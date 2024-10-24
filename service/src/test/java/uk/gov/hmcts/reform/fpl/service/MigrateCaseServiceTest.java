@@ -3241,7 +3241,7 @@ class MigrateCaseServiceTest {
         void shouldThrowAErrorWhenNoCancelledHearingDetailsPresent() {
             CaseData caseData = CaseData.builder().build();
 
-            assertThrows(AssertionError.class, () -> 
+            assertThrows(AssertionError.class, () ->
                 underTest.updateCancelledHearingDetailsType(caseData, MIGRATION_ID));
         }
     }
@@ -3485,4 +3485,53 @@ class MigrateCaseServiceTest {
                 .hasMessage(format("Migration {id = %s}, this is not an EPO", MIGRATION_ID));
         }
     }
+
+    @Nested
+    class RedactHearingTypeReason {
+
+        @Test
+        void shouldRedactHearingTypeReason() {
+            Hearing hearing = Hearing.builder()
+                .typeGiveReason("Testing REDACT THIS string")
+                .type("test")
+                .reason("reason")
+                .timeFrame("timeFrame")
+                .withoutNotice("withoutNotice")
+                .withoutNoticeReason("withoutNoticeReason")
+                .build();
+
+            Hearing expected = hearing.toBuilder()
+                .typeGiveReason("Testing *** string")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .hearing(hearing)
+                .build();
+
+            Map<String, Object> returned = underTest.redactTypeReason(caseData, MIGRATION_ID, 8, 19);
+
+            assertThat(returned).extracting("hearing").isEqualTo(expected);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoHearingToRedact() {
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.redactTypeReason(caseData, MIGRATION_ID, 8, 19));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoHearingReasonToRedact() {
+            CaseData caseData = CaseData.builder()
+                .hearing(Hearing.builder()
+                    .type("test")
+                    .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.redactTypeReason(caseData, MIGRATION_ID, 8, 19));
+        }
+
+    }
+
 }
