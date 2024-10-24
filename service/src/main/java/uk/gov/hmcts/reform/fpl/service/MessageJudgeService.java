@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Comparator;
@@ -25,6 +26,9 @@ public abstract class MessageJudgeService {
 
     @Autowired
     protected UserService userService;
+
+    @Autowired
+    protected ManageDocumentService manageDocumentService;
 
     protected boolean isJudiciary() {
         return userService.hasUserRole(JUDICIARY);

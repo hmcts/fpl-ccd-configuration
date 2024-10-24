@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "MessageAttachmentSelector",
+    "ListElementCode": "DOCUMENT",
+    "ListElement": "Document",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "MessageAttachmentSelector",
+    "ListElementCode": "APPLICATION",
+    "ListElement": "Application",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "MessageAttachmentSelector",
+    "ListElementCode": "NONE",
+    "ListElement": "No attachment",
+    "DisplayOrder": 3
+  }
+]

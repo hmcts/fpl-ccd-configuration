@@ -42,19 +42,25 @@ public class MessageJudgeController extends CallbackController {
 
         return respond(caseDetailsMap);
     }
+    @PostMapping("/populate-lists/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleDocumentListEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-    @PostMapping("/mid-event")
+        caseDetailsMap.putAll(messageJudgeService.populateDynamicLists(caseData));
+        List<String> errors = messageJudgeService.validateDynamicLists(caseData);
+
+        return respond(caseDetailsMap, errors);
+    }
+
+    @PostMapping("/populate-document-labels/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
-
-        Optional<String> emailError = messageJudgeService.validateRecipientEmail(caseData);
-        if (!emailError.isEmpty()) {
-            return respond(caseDetailsMap, List.of(emailError.get()));
-        }
 
         return respond(caseDetailsMap);
     }
@@ -65,6 +71,11 @@ public class MessageJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         List<Element<JudicialMessage>> updatedMessages;
+
+        Optional<String> emailError = messageJudgeService.validateRecipientEmail(caseData);
+        if (!emailError.isEmpty()) {
+            return respond(caseDetailsMap, List.of(emailError.get()));
+        }
 
         updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
         caseDetailsMap.put("judicialMessages", messageJudgeService.sortJudicialMessages(updatedMessages));

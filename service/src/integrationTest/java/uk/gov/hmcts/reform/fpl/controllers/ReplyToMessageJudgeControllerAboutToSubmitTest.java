@@ -140,7 +140,7 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.ofEntries(
                 Map.entry("hasAdditionalApplications", "some data"),
-                Map.entry("isMessageRegardingAdditionalApplications", "some data"),
+                Map.entry("isMessageRegardingDocuments", "some data"),
                 Map.entry("additionalApplicationsDynamicList", "some data"),
                 Map.entry("relatedDocumentsLabel", "some data"),
                 Map.entry("replyToMessageJudgeNextHearingLabel", "some data"),
@@ -161,7 +161,7 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
 
         assertThat(response.getData()).doesNotContainKeys(
             "hasAdditionalApplications",
-            "isMessageRegardingAdditionalApplications",
+            "isMessageRegardingDocuments",
             "additionalApplicationsDynamicList",
             "relatedDocumentsLabel",
             "nextHearingLabel",

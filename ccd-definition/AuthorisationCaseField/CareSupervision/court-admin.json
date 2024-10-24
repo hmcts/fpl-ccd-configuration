@@ -3866,7 +3866,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "isMessageRegardingAdditionalApplications",
+    "CaseFieldID": "isMessageRegardingDocuments",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRUD"
   },
@@ -3874,6 +3874,20 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalApplicationsDynamicList",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentTypesDynamicList",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentDynamicList",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRUD"
   },
@@ -3895,6 +3909,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "relatedDocumentsLabel",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "attachDocumentLabel",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRD"
   },

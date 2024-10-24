@@ -1742,7 +1742,7 @@ class ManageDocumentServiceTest {
                 Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1775,7 +1775,7 @@ class ManageDocumentServiceTest {
             ))).thenReturn(expectedDynamicList1);
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             if (uploaderType == DocumentUploaderType.HMCTS) {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList1);
             } else {
@@ -1812,7 +1812,7 @@ class ManageDocumentServiceTest {
             ))).thenReturn(expectedDynamicList1);
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             if (uploaderType == DocumentUploaderType.HMCTS
                 || uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
                 || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
@@ -1850,7 +1850,7 @@ class ManageDocumentServiceTest {
             ))).thenReturn(expectedDynamicList1);
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             if (loginType == LA_LOGIN_TYPE || loginType == 2) { // LAs should get an empty dynamic list
                 assertThat(dynamicList).isEqualTo(expectedDynamicList2);
             } else {
@@ -1892,7 +1892,7 @@ class ManageDocumentServiceTest {
 
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1944,7 +1944,7 @@ class ManageDocumentServiceTest {
             ))).thenReturn(expectedDynamicList2);
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList3);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             if (uploaderType == DocumentUploaderType.HMCTS) {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList2);
             } else if (uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
@@ -1984,7 +1984,7 @@ class ManageDocumentServiceTest {
 
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
     }

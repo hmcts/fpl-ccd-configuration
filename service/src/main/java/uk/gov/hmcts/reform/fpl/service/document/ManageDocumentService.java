@@ -93,7 +93,7 @@ public class ManageDocumentService {
 
     public static final String DOCUMENT_ACKNOWLEDGEMENT_KEY = "ACK_RELATED_TO_CASE";
 
-    private static final String DOCUMENT_TO_BE_REMOVED_SEPARATOR = "###";
+    public static final String DOCUMENT_TO_BE_REMOVED_SEPARATOR = "###";
 
     private final CaseConverter caseConverter;
 
@@ -480,15 +480,24 @@ public class ManageDocumentService {
             removalReason = eventData.getManageDocumentRemoveDocReason().getDescription();
         }
 
+        final Map<String, Object> output = new HashMap<>();
         DynamicListElement selected = eventData.getDocumentsToBeRemoved().getValue();
+        List<Element<? extends WithDocument>> targetElements = getSelectedDocuments(
+            caseData, selected, Optional.of(output));
+        targetElements.forEach(t -> t.getValue().setRemovalReason(removalReason));
 
+        return output;
+    }
+
+    public List<Element<? extends WithDocument>> getSelectedDocuments(CaseData caseData, DynamicListElement selected,
+                                                                      Optional<Map<String, Object>> fieldsToUpdate) {
         String[] split = selected.getCode().split(DOCUMENT_TO_BE_REMOVED_SEPARATOR);
         String fieldName = split[0];
         DocumentType documentType = DocumentType.fromFieldName(fieldName);
         UUID documentElementId = UUID.fromString(split[1]);
         List<Element<? extends WithDocument>> targetElements = new ArrayList<>();
 
-        final Map<String, Object> output = new HashMap<>();
+        final Map<String, Object> output = fieldsToUpdate.orElse(new HashMap<>());
         if (documentType == PLACEMENT_RESPONSES) {
             targetElements.add(handlePlacementResponseRemoval(caseData, documentElementId, output));
         } else {
@@ -499,8 +508,8 @@ public class ManageDocumentService {
                     documentElementId, output));
             }
         }
-        targetElements.forEach(t -> t.getValue().setRemovalReason(removalReason));
-        return output;
+
+        return targetElements;
     }
 
     @SuppressWarnings("unchecked")
@@ -619,6 +628,7 @@ public class ManageDocumentService {
         }
     }
 
+    // Also used in SendNewJudgeMessageService for document attachment type dropdown
     public DynamicList buildDocumentTypeDynamicList(CaseData caseData) {
         boolean hasPlacementNotices = caseData.getPlacementEventData().getPlacements().stream()
             .anyMatch(el -> el.getValue().getPlacementNotice() != null);
@@ -798,12 +808,12 @@ public class ManageDocumentService {
         return ret;
     }
 
-    public DynamicList buildAvailableDocumentsToBeRemoved(CaseData caseData) {
-        return buildAvailableDocumentsToBeRemoved(caseData, null);
+    public DynamicList buildAvailableDocumentsDynamicList(CaseData caseData) {
+        return buildAvailableDocumentsDynamicList(caseData, null);
     }
 
     // Return all documents when documentType is null
-    public DynamicList buildAvailableDocumentsToBeRemoved(CaseData caseData, DocumentType documentType) {
+    public DynamicList buildAvailableDocumentsDynamicList(CaseData caseData, DocumentType documentType) {
         DocumentUploaderType currentUserType = getUploaderType(caseData);
 
         Map<String, List<Element<?>>> fieldNameToListOfElementMap = new LinkedHashMap<>();
