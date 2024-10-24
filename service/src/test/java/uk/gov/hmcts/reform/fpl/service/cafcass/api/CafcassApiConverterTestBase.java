@@ -142,6 +142,7 @@ public abstract class CafcassApiConverterTestBase {
             .email("respondentSolicitor" + solicitorNo + "@test.com")
             .organisationId(testOrg.getOrganisationID())
             .organisationName(testOrg.getOrganisationName())
+            .address(getExpectedAddress("Solicitor " + solicitorNo + "'s address"))
             .build();
     }
 
