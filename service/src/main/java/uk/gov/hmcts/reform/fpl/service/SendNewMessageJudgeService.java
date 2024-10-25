@@ -24,8 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.SelectableItem;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,9 +39,7 @@ import java.util.function.Function;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Comparator.comparing;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
@@ -136,12 +132,12 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
     public List<String> validateDynamicLists(CaseData caseData) {
         MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
 
-        if (messageJudgeEventData.getIsMessageRegardingDocuments().equals(DOCUMENT) &&
-            getDocumentList(caseData).getListItems().isEmpty()) {
+        if (messageJudgeEventData.getIsMessageRegardingDocuments().equals(DOCUMENT)
+            && getDocumentList(caseData).getListItems().isEmpty()) {
             return List.of(format("No documents available of type: %s",
                 messageJudgeEventData.getDocumentTypesDynamicList().getValue().getLabel()));
-        } else if (messageJudgeEventData.getIsMessageRegardingDocuments().equals(APPLICATION) &&
-            getApplicationsLists(caseData).getListItems().isEmpty()) {
+        } else if (messageJudgeEventData.getIsMessageRegardingDocuments().equals(APPLICATION)
+            && getApplicationsLists(caseData).getListItems().isEmpty()) {
             return List.of("No applications available");
         }
 
@@ -304,7 +300,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return asDynamicList(applications, SelectableItem::toLabel);
     }
 
-    public DynamicList getDocumentList(CaseData caseData){
+    public DynamicList getDocumentList(CaseData caseData) {
         DocumentType documentTypeSelected = DocumentType.valueOf(caseData.getMessageJudgeEventData()
             .getDocumentTypesDynamicList().getValue().getCode());
 

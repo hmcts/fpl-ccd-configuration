@@ -42,6 +42,7 @@ public class MessageJudgeController extends CallbackController {
 
         return respond(caseDetailsMap);
     }
+
     @PostMapping("/populate-lists/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleDocumentListEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();

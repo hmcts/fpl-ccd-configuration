@@ -1,21 +1,21 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.util.List;
 import java.util.Map;
@@ -24,19 +24,17 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
-
-    @SpyBean
-    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
-
+    @MockBean
+    ManageDocumentService manageDocumentService;
     @MockBean
     private UserService userService;
 
@@ -45,7 +43,7 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldInitialiseCaseFieldsWhenAdditionalApplicationsDocumentsExist() {
+    void shouldInitialiseCaseFieldsForApplicationsAndDocTypes() {
         UUID c2DocumentBundleId = randomUUID();
         UUID otherApplicationsBundleId = randomUUID();
 
@@ -68,32 +66,29 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
             .additionalApplicationsBundle(additionalApplicationsBundles)
             .build();
 
+        DynamicListElement documentTypeElement1 = DynamicListElement.builder()
+            .code("SKELETON_ARGUMENTS")
+            .label("Skeleton arguments")
+            .build();
+
+        DynamicListElement documentTypeElement2 = DynamicListElement.builder()
+            .code("COURT_BUNDLE")
+            .label("Court Bundles")
+            .build();
+
+        DynamicList docTypeDynamicList = DynamicList.builder()
+            .listItems(List.of(documentTypeElement1, documentTypeElement2)).build();
+
+        when(manageDocumentService.buildDocumentTypeDynamicList(any())).thenReturn(docTypeDynamicList);
+
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
-        DynamicList additionalApplicationsDynamicList = mapper.convertValue(response.getData()
-            .get("additionalApplicationsDynamicList"), DynamicList.class);
-
-        DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
-            Pair.of(otherApplicationsBundleId, "C1, 1 January 2021, 12:00pm"),
-            Pair.of(c2DocumentBundleId, "C2, 1 January 2021, 12:00pm")
+        DynamicList builtDynamicList = mapper.convertValue(
+            response.getData().get("documentTypesDynamicList"), DynamicList.class
         );
 
-        assertThat(additionalApplicationsDynamicList).isEqualTo(expectedAdditionalApplicationsDynamicList);
-
         assertThat(response.getData().get("hasAdditionalApplications")).isEqualTo(YES.getValue());
-    }
-
-    @Test
-    void shouldInitialiseOnlySenderAndRecipientEmailAddressesWhenApplicationDocumentsDoNotExist() {
-        CaseData caseData = CaseData.builder().id(1111L).build();
-        Map<String, Object> caseDetails = postAboutToStartEvent(caseData).getData();
-
-        assertThat(caseDetails.get("additionalApplicationsDynamicList")).isNull();
-        assertThat(caseDetails.get("hasAdditional"
-                                   + "Applications")).isNull();
-        assertThat(caseDetails.get("judicialMessageMetaData"))
-            .extracting("sender", "recipient")
-            .containsExactly(EMPTY, EMPTY);
+        assertThat(builtDynamicList).isEqualTo(docTypeDynamicList);
     }
 
     @Test
@@ -102,7 +97,7 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
 
         when(userService.getUserEmail()).thenReturn("sender@mail.com");
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
-
+        when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType.HMCTS);
         Map<String, Object> caseDetails = postAboutToStartEvent(caseData, UserRole.JUDICIARY.getRoleName()).getData();
 
         assertThat(caseDetails.get("judicialMessageMetaData")).extracting("sender", "recipient")

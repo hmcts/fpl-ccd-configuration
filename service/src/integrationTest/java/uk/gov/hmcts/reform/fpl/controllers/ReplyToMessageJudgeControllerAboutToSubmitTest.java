@@ -140,8 +140,9 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.ofEntries(
                 Map.entry("hasAdditionalApplications", "some data"),
-                Map.entry("isMessageRegardingDocuments", "some data"),
-                Map.entry("additionalApplicationsDynamicList", "some data"),
+                Map.entry("isMessageRegardingDocuments", "APPLICATION"),
+                Map.entry("additionalApplicationsDynamicList",
+                    buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data"))),
                 Map.entry("relatedDocumentsLabel", "some data"),
                 Map.entry("replyToMessageJudgeNextHearingLabel", "some data"),
                 Map.entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
