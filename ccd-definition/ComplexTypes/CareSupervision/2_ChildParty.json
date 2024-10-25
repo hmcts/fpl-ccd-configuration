@@ -237,6 +237,7 @@
     "ListElementCode": "detailsHidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need contact details hidden from other parties?",
+    "FieldShowCondition": "livingSituation!=\"Living in a refuge\"",
     "SecurityClassification": "Public"
   },
   {
@@ -245,7 +246,7 @@
     "ListElementCode": "detailsHiddenReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "detailsHidden=\"Yes\"",
+    "FieldShowCondition": "detailsHidden=\"Yes\" and livingSituation!=\"Living in a refuge\"",
     "SecurityClassification": "Public"
   },
   {

@@ -95,7 +95,7 @@ class ChildRepresentationServiceTest {
 
         @Test
         void testIfMainSolicitorNotPresent() {
-            Map<String, Object> actual = underTest.finaliseRepresentationDetails(CaseData.builder()
+            Map<String, Object> actual = underTest.finaliseChildrenAndRepresentationDetails(CaseData.builder()
                 .children1(List.of(element(CHILD_UUID_1, Child.builder()
                     .solicitor(CHILD_REPRESENTATIVE)
                     .build())))
@@ -113,7 +113,7 @@ class ChildRepresentationServiceTest {
 
         @Test
         void testIfMainSolicitorIsPresentAndAllChildrenUseMainSolicitor() {
-            Map<String, Object> actual = underTest.finaliseRepresentationDetails(CaseData.builder()
+            Map<String, Object> actual = underTest.finaliseChildrenAndRepresentationDetails(CaseData.builder()
                 .children1(List.of(element(CHILD_UUID_1, Child.builder()
                     .solicitor(CHILD_REPRESENTATIVE)
                     .build())))
@@ -133,7 +133,7 @@ class ChildRepresentationServiceTest {
 
         @Test
         void testIfMainSolicitorIsPresentAndChildDoNotUseMainSolicitor() {
-            Map<String, Object> actual = underTest.finaliseRepresentationDetails(CaseData.builder()
+            Map<String, Object> actual = underTest.finaliseChildrenAndRepresentationDetails(CaseData.builder()
                 .children1(List.of(element(CHILD_UUID_1, Child.builder()
                     .build())))
                 .childrenEventData(ChildrenEventData.builder()
@@ -156,7 +156,7 @@ class ChildRepresentationServiceTest {
 
         @Test
         void testIfMainSolicitorIsPresentAndChildUseMainSolicitor() {
-            Map<String, Object> actual = underTest.finaliseRepresentationDetails(CaseData.builder()
+            Map<String, Object> actual = underTest.finaliseChildrenAndRepresentationDetails(CaseData.builder()
                 .children1(List.of(element(CHILD_UUID_1, Child.builder()
                     .build())))
                 .childrenEventData(ChildrenEventData.builder()
@@ -178,7 +178,7 @@ class ChildRepresentationServiceTest {
 
         @Test
         void testIfMainSolicitorIsPresentAndMultipleChildrenUseMixedSolicitors() {
-            Map<String, Object> actual = underTest.finaliseRepresentationDetails(CaseData.builder()
+            Map<String, Object> actual = underTest.finaliseChildrenAndRepresentationDetails(CaseData.builder()
                 .children1(List.of(
                     element(CHILD_UUID_1, Child.builder().build()),
                     element(CHILD_UUID_2, Child.builder().build())
