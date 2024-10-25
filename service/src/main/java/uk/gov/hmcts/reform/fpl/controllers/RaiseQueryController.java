@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -20,68 +24,44 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RaiseQueryController extends CallbackController {
 
-    private static final List<String> QUERY_COLLECTIONS = List.of(
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionLASol",
-        "qmCaseQueriesCollectionEPSManaging",
-        "qmCaseQueriesCollectionLAManaging",
-        "qmCaseQueriesCollectionLABarrister",
-        "qmCaseQueriesCollectionLAShared",
-        "qmCaseQueriesCollectionBarrister",
-        "qmCaseQueriesCollectionSolicitor",
-        "qmCaseQueriesCollectionSolicitorA",
-        "qmCaseQueriesCollectionSolicitorB",
-        "qmCaseQueriesCollectionSolicitorC",
-        "qmCaseQueriesCollectionSolicitorD",
-        "qmCaseQueriesCollectionSolicitorE",
-        "qmCaseQueriesCollectionSolicitorF",
-        "qmCaseQueriesCollectionSolicitorG",
-        "qmCaseQueriesCollectionSolicitorH",
-        "qmCaseQueriesCollectionSolicitorI",
-        "qmCaseQueriesCollectionSolicitorJ",
-        "qmCaseQueriesCollectionChildSolA",
-        "qmCaseQueriesCollectionChildSolB",
-        "qmCaseQueriesCollectionChildSolC",
-        "qmCaseQueriesCollectionChildSolD",
-        "qmCaseQueriesCollectionChildSolE",
-        "qmCaseQueriesCollectionChildSolF",
-        "qmCaseQueriesCollectionChildSolG",
-        "qmCaseQueriesCollectionChildSolH",
-        "qmCaseQueriesCollectionChildSolI",
-        "qmCaseQueriesCollectionChildSolJ",
-        "qmCaseQueriesCollectionChildSolK",
-        "qmCaseQueriesCollectionChildSolL",
-        "qmCaseQueriesCollectionChildSolM",
-        "qmCaseQueriesCollectionChildSolN",
-        "qmCaseQueriesCollectionChildSolO",
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionCafcass",
-        "qmCaseQueriesCollectionCafcassSol"
-    );
+    private final UserService userService;
+    private static final Map<CaseRole, String> COLLECTION_MAPPING = initialiseCollectionMapping();
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolOne");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolTwo");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolThree");
+
         CaseData caseData = getCaseData(caseDetails);
 
-        logAllCollections(caseDetails, QUERY_COLLECTIONS);
+        Set<CaseRole> currentUserRoles = userService.getCaseRoles(caseData.getId());
+        log.info("Current logged-in user's case roles are: {}", currentUserRoles);
 
-        for (String queryCollection : QUERY_COLLECTIONS) {
-            caseDetails.getData().putIfAbsent(queryCollection, null);
-            log.info("Setting {} to value {}", queryCollection, caseDetails.getData().get(queryCollection));
-        }
+        initialiseRelevantQueryCollectionsForUser(caseDetails, currentUserRoles);
 
         log.info("Final values of query collections: ");
-        logAllCollections(caseDetails, QUERY_COLLECTIONS);
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolOne");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolTwo");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolThree");
 
         return respond(caseDetails);
+    }
+
+    private void initialiseRelevantQueryCollectionsForUser(CaseDetails caseDetails, Set<CaseRole> currentUserRoles) {
+        CaseRole userQueryCollectionRole = currentUserRoles.stream()
+            .filter(COLLECTION_MAPPING::containsKey)
+            .findFirst()
+            .orElse(null);
+
+        if (userQueryCollectionRole != null) {
+            String queryCollectionKey = COLLECTION_MAPPING.get(userQueryCollectionRole);
+            log.info("Query collection for user role {} is {}.", userQueryCollectionRole, queryCollectionKey);
+            caseDetails.getData().putIfAbsent(queryCollectionKey, null);
+            log.info("Setting {} to value {}", queryCollectionKey, caseDetails.getData().get(queryCollectionKey));
+        }
     }
 
     private void logQueryCollection(CaseDetails caseDetails, String collectionKey) {
@@ -92,9 +72,11 @@ public class RaiseQueryController extends CallbackController {
         }
     }
 
-    private void logAllCollections(CaseDetails caseDetails, List<String> collections) {
-        for (String collectionKey : collections) {
-            logQueryCollection(caseDetails, collectionKey);
-        }
+    private static Map<CaseRole, String> initialiseCollectionMapping() {
+        Map<CaseRole, String> collectionMapping = new LinkedHashMap<>();
+        collectionMapping.put(CaseRole.CHILDSOLICITORA, "qmCaseQueriesCollectionChildSolOne");
+        collectionMapping.put(CaseRole.CHILDSOLICITORB, "qmCaseQueriesCollectionChildSolTwo");
+        collectionMapping.put(CaseRole.CHILDSOLICITORC, "qmCaseQueriesCollectionChildSolThree");
+        return collectionMapping;
     }
 }
