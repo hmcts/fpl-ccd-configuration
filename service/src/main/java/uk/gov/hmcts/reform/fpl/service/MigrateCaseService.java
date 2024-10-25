@@ -1275,6 +1275,20 @@ public class MigrateCaseService {
         return Map.of("hearing",hearing);
     }
 
+    public Map<String, Object> redactTypeReason(CaseData caseData, String migrationId, int startLoc, int endLoc) {
+        if (isEmpty(caseData.getHearing()) || isEmpty(caseData.getHearing().getTypeGiveReason())) {
+            throw new AssertionError(format("Migration {id = %s}, hearing not found", migrationId));
+        }
+
+        final String typeGiveReason = caseData.getHearing().getTypeGiveReason();
+
+        Hearing hearing = caseData.getHearing().toBuilder()
+            .typeGiveReason(typeGiveReason.replace(typeGiveReason.substring(startLoc, endLoc), "***"))
+            .build();
+
+        return Map.of("hearing", hearing);
+    }
+
     public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {
         if (!caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
             throw new AssertionError(format("Migration {id = %s}, this is not an EPO", migrationId));
