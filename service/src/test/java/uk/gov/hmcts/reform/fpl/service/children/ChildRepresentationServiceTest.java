@@ -3,8 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.children;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
+import uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -211,6 +214,30 @@ class ChildRepresentationServiceTest {
             ));
         }
 
+        @Test
+        void shouldMarkAsConfidentialIfRefugeeAddressIsProvided() {
+            Map<String, Object> actual = underTest.finaliseChildrenAndRepresentationDetails(CaseData.builder()
+                .children1(List.of(element(CHILD_UUID_1, Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(ChildLivingSituation.LIVE_IN_REFUGE.getValue())
+                        .address(Address.builder().addressLine1("Refugee address").build())
+                        .build())
+                    .build())))
+                .childrenEventData(ChildrenEventData.builder()
+                    .childrenHaveRepresentation(NO.getValue())
+                    .build())
+                .build());
+
+            assertThat(actual).isEqualTo(Map.of(
+                "children1", List.of(element(CHILD_UUID_1, Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(ChildLivingSituation.LIVE_IN_REFUGE.getValue())
+                        .address(Address.builder().addressLine1("Refugee address").build())
+                        .detailsHidden(YES.getValue())
+                        .build())
+                    .build()))
+            ));
+        }
     }
 
 }
