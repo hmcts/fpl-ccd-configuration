@@ -807,7 +807,7 @@ class SendNewMessageJudgeServiceTest {
             .build();
     }
 
-    private DynamicList buildBasicDocumentDynamicList(){
+    private DynamicList buildBasicDocumentDynamicList() {
         DynamicListElement skeletonArgumentElement = DynamicListElement.builder()
             .code(format("hearingDocuments.skeletonArgumentList###%s", DOCUMENT_1_ID))
             .label(DOCUMENT_REFERENCE_1.getFilename())
