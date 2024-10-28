@@ -66,6 +66,7 @@ public class CafcassApiHelperTest {
             .email("solicitor@test.com")
             .firstName("SolicitorFirstName")
             .lastName("SolicitorLastName")
+            .unregisteredOrganisation(UnregisteredOrganisation.builder().build())
             .organisation(Organisation.builder()
                 .organisationID("organisation ID")
                 .organisationName("organisation name")

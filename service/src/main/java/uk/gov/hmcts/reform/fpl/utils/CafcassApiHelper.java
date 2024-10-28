@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 public class CafcassApiHelper {
@@ -56,7 +57,8 @@ public class CafcassApiHelper {
                 String orgName = null;
                 Address address = null;
 
-                if (solicitor.getUnregisteredOrganisation() != null) {
+                if (solicitor.getUnregisteredOrganisation() != null
+                    && isNotEmpty(solicitor.getUnregisteredOrganisation().getName())) {
                     orgName = solicitor.getUnregisteredOrganisation().getName();
                     if (solicitor.getUnregisteredOrganisation().getAddress() != null) {
                         address = solicitor.getUnregisteredOrganisation().getAddress();
