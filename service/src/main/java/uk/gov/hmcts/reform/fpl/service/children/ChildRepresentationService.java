@@ -62,8 +62,9 @@ public class ChildRepresentationService {
                     Child.ChildBuilder childBuilder = childElement.getValue().toBuilder()
                         .solicitor(selectSpecifiedRepresentative(eventData, idx));
 
-                    if (LIVE_IN_REFUGE.getValue().equalsIgnoreCase(childElement.getValue().getParty()
-                        .getLivingSituation())) {
+                    if (childElement.getValue().getParty() != null
+                        && LIVE_IN_REFUGE.getValue().equalsIgnoreCase(
+                            childElement.getValue().getParty().getLivingSituation())) {
                         childBuilder = childBuilder.party(childElement.getValue().getParty().toBuilder()
                             .detailsHidden(YES.getValue()).build());
                     }
