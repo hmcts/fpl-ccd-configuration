@@ -153,6 +153,25 @@ class MigrateCaseServiceTest {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
     }
 
+    @Test
+    void shouldDoStateCheck() {
+        assertDoesNotThrow(() -> underTest.doStateCheck(
+            State.CASE_MANAGEMENT.toString(),
+            State.CASE_MANAGEMENT.toString(),
+            1L,
+            MIGRATION_ID));
+    }
+
+    @Test
+    void shouldThrowExceptionIfStateCheckFails() {
+        assertThrows(AssertionError.class, () -> underTest.doStateCheck(
+            State.CASE_MANAGEMENT.toString(),
+            State.CLOSED.toString(),
+            1L,
+            MIGRATION_ID
+        ));
+    }
+
     @Mock
     private CaseConverter caseConverter;
 

@@ -216,6 +216,15 @@ public class MigrateCaseService {
         return Map.of("hearingOrdersBundlesDrafts", bundles);
     }
 
+    public void doStateCheck(String state, String expectedState, long caseId, String migrationId) throws AssertionError {
+        if (!state.equals(expectedState)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, state was %s, expected %s",
+                migrationId, caseId, state, expectedState
+            ));
+        }
+    }
+
     public void doCaseIdCheck(long caseId, long expectedCaseId, String migrationId) throws AssertionError {
         if (caseId != expectedCaseId) {
             throw new AssertionError(format(

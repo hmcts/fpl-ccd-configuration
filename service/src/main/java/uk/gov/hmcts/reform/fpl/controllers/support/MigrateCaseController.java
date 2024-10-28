@@ -11,9 +11,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.Map;
@@ -28,12 +30,11 @@ public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
+    private final RoleAssignmentService roleAssignmentService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2551", this::run2551,
-        "DFPL-2507", this::run2507,
-        "DFPL-2580", this::run2580
+        "DFPL-2585", this::run2585
     );
     private final CaseConverter caseConverter;
 
@@ -61,33 +62,11 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2551(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2551";
-        final long expectedCaseId = 1726735474157650L;
+    private void run2585(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2585";
+        migrateCaseService.doStateCheck(
+            caseDetails.getState(), State.CLOSED.toString(), caseDetails.getId(), migrationId);
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        final CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeAddressFromEPO(caseData, migrationId));
-    }
-
-    private void run2507(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2507";
-        final long expectedCaseId = 1697635739516572L;
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        final CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().putAll(migrateCaseService.updateCancelledHearingDetailsType(caseData, migrationId));
-    }
-
-    private void run2580(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2580";
-        final long expectedCaseId = 1726476888400895L;
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        final CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.redactTypeReason(caseData, migrationId, 395, 404));
+        roleAssignmentService.deleteAllRolesOnCase(caseDetails.getId());
     }
 }
