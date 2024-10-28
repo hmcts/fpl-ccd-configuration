@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 public class CafcassApiHelper {
@@ -51,10 +52,35 @@ public class CafcassApiHelper {
                     .firstName(solicitor.getFirstName())
                     .lastName(solicitor.getLastName());
 
-                if (solicitor.getOrganisation() != null) {
-                    builder = builder.organisationId(solicitor.getOrganisation().getOrganisationID())
-                        .organisationName(solicitor.getOrganisation().getOrganisationName());
+                String orgId = null;
+                String orgName = null;
+                Address address = null;
+
+                if (solicitor.getUnregisteredOrganisation() != null) {
+                    orgName = solicitor.getUnregisteredOrganisation().getName();
+                    if (solicitor.getUnregisteredOrganisation().getAddress() != null) {
+                        address = solicitor.getUnregisteredOrganisation().getAddress();
+                    }
+                } else {
+                    if (solicitor.getOrganisation() != null) {
+                        orgId =  solicitor.getOrganisation().getOrganisationID();
+                        orgName = solicitor.getOrganisation().getOrganisationName();
+                    }
+                    if (solicitor.getRegionalOfficeAddress() != null) {
+                        address = solicitor.getRegionalOfficeAddress();
+                    }
                 }
+
+                if (isNotBlank(orgId)) {
+                    builder = builder.organisationId(orgId);
+                }
+                if (isNotBlank(orgName)) {
+                    builder = builder.organisationName(orgName);
+                }
+                if (address != null) {
+                    builder = builder.address(getCafcassApiAddress(address));
+                }
+
                 return builder.build();
             })
             .orElse(null);
