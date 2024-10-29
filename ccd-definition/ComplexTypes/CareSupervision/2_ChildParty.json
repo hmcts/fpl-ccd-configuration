@@ -121,6 +121,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "addressAutoConfidentialLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## This will automatically be confidential",
+    "FieldShowCondition": "livingSituation=\"Living in a refuge\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
