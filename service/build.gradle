@@ -330,7 +330,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2'
   implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.0.0'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '4.0.4'
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.2-RELEASE'
 
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
