@@ -2747,6 +2747,83 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitor",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorA",
+    "UserRole": "[SOLICITORA]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorB",
+    "UserRole": "[SOLICITORB]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorC",
+    "UserRole": "[SOLICITORC]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorD",
+    "UserRole": "[SOLICITORD]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorE",
+    "UserRole": "[SOLICITORE]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorF",
+    "UserRole": "[SOLICITORF]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorG",
+    "UserRole": "[SOLICITORG]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorH",
+    "UserRole": "[SOLICITORH]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorI",
+    "UserRole": "[SOLICITORI]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionSolicitorJ",
+    "UserRole": "[SOLICITORJ]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolOne",
     "UserRole": "[CHILDSOLICITORA]",
     "CRUD": "CRUD"
@@ -2763,6 +2840,90 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolThree",
     "UserRole": "[CHILDSOLICITORC]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolD",
+    "UserRole": "[CHILDSOLICITORD]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolE",
+    "UserRole": "[CHILDSOLICITORE]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolF",
+    "UserRole": "[CHILDSOLICITORF]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolG",
+    "UserRole": "[CHILDSOLICITORG]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolH",
+    "UserRole": "[CHILDSOLICITORH]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolI",
+    "UserRole": "[CHILDSOLICITORI]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolJ",
+    "UserRole": "[CHILDSOLICITORJ]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolK",
+    "UserRole": "[CHILDSOLICITORK]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolL",
+    "UserRole": "[CHILDSOLICITORL]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolM",
+    "UserRole": "[CHILDSOLICITORM]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolN",
+    "UserRole": "[CHILDSOLICITORN]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolO",
+    "UserRole": "[CHILDSOLICITORO]",
     "CRUD": "CRUD"
   },
   {
