@@ -124,7 +124,7 @@
     "ID": "ChildParty ",
     "ListElementCode": "addressAutoConfidentialLabel",
     "FieldType": "Label",
-    "ElementLabel": "## This will automatically be confidential",
+    "ElementLabel": "## This address is automatically made confidential",
     "FieldShowCondition": "livingSituation=\"Living in a refuge\"",
     "SecurityClassification": "Public"
   },
