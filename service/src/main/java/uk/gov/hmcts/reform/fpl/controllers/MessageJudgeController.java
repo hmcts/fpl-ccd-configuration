@@ -84,8 +84,7 @@ public class MessageJudgeController extends CallbackController {
         caseDetailsMap.put("latestRoleSent", caseData.getMessageJudgeEventData().getJudicialMessageMetaData()
             .getRecipientType());
 
-
-
+        removeTemporaryFields(caseDetailsMap, transientFields());
         return respond(caseDetailsMap);
     }
 

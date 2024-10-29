@@ -32,7 +32,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documentDynamicList",
     "FieldType": "DynamicList",
-    "Label": "Documents",
+    "Label": "Which document?",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
