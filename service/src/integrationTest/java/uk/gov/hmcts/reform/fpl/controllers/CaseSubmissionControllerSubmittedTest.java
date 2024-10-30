@@ -763,7 +763,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject()
             .put("file", fileContent)
-            .put("is_csv", false);
+            .put("filename", JSONObject.NULL)
+            .put("confirm_email_before_download", JSONObject.NULL)
+            .put("retention_period", JSONObject.NULL);
 
         if (completed) {
             getCompleteParameters(submitCaseCafcassTemplate);

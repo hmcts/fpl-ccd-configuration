@@ -33,7 +33,8 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2585", this::run2585
+        "DFPL-2585", this::run2585,
+        "DFPL-2579", this::run2579
     );
     private final CaseConverter caseConverter;
 
@@ -67,5 +68,14 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getState(), State.CLOSED.toString(), caseDetails.getId(), migrationId);
 
         roleAssignmentService.deleteAllRolesOnCase(caseDetails.getId());
+    }
+
+    private void run2579(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2579";
+        final long expectedCaseId = 1727273204426566L;
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 }
