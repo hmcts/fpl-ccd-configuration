@@ -24,7 +24,10 @@ class NotifyAttachedDocumentLinkHelperTest {
 
         JSONObject expectedDocumentLink = new JSONObject()
             .put("file", documentContent)
-            .put("is_csv", false);
+            .put("retention_period", JSONObject.NULL)
+            .put("filename", JSONObject.NULL)
+            .put("confirm_email_before_download", JSONObject.NULL)
+            .put("file", documentContent);
 
         Optional<JSONObject> generatedDocumentLink = generateAttachedDocumentLink(documentContentsAsByte);
         assertThat(generatedDocumentLink).isPresent();
