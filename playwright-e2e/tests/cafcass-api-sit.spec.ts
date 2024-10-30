@@ -37,15 +37,7 @@ test.describe('Cafcass API Integration test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber : string;
     let caseName = 'Cafcass Integration Test ' + dateTime;
-    let familManNumPrefix = 'FP24A02';
-    // test.beforeEach(async ()  => {
-    //     caseNumber = await createCase(caseName, laUser);
-    //     if (caseNumber != null) {
-    //         // do nothing
-    //     } else {
-    //         throw "Fail to create case";
-    //     }
-    // });
+    let familManNumPrefix = 'FP24A10';
 
     test("Integration Test", async ({page}, testInfo) => {
         let caseNo = [
@@ -66,7 +58,7 @@ test.describe('Cafcass API Integration test', () => {
                 caseNumber = await createCase(caseName, laUser);
                 if (caseNumber != null) {
                     cases[i].caseData.familyManCaseNumber = familManNumPrefix + familyNumCount;
-                    if (caseNo[i] != "case13" && caseNo[i] != "case15" && caseNo[i] != "case16"
+                    if (caseNo[i] != "case13" && caseNo[i] != "case15" && caseNo[i] != "case16" && caseNo[i] != "case17"
                         && cases[i].caseData.respondents1 != null) {
                         for (let x = 0; x < cases[i].caseData.respondents1.length; x++) {
                             cases[i].caseData.respondents1[x].value.party.firstName = caseNumber + 'respFirstname' + x;
