@@ -103,7 +103,8 @@
           "type": "FURTHER_CASE_MANAGEMENT",
           "typeDetails": "test type details",
           "venue": "111",
-          "venueCustomAddress": {}
+          "venueCustomAddress": {},
+          "preAttendanceDetails": "1 hour before the hearing"
         }
       }
     ],

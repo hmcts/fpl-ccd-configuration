@@ -83,6 +83,7 @@
       {
         "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
         "value": {
+          "preAttendanceDetails": "1 hour before the hearing",
           "endDate": "2050-01-02T16:30:00",
           "hearingNeedsBooked": [
             "INTERPRETER",
