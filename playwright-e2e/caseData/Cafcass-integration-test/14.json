@@ -235,6 +235,7 @@
         "value": {
           "party": {
             "gender": "Male",
+            "addressKnow": "Yes",
             "address": {
               "County": "",
               "Country": "United Kingdom",
