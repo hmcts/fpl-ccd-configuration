@@ -368,6 +368,7 @@
         "DOB": "1980-01-01",
         "name": "Other people in the case",
         "gender": "They identify in another way",
+        "addressKnow": "Yes",
         "address": {
           "Country": "United Kingdom",
           "PostCode": "SW1H 9AJ",
