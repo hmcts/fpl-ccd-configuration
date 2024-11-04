@@ -201,15 +201,15 @@
       {
         "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
         "value": {
-          "id": "IWGOT5W",
           "name": "Barnaby Dutton",
-          "email": "FamilyPublicLaw+hn@gmail.com",
+          "id": "M1YPZ85",
+          "email": "private.solicitors@mailinator.com",
           "phone": "123456",
           "address": {
             "PostCode": "CR0 2GE",
             "PostTown": "London",
-            "AddressLine1": "Flat 1, Hillingdon Apartments",
-            "AddressLine2": "Hillingdon Central Square 1"
+            "AddressLine1": "Flat 1",
+            "AddressLine2": "Private Solicitors Apartments"
           },
           "pbaNumber": "PBA1234567",
           "clientCode": "",
@@ -272,13 +272,6 @@
       "proposal": "District judge"
     },
     "caseLocalAuthority": "HN",
-    "localAuthorityPolicy": {
-      "Organisation": {
-        "OrganisationID": "IWGOT5W",
-        "OrganisationName": "London Borough Hillingdon"
-      },
-      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
-    },
     "caseLocalAuthorityName": "London Borough Hillingdon",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
