@@ -88,6 +88,24 @@ class SendOrderReminderServiceTest {
     }
 
     @Test
+    void shouldReturnListOfHearingsWithMissingCMOs() {
+        LocalDateTime startDate = LocalDateTime.of(2020, Month.JUNE, 21, 0, 0);
+        Element<HearingBooking> booking = element(HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
+            .startDate(startDate)
+            .endDate(startDate.plusHours(1))
+            .build());
+        CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .hearingDetails(List.of(booking))
+            .build();
+
+        List<HearingBooking> actual = underTest.getPastHearingBookingsWithoutCMOs(caseData);
+
+        assertThat(actual).isEqualTo(List.of(booking.getValue()));
+    }
+
+    @Test
     void shouldReturnTrueIfNoHearingsMissingCMOsButNoCMOIdPresent() {
         LocalDateTime startDate = LocalDateTime.of(2020, Month.JUNE, 21, 0, 0);
         Element<HearingBooking> booking = element(HearingBooking.builder()
@@ -108,5 +126,23 @@ class SendOrderReminderServiceTest {
         boolean actual = underTest.checkSealedCMOExistsForHearing(caseData, booking);
 
         assertThat(actual).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseIfHearingsMissingCMOs() {
+        LocalDateTime startDate = LocalDateTime.of(2020, Month.JUNE, 21, 0, 0);
+        Element<HearingBooking> booking = element(HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
+            .startDate(startDate)
+            .endDate(startDate.plusHours(1))
+            .build());
+        CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .hearingDetails(List.of(booking))
+            .build();
+
+        boolean actual = underTest.checkSealedCMOExistsForHearing(caseData, booking);
+
+        assertThat(actual).isFalse();
     }
 }
