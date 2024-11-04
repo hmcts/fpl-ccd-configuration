@@ -199,11 +199,11 @@
     "sendToCtsc": "Yes",
     "localAuthorities": [
       {
-        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "id": "399a0f39-c54c-4408-b97e-cbda2d2ce668",
         "value": {
-          "id": "IWGOT5W",
-          "name": "London Borough Hillingdon",
-          "email": "FamilyPublicLaw+hn@gmail.com",
+          "id": "M1YPZ85",
+          "name": "Private solicitors",
+          "email": "private.solicitors@mailinator.com",
           "phone": "123456",
           "address": {
             "PostCode": "fictitous",
@@ -212,12 +212,12 @@
           },
           "pbaNumber": "PBA1234567",
           "clientCode": "",
-          "designated": "Yes",
+          "designated": "No",
           "legalTeamManager": null,
           "customerReference": "PBA1234567",
           "colleagues": [
             {
-              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "id": "3bc7549b-270c-4c10-a375-d712b0d3a9e1",
               "value": {
                 "role": "SOLICITOR",
                 "email": "test@test.com",
@@ -271,13 +271,6 @@
       "proposal": "District judge"
     },
     "caseLocalAuthority": "HN",
-    "localAuthorityPolicy": {
-      "Organisation": {
-        "OrganisationID": "IWGOT5W",
-        "OrganisationName": "London Borough Hillingdon"
-      },
-      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
-    },
     "caseLocalAuthorityName": "London Borough Hillingdon",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
