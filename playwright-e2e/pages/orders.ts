@@ -25,6 +25,8 @@ export class Orders extends BasePage {
     readonly legalAdvisorName: Locator;
     readonly orderDirectionDetails: Locator;
     readonly closeOrder: Locator;
+    readonly careOrderIssuedDate: Locator;
+    readonly careOrderIssuedCourt: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -50,6 +52,8 @@ export class Orders extends BasePage {
         this.legalAdvisorName =page.getByLabel('Justices\' Legal Adviser\'s');
         this.orderDirectionDetails =page.getByLabel('Add further directions, if');
         this.closeOrder = page.getByRole('group', {name: 'Does this order close the case?'});
+        this.careOrderIssuedDate = page.getByRole('group', {name: 'When was the care order issued?'});
+        this.careOrderIssuedCourt =page.getByLabel('Which court issued the order?');
     }
 
     async selectOrderOperation(toDo: string) {
@@ -112,6 +116,16 @@ export class Orders extends BasePage {
     }
     async addC32CareOrder(){
         await this.orderDirectionDetails.fill('Direction on accomadation of the children\nNeed assistance for child1 sam');
+    }
+
+    async addC32BDischargeOfCareOrder(){
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Day' }).fill('3');
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Month' }).fill('4');
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Year' }).fill('2022');
+        await this.careOrderIssuedCourt.selectOption('Swansea C&F Justice Centre');
+        await this.orderDirectionDetails.fill('Remove the child from social care . The respondent is new gaurdian');
+        await this.finalOrder.getByText('No').click();
+
     }
     async closeTheOrder(close:string){
         await this.closeOrder.getByLabel(`${close}`).check();
