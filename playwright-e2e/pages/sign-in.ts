@@ -59,7 +59,7 @@ export class SignInPage extends BasePage {
     }
 
     async isSignedIn() {
-        await expect(this.applyLocator).toBeVisible();
+        await expect(this.logoutButton).toBeVisible();
     }
 
     async logout() {
