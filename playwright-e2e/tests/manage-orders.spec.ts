@@ -170,7 +170,6 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.locator('#case-viewer-field-read--orderCollection')).toContainText('Discharge of care order (C32B)');
         await expect(page.locator('ccd-read-document-field')).toContainText('c32b_discharge_of_care_order.pdf');
-
     })
     test('C47A Appointment of a children\'s guardian (C47A)', async ({page,signInPage, orders}) => {
         caseName = 'C47A Order ' + dateTime.slice(0, 10);
