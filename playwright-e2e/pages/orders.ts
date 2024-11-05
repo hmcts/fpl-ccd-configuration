@@ -1,5 +1,5 @@
 import {BasePage} from "./base-page";
-import {Locator, Page} from "@playwright/test";
+import {expect, Locator, Page} from "@playwright/test";
 import config from "../settings/test-docs/config";
 
 export class Orders extends BasePage {
@@ -19,6 +19,12 @@ export class Orders extends BasePage {
     readonly isExclusion: Locator;
     readonly excluded: Locator;
     readonly powerOfExclusionStart: Locator;
+    readonly judgemagistrateTitle: Locator;
+    readonly judgeLastName: Locator;
+    readonly judgeEmail: Locator;
+    readonly legalAdvisorName: Locator;
+    readonly orderDirectionDetails: Locator;
+    readonly closeOrder: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -27,6 +33,7 @@ export class Orders extends BasePage {
         this.orderApplication = page.getByRole('group', {name: 'Is there an application for'});
         this.approvedHearing = page.getByLabel('Which hearing?');
         this.issuingJudge = page.getByRole('group', {name: 'Is this judge issuing the'});
+        this.judgemagistrateTitle = page.getByRole('group', {name: 'Judge or magistrate\'s title'});
         this.childInvolved = page.getByRole('group', {name: 'Is the order about all the children?'})
         this.EPOrderType = page.getByRole('group', {name: 'Type of emergency protection'});
         this.EPOEndDate = page.getByRole('group', {name: 'When does it end?'});
@@ -38,6 +45,11 @@ export class Orders extends BasePage {
         this.powerOfExclusionStart = page.getByRole('group', {name: 'Date power of exclusion starts'});
         this.orderToAmend = page.getByLabel('Select order to amend');
         this.uploadAmendOrder = page.getByRole('textbox', {name: 'Upload the amended order. It will then be dated and stamped as amended.'});
+        this.judgeLastName = page.getByLabel('Last name');
+        this.judgeEmail= page.getByLabel('Email Address');
+        this.legalAdvisorName =page.getByLabel('Justices\' Legal Adviser\'s');
+        this.orderDirectionDetails =page.getByLabel('Add further directions, if');
+        this.closeOrder = page.getByRole('group', {name: 'Does this order close the case?'});
     }
 
     async selectOrderOperation(toDo: string) {
@@ -48,19 +60,34 @@ export class Orders extends BasePage {
         await this.orderTypeRadio.getByLabel(`${orderType}`).check();
     }
 
-    async addIssuingDetails() {
+    async addIssuingDetailsOfApprovedOrder() {
         await this.orderApproved.getByLabel('Yes').click();
         await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
         await this.orderApplication.getByLabel('No').click();
         await this.clickContinue();
         await this.issuingJudge.getByRole('radio', {name: 'Yes'}).check();
     }
+    async addIssuningDeatilsOfUnApprovedOrder(){
+        await this.orderApproved.getByLabel('No').click();
+        await this.clickContinue();
+        await expect.soft(this.page.getByText('Case assigned to: Her Honour')).toBeVisible();
+        await this.issuingJudge.getByLabel('No').click();
+        await this.judgemagistrateTitle.getByLabel('His Honour Judge').check();
+        await this.judgeLastName.fill('John');
+        await this.judgeEmail.fill('email@email.comLegal');
+        await this.legalAdvisorName.fill('LA Jonathan');
 
-    async addChildDetails() {
-        await this.childInvolved.getByRole('radio', {name: 'No'}).click();
-        await this.page.getByRole('group', {name: 'Child 1 (Optional)'}).getByLabel('Yes').check();
-        await this.page.getByRole('group', {name: 'Child 2 (Optional)'}).getByLabel('Yes').check();
-        await this.page.getByRole('group', {name: 'Child 4 (Optional)'}).getByLabel('Yes').check();
+
+    }
+
+    async addChildDetails(isAllChild: string) {
+        await this.childInvolved.getByRole('radio', {name: `${isAllChild}`}).click();
+        if(isAllChild == 'No'){
+            await this.page.getByRole('group', {name: 'Child 1 (Optional)'}).getByLabel('Yes').check();
+            await this.page.getByRole('group', {name: 'Child 2 (Optional)'}).getByLabel('Yes').check();
+            await this.page.getByRole('group', {name: 'Child 4 (Optional)'}).getByLabel('Yes').check();
+        }
+
     }
 
     async addEPOOrderDetails(EPOOrderType: string) {
@@ -83,7 +110,12 @@ export class Orders extends BasePage {
         await this.EPOEndDate.getByRole('spinbutton', {name: 'Hour'}).fill('10');
         await this.finalOrder.getByLabel('Yes').click();
     }
-
+    async addC32CareOrder(){
+        await this.orderDirectionDetails.fill('Direction on accomadation of the children\nNeed assistance for child1 sam');
+    }
+    async closeTheOrder(close:string){
+        await this.closeOrder.getByLabel(`${close}`).check();
+    }
     async openOrderDoc(docLink: string) {
         const newPagePromise = this.page.context().waitForEvent('page');
         await this.page.getByRole('link', {name: `${docLink}`}).click();
