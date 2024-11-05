@@ -216,6 +216,16 @@ public class MigrateCaseService {
         return Map.of("hearingOrdersBundlesDrafts", bundles);
     }
 
+    public void doStateCheck(String state, String expectedState, long caseId, String migrationId)
+        throws AssertionError {
+        if (!state.equals(expectedState)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, state was %s, expected %s",
+                migrationId, caseId, state, expectedState
+            ));
+        }
+    }
+
     public void doCaseIdCheck(long caseId, long expectedCaseId, String migrationId) throws AssertionError {
         if (caseId != expectedCaseId) {
             throw new AssertionError(format(
@@ -1273,6 +1283,20 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("hearing",hearing);
+    }
+
+    public Map<String, Object> redactTypeReason(CaseData caseData, String migrationId, int startLoc, int endLoc) {
+        if (isEmpty(caseData.getHearing()) || isEmpty(caseData.getHearing().getTypeGiveReason())) {
+            throw new AssertionError(format("Migration {id = %s}, hearing not found", migrationId));
+        }
+
+        final String typeGiveReason = caseData.getHearing().getTypeGiveReason();
+
+        Hearing hearing = caseData.getHearing().toBuilder()
+            .typeGiveReason(typeGiveReason.replace(typeGiveReason.substring(startLoc, endLoc), "***"))
+            .build();
+
+        return Map.of("hearing", hearing);
     }
 
     public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {

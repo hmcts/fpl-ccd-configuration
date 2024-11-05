@@ -1192,7 +1192,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "noticeOfActingListRemoved",
+    "ID": "noticeOfActingOrIssueListRemoved",
     "FieldType": "Collection",
     "FieldTypeParameter": "NoticeOfActingOrIssue",
     "Label": "Notice of acting / Notice of issue",
