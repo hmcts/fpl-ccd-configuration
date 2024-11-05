@@ -111,10 +111,10 @@ public class CaseSubmissionGenerationService
     private static final Map<TranslationSection, LanguagePair> translations = Map.of(
         TranslationSection.EXCLUDED, LanguagePair.of(" excluded", " wedi'u heithrio"),
         TranslationSection.BEYOND_PARENTAL_CONTROL, LanguagePair.of(
-            "Beyond parental control.", "Y tu hwnt i reolaeth rhiant."
+            "Child is beyond parental control.", "Y tu hwnt i reolaeth rhiant."
         ),
         TranslationSection.NOT_RECEIVING_CARE, LanguagePair.of(
-            "Not receiving care that would be reasonably expected from a parent.",
+            "Child is not receiving care that would be reasonably expected from someone with parental responsibility.",
             "Ddim yn derbyn y gofal a fyddai'n rhesymol ddisgwyliedig gan riant."
         ),
         TranslationSection.REASON, LanguagePair.of("Reason:", "Rheswm:"),
