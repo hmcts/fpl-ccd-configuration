@@ -78,7 +78,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         }
 
         data.putAll(prePopulateSenderAndRecipient());
-        data.put("documentTypesDynamicList", manageDocumentService.buildDocumentTypeDynamicList(caseData));
+        data.put("documentTypesDynamicList", manageDocumentService.buildExistingDocumentTypeDynamicList(caseData));
 
         return data;
     }

@@ -79,7 +79,7 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
         DynamicList docTypeDynamicList = DynamicList.builder()
             .listItems(List.of(documentTypeElement1, documentTypeElement2)).build();
 
-        when(manageDocumentService.buildDocumentTypeDynamicList(any())).thenReturn(docTypeDynamicList);
+        when(manageDocumentService.buildExistingDocumentTypeDynamicList(any())).thenReturn(docTypeDynamicList);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 

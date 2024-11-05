@@ -857,7 +857,7 @@ public class ManageDocumentService {
     }
 
     // For HMCTS admin's journey
-    public DynamicList buildDocumentTypeDynamicListForRemoval(CaseData caseData) {
+    public DynamicList buildExistingDocumentTypeDynamicList(CaseData caseData) {
         Map<String, Object> map = caseConverter.toMap(caseData);
 
         Set<DocumentType> availableDocumentTypes = Arrays.stream(DocumentType.values())

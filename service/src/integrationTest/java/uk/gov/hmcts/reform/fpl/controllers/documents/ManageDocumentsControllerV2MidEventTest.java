@@ -75,7 +75,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             .build();
 
         when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(allow);
-        when(manageDocumentService.buildDocumentTypeDynamicListForRemoval(any()))
+        when(manageDocumentService.buildExistingDocumentTypeDynamicList(any()))
             .thenReturn(DynamicList.builder().listItems(List.of()).build());
         when(manageDocumentService.buildAvailableDocumentsDynamicList(any()))
             .thenReturn(DynamicList.builder().listItems(List.of()).build());
@@ -202,7 +202,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             .build();
 
         when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(true);
-        when(manageDocumentService.buildDocumentTypeDynamicListForRemoval(any())).thenReturn(DynamicList.builder()
+        when(manageDocumentService.buildExistingDocumentTypeDynamicList(any())).thenReturn(DynamicList.builder()
             .listItems(List.of())
             .build());
 

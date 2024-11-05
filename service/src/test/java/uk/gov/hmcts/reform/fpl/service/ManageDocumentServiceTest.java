@@ -1455,7 +1455,7 @@ class ManageDocumentServiceTest {
             when(caseConverter.toMap(any())).thenReturn(Map.of());
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder().build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1483,7 +1483,7 @@ class ManageDocumentServiceTest {
                 Pair.of(COURT_BUNDLE.name(), COURT_BUNDLE.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder().build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1515,7 +1515,7 @@ class ManageDocumentServiceTest {
                 Pair.of(TRANSCRIPTS.name(), TRANSCRIPTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder().build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1548,7 +1548,7 @@ class ManageDocumentServiceTest {
                 Pair.of(PLACEMENT_RESPONSES.name(), PLACEMENT_RESPONSES.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .placementEventData(PlacementEventData.builder()
                     .placements(List.of(element(Placement.builder()
                         .noticeDocuments(List.of(element(PlacementNoticeDocument.builder().build())))
@@ -1569,7 +1569,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C1_APPLICATION_DOCUMENTS.name(), C1_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
                         .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
@@ -1594,7 +1594,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C1_APPLICATION_DOCUMENTS.name(), C1_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
                         .document(testDocumentReference())
@@ -1617,7 +1617,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C2_APPLICATION_DOCUMENTS.name(), C2_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
                     .c2DocumentBundle(C2DocumentBundle.builder()
                         .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
@@ -1642,7 +1642,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C2_APPLICATION_DOCUMENTS.name(), C2_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
                     .c2DocumentBundleConfidential(C2DocumentBundle.builder()
                         .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
@@ -1672,7 +1672,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C2_APPLICATION_DOCUMENTS.name(), C2_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .additionalApplicationsBundle(List.of(element(
                     toConfidentialAdditionalApplicationsBundleBuilder(modifier,
                         C2DocumentBundle.builder()

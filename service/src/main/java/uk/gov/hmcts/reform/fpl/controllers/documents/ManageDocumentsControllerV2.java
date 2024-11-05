@@ -84,7 +84,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             if (allowSelectDocumentTypeToRemoveDocument) {
                 // for HMCTS admin
                 DynamicList availableDocumentTypesForRemoval = manageDocumentService
-                    .buildDocumentTypeDynamicListForRemoval(caseData);
+                    .buildExistingDocumentTypeDynamicList(caseData);
                 if (!availableDocumentTypesForRemoval.getListItems().isEmpty()) {
                     caseDetails.getData().put("availableDocumentTypesForRemoval", availableDocumentTypesForRemoval);
                 } else {
