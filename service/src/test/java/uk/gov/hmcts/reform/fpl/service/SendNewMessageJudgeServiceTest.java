@@ -109,7 +109,8 @@ class SendNewMessageJudgeServiceTest {
     void init() {
         when(ctscEmailLookupConfiguration.getEmail()).thenReturn(COURT_EMAIL);
         when(time.now()).thenReturn(LocalDateTime.now());
-        when(manageDocumentService.buildExistingDocumentTypeDynamicList(any())).thenReturn(buildBasicDocumentTypeDynamicList());
+        when(manageDocumentService.buildExistingDocumentTypeDynamicList(any()))
+            .thenReturn(buildBasicDocumentTypeDynamicList());
         when(manageDocumentService.buildAvailableDocumentsDynamicList(any()))
             .thenReturn(buildBasicDocumentDynamicList());
         when(manageDocumentService.getSelectedDocuments(any(), any(), any()))
