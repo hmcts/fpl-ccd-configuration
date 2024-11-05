@@ -56,23 +56,15 @@ BoyGender
 15 June 2018Date of birth
 5 months oldAge
 Tom ReevesName
-Yes
 I need this from someone
 Something else
-Yes
-security needed
+Separate waiting room required
 Separate waiting room or other security measures
-Yes
-learning disability
+Learning disability
 Facilities or assistance for a disability
-Yes
-intermediary hearing required
+Intermediary hearing required
 Intermediary
-Yes
-welsh proceedings
-Spoken or written Welsh
-Yes
-interpreter required
+Interpreter required
 Interpreter
 Attending the hearing
 Child 1
@@ -190,19 +182,12 @@ Applicant
 Other 1
 Other 2
 Yes
-Past harm
 Neglect
 Yes
-Future risk of harm
-Past harm
 Sexual abuse
 Yes
-Future risk of harm
-Past harm
 Emotional harm
 Yes
-Future risk of harm
-Past harm
 Physical harm including non-accidental injury
 grounds for application criteria
 Beyond parental control.
@@ -256,15 +241,12 @@ Supervision orderOrders made
 OngoingPrevious or ongoing
 Something happened in France
 Important details
-YesAre any of these countries outside Hague Convention
+YesAre any of these countries outside the Hague Convention
 Italy, Spain, France
 Other countries which are involved
-NoAnything else
-history of domestic violence
-YesDomestic violence
-history of drug abuse
+Something elseAnything else
+YesDomestic abuse
 YesAlcohol or drug abuse
-Future risk of harm
 Factors affecting parenting
 International element
 Other proceedings 1

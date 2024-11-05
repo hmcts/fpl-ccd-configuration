@@ -112,7 +112,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "facilitiesOrServicesNeededLink",
     "FieldType": "Label",
-    "Label": "[Make changes to court services needed](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
+    "Label": "[Make changes to court services](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
