@@ -27,13 +27,12 @@ Proposal by applicant Section 9 circuit judge
 Reason                allocation proposal reason
 
 Attending the hearing
-Interpreter                                       Yes interpreter required
+Interpreter                                       Interpreter required
 Welsh language requirement                        ${languageRequirement}
-Spoken or written Welsh                           Yes welsh proceedings
-Intermediary                                      Yes intermediary hearing required
-Facilities or assistance for a disability         Yes learning disability
-Separate waiting room or other security measures  Yes security needed
-Something else                                    Yes I need this from someone
+Intermediary                                      Intermediary hearing required
+Facilities or assistance for a disability         Learning disability
+Separate waiting room or other security measures  Separate waiting room required
+Something else                                    I need this from someone
 
 Child 1
 Name                                          Tom Reeves

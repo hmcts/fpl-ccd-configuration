@@ -56,23 +56,15 @@ BoyGender
 15 June 2018Date of birth
 5 months oldAge
 Tom ReevesName
-Yes
 I need this from someone
 Something else
-Yes
-security needed
+Separate waiting room required
 Separate waiting room or other security measures
-Yes
-learning disability
+Learning disability
 Facilities or assistance for a disability
-Yes
-intermediary hearing required
+Intermediary hearing required
 Intermediary
-Yes
-welsh proceedings
-Spoken or written Welsh
-Yes
-interpreter required
+Interpreter required
 Interpreter
 Attending the hearing
 Child 1
