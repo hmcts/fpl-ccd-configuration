@@ -109,7 +109,7 @@ class SendNewMessageJudgeServiceTest {
     void init() {
         when(ctscEmailLookupConfiguration.getEmail()).thenReturn(COURT_EMAIL);
         when(time.now()).thenReturn(LocalDateTime.now());
-        when(manageDocumentService.buildDocumentTypeDynamicList(any())).thenReturn(buildBasicDocumentTypeDynamicList());
+        when(manageDocumentService.buildExistingDocumentTypeDynamicList(any())).thenReturn(buildBasicDocumentTypeDynamicList());
         when(manageDocumentService.buildAvailableDocumentsDynamicList(any()))
             .thenReturn(buildBasicDocumentDynamicList());
         when(manageDocumentService.getSelectedDocuments(any(), any(), any()))
@@ -267,7 +267,8 @@ class SendNewMessageJudgeServiceTest {
                     .recipient(EMPTY)
                     .sender(MESSAGE_SENDER).build()),
                 entry("isJudiciary", YesNo.YES),
-                entry("documentTypesDynamicList", manageDocumentService.buildDocumentTypeDynamicList(caseData)));
+                entry("documentTypesDynamicList",
+                    manageDocumentService.buildExistingDocumentTypeDynamicList(caseData)));
     }
 
     @Test
