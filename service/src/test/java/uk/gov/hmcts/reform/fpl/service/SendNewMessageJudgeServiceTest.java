@@ -284,7 +284,8 @@ class SendNewMessageJudgeServiceTest {
                     .sender(EMPTY)
                     .recipient(EMPTY).build()),
                 entry("isJudiciary", YesNo.NO),
-                entry("documentTypesDynamicList", manageDocumentService.buildDocumentTypeDynamicList(caseData)));
+                entry("documentTypesDynamicList",
+                    manageDocumentService.buildExistingDocumentTypeDynamicList(caseData)));
     }
 
     @Test
