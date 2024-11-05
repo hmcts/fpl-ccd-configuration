@@ -182,19 +182,19 @@ Threshold evidence
 grounds for application criteria
 
 Risk and harm to children
-Physical harm including non-accidental injury Yes Past harm Future risk of harm
-Emotional harm                                Yes Past harm Future risk of harm
-Sexual abuse                                  Yes Past harm Future risk of harm
-Neglect                                       Yes Past harm Future risk of harm
+Physical harm including non-accidental injury Yes
+Emotional harm                                Yes
+Sexual abuse                                  Yes
+Neglect                                       Yes
 
 Factors affecting parenting
-Alcohol or drug abuse     Yes history of drug abuse
-Domestic violence         Yes history of domestic violence
-Anything else             No
+Alcohol or drug abuse     Yes
+Domestic abuse            Yes
+Anything else             Something else
 
 International element
 Other countries which are involved                                Italy, Spain, France
-Are any of these countries outside Hague Convention               Yes
+Are any of these countries outside the Hague Convention           Yes
 Important details                                                 Something happened in France
 
 Other proceedings 1
