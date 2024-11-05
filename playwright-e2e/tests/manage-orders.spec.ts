@@ -136,4 +136,41 @@ test.describe('manage orders', () => {
 
     })
 
+    test('C32B Discharge of Care Order', async ({page,signInPage, orders}) => {
+        caseName = 'C32B Discharge of Care Order ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+        await orders.selectOrder('Discharge of care order (C32B)');
+        await orders.clickContinue();
+
+        await expect.soft(page.getByText(' Add issuing details', {exact: true})).toBeVisible();
+        await orders.addIssuingDetailsOfApprovedOrder();
+        await orders.clickContinue();
+        await orders.addChildDetails('Yes');
+        await orders.clickContinue();
+
+        await orders.addC32BDischargeOfCareOrder();
+
+        await orders.clickContinue();
+        await expect.soft(page.getByRole('heading', {name: 'Check your order', exact: true})).toBeVisible();
+
+        await orders.openOrderDoc('Preview order.pdf');
+        await expect(orders.orderPage.getByText('Discharge of care order')).toBeVisible();
+        await expect(orders.orderPage.getByText('The Court discharges the care')).toBeVisible();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.locator('#case-viewer-field-read--orderCollection')).toContainText('Discharge of care order (C32B)');
+        await expect(page.locator('ccd-read-document-field')).toContainText('c32b_discharge_of_care_order.pdf');
+
+   })
+
 });
