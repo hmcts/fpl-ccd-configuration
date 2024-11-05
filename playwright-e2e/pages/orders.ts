@@ -27,6 +27,8 @@ export class Orders extends BasePage {
     readonly closeOrder: Locator;
     readonly careOrderIssuedDate: Locator;
     readonly careOrderIssuedCourt: Locator;
+    readonly juridiction: Locator;
+    readonly juridictionRegion: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -54,6 +56,8 @@ export class Orders extends BasePage {
         this.closeOrder = page.getByRole('group', {name: 'Does this order close the case?'});
         this.careOrderIssuedDate = page.getByRole('group', {name: 'When was the care order issued?'});
         this.careOrderIssuedCourt =page.getByLabel('Which court issued the order?');
+        this.juridiction = page.getByRole('group', {name: 'Select jurisdiction'});
+        this.juridictionRegion = page.locator('#manageOrdersCafcassOfficesWales');
     }
 
     async selectOrderOperation(toDo: string) {
@@ -80,8 +84,6 @@ export class Orders extends BasePage {
         await this.judgeLastName.fill('John');
         await this.judgeEmail.fill('email@email.comLegal');
         await this.legalAdvisorName.fill('LA Jonathan');
-
-
     }
 
     async addChildDetails(isAllChild: string) {
@@ -127,9 +129,17 @@ export class Orders extends BasePage {
         await this.finalOrder.getByText('No').click();
 
     }
+
+    async addC47AppointOfGuardianOrder(){
+        await this.juridiction.getByRole('radio', { name: 'Wales' }).check();
+        await this.juridictionRegion.selectOption('Swansea');
+        await this.orderDirectionDetails.fill('Remove the child from the social care and appointing Aunty as guardian');
+    }
+
     async closeTheOrder(close:string){
         await this.closeOrder.getByLabel(`${close}`).check();
     }
+
     async openOrderDoc(docLink: string) {
         const newPagePromise = this.page.context().waitForEvent('page');
         await this.page.getByRole('link', {name: `${docLink}`}).click();
