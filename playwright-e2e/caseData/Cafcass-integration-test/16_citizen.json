@@ -201,7 +201,7 @@
       {
         "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
         "value": {
-          "name": "Barnaby Dutton",
+          "name": "Private solicitors",
           "id": "M1YPZ85",
           "email": "private.solicitors@mailinator.com",
           "phone": "123456",
@@ -281,6 +281,115 @@
     "caseManagementLocation": {
       "region": "6",
       "baseLocation": "411234"
+    },
+    "isLocalAuthority": "NO",
+    "relatingLA": "HN",
+    "outsourcingPolicy": {
+      "Organisation": {
+        "OrganisationID": "M1YPZ85",
+        "OrganisationName": "Private solicitors"
+      },
+      "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+    },
+    "respondentPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+    },
+    "respondentPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+    },
+    "respondentPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+    },
+    "respondentPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+    },
+    "respondentPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+    },
+    "respondentPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+    },
+    "respondentPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+    },
+    "respondentPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+    },
+    "respondentPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+    },
+    "respondentPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+    },
+    "childPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+    },
+    "childPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORB]"
+    },
+    "childPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORC]"
+    },
+    "childPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORD]"
+    },
+    "childPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORE]"
+    },
+    "childPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORF]"
+    },
+    "childPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORG]"
+    },
+    "childPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORH]"
+    },
+    "childPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORI]"
+    },
+    "childPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
+    },
+    "childPolicy10": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORK]"
+    },
+    "childPolicy11": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORL]"
+    },
+    "childPolicy12": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORM]"
+    },
+    "childPolicy13": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORN]"
+    },
+    "childPolicy14": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORO]"
     }
   }
 }
