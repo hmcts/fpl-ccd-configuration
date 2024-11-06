@@ -16,7 +16,7 @@
     "orders": {
       "court": "123",
       "orderType": [
-        "CARE_ORDER"
+        "CONTACT_WITH_CHILD_IN_CARE"
       ],
       "directions": "No"
     },
