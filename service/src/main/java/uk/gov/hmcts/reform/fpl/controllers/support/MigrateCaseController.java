@@ -49,9 +49,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
         "DFPL-2585", this::run2585,
-        "DFPL-2585Rollback", this::run2585Rollback,
-        "DFPL-2579", this::run2579,
-        "DFPL-2597", this:: run2597
+        "DFPL-2585Rollback", this::run2585Rollback
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -86,15 +84,6 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getState(), State.CLOSED.toString(), caseDetails.getId(), migrationId);
 
         roleAssignmentService.deleteAllRolesOnCase(caseDetails.getId());
-    }
-
-    private void run2579(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2579";
-        final long expectedCaseId = 1727273204426566L;
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void run2585Rollback(CaseDetails caseDetails) {
@@ -132,12 +121,4 @@ public class MigrateCaseController extends CallbackController {
         judicialService.migrateJudgeRoles(rolesToAssign);
     }
 
-    private void run2597(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2597";
-        final long expectedCaseId = 1695915469305251L;
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        caseDetails.getData().remove("statementOfService");
-    }
 }
