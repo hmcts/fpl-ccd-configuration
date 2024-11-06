@@ -384,11 +384,10 @@
   "dateAndTimeSubmitted": "2022-09-16T13:31:43.504",
   "manageOrdersApprovedAtHearing": "No",
   "grounds": {
-    "groundsReason": [
+    "thresholdReason": [
       "noCare"
     ],
-    "hasThresholdDocument": "No",
-    "thresholdDetails": "Details"
+    "thresholdDetails": "mock threshold details"
   },
   "allocationProposal": {
     "proposal": "District judge"

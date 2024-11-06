@@ -387,11 +387,10 @@
   "manageOrdersApprovedAtHearing": "No",
   "manageOrdersIsExParte": "Yes",
   "grounds": {
-    "groundsReason": [
+    "thresholdReason": [
       "noCare"
     ],
-    "hasThresholdDocument": "No",
-    "thresholdDetails": "Details"
+    "thresholdDetails": "mock threshold details"
   },
   "allocationProposal": {
     "proposal": "District judge"
