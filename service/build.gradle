@@ -281,7 +281,7 @@ def versions = [
   logbackVersion  : '1.5.6',
   jackson         : '2.18.1',
   pdfbox          : '2.0.32',
-  mockito         : '5.14.2',
+  mockito         : '5.2.0',
   serenity        : '4.1.6',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.11.3',
@@ -370,6 +370,7 @@ dependencies {
 
   testImplementation group: 'org.mockito', name: 'mockito-core', version: versions.mockito
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
+  testImplementation group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
 
   // Fortify client for Fortify scans
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.5', classifier: 'all'
