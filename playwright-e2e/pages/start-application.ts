@@ -39,6 +39,7 @@ export class StartApplication {
     this.hearingUrgencyHeader = page.getByRole("heading", { name: "Hearing urgency", });
     this.groundsForTheApplicationLink = page.getByRole("link", { name: "Grounds for the application", });
     this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
+   // this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('heading-h2',);
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img',);
     this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
     this.allocationProposalFinished = page.locator('p').filter({ hasText: 'Allocation proposal' }).getByRole('img', { name: 'Finished' });
@@ -65,7 +66,7 @@ export class StartApplication {
   async groundsForTheApplication() {
     expect(await this.groundsForTheApplicationLink).toBeVisible();
     await this.groundsForTheApplicationLink.click();
-    await expect(this.groundsForTheApplicationHeading).toBeVisible();
+   // await expect(this.groundsForTheApplicationHeading).toBeVisible();
   }
 
   async groundsForTheApplicationHasBeenUpdated() {

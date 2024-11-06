@@ -55,11 +55,10 @@ export class SignInPage extends BasePage {
             await this.hideMessage.nth(0).click();
         }
 
-
     }
 
     async isSignedIn() {
-        await expect(this.applyLocator).toBeVisible();
+        await expect(this.logoutButton).toBeVisible();
     }
 
     async logout() {
@@ -71,4 +70,3 @@ export class SignInPage extends BasePage {
         await expect(this.page.getByRole('heading', {name: 'Organisation', exact: true})).toBeVisible();
     }
 }
-
