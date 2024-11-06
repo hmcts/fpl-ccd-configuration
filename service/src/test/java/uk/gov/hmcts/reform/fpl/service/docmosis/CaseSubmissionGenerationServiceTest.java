@@ -1019,7 +1019,8 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCasData);
 
             assertThat(caseSubmission.getGroundsThresholdReason())
-                .isEqualTo("Child is not receiving care that would be reasonably expected from someone with parental responsibility.");
+                .isEqualTo("Child is not receiving care that would be reasonably expected from someone" +
+                    " with parental responsibility.");
         }
 
         @Test
