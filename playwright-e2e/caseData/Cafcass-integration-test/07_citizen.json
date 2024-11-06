@@ -206,9 +206,12 @@
           "email": "private.solicitors@mailinator.com",
           "phone": "123456",
           "address": {
-            "PostCode": "fictitous",
+            "AddressLine1": "fictitouss",
+            "AddressLine2": "fictitouss",
             "PostTown": "fictitous",
-            "AddressLine1": "fictitouss"
+            "County": "fictitous",
+            "Country": "fictitous",
+            "PostCode": "fictitous"
           },
           "pbaNumber": "PBA1234567",
           "clientCode": "",

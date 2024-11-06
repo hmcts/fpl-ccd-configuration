@@ -6,16 +6,16 @@ import case03 from "../caseData/Cafcass-integration-test/03.json" assert { type:
 import case04 from "../caseData/Cafcass-integration-test/04.json" assert { type: "json" };
 import case05 from "../caseData/Cafcass-integration-test/05.json" assert { type: "json" };
 import case06 from "../caseData/Cafcass-integration-test/06.json" assert { type: "json" };
-import case07 from "../caseData/Cafcass-integration-test/07.json" assert { type: "json" };
+import case07 from "../caseData/Cafcass-integration-test/07_citizen.json" assert { type: "json" };
 import case08 from "../caseData/Cafcass-integration-test/08.json" assert { type: "json" };
 import case09 from "../caseData/Cafcass-integration-test/09.json" assert { type: "json" };
 import case10 from "../caseData/Cafcass-integration-test/10.json" assert { type: "json" };
-import case11 from "../caseData/Cafcass-integration-test/11.json" assert { type: "json" };
-import case12 from "../caseData/Cafcass-integration-test/12.json" assert { type: "json" };
+import case11 from "../caseData/Cafcass-integration-test/11_citizen.json" assert { type: "json" };
+import case12 from "../caseData/Cafcass-integration-test/12_citizen.json" assert { type: "json" };
 import case13 from "../caseData/Cafcass-integration-test/13.json" assert { type: "json" };
 import case14 from "../caseData/Cafcass-integration-test/14.json" assert { type: "json" };
 import case15 from "../caseData/Cafcass-integration-test/15.json" assert { type: "json" };
-import case16 from "../caseData/Cafcass-integration-test/16.json" assert { type: "json" };
+import case16 from "../caseData/Cafcass-integration-test/16_citizen.json" assert { type: "json" };
 import case17 from "../caseData/Cafcass-integration-test/17.json" assert { type: "json" };
 import case26 from "../caseData/Cafcass-integration-test/26.json" assert { type: "json" };
 import case27 from "../caseData/Cafcass-integration-test/27.json" assert { type: "json" };
@@ -37,7 +37,7 @@ test.describe('Cafcass API Integration test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber : string;
     let caseName = 'Cafcass Integration Test ' + dateTime;
-    let familManNumPrefix = 'FP24A10';
+    let familManNumPrefix = 'FP24A12';
 
     test("Integration Test", async ({page}, testInfo) => {
         let caseNo = [
