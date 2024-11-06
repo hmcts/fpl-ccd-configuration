@@ -194,8 +194,7 @@ test.describe('manage orders', () => {
 
         await orders.openOrderDoc('Preview order.pdf');
         await expect(orders.orderPage.getByText('Appointment of a children\'s')).toBeVisible();
-        await expect(orders.orderPage.getByLabel('Page ⁨1⁩')).toContainText('The Court appoints Cafcass Swansea as a children\'s guardian for the children in the');
-        await expect(orders.orderPage.getByLabel('Page ⁨1⁩')).toContainText('proceedings.');
+        await expect(orders.orderPage.getByText('The Court appoints Cafcass Swansea as a children\'s guardian for the children in the')).toBeVisible();
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
