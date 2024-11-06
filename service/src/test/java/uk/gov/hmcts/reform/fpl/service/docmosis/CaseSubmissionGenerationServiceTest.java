@@ -1156,7 +1156,8 @@ class CaseSubmissionGenerationServiceTest {
 
             assertThat(caseSubmission.getThresholdDetails()).isEqualTo("-");
             assertThat(caseSubmission.getGroundsThresholdReason())
-                .isEqualTo("Not receiving care that would be reasonably expected from a parent.");
+                .isEqualTo("Child is not receiving care that would be reasonably expected from someone"
+                    + " with parental responsibility.");
         }
     }
 
