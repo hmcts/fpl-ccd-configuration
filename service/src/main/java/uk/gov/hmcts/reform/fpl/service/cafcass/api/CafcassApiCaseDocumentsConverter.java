@@ -266,7 +266,7 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
     }
 
     private List<CafcassApiCaseDocument> getHearingNotice(CaseData caseData) {
-        return buildCafcassApiCaseDocumentList(NOTICE_OF_ACTING_OR_ISSUE, false,
+        return buildCafcassApiCaseDocumentList("hearingNotices", false,
             unwrapElements(caseData.getHearingDetails()).stream()
                 .flatMap(hearingBooking -> Stream.of(
                     hearingBooking.getNoticeOfHearing(),
