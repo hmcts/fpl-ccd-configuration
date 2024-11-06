@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiAddress;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -61,17 +60,14 @@ public class CafcassApiHelperTest {
 
     @Test
     public void testGetCafcassApiSolicitor() {
-        Address solicitorAddress = Address.builder().addressLine1("Address Line 1").build();
         RespondentSolicitor solicitor = RespondentSolicitor.builder()
             .email("solicitor@test.com")
             .firstName("SolicitorFirstName")
             .lastName("SolicitorLastName")
-            .unregisteredOrganisation(UnregisteredOrganisation.builder().build())
             .organisation(Organisation.builder()
                 .organisationID("organisation ID")
                 .organisationName("organisation name")
                 .build())
-            .regionalOfficeAddress(solicitorAddress)
             .build();
 
         CafcassApiSolicitor expected = CafcassApiSolicitor.builder()
@@ -80,32 +76,6 @@ public class CafcassApiHelperTest {
             .lastName(solicitor.getLastName())
             .organisationId(solicitor.getOrganisation().getOrganisationID())
             .organisationName(solicitor.getOrganisation().getOrganisationName())
-            .address(CafcassApiHelper.getCafcassApiAddress(solicitorAddress))
-            .build();
-
-        assertEquals(expected, CafcassApiHelper.getCafcassApiSolicitor(solicitor));
-        assertNull(CafcassApiHelper.getCafcassApiSolicitor(null));
-        assertNull(CafcassApiHelper.getCafcassApiSolicitor(RespondentSolicitor.builder().build()));
-    }
-
-    @Test
-    public void testGetCafcassApiNoRegisteredSolicitor() {
-        Address solicitorAddress = Address.builder().addressLine1("Address Line 1").build();
-        RespondentSolicitor solicitor = RespondentSolicitor.builder()
-            .email("solicitor@test.com")
-            .firstName("SolicitorFirstName")
-            .lastName("SolicitorLastName")
-            .unregisteredOrganisation(UnregisteredOrganisation.builder()
-                .name("unregistered organisation name")
-                .address(solicitorAddress).build())
-            .build();
-
-        CafcassApiSolicitor expected = CafcassApiSolicitor.builder()
-            .email(solicitor.getEmail())
-            .firstName(solicitor.getFirstName())
-            .lastName(solicitor.getLastName())
-            .organisationName(solicitor.getUnregisteredOrganisation().getName())
-            .address(CafcassApiHelper.getCafcassApiAddress(solicitorAddress))
             .build();
 
         assertEquals(expected, CafcassApiHelper.getCafcassApiSolicitor(solicitor));
