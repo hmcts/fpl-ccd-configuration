@@ -321,7 +321,7 @@ public enum DocumentType {
         "noticeOfActingOrIssueList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        null, 540, DEFAULT_NOTIFICATION_CONFIG, "noticeOfActingNoticeOfIssue"),
+        null, 540, DEFAULT_NOTIFICATION_CONFIG, "hearingNotices"),
     PREVIOUS_PROCEEDING("Previous Proceeding", standardResolver("previousProceedingList"),
         false, false, false,
         defaultWithDocumentBuilder(),
