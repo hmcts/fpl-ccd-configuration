@@ -402,10 +402,11 @@
   "manageOrdersApprovedAtHearing": "No",
   "manageOrdersCafcassRegion": "ENGLAND",
   "grounds": {
-    "thresholdReason": [
+    "groundsReason": [
       "noCare"
     ],
-    "thresholdDetails": "mock threshold details"
+    "hasThresholdDocument": "No",
+    "thresholdDetails": "Details"
   },
   "allocationProposal": {
     "proposal": "District judge"

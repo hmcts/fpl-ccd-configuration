@@ -381,10 +381,11 @@
   "orderDetailsSectionSubHeader": "Interim supervision order (C35B)",
   "manageOrdersApprovedAtHearing": "No",
   "grounds": {
-    "thresholdReason": [
+    "groundsReason": [
       "noCare"
     ],
-    "thresholdDetails": "mock threshold details"
+    "hasThresholdDocument": "No",
+    "thresholdDetails": "Details"
   },
   "allocationProposal": {
     "proposal": "District judge"
