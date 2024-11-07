@@ -19,7 +19,7 @@
               "noCare",
               "beyondControl"
             ],
-            "hasThresholdDocument": "No",
+            "hasThresholdDocument": "NO",
             "thresholdDetails": "Details"
           },
           "hearing": {
@@ -139,7 +139,7 @@
               "noCare",
               "beyondControl"
             ],
-            "hasThresholdDocument": "No",
+            "hasThresholdDocument": "NO",
             "thresholdDetails": "Details"
           },
           "hearing": {
