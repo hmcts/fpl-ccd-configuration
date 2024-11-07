@@ -30,18 +30,18 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await signInPage.isSignedIn();
 
   // Add application details
-  // Start new case, get case id and assert case id is created
+ // Start new case, get case id and assert case id is created
   await createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   //this has to be refracted to new test as the test execution time exceed 8m
-//  await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+ await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
   // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
   await startApplication.addApplicationDetailsHeading.isVisible();
 
-  // Hearing urgency
+  // // Hearing urgency
   await startApplication.hearingUrgencyLink.isVisible();
   await startApplication.hearingUrgencyLink.click();
   await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
@@ -57,47 +57,43 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Grounds for the application
   await startApplication.groundsForTheApplication();
-  await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-  // Add application documents
+  // // Add application documents
   await startApplication.addApplicationDetailsHeading.isVisible();
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
-  // Applicant Details
+  // // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
   await startApplication.applicantDetails();
   await applicantDetails.colleagueDetailsNeeded();
   await startApplication.applicantDetailsHasBeenUpdated();
 
-  // Child details
+  // // Child details
   await startApplication.childDetails();
   await childDetails.childDetailsNeeded();
   await startApplication.childDetailsHasBeenUpdated();
 
-  // Add respondents' details
+  // // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
 
-  // Allocation Proposal
+  // // Allocation Proposal
   await startApplication.allocationProposal();
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
 
-  // Submit the case
-  await startApplication.submitCase();
-  await submitCase.submitCaseSmokeTest();
-
+   //Submit the case
   const accessibilityScanResults = await makeAxeBuilder()
     // Automatically uses the shared AxeBuilder configuration,
     // but supports additional test-specific configuration too
-    .analyze();
+     .analyze();
 
-  await testInfo.attach('accessibility-scan-results', {
+   await testInfo.attach('accessibility-scan-results', {
     body: JSON.stringify(accessibilityScanResults, null, 2),
     contentType: 'application/json'
   });

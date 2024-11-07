@@ -10,7 +10,7 @@
     "@babel/core": "^7.11.0",
     "@babel/eslint-parser": "^7.17.0",
     "@eslint/js": "^9.0.0",
-    "@playwright/test": "^1.43.1",
+    "@playwright/test": "^1.48.2",
     "@types/node": "^20.10.7",
     "@types/qs": "^6.9.11",
     "axios": "^1.6.7",
