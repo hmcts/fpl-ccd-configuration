@@ -117,6 +117,23 @@ public class UploadAdditionalApplicationsService {
         return additionalApplicationsBundleBuilder.build();
     }
 
+    public AdditionalApplicationsBundle sealAllDocuments(AdditionalApplicationsBundle bundle, CaseData caseData) {
+        AdditionalApplicationsBundleBuilder bundleBuilder = bundle.toBuilder();
+
+        if (!isEmpty(bundle.getC2DocumentBundle())) {
+            bundleBuilder.c2DocumentBundle(convertC2Bundle(bundle.getC2DocumentBundle(), caseData));
+        }
+        if (!isEmpty(bundle.getC2DocumentBundleConfidential())) {
+            convertConfidentialC2Bundle(caseData, bundle.getC2DocumentBundleConfidential(), bundleBuilder);
+        }
+
+        // If we have an other application, do conversion if needed
+        if (!isEmpty(bundle.getOtherApplicationsBundle())) {
+            bundleBuilder.otherApplicationsBundle(convertOtherBundle(bundle.getOtherApplicationsBundle(), caseData));
+        }
+        return bundleBuilder.build();
+    }
+
     private void buildC2BundleByPolicy(CaseData caseData, C2DocumentBundle c2Bundle,
                                       AdditionalApplicationsBundleBuilder builder) {
         final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
