@@ -6,7 +6,8 @@
   },
   "grounds": {
     "groundsReason": [
-      "beyondControl"
+      "beyondControl",
+      "noCare"
     ],
     "hasThresholdDocument": "No",
     "thresholdDetails": "Details"
