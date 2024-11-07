@@ -18,4 +18,7 @@ public class InternationalElement {
     private final String significantEventsReason;
     private final String internationalAuthorityInvolvement;
     private final String internationalAuthorityInvolvementDetails;
+    private final String whichCountriesInvolved;
+    private final String outsideHagueConvention;
+    private final String importantDetails;
 }

@@ -487,7 +487,7 @@
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
-        "CRUD": "CR"
+        "CRUD": "R"
       },
       {
         "UserRoles": [
@@ -592,13 +592,13 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "CR"
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-magistrate"
         ],

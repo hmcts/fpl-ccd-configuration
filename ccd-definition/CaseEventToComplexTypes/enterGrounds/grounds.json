@@ -4,9 +4,18 @@
     "ID": "Grounds",
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "grounds",
-    "ListElementCode": "thresholdReason",
-    "EventElementLabel": "*The child concerned is suffering or is likely to suffer significant harm because they are:",
-    "DisplayContext": "OPTIONAL"
+    "ListElementCode": "groundsReason",
+    "EventElementLabel": "What is the reason behind the child suffering or being likely to suffer significant harm?",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Grounds",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "grounds",
+    "ListElementCode": "hasThresholdDocument",
+    "EventElementLabel": "Do you have the threshold document?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -14,7 +23,7 @@
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "grounds",
     "ListElementCode": "thresholdDetails",
-    "EventElementLabel": "*Give details of how this case meets the threshold criteria",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Provide a summary of how this case meets threshold criteria",
+    "DisplayContext": "MANDATORY"
   }
 ]

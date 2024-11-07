@@ -9,9 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
+import uk.gov.hmcts.reform.fpl.enums.FactorsAffectingParentingType;
+import uk.gov.hmcts.reform.fpl.enums.GroundsList;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
+import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -21,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
-import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildRecoveryOrder;
@@ -54,7 +56,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
@@ -110,10 +111,10 @@ public class CaseSubmissionGenerationService
     private static final Map<TranslationSection, LanguagePair> translations = Map.of(
         TranslationSection.EXCLUDED, LanguagePair.of(" excluded", " wedi'u heithrio"),
         TranslationSection.BEYOND_PARENTAL_CONTROL, LanguagePair.of(
-            "Beyond parental control.", "Y tu hwnt i reolaeth rhiant."
+            "Child is beyond parental control.", "Y tu hwnt i reolaeth rhiant."
         ),
         TranslationSection.NOT_RECEIVING_CARE, LanguagePair.of(
-            "Not receiving care that would be reasonably expected from a parent.",
+            "Child is not receiving care that would be reasonably expected from someone with parental responsibility.",
             "Ddim yn derbyn y gofal a fyddai'n rhesymol ddisgwyliedig gan riant."
         ),
         TranslationSection.REASON, LanguagePair.of("Reason:", "Rheswm:"),
@@ -327,7 +328,6 @@ public class CaseSubmissionGenerationService
             .internationalElement(buildDocmosisInternationalElement(caseData.getInternationalElement(),
                 applicationLanguage))
             .risks(buildDocmosisRisks(caseData.getRisks(), applicationLanguage))
-            .factorsParenting(buildDocmosisFactorsParenting(caseData.getFactorsParenting(), applicationLanguage))
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents(), applicationLanguage))
             .applicants(buildDocmosisApplicants(caseData))
             .children(buildDocmosisChildren(caseData.getAllChildren(), applicationLanguage))
@@ -341,7 +341,7 @@ public class CaseSubmissionGenerationService
                 applicationLanguage)
                                  : DEFAULT_STRING)
             .groundsThresholdReason(caseData.getGrounds() != null
-                                    ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason(),
+                                    ? buildGroundsThresholdReason(caseData.getGrounds().getGroundsReason(),
                 applicationLanguage) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(annexGenerator.generate(caseData, applicationLanguage))
@@ -548,16 +548,16 @@ public class CaseSubmissionGenerationService
                ? grounds.getThresholdDetails() : DEFAULT_STRING;
     }
 
-    private String buildGroundsThresholdReason(final List<String> thresholdReasons,
+    private String buildGroundsThresholdReason(final List<GroundsList> thresholdReasons,
                                                Language applicationLanguage) {
         StringBuilder stringBuilder = new StringBuilder();
         if (isNotEmpty(thresholdReasons)) {
             thresholdReasons.forEach(thresholdReason -> {
-                if ("noCare".equals(thresholdReason)) {
+                if (GroundsList.NO_CARE.equals(thresholdReason)) {
                     stringBuilder.append(getThresholdReasonNoCare(applicationLanguage));
                     stringBuilder.append(NEW_LINE);
 
-                } else if ("beyondControl".equals(thresholdReason)) {
+                } else if (GroundsList.BEYOND_PARENTAL_CONTROL.equals(thresholdReason)) {
                     stringBuilder.append(getThresholdReasonBeyondControl(applicationLanguage));
                     stringBuilder.append(NEW_LINE);
                 }
@@ -963,29 +963,20 @@ public class CaseSubmissionGenerationService
 
         return DocmosisHearingPreferences.builder()
             .interpreter(hearingPreferencesPresent
-                         ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getInterpreter(),
-                hearingPreferences.getInterpreterDetails(), applicationLanguage) : DEFAULT_STRING)
-            .welshDetails(hearingPreferencesPresent
-                          ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getWelsh(),
-                hearingPreferences.getWelshDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getInterpreterDetails()
+                            : DEFAULT_STRING)
             .intermediary(hearingPreferencesPresent
-                          ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getIntermediary(),
-                hearingPreferences.getIntermediaryDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getIntermediaryDetails()
+                            : DEFAULT_STRING)
             .disabilityAssistance(hearingPreferencesPresent
-                                  ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getDisabilityAssistance(),
-                hearingPreferences.getDisabilityAssistanceDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getDisabilityAssistanceDetails()
+                            : DEFAULT_STRING)
             .extraSecurityMeasures(hearingPreferencesPresent
-                                   ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getExtraSecurityMeasures(),
-                hearingPreferences.getExtraSecurityMeasuresDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getSeparateWaitingRoomsDetails()
+                            : DEFAULT_STRING)
             .somethingElse(hearingPreferencesPresent
-                           ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getSomethingElse(),
-                hearingPreferences.getSomethingElseDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getSomethingElseDetails()
+                            : DEFAULT_STRING)
             .build();
     }
 
@@ -993,42 +984,33 @@ public class CaseSubmissionGenerationService
                                              Language applicationLanguage) {
         final boolean risksPresent = (risks != null);
         return DocmosisRisks.builder()
-            .neglectDetails(risksPresent
-                            ? concatenateYesOrNoKeyAndValue(
-                risks.getNeglect(),
-                listToString(risks.getNeglectOccurrences()), applicationLanguage) : DEFAULT_STRING)
-            .sexualAbuseDetails(risksPresent
-                                ? concatenateYesOrNoKeyAndValue(
-                risks.getSexualAbuse(),
-                listToString(risks.getSexualAbuseOccurrences()), applicationLanguage) : DEFAULT_STRING)
-            .physicalHarmDetails(risksPresent
-                                 ? concatenateYesOrNoKeyAndValue(
-                risks.getPhysicalHarm(),
-                listToString(risks.getPhysicalHarmOccurrences()), applicationLanguage) : DEFAULT_STRING)
-            .emotionalHarmDetails(risksPresent
-                                  ? concatenateYesOrNoKeyAndValue(
-                risks.getEmotionalHarm(),
-                listToString(risks.getEmotionalHarmOccurrences()), applicationLanguage) : DEFAULT_STRING)
-            .build();
-    }
-
-    private DocmosisFactorsParenting buildDocmosisFactorsParenting(final FactorsParenting factorsParenting,
-                                                                   Language applicationLanguage) {
-        final boolean factorsParentingPresent = (factorsParenting != null);
-
-        return DocmosisFactorsParenting.builder()
-            .alcoholDrugAbuseDetails(factorsParentingPresent
-                                     ? concatenateYesOrNoKeyAndValue(
-                factorsParenting.getAlcoholDrugAbuse(),
-                factorsParenting.getAlcoholDrugAbuseReason(), applicationLanguage) : DEFAULT_STRING)
-            .domesticViolenceDetails(factorsParentingPresent
-                                     ? concatenateYesOrNoKeyAndValue(
-                factorsParenting.getDomesticViolence(),
-                factorsParenting.getDomesticViolenceReason(), applicationLanguage) : DEFAULT_STRING)
-            .anythingElse(factorsParentingPresent
-                          ? concatenateYesOrNoKeyAndValue(
-                factorsParenting.getAnythingElse(),
-                factorsParenting.getAnythingElseReason(), applicationLanguage) : DEFAULT_STRING)
+            .physicalHarm(risksPresent
+                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.PHYSICAL_HARM)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
+                : DEFAULT_STRING)
+            .emotionalHarm(risksPresent
+                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.EMOTIONAL_HARM)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
+                : DEFAULT_STRING)
+            .sexualAbuse(risksPresent
+                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.SEXUAL_ABUSE)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
+                : DEFAULT_STRING)
+            .neglect(risksPresent
+                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.NEGLECT)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
+                : DEFAULT_STRING)
+            .alcoholDrugAbuse(risksPresent
+                ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
+                : DEFAULT_STRING)
+            .domesticAbuse(risksPresent
+                ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.DOMESTIC_ABUSE)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
+                : DEFAULT_STRING)
+            .anythingElse(risksPresent
+                ? risks.getAnythingElseAffectingParenting()
+                : DEFAULT_STRING)
             .build();
     }
 
@@ -1037,27 +1019,13 @@ public class CaseSubmissionGenerationService
         final boolean internationalElementPresent = internationalElement != null;
 
         return DocmosisInternationalElement.builder()
-            .possibleCarer(internationalElementPresent
-                           ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getPossibleCarer(),
-                internationalElement.getPossibleCarerReason(), applicationLanguage) : DEFAULT_STRING)
-            .significantEvents(internationalElementPresent
-                               ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getSignificantEvents(),
-                internationalElement.getSignificantEventsReason(), applicationLanguage) : DEFAULT_STRING)
-            .proceedings(internationalElementPresent
-                         ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getProceedings(),
-                internationalElement.getProceedingsReason(), applicationLanguage) : DEFAULT_STRING)
-            .internationalAuthorityInvolvement(internationalElementPresent
-                                               ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getInternationalAuthorityInvolvement(),
-                internationalElement.getInternationalAuthorityInvolvementDetails(),
-                applicationLanguage) : DEFAULT_STRING)
-            .issues(internationalElementPresent
-                    ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getIssues(),
-                internationalElement.getIssuesReason(), applicationLanguage) : DEFAULT_STRING)
+            .whichCountriesInvolved(internationalElementPresent
+                ? internationalElement.getWhichCountriesInvolved() : DEFAULT_STRING)
+            .outsideHagueConvention(internationalElementPresent
+                ? getValidAnswerOrDefaultValue(internationalElement.getOutsideHagueConvention(), applicationLanguage)
+                : DEFAULT_STRING)
+            .importantDetails(internationalElementPresent
+                ? internationalElement.getImportantDetails() : DEFAULT_STRING)
             .build();
     }
 

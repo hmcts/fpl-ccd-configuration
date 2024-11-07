@@ -27,7 +27,6 @@ Allocation proposal
 -Reason
 Attending the hearing
 -Interpreter
--Spoken or written Welsh
 -Intermediary
 -Facilities or assistance for a disability
 -Separate waiting room or other security measures
@@ -98,8 +97,8 @@ Other
 -Anything else to help take part in the proceedings
 -Confidential contact details
 Grounds for the application
--Threshold is met as the child is suffering or is likely to
-suffer significant harm because they are
+-The reason(s) behind the child suffering or being likely to
+suffer significant harm
 Threshold evidence
 -
 Risk and harm to children
@@ -109,15 +108,12 @@ Risk and harm to children
 -Neglect
 Factors affecting parenting
 -Alcohol or drug abuse
--Domestic violence
+-Domestic abuse
 -Anything else
 International element
--Suitable carers outside of the UK
--Significant events outside the UK
--Issues with jurisdiction
--Proceedings outside the UK
--Government or central authority in another country
-been involved
+-Other countries which are involved
+-Are any of these countries outside the Hague Convention
+-Important details
 Annex Documents
 -Social work chronology
 -Social work statement and genogram

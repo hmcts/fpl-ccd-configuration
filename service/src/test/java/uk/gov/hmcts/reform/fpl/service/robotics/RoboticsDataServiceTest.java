@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
@@ -273,14 +274,11 @@ class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnTrueForHarmAllegedWhenOneOfTheOptionsForRisksIsYes() {
+    void shouldReturnTrueForHarmAllegedWhenOneOfTheOptionsisNotEmpty() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder()
-                .physicalHarm("Yes")
-                .emotionalHarm("No")
-                .sexualAbuse("No")
-                .neglect("No")
+                .whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.EMOTIONAL_HARM))
                 .build())
             .build();
 
@@ -290,14 +288,10 @@ class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnFalseForHarmAllegedWhenAllOfTheOptionsForRisksIsNo() {
+    void shouldReturnFalseForHarmAllegedWhenAllOfTheOptionsForRisksIsEmpty() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder()
-                .physicalHarm("No")
-                .emotionalHarm("No")
-                .sexualAbuse("No")
-                .neglect("No")
                 .build())
             .build();
 
@@ -335,11 +329,7 @@ class RoboticsDataServiceTest {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
             .internationalElement(InternationalElement.builder()
-                .possibleCarer("Yes")
-                .significantEvents("No")
-                .issues("No")
-                .proceedings("No")
-                .internationalAuthorityInvolvement("No")
+                .outsideHagueConvention("Yes")
                 .build())
             .build();
 
@@ -353,11 +343,7 @@ class RoboticsDataServiceTest {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
             .internationalElement(InternationalElement.builder()
-                .possibleCarer("No")
-                .significantEvents("No")
-                .issues("No")
-                .proceedings("No")
-                .internationalAuthorityInvolvement("No")
+                .outsideHagueConvention("No")
                 .build())
             .build();
 
