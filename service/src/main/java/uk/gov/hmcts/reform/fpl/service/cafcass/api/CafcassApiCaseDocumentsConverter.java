@@ -302,7 +302,7 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
 
     private List<CafcassApiCaseDocument> buildCafcassApiCaseDocumentList(DocumentType docType, boolean removed,
                                                                          List<DocumentReference> docRefList) {
-        return buildCafcassApiCaseDocumentList(docType.getCategory(), removed, docRefList);
+        return buildCafcassApiCaseDocumentList(docType.getCafcassApiDocumentCategory(), removed, docRefList);
     }
 
     private List<CafcassApiCaseDocument> buildCafcassApiCaseDocumentList(String category, boolean removed,
@@ -312,7 +312,7 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
 
     private List<CafcassApiCaseDocument> buildCafcassApiCaseDocumentList(DocumentType category, boolean removed,
                                                                          Stream<DocumentReference> docRefList) {
-        return buildCafcassApiCaseDocumentList(category.getCategory(), removed, docRefList);
+        return buildCafcassApiCaseDocumentList(category.getCafcassApiDocumentCategory(), removed, docRefList);
     }
 
     private List<CafcassApiCaseDocument> buildCafcassApiCaseDocumentList(String category, boolean removed,
