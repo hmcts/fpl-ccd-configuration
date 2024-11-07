@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -53,36 +52,15 @@ public class CafcassApiHelper {
                     .firstName(solicitor.getFirstName())
                     .lastName(solicitor.getLastName());
 
-                String orgId = null;
-                String orgName = null;
-                Address address = null;
-
-                if (solicitor.getUnregisteredOrganisation() != null
-                    && isNotEmpty(solicitor.getUnregisteredOrganisation().getName())) {
-                    orgName = solicitor.getUnregisteredOrganisation().getName();
-                    if (solicitor.getUnregisteredOrganisation().getAddress() != null) {
-                        address = solicitor.getUnregisteredOrganisation().getAddress();
-                    }
-                } else {
-                    if (solicitor.getOrganisation() != null) {
-                        orgId =  solicitor.getOrganisation().getOrganisationID();
-                        orgName = solicitor.getOrganisation().getOrganisationName();
-                    }
-                    if (solicitor.getRegionalOfficeAddress() != null) {
-                        address = solicitor.getRegionalOfficeAddress();
+                if (solicitor.hasOrganisationDetails()) {
+                    if (solicitor.getOrganisation() != null
+                        && isNotEmpty(solicitor.getOrganisation().getOrganisationID())) {
+                        builder = builder.organisationId(solicitor.getOrganisation().getOrganisationID())
+                            .organisationName(solicitor.getOrganisation().getOrganisationName());
+                    } else {
+                        builder = builder.organisationName(solicitor.getUnregisteredOrganisation().getName());
                     }
                 }
-
-                if (isNotBlank(orgId)) {
-                    builder = builder.organisationId(orgId);
-                }
-                if (isNotBlank(orgName)) {
-                    builder = builder.organisationName(orgName);
-                }
-                if (address != null) {
-                    builder = builder.address(getCafcassApiAddress(address));
-                }
-
                 return builder.build();
             })
             .orElse(null);

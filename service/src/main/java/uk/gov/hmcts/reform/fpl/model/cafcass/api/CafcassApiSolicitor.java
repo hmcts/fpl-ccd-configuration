@@ -13,5 +13,4 @@ public class CafcassApiSolicitor {
     private String lastName;
     private String organisationId;
     private String organisationName;
-    private CafcassApiAddress address;
 }
