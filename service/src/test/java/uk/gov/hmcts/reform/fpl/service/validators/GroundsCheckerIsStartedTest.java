@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.GroundsList;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
@@ -107,7 +108,7 @@ class GroundsCheckerIsStartedTest {
 
     private static Stream<Arguments> nonEmptyGrounds() {
         return Stream.of(
-                Grounds.builder().thresholdReason(List.of(("Test"))).build(),
+                Grounds.builder().groundsReason(List.of(GroundsList.NO_CARE)).build(),
                 Grounds.builder().thresholdDetails("Test").build())
                 .map(Arguments::of);
     }
@@ -126,7 +127,7 @@ class GroundsCheckerIsStartedTest {
                 Arguments.of(
                         Grounds.builder()
                                 .thresholdDetails("")
-                                .thresholdReason(emptyList())
+                                .groundsReason(emptyList())
                                 .build(),
                         GroundsForEPO.builder()
                                 .reason(emptyList())

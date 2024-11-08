@@ -84,11 +84,12 @@
       ]
     },
     "grounds": {
-      "thresholdReason": [
+      "groundsReason": [
         "noCare",
         "beyondControl"
       ],
-      "thresholdDetails": "grounds for application criteria"
+      "hasThresholdDocument": "NO",
+      "thresholdDetails": "Details"
     },
     "groundsForEPO": {
       "reason": [
