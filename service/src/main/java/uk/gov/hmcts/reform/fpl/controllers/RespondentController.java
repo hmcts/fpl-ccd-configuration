@@ -87,7 +87,8 @@ public class RespondentController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        caseDetails.getData().put(RESPONDENTS_KEY, respondentService.consolidateAndRemoveHiddenFields(caseData.getRespondents1()));
+        caseDetails.getData().put(RESPONDENTS_KEY,
+            respondentService.consolidateAndRemoveHiddenFields(caseData.getRespondents1()));
 
         List<String> errors = respondentValidator.validate(caseData, caseDataBefore);
         return respond(caseDetails, errors);
