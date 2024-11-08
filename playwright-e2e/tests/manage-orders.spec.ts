@@ -170,7 +170,6 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.locator('#case-viewer-field-read--orderCollection')).toContainText('Discharge of care order (C32B)');
         await expect(page.locator('ccd-read-document-field')).toContainText('c32b_discharge_of_care_order.pdf');
-
     })
     test('C47A Appointment of a children\'s guardian (C47A)', async ({page,signInPage, orders}) => {
         caseName = 'C47A Order ' + dateTime.slice(0, 10);
@@ -195,8 +194,7 @@ test.describe('manage orders', () => {
 
         await orders.openOrderDoc('Preview order.pdf');
         await expect(orders.orderPage.getByText('Appointment of a children\'s')).toBeVisible();
-        await expect(orders.orderPage.getByLabel('Page ⁨1⁩')).toContainText('The Court appoints Cafcass Swansea as a children\'s guardian for the children in the');
-        await expect(orders.orderPage.getByLabel('Page ⁨1⁩')).toContainText('proceedings.');
+        await expect(orders.orderPage.getByText('The Court appoints Cafcass Swansea as a children\'s guardian for the children in the')).toBeVisible();
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();

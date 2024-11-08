@@ -30,6 +30,7 @@ export class Orders extends BasePage {
     readonly juridiction: Locator;
     readonly juridictionRegion: Locator;
 
+
     constructor(page: Page) {
         super(page);
         this.orderTypeRadio = page.getByRole('group', {name: 'Select order'});
