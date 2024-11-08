@@ -33,6 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DRUG_AND_ALCOHOL_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.EXPERT_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.LETTER_OF_INSTRUCTION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(ManageDocumentsControllerV2.class)
@@ -489,8 +492,8 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
     @ParameterizedTest
     @EnumSource(value = DocumentType.class, names = {"POSITION_STATEMENTS_CHILD", "POSITION_STATEMENTS_RESPONDENT",
-        "ARCHIVED_DOCUMENTS"})
-    void shouldPopulateDocumentsToBeRemovedAfterSelectingLegacyPositionStatement(DocumentType documentType) {
+        "ARCHIVED_DOCUMENTS", "EXPERT_REPORTS", "DRUG_AND_ALCOHOL_REPORTS", "LETTER_OF_INSTRUCTION"})
+    void shouldPopulateDocumentsToBeRemovedAfterSelectingLegacyDocument(DocumentType documentType) {
         CaseData caseData = CaseData.builder()
             .manageDocumentEventData(ManageDocumentEventData.builder()
                 .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
