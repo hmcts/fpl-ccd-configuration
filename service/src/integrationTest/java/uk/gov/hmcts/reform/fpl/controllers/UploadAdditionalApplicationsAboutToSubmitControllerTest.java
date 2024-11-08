@@ -397,8 +397,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(caseData);
 
-        assertThat(resp.getErrors()).containsExactly("The uploaded document is password protected. " +
-            "Please remove the password protection and try again.");
+        assertThat(resp.getErrors()).containsExactly("The uploaded document is password protected. "
+            + "Please remove the password protection and try again.");
     }
 
     private void assertC2DocumentBundle(C2DocumentBundle uploadedC2DocumentBundle) {
