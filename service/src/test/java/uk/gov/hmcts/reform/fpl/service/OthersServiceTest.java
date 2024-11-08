@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -478,7 +480,7 @@ class OthersServiceTest {
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
-        Others updatedOthers = service.removeAddressOrAddressNotKnowReason(caseData);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
         assertThat(updatedOthers.getFirstOther()).isEqualTo(firstOther);
     }
@@ -489,11 +491,11 @@ class OthersServiceTest {
             .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
-            .addressKnow("No")
+            .addressKnow(IsAddressKnowType.NO.getValue())
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
-        Others updatedOthers = service.removeAddressOrAddressNotKnowReason(caseData);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
         assertThat(updatedOthers.getFirstOther().getAddressNotKnowReason()).isNotNull();
         assertThat(updatedOthers.getFirstOther().getAddress()).isNull();
@@ -505,13 +507,26 @@ class OthersServiceTest {
             .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
-            .addressKnow("Yes")
+            .addressKnow(IsAddressKnowType.YES.getValue())
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
-        Others updatedOthers = service.removeAddressOrAddressNotKnowReason(caseData);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
         assertThat(updatedOthers.getFirstOther().getAddressNotKnowReason()).isNull();
         assertThat(updatedOthers.getFirstOther().getAddress()).isNotNull();
+    }
+
+    @Test
+    void shouldSetConfidentialWhenLiveInRefugeIsSelected() {
+        Other firstOther = Other.builder()
+            .name("First Other")
+            .addressKnow(IsAddressKnowType.LIVE_IN_REFUGEE.getValue())
+            .build();
+
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
+        assertThat(updatedOthers).isNotNull();
+        assertThat(updatedOthers.getFirstOther().getDetailsHidden()).isEqualTo(YesNo.YES.getValue());
     }
 }
