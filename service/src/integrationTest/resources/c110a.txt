@@ -26,12 +26,12 @@ Allocation proposal
 Proposal by applicant Section 9 circuit judge
 Reason                allocation proposal reason
 
-Attending the hearing
+Court services
 Interpreter                                       Interpreter required
 Welsh language requirement                        ${languageRequirement}
 Intermediary                                      Intermediary hearing required
 Facilities or assistance for a disability         Learning disability
-Separate waiting room or other security measures  Separate waiting room required
+Separate waiting rooms                            Separate waiting room required
 Something else                                    I need this from someone
 
 Child 1
