@@ -1351,7 +1351,6 @@ class CaseSubmissionGenerationServiceTest {
                 .intermediary("-")
                 .interpreter("-")
                 .somethingElse("-")
-                .welshDetails("-")
                 .build();
 
             assertThat(caseSubmission.getHearingPreferences()).isEqualTo(expectedDefaultHearingPreference);
