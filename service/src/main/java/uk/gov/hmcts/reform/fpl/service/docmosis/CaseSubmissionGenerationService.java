@@ -324,7 +324,7 @@ public class CaseSubmissionGenerationService
             .allocation(caseData.getAllocationProposal())
             .hearing(buildDocmosisHearing(caseData.getHearing(), applicationLanguage))
             .welshLanguageRequirement(getWelshLanguageRequirement(caseData, applicationLanguage))
-            .hearingPreferences(buildDocmosisHearingPreferences(caseData.getHearingPreferences(), applicationLanguage))
+            .hearingPreferences(buildDocmosisHearingPreferences(caseData.getHearingPreferences()))
             .internationalElement(buildDocmosisInternationalElement(caseData.getInternationalElement(),
                 applicationLanguage))
             .risks(buildDocmosisRisks(caseData.getRisks(), applicationLanguage))
@@ -957,8 +957,7 @@ public class CaseSubmissionGenerationService
             .build();
     }
 
-    private DocmosisHearingPreferences buildDocmosisHearingPreferences(final HearingPreferences hearingPreferences,
-                                                                       Language applicationLanguage) {
+    private DocmosisHearingPreferences buildDocmosisHearingPreferences(final HearingPreferences hearingPreferences) {
         final boolean hearingPreferencesPresent = hearingPreferences != null;
 
         return DocmosisHearingPreferences.builder()
@@ -1059,12 +1058,6 @@ public class CaseSubmissionGenerationService
             default:
                 return DEFAULT_STRING;
         }
-    }
-
-    private String listToString(final List<String> givenList) {
-        return ofNullable(givenList)
-            .map(list -> join(NEW_LINE, list))
-            .orElse(EMPTY);
     }
 
     private String formatAddress(Address address) {

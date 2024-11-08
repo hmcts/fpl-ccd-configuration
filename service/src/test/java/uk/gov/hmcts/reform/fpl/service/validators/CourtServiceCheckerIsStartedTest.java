@@ -51,7 +51,7 @@ class CourtServiceCheckerIsStartedTest {
                         .whichCourtServices(emptyList())
                         .interpreterDetails("")
                         .intermediaryDetails("")
-                        .disabilityAssistance("")
+                        .disabilityAssistanceDetails("")
                         .separateWaitingRoomsDetails("")
                         .somethingElseDetails("")
                         .build())

@@ -94,7 +94,6 @@ class CourtServiceCheckerTest {
 
     private static HearingPreferences.HearingPreferencesBuilder completedHearingPreferences() {
         return HearingPreferences.builder()
-            .welsh("Yes")
             .whichCourtServices(List.of(
                 CourtServicesNeeded.INTERPRETER,
                 CourtServicesNeeded.INTERMEDIARY,

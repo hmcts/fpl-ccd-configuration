@@ -15,7 +15,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 public class Grounds {
-    @Deprecated
+    @Deprecated(since = "DFPL-2312")
     private final List<String> thresholdReason;
     @NotNull(message = "Select at least one option for how this case meets the threshold criteria")
     @Size(min = 1, message = "Select at least one option for how this case meets the threshold criteria")

@@ -11,21 +11,21 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class HearingPreferences {
-    @Deprecated
+    @Deprecated(since = "DFPL-2316")
     private final String welsh;
-    @Deprecated
+    @Deprecated(since = "DFPL-2316")
     private final String interpreter;
-    @Deprecated
+    @Deprecated(since = "DFPL-2316")
     private final String intermediary;
-    @Deprecated
+    @Deprecated(since = "DFPL-2316")
     private final String welshDetails;
-    @Deprecated
+    @Deprecated(since = "DFPL-2316")
     private final String disabilityAssistance;
-    @Deprecated
+    @Deprecated(since = "DFPL-2316")
     private final String extraSecurityMeasures;
-    @Deprecated
+    @Deprecated(since = "DFPL-2316")
     private final String extraSecurityMeasuresDetails;
-    @Deprecated
+    @Deprecated(since = "DFPL-2316")
     private final String somethingElse;
     private final List<CourtServicesNeeded> whichCourtServices;
     private final String interpreterDetails;
