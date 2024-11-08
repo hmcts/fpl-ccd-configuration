@@ -41,13 +41,11 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
