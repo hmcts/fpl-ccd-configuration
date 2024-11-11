@@ -274,6 +274,7 @@ ccd:
       initialDelaySeconds: 90
   am-role-assignment-service:
     java:
+      ingressHost: am-role-assignment-service-${SERVICE_FQDN}
       autoscaling:
         enabled: false
         minReplicas: 1
