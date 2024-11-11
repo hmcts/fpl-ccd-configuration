@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ListingActionType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
 import java.util.List;
@@ -263,6 +264,8 @@ public class CaseDataParent {
     protected final CaseLocation caseManagementLocation;
 
     protected final List<Element<ListingActionRequest>> listingRequests;
+    protected final List<Element<ListingActionRequest>> reviewedListingRequests;
     protected final List<ListingActionType> selectListingActions;
     protected final String listingDetails;
+    protected final DynamicList listingRequestsList;
 }

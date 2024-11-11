@@ -8,7 +8,7 @@
     "PageID": "ListingActions",
     "PageDisplayOrder": 1,
     "PageFieldDisplayOrder": 1,
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -19,7 +19,7 @@
     "PageID": "ListingActions",
     "PageDisplayOrder": 1,
     "PageFieldDisplayOrder": 2,
-    "ShowSummaryChangeOption": "N",
+    "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "selectListingActions=\"*\""
   }
 ]

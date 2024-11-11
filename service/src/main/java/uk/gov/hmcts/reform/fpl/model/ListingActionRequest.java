@@ -6,8 +6,9 @@ import lombok.Value;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ListingActionType;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 @Value
 @Builder(toBuilder = true)
@@ -20,7 +21,7 @@ public class ListingActionRequest {
 
     @JsonIgnore
     public String toLabel() {
-        return String.format("%s - %s", dateSent.format(DateTimeFormatter.ofPattern("d LLL yyyy")), getTypesLabel());
+        return String.format("%s - Sent %s", getTypesLabel(), dateSent.format(ofPattern("d LLL yyyy")));
     }
 
     @JsonIgnore
