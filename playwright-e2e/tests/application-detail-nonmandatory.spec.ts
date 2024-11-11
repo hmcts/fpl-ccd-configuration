@@ -120,6 +120,12 @@ test.describe('Non mandatory application details before application submit', () 
             // International element
             await startApplication.internationalElementReqUpdated();
             await internationalElement.internationalElementSmokeTest();
+            //assert
+            await internationalElement.tabNavigation('View application')
+            await expect(internationalElement.page.locator('#case-viewer-field-read--internationalElement').getByText('International element', { exact: true })).toBeVisible();
+            await expect(internationalElement.page.locator('ccd-read-complex-field-table ccd-field-read-label').filter({ hasText: 'Spain Itlay France' }).locator('div')).toBeVisible();
+            await expect(internationalElement.page.getByText('Convention Care order by the')).toBeVisible();
+
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
                 // but supports additional test-specific configuration too
