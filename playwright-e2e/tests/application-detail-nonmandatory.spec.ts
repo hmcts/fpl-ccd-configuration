@@ -154,7 +154,7 @@ test.describe('Non mandatory application details before application submit', () 
             await signInPage.navigateTOCaseDetails(caseNumber);
 
             // Court Services Needed
-            await startApplication.courtServicesNeededReqUpdated();
+            await startApplication.courtServicesReqUpdated();
             await courtServicesNeeded.CourtServicesSmoketest();
 
             await courtServicesNeeded.tabNavigation('View application')
