@@ -9,10 +9,10 @@ export class InternationalElement extends BasePage {
 
     public constructor(page: Page) {
         super(page);
-        this.internationalElementHeading = page.getByRole('heading', {name: 'International element', exact: true});
-        this.countryInvolved = page.getByLabel('Which other countries are involved? (Optional)');
-        this.outSideHague = page.getByRole('group', {name: 'Are any of these countries outside of the Hague Convention? (Optional)'});
-        this.importantDetails = page.getByLabel('Provide all important details (Optional)');
+        this.internationalElementHeading = page.getByRole('heading', {name: 'International element', exact: true,level:1});
+        this.countryInvolved = page.getByLabel('Which other countries are involved?');
+        this.outSideHague = page.getByRole('group', {name: 'Are any of these countries outside of the Hague Convention?'});
+        this.importantDetails = page.getByLabel('Provide all important details');
     }
 
     async internationalElementSmokeTest() {

@@ -120,6 +120,12 @@ test.describe('Non mandatory application details before application submit', () 
             // International element
             await startApplication.internationalElementReqUpdated();
             await internationalElement.internationalElementSmokeTest();
+            //assert
+            await internationalElement.tabNavigation('View application')
+            await expect(internationalElement.page.locator('#case-viewer-field-read--internationalElement').getByText('International element', { exact: true })).toBeVisible();
+            await expect(internationalElement.page.locator('ccd-read-complex-field-table ccd-field-read-label').filter({ hasText: 'Spain Itlay France' }).locator('div')).toBeVisible();
+            await expect(internationalElement.page.getByText('Convention Care order by the')).toBeVisible();
+
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
                 // but supports additional test-specific configuration too
@@ -150,6 +156,18 @@ test.describe('Non mandatory application details before application submit', () 
             // Court Services Needed
             await startApplication.courtServicesNeededReqUpdated();
             await courtServicesNeeded.CourtServicesSmoketest();
+
+            await courtServicesNeeded.tabNavigation('View application')
+
+            await expect(courtServicesNeeded.page.locator('#case-viewer-field-read--hearingPreferences').getByText('Court services', { exact: true })).toBeVisible();
+            await expect(courtServicesNeeded.page.locator('ccd-read-complex-field-table')).toContainText('Court services');
+            await expect(courtServicesNeeded.page.getByText('Interpreter', { exact: true })).toBeVisible();
+            await expect(courtServicesNeeded.page.getByRole('cell', { name: 'Intermediary', exact: true })).toBeVisible();
+            await expect(courtServicesNeeded.page.getByText('Facilities or assistance for')).toBeVisible();
+            await expect(courtServicesNeeded.page.getByText('Separate waiting rooms', { exact: true })).toBeVisible();
+            await expect(courtServicesNeeded.page.getByRole('cell', { name: 'Something else', exact: true })).toBeVisible();
+            await expect(courtServicesNeeded.page.getByText('Something else')).toBeVisible();
+
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
                 // but supports additional test-specific configuration too
