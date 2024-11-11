@@ -26,7 +26,7 @@ export class StartApplication {
   readonly welshLanguageReqFinished: Locator;
   readonly otherProceedingsLink: Locator;
   readonly internationalElementsHeading: Locator;
-  readonly courtServicesNeeded: Locator;
+  readonly courtServices: Locator;
   readonly submitApplicationLink: Locator;
   readonly otherPeopleInCaseLink: Locator;
   readonly returnApplicationLink: Locator;
@@ -60,9 +60,9 @@ export class StartApplication {
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
-    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services'}); 
-    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'}); 
-    this.returnApplicationLink = page.getByRole('link', { name: 'Return application'}); 
+    this.courtServices = page.getByRole('link', { name: 'Court services'});
+    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
+    this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
   }
 
   async groundsForTheApplication() {
@@ -138,9 +138,9 @@ export class StartApplication {
     await this.internationalElementsHeading.click();
   }
 
-  async courtServicesNeededReqUpdated() {
-    await expect(this.courtServicesNeeded).toBeVisible();
-    await this.courtServicesNeeded.click();
+  async courtServicesReqUpdated() {
+    await expect(this.courtServices).toBeVisible();
+    await this.courtServices.click();
   }
 
   async addOtherPeopleInCase(){
