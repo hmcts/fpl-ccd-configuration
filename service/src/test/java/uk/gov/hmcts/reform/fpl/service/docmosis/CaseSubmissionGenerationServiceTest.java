@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
+import uk.gov.hmcts.reform.fpl.enums.GroundsList;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
@@ -58,7 +59,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC17Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
@@ -999,27 +999,28 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnBeyondParentalControlForGroundsThresholdReasonWhenThresholdReasonIsBeyondControl() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .thresholdReason(of("beyondControl"))
+                    .groundsReason(of(GroundsList.BEYOND_PARENTAL_CONTROL))
                     .build())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCasData);
 
-            assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("Beyond parental control.");
+            assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("Child is beyond parental control.");
         }
 
         @Test
         void shouldNotAppendBeyondParentalControlToGroundsThresholdReasonWhenThresholdReasonIsNotBeyondControl() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .thresholdReason(of("test", "noCare"))
+                    .groundsReason(of(GroundsList.NO_CARE))
                     .build())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCasData);
 
             assertThat(caseSubmission.getGroundsThresholdReason())
-                .isEqualTo("Not receiving care that would be reasonably expected from a parent.");
+                .isEqualTo("Child is not receiving care that would be reasonably expected from someone"
+                    + " with parental responsibility.");
         }
 
         @Test
@@ -1037,7 +1038,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnDefaultValueForGroundsThresholdReasonWhenTGroundsIsNotNullAndThresholdReasonEmpty() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .thresholdReason(of())
+                    .groundsReason(of())
                     .build())
                 .build();
 
@@ -1147,7 +1148,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
                     .thresholdDetails("")
-                    .thresholdReason(of("noCare"))
+                    .groundsReason(of(GroundsList.NO_CARE))
                     .build())
                 .build();
 
@@ -1155,7 +1156,8 @@ class CaseSubmissionGenerationServiceTest {
 
             assertThat(caseSubmission.getThresholdDetails()).isEqualTo("-");
             assertThat(caseSubmission.getGroundsThresholdReason())
-                .isEqualTo("Not receiving care that would be reasonably expected from a parent.");
+                .isEqualTo("Child is not receiving care that would be reasonably expected from someone"
+                    + " with parental responsibility.");
         }
     }
 
@@ -1352,7 +1354,6 @@ class CaseSubmissionGenerationServiceTest {
                 .intermediary("-")
                 .interpreter("-")
                 .somethingElse("-")
-                .welshDetails("-")
                 .build();
 
             assertThat(caseSubmission.getHearingPreferences()).isEqualTo(expectedDefaultHearingPreference);
@@ -1367,30 +1368,16 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisRisks expectedDefaultRisk = DocmosisRisks.builder()
-                .emotionalHarmDetails("-")
-                .neglectDetails("-")
-                .physicalHarmDetails("-")
-                .sexualAbuseDetails("-")
+                .physicalHarm("-")
+                .emotionalHarm("-")
+                .sexualAbuse("-")
+                .neglect("-")
+                .alcoholDrugAbuse("-")
+                .domesticAbuse("-")
+                .anythingElse("-")
                 .build();
 
             assertThat(caseSubmission.getRisks()).isEqualTo(expectedDefaultRisk);
-        }
-
-        @Test
-        void shouldReturnDefaultFactorsAffectingParentingWhenInfoNotGiven() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .factorsParenting(null)
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
-
-            DocmosisFactorsParenting expectedFactorsParenting = DocmosisFactorsParenting.builder()
-                .alcoholDrugAbuseDetails("-")
-                .anythingElse("-")
-                .domesticViolenceDetails("-")
-                .build();
-
-            assertThat(caseSubmission.getFactorsParenting()).isEqualTo(expectedFactorsParenting);
         }
 
         @Test

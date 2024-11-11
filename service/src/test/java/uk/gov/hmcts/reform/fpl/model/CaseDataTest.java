@@ -74,7 +74,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.document.SealType.BILINGUAL;
+import static uk.gov.hmcts.reform.fpl.model.document.SealType.WELSH;
 import static uk.gov.hmcts.reform.fpl.model.document.SealType.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -2037,7 +2037,7 @@ class CaseDataTest {
 
         @Test
         void testIfLanguageRequirementYes() {
-            assertThat(CaseData.builder().languageRequirement("Yes").build().getSealType()).isEqualTo(BILINGUAL);
+            assertThat(CaseData.builder().languageRequirement("Yes").build().getSealType()).isEqualTo(WELSH);
         }
     }
 
@@ -2101,6 +2101,32 @@ class CaseDataTest {
         List<Element<GeneratedOrder>> expected = Stream.of(orders, ordersCTSC).flatMap(List::stream).toList();
 
         assertThat(caseData.getAllOrderCollections()).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldGetCorrectLastHearingBeforeDate() {
+        LocalDateTime now = LocalDateTime.now();
+        HearingBooking hearing = HearingBooking.builder().startDate(now).build();
+        HearingBooking hearingPrior = HearingBooking.builder().startDate(now.minusDays(2)).build();
+        HearingBooking hearingPrior2 = HearingBooking.builder().startDate(now.minusDays(4)).build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(wrapElements(hearing, hearingPrior, hearingPrior2))
+            .build();
+
+        assertThat(caseData.getLastHearingBefore(now)).isEqualTo(Optional.of(hearingPrior));
+    }
+
+    @Test
+    void shouldReturnEmptyIfNoPriorHearingBeforeDate() {
+        LocalDateTime now = LocalDateTime.now();
+        HearingBooking futureHearing = HearingBooking.builder().startDate(now.plusDays(2)).build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(wrapElements(futureHearing))
+            .build();
+
+        assertThat(caseData.getLastHearingBefore(now)).isEqualTo(Optional.empty());
     }
 
     private HearingOrder buildHearingOrder(HearingOrderType type) {

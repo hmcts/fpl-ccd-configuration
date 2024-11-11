@@ -282,7 +282,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldContainErrorIfOneOfTheeSelectedDocumentTypesIsNonUploadableInUploadDocumentAction() {
+    void shouldContainErrorIfOneOfTheSelectedDocumentTypesIsNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
             DocumentType.AA_PARENT_APPLICANTS_DOCUMENTS, DocumentType.AA_PARENT_EXPERT_REPORTS,
             DocumentType.AA_PARENT_ORDERS, DocumentType.AA_PARENT_RESPONDENTS_STATEMENTS
@@ -336,9 +336,30 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             DocumentType.RESPONDENTS_STATEMENTS,
             DocumentType.RESPONDENTS_WITNESS_STATEMENTS,
             DocumentType.GUARDIAN_EVIDENCE,
-            DocumentType.EXPERT_REPORTS,
-            DocumentType.DRUG_AND_ALCOHOL_REPORTS,
-            DocumentType.LETTER_OF_INSTRUCTION,
+            DocumentType.FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL,
+            DocumentType.ADULT_PSYCHIATRIC_REPORT_ON_PARENTS,
+            DocumentType.FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL,
+            DocumentType.HAEMATOLOGIST,
+            DocumentType.INDEPENDENT_SOCIAL_WORKER,
+            DocumentType.MULTI_DISCIPLINARY_ASSESSMENT,
+            DocumentType.NEUROSURGEON,
+            DocumentType.OPHTHALMOLOGIST,
+            DocumentType.OTHER_EXPERT_REPORT,
+            DocumentType.OTHER_MEDICAL_REPORT,
+            DocumentType.PEDIATRIC,
+            DocumentType.PEDIATRIC_RADIOLOGIST,
+            DocumentType.PROFESSIONAL_DNA_TESTING,
+            DocumentType.PROFESSIONAL_DRUG_ALCOHOL,
+            DocumentType.PROFESSIONAL_HAIR_STRAND,
+            DocumentType.PROFESSIONAL_OTHER,
+            DocumentType.PSYCHIATRIC_CHILD_ONLY,
+            DocumentType.PSYCHIATRIC_CHILD_AND_PARENT,
+            DocumentType.PSYCHOLOGICAL_REPORT_CHILD_ONLY_CLINICAL,
+            DocumentType.PSYCHOLOGICAL_REPORT_CHILD_ONLY_EDUCATIONAL,
+            DocumentType.PSYCHOLOGICAL_REPORT_PARENT_AND_CHILD,
+            DocumentType.PSYCHOLOGICAL_REPORT_PARENT_FULL_COGNITIVE,
+            DocumentType.PSYCHOLOGICAL_REPORT_PARENT_FULL_FUNCTIONING,
+            DocumentType.TOXICOLOGY_REPORT,
             DocumentType.POLICE_DISCLOSURE,
             DocumentType.MEDICAL_RECORDS,
             DocumentType.COURT_CORRESPONDENCE,
@@ -385,9 +406,30 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             DocumentType.RESPONDENTS_STATEMENTS,
             DocumentType.RESPONDENTS_WITNESS_STATEMENTS,
             DocumentType.GUARDIAN_EVIDENCE,
-            DocumentType.EXPERT_REPORTS,
-            DocumentType.DRUG_AND_ALCOHOL_REPORTS,
-            DocumentType.LETTER_OF_INSTRUCTION,
+            DocumentType.FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL,
+            DocumentType.ADULT_PSYCHIATRIC_REPORT_ON_PARENTS,
+            DocumentType.FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL,
+            DocumentType.HAEMATOLOGIST,
+            DocumentType.INDEPENDENT_SOCIAL_WORKER,
+            DocumentType.MULTI_DISCIPLINARY_ASSESSMENT,
+            DocumentType.NEUROSURGEON,
+            DocumentType.OPHTHALMOLOGIST,
+            DocumentType.OTHER_EXPERT_REPORT,
+            DocumentType.OTHER_MEDICAL_REPORT,
+            DocumentType.PEDIATRIC,
+            DocumentType.PEDIATRIC_RADIOLOGIST,
+            DocumentType.PROFESSIONAL_DNA_TESTING,
+            DocumentType.PROFESSIONAL_DRUG_ALCOHOL,
+            DocumentType.PROFESSIONAL_HAIR_STRAND,
+            DocumentType.PROFESSIONAL_OTHER,
+            DocumentType.PSYCHIATRIC_CHILD_ONLY,
+            DocumentType.PSYCHIATRIC_CHILD_AND_PARENT,
+            DocumentType.PSYCHOLOGICAL_REPORT_CHILD_ONLY_CLINICAL,
+            DocumentType.PSYCHOLOGICAL_REPORT_CHILD_ONLY_EDUCATIONAL,
+            DocumentType.PSYCHOLOGICAL_REPORT_PARENT_AND_CHILD,
+            DocumentType.PSYCHOLOGICAL_REPORT_PARENT_FULL_COGNITIVE,
+            DocumentType.PSYCHOLOGICAL_REPORT_PARENT_FULL_FUNCTIONING,
+            DocumentType.TOXICOLOGY_REPORT,
             DocumentType.POLICE_DISCLOSURE,
             DocumentType.MEDICAL_RECORDS,
             DocumentType.COURT_CORRESPONDENCE,
@@ -488,6 +530,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
         extractCaseData(callbackResponse);
 
         assertThat(callbackResponse.getErrors()).contains("You are trying to remove a document from a parent folder, "
+            + "or a document that is not uploadable, "
             + "you need to choose one of the available sub folders.");
     }
 }

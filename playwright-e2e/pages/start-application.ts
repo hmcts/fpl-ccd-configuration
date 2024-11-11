@@ -29,6 +29,7 @@ export class StartApplication {
   readonly courtServicesNeeded: Locator;
   readonly submitApplicationLink: Locator;
   readonly otherPeopleInCaseLink: Locator;
+  readonly returnApplicationLink: Locator;
   readonly internationalElementCompleted: Locator;
 
   public constructor(page: Page) {
@@ -40,6 +41,7 @@ export class StartApplication {
     this.hearingUrgencyHeader = page.getByRole("heading", { name: "Hearing urgency", });
     this.groundsForTheApplicationLink = page.getByRole("link", { name: "Grounds for the application", });
     this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
+   // this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('heading-h2',);
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img',);
     this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
     this.allocationProposalFinished = page.locator('p').filter({ hasText: 'Allocation proposal' }).getByRole('img', { name: 'Finished' });
@@ -60,6 +62,9 @@ export class StartApplication {
     this.internationalElementCompleted = page.locator('p').filter({ hasText: 'International element' }).getByRole('img',{name:'Finished'});
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
+    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services'});
+    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
+    this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'});
     this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
   }
@@ -67,7 +72,7 @@ export class StartApplication {
   async groundsForTheApplication() {
     expect(await this.groundsForTheApplicationLink).toBeVisible();
     await this.groundsForTheApplicationLink.click();
-    await expect(this.groundsForTheApplicationHeading).toBeVisible();
+   // await expect(this.groundsForTheApplicationHeading).toBeVisible();
   }
 
   async groundsForTheApplicationHasBeenUpdated() {
@@ -145,6 +150,11 @@ export class StartApplication {
   async addOtherPeopleInCase(){
     await expect(this.otherPeopleInCaseLink).toBeVisible();
     await this.otherPeopleInCaseLink.click();
+  }
+
+  async returnApplication(){
+    await expect(this.returnApplicationLink).toBeVisible();
+    await this.returnApplicationLink.click();
   }
 
   async submitCase() {

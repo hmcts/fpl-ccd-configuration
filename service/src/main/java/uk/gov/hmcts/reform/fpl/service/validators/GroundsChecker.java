@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import jakarta.validation.groups.Default;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
 import java.util.List;
-import javax.validation.groups.Default;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
@@ -84,7 +84,7 @@ public class GroundsChecker extends PropertiesChecker {
     }
 
     private static boolean isGroundsStarted(Grounds grounds) {
-        return isNotEmpty(grounds) && anyNonEmpty(grounds.getThresholdReason(), grounds.getThresholdDetails());
+        return isNotEmpty(grounds) && anyNonEmpty(grounds.getGroundsReason(), grounds.getThresholdDetails());
     }
 
     private static boolean isEPOGroundsStarted(GroundsForEPO grounds) {

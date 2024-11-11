@@ -9,11 +9,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.CourtServicesNeeded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 
+import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
@@ -68,77 +71,11 @@ class CourtServiceCheckerTest {
     private static Stream<Arguments> incompleteHearingPreferences() {
         return Stream.of(
             HearingPreferences.builder().build(),
-
             completedHearingPreferences()
-                .interpreter("")
+                .whichCourtServices(null)
                 .build(),
             completedHearingPreferences()
-                .interpreter("Yes")
-                .interpreterDetails(null)
-                .build(),
-            completedHearingPreferences()
-                .interpreter("Yes")
-                .interpreterDetails("")
-                .build(),
-
-            completedHearingPreferences()
-                .welsh("")
-                .build(),
-            completedHearingPreferences()
-                .welsh("Yes")
-                .welshDetails(null)
-                .build(),
-            completedHearingPreferences()
-                .welsh("Yes")
-                .welshDetails("")
-                .build(),
-
-            completedHearingPreferences()
-                .intermediary("")
-                .build(),
-            completedHearingPreferences()
-                .intermediary("Yes")
-                .intermediaryDetails(null)
-                .build(),
-            completedHearingPreferences()
-                .intermediary("Yes")
-                .intermediaryDetails("")
-                .build(),
-
-            completedHearingPreferences()
-                .disabilityAssistance("")
-                .build(),
-            completedHearingPreferences()
-                .disabilityAssistance("Yes")
-                .disabilityAssistanceDetails(null)
-                .build(),
-            completedHearingPreferences()
-                .disabilityAssistance("Yes")
-                .disabilityAssistanceDetails("")
-                .build(),
-
-            completedHearingPreferences()
-                .extraSecurityMeasures("")
-                .build(),
-            completedHearingPreferences()
-                .extraSecurityMeasures("Yes")
-                .extraSecurityMeasuresDetails(null)
-                .build(),
-            completedHearingPreferences()
-                .extraSecurityMeasures("Yes")
-                .extraSecurityMeasuresDetails("")
-                .build(),
-
-            completedHearingPreferences()
-                .somethingElse("")
-                .build(),
-            completedHearingPreferences()
-                .somethingElse("Yes")
-                .somethingElseDetails(null)
-                .build(),
-            completedHearingPreferences()
-                .somethingElse("Yes")
-                .somethingElseDetails("")
+                .whichCourtServices(emptyList())
                 .build()
         ).map(Arguments::of);
     }
@@ -146,12 +83,8 @@ class CourtServiceCheckerTest {
     private static Stream<Arguments> completeHearingPreferences() {
         return Stream.of(
             HearingPreferences.builder()
-                .welsh("No")
-                .interpreter("No")
-                .intermediary("No")
-                .disabilityAssistance("No")
-                .extraSecurityMeasures("No")
-                .somethingElse("No")
+                .whichCourtServices(List.of(CourtServicesNeeded.INTERPRETER))
+                .interpreterDetails("Interpreter required")
                 .build(),
             completedHearingPreferences()
                 .build()
@@ -161,17 +94,17 @@ class CourtServiceCheckerTest {
 
     private static HearingPreferences.HearingPreferencesBuilder completedHearingPreferences() {
         return HearingPreferences.builder()
-            .welsh("Yes")
-            .welshDetails("Test")
-            .interpreter("Yes")
-            .interpreterDetails("Yes")
-            .intermediary("Yes")
-            .intermediaryDetails("Test")
-            .disabilityAssistance("Yes")
-            .disabilityAssistanceDetails("Test")
-            .extraSecurityMeasures("Yes")
-            .extraSecurityMeasuresDetails("Test")
-            .somethingElse("Yes")
-            .somethingElseDetails("Test");
+            .whichCourtServices(List.of(
+                CourtServicesNeeded.INTERPRETER,
+                CourtServicesNeeded.INTERMEDIARY,
+                CourtServicesNeeded.FACILITIES_FOR_DISABILITY,
+                CourtServicesNeeded.SEPARATE_WAITING_ROOMS,
+                CourtServicesNeeded.SOMETHING_ELSE
+            ))
+            .interpreterDetails("Interpreter required")
+            .intermediaryDetails("Intermediary hearing required")
+            .disabilityAssistanceDetails("Learning disability")
+            .separateWaitingRoomsDetails("Separate waiting room required")
+            .somethingElseDetails("I need this from someone");
     }
 }

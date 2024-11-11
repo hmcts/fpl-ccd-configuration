@@ -7,11 +7,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.CourtServicesNeeded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 
+import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,22 +48,29 @@ class CourtServiceCheckerIsStartedTest {
         return Stream.of(
                 HearingPreferences.builder().build(),
                 HearingPreferences.builder()
-                        .welsh("")
-                        .interpreter("")
-                        .disabilityAssistance("")
-                        .extraSecurityMeasures("")
-                        .somethingElse("")
+                        .whichCourtServices(emptyList())
+                        .interpreterDetails("")
+                        .intermediaryDetails("")
+                        .disabilityAssistanceDetails("")
+                        .separateWaitingRoomsDetails("")
+                        .somethingElseDetails("")
                         .build())
                 .map(Arguments::of);
     }
 
     private static Stream<Arguments> updatedCourtServices() {
         return Stream.of(
-                HearingPreferences.builder().welsh("Yes").build(),
-                HearingPreferences.builder().interpreter("No").build(),
-                HearingPreferences.builder().disabilityAssistance("Yes").build(),
-                HearingPreferences.builder().extraSecurityMeasures("Yes").build(),
-                HearingPreferences.builder().somethingElse("No").build())
+                HearingPreferences.builder().whichCourtServices(List.of(
+                        CourtServicesNeeded.INTERPRETER,
+                        CourtServicesNeeded.INTERMEDIARY,
+                        CourtServicesNeeded.FACILITIES_FOR_DISABILITY,
+                        CourtServicesNeeded.SEPARATE_WAITING_ROOMS,
+                        CourtServicesNeeded.SOMETHING_ELSE)).build(),
+                HearingPreferences.builder().interpreterDetails("Interpreter required").build(),
+                HearingPreferences.builder().intermediaryDetails("Intermediary hearing required").build(),
+                HearingPreferences.builder().disabilityAssistanceDetails("Learning disability").build(),
+                HearingPreferences.builder().separateWaitingRoomsDetails("Separate waiting room required").build(),
+                HearingPreferences.builder().somethingElseDetails("I need this from someone").build())
                 .map(Arguments::of);
     }
 }

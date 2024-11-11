@@ -317,14 +317,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "specific-access-legal-operations",
+    "RoleName": "specific-access-legal-ops",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "challenged-access-legal-operations",
+    "RoleName": "challenged-access-legal-ops",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
@@ -389,19 +389,26 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hearing-centre-admin",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-gatekeeper"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hearing-centre-team-leader",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-gatekeeper"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "allocated-legal-advisor",
+    "RoleName": "allocated-legal-adviser",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-judiciary"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "hearing-legal-adviser",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
@@ -460,12 +467,5 @@
     "RoleName": "idam:caseworker-publiclaw-judiciary",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "idam:caseworker-publiclaw-gatekeeper",
-    "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-gatekeeper"
   }
 ]

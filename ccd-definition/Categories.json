@@ -139,7 +139,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "judgementsFactsAndReasons",
-    "CategoryLabel": "Judgements/facts and reasons",
+    "CategoryLabel": "Judgments/facts and reasons",
     "ParentCategoryID": "orders",
     "DisplayOrder": "800"
   },
@@ -374,10 +374,394 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "adultPsychiatricReportOnParents",
+    "CategoryLabel": "Adult Psychiatric Report On Parent(s)",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1204"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "adultPsychiatricReportOnParentsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "adultPsychiatricReportOnParents",
+    "DisplayOrder": "12040"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "familyCentreAssessmentsNonResidential",
+    "CategoryLabel": "Family Centre Assessments - Non-Residential",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1205"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "familyCentreAssessmentsNonResidentialConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "familyCentreAssessmentsNonResidential",
+    "DisplayOrder": "12050"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "familyCentreAssessmentsResidential",
+    "CategoryLabel": "Family Centre Assessments - Residential",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1206"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "familyCentreAssessmentsResidentialConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "familyCentreAssessmentsResidential",
+    "DisplayOrder": "12060"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "haematologist",
+    "CategoryLabel": "Haematologist",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1207"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "haematologistConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "haematologist",
+    "DisplayOrder": "12070"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "independentSocialWorker",
+    "CategoryLabel": "Independent Social Worker",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1208"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "independentSocialWorkerConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "independentSocialWorker",
+    "DisplayOrder": "12080"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "multiDisciplinaryAssessment",
+    "CategoryLabel": "Multi Disciplinary Assessment",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1209"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "multiDisciplinaryAssessmentConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "multiDisciplinaryAssessment",
+    "DisplayOrder": "12090"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "neuroSurgeon",
+    "CategoryLabel": "Neurosurgeon",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1210"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "neuroSurgeonConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "neuroSurgeon",
+    "DisplayOrder": "12100"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "ophthalmologist",
+    "CategoryLabel": "Ophthalmologist",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1211"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "ophthalmologistConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "ophthalmologist",
+    "DisplayOrder": "12101"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "otherExpertReport",
+    "CategoryLabel": "Other Expert Report",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1212"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "otherExpertReportConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "otherExpertReport",
+    "DisplayOrder": "12102"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "otherMedicalReport",
+    "CategoryLabel": "Other Medical Report",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1213"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "otherMedicalReportConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "otherMedicalReport",
+    "DisplayOrder": "12103"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "pediatric",
+    "CategoryLabel": "Pediatric",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1214"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "pediatricConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "pediatric",
+    "DisplayOrder": "12104"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "pediatricRadiologist",
+    "CategoryLabel": "Pediatric Radiologist",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1215"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "pediatricRadiologistConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "pediatricRadiologist",
+    "DisplayOrder": "12105"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "professionalDNATesting",
+    "CategoryLabel": "Professional: DNA Testing",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1216"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "professionalDNATestingConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "professionalDNATesting",
+    "DisplayOrder": "12106"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "professionalDrugAlcohol",
+    "CategoryLabel": "Professional: Drug/Alcohol",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1217"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "professionalDrugAlcoholConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "professionalDrugAlcohol",
+    "DisplayOrder": "12107"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "professionalHairStrand",
+    "CategoryLabel": "Professional: Hair Strand",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1218"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "professionalHairStrandConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "professionalHairStrand",
+    "DisplayOrder": "12108"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "professionalOther",
+    "CategoryLabel": "Professional: Other",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1219"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "professionalOtherConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "professionalOther",
+    "DisplayOrder": "12109"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychiatricChildOnly",
+    "CategoryLabel": "Psychiatric - On child only",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1220"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychiatricChildOnlyConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "psychiatricChildOnly",
+    "DisplayOrder": "12200"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychiatricChildParentAndCarers",
+    "CategoryLabel": "Psychiatric - On child and Parent(s)/carers",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1221"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychiatricChildParentAndCarersConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "psychiatricChildParentAndCarers",
+    "DisplayOrder": "12201"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnChildOnlyClinical",
+    "CategoryLabel": "Psychological Report on Child Only - Clinical",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1222"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnChildOnlyClinicalConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "psychologicalReportOnChildOnlyClinical",
+    "DisplayOrder": "12202"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnChildOnlyEducational",
+    "CategoryLabel": "Psychological Report on Child Only - Educational",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1223"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnChildOnlyEducationalConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "psychologicalReportOnChildOnlyEducational",
+    "DisplayOrder": "12203"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnParentAndChild",
+    "CategoryLabel": "Psychological Report on Parent(s) and child",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1224"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnParentAndChildConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "psychologicalReportOnParentAndChild",
+    "DisplayOrder": "12204"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnParentFullCognitive",
+    "CategoryLabel": "Psychological Report on Parent(s) - full cognitive",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1225"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnParentFullCognitiveConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "psychologicalReportOnParentFullCognitive",
+    "DisplayOrder": "12205"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnParentFunctioning",
+    "CategoryLabel": "Psychological Report on Parent(s) - functioning",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1226"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "psychologicalReportOnParentFunctioningConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "psychologicalReportOnParentFunctioning",
+    "DisplayOrder": "12206"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "toxicologyReportStatement",
+    "CategoryLabel": "Toxicology report/statement",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1227"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "toxicologyReportStatementConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "toxicologyReportStatement",
+    "DisplayOrder": "12207"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "expertReports",
     "CategoryLabel": "Expert reports",
     "ParentCategoryID": "parent_expertReports",
-    "DisplayOrder": "1201"
+    "DisplayOrder": "1228"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -385,7 +769,7 @@
     "CategoryID": "expertReportsConfidential",
     "CategoryLabel": "Confidential",
     "ParentCategoryID": "expertReports",
-    "DisplayOrder": "12010"
+    "DisplayOrder": "12208"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -393,7 +777,7 @@
     "CategoryID": "drugAndAlcoholReports",
     "CategoryLabel": "Drug and alcohol reports",
     "ParentCategoryID": "parent_expertReports",
-    "DisplayOrder": "1202"
+    "DisplayOrder": "1229"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -401,7 +785,7 @@
     "CategoryID": "drugAndAlcoholReportsConfidential",
     "CategoryLabel": "Confidential",
     "ParentCategoryID": "drugAndAlcoholReports",
-    "DisplayOrder": "12020"
+    "DisplayOrder": "12209"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -409,7 +793,7 @@
     "CategoryID": "lettersOfInstructionReferrals",
     "CategoryLabel": "Letters of instruction/referrals",
     "ParentCategoryID": "parent_expertReports",
-    "DisplayOrder": "1203"
+    "DisplayOrder": "1230"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -417,7 +801,7 @@
     "CategoryID": "lettersOfInstructionReferralsConfidential",
     "CategoryLabel": "Confidential",
     "ParentCategoryID": "lettersOfInstructionReferrals",
-    "DisplayOrder": "12030"
+    "DisplayOrder": "12210"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -8,8 +8,7 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/migrate-case/about-to-submit",
-    "Comment": "Event is triggered by running migration tool - callback modifies the data.",
-    "Publish": "Y"
+    "Comment": "Event is triggered by running migration tool - callback modifies the data."
   },
   {
     "LiveFrom": "01/01/2017",
@@ -27,7 +26,8 @@
     "Name": "Update case summary",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Publish": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -66,6 +66,15 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/post-submit-callback/about-to-submit"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "internal-change-translations",
+    "Name": "Post-process translations",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -387,22 +396,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "enterParentingFactors",
-    "Name": "Factors affecting parenting",
-    "Description": "Entering the factors affecting parenting",
-    "DisplayOrder": 10,
-    "PreConditionState(s)": "Open;RETURNED",
-    "PostConditionState": "*",
-    "SecurityClassification": "Public",
-    "ShowSummary": "Y",
-    "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted",
-    "EventEnablingCondition": "otherOrderType!=\"YES\" AND secureAccommodationOrderType!=\"YES\" AND refuseContactWithChildOrderType!=\"YES\" AND contactWithChildInCareOrderType!=\"YES\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterInternationalElement",
     "Name": "International element",
     "Description": "Entering the international element",
@@ -467,7 +460,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "attendingHearing",
-    "Name": "Court services needed",
+    "Name": "Court services",
     "Description": "Enter extra support needed for anyone to take part in hearing",
     "DisplayOrder": 13,
     "PreConditionState(s)": "Open;RETURNED",
@@ -596,7 +589,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "amendAttendingHearing",
-    "Name": "Attending the hearing",
+    "Name": "Court services",
     "Description": "Amend extra support needed for anyone to take part in hearing",
     "DisplayOrder": 25,
     "PreConditionState(s)": "Submitted;Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING",
@@ -735,7 +728,7 @@
     "ID": "changeState",
     "Name": "Change case state",
     "Description": "Change the state of the case",
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
+    "PreConditionState(s)": "Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
@@ -751,7 +744,7 @@
     "Name": "Manage hearings",
     "Description": "Manage hearing booking details on a case",
     "DisplayOrder": 3,
-    "PreConditionState(s)": "GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PreConditionState(s)": "GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
@@ -774,6 +767,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/submitted",
     "Publish": "Y"
@@ -785,7 +779,7 @@
     "Name": "Approve orders",
     "Description": "Review draft case management orders and C21 orders uploaded by the local authority",
     "DisplayOrder": 7,
-    "PreConditionState(s)": "GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PreConditionState(s)": "GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
@@ -803,14 +797,13 @@
     "Name": "Upload translated documents",
     "Description": "Upload translated documents",
     "DisplayOrder": 100,
-    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
+    "PreConditionState(s)": "Submitted;Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "EventEnablingCondition": "languageRequirement=\"Yes\"",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-translations/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-translations/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-translations/submitted",
     "EndButtonLabel": "Save and continue"
   },
@@ -1057,7 +1050,7 @@
     "ID": "sendOrderReminder",
     "Name": "Send order reminder",
     "Description": "Lets the CTSC send a reminder to the LA to upload an order.",
-    "DisplayOrder": 31,
+    "DisplayOrder": 22,
     "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING;",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
@@ -1097,7 +1090,6 @@
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted",
-    "Publish":  "Y"
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted"
   }
 ]

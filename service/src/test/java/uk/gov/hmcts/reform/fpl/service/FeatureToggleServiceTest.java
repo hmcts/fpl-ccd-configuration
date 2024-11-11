@@ -1,17 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.launchdarkly.sdk.LDUser;
-import com.launchdarkly.sdk.UserAttribute;
 import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import uk.gov.hmcts.reform.fpl.model.Court;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -158,16 +154,17 @@ class FeatureToggleServiceTest {
             eq(""));
     }
 
-    private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
-        List<UserAttribute> attributes = new ArrayList<>();
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForCourtNotificationEnabledForWa(Boolean toggleState) {
+        givenToggle(toggleState);
 
-        attributes.add(UserAttribute.forName("timestamp"));
-        attributes.add(UserAttribute.forName("environment"));
-        Arrays.stream(additionalAttributes)
-            .map(UserAttribute::forName)
-            .forEach(attributes::add);
-
-        return attributes;
+        assertThat(service.isCourtNotificationEnabledForWa(Court.builder().code("151").build()))
+            .isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("wa-test-court-notification"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(true));
     }
 
     private void givenToggle(boolean state) {

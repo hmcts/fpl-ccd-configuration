@@ -5,10 +5,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ChildExtension;
 import uk.gov.hmcts.reform.fpl.model.Temp;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -91,6 +94,13 @@ public class ChildExtensionEventData {
     String childSelected13;
     @Temp
     String childSelected14;
+
+    @Temp
+    YesNo extendTimelineApprovedAtHearing;
+    @Temp
+    LocalDate extendTimelineHearingDate;
+    @Temp
+    DynamicList extendTimelineHearingList;
 
     @JsonIgnore
     public List<ChildExtension> getAllChildExtension() {

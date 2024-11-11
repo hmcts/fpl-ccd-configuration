@@ -87,6 +87,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_APPLICATI
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_RESPONDENTS_STATEMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.ADULT_PSYCHIATRIC_REPORT_ON_PARENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.APPLICANTS_OTHER_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.APPLICANTS_WITNESS_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCUMENTS;
@@ -97,24 +98,44 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.CONTACT_NOTES;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DOCUMENTS_FILED_ON_ISSUE;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DRUG_AND_ALCOHOL_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_EVIDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.HAEMATOLOGIST;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.INDEPENDENT_SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.JUDGEMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.LETTER_OF_INSTRUCTION;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MEDICAL_RECORDS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MEETING_NOTES;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MULTI_DISCIPLINARY_ASSESSMENT;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.NEUROSURGEON;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.NOTICE_OF_ACTING_OR_ISSUE;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.OPHTHALMOLOGIST;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.OTHER_EXPERT_REPORT;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.OTHER_MEDICAL_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PARENT_ASSESSMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PEDIATRIC;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PEDIATRIC_RADIOLOGIST;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POLICE_DISCLOSURE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PREVIOUS_PROCEEDING;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PROFESSIONAL_DNA_TESTING;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PROFESSIONAL_DRUG_ALCOHOL;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PROFESSIONAL_HAIR_STRAND;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PROFESSIONAL_OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHIATRIC_CHILD_AND_PARENT;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHIATRIC_CHILD_ONLY;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_CHILD_ONLY_CLINICAL;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_CHILD_ONLY_EDUCATIONAL;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_PARENT_AND_CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_PARENT_FULL_COGNITIVE;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_PARENT_FULL_FUNCTIONING;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.RESPONDENTS_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.RESPONDENTS_WITNESS_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.SKELETON_ARGUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.THRESHOLD;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.TOXICOLOGY_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.TRANSCRIPTS;
 import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.buildSubmittedCaseDataWithNewDocumentUploaded;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -400,20 +421,39 @@ class ManageDocumentServiceTest {
                     toPair(MEETING_NOTES),
                     toPair(CONTACT_NOTES),
                     toPair(AA_PARENT_APPLICATIONS),
-                    toPair(C1_APPLICATION_DOCUMENTS),
-                    toPair(C2_APPLICATION_DOCUMENTS),
                     toPair(AA_PARENT_RESPONDENTS_STATEMENTS),
                     toPair(RESPONDENTS_STATEMENTS),
                     toPair(RESPONDENTS_WITNESS_STATEMENTS),
                     toPair(GUARDIAN_EVIDENCE),
                     toPair(AA_PARENT_EXPERT_REPORTS),
-                    toPair(EXPERT_REPORTS),
-                    toPair(DRUG_AND_ALCOHOL_REPORTS),
-                    toPair(LETTER_OF_INSTRUCTION),
+                    toPair(ADULT_PSYCHIATRIC_REPORT_ON_PARENTS),
+                    toPair(FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL),
+                    toPair(FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL),
+                    toPair(HAEMATOLOGIST),
+                    toPair(INDEPENDENT_SOCIAL_WORKER),
+                    toPair(MULTI_DISCIPLINARY_ASSESSMENT),
+                    toPair(NEUROSURGEON),
+                    toPair(OPHTHALMOLOGIST),
+                    toPair(OTHER_EXPERT_REPORT),
+                    toPair(OTHER_MEDICAL_REPORT),
+                    toPair(PEDIATRIC),
+                    toPair(PEDIATRIC_RADIOLOGIST),
+                    toPair(PROFESSIONAL_DNA_TESTING),
+                    toPair(PROFESSIONAL_DRUG_ALCOHOL),
+                    toPair(PROFESSIONAL_HAIR_STRAND),
+                    toPair(PROFESSIONAL_OTHER),
+                    toPair(PSYCHIATRIC_CHILD_ONLY),
+                    toPair(PSYCHIATRIC_CHILD_AND_PARENT),
+                    toPair(PSYCHOLOGICAL_REPORT_CHILD_ONLY_CLINICAL),
+                    toPair(PSYCHOLOGICAL_REPORT_CHILD_ONLY_EDUCATIONAL),
+                    toPair(PSYCHOLOGICAL_REPORT_PARENT_AND_CHILD),
+                    toPair(PSYCHOLOGICAL_REPORT_PARENT_FULL_COGNITIVE),
+                    toPair(PSYCHOLOGICAL_REPORT_PARENT_FULL_FUNCTIONING),
+                    toPair(TOXICOLOGY_REPORT),
                     toPair(POLICE_DISCLOSURE),
                     toPair(MEDICAL_RECORDS),
                     toPair(COURT_CORRESPONDENCE),
-                    toPair(NOTICE_OF_ACTING_OR_ISSUE), 
+                    toPair(NOTICE_OF_ACTING_OR_ISSUE),
                     toPair(PREVIOUS_PROCEEDING),
                     b == 0 ? toPair(PLACEMENT_RESPONSES) : Pair.of("", ""));
                 args.add(Arguments.of(i, b == 0, expected.stream()
@@ -1916,118 +1956,6 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
-        void shouldReturnDynamicListWhenC2ApplicationSupportingDocumentUploadedByThemselves(
-            int loginType) {
-            initialiseUserService(loginType);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            builder.additionalApplicationsBundle(List.of(
-                element(AdditionalApplicationsBundle.builder()
-                    .c2DocumentBundle(C2DocumentBundle.builder()
-                        .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                            .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(loginType))
-                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
-                            .build())))
-                        .build())
-                    .build())
-            ));
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C2_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
-        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
-        void shouldReturnDynamicListWhenC1ApplicationSupportingDocumentUploadedByThemselves(
-            int loginType) {
-            initialiseUserService(loginType);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            builder.additionalApplicationsBundle(List.of(
-                element(AdditionalApplicationsBundle.builder()
-                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
-                        .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                            .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(loginType))
-                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
-                            .build())))
-                        .build())
-                    .build())
-            ));
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C1_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
-        @ValueSource(ints = {LA_LOGIN_TYPE, HMCTS_LOGIN_TYPE})
-        void shouldReturnDynamicListWhenC1WithSupplementSupportingDocumentUploadedByLA(
-            int loginType) {
-            initialiseUserService(loginType);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            builder.submittedC1WithSupplement(
-                SubmittedC1WithSupplementBundle.builder()
-                    .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                        .document(testDocumentReference(filename1))
-                        .uploaderType(getUploaderType(LA_LOGIN_TYPE))
-                        .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
-                        .build())))
-                    .build());
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C1_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
-        @ValueSource(ints = {LA_LOGIN_TYPE, HMCTS_LOGIN_TYPE})
-        void shouldReturnDynamicListWhenConfidentialC2ApplicationSupportingDocumentUploadedByLA(
-            int loginType) {
-            initialiseUserService(loginType);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            builder.additionalApplicationsBundle(List.of(
-                element(AdditionalApplicationsBundle.builder()
-                    .c2DocumentBundleConfidential(C2DocumentBundle.builder()
-                        .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                            .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(LA_LOGIN_TYPE))
-                            .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
-                            .build())))
-                        .build())
-                    .c2DocumentBundleLA(C2DocumentBundle.builder()
-                        .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                            .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(LA_LOGIN_TYPE))
-                            .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
-                            .build())))
-                        .build())
-                    .build())
-            ));
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C2_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
         @ValueSource(ints = {EXT_SOL_LOGIN_TYPE, LEGACY_LOGIN_TYPE})
         void laShouldGetEmptyDynamicListWhenConfidentialC2ApplicationSupportingDocumentUploadedByOtherSolicitor(
             int uploaderLoginType) {
@@ -2055,64 +1983,6 @@ class ManageDocumentServiceTest {
             ));
 
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
-        @ValueSource(booleans = {true, false})
-        void shouldGetDynamicListWhenConfidentialC2ApplicationSupportingDocumentUploadedByOtherSolicitor(
-            boolean isChildSolicitor) {
-            initialiseUserService(EXT_SOL_LOGIN_TYPE, isChildSolicitor);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            if (isChildSolicitor) {
-                builder.additionalApplicationsBundle(List.of(
-                    element(AdditionalApplicationsBundle.builder()
-                        .c2DocumentBundleConfidential(C2DocumentBundle.builder()
-                            .document(additionalApplicationDocument)
-                            .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                                .document(testDocumentReference(filename1))
-                                .uploaderType(getUploaderType(EXT_SOL_LOGIN_TYPE))
-                                .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE, true))
-                                .build())))
-                            .build())
-                        .c2DocumentBundleChild0(C2DocumentBundle.builder()
-                            .document(additionalApplicationDocument)
-                            .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                                .document(testDocumentReference(filename1))
-                                .uploaderType(getUploaderType(EXT_SOL_LOGIN_TYPE))
-                                .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE, true))
-                                .build())))
-                            .build())
-                        .build())
-                ));
-            } else {
-                builder.additionalApplicationsBundle(List.of(
-                    element(AdditionalApplicationsBundle.builder()
-                        .c2DocumentBundleConfidential(C2DocumentBundle.builder()
-                            .document(additionalApplicationDocument)
-                            .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                                .document(testDocumentReference(filename1))
-                                .uploaderType(getUploaderType(EXT_SOL_LOGIN_TYPE))
-                                .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE, false))
-                                .build())))
-                            .build())
-                        .c2DocumentBundleResp0(C2DocumentBundle.builder()
-                            .document(additionalApplicationDocument)
-                            .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                                .document(testDocumentReference(filename1))
-                                .uploaderType(getUploaderType(EXT_SOL_LOGIN_TYPE))
-                                .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE, false))
-                                .build())))
-                            .build())
-                        .build())
-                ));
-            }
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C2_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
 
             DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);

@@ -205,7 +205,6 @@ withPipeline(type, product, component) {
       env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
       env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.MO_BASE_URL = "https://xui-mo-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       env.MOCKED_PAYMENTS = false
       env.TEST_RETRIES = 1
 
@@ -320,6 +319,8 @@ withPipeline(type, product, component) {
   }
 
   //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment demo migration for DFPL-1855 completed
-  def branchesToSync = ['perftest','ithc']
+//    def branchesToSync = ['perftest','ithc'] TODO: uncomment perftest for Cafcass API perf test completed
+//    def branchesToSync = ['ithc'] TODO: uncomment ithc for Cafcass API ithc test completed
+  def branchesToSync = []
   syncBranchesWithMaster(branchesToSync)
 }
