@@ -31,7 +31,7 @@ test.describe('manage orders', () => {
                 await orders.clickContinue();
 
                 await expect(page.getByText(' Add issuing details', {exact: true})).toBeVisible();
-                await orders.addIssuingDetailsOfApprovedOrder();
+                await orders.addIssuingDetailsOfApprovedOrder('No');
                 await orders.clickContinue();
 
                 //add children involved
@@ -150,7 +150,7 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await expect.soft(page.getByText(' Add issuing details', {exact: true})).toBeVisible();
-        await orders.addIssuingDetailsOfApprovedOrder();
+        await orders.addIssuingDetailsOfApprovedOrder('No');
         await orders.clickContinue();
         await orders.addChildDetails('Yes');
         await orders.clickContinue();
@@ -171,7 +171,7 @@ test.describe('manage orders', () => {
         await expect(page.locator('#case-viewer-field-read--orderCollection')).toContainText('Discharge of care order (C32B)');
         await expect(page.locator('ccd-read-document-field')).toContainText('c32b_discharge_of_care_order.pdf');
     })
-    test('C47A Appointment of a children\'s guardian (C47A)', async ({page,signInPage, orders}) => {
+    test('C47A Appointment of a children\'s guardian ', async ({page,signInPage, orders}) => {
         caseName = 'C47A Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
@@ -185,7 +185,7 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await expect.soft(page.getByText(' Add issuing details', {exact: true})).toBeVisible();
-        await orders.addIssuingDetailsOfApprovedOrder();
+        await orders.addIssuingDetailsOfApprovedOrder('No');
         await orders.clickContinue();
 
         await orders.addC47AppointOfGuardianOrder();
@@ -202,6 +202,42 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('cell', { name: 'Appointment of a children\'s guardian (C47A)', exact: true })).toBeVisible();
         await expect(page.locator('ccd-read-document-field')).toContainText('c47a_appointment_of_a_childrens_guardian.pdf');
+
+    })
+
+    test('C26 Authority to keep a child in secure accommodation ', async ({page,signInPage, orders}) => {
+        caseName = 'C26 Order ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+        await orders.selectOrder('Authority to keep a child in secure accommodation (C26)');
+        await orders.clickContinue();
+
+        await expect.soft(page.getByText(' Add issuing details', {exact: true})).toBeVisible();
+        await orders.addIssuingDetailsOfApprovedOrder('Yes');
+        await orders.clickContinue();
+        await expect.soft(page.getByRole('heading', { name: 'Add child\'s details' })).toBeVisible();
+        await orders.selectChildForAccomodation();
+        await orders.clickContinue();
+        await expect.soft(page.getByText( 'Authority to keep a child in secure accommodation (C26)' )).toBeVisible();
+        await orders.addC26SecureAccomadation();
+        await orders.clickContinue();
+
+        await expect.soft(page.getByRole('heading', {name: 'Check your order', exact: true})).toBeVisible();
+        await orders.openOrderDoc('Preview order.pdf');
+        await expect(orders.orderPage.getByText('Authority to keep a child in')).toBeVisible();
+        await expect(orders.orderPage.getByText('The Court authorises Swansea')).toBeVisible();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+        await orders.tabNavigation('Orders');
+        await expect(page.getByText('Authority to keep a child in')).toBeVisible();
+        await expect(page.getByRole('link', { name: 'c26_secure_accommodation_order.pdf' })).toBeVisible();
 
     })
 
