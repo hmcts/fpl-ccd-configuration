@@ -1,0 +1,293 @@
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "caseName": "e2e test case",
+    "familyManCaseNumber": "",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "court": {
+      "code": "123",
+      "name": "Family Court sitting at Bath",
+      "email": null,
+      "region": "South West",
+      "epimmsId": "411234",
+      "regionId": "6",
+      "dateTransferred": null
+    },
+    "orders": {
+      "court": "123",
+      "orderType": [
+        "CARE_ORDER"
+      ],
+      "directions": "No"
+    },
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "type": "Standard case management hearing",
+      "timeFrame": "Within 18 days",
+      "reducedNotice": "No",
+      "withoutNotice": "No",
+      "type_GiveReason": "Because this is a Standard case",
+      "respondentsAware": "No"
+    },
+    "allocationProposal": {
+      "proposal": "Circuit judge",
+      "proposalReason": "Because we need a Circuit judge for this case"
+    },
+    "gatekeeperEmails": [
+      {
+        "id": "6083cb16-4058-4d20-a909-ef8e2b9e5c75",
+        "value": {
+          "email": "gatekeeper@mailnesia.com"
+        }
+      }
+    ],
+    "standardDirectionOrder": {
+      "orderDoc": {
+        "document_url": "${TEST_SDO_URL}",
+        "upload_timestamp": "${TEST_SDO_UPLOAD_TIMESTAMP}",
+        "document_filename": "standard-directions-order.pdf",
+        "document_binary_url": "${TEST_SDO_BINARY_URL}"
+      },
+      "dateOfIssue": "11 October 2024",
+      "orderStatus": "SEALED",
+      "needTranslation": "NO",
+      "standardDirections": [
+        {
+          "id": "a1e952f5-6209-4709-97f3-2a3a3123458a",
+          "value": {
+            "type": "REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
+            "title": "Request permission for expert evidence",
+            "assignee": "ALL_PARTIES",
+            "description": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.",
+            "dueDateType": "DAYS",
+            "daysBeforeHearing": 2
+          }
+        }
+      ],
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "LastnameoftheJudge",
+        "judgeEmailAddress": "judiciary@mailnesia.com",
+        "judgeJudicialUser": {
+          "idamId": null,
+          "personalCode": null
+        }
+      },
+      "translationRequirements": "NO"
+    },
+    "hearingDetails": [
+      {
+        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "value": {
+          "endDate": "2050-01-02T16:30:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeLastName": "Test",
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "legalAdvisorName": "Test Test"
+          },
+          "startDate": "2050-01-01T15:15:00",
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "type": "FURTHER_CASE_MANAGEMENT",
+          "typeDetails": "test type details",
+          "venue": "111",
+          "venueCustomAddress": {},
+          "preAttendanceDetails": "1 hour before the hearing"
+        }
+      }
+    ],
+    "children1": [
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      },
+      {
+        "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Black",
+            "firstName": "John",
+            "dateOfBirth": "2016-09-02"
+          }
+        }
+      },
+      {
+        "id": "d56b23ee-ca80-42cc-bf9f-2e65cec00985",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Black",
+            "firstName": "William",
+            "dateOfBirth": "2017-10-01"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b05",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Sarah",
+            "dateOfBirth": "2010-05-02"
+          }
+        }
+      }
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "applicants": [
+      {
+        "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
+        "value": {
+          "party": {
+            "email": {
+              "email": "swansea@test.com"
+            },
+            "address": {
+              "County": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "London",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "AddressLine2": "Saffron Central Square 11"
+            },
+            "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
+            "jobTitle": "Legal adviser",
+            "partyType": "ORGANISATION",
+            "pbaNumber": "PBA0082848",
+            "clientCode": "",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "00000000000",
+              "contactDirection": "Jonathon Walker"
+            },
+            "organisationName": "Swansea City Council",
+            "customerReference": "Example reference"
+          },
+          "leadApplicantIndicator": "Yes"
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "id": "IWGOT5W",
+          "name": "London Borough Hillingdon",
+          "email": "FamilyPublicLaw+hn@gmail.com",
+          "phone": "123456",
+          "address": {
+            "PostCode": "CR0 2GE",
+            "PostTown": "London",
+            "AddressLine1": "Flat 1, Hillingdon Apartments",
+            "AddressLine2": "Hillingdon Central Square 1"
+          },
+          "pbaNumber": "PBA1234567",
+          "clientCode": "",
+          "designated": "Yes",
+          "legalTeamManager": null,
+          "customerReference": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "respondents1": [
+      {
+        "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "addressKnow": "Yes",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          }
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "upload_timestamp": "${TEST_DOCUMENT_UPLOAD_TIMESTAMP}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "caseLocalAuthority": "HN",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "IWGOT5W",
+        "OrganisationName": "London Borough Hillingdon"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "London Borough Hillingdon",
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    },
+    "caseManagementLocation": {
+      "region": "6",
+      "baseLocation": "411234"
+    }
+  }
+}

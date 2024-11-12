@@ -23,6 +23,9 @@ import case28 from "../caseData/Cafcass-integration-test/28.json" assert { type:
 import case30 from "../caseData/Cafcass-integration-test/30.json" assert { type: "json" };
 import case31 from "../caseData/Cafcass-integration-test/31.json" assert { type: "json" };
 import case32 from "../caseData/Cafcass-integration-test/32.json" assert { type: "json" };
+import case43 from "../caseData/Cafcass-integration-test/43.json" assert { type: "json" };
+import case44 from "../caseData/Cafcass-integration-test/44.json" assert { type: "json" };
+import case45 from "../caseData/Cafcass-integration-test/45.json" assert { type: "json" };
 import { urlConfig } from "../settings/urls";
 import { systemUpdateUser } from "../settings/user-credentials";
 import lodash from "lodash";
@@ -37,27 +40,31 @@ test.describe('Cafcass API Integration test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber : string;
     let caseName = 'Cafcass Integration Test ' + dateTime;
-    let familManNumPrefix = 'FP24A12';
+    let familManNumPrefix = 'FP24A13';
 
     test("Integration Test", async ({page}, testInfo) => {
         let caseNo = [
             "case01", "case02", "case03", "case04", "case05", "case06", "case07", "case08", "case09", "case10",
             "case11", "case12", "case13", "case14", "case15", "case16", "case17",
             "case26", "case27", "case28",
-            "case30", "case31", "case32"
+            "case30", "case31", "case32",
+            "case43", "case44", "case45"
         ];
         let cases = [
             case01, case02, case03, case04, case05, case06, case07, case08, case09, case10,
             case11, case12, case13, case14, case15, case16, case17,
             case26, case27, case28,
-            case30, case31, case32
+            case30, case31, case32,
+            case43, case44, case45
         ];
         for(let i = 0; i < cases.length; i++) {
             let familyNumCount = ('00' + i).slice(-3);
             try {
                 caseNumber = await createCase(caseName, laUser);
                 if (caseNumber != null) {
-                    cases[i].caseData.familyManCaseNumber = familManNumPrefix + familyNumCount;
+                    if (caseNo[i] != "case43") {
+                        cases[i].caseData.familyManCaseNumber = familManNumPrefix + familyNumCount;
+                    }
                     if (caseNo[i] != "case13" && caseNo[i] != "case15" && caseNo[i] != "case16" && caseNo[i] != "case17"
                         && cases[i].caseData.respondents1 != null) {
                         for (let x = 0; x < cases[i].caseData.respondents1.length; x++) {
