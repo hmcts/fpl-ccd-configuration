@@ -220,7 +220,6 @@ test.describe('manage orders', () => {
 
         await expect.soft(page.getByText(' Add issuing details', {exact: true})).toBeVisible();
         await orders.addIssuingDetailsOfApprovedOrder('Yes');
-        // await orders.addIssuingDetailsOfApprovedOrder();
         await orders.clickContinue();
         await expect.soft(page.getByRole('heading', { name: 'Add child\'s details' })).toBeVisible();
         await orders.selectChildForAccomodation();
