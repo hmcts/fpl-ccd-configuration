@@ -195,7 +195,7 @@ public class OthersService {
                         builder = builder.addressNotKnowReason(null);
                     }
 
-                    if (IsAddressKnowType.LIVE_IN_REFUGEE.getValue().equalsIgnoreCase(other.getAddressKnow())) {
+                    if (IsAddressKnowType.LIVE_IN_REFUGE.getValue().equalsIgnoreCase(other.getAddressKnow())) {
                         builder = builder.detailsHidden(YesNo.YES.getValue());
                     }
                     return element(otherElement.getId(), builder.build());

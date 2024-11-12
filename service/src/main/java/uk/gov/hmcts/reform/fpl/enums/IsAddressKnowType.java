@@ -10,7 +10,7 @@ import java.util.Arrays;
 public enum IsAddressKnowType {
     YES("Yes"),
     NO("No"),
-    LIVE_IN_REFUGEE("LIVE_IN_REFUGE");
+    LIVE_IN_REFUGE("LIVE_IN_REFUGE");
 
     private final String value;
 
