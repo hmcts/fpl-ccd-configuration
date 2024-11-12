@@ -230,7 +230,6 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await expect.soft(page.getByRole('heading', {name: 'Check your order', exact: true})).toBeVisible();
-
         await orders.openOrderDoc('Preview order.pdf');
         await expect(orders.orderPage.getByText('Authority to keep a child in')).toBeVisible();
         await expect(orders.orderPage.getByText('The Court authorises Swansea')).toBeVisible();
