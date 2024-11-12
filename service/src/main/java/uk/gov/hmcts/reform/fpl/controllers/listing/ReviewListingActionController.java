@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers.listing;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.ListingActionService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +28,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 
+@Slf4j
 @RestController
 @RequestMapping("/callback/review-listing-action")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -51,6 +52,7 @@ public class ReviewListingActionController extends CallbackController {
             // we have a task, therefore skip the contents page and go directly to the review page
             // todo - check if this header is actually applicable in about-to-start, implement skipping logic
             // see https://tools.hmcts.net/confluence/x/ng6Jaw
+            log.info("TASK PRESENT");
         } else {
             // we don't have a task, therefore we need to create a contents page/DynamicList
             caseDetails.getData().put("listingRequestsList",

@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
