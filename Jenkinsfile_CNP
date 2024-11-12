@@ -48,7 +48,8 @@ def otherSecrets = [
   ],
   'fpl-${env}': [
     secret('definition-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
-    secret('definition-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
+    secret('definition-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
+    secret('fpl-case-service-s2s-secret', 'FPL_S2S_SECRET')
   ]
 ]
 
@@ -237,6 +238,7 @@ withPipeline(type, product, component) {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       ./bin/add-ccd-user-roles.sh
+      ./bin/add-role-assignments.sh
     """
 
     archiveCoreCaseDataDefinitions('preview')

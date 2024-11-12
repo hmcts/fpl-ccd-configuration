@@ -1,0 +1,36 @@
+[
+  {
+    "email": "fpl-ctsc-admin@justice.gov.uk",
+    "id": "900a7ad4-3295-4e00-bf7b-20a7e4ea52a6",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "ctsc",
+        "grantType": "STANDARD",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "hca-wales@justice.gov.uk",
+    "id": "4efafcc8-bf88-4ea4-ab37-7a648a9c5a2a",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hearing-centre-admin",
+        "grantType": "STANDARD",
+        "roleCategory": "ADMIN",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324", "region": "7"},
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  }
+]
