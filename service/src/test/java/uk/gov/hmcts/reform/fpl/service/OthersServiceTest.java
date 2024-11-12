@@ -521,7 +521,7 @@ class OthersServiceTest {
     void shouldSetConfidentialWhenLiveInRefugeIsSelected() {
         Other firstOther = Other.builder()
             .name("First Other")
-            .addressKnow(IsAddressKnowType.LIVE_IN_REFUGEE.getValue())
+            .addressKnow(IsAddressKnowType.LIVE_IN_REFUGE.getValue())
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);

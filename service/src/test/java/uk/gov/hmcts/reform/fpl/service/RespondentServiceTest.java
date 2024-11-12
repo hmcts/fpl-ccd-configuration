@@ -192,7 +192,7 @@ class RespondentServiceTest {
     @Test
     void shouldSetConfidentWhenLiveInRefugeIsSelected() {
         List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
-            .party(RespondentParty.builder().addressKnow(IsAddressKnowType.LIVE_IN_REFUGEE.getValue()).build())
+            .party(RespondentParty.builder().addressKnow(IsAddressKnowType.LIVE_IN_REFUGE.getValue()).build())
             .build()));
 
         List<Element<Respondent>> updatedRespondents = service.consolidateAndRemoveHiddenFields(respondents);

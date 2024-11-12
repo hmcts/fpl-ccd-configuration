@@ -38,7 +38,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
-import static uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType.LIVE_IN_REFUGEE;
+import static uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType.LIVE_IN_REFUGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -101,7 +101,7 @@ public class RespondentService {
                 RespondentParty.RespondentPartyBuilder partyBuilder = party.toBuilder();
 
                 // Make as confidential if living in a refuge
-                if (LIVE_IN_REFUGEE.getValue().equalsIgnoreCase(party.getAddressKnow())) {
+                if (LIVE_IN_REFUGE.getValue().equalsIgnoreCase(party.getAddressKnow())) {
                     partyBuilder = partyBuilder.contactDetailsHidden(YES.getValue());
                 }
 
