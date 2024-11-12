@@ -3,6 +3,7 @@
 @Library("Infrastructure")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
+import uk.gov.hmcts.contino.GithubAPI
 
 def type = "java"
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
