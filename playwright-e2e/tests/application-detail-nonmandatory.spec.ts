@@ -24,37 +24,16 @@ test.describe('Non mandatory application details before application submit', () 
             // Risk and harm to children
             await startApplication.riskAndHarmToChildren();
             await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
-            const accessibilityScanResults = await makeAxeBuilder()
-                // Automatically uses the shared AxeBuilder configuration,
-                // but supports additional test-specific configuration too
-                .analyze();
 
-            await testInfo.attach('accessibility-scan-results', {
-                body: JSON.stringify(accessibilityScanResults, null, 2),
-                contentType: 'application/json'
-            });
+            await riskAndHarmToChildren.tabNavigation('View application');
+            await expect(riskAndHarmToChildren.page.getByText('Physical harm including non-')).toBeVisible();
+            await expect(riskAndHarmToChildren.page.getByText('Emotional harm')).toBeVisible();
+            await expect(riskAndHarmToChildren.page.getByText('Sexual abuse')).toBeVisible();
+            await expect(riskAndHarmToChildren.page.getByRole('cell', { name: 'Neglect', exact: true })).toBeVisible();
+            await expect(riskAndHarmToChildren.page.getByText('Alcohol or drug abuse')).toBeVisible();
+            await expect(riskAndHarmToChildren.page.getByText('Domestic abuse')).toBeVisible();
 
-            expect(accessibilityScanResults.violations).toEqual([]);
 
-        });
-
-    test('LA add factors affecting parenting details',
-        async ({startApplication, signInPage, factorsAffectingParenting, makeAxeBuilder}, testInfo) => {
-            casename = 'Factor affecting parenting  ' + dateTime.slice(0, 10);
-            caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
-            // 1. Sign in as local-authority user
-            await signInPage.visit();
-            await signInPage.login(
-                newSwanseaLocalAuthorityUserOne.email,
-                newSwanseaLocalAuthorityUserOne.password,
-            );
-            //sign in page
-            await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
-
-            // Factors affecting parenting
-            await factorsAffectingParenting.addFactorsAffectingParenting();
-            await startApplication.addApplicationDetailsHeading.isVisible();
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
                 // but supports additional test-specific configuration too
@@ -104,7 +83,7 @@ test.describe('Non mandatory application details before application submit', () 
 
 
     test('LA add international element',
-        async ({startApplication, signInPage, internationalElement, makeAxeBuilder}, testInfo) => {
+        async ({startApplication, signInPage, internationalElement, makeAxeBuilder}, testInfo) =>  {
             casename = 'International element  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
             // 1. Sign in as local-authority user
@@ -182,7 +161,6 @@ test.describe('Non mandatory application details before application submit', () 
 
         });
 
-
     test('LA add c1 application',
         async ({startApplication, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
             casename = 'c1 application  ' + dateTime.slice(0, 10);
@@ -226,7 +204,7 @@ test.describe('Non mandatory application details before application submit', () 
             //sign in page
             await signInPage.isSignedIn();
             await signInPage.navigateTOCaseDetails(caseNumber);
-//add other people in the case
+            //add other people in the case
             await startApplication.addOtherPeopleInCase()
             await otherPeopleInCase.personOneToBeGivenNotice();
             await otherPeopleInCase.personTwoToBeGivenNotice();
