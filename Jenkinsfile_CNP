@@ -9,6 +9,9 @@ def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 def product = "fpl"
 def component = "case-service"
 
+// For testing DMNs, change this to the branch on the DMN repo, but ensure it is changed back to master before merging
+def dmnBranch = "master"
+
 AppPipelineConfig pipelineConf;
 
 def serviceSecrets = [
@@ -157,6 +160,17 @@ env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 withPipeline(type, product, component) {
   pipelineConf = config;
 
+  def githubApi = new GithubAPI(this)
+  env.ENABLE_WA = false
+  for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
+    if (label == "enable_wa") {
+      env.ENABLE_WA = true
+      env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
+      env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
+      env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
+    }
+  }
+
   loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
 
   disableLegacyDeployment()
@@ -198,6 +212,16 @@ withPipeline(type, product, component) {
   afterAlways('test') {
     archiveExtraFilesForIntegrationTests()
     teardownSecretsForIntegrationTests()
+  }
+
+  afterSuccess('akschartsinstall') {
+    onPR {
+      if (env.ENABLE_WA == true) {
+        sh """
+          ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+        """
+      }
+    }
   }
 
   before('fullFunctionalTest:preview'){
