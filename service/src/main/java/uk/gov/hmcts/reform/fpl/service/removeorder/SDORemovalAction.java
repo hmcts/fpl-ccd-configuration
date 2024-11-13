@@ -37,7 +37,11 @@ public class SDORemovalAction implements OrderRemovalAction {
             data.put("showRemoveSDOWarningFlag", YES.getValue());
         } else {
             data.put("orderTitleToBeRemoved", "Urgent directions order");
-            data.put("showRemoveSDOWarningFlag", NO.getValue());
+            if (caseData.getStandardDirectionOrder() == null) {
+                data.put("showRemoveSDOWarningFlag", YES.getValue());
+            } else {
+                data.put("showRemoveSDOWarningFlag", NO.getValue());
+            }
         }
         StandardDirectionOrder standardDirectionOrder = (StandardDirectionOrder) removableOrder;
 
@@ -97,9 +101,11 @@ public class SDORemovalAction implements OrderRemovalAction {
     }
 
     private boolean isSdoToBeRemoved(CaseData caseData, UUID removedOrderId) {
-        if (removedOrderId.equals(caseData.getStandardDirectionOrder().getCollectionId())) {
+        if (caseData.getStandardDirectionOrder() != null
+            && removedOrderId.equals(caseData.getStandardDirectionOrder().getCollectionId())) {
             return true;
-        } else if (removedOrderId.equals(caseData.getUrgentDirectionsOrder().getCollectionId())) {
+        } else if (caseData.getUrgentDirectionsOrder() != null
+                   && removedOrderId.equals(caseData.getUrgentDirectionsOrder().getCollectionId())) {
             return true;
         }
         throw new RemovableOrderOrApplicationNotFoundException(removedOrderId);

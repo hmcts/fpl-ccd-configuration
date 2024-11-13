@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason;
@@ -105,4 +106,9 @@ public class RemovalToolData {
     public List<Element<RemovedPlacement>> getRemovedPlacements() {
         return defaultIfNull(removedPlacements, new ArrayList<>());
     }
+
+    public  List<Element<StandardDirectionOrder>> getHiddenUrgentDirectionOrders() {
+        return defaultIfNull(hiddenUrgentDirectionOrders, new ArrayList<>());
+    }
+
 }
