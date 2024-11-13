@@ -133,7 +133,8 @@ public class ManageDocumentsUploadedEventHandler {
                     .toList();
 
             if (!nonConfidentialPdfDocumentsToBeSent.isEmpty()) {
-                Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
+                Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService
+                    .getRepresentativesServedByPost(caseData));
                 sendDocumentService.sendDocuments(caseData, nonConfidentialPdfDocumentsToBeSent,
                     new ArrayList<>(allRecipients));
             }
