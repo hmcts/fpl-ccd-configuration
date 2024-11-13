@@ -491,7 +491,7 @@ class OthersServiceTest {
             .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
-            .addressKnow(IsAddressKnowType.NO.getValue())
+            .addressKnow(IsAddressKnowType.NO)
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
@@ -507,7 +507,7 @@ class OthersServiceTest {
             .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
-            .addressKnow(IsAddressKnowType.YES.getValue())
+            .addressKnow(IsAddressKnowType.YES)
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
@@ -521,7 +521,7 @@ class OthersServiceTest {
     void shouldSetConfidentialWhenLiveInRefugeIsSelected() {
         Other firstOther = Other.builder()
             .name("First Other")
-            .addressKnow(IsAddressKnowType.LIVE_IN_REFUGE.getValue())
+            .addressKnow(IsAddressKnowType.LIVE_IN_REFUGE)
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);

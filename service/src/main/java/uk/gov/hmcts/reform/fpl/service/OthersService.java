@@ -189,13 +189,13 @@ public class OthersService {
                 Other other = otherElement.getValue();
                 if (!isNull(other.getAddressKnow())) {
                     Other.OtherBuilder builder = other.toBuilder();
-                    if (IsAddressKnowType.NO.getValue().equalsIgnoreCase(other.getAddressKnow())) {
+                    if (IsAddressKnowType.NO.equals(other.getAddressKnow())) {
                         builder = builder.address(null);
                     } else {
                         builder = builder.addressNotKnowReason(null);
                     }
 
-                    if (IsAddressKnowType.LIVE_IN_REFUGE.getValue().equalsIgnoreCase(other.getAddressKnow())) {
+                    if (IsAddressKnowType.LIVE_IN_REFUGE.equals(other.getAddressKnow())) {
                         builder = builder.detailsHidden(YesNo.YES.getValue());
                     }
                     return element(otherElement.getId(), builder.build());

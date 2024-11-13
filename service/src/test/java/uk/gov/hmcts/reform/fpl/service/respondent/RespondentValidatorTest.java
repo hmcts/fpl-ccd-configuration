@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -172,7 +173,7 @@ class RespondentValidatorTest {
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
-                .addressKnow(YesNo.YES.getValue())
+                .addressKnow(IsAddressKnowType.YES)
                 .build())
             .build();
 
@@ -197,7 +198,7 @@ class RespondentValidatorTest {
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
-                .addressKnow(YesNo.YES.getValue())
+                .addressKnow(IsAddressKnowType.YES)
                 .address(Address.builder().build())
                 .build())
             .build();
@@ -238,7 +239,7 @@ class RespondentValidatorTest {
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
-                .addressKnow(YesNo.YES.getValue())
+                .addressKnow(IsAddressKnowType.YES)
                 .address(Address.builder()
                     .addressLine1("Line 1")
                     .postTown("Town")

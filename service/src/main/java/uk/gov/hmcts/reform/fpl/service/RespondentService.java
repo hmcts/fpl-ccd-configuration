@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -101,14 +102,16 @@ public class RespondentService {
                 RespondentParty.RespondentPartyBuilder partyBuilder = party.toBuilder();
 
                 // Make as confidential if living in a refuge
-                if (LIVE_IN_REFUGE.getValue().equalsIgnoreCase(party.getAddressKnow())) {
+                if (LIVE_IN_REFUGE.equals(party.getAddressKnow())) {
                     partyBuilder = partyBuilder.contactDetailsHidden(YES.getValue());
                 }
 
                 // Clear address not know reason if address is known
-                if (!NO.getValue().equals(party.getAddressKnow()) && isNotEmpty(party.getAddressNotKnowReason())) {
+                if (!IsAddressKnowType.NO.equals(party.getAddressKnow())
+                    && isNotEmpty(party.getAddressNotKnowReason())) {
+
                     partyBuilder = partyBuilder.addressNotKnowReason(null);
-                } else if (NO.getValue().equals(party.getAddressKnow())
+                } else if (IsAddressKnowType.NO.equals(party.getAddressKnow())
                            && party.getAddress() != null && isNotEmpty(party.getAddress().getAddressLine1())) {
                     partyBuilder = partyBuilder.address(Address.builder().build());
                 }
