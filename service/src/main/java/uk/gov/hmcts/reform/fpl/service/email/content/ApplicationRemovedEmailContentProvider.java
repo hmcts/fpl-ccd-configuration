@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveApplicationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import static uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData.builder;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -25,7 +26,7 @@ public class ApplicationRemovedEmailContentProvider extends AbstractEmailContent
 
     public ApplicationRemovedNotifyData getNotifyData(final CaseData caseData,
                                                       final AdditionalApplicationsBundle removedApplication) {
-        return ApplicationRemovedNotifyData.builder()
+        return builder()
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseId(caseData.getId().toString())
             .c2Filename(removeApplicationService.getFilename(removedApplication))

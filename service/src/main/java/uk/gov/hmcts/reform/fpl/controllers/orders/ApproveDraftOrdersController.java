@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transien
 @RequestMapping("/callback/approve-draft-orders")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApproveDraftOrdersController extends CallbackController {
-
+    private final static String DRAFT_ORDERS_APPROVED = "draftOrdersApproved";
     private final ApproveDraftOrdersService approveDraftOrdersService;
     private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
     private final CoreCaseDataService coreCaseDataService;
@@ -43,7 +43,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency", "draftOrdersApproved");
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency", DRAFT_ORDERS_APPROVED);
 
         caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 
@@ -78,9 +78,9 @@ public class ApproveDraftOrdersController extends CallbackController {
         // add temp variable if at least one draft order/cmo has been approved
         if ((caseData.getReviewDraftOrdersData() != null && caseData.getReviewDraftOrdersData().hasADraftBeenApproved())
             || (caseData.getReviewCMODecision() != null && caseData.getReviewCMODecision().hasBeenApproved())) {
-            data.put("draftOrdersApproved", "Yes");
+            data.put(DRAFT_ORDERS_APPROVED, "Yes");
         } else {
-            data.put("draftOrdersApproved", "No");
+            data.put(DRAFT_ORDERS_APPROVED, "No");
         }
 
         return respond(caseDetails, errors);

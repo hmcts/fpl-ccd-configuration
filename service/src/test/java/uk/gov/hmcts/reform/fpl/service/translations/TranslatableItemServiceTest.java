@@ -73,10 +73,6 @@ class TranslatableItemServiceTest {
     );
     private final TranslatableItem translatableItem = mock(TranslatableItem.class);
 
-    @BeforeEach
-    void setUp() {
-    }
-
     @Nested
     class GenerateList {
 

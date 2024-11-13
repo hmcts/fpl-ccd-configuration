@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 @RequestMapping("/callback/enter-others")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OthersController extends CallbackController {
+    private final static String OTHERS = "others";
     private final ConfidentialDetailsService confidentialService;
     private final OthersService othersService;
 
@@ -33,7 +34,7 @@ public class OthersController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("others", othersService.prepareOthers(caseData));
+        caseDetails.getData().put(OTHERS, othersService.prepareOthers(caseData));
 
         return respond(caseDetails);
     }
@@ -42,7 +43,7 @@ public class OthersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Others updatedOthers = othersService.removeAddressOrAddressNotKnowReason(getCaseData(caseDetails));
-        caseDetails.getData().put("others", updatedOthers);
+        caseDetails.getData().put(OTHERS, updatedOthers);
 
         CaseData caseData = getCaseData(caseDetails);
         List<Element<Other>> allOthers = caseData.getAllOthers();
@@ -53,9 +54,9 @@ public class OthersController extends CallbackController {
 
         Others others = Others.from(othersList);
         if (isNull(others)) {
-            caseDetails.getData().remove("others");
+            caseDetails.getData().remove(OTHERS);
         } else {
-            caseDetails.getData().put("others", others);
+            caseDetails.getData().put(OTHERS, others);
         }
 
         return respond(caseDetails);

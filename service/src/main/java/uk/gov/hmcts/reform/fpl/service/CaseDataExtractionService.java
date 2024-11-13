@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
+    private final static String HEARING_TIME_FORMAT = "%s - %s";
     protected static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Details and instructions will be "
         + "sent by the local court.";
 
@@ -75,13 +76,13 @@ public class CaseDataExtractionService {
                                         .contains(DAYS.getType().toLowerCase());
 
         if (isDayDurationType) {
-            hearingTime = String.format("%s - %s", formatDate(startDate), formatDate(endDate));
+            hearingTime = String.format(HEARING_TIME_FORMAT, formatDate(startDate), formatDate(endDate));
         } else if (hearingBooking.hasDatesOnSameDay()) {
             // Example 3:30pm - 5:30pm
-            hearingTime = String.format("%s - %s", formatTime(startDate), formatTime(endDate));
+            hearingTime = String.format(HEARING_TIME_FORMAT, formatTime(startDate), formatTime(endDate));
         } else {
             // Example 18 June, 3:40pm - 19 June, 2:30pm
-            hearingTime = String.format("%s - %s", formatDateTime(startDate), formatDateTime(endDate));
+            hearingTime = String.format(HEARING_TIME_FORMAT, formatDateTime(startDate), formatDateTime(endDate));
         }
 
         return hearingTime;

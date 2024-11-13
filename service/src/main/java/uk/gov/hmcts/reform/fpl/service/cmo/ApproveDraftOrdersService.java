@@ -55,6 +55,8 @@ public class ApproveDraftOrdersService {
     private final HearingOrderGenerator hearingOrderGenerator;
     private final OthersService othersService;
 
+    private static final String ORDER_BUNDLES_DRAFT = "hearingOrdersBundlesDrafts";
+    private static final String REVIEW_DECISION = "reviewDecision";
     private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
     private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
     private static final String REFUSED_ORDERS = "refusedHearingOrders";
@@ -123,7 +125,7 @@ public class ApproveDraftOrdersService {
                         "CMO"));
                 }
             } else {
-                Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
+                Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get(REVIEW_DECISION + counter);
                 ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
                 if (reviewDecision != null && reviewDecision.getDecision() != null) {
 
@@ -154,7 +156,7 @@ public class ApproveDraftOrdersService {
                     return true;
                 }
             } else {
-                Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
+                Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get(REVIEW_DECISION + counter);
                 ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
                 if (isOrderApproved(reviewDecision)) {
                     return true;
@@ -209,7 +211,7 @@ public class ApproveDraftOrdersService {
 
                 data.put("hearingDetails", caseData.getHearingDetails());
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
-                data.put("hearingOrdersBundlesDrafts", hearingOrdersBundles.getAgreedCmos());
+                data.put(ORDER_BUNDLES_DRAFT, hearingOrdersBundles.getAgreedCmos());
                 data.put("hearingOrdersBundlesDraftReview", hearingOrdersBundles.getDraftCmos());
 
                 data.put(ORDERS_TO_BE_SENT, newArrayList(reviewedOrder));
@@ -251,7 +253,7 @@ public class ApproveDraftOrdersService {
         List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
 
         for (Element<HearingOrder> orderElement : draftOrders) {
-            Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
+            Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get(REVIEW_DECISION + counter);
             ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
 
             if (reviewDecision != null && reviewDecision.getDecision() != null
@@ -354,7 +356,7 @@ public class ApproveDraftOrdersService {
         if (selectedOrdersBundle.getValue().getOrders().isEmpty()
                 && selectedOrdersBundle.getValue().getAllConfidentialOrders().isEmpty()) {
             hearingOrdersBundlesDrafts.removeIf(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()));
-            updates.put("hearingOrdersBundlesDrafts", hearingOrdersBundlesDrafts);
+            updates.put(ORDER_BUNDLES_DRAFT, hearingOrdersBundlesDrafts);
         } else {
             hearingOrdersBundlesDrafts.stream()
                 .filter(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()))
@@ -364,7 +366,7 @@ public class ApproveDraftOrdersService {
                         bundle.getValue().setConfidentialOrdersBySuffix(suffix, orders);
                     });
                 });
-            updates.put("hearingOrdersBundlesDrafts", hearingOrdersBundlesDrafts);
+            updates.put(ORDER_BUNDLES_DRAFT, hearingOrdersBundlesDrafts);
         }
         return updates;
     }

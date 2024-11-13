@@ -55,10 +55,6 @@ public class NonMolestationOrderEventHandlerTest {
     private final DocumentReference orderDocument = mock(DocumentReference.class);
     private final OrderIssuedNotifyData notifyData = mock(OrderIssuedNotifyData.class);
 
-    private void init() {
-
-    }
-
     @Test
     void shouldSendTranslationRequest() {
         CaseData caseData = CaseData.builder().build();

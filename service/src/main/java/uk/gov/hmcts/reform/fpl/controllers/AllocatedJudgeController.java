@@ -59,6 +59,7 @@ public class AllocatedJudgeController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        final String ALLOCATED_JUDGE = "allocatedJudge";
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -72,7 +73,7 @@ public class AllocatedJudgeController extends CallbackController {
 
             Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
             if (jup.isPresent()) {
-                caseDetails.getData().put("allocatedJudge", Judge.fromJudicialUserProfile(jup.get()));
+                caseDetails.getData().put(ALLOCATED_JUDGE, Judge.fromJudicialUserProfile(jup.get()));
             } else {
                 return respond(caseDetails,
                     List.of("Could not fetch Judge details from JRD, please try again in a few minutes."));
@@ -83,7 +84,7 @@ public class AllocatedJudgeController extends CallbackController {
                 .getJudgeUserIdFromEmail(caseData.getAllocatedJudge().getJudgeEmailAddress());
 
             // if they are in our maps - add their UUID extra info to the case
-            possibleId.ifPresentOrElse(s -> caseDetails.getData().put("allocatedJudge",
+            possibleId.ifPresentOrElse(s -> caseDetails.getData().put(ALLOCATED_JUDGE,
                 caseData.getAllocatedJudge().toBuilder()
                     .judgeJudicialUser(JudicialUser.builder()
                         .idamId(s)
@@ -97,7 +98,7 @@ public class AllocatedJudgeController extends CallbackController {
                         allocatedJudge = allocatedJudge.toBuilder().judgeFullName(null).build();
                     }
 
-                    caseDetails.getData().put("allocatedJudge", allocatedJudge);
+                    caseDetails.getData().put(ALLOCATED_JUDGE, allocatedJudge);
                 });
         }
 

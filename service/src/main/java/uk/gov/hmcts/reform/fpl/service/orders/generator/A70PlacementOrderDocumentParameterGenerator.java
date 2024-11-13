@@ -31,6 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT;
 @RequiredArgsConstructor
 public class A70PlacementOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
 
+    private final static String UNKNOWN = "unknown";
     private final PlacementService placementService;
     private final CourtService courtService;
 
@@ -64,7 +65,7 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
                     .fathersName(getStringValueOrDefault(childInfo.getFathersName()))
                     .mothersName(getStringValueOrDefault(childInfo.getMothersName()))
                     .gender(Optional.ofNullable(childInfo.getGender())
-                        .map(ChildGender::getLabel).orElse("unknown"))
+                        .map(ChildGender::getLabel).orElse(UNKNOWN))
                     .dateOfBirth(getFormattedDateOrDefault(childInfo.getDateOfBirth()))
                     .birthCertificate(DocmosisBirthCertificate.builder()
                         .number(manageOrdersEventData.getManageOrdersBirthCertificateNumber())
@@ -86,7 +87,7 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
     private String getFormattedDateOrDefault(LocalDate date) {
         return Optional.ofNullable(date)
             .map(dob -> dob.format(ofPattern(DATE_SHORT)))
-            .orElse("unknown");
+            .orElse(UNKNOWN);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
     }
 
     private String getStringValueOrDefault(String value) {
-        return StringUtils.defaultIfEmpty(value, "unknown");
+        return StringUtils.defaultIfEmpty(value, UNKNOWN);
     }
 
 }
