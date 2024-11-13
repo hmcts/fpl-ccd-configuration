@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -121,7 +122,7 @@ public abstract class ChangeFromOtherUtils {
             e -> element(e.getId(), Respondent.builder()
                 .party(RespondentParty.builder()
                     .firstName(e.getValue().getParty().getFirstName())
-                    .addressKnow("Yes")
+                    .addressKnow(IsAddressKnowType.YES)
                     .address(buildHiddenAddress(e.getValue().getParty().getFirstName()))
                     .telephoneNumber(Telephone.builder().telephoneNumber("777777777").build())
                     .build())
@@ -154,7 +155,7 @@ public abstract class ChangeFromOtherUtils {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("Johnny")
-                .addressKnow("Yes")
+                .addressKnow(IsAddressKnowType.YES)
                 .address(buildHiddenAddress("Converting"))
                 .telephoneNumber(Telephone.builder().telephoneNumber("123456789").build())
                 .build())
@@ -165,7 +166,7 @@ public abstract class ChangeFromOtherUtils {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName(String.format("existing respondent %s", seqNo))
-                .addressKnow("Yes")
+                .addressKnow(IsAddressKnowType.YES)
                 .address(buildHiddenAddress(String.format("existing respondent %s", seqNo)))
                 .telephoneNumber(Telephone.builder().telephoneNumber("777777777").build())
                 .build())
@@ -186,7 +187,7 @@ public abstract class ChangeFromOtherUtils {
                 .firstName("Johnny")
                 .telephoneNumber(Telephone.builder().telephoneNumber("123456789").build())
                 .address(buildHiddenAddress("Converting"))
-                .addressKnow("Yes")
+                .addressKnow(IsAddressKnowType.YES)
                 .contactDetailsHidden(YesNo.from(contactDetailsHidden).getValue())
                 .build())
             .legalRepresentation("No")
@@ -200,7 +201,7 @@ public abstract class ChangeFromOtherUtils {
                 .telephoneNumber(contactDeatilsHidden ? null : Telephone.builder()
                     .telephoneNumber("123456789").build())
                 .address(contactDeatilsHidden ? null : buildHiddenAddress("Converting"))
-                .addressKnow("Yes")
+                .addressKnow(IsAddressKnowType.YES)
                 .contactDetailsHidden(YesNo.from(contactDeatilsHidden).getValue())
                 .build())
             .legalRepresentation("No")
@@ -281,7 +282,7 @@ public abstract class ChangeFromOtherUtils {
                             .telephoneNumber("777777777")
                             .build())
                         .address(respondentDetailsHidden ? null : buildHiddenAddress("" + j))
-                        .addressKnow(YesNo.from(respondentDetailsHidden).getValue())
+                        .addressKnow(respondentDetailsHidden ? IsAddressKnowType.YES : IsAddressKnowType.NO)
                         .contactDetailsHidden(YesNo.from(respondentDetailsHidden).getValue())
                         .build())
                     .legalRepresentation("No")
