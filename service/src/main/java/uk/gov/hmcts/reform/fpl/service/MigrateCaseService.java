@@ -959,7 +959,7 @@ public class MigrateCaseService {
         return Map.of("grounds", updatedGrounds);
     }
 
-    public Map<String, OrganisationPolicy> updateOrganisationPolicy(CaseData caseData, String orgId,
+    public Map<String, OrganisationPolicy> updateOutsourcingPolicy(CaseData caseData, String orgId,
                                                                                String caseRole) {
         String orgName = organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)

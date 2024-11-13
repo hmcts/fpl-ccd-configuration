@@ -266,7 +266,7 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.updateOrganisationPolicy(caseData, newOrgId,
+            Map<String, OrganisationPolicy> fields = underTest.updateOutsourcingPolicy(caseData, newOrgId,
                 null);
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
@@ -285,7 +285,7 @@ class MigrateCaseServiceTest {
                 .id(1L)
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.updateOrganisationPolicy(caseData, newOrgId,
+            Map<String, OrganisationPolicy> fields = underTest.updateOutsourcingPolicy(caseData, newOrgId,
                 CaseRole.EPSMANAGING.formattedName());
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()

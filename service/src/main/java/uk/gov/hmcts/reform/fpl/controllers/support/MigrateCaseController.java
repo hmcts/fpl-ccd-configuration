@@ -129,7 +129,7 @@ public class MigrateCaseController extends CallbackController {
         final String orgId = "18D9WP4";
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.updateOrganisationPolicy(getCaseData(caseDetails),
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
             orgId, CaseRole.EPSMANAGING.formattedName()));
     }
 
