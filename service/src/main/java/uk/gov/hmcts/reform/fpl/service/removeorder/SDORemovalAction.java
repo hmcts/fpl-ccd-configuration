@@ -103,4 +103,5 @@ public class SDORemovalAction implements OrderRemovalAction {
             return true;
         }
         throw new RemovableOrderOrApplicationNotFoundException(removedOrderId);
+    }
 }
