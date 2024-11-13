@@ -74,7 +74,7 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
 
     private void testCaseDocument(CaseData caseData, List<DocumentReference> documentReferences,
                                   DocumentType documentType) {
-        testCaseDocument(caseData, documentReferences, documentType.getCategory());
+        testCaseDocument(caseData, documentReferences, documentType.getCafcassApiDocumentCategory());
     }
 
     private void testCaseDocument(CaseData caseData, List<DocumentReference> documentReferences, String category) {
@@ -616,10 +616,10 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
                                                 List<DocumentReference> c1Docs) {
             CafcassApiCaseData actual = testConvert(caseData);
             List<CafcassApiCaseDocument> expectedDocs = new ArrayList<>();
-            expectedDocs.addAll(getExpectedCafcassApiCaseDocuments(C2_APPLICATION_DOCUMENTS.getCategory(),
-                false, c2Docs));
-            expectedDocs.addAll(getExpectedCafcassApiCaseDocuments(C1_APPLICATION_DOCUMENTS.getCategory(),
-                false, c1Docs));
+            expectedDocs.addAll(getExpectedCafcassApiCaseDocuments(
+                C2_APPLICATION_DOCUMENTS.getCafcassApiDocumentCategory(), false, c2Docs));
+            expectedDocs.addAll(getExpectedCafcassApiCaseDocuments(
+                C1_APPLICATION_DOCUMENTS.getCafcassApiDocumentCategory(), false, c1Docs));
 
             assertThat(actual.getCaseDocuments()).containsOnlyOnceElementsOf(expectedDocs);
         }
