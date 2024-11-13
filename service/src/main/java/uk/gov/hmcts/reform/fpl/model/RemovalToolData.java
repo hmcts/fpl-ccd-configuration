@@ -29,6 +29,7 @@ public class RemovalToolData {
     List<Element<HearingOrder>> hiddenCaseManagementOrders;
     List<Element<GeneratedOrder>> hiddenOrders;
     List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
+    List<Element<StandardDirectionOrder>> hiddenUrgentDirectionOrders;
     List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     List<Element<SentDocuments>> hiddenDocumentsSentToParties;
     List<Element<RemovedPlacement>> removedPlacements;
