@@ -385,15 +385,19 @@ wa:
     databaseNamePrefix: "pr-${CHANGE_ID}-"
   wa-initiation-batch:
     job:
+      schedule: "*/1 * * * *"
       releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
   wa-reconfiguration-batch:
     job:
+      schedule: "*/1 * * * *"
       releaseNameOverride: "{{ .Release.Name }}-reconfiguration"
   wa-termination-batch:
     job:
+      schedule: "*/1 * * * *"
       releaseNameOverride: "{{ .Release.Name }}-termination-batch"
   wa-message-cron-service:
     job:
+      schedule: "*/1 * * * *"
       releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
 
   camunda-bpm:
