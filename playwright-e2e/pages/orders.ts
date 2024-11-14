@@ -27,6 +27,16 @@ export class Orders extends BasePage {
     readonly closeOrder: Locator;
     readonly careOrderIssuedDate: Locator;
     readonly careOrderIssuedCourt: Locator;
+    readonly juridiction: Locator;
+    readonly juridictionRegion: Locator;
+    readonly approvalDate: Locator;
+    readonly childAccomadation: Locator;
+    readonly orderConsent: Locator;
+    readonly orderReason: Locator;
+    readonly childLegalAid: Locator;
+    readonly juridictionRadio: Locator;
+    readonly orderEndsOn: Locator;
+    readonly orderLength: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -54,6 +64,17 @@ export class Orders extends BasePage {
         this.closeOrder = page.getByRole('group', {name: 'Does this order close the case?'});
         this.careOrderIssuedDate = page.getByRole('group', {name: 'When was the care order issued?'});
         this.careOrderIssuedCourt =page.getByLabel('Which court issued the order?');
+        this.juridiction = page.getByRole('group', {name: 'Select jurisdiction'});
+        this.juridictionRegion = page.locator('#manageOrdersCafcassOfficesWales');
+        this.approvalDate = page.getByRole('group', { name: 'Approval Date' });
+        this.childAccomadation =page.getByLabel('Which child is the order for?');
+        this.orderConsent = page.getByRole('group', { name: 'Is order by consent?' });
+        this.orderReason = page.getByRole('group', { name: 'Order given because the child is likely to' });
+        this.childLegalAid = page.getByRole('group', { name: 'Does the child have a Legal' });
+        this.juridictionRadio = page.getByRole('group', {name: 'Jurisdiction'});
+        this.orderEndsOn = page.getByRole('group', {name: 'When does the order end?'});
+        this.orderLength =page.getByLabel('Order length, in months');
+
     }
 
     async selectOrderOperation(toDo: string) {
@@ -64,12 +85,21 @@ export class Orders extends BasePage {
         await this.orderTypeRadio.getByLabel(`${orderType}`).check();
     }
 
-    async addIssuingDetailsOfApprovedOrder() {
+    async addIssuingDetailsOfApprovedOrder(approvalDate: string) {
         await this.orderApproved.getByLabel('Yes').click();
         await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
         await this.orderApplication.getByLabel('No').click();
         await this.clickContinue();
         await this.issuingJudge.getByRole('radio', {name: 'Yes'}).check();
+        await this.legalAdvisorName.fill('LA Marien Wester');
+        if (approvalDate == 'yes'){
+            await this.approvalDate.getByRole('textbox', { name: 'Day' }).fill('04');
+            await this.approvalDate.getByRole('textbox', { name: 'Month' }).fill('11');
+            await this.approvalDate.getByRole('textbox', { name: 'Year' }).fill('2023');
+            await this.approvalDate.getByLabel('Hour').fill('12');
+            await this.approvalDate.getByLabel('Minute').fill('20');
+            await this.approvalDate.getByLabel('Second').fill('20');
+        }
     }
     async addIssuningDeatilsOfUnApprovedOrder(){
         await this.orderApproved.getByLabel('No').click();
@@ -80,8 +110,10 @@ export class Orders extends BasePage {
         await this.judgeLastName.fill('John');
         await this.judgeEmail.fill('email@email.comLegal');
         await this.legalAdvisorName.fill('LA Jonathan');
+    }
 
-
+    async selectChildForAccomodation(){
+        await this.childAccomadation.selectOption('Timothy Jones');
     }
 
     async addChildDetails(isAllChild: string) {
@@ -127,9 +159,28 @@ export class Orders extends BasePage {
         await this.finalOrder.getByText('No').click();
 
     }
+
+    async addC47AppointOfGuardianOrder(){
+        await this.juridiction.getByRole('radio', { name: 'Wales' }).check();
+        await this.juridictionRegion.selectOption('Swansea');
+        await this.orderDirectionDetails.fill('Remove the child from the social care and appointing Aunty as guardian');
+    }
+
+    async addC26SecureAccomadation(){
+        await this.orderConsent.getByLabel('No').check();
+        await this.orderReason.getByLabel('abscond and suffer harm').check();
+        await this.childLegalAid.getByLabel('Yes').check();
+        await this.juridictionRadio.getByRole('radio', { name: 'Wales' }).check();
+        await this.orderDirectionDetails.fill('Further Direction for give secure accommodation');
+        await this.orderEndsOn.getByLabel('In a set number of months').check();
+        await this.orderLength.fill('12');
+        await this.finalOrder.getByLabel('No').check();
+    }
+
     async closeTheOrder(close:string){
         await this.closeOrder.getByLabel(`${close}`).check();
     }
+
     async openOrderDoc(docLink: string) {
         const newPagePromise = this.page.context().waitForEvent('page');
         await this.page.getByRole('link', {name: `${docLink}`}).click();
