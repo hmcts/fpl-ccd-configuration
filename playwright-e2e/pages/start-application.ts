@@ -30,7 +30,6 @@ export class StartApplication {
   readonly submitApplicationLink: Locator;
   readonly otherPeopleInCaseLink: Locator;
   readonly returnApplicationLink: Locator;
-  readonly logExpertReportLink: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -63,7 +62,6 @@ export class StartApplication {
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'}); 
     this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'}); 
     this.returnApplicationLink = page.getByRole('link', { name: 'Return application'}); 
-    this.logExpertReportLink = page.getByRole('link',{name:'Log expert report' });
   }
   async groundsForTheApplication() {
     expect(await this.groundsForTheApplicationLink).toBeVisible();
@@ -155,10 +153,5 @@ export class StartApplication {
 
   async submitCase() {
     await this.submitApplicationLink.click();
-  }
-
-  async logExpertReport(){
-    await expect(this.logExpertReportLink).toBeVisible();
-    await this.logExpertReportLink.click();
   }
 }
