@@ -65,8 +65,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
 
     @JsonIgnore
     @Setter
-    @Builder.Default
-    private boolean orderTypeIsSdo = true; // for removal tools use only
+    private Boolean orderTypeIsSdo; // for removal tools use only
 
     @JsonIgnore
     public boolean isSealed() {
@@ -87,7 +86,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
 
     @JsonIgnore
     public UUID getCollectionId() {
-        if (isOrderTypeIsSdo()) {
+        if (!Boolean.FALSE.equals(orderTypeIsSdo)) {
             return COLLECTION_ID;
         } else {
             return UDO_COLLECTION_ID;
@@ -116,7 +115,8 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
         String formattedDate = Optional.ofNullable(dateOfIssue)
             .orElse(formatLocalDateToString(defaultIfNull(dateOfUpload, LocalDate.now()), DATE));
 
-        return ((isOrderTypeIsSdo()) ? "Gatekeeping order - " : "Urgent directions order - ") + formattedDate;
+        return ((!Boolean.FALSE.equals(orderTypeIsSdo))
+            ? "Gatekeeping order - " : "Urgent directions order - ") + formattedDate;
     }
 
     @Override
