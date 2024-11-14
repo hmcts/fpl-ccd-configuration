@@ -15,6 +15,7 @@ ROLE_NAME="${4:-"ctsc"}"
 ROLE_ATTRIBUTES="${5:-'{"jurisdiction":"PUBLICLAW"}'}"
 ROLE_CATEGORY="${6:-"ADMIN"}"
 AUTHORISATIONS="${7:-null}"
+GRANT_TYPE="${8:-"STANDARD"}"
 
 BASEDIR=$(dirname "$0")
 
@@ -45,7 +46,7 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
             "roleType": "ORGANISATION",
             "roleName": "'"${ROLE_NAME}"'",
             "classification": "'"${ROLE_CLASSIFICATION}"'",
-            "grantType": "STANDARD",
+            "grantType": "'"${GRANT_TYPE}"'",
             "roleCategory": "'"${ROLE_CATEGORY}"'",
             "readOnly": false,
             "attributes": '${ROLE_ATTRIBUTES}',

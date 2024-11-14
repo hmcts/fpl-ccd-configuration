@@ -17,6 +17,53 @@
     "overrideAll": true
   },
   {
+    "email": "fpl-ctsc-team-leader@justice.gov.uk",
+    "id": "835939cc-5743-4869-bfe1-5edfcd555665",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "ctsc",
+        "grantType": "STANDARD",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "ctsc-team-leader",
+        "grantType": "STANDARD",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-ctsc",
+        "grantType": "BASIC",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "task-supervisor",
+        "grantType": "STANDARD",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
     "email": "hca-wales@justice.gov.uk",
     "id": "4efafcc8-bf88-4ea4-ab37-7a648a9c5a2a",
     "roleAssignments": [
