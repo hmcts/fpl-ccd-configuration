@@ -4,7 +4,7 @@ branchName=$1
 
 #Checkout specific branch pf  camunda bpmn definition
 git clone https://github.com/hmcts/fpl-wa-task-configuration.git
-cd ia-task-configuration
+cd fpl-wa-task-configuration
 
 echo "Switch to ${branchName} branch on fpl-wa-task-configuration"
 git checkout ${branchName}
