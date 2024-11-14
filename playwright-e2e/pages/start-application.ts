@@ -63,7 +63,6 @@ export class StartApplication {
     this.courtServices = page.getByRole('link', { name: 'Court services'});
     this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
     this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
-
   }
 
   async groundsForTheApplication() {
