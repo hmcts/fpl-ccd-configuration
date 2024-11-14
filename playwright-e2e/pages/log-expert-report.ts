@@ -35,7 +35,7 @@ export class LogExpertReport extends BasePage {
         await this.Day.fill('02');
         await this.Month.fill('03');
         await this.Year.fill('2025');
-        await this.radio.getByRole('radio', { name: 'No' });
+        await this.radio.getByRole('radio', { name: 'No' }).Click();
         await this.submitButton.click();
         await this.saveAndContinue.click();
     }
