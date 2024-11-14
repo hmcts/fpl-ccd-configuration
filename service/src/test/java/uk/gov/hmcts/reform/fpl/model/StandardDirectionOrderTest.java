@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
