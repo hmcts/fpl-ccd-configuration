@@ -422,8 +422,8 @@ wa:
         S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-service-${SERVICE_FQDN}
-        ALLOWED_JURISDICTIONS: PUBLICLAW
-        ALLOWED_CASE_TYPES: CARE_SUPERVISION_EPO
+        ALLOWED_JURISDICTIONS: publiclaw,PUBLICLAW
+        ALLOWED_CASE_TYPES: care_supervision_epo,CARE_SUPERVISION_EPO
 
   wa-case-event-handler:
     java:
