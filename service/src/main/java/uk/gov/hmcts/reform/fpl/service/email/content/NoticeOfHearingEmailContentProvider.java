@@ -20,7 +20,6 @@ import java.time.format.FormatStyle;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.HEARINGS;
-import static uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate.builder;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -38,7 +37,7 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
         DocumentReference noticeOfHearing = hearingBooking.getNoticeOfHearing();
 
-        return builder()
+        return NoticeOfHearingTemplate.builder()
             .hearingType(hearingBooking.getType().getLabel().toLowerCase())
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
