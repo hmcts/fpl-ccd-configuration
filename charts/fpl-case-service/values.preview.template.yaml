@@ -158,6 +158,7 @@ ccd:
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-service-${SERVICE_FQDN}
         CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: fpl_case_service,aac_manage_case_assignment
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,fpl_case_service,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
