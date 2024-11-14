@@ -71,6 +71,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ListGatekeepingHearingController extends CallbackController {
 
+    private static final String ALLOCATED_JUDGE = "allocatedJudge";
     private static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String PRE_ATTENDANCE = "preHearingAttendanceDetails";
@@ -164,7 +165,6 @@ public class ListGatekeepingHearingController extends CallbackController {
 
     @PostMapping("/allocated-judge/mid-event")
     public AboutToStartOrSubmitCallbackResponse allocatedJudgeMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        final String ALLOCATED_JUDGE = "allocatedJudge";
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 

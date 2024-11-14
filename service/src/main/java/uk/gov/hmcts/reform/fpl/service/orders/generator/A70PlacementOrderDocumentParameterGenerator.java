@@ -31,9 +31,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT;
 @RequiredArgsConstructor
 public class A70PlacementOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
 
-    private final static String UNKNOWN = "unknown";
     private final PlacementService placementService;
     private final CourtService courtService;
+
+    private final static String UNKNOWN = "unknown";
 
     @Override
     public Order accept() {

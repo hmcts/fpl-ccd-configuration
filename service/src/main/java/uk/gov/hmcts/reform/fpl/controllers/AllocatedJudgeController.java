@@ -36,6 +36,8 @@ public class AllocatedJudgeController extends CallbackController {
     private final ValidateEmailService validateEmailService;
     private final JudicialService judicialService;
 
+    private final static String ALLOCATED_JUDGE = "allocatedJudge";
+
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -59,7 +61,6 @@ public class AllocatedJudgeController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        final String ALLOCATED_JUDGE = "allocatedJudge";
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 

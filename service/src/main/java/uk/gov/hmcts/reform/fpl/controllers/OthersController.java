@@ -25,9 +25,10 @@ import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 @RequestMapping("/callback/enter-others")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OthersController extends CallbackController {
-    private final static String OTHERS = "others";
     private final ConfidentialDetailsService confidentialService;
     private final OthersService othersService;
+
+    private final static String OTHERS = "others";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {

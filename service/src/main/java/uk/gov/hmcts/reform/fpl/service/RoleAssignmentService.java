@@ -35,11 +35,12 @@ import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignm
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoleAssignmentService {
 
-    private final String CASE_ID = "caseId";
-    private final String FPL_ROLE_ASSIGNMENT = "fpl-case-role-assignment";
     private final AmApi amApi;
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
+
+    private final static String FPL_ROLE_ASSIGNMENT = "fpl-case-role-assignment";
+    private final static String CASE_ID = "caseId";
 
     /**
      * Create a role assignment in AM. This will REPLACE the existing role assignment.

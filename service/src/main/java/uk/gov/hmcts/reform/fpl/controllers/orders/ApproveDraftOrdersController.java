@@ -32,10 +32,11 @@ import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transien
 @RequestMapping("/callback/approve-draft-orders")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApproveDraftOrdersController extends CallbackController {
-    private final static String DRAFT_ORDERS_APPROVED = "draftOrdersApproved";
     private final ApproveDraftOrdersService approveDraftOrdersService;
     private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
     private final CoreCaseDataService coreCaseDataService;
+
+    private final static String DRAFT_ORDERS_APPROVED = "draftOrdersApproved";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
