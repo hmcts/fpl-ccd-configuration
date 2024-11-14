@@ -154,21 +154,26 @@ def setupShutteringSecret() {
   }
 }
 
+def deployWADmns() {
+  def githubApi = new GithubAPI(this)
+
+  echo "Checking if we should use WA"
+  if (githubApi.checkForLabel('enable_wa')) {
+    env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
+    env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
+    env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
+    echo "WA enabled, loading DMNs"
+    sh """
+          ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+        """
+  }
+}
 
 // Vars for Kubernetes
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 withPipeline(type, product, component) {
   pipelineConf = config;
-
-  def githubApi = new GithubAPI(this)
-  env.ENABLE_WA = false
-  if (githubApi.checkForLabel('enable_wa')) {
-    env.ENABLE_WA = true
-    env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
-    env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
-    env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
-  }
 
   loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
 
@@ -257,12 +262,7 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('preview')
     uploadCoreCaseDataDefinitions('preview', '0')
 
-    if (env.ENABLE_WA == true) {
-      sh """
-          echo "WA ENABLED, loading DMNs"
-          ./bin/pull-latest-dmn-files.sh ${dmnBranch}
-        """
-    }
+    deployWADmns()
 
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
