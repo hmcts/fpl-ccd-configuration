@@ -163,13 +163,11 @@ withPipeline(type, product, component) {
 
   def githubApi = new GithubAPI(this)
   env.ENABLE_WA = false
-  for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
-    if (label == "enable_wa") {
-      env.ENABLE_WA = true
-      env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
-      env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
-      env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
-    }
+  if (githubApi.checkForLabel('enable_wa')) {
+    env.ENABLE_WA = true
+    env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
+    env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
+    env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
   }
 
   loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
