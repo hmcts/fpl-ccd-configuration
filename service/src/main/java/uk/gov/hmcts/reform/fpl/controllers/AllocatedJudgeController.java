@@ -36,7 +36,7 @@ public class AllocatedJudgeController extends CallbackController {
     private final ValidateEmailService validateEmailService;
     private final JudicialService judicialService;
 
-    private final static String ALLOCATED_JUDGE = "allocatedJudge";
+    private static final String ALLOCATED_JUDGE = "allocatedJudge";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {

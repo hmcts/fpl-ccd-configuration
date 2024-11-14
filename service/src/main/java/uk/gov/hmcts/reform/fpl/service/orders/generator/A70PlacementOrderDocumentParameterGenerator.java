@@ -34,7 +34,7 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
     private final PlacementService placementService;
     private final CourtService courtService;
 
-    private final static String UNKNOWN = "unknown";
+    private static final String UNKNOWN = "unknown";
 
     @Override
     public Order accept() {

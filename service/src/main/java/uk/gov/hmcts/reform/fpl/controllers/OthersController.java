@@ -28,7 +28,7 @@ public class OthersController extends CallbackController {
     private final ConfidentialDetailsService confidentialService;
     private final OthersService othersService;
 
-    private final static String OTHERS = "others";
+    private static final String OTHERS = "others";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {

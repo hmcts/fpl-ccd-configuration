@@ -39,8 +39,8 @@ public class RoleAssignmentService {
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final static String FPL_ROLE_ASSIGNMENT = "fpl-case-role-assignment";
-    private final static String CASE_ID = "caseId";
+    private static final String FPL_ROLE_ASSIGNMENT = "fpl-case-role-assignment";
+    private static final String CASE_ID = "caseId";
 
     /**
      * Create a role assignment in AM. This will REPLACE the existing role assignment.

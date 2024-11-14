@@ -57,7 +57,7 @@ public class CaseDataExtractionService {
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CourtService courtService;
 
-    private final static String HEARING_TIME_FORMAT = "%s - %s";
+    private static final String HEARING_TIME_FORMAT = "%s - %s";
     protected static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Details and instructions will be "
         + "sent by the local court.";
 

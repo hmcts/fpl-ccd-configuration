@@ -36,7 +36,7 @@ public class ApproveDraftOrdersController extends CallbackController {
     private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
     private final CoreCaseDataService coreCaseDataService;
 
-    private final static String DRAFT_ORDERS_APPROVED = "draftOrdersApproved";
+    private static final String DRAFT_ORDERS_APPROVED = "draftOrdersApproved";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
