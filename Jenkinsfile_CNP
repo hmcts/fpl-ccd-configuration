@@ -10,9 +10,6 @@ def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 def product = "fpl"
 def component = "case-service"
 
-// For testing DMNs, change this to the branch on the DMN repo, but ensure it is changed back to master before merging
-def dmnBranch = "master"
-
 AppPipelineConfig pipelineConf;
 
 def serviceSecrets = [
@@ -156,6 +153,9 @@ def setupShutteringSecret() {
 
 def deployWADmns() {
   def githubApi = new GithubAPI(this)
+
+  // For testing DMNs, change this to the branch on the DMN repo, but ensure it is changed back to master before merging
+  def dmnBranch = "master"
 
   echo "Checking if we should use WA"
   if (githubApi.checkForLabel(env.BRANCH_NAME, 'enable_wa')) {
