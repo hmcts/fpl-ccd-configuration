@@ -761,7 +761,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     private SupportingEvidenceBundle.SupportingEvidenceBundleBuilder
-    createSupportingEvidenceBundleBuilder(String name) {
+        createSupportingEvidenceBundleBuilder(String name) {
         return SupportingEvidenceBundle.builder()
             .name(name)
             .notes("Document notes")
