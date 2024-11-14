@@ -158,7 +158,7 @@ def deployWADmns() {
   def githubApi = new GithubAPI(this)
 
   echo "Checking if we should use WA"
-  if (githubApi.checkForLabel('enable_wa')) {
+  if (githubApi.checkForLabel(env.BRANCH_NAME, 'enable_wa')) {
     env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
     env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
     env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
