@@ -164,7 +164,8 @@ def deployWADmns() {
     env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
     echo "WA enabled, loading DMNs"
     sh """
-          ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+        eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
+        ./bin/pull-latest-dmn-files.sh ${dmnBranch}
         """
   }
 }
