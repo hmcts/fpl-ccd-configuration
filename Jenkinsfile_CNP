@@ -169,9 +169,6 @@ withPipeline(type, product, component) {
       env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
       env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
       env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
-      sh """
-        echo "Work allocation is ENABLED"
-      """
     }
   }
 
@@ -264,6 +261,7 @@ withPipeline(type, product, component) {
 
     if (env.ENABLE_WA == true) {
       sh """
+          echo "WA ENABLED, loading DMNs"
           ./bin/pull-latest-dmn-files.sh ${dmnBranch}
         """
     }
