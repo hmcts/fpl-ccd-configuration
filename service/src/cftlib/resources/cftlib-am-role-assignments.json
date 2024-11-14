@@ -17,6 +17,33 @@
     "overrideAll": true
   },
   {
+    "email": "m.johnson@ejudiciary.net",
+    "id": "e8c20680-225b-4403-8b76-26297a277048",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "judge",
+        "grantType": "STANDARD",
+        "roleCategory": "JUDICIAL",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "735217", "region": "6" },
+        "authorisations": ["316"]
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-judiciary",
+        "grantType": "BASIC",
+        "roleCategory": "JUDICIAL",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "735217", "region": "6" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
     "email": "fpl-ctsc-team-leader@justice.gov.uk",
     "id": "835939cc-5743-4869-bfe1-5edfcd555665",
     "roleAssignments": [
