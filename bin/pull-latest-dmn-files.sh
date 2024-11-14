@@ -2,16 +2,22 @@
 
 branchName=$1
 
-#Checkout specific branch pf  camunda bpmn definition
+#Checkout specific branch of fpl-wa-task-configuration
 git clone https://github.com/hmcts/fpl-wa-task-configuration.git
-cd fpl-wa-task-configuration
+
+if [ ! -d "./fpl-wa-task-configuration" ]; then
+  exit 1
+fi
 
 echo "Switch to ${branchName} branch on fpl-wa-task-configuration"
+cd fpl-wa-task-configuration
 git checkout ${branchName}
 cd ..
 
-#Copy camunda folder which contains dmn files
-cp -r ./fpl-wa-task-configuration/src/main/resources .
-rm -rf ./fpl-wa-task-configuration
+#Copy dmn files to camunda folder
+if [ ! -d "./camunda" ]; then
+  mkdir camunda
+fi
 
-./bin/import-dmn-diagram.sh . publiclaw fpl
+cp -r ./fpl-wa-task-configuration/src/main/resources/*.dmn ./camunda
+rm -rf ./fpl-wa-task-configuration

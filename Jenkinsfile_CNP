@@ -154,6 +154,7 @@ def setupShutteringSecret() {
 def deployWADmns() {
   def githubApi = new GithubAPI(this)
 
+  def waStandaloneBranch = "master"
   // For testing DMNs, change this to the branch on the DMN repo, but ensure it is changed back to master before merging
   def dmnBranch = "master"
 
@@ -166,6 +167,8 @@ def deployWADmns() {
     sh """
         eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
         ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+        ./bin/pull-camunda-bpmn-files.sh ${waStandaloneBranch}
+        ./bin/import-dmn-diagram.sh . publiclaw fpl
         """
   }
 }
