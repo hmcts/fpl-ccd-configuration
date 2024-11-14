@@ -8,7 +8,6 @@ export class LogExpertReport extends BasePage {
     readonly Day: Locator;
     readonly Month: Locator;
     readonly Year: Locator;
-    readonly hasItBeenApproved: Locator;
     readonly dateApproved: Locator;
     readonly submitButton: Locator;
     readonly radio: Locator;
@@ -19,14 +18,11 @@ export class LogExpertReport extends BasePage {
     public constructor(page: Page) {
         super(page);
         this.logExpertRerort = page.getByRole('heading', { name: 'Log expert report', exact: true });
-        this.button = page.getByRole('button', { name: 'Go' });
         this.addNew = page.getByRole('button', { name: 'Add new' });
         this.typeOfReport = page.getByLabel('What type of report have you');
-        this.hasItBeenApproved = page.getByRole('heading', { name: 'Has it been approved?' })
         this.Day = page.getByRole('textbox', { name: 'Day' });
         this.Month = page.getByRole('textbox', { name: 'Month' });
         this.Year = page.getByRole('textbox', { name: 'Year' });
-        this.dateApproved = page.getByRole('heading', { name: 'Date approved' })
         this.radio = page.getByRole('radio', { name: 'No' });
         this.submitButton = page.getByRole('button', { name: 'Submit' });
         this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
