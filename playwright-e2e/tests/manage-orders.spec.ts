@@ -204,7 +204,6 @@ test.describe('manage orders', () => {
         await expect(page.locator('ccd-read-document-field')).toContainText('c47a_appointment_of_a_childrens_guardian.pdf');
 
     })
-
     test('C26 Authority to keep a child in secure accommodation ', async ({page,signInPage, orders}) => {
         caseName = 'C26 Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
@@ -221,9 +220,11 @@ test.describe('manage orders', () => {
         await expect.soft(page.getByText(' Add issuing details', {exact: true})).toBeVisible();
         await orders.addIssuingDetailsOfApprovedOrder('Yes');
         await orders.clickContinue();
+
         await expect.soft(page.getByRole('heading', { name: 'Add child\'s details' })).toBeVisible();
-        await orders.selectChildForAccomodation();
+        await orders.selectChildInvolved();
         await orders.clickContinue();
+
         await expect.soft(page.getByText( 'Authority to keep a child in secure accommodation (C26)' )).toBeVisible();
         await orders.addC26SecureAccomadation();
         await orders.clickContinue();
@@ -238,6 +239,39 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Authority to keep a child in')).toBeVisible();
         await expect(page.getByRole('link', { name: 'c26_secure_accommodation_order.pdf' })).toBeVisible();
+
+    })
+    test('C36 Child assessment order ', async ({page,signInPage, orders}) => {
+        caseName = 'C26 Order ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Child assessment order (C39)');
+        await orders.clickContinue();
+
+        await orders.addIssuingJudgeDetails('Yes');
+        await orders.clickContinue();
+
+        await orders.selectChildInvolved();
+        await orders.clickContinue();
+
+        await orders.addC39childAssessment();
+        await orders.clickContinue();
+
+        await expect.soft(page.getByRole('heading', {name: 'Check your order', exact: true})).toBeVisible();
+        await orders.openOrderDoc('Preview order.pdf');
+        await expect(orders.orderPage.getByText('Child assessment order')).toBeVisible();
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByText('Child assessment order (C39)')).toBeVisible();
+        await expect(page.getByRole('link', { name: 'c39_child_assessment_order.pdf' })).toBeVisible();
 
     })
 
