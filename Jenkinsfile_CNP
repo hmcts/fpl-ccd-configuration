@@ -169,6 +169,9 @@ withPipeline(type, product, component) {
       env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
       env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
       env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
+      sh """
+        echo "Work allocation is ENABLED"
+      """
     }
   }
 
@@ -215,16 +218,6 @@ withPipeline(type, product, component) {
     teardownSecretsForIntegrationTests()
   }
 
-  afterSuccess('akschartsinstall') {
-    onPR {
-      if (env.ENABLE_WA == true) {
-        sh """
-          ./bin/pull-latest-dmn-files.sh ${dmnBranch}
-        """
-      }
-    }
-  }
-
   before('fullFunctionalTest:preview'){
       yarnBuilder.yarn('yarn-update')
       yarnBuilder.yarn('install-dependencies')
@@ -268,6 +261,12 @@ withPipeline(type, product, component) {
 
     archiveCoreCaseDataDefinitions('preview')
     uploadCoreCaseDataDefinitions('preview', '0')
+
+    if (env.ENABLE_WA == true) {
+      sh """
+          ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+        """
+    }
 
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
