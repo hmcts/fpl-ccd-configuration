@@ -40,7 +40,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFr
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, AmendableOrder, TranslatableItem {
-    public static final UUID COLLECTION_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    public static final UUID SDO_COLLECTION_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    public static final UUID UDO_COLLECTION_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
 
     private final String hearingDate;
     private final String dateOfIssue;
@@ -76,11 +77,6 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
         if (document != null) {
             this.orderDoc = buildFromDocument(document);
         }
-    }
-
-    @JsonIgnore
-    public UUID getCollectionId() {
-        return COLLECTION_ID;
     }
 
     @Override

@@ -103,12 +103,11 @@ public class RemoveOrderService {
             if (caseData.getStandardDirectionOrder() != null)  {
                 StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
-                orders.add(element(standardDirectionOrder.getCollectionId(), standardDirectionOrder));
+                orders.add(element(StandardDirectionOrder.SDO_COLLECTION_ID, standardDirectionOrder));
             }
 
             if (caseData.getUrgentDirectionsOrder() != null)  {
-                StandardDirectionOrder urgentDirectionOrder = caseData.getUrgentDirectionsOrder();
-                orders.add(element(urgentDirectionOrder.getCollectionId(), urgentDirectionOrder));
+                orders.add(element(StandardDirectionOrder.UDO_COLLECTION_ID, caseData.getUrgentDirectionsOrder()));
             }
         }
 

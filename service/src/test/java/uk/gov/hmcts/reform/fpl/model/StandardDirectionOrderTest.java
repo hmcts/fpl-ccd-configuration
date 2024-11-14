@@ -67,14 +67,6 @@ class StandardDirectionOrderTest {
     }
 
     @Test
-    void shouldReturnFixedUUID() {
-        UUID expectedId = UUID.fromString("11111111-1111-1111-1111-111111111111");
-        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
-
-        assertThat(standardDirectionOrder.getCollectionId()).isEqualTo(expectedId);
-    }
-
-    @Test
     void shouldFormatStandardDirectionOrderAsLabelWithProvidedDateOfIssue() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .dateOfIssue("1 January 2020")

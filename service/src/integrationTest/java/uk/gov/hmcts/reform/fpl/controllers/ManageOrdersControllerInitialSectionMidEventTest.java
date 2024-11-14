@@ -42,7 +42,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
     private static final DocumentReference CMO_DOCUMENT = testDocumentReference();
     private static final UUID ORDER_ID = UUID.randomUUID();
     private static final UUID CMO_ID = UUID.randomUUID();
-    private static final UUID SDO_ID = StandardDirectionOrder.COLLECTION_ID;
+    private static final UUID SDO_ID = StandardDirectionOrder.SDO_COLLECTION_ID;
     private static final UUID UHO_ID = UrgentHearingOrder.COLLECTION_ID;
 
     ManageOrdersControllerInitialSectionMidEventTest() {
