@@ -203,10 +203,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .willAnswer(returnsFirstArg());
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTER_1_ID));
-        given(uploadAdditionalApplicationsService.convertC2Bundle(any(), any()))
-            .willAnswer(returnsFirstArg());
-        given(uploadAdditionalApplicationsService.convertOtherBundle(any(), any()))
-            .willAnswer(returnsFirstArg());
 
         doNothing().when(sendDocumentService).sendDocuments(any());
         doNothing().when(cafcassNotificationService).sendEmail(any(), any(), any());

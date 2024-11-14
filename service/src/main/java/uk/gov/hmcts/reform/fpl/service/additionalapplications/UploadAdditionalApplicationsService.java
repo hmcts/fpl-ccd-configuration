@@ -233,7 +233,7 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle, CaseData caseData) {
+    private OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
             .document(sealDocument(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
@@ -242,7 +242,7 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle, CaseData caseData) {
+    private C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
             .document(sealDocument(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
@@ -251,7 +251,7 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public void convertConfidentialC2Bundle(CaseData caseData, C2DocumentBundle bundle,
+    private void convertConfidentialC2Bundle(CaseData caseData, C2DocumentBundle bundle,
                                             AdditionalApplicationsBundleBuilder builder) {
         C2DocumentBundle convertedC2 = convertC2Bundle(bundle, caseData);
         builder.c2DocumentBundleConfidential(convertedC2);
