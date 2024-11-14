@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,6 +64,14 @@ class StandardDirectionOrderTest {
         standardDirectionOrder.setDirectionsToEmptyList();
 
         assertThat(standardDirectionOrder.getDirections()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnFixedUUID() {
+        UUID expectedId = UUID.fromString("11111111-1111-1111-1111-111111111111");
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
+
+        assertThat(standardDirectionOrder.getCollectionId()).isEqualTo(expectedId);
     }
 
     @Test

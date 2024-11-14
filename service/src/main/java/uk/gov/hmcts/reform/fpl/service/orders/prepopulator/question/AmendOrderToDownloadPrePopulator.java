@@ -39,7 +39,7 @@ public class AmendOrderToDownloadPrePopulator implements QuestionBlockOrderPrePo
     private DocumentReference getSelectedOrder(CaseData caseData) {
         UUID selectedOrderId = getSelectedOrderId(caseData);
 
-        if (StandardDirectionOrder.SDO_COLLECTION_ID.equals(selectedOrderId)) {
+        if (StandardDirectionOrder.COLLECTION_ID.equals(selectedOrderId)) {
             return caseData.getStandardDirectionOrder().getOrderDoc();
         }
 

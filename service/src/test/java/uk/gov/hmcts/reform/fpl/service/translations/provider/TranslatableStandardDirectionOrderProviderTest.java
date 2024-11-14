@@ -43,7 +43,7 @@ class TranslatableStandardDirectionOrderProviderTest {
                 .standardDirectionOrder(order)
                 .build());
 
-            assertThat(actual).isEqualTo(List.of(element(StandardDirectionOrder.SDO_COLLECTION_ID, order)));
+            assertThat(actual).isEqualTo(List.of(element(StandardDirectionOrder.COLLECTION_ID, order)));
 
         }
 
@@ -95,7 +95,7 @@ class TranslatableStandardDirectionOrderProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            boolean actual = underTest.accept(CaseData.builder().build(), StandardDirectionOrder.SDO_COLLECTION_ID);
+            boolean actual = underTest.accept(CaseData.builder().build(), StandardDirectionOrder.COLLECTION_ID);
 
             AssertionsForClassTypes.assertThat(actual).isTrue();
 

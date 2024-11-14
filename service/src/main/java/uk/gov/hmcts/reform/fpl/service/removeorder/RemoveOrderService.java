@@ -102,12 +102,14 @@ public class RemoveOrderService {
         if (!FINAL_HEARING.equals(caseData.getState())) {
             if (caseData.getStandardDirectionOrder() != null)  {
                 StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
-
-                orders.add(element(StandardDirectionOrder.SDO_COLLECTION_ID, standardDirectionOrder));
+                standardDirectionOrder.setOrderTypeIsSdo(true);
+                orders.add(element(standardDirectionOrder.getCollectionId(), standardDirectionOrder));
             }
 
             if (caseData.getUrgentDirectionsOrder() != null)  {
-                orders.add(element(StandardDirectionOrder.UDO_COLLECTION_ID, caseData.getUrgentDirectionsOrder()));
+                StandardDirectionOrder urgentDirectionOrder = caseData.getUrgentDirectionsOrder();
+                urgentDirectionOrder.setOrderTypeIsSdo(false);
+                orders.add(element(urgentDirectionOrder.getCollectionId(), urgentDirectionOrder));
             }
         }
 

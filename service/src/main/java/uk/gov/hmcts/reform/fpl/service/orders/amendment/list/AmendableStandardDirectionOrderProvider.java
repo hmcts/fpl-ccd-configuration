@@ -16,7 +16,6 @@ public class AmendableStandardDirectionOrderProvider implements AmendableListIte
     public List<Element<? extends AmendableOrder>> provideListItems(CaseData caseData) {
         StandardDirectionOrder sdo = caseData.getStandardDirectionOrder();
 
-        return null != sdo && sdo.isSealed()
-            ? List.of(element(StandardDirectionOrder.SDO_COLLECTION_ID, sdo)) : List.of();
+        return null != sdo && sdo.isSealed() ? List.of(element(StandardDirectionOrder.COLLECTION_ID, sdo)) : List.of();
     }
 }

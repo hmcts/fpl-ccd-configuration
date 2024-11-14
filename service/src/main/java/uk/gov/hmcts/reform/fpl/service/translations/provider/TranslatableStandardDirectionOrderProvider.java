@@ -28,8 +28,7 @@ public class TranslatableStandardDirectionOrderProvider implements TranslatableL
     public List<Element<? extends TranslatableItem>> provideListItems(
         CaseData caseData) {
         StandardDirectionOrder sdo = caseData.getStandardDirectionOrder();
-        return null != sdo && sdo.isSealed()
-            ? List.of(element(StandardDirectionOrder.SDO_COLLECTION_ID, sdo)) : List.of();
+        return null != sdo && sdo.isSealed() ? List.of(element(StandardDirectionOrder.COLLECTION_ID, sdo)) : List.of();
     }
 
     @Override
@@ -39,7 +38,7 @@ public class TranslatableStandardDirectionOrderProvider implements TranslatableL
 
     @Override
     public boolean accept(CaseData caseData, UUID selectedOrderId) {
-        return StandardDirectionOrder.SDO_COLLECTION_ID.equals(selectedOrderId);
+        return StandardDirectionOrder.COLLECTION_ID.equals(selectedOrderId);
     }
 
     @Override

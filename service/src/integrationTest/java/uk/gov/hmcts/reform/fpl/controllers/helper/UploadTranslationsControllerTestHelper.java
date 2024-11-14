@@ -118,7 +118,7 @@ public class UploadTranslationsControllerTestHelper {
         .listItems(List.of(
             dlElement(UUID_1, "Generated order type - 10 December 2020"),
             dlElement(UUID_2, "Sealed case management order issued on 9 December 2020"),
-            dlElement(StandardDirectionOrder.SDO_COLLECTION_ID, "Gatekeeping order - 11 December 2020"),
+            dlElement(StandardDirectionOrder.COLLECTION_ID, "Gatekeeping order - 11 December 2020"),
             dlElement(UUID_3, "Notice of proceedings (C6)"),
             dlElement(UUID_4, "Notice of proceedings (C6A)"),
             dlElement(UrgentHearingOrder.COLLECTION_ID, "Urgent hearing order - 8 December 2020"),

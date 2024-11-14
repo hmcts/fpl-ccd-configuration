@@ -102,7 +102,7 @@ public class SDORemovalAction implements OrderRemovalAction {
 
     private boolean isSdoToBeRemoved(CaseData caseData, UUID removedOrderId) {
         if (caseData.getStandardDirectionOrder() != null
-            && removedOrderId.equals(StandardDirectionOrder.SDO_COLLECTION_ID)) {
+            && removedOrderId.equals(StandardDirectionOrder.COLLECTION_ID)) {
             return true;
         } else if (caseData.getUrgentDirectionsOrder() != null
                    && removedOrderId.equals(StandardDirectionOrder.UDO_COLLECTION_ID)) {

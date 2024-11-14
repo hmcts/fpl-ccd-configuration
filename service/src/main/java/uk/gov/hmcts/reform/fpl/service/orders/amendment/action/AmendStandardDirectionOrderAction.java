@@ -24,7 +24,7 @@ public class AmendStandardDirectionOrderAction implements AmendOrderAction {
     @Override
     public boolean accept(CaseData caseData) {
         UUID selectedOrderId = caseData.getManageOrdersEventData().getManageOrdersAmendmentList().getValueCodeAsUUID();
-        return StandardDirectionOrder.SDO_COLLECTION_ID.equals(selectedOrderId);
+        return StandardDirectionOrder.COLLECTION_ID.equals(selectedOrderId);
     }
 
     @Override

@@ -24,7 +24,7 @@ class AmendableStandardDirectionOrderProviderTest {
         when(standardDirectionOrder.isSealed()).thenReturn(true);
 
         assertThat(underTest.provideListItems(caseData)).isEqualTo(List.of(
-            element(StandardDirectionOrder.SDO_COLLECTION_ID, standardDirectionOrder)
+            element(StandardDirectionOrder.COLLECTION_ID, standardDirectionOrder)
         ));
     }
 

@@ -64,6 +64,7 @@ class RemoveOrderServiceTest {
     private static final LocalDate NOW = LocalDate.now();
     private static final java.util.UUID REMOVED_UUID = java.util.UUID.randomUUID();
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    private static final UUID UDO_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
 
     @Mock
     private OrderRemovalActions orderRemovalActions;
@@ -320,7 +321,7 @@ class RemoveOrderServiceTest {
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
             .listItems(List.of(
-                buildListElement(SDO_ID, format("Gatekeeping order - %s",
+                buildListElement(UDO_ID, format("Urgent directions order - %s",
                     formatLocalDateToString(NOW, "d MMMM yyyy")))))
             .build();
 

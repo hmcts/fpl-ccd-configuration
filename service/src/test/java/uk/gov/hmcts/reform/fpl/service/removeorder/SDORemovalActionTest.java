@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -39,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 class SDORemovalActionTest {
     private static final String REASON = "Reason";
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    private static final UUID UDO_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
     private static final UUID ANOTHER_SDO_ID = UUID.randomUUID();
 
     @Mock
@@ -79,51 +79,24 @@ class SDORemovalActionTest {
     }
 
     @Test
-    void shouldPopulateCaseFieldsFromRemovedUDOIfSDOExist() {
+    void shouldPopulateCaseFieldsFromRemovedUDO() {
         DocumentReference orderDocument = DocumentReference.builder().build();
         StandardDirectionOrder removedOrder = StandardDirectionOrder.builder()
             .orderDoc(orderDocument)
             .build();
 
-        DocumentReference sdoDocument = DocumentReference.builder().build();
-        StandardDirectionOrder sdo = StandardDirectionOrder.builder()
-            .orderDoc(sdoDocument)
-            .build();
-
         CaseData caseData = CaseData.builder()
-            .standardDirectionOrder(sdo)
             .urgentDirectionsOrder(removedOrder)
             .noticeOfProceedingsBundle(List.of(element(DocumentBundle.builder().build())))
             .build();
 
         CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
 
-        underTest.populateCaseFields(caseData, caseDetailsMap, SDO_ID, removedOrder);
+        underTest.populateCaseFields(caseData, caseDetailsMap, UDO_ID, removedOrder);
 
         assertThat(caseDetailsMap)
             .extracting("orderToBeRemoved", "orderTitleToBeRemoved", "showRemoveSDOWarningFlag")
             .containsExactly(orderDocument, "Urgent directions order", YES.getValue());
-    }
-
-    @Test
-    void shouldPopulateCaseFieldsFromRemovedUDOIfNoSDOExist() {
-        DocumentReference orderDocument = DocumentReference.builder().build();
-        StandardDirectionOrder removedOrder = StandardDirectionOrder.builder()
-            .orderDoc(orderDocument)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .urgentDirectionsOrder(removedOrder)
-            .noticeOfProceedingsBundle(List.of(element(DocumentBundle.builder().build())))
-            .build();
-
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
-
-        underTest.populateCaseFields(caseData, caseDetailsMap, SDO_ID, removedOrder);
-
-        assertThat(caseDetailsMap)
-            .extracting("orderToBeRemoved", "orderTitleToBeRemoved", "showRemoveSDOWarningFlag")
-            .containsExactly(orderDocument, "Urgent directions order", NO.getValue());
     }
 
     @Test
@@ -196,8 +169,8 @@ class SDORemovalActionTest {
                 "noticeOfProceedingsBundle", noticeOfProceedings))
             .build());
 
-        when(identityService.generateId()).thenReturn(SDO_ID);
-        underTest.remove(caseData, caseDetailsMap, SDO_ID, urgentDirectionsOrder);
+        when(identityService.generateId()).thenReturn(UDO_ID);
+        underTest.remove(caseData, caseDetailsMap, UDO_ID, urgentDirectionsOrder);
 
         StandardDirectionOrder expectedUDO = StandardDirectionOrder.builder()
             .orderStatus(SEALED)
@@ -206,14 +179,14 @@ class SDORemovalActionTest {
 
         assertThat(caseDetailsMap)
             .extracting("hiddenUrgentDirectionOrders", "state")
-            .containsExactly(List.of(element(SDO_ID, expectedUDO)), GATEKEEPING);
+            .containsExactly(List.of(element(UDO_ID, expectedUDO)), GATEKEEPING);
 
         assertThat(caseDetailsMap).doesNotContainKeys(
             "urgentDirectionsOrder", "noticeOfProceedings","showRemoveSDOWarningFlag");
     }
 
     @Test
-    void shouldRemoveUDONoticeOfProceedingsWithoutUpdatingStateToGatekeepingIfSDOExist() {
+    void shouldRemoveUDONoticeOfProceedingsAndKeepStateIfSDOExist() {
         StandardDirectionOrder urgentDirectionsOrder = StandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
@@ -230,8 +203,7 @@ class SDORemovalActionTest {
                 .build())
             .urgentDirectionsOrder(urgentDirectionsOrder)
             .standardDirectionOrder(StandardDirectionOrder.builder()
-                .orderDoc(DocumentReference.builder().build())
-                .build())
+                .orderDoc(DocumentReference.builder().build()).build())
             .noticeOfProceedings(noticeOfProceedings)
             .build();
 
@@ -242,8 +214,8 @@ class SDORemovalActionTest {
                 "noticeOfProceedingsBundle", noticeOfProceedings))
             .build());
 
-        when(identityService.generateId()).thenReturn(SDO_ID);
-        underTest.remove(caseData, caseDetailsMap, SDO_ID, urgentDirectionsOrder);
+        when(identityService.generateId()).thenReturn(UDO_ID);
+        underTest.remove(caseData, caseDetailsMap, UDO_ID, urgentDirectionsOrder);
 
         StandardDirectionOrder expectedUDO = StandardDirectionOrder.builder()
             .orderStatus(SEALED)
@@ -252,7 +224,7 @@ class SDORemovalActionTest {
 
         assertThat(caseDetailsMap)
             .extracting("hiddenUrgentDirectionOrders", "state")
-            .containsExactly(List.of(element(SDO_ID, expectedUDO)), CASE_MANAGEMENT);
+            .containsExactly(List.of(element(UDO_ID, expectedUDO)), CASE_MANAGEMENT);
 
         assertThat(caseDetailsMap).doesNotContainKeys(
             "urgentDirectionsOrder", "noticeOfProceedings","showRemoveSDOWarningFlag");
