@@ -24,6 +24,6 @@ test.describe('log expert report', () => {
 
             await logExpertReport.gotoNextStep('Log expert report');
             await logExpertReport.logExpertReport();
-         
-    })
+            await expect(page.getByText('Log expert report')).toBeVisible();
+          })
 });
