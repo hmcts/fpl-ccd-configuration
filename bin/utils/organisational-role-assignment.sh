@@ -24,8 +24,7 @@ USER_ID=$($BASEDIR/idam-user-id.sh $USER_TOKEN)
 SERVICE_TOKEN=$($BASEDIR/idam-lease-service-token.sh fpl_case_service \
   $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${FPL_S2S_SECRET:-AAAAAAAAAAAAAAAC}))
 
-echo "\n\nCreating role assignment: \n User: ${USER_ID}\n Role name: ${ROLE_NAME}\n ROLE_CLASSIFICATION: ${ROLE_CLASSIFICATION}\n"
-echo "\n\nROLE ASSIGNMENT URL: \n Url: ${ROLE_ASSIGNMENT_URL}\n"
+echo -e "\nCreating role assignment: \n User: ${USER_ID}\n Role name: ${ROLE_NAME}\n ROLE_CLASSIFICATION: ${ROLE_CLASSIFICATION}\n"
 
 curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" \
   -H "accept: application/vnd.uk.gov.hmcts.role-assignment-service.create-assignments+json;charset=UTF-8;version=1.0" \
