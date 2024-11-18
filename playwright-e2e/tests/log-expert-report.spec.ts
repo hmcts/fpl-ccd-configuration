@@ -24,6 +24,8 @@ test.describe('log expert report', () => {
 
             await logExpertReport.gotoNextStep('Log expert report');
             await logExpertReport.logExpertReport();
-            await expect(page.getByText('Log expert report')).toBeVisible();
-          })
+            await logExpertReport.tabNavigation('Expert Reports')
+            await expect(page.getByText('Report 1')).toBeVisible();
+            await expect(page.getByText('Psychiatric - On child only')).toBeVisible();
+        })
 });

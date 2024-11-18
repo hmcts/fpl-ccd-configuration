@@ -31,6 +31,7 @@ export class StartApplication {
   readonly otherPeopleInCaseLink: Locator;
   readonly returnApplicationLink: Locator;
 
+  // readonly logExpertReportLink: Locator;
   public constructor(page: Page) {
     this.page = page;
     this.addApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details", });
@@ -47,7 +48,7 @@ export class StartApplication {
     this.allocationProposalLink = page.getByRole("link", { name: "Allocation proposal", });
     this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });
     this.addApplicationDocsHeading = page.getByRole("heading", { name: "Add application documents", });
-    this.upLoadDocsInProgress = page.locator('p').filter({ hasText: 'Upload documents' }).getByRole('img',{name:'Finished'})
+    this.upLoadDocsInProgress = page.locator('p').filter({ hasText: 'Upload documents' }).getByRole('img', { name: 'Finished' })
     this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
     this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' });
@@ -59,9 +60,9 @@ export class StartApplication {
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
-    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'}); 
-    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'}); 
-    this.returnApplicationLink = page.getByRole('link', { name: 'Return application'}); 
+    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
+    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case' });
+    this.returnApplicationLink = page.getByRole('link', { name: 'Return application' });
   }
   async groundsForTheApplication() {
     expect(await this.groundsForTheApplicationLink).toBeVisible();
@@ -141,12 +142,12 @@ export class StartApplication {
     await this.courtServicesNeeded.click();
   }
 
-  async addOtherPeopleInCase(){
+  async addOtherPeopleInCase() {
     await expect(this.otherPeopleInCaseLink).toBeVisible();
     await this.otherPeopleInCaseLink.click();
   }
 
-  async returnApplication(){
+  async returnApplication() {
     await expect(this.returnApplicationLink).toBeVisible();
     await this.returnApplicationLink.click();
   }
