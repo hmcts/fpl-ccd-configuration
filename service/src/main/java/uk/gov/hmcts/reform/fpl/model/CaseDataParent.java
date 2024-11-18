@@ -264,6 +264,7 @@ public class CaseDataParent {
     protected final CaseLocation caseManagementLocation;
 
     protected final List<Element<ListingActionRequest>> listingRequests;
+    protected final ListingActionRequest listingRequestToReview;
     protected final List<Element<ListingActionRequest>> reviewedListingRequests;
     protected final List<ListingActionType> selectListingActions;
     protected final String listingDetails;

@@ -6,13 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.workallocation.ClientContext;
-import uk.gov.hmcts.reform.fpl.model.workallocation.ClientContextHeader;
-import uk.gov.hmcts.reform.fpl.model.workallocation.UserTask;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,12 +24,6 @@ public class WorkAllocationTaskService {
         log.info("Creating work allocation task {} on case {}", taskType.name(), caseData.getId());
         coreCaseDataService.performPostSubmitCallback(caseData.getId(), WORK_ALLOCATION_DUMMY_EVENT,
             caseDetails -> Map.of(WORK_ALLOCATION_DUMMY_CASE_FIELD, taskType));
-    }
-
-    public Optional<UserTask> getUserTask(ClientContextHeader header) {
-        return Optional.ofNullable(header)
-            .map(ClientContextHeader::getClientContext)
-            .map(ClientContext::getUserTask);
     }
 
 }

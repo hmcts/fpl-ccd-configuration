@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ListingActionRequest;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.workallocation.ClientContextHeader;
 import uk.gov.hmcts.reform.fpl.service.ListingActionService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -34,13 +32,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReviewListingActionController extends CallbackController {
 
-    private final WorkAllocationTaskService workAllocationService;
     private final ListingActionService listingActionService;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
-        @RequestBody CallbackRequest callbackRequest,
-        @RequestHeader(value = "Client-Context", required = false) ClientContextHeader clientContext) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -48,16 +43,8 @@ public class ReviewListingActionController extends CallbackController {
             return respond(caseDetails, List.of("There are no listing actions to review."));
         }
 
-        if (workAllocationService.getUserTask(clientContext).isPresent()) {
-            // we have a task, therefore skip the contents page and go directly to the review page
-            // todo - check if this header is actually applicable in about-to-start, implement skipping logic
-            // see https://tools.hmcts.net/confluence/x/ng6Jaw
-            log.info("TASK PRESENT");
-        } else {
-            // we don't have a task, therefore we need to create a contents page/DynamicList
-            caseDetails.getData().put("listingRequestsList",
-                asDynamicList(caseData.getListingRequests(), ListingActionRequest::toLabel));
-        }
+        caseDetails.getData().put("listingRequestsList",
+            asDynamicList(caseData.getListingRequests(), ListingActionRequest::toLabel));
 
         return respond(caseDetails);
     }
