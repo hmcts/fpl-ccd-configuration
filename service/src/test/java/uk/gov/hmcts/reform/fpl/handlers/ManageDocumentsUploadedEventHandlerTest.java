@@ -194,7 +194,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
         when(furtherEvidenceNotificationService.getChildSolicitorEmails(any()))
             .thenReturn(CHILD_SOLICITOR_RECIPIENTS);
 
-        when(sendDocumentService.getStandardRecipients(any())).thenReturn(REPRESENTATIVES_SERVED_BY_POST);
+        when(sendDocumentService.getRepresentativesServedByPost(any())).thenReturn(REPRESENTATIVES_SERVED_BY_POST);
 
         when(cafcassLookupConfiguration.getCafcassEngland(any())).thenReturn(
             Optional.of(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));

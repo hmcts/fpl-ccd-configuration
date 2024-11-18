@@ -38,6 +38,8 @@ public class CftlibConfig implements CFTLibConfigurer {
         var json = Resources.toString(Resources.getResource("cftlib-am-role-assignments.json"), StandardCharsets.UTF_8);
         lib.configureRoleAssignments(json);
 
+        var json = Resources.toString(Resources.getResource("cftlib-am-role-assignments.json"), StandardCharsets.UTF_8);
+        lib.configureRoleAssignments(json);
 
         var def = Files.readAllBytes(Path.of("../build/fpl.xlsx"));
         lib.importDefinition(def);

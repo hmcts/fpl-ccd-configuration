@@ -1,9 +1,0 @@
-[
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "idam:caseworker-publiclaw-superuser",
-    "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-superuser"
-  }
-]
