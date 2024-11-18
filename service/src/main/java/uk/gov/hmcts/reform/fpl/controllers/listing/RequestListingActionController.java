@@ -54,7 +54,7 @@ public class RequestListingActionController extends CallbackController {
         listingRequests.add(0, element(newRequest));
 
         caseDetails.getData().put("listingRequests", listingRequests);
-        caseDetails.getData().put("lastListingRequestType", newRequest.getTypesLabel());
+        caseDetails.getData().put("lastListingRequestType", newRequest.getTypesLabel().replace(", ", ";"));
 
         removeTemporaryFields(caseDetails, "selectListingActions", "listingDetails");
         return respond(caseDetails);
