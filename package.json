@@ -45,6 +45,10 @@
     "test:functional-chromium": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test --project=chromium",
     "test:functional-webkit": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test  --project=webkit",
     "test:functional-firefox": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test --project=firefox",
+    "test:functional-firefox": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test --project=firefox",
+    "test:functional-ipad7": "yarn playwright test --project=ipad7",
+    "test:functional-ipadPro11": "yarn playwright test --project=ipadPro11",
+
     "test:functional-nightly-preview": "yarn playwright install chromium && yarn playwright test --project=preview",
     "test:smoke": "yarn npm audit --recursive --environment production && MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
     "test:local": "yarn playwright test --project=webkit --repeat-each=1",

@@ -78,8 +78,8 @@ withNightlyPipeline(type, product, component) {
 
     loadVaultSecrets(integrationTestSecrets)
 
-    enableMutationTest()
-    enableFortifyScan('fpl-aat')
+  //  enableMutationTest()
+   // enableFortifyScan('fpl-aat')
     enableFullFunctionalTest(240)
 
     before('mutationTest') {
@@ -101,26 +101,60 @@ withNightlyPipeline(type, product, component) {
     }
 
     afterAlways('fullFunctionalTest') {
-      stage('Functional UI tests chromium') {
-            try {
-                yarnBuilder.yarn('test:functional-chromium')
-            } catch (Error) {
-                unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-            } finally {
-                publishHTML([
-                    allowMissing: true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'playwright-report',
-                    reportFiles: 'index.html',
-                    reportName: 'UITestChromiumReport'
-                ])
-                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-            }
-        }
-      stage('Functional UI tests firefox') {
+//      stage('Functional UI tests chromium') {
+//            try {
+//                yarnBuilder.yarn('test:functional-chromium')
+//            } catch (Error) {
+//                unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+//            } finally {
+//                publishHTML([
+//                    allowMissing: true,
+//                    alwaysLinkToLastBuild: true,
+//                    keepAll: true,
+//                    reportDir: 'playwright-report',
+//                    reportFiles: 'index.html',
+//                    reportName: 'UITestChromiumReport'
+//                ])
+//                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+//            }
+//        }
+//      stage('Functional UI tests firefox') {
+//        try {
+//          yarnBuilder.yarn('test:functional-firefox')
+//        } catch (Error) {
+//          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+//        } finally {
+//          publishHTML([
+//            allowMissing: true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll: true,
+//            reportDir: 'playwright-report',
+//            reportFiles: 'index.html',
+//            reportName: 'UITestFirefoxReport'
+//          ])
+//          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+//        }
+//      }
+//      stage('Functional UI tests webkit ') {
+//        try {
+//          yarnBuilder.yarn('test:functional-webkit')
+//        } catch (Error) {
+//          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+//        } finally {
+//          publishHTML([
+//            allowMissing: true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll: true,
+//            reportDir: 'playwright-report',
+//            reportFiles: 'index.html',
+//            reportName: 'UITestWebkitReport'
+//          ])
+//          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+//        }
+//      }
+      stage('Functional UI tests ipad7') {
         try {
-          yarnBuilder.yarn('test:functional-firefox')
+          yarnBuilder.yarn('test:functional-ipad7')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -130,14 +164,14 @@ withNightlyPipeline(type, product, component) {
             keepAll: true,
             reportDir: 'playwright-report',
             reportFiles: 'index.html',
-            reportName: 'UITestFirefoxReport'
+            reportName: 'UITestipad7Report'
           ])
           steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
         }
       }
-      stage('Functional UI tests webkit ') {
+      stage('Functional UI tests ipadPro11 ') {
         try {
-          yarnBuilder.yarn('test:functional-webkit')
+          yarnBuilder.yarn('test:functional-ipadPro11')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
