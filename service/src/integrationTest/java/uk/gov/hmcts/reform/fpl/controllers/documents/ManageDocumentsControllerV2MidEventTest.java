@@ -282,7 +282,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldContainErrorIfOneOfTheeSelectedDocumentTypesIsNonUploadableInUploadDocumentAction() {
+    void shouldContainErrorIfOneOfTheSelectedDocumentTypesIsNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
             DocumentType.AA_PARENT_APPLICANTS_DOCUMENTS, DocumentType.AA_PARENT_EXPERT_REPORTS,
             DocumentType.AA_PARENT_ORDERS, DocumentType.AA_PARENT_RESPONDENTS_STATEMENTS
@@ -489,8 +489,8 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
     @ParameterizedTest
     @EnumSource(value = DocumentType.class, names = {"POSITION_STATEMENTS_CHILD", "POSITION_STATEMENTS_RESPONDENT",
-        "ARCHIVED_DOCUMENTS"})
-    void shouldPopulateDocumentsToBeRemovedAfterSelectingLegacyPositionStatement(DocumentType documentType) {
+        "ARCHIVED_DOCUMENTS", "EXPERT_REPORTS", "DRUG_AND_ALCOHOL_REPORTS", "LETTER_OF_INSTRUCTION"})
+    void shouldPopulateDocumentsToBeRemovedAfterSelectingLegacyDocument(DocumentType documentType) {
         CaseData caseData = CaseData.builder()
             .manageDocumentEventData(ManageDocumentEventData.builder()
                 .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
@@ -530,6 +530,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
         extractCaseData(callbackResponse);
 
         assertThat(callbackResponse.getErrors()).contains("You are trying to remove a document from a parent folder, "
+            + "or a document that is not uploadable, "
             + "you need to choose one of the available sub folders.");
     }
 }
