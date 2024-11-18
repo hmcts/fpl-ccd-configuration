@@ -74,7 +74,7 @@ public class ReviewListingActionController extends CallbackController {
         Optional<Element<ListingActionRequest>> requestElement = ElementUtils.findElement(
             caseData.getListingRequestsList().getValueCodeAsUUID(), caseData.getListingRequests());
 
-        if(requestElement.isEmpty()) {
+        if (requestElement.isEmpty()) {
             return respond(caseDetails, List.of("No listing action selected"));
         }
 
