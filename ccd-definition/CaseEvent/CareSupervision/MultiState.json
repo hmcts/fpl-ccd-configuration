@@ -1120,7 +1120,9 @@
     "SecurityClassification": "Public",
     "ShowEventNotes": "N",
     "ShowSummary": "Y",
+    "Publish": "Y",
     "EndButtonLabel": "Make request",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/request-listing-action/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/request-listing-action/about-to-submit"
   },
   {

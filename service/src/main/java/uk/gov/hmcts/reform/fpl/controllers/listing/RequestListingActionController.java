@@ -30,6 +30,13 @@ public class RequestListingActionController extends CallbackController {
 
     private final Time time;
 
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        caseDetails.getData().remove("lastListingRequestType");
+        return respond(caseDetails);
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -38,13 +45,17 @@ public class RequestListingActionController extends CallbackController {
         List<Element<ListingActionRequest>> listingRequests = Optional.ofNullable(caseData.getListingRequests())
             .orElse(new ArrayList<>());
 
-        listingRequests.add(0, element(ListingActionRequest.builder()
+        ListingActionRequest newRequest = ListingActionRequest.builder()
             .type(caseData.getSelectListingActions())
             .details(caseData.getListingDetails())
             .dateSent(time.now())
-            .build()));
+            .build();
+
+        listingRequests.add(0, element(newRequest));
 
         caseDetails.getData().put("listingRequests", listingRequests);
+        caseDetails.getData().put("lastListingRequestType", newRequest.getTypesLabel());
+
         removeTemporaryFields(caseDetails, "selectListingActions", "listingDetails");
         return respond(caseDetails);
     }

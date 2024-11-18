@@ -25,7 +25,7 @@ public class ListingActionRequest {
     }
 
     @JsonIgnore
-    private String getTypesLabel() {
+    public String getTypesLabel() {
         return String.join(", ", type.stream().map(ListingActionType::getLabel).toList());
     }
 
