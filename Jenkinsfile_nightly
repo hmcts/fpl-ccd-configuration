@@ -181,7 +181,7 @@ withNightlyPipeline(type, product, component) {
             keepAll: true,
             reportDir: 'playwright-report',
             reportFiles: 'index.html',
-            reportName: 'UITestWebkitReport'
+            reportName: 'UITestipadPro11Report'
           ])
           steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
         }
