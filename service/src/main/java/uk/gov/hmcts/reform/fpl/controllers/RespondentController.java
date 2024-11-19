@@ -247,6 +247,7 @@ public class RespondentController extends CallbackController {
                     .build())
                 .build();
         }
+
         List<Element<Respondent>> newRespondents = confidentialDetailsService.prepareCollection(
             caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
         newRespondents.add(element(newRespondentId, transformedRespondent));
