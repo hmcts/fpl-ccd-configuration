@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.jobs;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +20,7 @@ import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationList;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,12 +77,12 @@ class UndeliveredEmailsFinderTest {
     void shouldEmitUndeliveredEmailsFoundEvent() {
         when(notificationList.getNotifications()).thenReturn(List.of(notification1, notification2));
 
-        when(notification1.getCompletedAt()).thenReturn(Optional.of(DateTime.now().minusHours(23)));
+        when(notification1.getCompletedAt()).thenReturn(Optional.of(ZonedDateTime.now().minusHours(23)));
         when(notification1.getEmailAddress()).thenReturn(Optional.of("test@test.com"));
         when(notification1.getSubject()).thenReturn(Optional.of("Subject"));
         when(notification1.getReference()).thenReturn(Optional.of("Reference"));
 
-        when(notification2.getCompletedAt()).thenReturn(Optional.of(DateTime.now().minusHours(10)));
+        when(notification2.getCompletedAt()).thenReturn(Optional.of(ZonedDateTime.now().minusHours(10)));
         when(notification2.getEmailAddress()).thenReturn(Optional.of("test2@test.com"));
         when(notification2.getSubject()).thenReturn(Optional.of("Subject 2"));
         when(notification2.getReference()).thenReturn(Optional.of("Reference 2"));
@@ -109,7 +109,7 @@ class UndeliveredEmailsFinderTest {
     void shouldEmitUndeliveredEmailsFoundEventWhenEmailFailedWithinLastDay() {
         when(notificationList.getNotifications()).thenReturn(List.of(notification1));
 
-        when(notification1.getCompletedAt()).thenReturn(Optional.of(DateTime.now().minusDays(1).plusHours(1)));
+        when(notification1.getCompletedAt()).thenReturn(Optional.of(ZonedDateTime.now().minusDays(1).plusHours(1)));
         when(notification1.getEmailAddress()).thenReturn(Optional.of("test@test.com"));
         when(notification1.getSubject()).thenReturn(Optional.of("Subject"));
         when(notification1.getReference()).thenReturn(Optional.of("Reference"));
@@ -129,7 +129,7 @@ class UndeliveredEmailsFinderTest {
     void shouldIgnoreEmailsThatFailedEarlierThanDayAgo() {
         when(notificationList.getNotifications()).thenReturn(List.of(notification1));
 
-        when(notification1.getCompletedAt()).thenReturn(Optional.of(DateTime.now().minusDays(1).minusHours(1)));
+        when(notification1.getCompletedAt()).thenReturn(Optional.of(ZonedDateTime.now().minusDays(1).minusHours(1)));
 
         underTest.execute(jobExecutionContext);
 
