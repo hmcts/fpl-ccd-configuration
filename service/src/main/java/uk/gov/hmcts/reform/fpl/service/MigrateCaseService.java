@@ -934,7 +934,8 @@ public class MigrateCaseService {
     public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
                                                                     String migrationId,
                                                                     int startIndex,
-                                                                    int endIndex) {
+                                                                    int endIndex,
+                                                                    String replacement) {
         Long caseId = caseData.getId();
         String thresholdDetails = caseData.getGrounds().getThresholdDetails();
         String textToRemove;
@@ -953,7 +954,7 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
 
-        thresholdDetails = thresholdDetails.replace(textToRemove, "");
+        thresholdDetails = thresholdDetails.replace(textToRemove, replacement);
         Grounds updatedGrounds = caseData.getGrounds().toBuilder().thresholdDetails(thresholdDetails).build();
 
         return Map.of("grounds", updatedGrounds);
