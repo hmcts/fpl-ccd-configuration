@@ -1,0 +1,2318 @@
+
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "guardianEvidenceList": [
+      {
+        "id": "71ed840f-ae3d-468f-8278-264888d6cd7b",
+        "value": {
+          "markAsConfidential": "No",
+          "document": {
+            "upload_timestamp": "2024-08-28T18:15:00.043284148",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "C2 application for the sealing.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"
+          },
+          "uploaderType": "HMCTS",
+          "uploaderCaseRoles": []
+        }
+      }
+    ],
+    "noticeOfProceedingsBundle": [
+      {
+        "id": "38dc91e4-82e4-41d0-894d-5337dcce3b37",
+        "value": {
+          "translatedDocument": null,
+          "translationRequirements": "NO",
+          "document": {
+            "upload_timestamp": "2024-08-27T16:46:49.648350833",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_proceedings_c6.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"
+          },
+          "translationUploadDateTime": null,
+          "needTranslation": "NO"
+        }
+      },
+      {
+        "id": "65137cb2-63f4-4cce-bd2a-90ad83f8dbad",
+        "value": {
+          "translatedDocument": null,
+          "translationRequirements": "NO",
+          "document": {
+            "upload_timestamp": "2024-08-27T16:46:49.648350833",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_proceedings_c6a.pdf",
+            "document_url":"${TEST_DOCUMENT_URL}"
+          },
+          "translationUploadDateTime": null,
+          "needTranslation": "NO"
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "posStmtList": [
+      {
+        "id": "9c93e517-fd04-4ee3-91d2-745a089a473e",
+        "value": {
+          "markAsConfidential": "No",
+          "document": {
+            "upload_timestamp": "2024-08-27T16:36:41.235667068",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "dummy.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"
+          },
+          "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+          "uploaderCaseRoles": [
+            "LASOLICITOR"
+          ]
+        }
+      },
+      {
+        "id": "cdbc08b4-0f4a-4c7f-8233-74afbc75179f",
+        "value": {
+          "markAsConfidential": "No",
+          "document": {
+            "upload_timestamp": "2024-08-27T16:36:41.235667068",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "dummy.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"
+          },
+          "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+          "uploaderCaseRoles": [
+            "LASOLICITOR"
+          ]
+        }
+      }
+    ],
+    "caseSummaryNextHearingType": "Judgment after hearing",
+    "caseSummaryNextHearingDateTime": "2024-10-12T10:00:00",
+    "caseSummaryFlagAddedByFullName": null,
+    "caseSummaryPreviousHearingDate": "2024-03-12",
+    "parentAssessmentList": [
+      {
+        "id": "a8f4ef0f-8f0a-4f9c-bdc0-ad0f61615bbd",
+        "value": {
+          "markAsConfidential": "No",
+          "document": {
+            "upload_timestamp": "2024-08-28T18:06:25.115911210",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "C2 application for the sealing.docx",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "uploaderType": "HMCTS",
+          "uploaderCaseRoles": []
+        }
+      }
+    ],
+    "submittedForm": {
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+      "document_filename": "Test.pdf",
+      "document_url": "${TEST_DOCUMENT_URL}"    },
+    "submissionConsent": [
+      "agree"
+    ],
+    "caseName": "TestCafcassAPI",
+    "additionalApplicationsBundle": [
+      {
+        "id": "971bff55-b576-4782-a360-47a72c1d18dd",
+        "value": {
+          "amountToPay": "25500",
+          "otherApplicationsBundle": {
+            "respondents": [
+              {
+                "id": "6c709151-7f8c-45ef-a43a-1975c44468a8",
+                "value": {
+                  "legalRepresentation": "Yes",
+                  "legalCounsellors": [],
+                  "solicitor": {
+                    "lastName": "respondentSol",
+                    "firstName": "Solicitor",
+                    "telephoneNumber": {
+                      "telephoneNumber": "01534756978"
+                    },
+                    "colleaguesToBeNotified": [],
+                    "organisation": {
+                      "OrganisationID": "D25VR7V",
+                      "OrganisationName": "Private solicitors"
+                    },
+                    "email": "asfsd@mailinator.com",
+                    "unregisteredOrganisation": {
+                      "address": {},
+                      "name": null
+                    },
+                    "regionalOfficeAddress": {}
+                  },
+                  "representedBy": [],
+                  "party": {
+                    "litigationIssues": "NO",
+                    "lastName": "One",
+                    "firstName": "Respondent",
+                    "address": {},
+                    "telephoneNumber": {
+                      "telephoneNumber": "099999999"
+                    },
+                    "gender": "Male",
+                    "dateOfBirth": "1998-05-04",
+                    "contactDetailsHidden": "No",
+                    "addressKnow": "No",
+                    "relationshipToChild": "Mother",
+                    "partyId": "e1ac35ac-c5c9-4988-a9c5-7152142d85ce",
+                    "addressNotKnowReason": "Person deceased"
+                  }
+                }
+              },
+              {
+                "id": "b9d5d7a4-7963-437f-b53c-a76a79e8149f",
+                "value": {
+                  "legalRepresentation": "Yes",
+                  "legalCounsellors": [],
+                  "solicitor": {
+                    "lastName": "two",
+                    "firstName": "respondent",
+                    "telephoneNumber": {
+                      "telephoneNumber": "9780898908908"
+                    },
+                    "colleaguesToBeNotified": [],
+                    "organisation": {
+                      "OrganisationID": "4ZYL0HK",
+                      "OrganisationName": "FPLSolicitorOrg"
+                    },
+                    "email": "respondent2@emal.com",
+                    "unregisteredOrganisation": {
+                      "address": {},
+                      "name": null
+                    },
+                    "regionalOfficeAddress": {}
+                  },
+                  "representedBy": [],
+                  "party": {
+                    "lastName": "two",
+                    "firstName": "respodent",
+                    "litigationIssues": "YES",
+                    "telephoneNumber": {
+                      "telephoneNumber": "01534756978"
+                    },
+                    "address": {
+                      "AddressLine3": "40 Livingstone Road",
+                      "AddressLine2": "Dashwood Court",
+                      "AddressLine1": "5",
+                      "Country": "United Kingdom",
+                      "PostTown": "Hounslow",
+                      "PostCode": "TW3 1XZ",
+                      "County": ""
+                    },
+                    "gender": "Female",
+                    "dateOfBirth": "2000-04-03",
+                    "contactDetailsHidden": "No",
+                    "relationshipToChild": "Relation ship to the child",
+                    "addressKnow": "Yes"
+                  }
+                }
+              }
+            ],
+            "uploadedDateTime": "27 August 2024, 5:40pm",
+            "applicationType": "C1_WITH_SUPPLEMENT",
+            "author": "local-authority-swansea-0001@maildrop.cc",
+            "document": {
+              "upload_timestamp": "2024-08-27T16:41:03.473648551",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+              "document_filename": "C2 application for the sealing.pdf",
+              "document_url": "${TEST_DOCUMENT_URL}"            },
+            "applicantName": "Child One, Child 1",
+            "id": "5bf6649d-88ee-4a38-b5e5-f8d82db61157",
+            "supplementsBundle": [],
+            "supportingEvidenceBundle": [],
+            "urgencyTimeFrameType": "WITHIN_2_DAYS"
+          },
+          "uploadedDateTime": "27 August 2024, 5:40pm",
+          "author": "local-authority-swansea-0001@maildrop.cc",
+          "pbaPayment": {
+            "pbaNumber": "PBA1234567",
+            "clientCode": "client code",
+            "usePbaPayment": "Yes",
+            "fileReference": "cust"
+          },
+          "applicationReviewed": "NO",
+          "c2DocumentBundleLA": {
+            "respondents": [
+              {
+                "id": "6c709151-7f8c-45ef-a43a-1975c44468a8",
+                "value": {
+                  "legalRepresentation": "Yes",
+                  "legalCounsellors": [],
+                  "solicitor": {
+                    "lastName": "respondentSol",
+                    "firstName": "Solicitor",
+                    "telephoneNumber": {
+                      "telephoneNumber": "01534756978"
+                    },
+                    "colleaguesToBeNotified": [],
+                    "organisation": {
+                      "OrganisationID": "D25VR7V",
+                      "OrganisationName": "Private solicitors"
+                    },
+                    "email": "asfsd@mailinator.com",
+                    "unregisteredOrganisation": {
+                      "address": {},
+                      "name": null
+                    },
+                    "regionalOfficeAddress": {}
+                  },
+                  "representedBy": [],
+                  "party": {
+                    "litigationIssues": "NO",
+                    "lastName": "One",
+                    "firstName": "Respondent",
+                    "address": {},
+                    "telephoneNumber": {
+                      "telephoneNumber": "099999999"
+                    },
+                    "gender": "Male",
+                    "dateOfBirth": "1998-05-04",
+                    "contactDetailsHidden": "No",
+                    "addressKnow": "No",
+                    "relationshipToChild": "Mother",
+                    "partyId": "e1ac35ac-c5c9-4988-a9c5-7152142d85ce",
+                    "addressNotKnowReason": "Person deceased"
+                  }
+                }
+              },
+              {
+                "id": "b9d5d7a4-7963-437f-b53c-a76a79e8149f",
+                "value": {
+                  "legalRepresentation": "Yes",
+                  "legalCounsellors": [],
+                  "solicitor": {
+                    "lastName": "two",
+                    "firstName": "respondent",
+                    "telephoneNumber": {
+                      "telephoneNumber": "9780898908908"
+                    },
+                    "colleaguesToBeNotified": [],
+                    "organisation": {
+                      "OrganisationID": "4ZYL0HK",
+                      "OrganisationName": "FPLSolicitorOrg"
+                    },
+                    "email": "respondent2@emal.com",
+                    "unregisteredOrganisation": {
+                      "address": {},
+                      "name": null
+                    },
+                    "regionalOfficeAddress": {}
+                  },
+                  "representedBy": [],
+                  "party": {
+                    "lastName": "two",
+                    "firstName": "respodent",
+                    "litigationIssues": "YES",
+                    "telephoneNumber": {
+                      "telephoneNumber": "01534756978"
+                    },
+                    "address": {
+                      "AddressLine3": "40 Livingstone Road",
+                      "AddressLine2": "Dashwood Court",
+                      "AddressLine1": "5",
+                      "Country": "United Kingdom",
+                      "PostTown": "Hounslow",
+                      "PostCode": "TW3 1XZ",
+                      "County": ""
+                    },
+                    "gender": "Female",
+                    "dateOfBirth": "2000-04-03",
+                    "contactDetailsHidden": "No",
+                    "relationshipToChild": "Relation ship to the child",
+                    "addressKnow": "Yes"
+                  }
+                }
+              }
+            ],
+            "uploadedDateTime": "27 August 2024, 5:40pm",
+            "author": "local-authority-swansea-0001@maildrop.cc",
+            "document": {
+              "upload_timestamp": "2024-08-27T16:41:03.473648551",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+              "document_filename": "C2 application for the sealing.pdf",
+              "document_url": "${TEST_DOCUMENT_URL}"            },
+            "draftOrdersBundle": [],
+            "applicantName": "Child One, Child 1",
+            "id": "4187112c-1bfc-4fd2-8053-2230147ff714",
+            "supplementsBundle": [],
+            "type": "WITH_NOTICE",
+            "supportingEvidenceBundle": [],
+            "urgencyTimeFrameType": "SAME_DAY",
+            "c2AdditionalOrdersRequested": [
+              "CHANGE_SURNAME_OR_REMOVE_JURISDICTION"
+            ]
+          },
+          "c2DocumentBundleConfidential": {
+            "respondents": [
+              {
+                "id": "6c709151-7f8c-45ef-a43a-1975c44468a8",
+                "value": {
+                  "legalRepresentation": "Yes",
+                  "legalCounsellors": [],
+                  "solicitor": {
+                    "lastName": "respondentSol",
+                    "firstName": "Solicitor",
+                    "telephoneNumber": {
+                      "telephoneNumber": "01534756978"
+                    },
+                    "colleaguesToBeNotified": [],
+                    "organisation": {
+                      "OrganisationID": "D25VR7V",
+                      "OrganisationName": "Private solicitors"
+                    },
+                    "email": "asfsd@mailinator.com",
+                    "unregisteredOrganisation": {
+                      "address": {},
+                      "name": null
+                    },
+                    "regionalOfficeAddress": {}
+                  },
+                  "representedBy": [],
+                  "party": {
+                    "litigationIssues": "NO",
+                    "lastName": "One",
+                    "firstName": "Respondent",
+                    "address": {},
+                    "telephoneNumber": {
+                      "telephoneNumber": "099999999"
+                    },
+                    "gender": "Male",
+                    "dateOfBirth": "1998-05-04",
+                    "contactDetailsHidden": "No",
+                    "addressKnow": "No",
+                    "relationshipToChild": "Mother",
+                    "partyId": "e1ac35ac-c5c9-4988-a9c5-7152142d85ce",
+                    "addressNotKnowReason": "Person deceased"
+                  }
+                }
+              },
+              {
+                "id": "b9d5d7a4-7963-437f-b53c-a76a79e8149f",
+                "value": {
+                  "legalRepresentation": "Yes",
+                  "legalCounsellors": [],
+                  "solicitor": {
+                    "lastName": "two",
+                    "firstName": "respondent",
+                    "telephoneNumber": {
+                      "telephoneNumber": "9780898908908"
+                    },
+                    "colleaguesToBeNotified": [],
+                    "organisation": {
+                      "OrganisationID": "4ZYL0HK",
+                      "OrganisationName": "FPLSolicitorOrg"
+                    },
+                    "email": "respondent2@emal.com",
+                    "unregisteredOrganisation": {
+                      "address": {},
+                      "name": null
+                    },
+                    "regionalOfficeAddress": {}
+                  },
+                  "representedBy": [],
+                  "party": {
+                    "lastName": "two",
+                    "firstName": "respodent",
+                    "litigationIssues": "YES",
+                    "telephoneNumber": {
+                      "telephoneNumber": "01534756978"
+                    },
+                    "address": {
+                      "AddressLine3": "40 Livingstone Road",
+                      "AddressLine2": "Dashwood Court",
+                      "AddressLine1": "5",
+                      "Country": "United Kingdom",
+                      "PostTown": "Hounslow",
+                      "PostCode": "TW3 1XZ",
+                      "County": ""
+                    },
+                    "gender": "Female",
+                    "dateOfBirth": "2000-04-03",
+                    "contactDetailsHidden": "No",
+                    "relationshipToChild": "Relation ship to the child",
+                    "addressKnow": "Yes"
+                  }
+                }
+              }
+            ],
+            "uploadedDateTime": "27 August 2024, 5:40pm",
+            "author": "local-authority-swansea-0001@maildrop.cc",
+            "document": {
+              "upload_timestamp": "2024-08-27T16:41:03.473648551",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+              "document_filename": "C2 application for the sealing.pdf",
+              "document_url": "${TEST_DOCUMENT_URL}"            },
+            "draftOrdersBundle": [],
+            "applicantName": "Child One, Child 1",
+            "id": "4187112c-1bfc-4fd2-8053-2230147ff714",
+            "supplementsBundle": [],
+            "type": "WITH_NOTICE",
+            "supportingEvidenceBundle": [],
+            "urgencyTimeFrameType": "SAME_DAY",
+            "c2AdditionalOrdersRequested": [
+              "CHANGE_SURNAME_OR_REMOVE_JURISDICTION"
+            ]
+          },
+          "hasConfidentialC2": "YES"
+        }
+      }
+    ],
+    "caseSummaryCafcassGuardian": null,
+    "familyManCaseNumber": "Famil1234",
+    "allocatedJudge": {
+      "judgeTitle": "OTHER",
+      "judgeFullName": "Mrs Susan Calderon",
+      "judgeJudicialUser": {
+        "personalCode": null,
+        "idamId": null
+      },
+      "judgeEnterManually": "NO",
+      "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+      "judgeLastName": "Calderon",
+      "otherTitle": "Mrs"
+    },
+    "caseSummaryFlagAssessmentForm": null,
+    "caseSummaryNextHearingCMO": null,
+    "others": {
+      "additionalOthers": [
+        {
+          "id": "ea7759c3-63cc-4be3-9d2f-e26f9487903c",
+          "value": {
+            "address": {
+              "AddressLine3": "40 Livingstone Road",
+              "AddressLine2": "Dashwood Court",
+              "AddressLine1": "38",
+              "Country": "United Kingdom",
+              "PostTown": "Hounslow",
+              "PostCode": "TW3 1XZ",
+              "County": ""
+            },
+            "gender": "They identify in another way",
+            "detailsHidden": "No",
+            "genderIdentification": "yet",
+            "telephone": "01534756978",
+            "representedBy": [],
+            "birthPlace": "spain",
+            "litigationIssues": "YES",
+            "detailsHiddenReason": null,
+            "DOB": "2000-05-05",
+            "name": "other person2",
+            "addressKnow": "Yes",
+            "addressNotKnowReason": null,
+            "litigationIssuesDetails": null,
+            "childInformation": null
+          }
+        },
+        {
+          "id": "a4716d81-ca1d-4bc2-8f19-bda656289b62",
+          "value": {
+            "address": {},
+            "gender": "Female",
+            "detailsHidden": "No",
+            "genderIdentification": null,
+            "telephone": null,
+            "representedBy": [],
+            "birthPlace": "NY",
+            "litigationIssues": "DONT_KNOW",
+            "detailsHiddenReason": null,
+            "DOB": "2001-05-05",
+            "name": "Other person3",
+            "addressKnow": "No",
+            "addressNotKnowReason": "Person deceased",
+            "litigationIssuesDetails": null,
+            "childInformation": "What is happ"
+          }
+        }
+      ],
+      "firstOther": {
+        "address": {},
+        "gender": "Female",
+        "detailsHidden": "No",
+        "genderIdentification": null,
+        "telephone": "0999534645",
+        "representedBy": [],
+        "birthPlace": "Uk",
+        "litigationIssues": "NO",
+        "detailsHiddenReason": null,
+        "DOB": "1980-05-04",
+        "name": "ohter person1",
+        "addressKnow": "No",
+        "addressNotKnowReason": "No fixed abode",
+        "litigationIssuesDetails": null,
+        "childInformation": null
+      }
+    },
+    "skeletonArgumentList": [
+      {
+        "id": "3f3b4d60-feee-4d28-90c2-255608365ae3",
+        "value": {
+          "markAsConfidential": "No",
+          "hasConfidentialAddress": "No",
+          "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+          "document": {
+            "upload_timestamp": "2024-08-27T16:36:41.235667068",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "C2 application for the sealing.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "documentAcknowledge": [
+            "ACK_RELATED_TO_CASE"
+          ],
+          "uploaderCaseRoles": [
+            "LASOLICITOR"
+          ]
+        }
+      },
+      {
+        "id": "c9e80ead-f345-4004-811d-1f234faa38cc",
+        "value": {
+          "markAsConfidential": "No",
+          "hasConfidentialAddress": "No",
+          "uploaderType": "HMCTS",
+          "document": {
+            "upload_timestamp": "2024-08-28T18:15:00.043284148",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Supplement doc in word format.docx",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "documentAcknowledge": [
+            "ACK_RELATED_TO_CASE"
+          ],
+          "uploaderCaseRoles": []
+        }
+      }
+    ],
+    "caseSummaryLASolicitorName": "applicant Solicitor",
+    "dfjArea": "WEST_LONDON",
+    "caseSummaryPreviousHearingType": "Final",
+    "caseLocalAuthority": "SA",
+    "caseLocalAuthorityName": "Swansea City Council",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseSummaryHasFinalHearing": "Yes",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "caseSummaryCourtName": "Family Court sitting at Barnet",
+    "hearingOrdersBundlesDraftReview": [],
+    "deadline26week": "2025-02-25",
+    "grounds": {
+      "thresholdDetails": "Give details",
+      "thresholdReason": [
+        "beyondControl"
+      ]
+    },
+    "correspondenceDocList": [
+      {
+        "id": "2a70fd67-b218-4253-baa5-13ffb0b77c8c",
+        "value": {
+          "markAsConfidential": "No",
+          "document": {
+            "upload_timestamp": "2024-08-28T18:06:25.115911210",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "EPS.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "uploaderType": "HMCTS",
+          "uploaderCaseRoles": []
+        }
+      }
+    ],
+    "caseSummaryNextHearingEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+    "allocationProposal": {
+      "proposal": "District judge",
+      "proposalReason": "Give details"
+    },
+    "previousProceedingList": [
+      {
+        "id": "ef41508b-1d27-49c0-aea2-227fcaaeaf0b",
+        "value": {
+          "markAsConfidential": "No",
+          "document": {
+            "upload_timestamp": "2024-08-28T18:06:25.115911210",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "D10.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "uploaderType": "HMCTS",
+          "uploaderCaseRoles": []
+        }
+      }
+    ],
+    "localAuthorities": [
+      {
+        "id": "2bf3d806-b9fb-4186-8e58-f91853b56240",
+        "value": {
+          "address": {
+            "AddressLine3": "40 Fleet street",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "Country": "county",
+            "PostTown": "Swansea",
+            "PostCode": "CR0 2GE",
+            "County": "United Kingdom"
+          },
+          "designated": "Yes",
+          "phone": "1245678909000",
+          "pbaNumber": "PBA1234567",
+          "clientCode": "Client code",
+          "legalTeamManager": "hihjhj",
+          "colleagues": [
+            {
+              "id": "3d8b502d-962a-4758-b33b-26424a9751b7",
+              "value": {
+                "reference": "Solcitor reference",
+                "mainContact": "Yes",
+                "notificationRecipient": "Yes",
+                "role": "SOLICITOR",
+                "dx": "DX code",
+                "phone": "01534756978",
+                "fullName": "applicant Solicitor",
+                "title": null,
+                "email": "asfsd@mailinator.com"
+              }
+            }
+          ],
+          "customerReference": "customer",
+          "name": "Swansea City Council",
+          "id": "W9V61CP",
+          "email": "FamilyPublicLaw+sa@gmail.com"
+        }
+      }
+    ],
+    "orders": {
+      "orderType": [
+        "SUPERVISION_ORDER"
+      ],
+      "particularsOfChildren": [],
+      "emergencyProtectionOrders": [],
+      "directionDetails": "Give Details",
+      "epoType": null,
+      "emergencyProtectionOrderDirections": [],
+      "childAssessmentOrderContactDirections": null,
+      "court": "117",
+      "particularsOfChildrenDetails": null,
+      "childRecoveryOrderDirectionsAppliedFor": null,
+      "educationSupervisionOrderPriorConsultationType": [],
+      "excluded": null,
+      "educationSupervisionOrderDirectionsAppliedFor": null,
+      "directions": "Yes",
+      "educationSupervisionOrderPriorConsultationOtherLA": null,
+      "childAssessmentOrderAssessmentDirections": null,
+      "emergencyProtectionOrderDirectionDetails": null,
+      "emergencyProtectionOrderDetails": null,
+      "otherOrder": null
+    },
+    "caseSummaryAllocatedJudgeName": "Mrs Calderon",
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "caseSummaryNextHearingDate": "2024-10-12",
+    "hearingOrdersBundlesDrafts": [
+      {
+        "id": "e66d8c9c-6f71-4c62-9036-aa0466fdc270",
+        "value": {
+          "orders": [
+            {
+              "id": "8cbec5a7-0621-4850-932b-d826ae2586a1",
+              "value": {
+                "translationRequirements": "NO",
+                "uploaderType": "SOLICITOR",
+                "judgeTitleAndName": "Mrs Calderon",
+                "needTranslation": "NO",
+                "type": "AGREED_CMO",
+                "title": "Agreed CMO discussed at hearing",
+                "hearingId": "62329bcf-d8e0-4aee-b5ce-627db0bc7bb6",
+                "hearing": "Interim care order hearing, 12 October 2023",
+                "dateSent": "2024-08-28",
+                "documentAcknowledge": [
+                  "ACK_RELATED_TO_CASE"
+                ],
+                "others": [],
+                "order": {
+                  "upload_timestamp": "2024-08-28T17:50:47.986448064",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+                  "document_filename": "CMO Order uploaded  LA.docx",
+                  "document_url": "${TEST_DOCUMENT_URL}"                },
+                "uploaderCaseRoles": [
+                  "SOLICITORB"
+                ],
+                "status": "SEND_TO_JUDGE"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "westLondonDFJCourt": "117",
+    "caseSummaryCaseFlagNotes": null,
+    "caseManagementLocation": {
+      "baseLocation": "229786",
+      "region": "1"
+    },
+    "caseSummaryOrdersRequested": "Supervision order",
+    "hearingDetails": [
+      {
+        "id": "efddcb27-bab1-42ae-94dd-ca88196551c4",
+        "value": {
+          "hearingDuration": "1 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2025-08-19T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "FACT_FINDING",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 1,
+          "noticeOfHearing": {
+            "upload_timestamp": "2024-08-28T18:21:31.55409705",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_28August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "attendanceDetails": "ghgjh",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2025-08-19T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "340fe481-a9f3-4ca2-b568-6063e88d270d",
+        "value": {
+          "hearingDuration": "5 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2025-04-09T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "ISSUE_RESOLUTION",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 5,
+          "noticeOfHearing": null,
+          "attendanceDetails": "add",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2025-04-03T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "e10dfc5f-31ee-4593-ae9d-39e8e3a80938",
+        "value": {
+          "hearingDuration": "4 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-11-15T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "CASE_MANAGEMENT",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 4,
+          "noticeOfHearing": {
+            "upload_timestamp": "2024-08-28T18:26:08.13596167",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_28August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "attendanceDetails": "cda",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-11-12T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "2e805752-aea8-41d7-afee-2d1614b83932",
+        "value": {
+          "hearingDuration": "2 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-11-13T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "MAGISTRATES",
+            "judgeFullName": "Legal advisor",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEmailAddress": "email@email.com"
+          },
+          "hearingNeedsBooked": null,
+          "type": "ACCELERATED_DISCHARGE_OF_CARE",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Legal advisor (JP)",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 2,
+          "noticeOfHearing": {
+            "upload_timestamp": "2024-08-29T08:24:18.230331383",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_29August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-11-12T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "d5b6ebf5-bf10-44e8-8848-5ee8a345285b",
+        "value": {
+          "hearingDuration": "4 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-11-15T09:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "FACT_FINDING",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 4,
+          "noticeOfHearing": {
+            "upload_timestamp": "2024-08-28T19:29:54.772243035",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_28August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-11-12T09:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "388871b5-e156-4861-ae37-c31cd9931ff9",
+        "value": {
+          "hearingDuration": "5 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-10-17T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "JUDGMENT_AFTER_HEARING",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 5,
+          "noticeOfHearing": {
+            "upload_timestamp": "2024-08-29T08:22:37.231444519",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_29August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "attendanceDetails": "sda",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-10-12T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "4dc66f0d-adda-462e-b99f-5d1c16e7b87b",
+        "value": {
+          "hearingDuration": "3 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-03-14T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "INTERIM_CARE_ORDER",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 3,
+          "noticeOfHearing": null,
+          "attendanceDetails": "dded",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-03-12T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "0f52beb7-7fc4-45d4-9811-9be8a8f349a6",
+        "value": {
+          "hearingDuration": "4 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-03-15T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "FINAL",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 4,
+          "noticeOfHearing": {
+            "upload_timestamp": "2024-08-29T08:20:19.181308358",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_29August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "attendanceDetails": "add",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-03-12T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "62329bcf-d8e0-4aee-b5ce-627db0bc7bb6",
+        "value": {
+          "hearingDuration": "2 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2023-10-13T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "INTERIM_CARE_ORDER",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": null,
+            "usePreviousVenue": null,
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": "8cbec5a7-0621-4850-932b-d826ae2586a1",
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 2,
+          "noticeOfHearing": {
+            "upload_timestamp": "2024-08-27T16:46:49.648350833",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_27August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2023-10-12T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "c0142fbd-5b57-400d-8294-ee8ded69c1bf",
+        "value": {
+          "hearingDuration": "5 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2023-02-09T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "PLACEMENT_HEARING",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 5,
+          "noticeOfHearing": null,
+          "attendanceDetails": "ddd",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON",
+            "VIDEO",
+            "PHONE"
+          ],
+          "startDate": "2023-02-05T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "66f66016-97c4-4607-9166-0814ca9f4f15",
+        "value": {
+          "hearingDuration": "5 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-11-18T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "FURTHER_CASE_MANAGEMENT",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": null,
+            "usePreviousVenue": null,
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 5,
+          "noticeOfHearing": null,
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-11-12T10:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "ce16dd34-7a0d-47e7-be7c-70bf0896291f",
+        "value": {
+          "hearingDuration": "6 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-11-26T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "INTERIM_CARE_ORDER",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {},
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 6,
+          "noticeOfHearing": null,
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "VIDEO"
+          ],
+          "startDate": "2024-11-19T10:00:00",
+          "status": null
+        }
+      }
+    ],
+    "caseSummaryFlagAddedByEmail": null,
+    "placements": [
+      {
+        "id": "4ade79b1-3ec2-4b96-a5a1-43ca12e10683",
+        "value": {
+          "placementRespondentsToNotify": [
+            {
+              "id": "6c709151-7f8c-45ef-a43a-1975c44468a8",
+              "value": {
+                "legalRepresentation": "Yes",
+                "legalCounsellors": [],
+                "solicitor": {
+                  "lastName": "respondentSol",
+                  "firstName": "Solicitor",
+                  "telephoneNumber": {
+                    "telephoneNumber": "01534756978"
+                  },
+                  "colleaguesToBeNotified": [],
+                  "organisation": {
+                    "OrganisationID": "D25VR7V",
+                    "OrganisationName": "Private solicitors"
+                  },
+                  "email": "asfsd@mailinator.com",
+                  "unregisteredOrganisation": {
+                    "address": {},
+                    "name": null
+                  },
+                  "regionalOfficeAddress": {}
+                },
+                "representedBy": [],
+                "party": {
+                  "litigationIssues": "NO",
+                  "lastName": "One",
+                  "firstName": "Respondent",
+                  "address": {},
+                  "telephoneNumber": {
+                    "telephoneNumber": "099999999"
+                  },
+                  "gender": "Male",
+                  "dateOfBirth": "1998-05-04",
+                  "contactDetailsHidden": "No",
+                  "addressKnow": "No",
+                  "relationshipToChild": "Mother",
+                  "partyId": "e1ac35ac-c5c9-4988-a9c5-7152142d85ce",
+                  "addressNotKnowReason": "Person deceased"
+                }
+              }
+            },
+            {
+              "id": "b9d5d7a4-7963-437f-b53c-a76a79e8149f",
+              "value": {
+                "legalRepresentation": "Yes",
+                "legalCounsellors": [],
+                "solicitor": {
+                  "lastName": "two",
+                  "firstName": "respondent",
+                  "telephoneNumber": {
+                    "telephoneNumber": "9780898908908"
+                  },
+                  "colleaguesToBeNotified": [],
+                  "organisation": {
+                    "OrganisationID": "4ZYL0HK",
+                    "OrganisationName": "FPLSolicitorOrg"
+                  },
+                  "email": "respondent2@emal.com",
+                  "unregisteredOrganisation": {
+                    "address": {},
+                    "name": null
+                  },
+                  "regionalOfficeAddress": {}
+                },
+                "representedBy": [],
+                "party": {
+                  "lastName": "two",
+                  "firstName": "respodent",
+                  "litigationIssues": "YES",
+                  "telephoneNumber": {
+                    "telephoneNumber": "01534756978"
+                  },
+                  "address": {
+                    "AddressLine3": "40 Livingstone Road",
+                    "AddressLine2": "Dashwood Court",
+                    "AddressLine1": "5",
+                    "Country": "United Kingdom",
+                    "PostTown": "Hounslow",
+                    "PostCode": "TW3 1XZ",
+                    "County": ""
+                  },
+                  "gender": "Female",
+                  "dateOfBirth": "2000-04-03",
+                  "contactDetailsHidden": "No",
+                  "relationshipToChild": "Relation ship to the child",
+                  "addressKnow": "Yes"
+                }
+              }
+            }
+          ],
+          "placementApplication": {
+            "upload_timestamp": "2024-08-29T08:54:54.523634615",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Parent Assessment.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "placementUploadDateTime": "2024-08-29T09:54:52.075516319",
+          "isSubmitted": "YES",
+          "placementConfidentialDocuments": [
+            {
+              "id": "a6c8fa8b-ba12-4849-a693-eac457e3ded8",
+              "value": {
+                "document": {
+                  "upload_timestamp": "2024-08-29T08:54:52.158694141",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+                  "document_filename": "AdditionalDoc1.pdf",
+                  "document_url": "${TEST_DOCUMENT_URL}"                },
+                "type": "ANNEX_B",
+                "documentAcknowledge": [
+                  "ACK_RELATED_TO_CASE"
+                ]
+              }
+            }
+          ],
+          "placementChildId": "de9076cd-1cac-41d3-871f-9b6f68185953",
+          "placementSupportingDocuments": [
+            {
+              "id": "48507996-7862-42d7-970e-83021295ea72",
+              "value": {
+                "document": {
+                  "upload_timestamp": "2024-08-29T08:54:52.158694141",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+                  "document_filename": "Birth Certificate.docx",
+                  "document_url": "${TEST_DOCUMENT_URL}"                },
+                "type": "BIRTH_ADOPTION_CERTIFICATE"
+              }
+            },
+            {
+              "id": "4fa6d095-4c32-41a0-ad1e-351677ab876e",
+              "value": {
+                "document": {
+                  "upload_timestamp": "2024-08-29T08:54:52.158694141",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+                  "document_filename": "C2 application for the sealing.docx",
+                  "document_url": "${TEST_DOCUMENT_URL}"                },
+                "type": "STATEMENT_OF_FACTS"
+              }
+            }
+          ],
+          "placementChildName": "Child 2 Second",
+          "placementNoticeDocuments": []
+        }
+      }
+    ],
+    "caseSummaryLASolicitorEmail": "asfsd@mailinator.com",
+    "factorsParenting": {
+      "alcoholDrugAbuse": "Yes",
+      "domesticViolence": "No",
+      "domesticViolenceReason": null,
+      "anythingElse": "Yes",
+      "anythingElseReason": "Given details of other harms",
+      "alcoholDrugAbuseReason": "Test"
+    },
+    "caseManagementCategory": {
+      "value": {
+        "code": "FPL",
+        "label": "Family Public Law"
+      },
+      "list_items": [
+        {
+          "code": "FPL",
+          "label": "Family Public Law"
+        }
+      ]
+    },
+    "caseSummaryLanguageRequirement": "No",
+    "caseSummaryDateOfIssue": "2024-08-27",
+    "caseSummaryPreviousCourtName": null,
+    "hearing": {
+      "reason": null,
+      "reducedNoticeReason": null,
+      "reducedNotice": "No",
+      "reason12Days": null,
+      "respondentsAwareReason": null,
+      "type": "Urgent preliminary case management heari",
+      "timeFrame": "Within 18 days",
+      "withoutNotice": "No",
+      "respondentsAware": "No",
+      "reason2Days": null,
+      "type_GiveReason": "Give reasoj",
+      "reason7Days": null,
+      "withoutNoticeReason": null
+    },
+    "cancelledHearingDetails": [
+      {
+        "id": "27220e88-2ff6-4ec3-9b8f-09f43cf2a0db",
+        "value": {
+          "hearingDuration": "5 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-10-24T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "INTERIM_CARE_ORDER",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": "other reason",
+          "vacatedDate": "2024-08-02",
+          "hearingDays": 5,
+          "noticeOfHearing": null,
+          "attendanceDetails": "dsfas",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-10-19T10:00:00",
+          "status": "VACATED"
+        }
+      },
+      {
+        "id": "f2a2985a-dcd1-4b63-96bf-44ca9fb9dd51",
+        "value": {
+          "hearingDuration": "4 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-10-09T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "INTERIM_CARE_ORDER",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": "CA1",
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": "2024-08-22",
+          "hearingDays": 4,
+          "noticeOfHearing": {
+            "upload_timestamp": "2024-08-29T08:38:52.729948552",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_29August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": {
+            "upload_timestamp": "2024-08-29T08:39:57.582731661",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_vacated_29August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "typeReason": null,
+          "attendance": [
+            "VIDEO"
+          ],
+          "startDate": "2024-10-05T10:00:00",
+          "status": "VACATED_AND_RE_LISTED"
+        }
+      },
+      {
+        "id": "c2bcb14a-aefa-4ca9-969a-adf8c0ff91c0",
+        "value": {
+          "hearingDuration": "6 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-10-18T09:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "FURTHER_CASE_MANAGEMENT",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": "LW3",
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": "2024-08-04",
+          "hearingDays": 6,
+          "noticeOfHearing": null,
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": {
+            "upload_timestamp": "2024-08-29T08:41:44.978423573",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Notice_of_hearing_vacated_29August.pdf",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-10-12T09:00:00",
+          "status": "VACATED_AND_RE_LISTED"
+        }
+      },
+      {
+        "id": "251403cb-40c4-425b-bbc7-fb7f95e99e0d",
+        "value": {
+          "hearingDuration": "3 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-02-06T10:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "JUDGMENT_AFTER_HEARING",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": "JU1",
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": 3,
+          "noticeOfHearing": null,
+          "attendanceDetails": "f",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2024-02-02T10:00:00",
+          "status": "ADJOURNED_TO_BE_RE_LISTED"
+        }
+      },
+      {
+        "id": "39afd2e1-0972-4aa8-8997-153a78702d2d",
+        "value": {
+          "hearingDuration": "5 days",
+          "venue": "37",
+          "allocatedJudgeLabel": "Mrs Calderon",
+          "endDate": "2024-02-22T08:00:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "OTHER",
+            "judgeFullName": "Mrs Susan Calderon",
+            "judgeJudicialUser": {
+              "personalCode": null,
+              "idamId": null
+            },
+            "judgeEnterManually": "NO",
+            "judgeEmailAddress": "Susan.Calderon.JP@ejudiciary.net",
+            "judgeLastName": "Calderon",
+            "otherTitle": "Mrs"
+          },
+          "hearingNeedsBooked": null,
+          "type": "FAMILY_DRUG_ALCOHOL_COURT",
+          "translatedNoticeOfHearing": null,
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "presence": null,
+          "additionalNotes": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "previousVenue": "Aldershot Justice Centre, Civic Centre, The Court House, Aldershot, GU11 1NY",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {},
+            "newVenue": null
+          },
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "hearingJudgeLabel": "Mrs Calderon",
+          "needTranslation": "NO",
+          "caseManagementOrderId": null,
+          "housekeepReason": "Listed in error",
+          "vacatedDate": null,
+          "hearingDays": 5,
+          "noticeOfHearing": null,
+          "attendanceDetails": "add",
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "VIDEO"
+          ],
+          "startDate": "2024-02-18T08:00:00",
+          "status": "ADJOURNED"
+        }
+      }
+    ],
+    "c2DocumentBundle": [],
+    "policeDisclosureList": [
+      {
+        "id": "63be58fc-e172-440c-a12b-c3577e1dbfe3",
+        "value": {
+          "markAsConfidential": "No",
+          "document": {
+            "upload_timestamp": "2024-08-28T18:15:00.043284148",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Supplement doc in word format.docx",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "uploaderType": "HMCTS",
+          "uploaderCaseRoles": []
+        }
+      }
+    ],
+    "caseSummaryFinalHearingDate": "2024-03-12",
+    "caseSummaryHighCourtCase": "No",
+    "caseSummaryFirstRespondentLastName": "One",
+    "respondents1": [
+      {
+        "id": "6c709151-7f8c-45ef-a43a-1975c44468a8",
+        "value": {
+          "legalRepresentation": "Yes",
+          "legalCounsellors": [],
+          "solicitor": {
+            "lastName": "respondentSol",
+            "firstName": "Solicitor",
+            "telephoneNumber": {
+              "telephoneNumber": "01534756978"
+            },
+            "colleaguesToBeNotified": [],
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "email": "asfsd@mailinator.com",
+            "unregisteredOrganisation": {},
+            "regionalOfficeAddress": {}
+          },
+          "representedBy": [],
+          "party": {
+            "litigationIssues": "NO",
+            "lastName": "One",
+            "firstName": "Respondent",
+            "address": {},
+            "telephoneNumber": {
+              "telephoneNumber": "099999999"
+            },
+            "gender": "Male",
+            "dateOfBirth": "1998-05-04",
+            "contactDetailsHidden": "No",
+            "addressKnow": "No",
+            "relationshipToChild": "Mother",
+            "partyId": "e1ac35ac-c5c9-4988-a9c5-7152142d85ce",
+            "addressNotKnowReason": "Person deceased"
+          }
+        }
+      },
+      {
+        "id": "b9d5d7a4-7963-437f-b53c-a76a79e8149f",
+        "value": {
+          "legalRepresentation": "Yes",
+          "legalCounsellors": [],
+          "solicitor": {
+            "lastName": "two",
+            "firstName": "respondent",
+            "telephoneNumber": {
+              "telephoneNumber": "9780898908908"
+            },
+            "colleaguesToBeNotified": [],
+            "organisation": {
+              "OrganisationID": "4ZYL0HK",
+              "OrganisationName": "FPLSolicitorOrg"
+            },
+            "email": "respondent2@emal.com",
+            "unregisteredOrganisation": {},
+            "regionalOfficeAddress": {}
+          },
+          "representedBy": [],
+          "party": {
+            "lastName": "two",
+            "firstName": "respodent",
+            "litigationIssues": "YES",
+            "telephoneNumber": {
+              "telephoneNumber": "01534756978"
+            },
+            "address": {
+              "AddressLine3": "40 Livingstone Road",
+              "AddressLine2": "Dashwood Court",
+              "AddressLine1": "5",
+              "Country": "United Kingdom",
+              "PostTown": "Hounslow",
+              "PostCode": "TW3 1XZ",
+              "County": ""
+            },
+            "gender": "Female",
+            "dateOfBirth": "2000-04-03",
+            "contactDetailsHidden": "No",
+            "relationshipToChild": "Relation ship to the child",
+            "addressKnow": "Yes"
+          }
+        }
+      }
+    ],
+    "respStmtList": [
+      {
+        "id": "016606bd-8cd2-47ac-a415-356d90d9dbfb",
+        "value": {
+          "markAsConfidential": "No",
+          "hasConfidentialAddress": "No",
+          "uploaderType": "SOLICITOR",
+          "document": {
+            "upload_timestamp": "2024-08-28T18:08:33.204941478",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "C2 application for the sealing.docx",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "needTranslation": "NO",
+          "documentAcknowledge": [
+            "ACK_RELATED_TO_CASE"
+          ],
+          "uploaderCaseRoles": [
+            "SOLICITORB"
+          ]
+        }
+      }
+    ],
+    "caseSummaryNumberOfChildren": 2,
+    "standardDirectionOrder": {
+      "dateOfUpload": "2024-08-27",
+      "translationRequirements": "NO",
+      "uploader": "CTSC Team Leader",
+      "orderStatus": "SEALED",
+      "judgeAndLegalAdvisor": {},
+      "needTranslation": "NO",
+      "orderDoc": {
+        "upload_timestamp": "2024-08-27T16:46:57.670217301",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+        "document_filename": "Gauardian report.pdf",
+        "document_url": "${TEST_DOCUMENT_URL}"      },
+      "lastUploadedOrder": {
+        "upload_timestamp": "2024-08-27T16:44:46.158190617",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+        "document_filename": "Gauardian report.docx",
+        "document_url": "${TEST_DOCUMENT_URL}"      }
+    },
+    "caseSummaryAllocatedJudgeEmail": "Susan.Calderon.JP@ejudiciary.net",
+    "caseSummaryFirstRespondentLegalRep": null,
+    "SearchCriteria": {
+      "SearchParties": [
+        {
+          "id": "39102bfc-d999-400b-9b3b-dacd6413d22a",
+          "value": {
+            "DateOfBirth": "1998-05-04",
+            "Name": "Respondent One"
+          }
+        },
+        {
+          "id": "9b663ad9-1190-479d-b447-9a20ad9f790b",
+          "value": {
+            "DateOfBirth": "2000-04-03",
+            "AddressLine1": "5",
+            "PostCode": "TW3 1XZ",
+            "Name": "respodent two"
+          }
+        },
+        {
+          "id": "23150152-e81a-41b4-8eea-66097ffc0cf5",
+          "value": {
+            "DateOfBirth": "2020-02-12",
+            "Name": "Child One"
+          }
+        },
+        {
+          "id": "5f64ff72-67e2-4209-9668-b8ee630c8372",
+          "value": {
+            "DateOfBirth": "2008-04-03",
+            "AddressLine1": "Flat 31",
+            "PostCode": "TW3 1EW",
+            "Name": "Child 2 Second"
+          }
+        },
+        {
+          "id": "d00aa4d4-a036-4d3f-b8e4-8e727446248e",
+          "value": {
+            "DateOfBirth": "2000-05-05",
+            "AddressLine1": "38",
+            "PostCode": "TW3 1XZ",
+            "Name": "other person2"
+          }
+        },
+        {
+          "id": "6f3d0e00-3ba0-4d47-9a2f-e141024b2071",
+          "value": {
+            "DateOfBirth": "2001-05-05",
+            "Name": "Other person3"
+          }
+        },
+        {
+          "id": "644183fd-29b3-433c-a532-507414f82a4e",
+          "value": {
+            "DateOfBirth": "1980-05-04",
+            "Name": "ohter person1"
+          }
+        }
+      ]
+    },
+    "caseSummaryHasNextHearing": "Yes",
+    "children1": [
+      {
+        "id": "a2ef436b-c22e-4206-96b6-17e039f5cf46",
+        "value": {
+          "legalCounsellors": [],
+          "party": {
+            "lastName": "One",
+            "fathersName": "Father",
+            "gender": "Boy",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "44444444444"
+            },
+            "careAndContactPlan": "Care order",
+            "detailsHidden": "Yes",
+            "additionalNeedsDetails": "Details",
+            "socialWorkerName": "Solicitor",
+            "dateOfBirth": "2020-02-12",
+            "fathersResponsibility": "Don't know",
+            "livingSituationDetails": "Details of the living situation",
+            "litigationIssues": "NO",
+            "firstName": "Child",
+            "detailsHiddenReason": "Details",
+            "addressChangeDate": "2023-05-03",
+            "additionalNeeds": "Yes",
+            "mothersName": "Mother",
+            "livingSituation": "Other",
+            "partyId": "9d83482a-0715-480c-bd88-2683d05ede3b",
+            "keyDates": "key dates key date1\nkey date2"
+          }
+        }
+      },
+      {
+        "id": "de9076cd-1cac-41d3-871f-9b6f68185953",
+        "value": {
+          "legalCounsellors": [],
+          "party": {
+            "lastName": "Second",
+            "firstName": "Child 2",
+            "address": {
+              "AddressLine3": "34 Prince Regent Road",
+              "AddressLine2": "Croxby House",
+              "AddressLine1": "Flat 31",
+              "Country": "United Kingdom",
+              "PostTown": "Hounslow",
+              "PostCode": "TW3 1EW",
+              "County": ""
+            },
+            "gender": "They identify in another way",
+            "careAndContactPlan": "",
+            "addressChangeDate": "2024-05-04",
+            "additionalNeeds": "Yes",
+            "mothersName": "Mother",
+            "dateOfBirth": "2008-04-03",
+            "genderIdentification": "Baby",
+            "livingSituation": "Living with other family or friends"
+          }
+        }
+      }
+    ],
+    "expertReportList": [
+      {
+        "id": "463c8a65-a39d-47cb-a561-2c34afcded0e",
+        "value": {
+          "markAsConfidential": "No",
+          "document": {
+            "upload_timestamp": "2024-08-28T18:15:00.043284148",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "Supplement doc in word format.docx",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "uploaderType": "HMCTS",
+          "uploaderCaseRoles": []
+        }
+      }
+    ],
+    "caseSummaryNextHearingJudge": "Mrs Calderon",
+    "caseSummaryHasPreviousHearing": "Yes",
+    "caseSummaryPreviousHearingCMO": null,
+    "lettersOfInstructionList": [
+      {
+        "id": "41f40654-5192-4967-bfe3-5d1a8b94f55e",
+        "value": {
+          "markAsConfidential": "No",
+          "document": {
+            "upload_timestamp": "2024-08-28T18:15:00.043284148",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+            "document_filename": "C2 application for the sealing.docx",
+            "document_url": "${TEST_DOCUMENT_URL}"          },
+          "uploaderType": "HMCTS",
+          "uploaderCaseRoles": []
+        }
+      }
+    ]
+  }
+}

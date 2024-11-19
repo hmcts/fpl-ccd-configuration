@@ -21,11 +21,11 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 3 : 0,
+  retries: process.env.CI ? 2 : 0,
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 5 : undefined,
+  workers: process.env.CI ? 3 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [[process.env.CI ? 'html' : 'list'],
              ['html', { outputFolder: '../test-results/functionalTest' }]],
@@ -39,29 +39,48 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+
+    {
+        name: 'usertoken',
+        testMatch: /global\.setup\.ts/,
+    },
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+        grepInvert:/.*API.spec.ts/,
     },
 
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
+        grepInvert:/.*API.spec.ts/,
     },
 
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
+      grepInvert:/.*API.spec.ts/,
     },
     {
       name: "preview",
       use: { ...devices["Desktop Chrome"] },
-      retries: 3,
-      timeout: 3*60*1000,
-      expect: { timeout: 1*60*1000 },
-    },
+      grepInvert:/.*API.spec.ts/,
+      retries: 1,
+        timeout: 4*60*1000,
+        expect: { timeout: 1*60*1000 },
 
-    /* Test against mobile viewports. */
+    },
+      {
+          name: "CafcassAPI",
+          use: { ...devices["Desktop Chrome"] },
+          grep:/.*API.spec.ts/,
+          timeout: 3*60*1000,
+          expect: { timeout: 1*60*1000 },
+          dependencies:['usertoken'],
+      },
+
+
+      /* Test against mobile viewports. */
     // {
     //   name: "Mobile Chrome",
     //   use: { ...devices["Pixel 5"] },

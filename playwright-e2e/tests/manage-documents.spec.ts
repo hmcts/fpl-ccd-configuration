@@ -172,7 +172,7 @@ test.describe('Manage Documents', () => {
 
         // remove documents
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.removeDocuments();
+        await manageDocuments.removeDocuments('Court correspondence','mock.pdf');
 
         //go to CFV and assert Court Correspondence not visble
         await caseFileView.goToCFVTab();
