@@ -40,7 +40,7 @@ test.describe('Cafcass API Integration test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber : string;
     let caseName = 'Cafcass Integration Test ' + dateTime;
-    let familManNumPrefix = 'FP24A13';
+    let familManNumPrefix = 'FP24A14';
 
     test("Integration Test", async ({page}, testInfo) => {
         let caseNo = [
