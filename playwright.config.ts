@@ -65,11 +65,15 @@ export default defineConfig({
     /* Test against mobile viewports. */
     {
       name: "ipad7",
-      use: { ...devices["iPad (gen 7)"] },
+      use: { ...devices["iPad (gen 7)"],
+          launchOptions: {
+              slowMo: 1_1000
+          }},
     },
       {
           name: "ipadPro11",
-          use: { ...devices["iPad Pro 11"] },
+          use: { ...devices["iPad Pro 11"]
+          },
       },
     // {
     //   name: "Mobile Safari",
