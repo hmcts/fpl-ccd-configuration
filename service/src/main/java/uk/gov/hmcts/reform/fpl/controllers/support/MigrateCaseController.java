@@ -126,7 +126,7 @@ public class MigrateCaseController extends CallbackController {
     private void run2605(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2605";
         final long expectedCaseId = 1669804298339297L;
-        final String orgId = "18D9WP4";
+        final String orgId = "V9753KQ";
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
