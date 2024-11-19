@@ -29,7 +29,27 @@ export class Orders extends BasePage {
     readonly careOrderIssuedCourt: Locator;
     readonly juridiction: Locator;
     readonly juridictionRegion: Locator;
-
+    readonly approvalDate: Locator;
+    readonly childAccomadation: Locator;
+    readonly orderConsent: Locator;
+    readonly orderReason: Locator;
+    readonly childLegalAid: Locator;
+    readonly juridictionRadio: Locator;
+    readonly orderEndsOn: Locator;
+    readonly orderLength: Locator;
+    readonly assessmentStartDate: Locator;
+    readonly assessmentDuration: Locator;
+    readonly assessmentPlace: Locator;
+    readonly psychiatricAssessment: Locator;
+    readonly assessingBody: Locator;
+    readonly awayFromHome: Locator;
+    readonly awayfromDate: Locator;
+    readonly awayToDate: Locator;
+    readonly childFirstContact: Locator;
+    readonly childSecondContact: Locator;
+    readonly childThirdContact: Locator;
+    readonly costOrderDetails: Locator;
+    readonly costOrder: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -59,6 +79,28 @@ export class Orders extends BasePage {
         this.careOrderIssuedCourt =page.getByLabel('Which court issued the order?');
         this.juridiction = page.getByRole('group', {name: 'Select jurisdiction'});
         this.juridictionRegion = page.locator('#manageOrdersCafcassOfficesWales');
+        this.approvalDate = page.getByRole('group', { name: 'Approval Date' });
+        this.childAccomadation =page.getByLabel('Which child is the order for?');
+        this.orderConsent = page.getByRole('group', { name: 'Is order by consent?' });
+        this.orderReason = page.getByRole('group', { name: 'Order given because the child is likely to' });
+        this.childLegalAid = page.getByRole('group', { name: 'Does the child have a Legal' });
+        this.juridictionRadio = page.getByRole('group', {name: 'Jurisdiction'});
+        this.orderEndsOn = page.getByRole('group', {name: 'When does the order end?'});
+        this.orderLength =page.getByLabel('Order length, in months');
+        this.assessmentStartDate = page.getByRole('group', { name: 'Assessment Start Date' });
+        this.assessmentDuration = page.getByLabel('Duration of assessment (days)');
+        this.assessmentPlace = page.getByLabel('Place of Assessment (Optional)');
+        this.psychiatricAssessment = this.page.getByLabel('Psychiatric Assessment');
+        this.assessingBody = page.getByLabel('Assessing Body');
+        this.awayFromHome = page.getByRole('group', { name: 'Is child kept away from home?' });
+        this.awayfromDate = this.page.getByRole('group', { name: 'From date' });
+        this.awayToDate = page.getByRole('group', { name: 'To date' });
+        this.childFirstContact =  page.getByLabel('Child\'s first contact');
+        this.childSecondContact =  page.getByLabel('Child\'s second contact');
+        this.childThirdContact = page.getByLabel('Child\'s third contact');
+        this.costOrder =  page.getByRole('group', { name: 'Is there a costs order?' });
+        this.costOrderDetails = page.getByLabel('Cost order details');
+
     }
 
     async selectOrderOperation(toDo: string) {
@@ -69,22 +111,43 @@ export class Orders extends BasePage {
         await this.orderTypeRadio.getByLabel(`${orderType}`).check();
     }
 
-    async addIssuingDetailsOfApprovedOrder() {
+    async addIssuingDetailsOfApprovedOrder(approvalDate: string) {
         await this.orderApproved.getByLabel('Yes').click();
         await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
         await this.orderApplication.getByLabel('No').click();
         await this.clickContinue();
-        await this.issuingJudge.getByRole('radio', {name: 'Yes'}).check();
+        await this.addIssuingJudgeDetails('Yes');
+
+        if (approvalDate == 'yes'){
+            await this.approvalDate.getByRole('textbox', { name: 'Day' }).fill('04');
+            await this.approvalDate.getByRole('textbox', { name: 'Month' }).fill('11');
+            await this.approvalDate.getByRole('textbox', { name: 'Year' }).fill('2023');
+            await this.approvalDate.getByLabel('Hour').fill('12');
+            await this.approvalDate.getByLabel('Minute').fill('20');
+            await this.approvalDate.getByLabel('Second').fill('20');
+        }
     }
+
+    async addIssuingJudgeDetails(hearingJudge: string){
+        await this.issuingJudge.getByRole('radio', {name: `${hearingJudge}`}).check();
+        await this.legalAdvisorName.fill('LA Marien Wester');
+        if (hearingJudge =='No'){
+            await this.judgemagistrateTitle.getByLabel('His Honour Judge').check();
+            await this.judgeLastName.fill('John');
+            await this.judgeEmail.fill('email@email.comLegal');
+            await this.legalAdvisorName.fill('LA Jonathan');
+        }
+    }
+
     async addIssuningDeatilsOfUnApprovedOrder(){
         await this.orderApproved.getByLabel('No').click();
         await this.clickContinue();
         await expect.soft(this.page.getByText('Case assigned to: Her Honour')).toBeVisible();
-        await this.issuingJudge.getByLabel('No').click();
-        await this.judgemagistrateTitle.getByLabel('His Honour Judge').check();
-        await this.judgeLastName.fill('John');
-        await this.judgeEmail.fill('email@email.comLegal');
-        await this.legalAdvisorName.fill('LA Jonathan');
+        await this.addIssuingJudgeDetails('No');
+    }
+
+    async selectChildInvolved(){
+        await this.childAccomadation.selectOption('Timothy Jones');
     }
 
     async addChildDetails(isAllChild: string) {
@@ -135,6 +198,43 @@ export class Orders extends BasePage {
         await this.juridiction.getByRole('radio', { name: 'Wales' }).check();
         await this.juridictionRegion.selectOption('Swansea');
         await this.orderDirectionDetails.fill('Remove the child from the social care and appointing Aunty as guardian');
+    }
+
+    async addC26SecureAccomadation(){
+        await this.orderConsent.getByLabel('No').check();
+        await this.orderReason.getByLabel('abscond and suffer harm').check();
+        await this.childLegalAid.getByLabel('Yes').check();
+        await this.juridictionRadio.getByRole('radio', { name: 'Wales' }).check();
+        await this.orderDirectionDetails.fill('Further Direction for give secure accommodation');
+        await this.orderEndsOn.getByLabel('In a set number of months').check();
+        await this.orderLength.fill('12');
+        await this.finalOrder.getByLabel('No').check();
+    }
+
+    async addC39childAssessment(){
+        await expect(this.page.getByText('Child assessment order (C39)')).toBeVisible();
+        await this.finalOrder.getByLabel('Yes').check();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.assessmentStartDate.getByRole('textbox', { name: 'Day' }).fill('4');
+        await this.assessmentStartDate.getByRole('textbox', { name: 'Month' }).fill('4');
+        await this.assessmentStartDate.getByRole('textbox', { name: 'Year' }).fill('2024');
+        await this.assessmentDuration.fill('1');
+        await this.assessmentPlace.fill('London');
+        await this.psychiatricAssessment.check();
+        await this.assessingBody.fill('NHS pediatric specialist');
+        await this.awayFromHome.getByLabel('Yes').check();
+        await this.enterPostCode('EN5');
+        await this.awayfromDate.getByLabel('Day').fill('2');
+        await this.awayfromDate.getByLabel('Month').fill('2');
+        await this.awayfromDate.getByLabel('Year').fill('2024');
+        await this.awayToDate.getByLabel('Day').fill('2');
+        await this.awayToDate.getByLabel('Month').fill('4');
+        await this.awayToDate.getByLabel('Year').fill('2024');
+        await this.childFirstContact.fill('Mother');
+        await this.childSecondContact.fill('Father');
+        await this.childThirdContact.fill('Aunty Joey');
+        await this.costOrder.getByLabel('Yes').check();
+        await this.costOrderDetails.fill('Cost to cover the  assessment and transportation');
     }
 
     async closeTheOrder(close:string){
