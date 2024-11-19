@@ -34,6 +34,7 @@ export default defineConfig({
   use: {
     // Record trace only when retrying a test for the first time.
     trace: 'on-first-retry',
+      video: 'retain-on-failure'
 
   },
 
