@@ -105,4 +105,3 @@ export const giveAccessToCase = async (caseID: string,user: {email: string ,pass
     }
 
 }
-
