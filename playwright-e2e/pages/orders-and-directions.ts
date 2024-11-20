@@ -27,6 +27,7 @@ export class OrdersAndDirectionSought {
     await this.OrdersAndDirectionsSought.click();
     await expect(this.OrdersAndDirectionsHeading).toBeVisible();
     await this.WhichOrdersDoYouNeedCareOrder.check();
+    await this.DoYouNeedAnyOtherDirectionsRadioNo.focus();
     await this.DoYouNeedAnyOtherDirectionsRadioNo.check({force: true});
     await this.WhichCourtAreYouIssuingFor.selectOption('2: 117');
     await this.Continue.click();
