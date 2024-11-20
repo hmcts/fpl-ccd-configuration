@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -100,7 +99,7 @@ public class MigrateCaseController extends CallbackController {
         final String migrationId = "DFPL-2585";
         migrateCaseService.doStateCheck(
             caseDetails.getState(), State.CLOSED.toString(), caseDetails.getId(), migrationId);
-            roleAssignmentService.deleteAllRolesOnCase(caseDetails.getId());
+        roleAssignmentService.deleteAllRolesOnCase(caseDetails.getId());
     }
 
     private void run2585Rollback(CaseDetails caseDetails) {
