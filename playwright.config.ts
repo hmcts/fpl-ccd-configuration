@@ -66,9 +66,8 @@ export default defineConfig({
     {
       name: "ipad7",
       use: { ...devices["iPad (gen 7)"],
-          launchOptions: {
-              slowMo: 1_1000
-          }},
+          viewport: null
+          },
     },
       {
           name: "ipadPro11",
