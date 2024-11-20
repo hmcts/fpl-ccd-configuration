@@ -960,8 +960,8 @@ public class MigrateCaseService {
         return Map.of("grounds", updatedGrounds);
     }
 
-    public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId,
-                                                                               String applicantCaseRole) {
+    public Map<String, OrganisationPolicy> updateOutsourcingPolicy(CaseData caseData, String orgId,
+                                                                               String caseRole) {
         String orgName = organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
             .orElseThrow();
@@ -971,11 +971,11 @@ public class MigrateCaseService {
             .organisationName(orgName)
             .build();
 
-        applicantCaseRole = caseData.getOutsourcingPolicy() != null
-            ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : applicantCaseRole;
+        caseRole = caseData.getOutsourcingPolicy() != null
+            ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : caseRole;
 
         return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
-            .orgPolicyCaseAssignedRole(applicantCaseRole).build());
+            .orgPolicyCaseAssignedRole(caseRole).build());
     }
 
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,
