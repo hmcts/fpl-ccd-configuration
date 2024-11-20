@@ -66,7 +66,10 @@ export default defineConfig({
     {
       name: "ipad7",
       use: { ...devices["iPad (gen 7)"],
-          viewport: null
+          launchOptions: {
+              args: ["--start-fullscreen"], // starting the browser in full screen
+              slowMo: 100, // a 1000 milliseconds pause before each operation. Useful for slow systems.
+          },
           },
     },
       {
