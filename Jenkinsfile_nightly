@@ -75,6 +75,7 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = params.CASE_SERVICE_URL
     env.SECURITY_RULES = params.SECURITY_RULES
     env.ORG_ID = params.ORG_ID
+  env.SKIP_API_TESTS = true
 
     loadVaultSecrets(integrationTestSecrets)
 
