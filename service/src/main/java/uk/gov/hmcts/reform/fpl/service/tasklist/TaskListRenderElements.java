@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @Component
 public class TaskListRenderElements {
@@ -26,8 +24,10 @@ public class TaskListRenderElements {
     }
 
     public String renderLink(Event event) {
-        return format("<a href='/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s'>%s</a>",
-            JURISDICTION, CASE_TYPE, event.getId(), event.getName());
+        return format(
+            "<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/%s'>%s</a>",
+            event.getId(), event.getName()
+        );
     }
 
     public String renderDisabledLink(Task event) {
