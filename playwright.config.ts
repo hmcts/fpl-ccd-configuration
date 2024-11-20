@@ -65,10 +65,7 @@ export default defineConfig({
     /* Test against mobile viewports. */
     {
       name: "ipad7",
-      use: { ...devices["iPad (gen 7)"],
-          launchOptions: {
-              slowMo: 100, // a 1000 milliseconds pause before each operation. Useful for slow systems.
-          },
+      use: { ...devices["iPad (gen 7) landscape"]
           },
     },
       {
