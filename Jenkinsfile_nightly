@@ -187,6 +187,40 @@ withNightlyPipeline(type, product, component) {
           steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
         }
       }
+      stage('Functional UI tests Pixel7 ') {
+        try {
+          yarnBuilder.yarn('test:functional-pixel7')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'UITestPixel7Report'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+        }
+      }
+      stage('Functional UI tests galaxyS4 ') {
+        try {
+          yarnBuilder.yarn('test:functional-galaxyS4')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'UITestGalaxyS4Report'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+        }
+      }
     }
 
     afterAlways('fortify-scan') {

@@ -69,13 +69,18 @@ export default defineConfig({
     },
       {
           name: "ipadPro11",
-          use: { ...devices["iPad Pro 11"]
+          use: { ...devices["iPad Pro 11"],
+              defaultBrowserType: "chromium"
           },
       },
-    // {
-    //   name: "Mobile Safari",
-    //   use: { ...devices["iPad Mini"] },
-    // },
+    {
+      name: "GalaxyS4",
+      use: { ...devices["Galaxy Tab S4"] },
+    },
+      {
+          name: "Pixel7",
+          use: { ...devices["Pixel 7"] },
+      },
 
     /* Test against branded browsers. */
     // {
