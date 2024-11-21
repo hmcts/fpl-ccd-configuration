@@ -96,6 +96,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ACCELERATED_DISCHARGE_OF_CARE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FAMILY_DRUG_ALCOHOL_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
@@ -150,6 +151,25 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdListCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
+    }
+
+    @Test
+    void shouldDoStateCheck() {
+        assertDoesNotThrow(() -> underTest.doStateCheck(
+            State.CASE_MANAGEMENT.toString(),
+            State.CASE_MANAGEMENT.toString(),
+            1L,
+            MIGRATION_ID));
+    }
+
+    @Test
+    void shouldThrowExceptionIfStateCheckFails() {
+        assertThrows(AssertionError.class, () -> underTest.doStateCheck(
+            State.CASE_MANAGEMENT.toString(),
+            State.CLOSED.toString(),
+            1L,
+            MIGRATION_ID
+        ));
     }
 
     @Mock
@@ -212,7 +232,7 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
-    class UpdateThirdPartyStandaloneApplicant {
+    class UpdateOutsourcingPolicy {
 
         private final String previousOrgId = "ABCDEFG";
         private final String previousOrgName = "Previous Organisation Name";
@@ -246,7 +266,7 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+            Map<String, OrganisationPolicy> fields = underTest.updateOutsourcingPolicy(caseData, newOrgId,
                 null);
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
@@ -265,7 +285,7 @@ class MigrateCaseServiceTest {
                 .id(1L)
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+            Map<String, OrganisationPolicy> fields = underTest.updateOutsourcingPolicy(caseData, newOrgId,
                 CaseRole.EPSMANAGING.formattedName());
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
@@ -3210,6 +3230,42 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
+    class UpdatingCancelledHearingDetailsType {
+        private final UUID cancelledHearingBookingId = UUID.randomUUID();
+
+        @Test
+        void shouldSetTypeToEmergencyProtectionOrdertWhenTypeDetailsMatchEPO() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(cancelledHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("EPO")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .cancelledHearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.updateCancelledHearingDetailsType(caseData, MIGRATION_ID);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(cancelledHearingBookingId, HearingBooking.builder()
+                .type(EMERGENCY_PROTECTION_ORDER)
+                .typeDetails("EPO")
+                .build()));
+
+            assertThat(updates).containsEntry("cancelledHearingDetails", expected);
+        }
+
+        @Test
+        void shouldThrowAErrorWhenNoCancelledHearingDetailsPresent() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.updateCancelledHearingDetailsType(caseData, MIGRATION_ID));
+        }
+    }
+
+    @Nested
     class RemoveSubmittedC1Document {
         private static final SubmittedC1WithSupplementBundle SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE =
             SubmittedC1WithSupplementBundle.builder()
@@ -3448,4 +3504,53 @@ class MigrateCaseServiceTest {
                 .hasMessage(format("Migration {id = %s}, this is not an EPO", MIGRATION_ID));
         }
     }
+
+    @Nested
+    class RedactHearingTypeReason {
+
+        @Test
+        void shouldRedactHearingTypeReason() {
+            Hearing hearing = Hearing.builder()
+                .typeGiveReason("Testing REDACT THIS string")
+                .type("test")
+                .reason("reason")
+                .timeFrame("timeFrame")
+                .withoutNotice("withoutNotice")
+                .withoutNoticeReason("withoutNoticeReason")
+                .build();
+
+            Hearing expected = hearing.toBuilder()
+                .typeGiveReason("Testing *** string")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .hearing(hearing)
+                .build();
+
+            Map<String, Object> returned = underTest.redactTypeReason(caseData, MIGRATION_ID, 8, 19);
+
+            assertThat(returned).extracting("hearing").isEqualTo(expected);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoHearingToRedact() {
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.redactTypeReason(caseData, MIGRATION_ID, 8, 19));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoHearingReasonToRedact() {
+            CaseData caseData = CaseData.builder()
+                .hearing(Hearing.builder()
+                    .type("test")
+                    .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.redactTypeReason(caseData, MIGRATION_ID, 8, 19));
+        }
+
+    }
+
 }

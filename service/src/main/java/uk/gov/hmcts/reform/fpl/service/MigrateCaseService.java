@@ -216,6 +216,16 @@ public class MigrateCaseService {
         return Map.of("hearingOrdersBundlesDrafts", bundles);
     }
 
+    public void doStateCheck(String state, String expectedState, long caseId, String migrationId)
+        throws AssertionError {
+        if (!state.equals(expectedState)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, state was %s, expected %s",
+                migrationId, caseId, state, expectedState
+            ));
+        }
+    }
+
     public void doCaseIdCheck(long caseId, long expectedCaseId, String migrationId) throws AssertionError {
         if (caseId != expectedCaseId) {
             throw new AssertionError(format(
@@ -949,8 +959,8 @@ public class MigrateCaseService {
         return Map.of("grounds", updatedGrounds);
     }
 
-    public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId,
-                                                                               String applicantCaseRole) {
+    public Map<String, OrganisationPolicy> updateOutsourcingPolicy(CaseData caseData, String orgId,
+                                                                               String caseRole) {
         String orgName = organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
             .orElseThrow();
@@ -960,11 +970,11 @@ public class MigrateCaseService {
             .organisationName(orgName)
             .build();
 
-        applicantCaseRole = caseData.getOutsourcingPolicy() != null
-            ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : applicantCaseRole;
+        caseRole = caseData.getOutsourcingPolicy() != null
+            ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : caseRole;
 
         return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
-            .orgPolicyCaseAssignedRole(applicantCaseRole).build());
+            .orgPolicyCaseAssignedRole(caseRole).build());
     }
 
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,
@@ -1148,6 +1158,25 @@ public class MigrateCaseService {
         return hearingDetailsMap;
     }
 
+    public Map<String, Object> updateCancelledHearingDetailsType(CaseData caseData, String migrationId) {
+        List<Element<HearingBooking>> updatedCancelledHearingDetails = Optional.ofNullable(caseData
+                .getCancelledHearingDetails())
+            .map(List::stream)
+            .orElseGet(Stream::empty)
+            .peek(MigrateCaseService::processHearingBooking)
+            .collect(toList());
+
+        Map<String, Object> hearingDetailsMap = new HashMap<>();
+
+        if (!updatedCancelledHearingDetails.isEmpty()) {
+            hearingDetailsMap.put("cancelledHearingDetails", updatedCancelledHearingDetails);
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, CancelledHearingDetails not found", migrationId));
+        }
+
+        return hearingDetailsMap;
+    }
+
     private static Optional<HearingType> evaluateType(String typeDetails) {
         return HEARING_TYPE_DETAILS_MAPPING.entrySet().stream()
             .filter(key -> typeDetails.toUpperCase().contains(key.getKey()))
@@ -1254,6 +1283,20 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("hearing",hearing);
+    }
+
+    public Map<String, Object> redactTypeReason(CaseData caseData, String migrationId, int startLoc, int endLoc) {
+        if (isEmpty(caseData.getHearing()) || isEmpty(caseData.getHearing().getTypeGiveReason())) {
+            throw new AssertionError(format("Migration {id = %s}, hearing not found", migrationId));
+        }
+
+        final String typeGiveReason = caseData.getHearing().getTypeGiveReason();
+
+        Hearing hearing = caseData.getHearing().toBuilder()
+            .typeGiveReason(typeGiveReason.replace(typeGiveReason.substring(startLoc, endLoc), "***"))
+            .build();
+
+        return Map.of("hearing", hearing);
     }
 
     public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {
