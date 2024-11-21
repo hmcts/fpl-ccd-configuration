@@ -53,7 +53,8 @@ public class CafcassApiHearingDetailsConverterTest extends CafcassApiConverterTe
         Element<HearingBooking> caseManagementHearingElement = element(caseManagementHearing);
 
         CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(vacatedHearingElement, caseManagementHearingElement))
+            .hearingDetails(List.of(caseManagementHearingElement))
+            .cancelledHearingDetails(List.of(vacatedHearingElement))
             .build();
 
         CafcassApiHearing expectedVacatedHearing = CafcassApiHearing.builder()
@@ -81,7 +82,7 @@ public class CafcassApiHearingDetailsConverterTest extends CafcassApiConverterTe
             .build();
 
         CafcassApiCaseData expected = CafcassApiCaseData.builder()
-            .hearingDetails(List.of(expectedVacatedHearing, expectedCaseManagementHearing))
+            .hearingDetails(List.of(expectedCaseManagementHearing, expectedVacatedHearing))
             .build();
 
         testConvert(caseData, expected);
@@ -91,7 +92,7 @@ public class CafcassApiHearingDetailsConverterTest extends CafcassApiConverterTe
     void shouldReturnEmptyListIfNullOrEmpty() {
         CafcassApiCaseData expected = CafcassApiCaseData.builder().hearingDetails(List.of()).build();
 
-        testConvert(CaseData.builder().hearingDetails(null).build(), expected);
-        testConvert(CaseData.builder().hearingDetails(List.of()).build(), expected);
+        testConvert(CaseData.builder().hearingDetails(null).cancelledHearingDetails(null).build(), expected);
+        testConvert(CaseData.builder().hearingDetails(List.of()).cancelledHearingDetails(List.of()).build(), expected);
     }
 }

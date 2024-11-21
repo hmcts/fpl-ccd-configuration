@@ -25,7 +25,7 @@ public class CafcassApiHearingDetailsConverter implements CafcassApiCaseDataConv
     }
 
     private List<CafcassApiHearing> getCafcassApiHearing(CaseData caseData) {
-        return Optional.ofNullable(caseData.getHearingDetails()).orElse(List.of()).stream()
+        return caseData.getAllHearings().stream()
             .map(hearingBookingElement -> {
                 HearingBooking hearingBooking = hearingBookingElement.getValue();
                 return CafcassApiHearing.builder()
