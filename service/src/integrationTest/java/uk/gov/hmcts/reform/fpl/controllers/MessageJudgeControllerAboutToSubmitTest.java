@@ -34,7 +34,6 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final JudicialMessageRoleType RECIPIENT_TYPE = JudicialMessageRoleType.OTHER;
     private static final String SENDER = "ben@fpla.com";
     private static final String MESSAGE = "Some message";
-    private static final String MESSAGE_REQUESTED_BY = "request review from some court";
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
 
@@ -100,9 +99,14 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldRemoveTransientFields() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.ofEntries(
+                Map.entry("documentDynamicList",
+                    buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data"))),
+                Map.entry("documentTypesDynamicList",
+                    buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data"))),
                 Map.entry("hasAdditionalApplications", "some data"),
-                Map.entry("isMessageRegardingAdditionalApplications", "some data"),
-                Map.entry("additionalApplicationsDynamicList", "some data"),
+                Map.entry("isMessageRegardingDocuments", "APPLICATION"),
+                Map.entry("judicialMessageDynamicList",
+                    buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data"))),
                 Map.entry("relatedDocumentsLabel", "some data"),
                 Map.entry("nextHearingLabel", "some data"),
                 Map.entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
@@ -111,8 +115,6 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
                     .urgency("some data")
                     .build()),
                 Map.entry("judicialMessageNote", "some data"),
-                Map.entry("judicialMessageDynamicList",
-                    buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data"))),
                 Map.entry("judicialMessageReply", JudicialMessage.builder().build())
             ))
             .build();
@@ -120,28 +122,17 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
         assertThat(response.getData()).doesNotContainKeys(
+            "documentDynamicList",
+            "documentTypesDynamicList",
             "hasAdditionalApplications",
-            "isMessageRegardingAdditionalApplications",
+            "isMessageRegardingDocuments",
+            "judicialMessageDynamicList",
             "additionalApplicationsDynamicList",
             "relatedDocumentsLabel",
             "nextHearingLabel",
             "judicialMessageMetaData",
             "judicialMessageNote",
-            "judicialMessageDynamicList",
             "judicialMessageReply"
         );
-    }
-
-    private JudicialMessage buildJudicialMessage(String dateSent, String latestMessage) {
-        return JudicialMessage.builder()
-            .sender(SENDER)
-            .recipient(MESSAGE_RECIPIENT)
-            .updatedTime(now().minusDays(2))
-            .status(OPEN)
-            .subject(MESSAGE_REQUESTED_BY)
-            .latestMessage(latestMessage)
-            .messageHistory(String.format("%s - %s", SENDER, MESSAGE))
-            .dateSent(dateSent)
-            .build();
     }
 }
