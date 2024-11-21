@@ -24,7 +24,7 @@ public class CafcassApiHearingDetailsConverterTest extends CafcassApiConverterTe
 
     @Test
     void shouldReturnSource() {
-        testSource(List.of("data.hearingDetails"));
+        testSource(List.of("data.hearingDetails", "data.cancelledHearingDetails"));
     }
 
     @Test

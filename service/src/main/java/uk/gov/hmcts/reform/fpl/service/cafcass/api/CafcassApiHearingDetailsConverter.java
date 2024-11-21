@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public class CafcassApiHearingDetailsConverter implements CafcassApiCaseDataConverter {
-    private static final List<String> SOURCE = List.of("data.hearingDetails");
+    private static final List<String> SOURCE = List.of("data.hearingDetails", "data.cancelledHearingDetails");
 
     @Override
     public List<String> getEsSearchSources() {
