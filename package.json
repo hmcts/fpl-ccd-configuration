@@ -47,7 +47,7 @@
     "test:functional-ipad7": "  yarn playwright install webkit && yarn playwright test --project=ipad7 --grep @smoke-test",
     "test:functional-ipadPro11": "  yarn playwright install webkit  && yarn playwright test --project=ipadPro11  --grep @smoke-test",
     "test:functional-galaxyS4": "  yarn playwright install chromium  && yarn playwright test --project=GalaxyS4  --grep @smoke-test",
-    "test:functional-pixel7": "  yarn playwright install chromium  && yarn playwright test --project=Pixel7  --grep @smoke-test",
+    "test:functional-pixel7": "DEBUG=pw:api yarn playwright install chromium  && yarn playwright test --project=Pixel7  --grep @smoke-test",
     "test:functional-nightly-preview": "yarn playwright install chromium && yarn playwright test --project=preview",
     "test:smoke": "yarn npm audit --recursive --environment production && MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
     "test:local": "yarn playwright test --project=ipad7 --ui --headed --repeat-each=1",

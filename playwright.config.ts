@@ -69,9 +69,7 @@ export default defineConfig({
     },
       {
           name: "ipadPro11",
-          use: { ...devices["iPad Pro 11"],
-              defaultBrowserType: "chromium"
-          },
+          use: { ...devices["iPad Pro 11"] },
       },
     {
       name: "GalaxyS4",
