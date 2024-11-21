@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiHearing;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CafcassApiHearingDetailsConverter implements CafcassApiCaseDataConverter {
