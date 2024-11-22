@@ -73,11 +73,12 @@ export default defineConfig({
       },
     {
       name: "GalaxyS4",
-      use: { ...devices["Galaxy Tab S4"] },
+      use: { ...devices["Galaxy Tab S4 landscape"] },
     },
       {
           name: "Pixel7",
-          use: { ...devices["Pixel 7"] },
+          use: { ...devices["Pixel 7 landscape"]
+      },
       },
 
     /* Test against branded browsers. */
