@@ -7,11 +7,10 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiHearing;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CafcassApiHearingDetailsConverter implements CafcassApiCaseDataConverter {
-    private static final List<String> SOURCE = List.of("data.hearingDetails");
+    private static final List<String> SOURCE = List.of("data.hearingDetails", "data.cancelledHearingDetails");
 
     @Override
     public List<String> getEsSearchSources() {
@@ -25,7 +24,7 @@ public class CafcassApiHearingDetailsConverter implements CafcassApiCaseDataConv
     }
 
     private List<CafcassApiHearing> getCafcassApiHearing(CaseData caseData) {
-        return Optional.ofNullable(caseData.getHearingDetails()).orElse(List.of()).stream()
+        return caseData.getAllHearings().stream()
             .map(hearingBookingElement -> {
                 HearingBooking hearingBooking = hearingBookingElement.getValue();
                 return CafcassApiHearing.builder()
