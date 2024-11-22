@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1457'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1470'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -285,7 +285,7 @@ def versions = [
   serenity        : '4.1.6',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.11.3',
-  lombok          : '1.18.34',
+  lombok          : '1.18.36',
   pitest          : '1.15.0',
   gradlePitest    : '1.3.0',
   sonarPitest     : '0.5'
@@ -336,7 +336,7 @@ dependencies {
 
   implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
 
-  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.17.2'
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.18.1'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.7'
 
@@ -412,7 +412,7 @@ dependencies {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
-  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
