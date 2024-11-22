@@ -69,7 +69,7 @@ export default defineConfig({
     },
       {
           name: "ipadPro11",
-          use: { ...devices["iPad Pro 11"] },
+          use: { ...devices["iPad Pro 11 landscape"] },
       },
     {
       name: "GalaxyS4",
