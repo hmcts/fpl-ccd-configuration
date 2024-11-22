@@ -28,6 +28,9 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.REMOVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.ARCHIVED_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DRUG_AND_ALCOHOL_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.EXPERT_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.LETTER_OF_INSTRUCTION;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData.temporaryFields;
@@ -54,15 +57,17 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         if (REMOVE_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
             DocumentType documentTypeSelected = DocumentType.valueOf(eventData.getAvailableDocumentTypesForRemoval()
                 .getValue().getCode());
-            if (!List.of(POSITION_STATEMENTS_RESPONDENT, POSITION_STATEMENTS_CHILD, ARCHIVED_DOCUMENTS)
+            if (!List.of(POSITION_STATEMENTS_RESPONDENT, POSITION_STATEMENTS_CHILD, ARCHIVED_DOCUMENTS, EXPERT_REPORTS,
+                    DRUG_AND_ALCOHOL_REPORTS, LETTER_OF_INSTRUCTION)
                 .contains(documentTypeSelected)
                 && !documentTypeSelected.isUploadable()) {
                 return respond(caseDetails, List.of("You are trying to remove a document from a parent folder, "
+                    + "or a document that is not uploadable, "
                     + "you need to choose one of the available sub folders."));
             }
 
             DynamicList availableDocumentsToBeRemoved = manageDocumentService
-                .buildAvailableDocumentsToBeRemoved(caseData, documentTypeSelected);
+                .buildAvailableDocumentsDynamicList(caseData, documentTypeSelected);
             caseDetails.getData().put("documentsToBeRemoved", availableDocumentsToBeRemoved);
         }
 
@@ -84,7 +89,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             if (allowSelectDocumentTypeToRemoveDocument) {
                 // for HMCTS admin
                 DynamicList availableDocumentTypesForRemoval = manageDocumentService
-                    .buildDocumentTypeDynamicListForRemoval(caseData);
+                    .buildExistingDocumentTypeDynamicList(caseData);
                 if (!availableDocumentTypesForRemoval.getListItems().isEmpty()) {
                     caseDetails.getData().put("availableDocumentTypesForRemoval", availableDocumentTypesForRemoval);
                 } else {
@@ -93,7 +98,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             } else {
                 // for LA or external solicitor
                 DynamicList availableDocumentsToBeRemoved = manageDocumentService
-                    .buildAvailableDocumentsToBeRemoved(caseData);
+                    .buildAvailableDocumentsDynamicList(caseData);
                 if (!availableDocumentsToBeRemoved.getListItems().isEmpty()) {
                     caseDetails.getData().put("documentsToBeRemoved", availableDocumentsToBeRemoved);
                 } else {
