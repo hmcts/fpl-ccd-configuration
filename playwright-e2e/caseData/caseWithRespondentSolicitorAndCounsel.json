@@ -145,7 +145,7 @@
           "legalRepresentation": "Yes",
           "legalCounsellors": [
             {
-                "id": 
+                "id":
   "9fff9729-790e-448c-80c5-dd2d8c79cb88",
                 "value": {
                   "firstName": "FPLOrg",
@@ -155,10 +155,10 @@
                     "OrganisationID": "4ZYL0HK",
                     "OrganisationName": "FPLSolicitorOrg"
                   },
-                  "userId": 
-  "f8c00e5f-cfb8-48c4-9613-25170247a329"
+                  "userId":
+  "45ae9b95-a1ac-4aa9-900e-7bd773998e6b"
   ,
-                  "email": "solicitoroneorg2@mailinator.com"
+                  "email": "fpl_sol_org_01@mailinator.com"
                 }
               }
           ],

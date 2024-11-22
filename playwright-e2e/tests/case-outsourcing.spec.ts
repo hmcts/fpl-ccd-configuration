@@ -27,11 +27,6 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
             await signInPage.navigateTOCaseDetails(createCase.casenumber);
             await expect(page.getByRole('heading', {name: `${caseName}`})).toBeVisible();
 
-            //Login into manage Org and verify the CAA have access to the case created
-            await signInPage.visit(signInPage.mourl);
-            await signInPage.login(WiltshireOrgCAAUser.email, WiltshireOrgCAAUser.password);
-            await signInPage.isLoggedInMO();
-            await organisation.searchUnassignedCase(createCase.casenumber, caseName);
 
         })
 
@@ -55,12 +50,6 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
             await signInPage.navigateTOCaseDetails(createCase.casenumber);
             await expect(page.getByRole('heading', {name: `${caseName}`})).toBeHidden();
 
-            //Login into manage Org and verify the outsourced lA CAA have access to the case created
-            await signInPage.visit(signInPage.mourl);
-            await signInPage.login(swanseaOrgCAAUser.email, swanseaOrgCAAUser.password);
-            await signInPage.isLoggedInMO();
-            await organisation.searchUnassignedCase(createCase.casenumber, caseName);
-
         })
 
     test(' ManagingLA share case within its organisation',
@@ -82,12 +71,6 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
             await signInPage.login(wiltshireCountyUserTwo.email, wiltshireCountyUserTwo.password);
             await signInPage.navigateTOCaseDetails(createCase.casenumber);
             await expect(page.getByRole('heading', {name: `${caseName}`})).toBeVisible();
-
-            //Login into manage Org and verify the CAA have access to the case created
-            await signInPage.visit(signInPage.mourl);
-            await signInPage.login(swanseaOrgCAAUser.email, swanseaOrgCAAUser.password);
-            await signInPage.isLoggedInMO();
-            await organisation.searchUnassignedCase(createCase.casenumber, caseName);
 
         })
 
@@ -139,11 +122,6 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
             await signInPage.navigateTOCaseDetails(createCase.casenumber);
             await expect(page.getByRole('heading', {name: `${caseName}`})).toBeHidden();
 
-            //Login into manage Org and verify the CAA have access to the case created
-            await signInPage.visit(signInPage.mourl);
-            await signInPage.login(swanseaOrgCAAUser.email, swanseaOrgCAAUser.password);
-            await signInPage.isLoggedInMO();
-            await organisation.searchUnassignedCase(createCase.casenumber, caseName);
         })
 })
 

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -213,6 +214,16 @@ public class MigrateCaseService {
             .toList();
 
         return Map.of("hearingOrdersBundlesDrafts", bundles);
+    }
+
+    public void doStateCheck(String state, String expectedState, long caseId, String migrationId)
+        throws AssertionError {
+        if (!state.equals(expectedState)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, state was %s, expected %s",
+                migrationId, caseId, state, expectedState
+            ));
+        }
     }
 
     public void doCaseIdCheck(long caseId, long expectedCaseId, String migrationId) throws AssertionError {
@@ -923,7 +934,8 @@ public class MigrateCaseService {
     public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
                                                                     String migrationId,
                                                                     int startIndex,
-                                                                    int endIndex) {
+                                                                    int endIndex,
+                                                                    String replacement) {
         Long caseId = caseData.getId();
         String thresholdDetails = caseData.getGrounds().getThresholdDetails();
         String textToRemove;
@@ -942,14 +954,14 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
 
-        thresholdDetails = thresholdDetails.replace(textToRemove, "");
+        thresholdDetails = thresholdDetails.replace(textToRemove, replacement);
         Grounds updatedGrounds = caseData.getGrounds().toBuilder().thresholdDetails(thresholdDetails).build();
 
         return Map.of("grounds", updatedGrounds);
     }
 
-    public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId,
-                                                                               String applicantCaseRole) {
+    public Map<String, OrganisationPolicy> updateOutsourcingPolicy(CaseData caseData, String orgId,
+                                                                               String caseRole) {
         String orgName = organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
             .orElseThrow();
@@ -959,11 +971,11 @@ public class MigrateCaseService {
             .organisationName(orgName)
             .build();
 
-        applicantCaseRole = caseData.getOutsourcingPolicy() != null
-            ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : applicantCaseRole;
+        caseRole = caseData.getOutsourcingPolicy() != null
+            ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : caseRole;
 
         return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
-            .orgPolicyCaseAssignedRole(applicantCaseRole).build());
+            .orgPolicyCaseAssignedRole(caseRole).build());
     }
 
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,
@@ -1147,6 +1159,25 @@ public class MigrateCaseService {
         return hearingDetailsMap;
     }
 
+    public Map<String, Object> updateCancelledHearingDetailsType(CaseData caseData, String migrationId) {
+        List<Element<HearingBooking>> updatedCancelledHearingDetails = Optional.ofNullable(caseData
+                .getCancelledHearingDetails())
+            .map(List::stream)
+            .orElseGet(Stream::empty)
+            .peek(MigrateCaseService::processHearingBooking)
+            .collect(toList());
+
+        Map<String, Object> hearingDetailsMap = new HashMap<>();
+
+        if (!updatedCancelledHearingDetails.isEmpty()) {
+            hearingDetailsMap.put("cancelledHearingDetails", updatedCancelledHearingDetails);
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, CancelledHearingDetails not found", migrationId));
+        }
+
+        return hearingDetailsMap;
+    }
+
     private static Optional<HearingType> evaluateType(String typeDetails) {
         return HEARING_TYPE_DETAILS_MAPPING.entrySet().stream()
             .filter(key -> typeDetails.toUpperCase().contains(key.getKey()))
@@ -1253,5 +1284,27 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("hearing",hearing);
+    }
+
+    public Map<String, Object> redactTypeReason(CaseData caseData, String migrationId, int startLoc, int endLoc) {
+        if (isEmpty(caseData.getHearing()) || isEmpty(caseData.getHearing().getTypeGiveReason())) {
+            throw new AssertionError(format("Migration {id = %s}, hearing not found", migrationId));
+        }
+
+        final String typeGiveReason = caseData.getHearing().getTypeGiveReason();
+
+        Hearing hearing = caseData.getHearing().toBuilder()
+            .typeGiveReason(typeGiveReason.replace(typeGiveReason.substring(startLoc, endLoc), "***"))
+            .build();
+
+        return Map.of("hearing", hearing);
+    }
+
+    public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {
+        if (!caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+            throw new AssertionError(format("Migration {id = %s}, this is not an EPO", migrationId));
+        }
+
+        return Map.of("orders", caseData.getOrders().toBuilder().address(null).build());
     }
 }

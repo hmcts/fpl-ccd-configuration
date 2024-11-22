@@ -376,5 +376,14 @@
     "Label": "<div class='govuk-tag govuk-tag--red'>Potentially violent person</div>",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDetails",
+    "Label": "Next hearing details",
+    "FieldType": "NextHearingDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
