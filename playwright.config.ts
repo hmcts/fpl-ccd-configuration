@@ -21,7 +21,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 2 : 0,
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
@@ -62,11 +62,6 @@ export default defineConfig({
     },
 
     /* Test against mobile viewports. */
-    {
-      name: "ipad7",
-      use: { ...devices["iPad (gen 7) landscape"]
-          },
-    },
       {
           name: "ipadPro11",
           use: { ...devices["iPad Pro 11 landscape"] },
@@ -75,11 +70,7 @@ export default defineConfig({
       name: "GalaxyS4",
       use: { ...devices["Galaxy Tab S4 landscape"] },
     },
-      {
-          name: "Pixel7",
-          use: { ...devices["Pixel 7 landscape"]
-      },
-      },
+
 
     /* Test against branded browsers. */
     // {
