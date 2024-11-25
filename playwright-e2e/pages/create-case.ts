@@ -75,7 +75,7 @@ export class CreateCase extends BasePage{
     await this.page
       .getByRole("button", { name: "Submit" })
       // This click timeout is here allow for ExUI loading spinner to finish
-      .click({force: true});
+      .click();
   }
 
   async checkCaseIsCreated(caseName: string) {
