@@ -26,49 +26,31 @@ public class HearingUrgencyChecker extends PropertiesChecker {
     public boolean isStarted(CaseData caseData) {
         final Hearing hearing = caseData.getHearing();
 
-        if (isEmpty(hearing)) {
-            return false;
-        }
-
-        return anyNonEmpty(
-            hearing.getTimeFrame(),
-            hearing.getType(),
-            hearing.getWithoutNotice(),
-            hearing.getReducedNotice(),
-            hearing.getRespondentsAware());
+        return !isEmpty(hearing)
+               && anyNonEmpty(hearing.getHearingUrgencyType(), hearing.getRespondentsAware());
     }
 
     @Override
     public boolean isCompleted(CaseData caseData) {
         final Hearing hearing = caseData.getHearing();
 
-        if (hearing == null || anyEmpty(
-            hearing.getTimeFrame(),
-            hearing.getType(),
-            hearing.getTypeGiveReason(),
-            hearing.getWithoutNotice(),
-            hearing.getReducedNotice(),
-            hearing.getRespondentsAware())) {
+        if (isEmpty(hearing) || anyEmpty(hearing.getHearingUrgencyType(), hearing.getRespondentsAware())) {
             return false;
         }
 
-        if (("Same day").equals(hearing.getTimeFrame())
-            && isEmpty(hearing.getReason())) {
+        if (NO.equals(hearing.getRespondentsAware()) && isEmpty(hearing.getRespondentsAwareReason())) {
             return false;
         }
 
-        if (YES.getValue().equals(hearing.getWithoutNotice())
-            && isEmpty(hearing.getWithoutNoticeReason())) {
-            return false;
+        switch (hearing.getHearingUrgencyType()) {
+            case SAME_DAY:
+            case URGENT: if (isEmpty(hearing.getWithoutNotice())
+                             || (YES.equals(hearing.getWithoutNotice()) && isEmpty(hearing.getWithoutNoticeReason()))) {
+                return false;
+            }
         }
 
-        if (YES.getValue().equals(hearing.getReducedNotice())
-            && isEmpty(hearing.getReducedNoticeReason())) {
-            return false;
-        }
-
-        return NO.getValue().equals(hearing.getRespondentsAware())
-            || !isEmpty(hearing.getRespondentsAwareReason());
+        return true;
     }
 
     @Override

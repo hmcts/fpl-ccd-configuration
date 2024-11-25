@@ -937,7 +937,7 @@ public class CaseSubmissionGenerationService
                 applicationLanguage))
                            : DEFAULT_STRING)
             .withoutNoticeDetails(hearingPresent
-                                  ? concatenateYesOrNoKeyAndValue(hearing.getWithoutNotice(),
+                                  ? concatenateYesOrNoKeyAndValue(hearing.getWithoutNotice().getValue(),
                 addPrefixReason(hearing.getWithoutNoticeReason(),
                     applicationLanguage),
                 applicationLanguage)
@@ -948,10 +948,10 @@ public class CaseSubmissionGenerationService
                     applicationLanguage),
                 applicationLanguage)
                                   : DEFAULT_STRING)
-            .respondentsAware(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
-                              ? YesNo.fromString(hearing.getRespondentsAware()).getValue(applicationLanguage)
+            .respondentsAware(hearingPresent && isNotEmpty(hearing.getRespondentsAware())
+                              ? hearing.getRespondentsAware().getValue(applicationLanguage)
                               : DEFAULT_STRING)
-            .respondentsAwareReason(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
+            .respondentsAwareReason(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAwareReason())
                                     ? hearing.getRespondentsAwareReason()
                                     : DEFAULT_STRING)
             .build();
