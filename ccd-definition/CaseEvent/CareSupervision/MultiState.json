@@ -141,6 +141,7 @@
     "DisplayOrder": 10,
     "PreConditionState(s)": "Submitted;Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
+    "TTLIncrement": 6574,
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
@@ -744,6 +745,7 @@
     "ID": "changeState",
     "Name": "Change case state",
     "Description": "Change the state of the case",
+    "TTLIncrement": 6574,
     "PreConditionState(s)": "Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
@@ -918,6 +920,7 @@
     "ID": "recordFinalDecisions",
     "Name": "Record final decisions",
     "Description": "Record final decisions",
+    "TTLIncrement": 6574,
     "DisplayOrder": 31,
     "PreConditionState(s)": "Submitted;RETURNED;Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
@@ -1107,5 +1110,19 @@
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageCaseTTL",
+    "Name": "Manage Case TTL",
+    "Description": "Manage Case TTL",
+    "DisplayOrder": 15,
+    "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
+    "EndButtonLabel": "Save and continue"
   }
 ]
