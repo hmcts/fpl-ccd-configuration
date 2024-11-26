@@ -68,6 +68,6 @@ public class NoticeOfProceedingsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-
+        //trigger submitted for task creation
     }
 }
