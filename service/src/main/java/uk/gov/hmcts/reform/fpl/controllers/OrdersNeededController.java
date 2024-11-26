@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 public class OrdersNeededController extends CallbackController {
 
     public static final String ORDERS = "orders";
+    public static final String ORDERS_SOLICITOR = "ordersSolicitor";
     public static final List<OrderType> STANDALONE_ORDER_TYPE = List.of(OrderType.CHILD_ASSESSMENT_ORDER,
         OrderType.CONTACT_WITH_CHILD_IN_CARE,
         OrderType.OTHER,
@@ -55,7 +56,7 @@ public class OrdersNeededController extends CallbackController {
         final RepresentativeType representativeType = Objects.nonNull(caseData.getRepresentativeType())
             ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
         final String ordersFieldName = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY)
-            ? "orders" : "ordersSolicitor";
+            ? ORDERS : ORDERS_SOLICITOR;
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
@@ -80,7 +81,7 @@ public class OrdersNeededController extends CallbackController {
         final RepresentativeType representativeType = Objects.nonNull(caseData.getRepresentativeType())
             ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
         final String ordersFieldName = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY)
-            ? "orders" : "ordersSolicitor";
+            ? ORDERS : ORDERS_SOLICITOR;
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
@@ -168,8 +169,8 @@ public class OrdersNeededController extends CallbackController {
             data.put(dfjArea.getCourtField(), selectedCourt.getCode());
         }
 
-        if (ordersFieldName.equals("ordersSolicitor")) {
-            data.put("orders", data.get("ordersSolicitor"));
+        if (ordersFieldName.equals(ORDERS_SOLICITOR)) {
+            data.put(ORDERS, data.get(ORDERS_SOLICITOR));
         }
 
         if (caseData.isC1Application()) {
