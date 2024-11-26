@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1467'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1475'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -327,7 +327,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
   implementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2'
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
   implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.0.0'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '4.0.4'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
@@ -336,7 +336,7 @@ dependencies {
 
   implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
 
-  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.17.2'
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.18.1'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.7'
 
@@ -412,7 +412,7 @@ dependencies {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
-  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'

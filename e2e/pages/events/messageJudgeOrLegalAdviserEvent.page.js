@@ -2,9 +2,9 @@ const {I} = inject();
 
 module.exports = {
   fields: {
-    isMessageRegardingAdditionalApplications: {
-      yes: '#isMessageRegardingAdditionalApplications_Yes',
-      no: '#isMessageRegardingAdditionalApplications_No',
+    isMessageRegardingDocuments: {
+      yes: '#isMessageRegardingDocuments_Yes',
+      no: '#isMessageRegardingDocuments_No',
     },
     eventOptions: {
       newMessage: '#messageJudgeOption-NEW_MESSAGE',
@@ -49,11 +49,11 @@ module.exports = {
   },
 
   selectMessageRelatedToAdditionalApplication() {
-    I.click(this.fields.isMessageRegardingAdditionalApplications.yes);
+    I.click(this.fields.isMessageRegardingDocuments.yes);
   },
 
   selectMessageNotRelatedToAdditionalApplication() {
-    I.click(this.fields.isMessageRegardingAdditionalApplications.no);
+    I.click(this.fields.isMessageRegardingDocuments.no);
   },
 
   async selectAdditionalApplication() {
