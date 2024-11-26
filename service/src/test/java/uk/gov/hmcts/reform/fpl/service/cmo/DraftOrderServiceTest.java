@@ -1122,7 +1122,8 @@ class DraftOrderServiceTest {
         @Test
         void shouldSetUploaderEmailToCtscEmailWhenUserIsCtscUser() {
             CaseData caseData = mock(CaseData.class);
-            List<Element<HearingOrder>> draftOrders = List.of(Element.<HearingOrder>builder().value(HearingOrder.builder().build()).build());
+            List<Element<HearingOrder>> draftOrders = List.of(Element.<HearingOrder>builder()
+                .value(HearingOrder.builder().build()).build());
             List<Element<HearingOrdersBundle>> bundles = new ArrayList<>();
 
             given(userService.isHmctsAdminUser()).willReturn(true);
@@ -1136,7 +1137,8 @@ class DraftOrderServiceTest {
         @Test
         void shouldSetUploaderEmailToUserEmailWhenUserIsNotCtscUser() {
             CaseData caseData = mock(CaseData.class);
-            List<Element<HearingOrder>> draftOrders = List.of(Element.<HearingOrder>builder().value(HearingOrder.builder().build()).build());
+            List<Element<HearingOrder>> draftOrders = List.of(Element.<HearingOrder>builder()
+                .value(HearingOrder.builder().build()).build());
             List<Element<HearingOrdersBundle>> bundles = new ArrayList<>();
 
             given(userService.isHmctsAdminUser()).willReturn(false);
