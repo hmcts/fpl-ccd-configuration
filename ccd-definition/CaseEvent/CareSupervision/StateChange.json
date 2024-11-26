@@ -5,6 +5,7 @@
     "ID": "submitApplication",
     "Name": "Submit application",
     "Description": "Check and send application",
+    "TTLIncrement": 6574,
     "DisplayOrder": 18,
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "Submitted",
