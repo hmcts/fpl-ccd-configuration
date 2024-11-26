@@ -9,6 +9,7 @@ import static java.time.LocalDate.now;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 public class SubmittedFormFilenameHelper {
+    private static final String DAY_MONTH_FORMAT = "ddMMM";
 
     private SubmittedFormFilenameHelper() {
         // NO-OP
@@ -19,7 +20,7 @@ public class SubmittedFormFilenameHelper {
 
         if (isDraft) {
             return format("draft_%s", format(template.getDocumentTitle(),
-                formatLocalDateToString(now(), "ddMMM").toLowerCase()));
+                formatLocalDateToString(now(), DAY_MONTH_FORMAT).toLowerCase()));
         }
 
         if (!Strings.isNullOrEmpty(caseName)) {
@@ -32,10 +33,10 @@ public class SubmittedFormFilenameHelper {
     public static String buildGenericFileName(final boolean isDraft, DocmosisTemplates template) {
         if (isDraft) {
             return format("draft_%s", format(template.getDocumentTitle(),
-                formatLocalDateToString(now(), "ddMMM").toLowerCase()));
+                formatLocalDateToString(now(), DAY_MONTH_FORMAT).toLowerCase()));
         } else {
             return format(template.getDocumentTitle(),
-                formatLocalDateToString(now(), "ddMMM").toLowerCase());
+                formatLocalDateToString(now(), DAY_MONTH_FORMAT).toLowerCase());
         }
     }
 }

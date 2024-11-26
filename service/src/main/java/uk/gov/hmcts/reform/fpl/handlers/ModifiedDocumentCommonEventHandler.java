@@ -58,7 +58,7 @@ public class ModifiedDocumentCommonEventHandler {
             .getProvider()
             .getNotifyData(caseData, orderDocument, orderType);
 
-        if (!digitalRepresentatives.isEmpty() & !ModifiedOrderType
+        if (!digitalRepresentatives.isEmpty() && !ModifiedOrderType
             .STANDARD_DIRECTION_ORDER.getLabel().equals(orderType)) {
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
