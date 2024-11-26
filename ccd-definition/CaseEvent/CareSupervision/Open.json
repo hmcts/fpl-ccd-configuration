@@ -6,6 +6,7 @@
     "Name": "Start application",
     "Description": "Create a new case – add a title",
     "DisplayOrder": 1,
+    "TTLIncrement": 180,
     "PostConditionState": "Open",
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/about-to-start",

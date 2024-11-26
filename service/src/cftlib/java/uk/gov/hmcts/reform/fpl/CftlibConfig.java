@@ -33,7 +33,8 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-wa-task-configuration",
             "TTL_profile",
             "ctsc",
-            "hearing-centre-admin"
+            "hearing-centre-admin",
+            "TTL_profile"
         };
         lib.createRoles(roles);
 
