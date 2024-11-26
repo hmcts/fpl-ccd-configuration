@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
@@ -56,6 +57,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static java.util.Collections.emptyList;
 import static java.util.Map.of;
@@ -63,7 +65,6 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -99,12 +100,15 @@ class DraftOrderServiceTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+
     @BeforeEach
     void init() {
         service = new DraftOrderService(new ObjectMapper(),
             time,
             new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder()),
-            manageDocumentService, userService
+            manageDocumentService, userService, ctscEmailLookupConfiguration
         );
     }
 
@@ -1113,6 +1117,34 @@ class DraftOrderServiceTest {
                 wrapElements(existingBundle));
 
             assertThat(existingBundle.getConfidentialOrdersBySuffix(suffix)).isEqualTo(newDraftOrders);
+        }
+
+        @Test
+        void shouldSetUploaderEmailToCtscEmailWhenUserIsCtscUser() {
+            CaseData caseData = mock(CaseData.class);
+            List<Element<HearingOrder>> draftOrders = List.of(Element.<HearingOrder>builder().value(HearingOrder.builder().build()).build());
+            List<Element<HearingOrdersBundle>> bundles = new ArrayList<>();
+
+            given(userService.isHmctsAdminUser()).willReturn(true);
+            given(ctscEmailLookupConfiguration.getEmail()).willReturn("ctsc@hmcts.com");
+
+            service.confidentialAdditionalApplicationUpdateCase(caseData, draftOrders, bundles);
+
+            assertThat(draftOrders.get(0).getValue().getUploaderEmail()).isEqualTo("ctsc@hmcts.com");
+        }
+
+        @Test
+        void shouldSetUploaderEmailToUserEmailWhenUserIsNotCtscUser() {
+            CaseData caseData = mock(CaseData.class);
+            List<Element<HearingOrder>> draftOrders = List.of(Element.<HearingOrder>builder().value(HearingOrder.builder().build()).build());
+            List<Element<HearingOrdersBundle>> bundles = new ArrayList<>();
+
+            given(userService.isHmctsAdminUser()).willReturn(false);
+            given(userService.getUserEmail()).willReturn("user@hmcts.com");
+
+            service.confidentialAdditionalApplicationUpdateCase(caseData, draftOrders, bundles);
+
+            assertThat(draftOrders.get(0).getValue().getUploaderEmail()).isEqualTo("user@hmcts.com");
         }
     }
 

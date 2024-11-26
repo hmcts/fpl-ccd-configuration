@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
@@ -77,6 +78,7 @@ public class DraftOrderService {
     private final HearingOrderKindEventDataBuilder hearingOrderKindEventDataBuilder;
     private final ManageDocumentService manageDocumentService;
     private final UserService userService;
+    private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
         final UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
@@ -270,7 +272,7 @@ public class DraftOrderService {
                 hearingOrder.getValue().setOrderConfidential(hearingOrder.getValue().getOrder());
                 hearingOrder.getValue().setOrder(null);
             }
-            hearingOrder.getValue().setUploaderEmail(userService.getUserEmail());
+            hearingOrder.getValue().setUploaderEmail(getUploaderEmail());
         }
 
         HearingOrdersBundle hearingOrdersBundle = bundles.stream()
@@ -294,6 +296,13 @@ public class DraftOrderService {
                 ConfidentialOrderBundle.SUFFIX_CHILD, caseRoles, suffixes::add);
         }
         hearingOrdersBundle.updateConfidentialOrders(draftOrders, C21, suffixes);
+    }
+
+    private String getUploaderEmail() {
+        if(userService.isHmctsAdminUser()){
+            return ctscEmailLookupConfiguration.getEmail();
+        }
+        return userService.getUserEmail();
     }
 
     private boolean isInCmoDrafts(Element<HearingOrder> draft, List<Element<HearingOrder>> cmoDrafts) {
