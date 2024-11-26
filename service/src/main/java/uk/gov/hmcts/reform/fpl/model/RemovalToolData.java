@@ -29,6 +29,7 @@ public class RemovalToolData {
     List<Element<HearingOrder>> hiddenCaseManagementOrders;
     List<Element<GeneratedOrder>> hiddenOrders;
     List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
+    List<Element<StandardDirectionOrder>> hiddenUrgentDirectionOrders;
     List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     List<Element<SentDocuments>> hiddenDocumentsSentToParties;
     List<Element<RemovedPlacement>> removedPlacements;
@@ -104,4 +105,9 @@ public class RemovalToolData {
     public List<Element<RemovedPlacement>> getRemovedPlacements() {
         return defaultIfNull(removedPlacements, new ArrayList<>());
     }
+
+    public  List<Element<StandardDirectionOrder>> getHiddenUrgentDirectionOrders() {
+        return defaultIfNull(hiddenUrgentDirectionOrders, new ArrayList<>());
+    }
+
 }

@@ -60,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 @SuppressWarnings("unchecked")
 public class TestingSupportController {
     private static final String POPULATE_EVENT_ID_TEMPLATE = "populateCase-%s";
+    private static final String EMAIL = "email";
 
     private final IdamClient idamClient;
     private final RoleAssignmentService roleAssignmentService;
@@ -138,7 +139,7 @@ public class TestingSupportController {
 
     @PostMapping("/testing-support/user")
     public UserDetails getUser(@RequestBody Map<String, String> requestBody) {
-        final String token = idamClient.getAccessToken(requestBody.get("email"), requestBody.get("password"));
+        final String token = idamClient.getAccessToken(requestBody.get(EMAIL), requestBody.get("password"));
         return idamClient.getUserDetails(token);
     }
 
@@ -159,7 +160,7 @@ public class TestingSupportController {
     @GetMapping("/testing-support/case/{caseId}/emails")
     public NotificationList getEmails(@PathVariable("caseId") String caseId) {
         try {
-            return notifications.getNotifications(null, "email", environment + "/" + caseId, null);
+            return notifications.getNotifications(null, EMAIL, environment + "/" + caseId, null);
         } catch (NotificationClientException e) {
             return null;
         }
@@ -169,7 +170,7 @@ public class TestingSupportController {
     public void grantCaseAccess(@PathVariable("caseId") Long caseId, @RequestBody Map<String, String> requestBody) {
         String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
 
-        final String email = requestBody.get("email");
+        final String email = requestBody.get(EMAIL);
         final String password = requestBody.get("password");
         final String role = requestBody.get("role");
 
