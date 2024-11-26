@@ -299,7 +299,7 @@ public class DraftOrderService {
     }
 
     private String getUploaderEmail() {
-        if(userService.isHmctsAdminUser()){
+        if (userService.isHmctsAdminUser()) {
             return ctscEmailLookupConfiguration.getEmail();
         }
         return userService.getUserEmail();
