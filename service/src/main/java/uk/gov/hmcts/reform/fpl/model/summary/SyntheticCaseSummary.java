@@ -36,6 +36,8 @@ public class SyntheticCaseSummary {
     String caseSummaryNextHearingType;
     LocalDate caseSummaryNextHearingDate;
     LocalDateTime caseSummaryNextHearingDateTime;
+    NextHearingDetails nextHearingDetails;
+
     String caseSummaryNextHearingJudge;
     String caseSummaryNextHearingEmailAddress;
     DocumentReference caseSummaryNextHearingCMO;

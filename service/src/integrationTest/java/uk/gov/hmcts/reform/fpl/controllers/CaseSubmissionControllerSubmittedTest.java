@@ -763,7 +763,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject()
             .put("file", fileContent)
-            .put("is_csv", false);
+            .put("filename", JSONObject.NULL)
+            .put("confirm_email_before_download", JSONObject.NULL)
+            .put("retention_period", JSONObject.NULL);
 
         if (completed) {
             getCompleteParameters(submitCaseCafcassTemplate);
@@ -806,10 +808,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private <T extends SharedNotifyTemplate> T getIncompleteParameters(T template) {
         setSharedTemplateParameters(template);
 
-        template.setTimeFramePresent(NO.getValue());
-        template.setTimeFrameValue("");
+        template.setTimeFramePresent(YES.getValue());
+        template.setTimeFrameValue("other");
         template.setUrgentHearing(NO.getValue());
-        template.setNonUrgentHearing(NO.getValue());
+        template.setNonUrgentHearing(YES.getValue());
         template.setFirstRespondentName("");
 
         return template;

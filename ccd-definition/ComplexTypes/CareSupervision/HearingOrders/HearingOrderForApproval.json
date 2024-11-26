@@ -39,6 +39,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingOrderForApproval",
+    "ListElementCode": "orderConfidential",
+    "FieldType": "Document",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public",
+    "CategoryID": "draftOrdersConfidential"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForApproval",
     "ListElementCode": "hearing",
     "FieldType": "Text",
     "ElementLabel": "Hearing",
@@ -171,6 +180,37 @@
     "FieldType": "Text",
     "ElementLabel": "Hearing UUID",
     "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForApproval",
+    "ListElementCode": "uploaderEmail",
+    "FieldType": "Text",
+    "ElementLabel": "Uploader email",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForApproval",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForApproval",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
     "FieldShowCondition": "status=\"DO_NOT_SHOW\""
   }
 ]

@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 class BlankOrderGeneratorTest {
 
-    private static final String hearing1 = "Case management hearing, 2 March 2020";
+    private static final String HEARING_1 = "Case management hearing, 2 March 2020";
     private static final DocumentReference order = testDocumentReference();
     private static final Time TIME = new FixedTimeConfiguration().stoppedTime();
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
@@ -115,7 +115,7 @@ class BlankOrderGeneratorTest {
 
     private static Element<HearingOrder> buildBlankOrder(LocalDate dateIssued) {
         return element(HearingOrder.builder()
-            .hearing(hearing1)
+            .hearing(HEARING_1)
             .title("test order1")
             .order(order)
             .type(HearingOrderType.C21)
@@ -128,7 +128,7 @@ class BlankOrderGeneratorTest {
     private static Element<HearingOrdersBundle> buildDraftOrdersBundle(
         List<Element<HearingOrder>> draftOrders, UUID hearingId) {
         return element(HearingOrdersBundle.builder()
-            .hearingName(hearing1)
+            .hearingName(HEARING_1)
             .hearingId(hearingId)
             .orders(draftOrders)
             .judgeTitleAndName("Her Honour Judge Judy").build());

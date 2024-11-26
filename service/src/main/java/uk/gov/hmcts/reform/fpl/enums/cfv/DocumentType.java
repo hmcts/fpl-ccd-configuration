@@ -91,7 +91,7 @@ public enum DocumentType {
         false, false, false,
         null,
         null, 60, null),
-    JUDGEMENTS("└─ Judgements/facts and reasons", standardResolver("judgementList"),
+    JUDGEMENTS("└─ Judgments/facts and reasons", standardResolver("judgementList"),
         false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_ORDERS, 70, DEFAULT_NOTIFICATION_CONFIG),
@@ -140,11 +140,11 @@ public enum DocumentType {
         null,
         null, 180, null),
     C1_APPLICATION_DOCUMENTS("└─ C1 application supporting documents", standardResolver("c1ApplicationDocList"),
-        false, false, false,
+        true, true, true,
         defaultWithDocumentBuilder(),
         AA_PARENT_APPLICATIONS, 190, ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG),
     C2_APPLICATION_DOCUMENTS("└─ C2 application supporting documents", standardResolver("c2ApplicationDocList"),
-        false, false, false,
+        true, true, true,
         defaultWithDocumentBuilder(),
         AA_PARENT_APPLICATIONS, 200, ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG),
     AA_PARENT_RESPONDENTS_STATEMENTS("Respondent statements", null,
@@ -173,42 +173,158 @@ public enum DocumentType {
         false, false, false,
         null,
         null, 250, null),
-    EXPERT_REPORTS("└─ Expert Reports", standardResolver("expertReportList"),
+    ADULT_PSYCHIATRIC_REPORT_ON_PARENTS("└─ Adult Psychiatric Report On Parent(s)", standardResolver(
+        "adultPsychRepParentsList"),
         false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_EXPERT_REPORTS, 260, DEFAULT_NOTIFICATION_CONFIG),
-    DRUG_AND_ALCOHOL_REPORTS("└─ Drug and alcohol reports", standardResolver("drugAndAlcoholReportList"),
+    FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL("└─ Family Centre Assessments - Non-Residential",
+        standardResolver("famCentreAssessNonResList"),
         false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_EXPERT_REPORTS, 270, DEFAULT_NOTIFICATION_CONFIG),
-    LETTER_OF_INSTRUCTION("└─ Letters of instruction / referrals", standardResolver("lettersOfInstructionList"),
+    FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL("└─ Family Centre Assessments - Residential",
+        standardResolver("familyCentreAssesResList"),
         false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_EXPERT_REPORTS, 280, DEFAULT_NOTIFICATION_CONFIG),
+    HAEMATOLOGIST("└─ Haematologist", standardResolver("haematologistList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 290, DEFAULT_NOTIFICATION_CONFIG),
+    INDEPENDENT_SOCIAL_WORKER("└─ Independent Social Worker", standardResolver(
+        "indepSocialWorkerList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 300, DEFAULT_NOTIFICATION_CONFIG),
+    MULTI_DISCIPLINARY_ASSESSMENT("└─ Multi Disciplinary Assessment", standardResolver(
+        "multiDisciplinAssessList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 310, DEFAULT_NOTIFICATION_CONFIG),
+    NEUROSURGEON("└─ Neurosurgeon", standardResolver("neuroSurgeonList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 320, DEFAULT_NOTIFICATION_CONFIG),
+    OPHTHALMOLOGIST("└─ Ophthalmologist", standardResolver("ophthalmologistList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 330, DEFAULT_NOTIFICATION_CONFIG),
+    OTHER_EXPERT_REPORT("└─ Other Expert Report", standardResolver("otherExpertReportList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 340, DEFAULT_NOTIFICATION_CONFIG),
+    OTHER_MEDICAL_REPORT("└─ Other Medical Report", standardResolver("otherMedicalReportList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 350, DEFAULT_NOTIFICATION_CONFIG),
+    PEDIATRIC("└─ Pediatric", standardResolver("pediatricList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 360, DEFAULT_NOTIFICATION_CONFIG),
+    PEDIATRIC_RADIOLOGIST("└─ Pediatric Radiologist", standardResolver(
+        "pediatricRadiologistList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 370, DEFAULT_NOTIFICATION_CONFIG),
+
+    PROFESSIONAL_DNA_TESTING("└─ Professional: DNA Testing", standardResolver(
+        "profDNATestingList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 380, DEFAULT_NOTIFICATION_CONFIG),
+    PROFESSIONAL_DRUG_ALCOHOL("└─ Professional: Drug/Alcohol", standardResolver(
+        "profDrugAlcoholList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 390, DEFAULT_NOTIFICATION_CONFIG),
+    PROFESSIONAL_HAIR_STRAND("└─ Professional: Hair Strand", standardResolver(
+        "professionalHairStrandList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 400, DEFAULT_NOTIFICATION_CONFIG),
+    PROFESSIONAL_OTHER("└─ Professional: Other", standardResolver("professionalOtherList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 410, DEFAULT_NOTIFICATION_CONFIG),
+    PSYCHIATRIC_CHILD_ONLY("└─ Psychiatric - On child only", standardResolver(
+        "psychiatricChildOnlyList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 420, DEFAULT_NOTIFICATION_CONFIG),
+    PSYCHIATRIC_CHILD_AND_PARENT("└─ Psychiatric - On child and Parent(s)/carers", standardResolver(
+        "psychChildParentCarersList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 430, DEFAULT_NOTIFICATION_CONFIG),
+    PSYCHOLOGICAL_REPORT_CHILD_ONLY_CLINICAL("└─ Psychological Report on Child Only - Clinical",
+        standardResolver("psycReportChildClinList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 440, DEFAULT_NOTIFICATION_CONFIG),
+    PSYCHOLOGICAL_REPORT_CHILD_ONLY_EDUCATIONAL("└─ Psychological Report on Child Only - Educational",
+        standardResolver("psycReportChildOnlyEdList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 450, DEFAULT_NOTIFICATION_CONFIG),
+    PSYCHOLOGICAL_REPORT_PARENT_AND_CHILD("└─ Psychological Report on Parent(s) and child",
+        standardResolver("psychReportParentChildList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 460, DEFAULT_NOTIFICATION_CONFIG),
+    PSYCHOLOGICAL_REPORT_PARENT_FULL_COGNITIVE("└─ Psychological Report on Parent(s) - full cognitive",
+        standardResolver("psychRepParentFullCogList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 470, DEFAULT_NOTIFICATION_CONFIG),
+    PSYCHOLOGICAL_REPORT_PARENT_FULL_FUNCTIONING("└─ Psychological Report on Parent(s) - functioning",
+        standardResolver("psychRepParentFuncList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 480, DEFAULT_NOTIFICATION_CONFIG),
+    TOXICOLOGY_REPORT("└─ Toxicology report/statement", standardResolver(
+        "toxicologyStatementList"),
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 500, DEFAULT_NOTIFICATION_CONFIG),
+    EXPERT_REPORTS("└─ Expert Reports", standardResolver("expertReportList"),
+        true, true, true,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 501, DEFAULT_NOTIFICATION_CONFIG),
+    DRUG_AND_ALCOHOL_REPORTS("└─ Drug and alcohol reports", standardResolver("drugAndAlcoholReportList"),
+        true, true, true,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 502, DEFAULT_NOTIFICATION_CONFIG),
+    LETTER_OF_INSTRUCTION("└─ Letters of instruction / referrals", standardResolver(
+        "lettersOfInstructionList"),
+        true, true, true,
+        defaultWithDocumentBuilder(),
+        AA_PARENT_EXPERT_REPORTS, 503, DEFAULT_NOTIFICATION_CONFIG),
     POLICE_DISCLOSURE("Police disclosure", standardResolver("policeDisclosureList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        null, 290, DEFAULT_NOTIFICATION_CONFIG),
+        null, 510, DEFAULT_NOTIFICATION_CONFIG),
     MEDICAL_RECORDS("Medical records", standardResolver("medicalRecordList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        null, 300, DEFAULT_NOTIFICATION_CONFIG),
+        null, 520, DEFAULT_NOTIFICATION_CONFIG),
     COURT_CORRESPONDENCE("Court correspondence", standardResolver("correspondenceDocList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        null, 310, COURT_CORRESPONDENCE_NOTIFICATION_CONFIG),
-    NOTICE_OF_ACTING_OR_ISSUE("Notice of acting / notice of issue", standardResolver("noticeOfActingOrIssueList"),
+        null, 530, COURT_CORRESPONDENCE_NOTIFICATION_CONFIG),
+    NOTICE_OF_ACTING_OR_ISSUE("Notice of acting / notice of issue", standardResolver(
+        "noticeOfActingOrIssueList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        null, 320, DEFAULT_NOTIFICATION_CONFIG),
+        null, 540, DEFAULT_NOTIFICATION_CONFIG),
     PREVIOUS_PROCEEDING("Previous Proceeding", standardResolver("previousProceedingList"),
-        false, false, false, 
+        false, false, false,
         defaultWithDocumentBuilder(),
-        null, 330, NO_CAFCASS_NOTIFICATION_CONFIG),
+        null, 550, NO_CAFCASS_NOTIFICATION_CONFIG),
     PLACEMENT_RESPONSES("Placement responses", null,
         false, false, false,
         null,
-        null, 340, null),
+        null, 560, null),
     ARCHIVED_DOCUMENTS("Archived migrated data", standardResolver("archivedDocumentsList"),
         true, true, true,
     defaultWithDocumentBuilder(),
@@ -234,7 +350,7 @@ public enum DocumentType {
     private final DocumentUploadedNotificationConfiguration notificationConfiguration;
 
     public boolean isUploadable() {
-        if (isHiddenFromSolicitorUpload() || isHiddenFromLAUpload() || isHiddenFromCTSCUpload()) {
+        if (isHiddenFromSolicitorUpload() && isHiddenFromLAUpload() && isHiddenFromCTSCUpload()) {
             return false;
         }
         return nonNull(baseFieldNameResolver) || PLACEMENT_RESPONSES == this;
@@ -246,6 +362,10 @@ public enum DocumentType {
 
     public String getFieldNameOfRemovedList() {
         return getBaseFieldNameResolver().apply(null);
+    }
+
+    public String getJsonFieldNameOfRemovedList() {
+        return toJsonFieldName(getBaseFieldNameResolver().apply(null));
     }
 
     private ConfidentialLevel getConfidentialLevel(DocumentUploaderType uploaderType, boolean isConfidential) {
@@ -262,7 +382,7 @@ public enum DocumentType {
         }
     }
 
-    private static final Function<ConfidentialLevel, String> courtBundleResolver() {
+    private static Function<ConfidentialLevel, String> courtBundleResolver() {
         return confidentialLevel -> {
             if (confidentialLevel == null) {
                 return "hearingDocuments.courtBundleListRemoved";
@@ -279,7 +399,7 @@ public enum DocumentType {
         };
     }
 
-    private static final String standardNaming(ConfidentialLevel confidentialLevel, String baseFieldName) {
+    private static String standardNaming(ConfidentialLevel confidentialLevel, String baseFieldName) {
         if (confidentialLevel == null) {
             return baseFieldName + "Removed";
         }
@@ -295,7 +415,7 @@ public enum DocumentType {
         }
     }
 
-    private static final Function<ConfidentialLevel, String> standardResolver(String baseFieldName) {
+    private static Function<ConfidentialLevel, String> standardResolver(String baseFieldName) {
         return confidentialLevel -> standardNaming(confidentialLevel, baseFieldName);
     }
 

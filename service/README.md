@@ -12,8 +12,8 @@
 The FPL Service (as any other HMCTS Reform services) uses three sources of configuration for the placeholders:
 * application.yaml (profile-driven, test and production systems use only default profile)
 * ENV variables (passed in via charts in the cluster or docker-compose for local)
-* The following [library](https://github.com/hmcts/properties-volume-spring-boot-starter) provides secrets as configuration placeholders.
-  [This file](src/main/resources/bootstrap.yaml) configures mapping from a secret name to Spring's configuration property.
+* [Configtree](https://spring.io/blog/2020/08/14/config-file-processing-in-spring-boot-2-4) provides secrets as configuration placeholders.
+  [The chart values](charts/fpl-case-service/values.yaml) configures the mapping from a secret name to Spring's configuration property/a different environment variable through aliases.
 
 ### Custom configuration parameters:
 

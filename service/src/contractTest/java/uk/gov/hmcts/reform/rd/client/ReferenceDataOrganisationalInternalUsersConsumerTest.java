@@ -15,7 +15,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @PactTestFor(providerName = "referenceData_organisationalInternal", port = "8894")
 @TestPropertySource(
-    properties = "rd_professional.api.url=localhost:8894")
+    properties = {"rd_professional.api.url=localhost:8894", "rd_judicial.api.url=localhost:8895",
+        "rd_staff.api.url=localhost:8896"})
 public class ReferenceDataOrganisationalInternalUsersConsumerTest extends ReferenceDataConsumerTestBase {
 
     @Pact(provider = "referenceData_organisationalInternal", consumer = "fpl_ccdConfiguration")

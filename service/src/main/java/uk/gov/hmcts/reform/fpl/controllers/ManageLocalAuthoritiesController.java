@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction;
@@ -44,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_
 public class ManageLocalAuthoritiesController extends CallbackController {
 
     public static final String PAST_COURT_LIST_KEY = "pastCourtList";
+    public static final String LOCAL_AUTHORITY_LIST = "localAuthorities";
 
     public static final String COURT_KEY = "court";
 
@@ -162,14 +162,14 @@ public class ManageLocalAuthoritiesController extends CallbackController {
 
         if (ADD == action) {
             caseDetails.getData().put("sharedLocalAuthorityPolicy", service.getSharedLocalAuthorityPolicy(caseData));
-            caseDetails.getData().put("localAuthorities", service.addSharedLocalAuthority(caseData));
+            caseDetails.getData().put(LOCAL_AUTHORITY_LIST, service.addSharedLocalAuthority(caseData));
 
             return respond(removeTemporaryFields(caseDetails));
         }
 
         if (REMOVE == action) {
             caseDetails.getData().put("changeOrganisationRequestField", service.getOrgRemovalRequest(caseData));
-            caseDetails.getData().put("localAuthorities", service.removeSharedLocalAuthority(caseData));
+            caseDetails.getData().put(LOCAL_AUTHORITY_LIST, service.removeSharedLocalAuthority(caseData));
 
             return assignmentService.applyDecisionAsSystemUser(removeTemporaryFields(caseDetails));
         }
@@ -181,9 +181,9 @@ public class ManageLocalAuthoritiesController extends CallbackController {
             caseDetails.getData().put(COURT_KEY, caseData.getCourt());
             caseDetails.getData().put("caseLocalAuthority", caseData.getCaseLocalAuthority());
             caseDetails.getData().put("caseLocalAuthorityName", caseData.getCaseLocalAuthorityName());
-            caseDetails.getData().put("localAuthorities", caseData.getLocalAuthorities());
+            caseDetails.getData().put(LOCAL_AUTHORITY_LIST, caseData.getLocalAuthorities());
 
-            updateDfjAreaCourtDetails(caseDetails, caseData.getCourt());
+            updateCourtDetails(caseDetails, caseData.getCourt());
 
             removeTemporaryFields(caseDetails);
 
@@ -210,12 +210,6 @@ public class ManageLocalAuthoritiesController extends CallbackController {
             caseDetails.getData().put(PAST_COURT_LIST_KEY, caseData.getPastCourtList());
             caseDetails.getData().put(COURT_KEY, courtTransferred);
 
-            // Add the caseManagementLocation for global search/challenged access
-            caseDetails.getData().put("caseManagementLocation", CaseLocation.builder()
-                .baseLocation(courtTransferred.getEpimmsId())
-                .region(courtTransferred.getRegionId())
-                .build());
-
             if (!isEmpty(courtTransferred) && RCJ_HIGH_COURT_CODE.equals(courtTransferred.getCode())) {
                 // transferred to the high court -> turn off sendToCtsc
                 caseDetails.getData().put("sendToCtsc", YesNo.NO.getValue());
@@ -224,7 +218,7 @@ public class ManageLocalAuthoritiesController extends CallbackController {
                 // we were in the high court, now we're not -> sendToCtsc again
                 caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
             }
-            updateDfjAreaCourtDetails(caseDetails, courtTransferred);
+            updateCourtDetails(caseDetails, courtTransferred);
         }
 
 
@@ -255,10 +249,13 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-    private void updateDfjAreaCourtDetails(CaseDetails caseDetails, Court court) {
+    private void updateCourtDetails(CaseDetails caseDetails, Court court) {
         DfjAreaCourtMapping dfjArea = dfjAreaLookUpService.getDfjArea(court.getCode());
         caseDetails.getData().keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
         caseDetails.getData().put("dfjArea", dfjArea.getDfjArea());
         caseDetails.getData().put(dfjArea.getCourtField(), court.getCode());
+
+        service.getCaseManagementLocation(court)
+            .ifPresent(caseLocation -> caseDetails.getData().put("caseManagementLocation", caseLocation));
     }
 }

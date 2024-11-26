@@ -9,35 +9,48 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
+  readonly postCode: Locator;
+  readonly findAddress: Locator;
+  readonly rateLimit: Locator;
+
 
   constructor(page: Page) {
     this.page = page;
-
-    this.nextStep = page.getByLabel("Next step");
+    this.nextStep = page.getByLabel('Next step');
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
     this.continueButton = page.getByRole("button", { name: "Continue" });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
     this.submit = page.getByRole('button', { name: 'Submit' });
+    this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
+    this.findAddress = page.getByRole('button', { name: 'Find address' });
+    this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
   }
 
   async gotoNextStep(eventName: string) {
-    await this.nextStep.selectOption(eventName);
-    await this.goButton.dblclick();
-    await this.page.waitForTimeout(20000);
-    if (await  this.goButton.isVisible()) {
-       await this.goButton.click();
+      await expect(async () => {
+          await this.page.reload();
+          await this.nextStep.selectOption(eventName);
+          await this.goButton.click({clickCount:2,delay:300});
+          await expect(this.page.getByRole('button', { name: 'Previous' })).toBeDisabled();
+      }).toPass();
+  }
+
+  async expectAllUploadsCompleted() {
+    let locs = await this.page.getByText('Cancel upload').all();
+    for (let i = 0; i < locs.length; i++) {
+        await expect(locs[i]).toBeDisabled();
     }
   }
 
   async checkYourAnsAndSubmit(){
-    await this.checkYourAnswersHeader.isVisible();
+    await expect(this.checkYourAnswersHeader).toBeVisible();
     await this.saveAndContinue.click();
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByRole('tab', { name: tabName ,exact: true},).click();
+    await this.page.getByRole('tab', { name: tabName,exact: true }).click();
   }
 
   async clickContinue() {
@@ -45,7 +58,7 @@ export class BasePage {
   }
 
   async waitForAllUploadsToBeCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
       await expect(locs[i]).toBeDisabled();
     }
@@ -61,7 +74,7 @@ export class BasePage {
     expect(await this.reloadAndCheckForText(userName, 10000, 3)).toBeTruthy();
   }
 
-  async reloadAndCheckForText(text: string, timeout?: number, maxAttempts?: number): Promise<Boolean> {
+  async reloadAndCheckForText(text: string, timeout?: number, maxAttempts?: number): Promise<boolean> {
     // reload the page, wait 5s, see if it's there
     for (let attempt = 0; attempt < (maxAttempts ?? 12); attempt++) {
       await this.page.reload();
@@ -81,5 +94,20 @@ export class BasePage {
   async clickSubmit() {
     await this.submit.click();
   }
+
+  async enterPostCode(postcode:string){
+      await this.postCode.fill(postcode);
+      await this.findAddress.click();
+      await this.page.getByLabel('Select an address').selectOption('1: Object');
+
+  }
+    getCurrentDate():string {
+        let date = new Date();
+        let year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
+        let month = new Intl.DateTimeFormat('en', { month: 'short' }).format(date);
+        let day = new Intl.DateTimeFormat('en', { day: 'numeric'}).format(date);
+        let todayDate = `${day} ${month} ${year}`;
+        return todayDate;
+    }
 }
 
