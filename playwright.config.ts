@@ -21,7 +21,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 3 : 0,
+  retries: process.env.CI ? 2 : 0,
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
@@ -33,7 +33,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     // Record trace only when retrying a test for the first time.
-    trace: 'on-first-retry',
+    trace: 'on-first-retry'
 
   },
 
@@ -62,14 +62,15 @@ export default defineConfig({
     },
 
     /* Test against mobile viewports. */
-    // {
-    //   name: "Mobile Chrome",
-    //   use: { ...devices["Pixel 5"] },
-    // },
-    // {
-    //   name: "Mobile Safari",
-    //   use: { ...devices["iPad Mini"] },
-    // },
+      {
+          name: "ipadPro11",
+          use: { ...devices["iPad Pro 11 landscape"] },
+      },
+    {
+      name: "GalaxyS4",
+      use: { ...devices["Galaxy Tab S4 landscape"] },
+    },
+
 
     /* Test against branded browsers. */
     // {
