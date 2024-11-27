@@ -2259,7 +2259,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             Map<String, Object> updatedGrounds = underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
-                thresholdDetailsStartIndex, thresholdDetailsEndIndex);
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex, "");
 
             assertThat(updatedGrounds).extracting("grounds").isEqualTo(expectedGrounds);
         }
@@ -2279,7 +2279,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
-                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex, ""))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s},"
                         + " threshold details is shorter than provided index",
@@ -2301,7 +2301,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
-                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex, ""))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, "
                         + "threshold details does not contain provided text",
