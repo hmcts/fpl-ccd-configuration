@@ -16,29 +16,36 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
+    "ListElementCode": "Living in a refuge",
+    "ListElement": "Living in a refuge",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LivingSituationList",
     "ListElementCode": "Removed by Police, powers ending soon",
     "ListElement": "Removed under police powers which end soon",
-    "DisplayOrder": 3
+    "DisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
     "ListElementCode": "Voluntarily in section 20 care order",
     "ListElement": "In care under a voluntary section 20 (76) agreement",
-    "DisplayOrder": 4
+    "DisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
     "ListElementCode": "In hospital and soon to be discharged",
     "ListElement": "In hospital and ready to be discharged soon",
-    "DisplayOrder": 5
+    "DisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
     "ListElementCode": "Other",
     "ListElement": "Other",
-    "DisplayOrder": 6
+    "DisplayOrder": 7
   }
 ]

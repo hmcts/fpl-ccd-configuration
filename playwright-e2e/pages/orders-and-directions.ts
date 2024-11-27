@@ -24,9 +24,10 @@ export class OrdersAndDirectionSought {
   }
 
   async ordersAndDirectionsNeeded() {
+      await expect(this.OrdersAndDirectionsSought).toBeVisible();
     await this.OrdersAndDirectionsSought.click();
     await expect(this.OrdersAndDirectionsHeading).toBeVisible();
-    await this.WhichOrdersDoYouNeedCareOrder.check();
+    await this.WhichOrdersDoYouNeedCareOrder.click();
     await this.DoYouNeedAnyOtherDirectionsRadioNo.check();
     await this.WhichCourtAreYouIssuingFor.selectOption('2: 117');
     await this.Continue.click();

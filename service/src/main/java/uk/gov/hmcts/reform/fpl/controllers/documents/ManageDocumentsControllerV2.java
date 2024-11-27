@@ -67,7 +67,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             }
 
             DynamicList availableDocumentsToBeRemoved = manageDocumentService
-                .buildAvailableDocumentsToBeRemoved(caseData, documentTypeSelected);
+                .buildAvailableDocumentsDynamicList(caseData, documentTypeSelected);
             caseDetails.getData().put("documentsToBeRemoved", availableDocumentsToBeRemoved);
         }
 
@@ -89,7 +89,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             if (allowSelectDocumentTypeToRemoveDocument) {
                 // for HMCTS admin
                 DynamicList availableDocumentTypesForRemoval = manageDocumentService
-                    .buildDocumentTypeDynamicListForRemoval(caseData);
+                    .buildExistingDocumentTypeDynamicList(caseData);
                 if (!availableDocumentTypesForRemoval.getListItems().isEmpty()) {
                     caseDetails.getData().put("availableDocumentTypesForRemoval", availableDocumentTypesForRemoval);
                 } else {
@@ -98,7 +98,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             } else {
                 // for LA or external solicitor
                 DynamicList availableDocumentsToBeRemoved = manageDocumentService
-                    .buildAvailableDocumentsToBeRemoved(caseData);
+                    .buildAvailableDocumentsDynamicList(caseData);
                 if (!availableDocumentsToBeRemoved.getListItems().isEmpty()) {
                     caseDetails.getData().put("documentsToBeRemoved", availableDocumentsToBeRemoved);
                 } else {
