@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReviewAdditionalApplicationService {
-    public static final String ADDITIONAL_APPLICATION_REVIEWED = "ADDITIONAL_APPLICATION_REVIEWED";
+    public static final String ONLY_ONE_APPLICATION = "onlyOneApplicationToBeReviewed";
 
     public Map<String, Object> initEventField(CaseData caseData) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -34,16 +34,16 @@ public class ReviewAdditionalApplicationService {
 
         if (isEmpty(applicationsBundlesToBeReviewed)) {
             resultMap.put("hasApplicationToBeReviewed", NO);
-            resultMap.put("onlyOneApplicationToBeReviewed", NO);
+            resultMap.put(ONLY_ONE_APPLICATION, NO);
         } else {
             resultMap.put("hasApplicationToBeReviewed", YES);
 
             if (applicationsBundlesToBeReviewed.size() > 1) {
                 resultMap.put("additionalApplicationToBeReviewedList", asDynamicList(applicationsBundlesToBeReviewed,
                     AdditionalApplicationsBundle::toLabel));
-                resultMap.put("onlyOneApplicationToBeReviewed", NO);
+                resultMap.put(ONLY_ONE_APPLICATION, NO);
             } else if (applicationsBundlesToBeReviewed.size() == 1) {
-                resultMap.put("onlyOneApplicationToBeReviewed", YES);
+                resultMap.put(ONLY_ONE_APPLICATION, YES);
                 resultMap.put("additionalApplicationsBundleToBeReviewed",
                     applicationsBundlesToBeReviewed.get(0).getValue());
             }

@@ -91,6 +91,9 @@ public class ManageDocumentService {
     private final DynamicListService dynamicListService;
     private final UserService userService;
 
+    public static final String PROPERTY_FAILED_ERR = "Fail to get property %s from %s";
+    public static final String ELEMENT_NOT_FOUND_ERR = "target element not found (%s)";
+    public static final String PLACEMENTS = "placements";
     public static final String DOCUMENT_ACKNOWLEDGEMENT_KEY = "ACK_RELATED_TO_CASE";
 
     public static final String DOCUMENT_TO_BE_REMOVED_SEPARATOR = "###";
@@ -201,7 +204,7 @@ public class ManageDocumentService {
         noticeDocumentsRemoved.add(target);
         placement.getValue().setNoticeDocumentsRemoved(noticeDocumentsRemoved);
 
-        output.put("placements", caseData.getPlacementEventData().getPlacements());
+        output.put(PLACEMENTS, caseData.getPlacementEventData().getPlacements());
         output.put("placementsNonConfidential", caseData.getPlacementEventData()
             .getPlacementsNonConfidential(true));
         output.put("placementsNonConfidentialNotices", caseData.getPlacementEventData()
@@ -295,14 +298,14 @@ public class ManageDocumentService {
                                                         String propertyName) {
         PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(AdditionalApplicationsBundle.class, propertyName);
         if (pd == null) {
-            throw new AssertionError(format("Fail to get property %s from %s", propertyName,
+            throw new AssertionError(format(PROPERTY_FAILED_ERR, propertyName,
                 AdditionalApplicationsBundle.class));
         }
         Method getter = pd.getReadMethod();
         try {
             return (C2DocumentBundle) getter.invoke(aab);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new AssertionError(format("Fail to get property %s from %s", propertyName,
+            throw new AssertionError(format(PROPERTY_FAILED_ERR, propertyName,
                 AdditionalApplicationsBundle.class));
         }
     }
@@ -320,7 +323,7 @@ public class ManageDocumentService {
             return ((AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder)
                 builderPropertySetter.invoke(aab.toBuilder(), newC2DocumentBundle)).build();
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new AssertionError(format("Fail to get property %s from %s", propertyName,
+            throw new AssertionError(format(PROPERTY_FAILED_ERR, propertyName,
                 AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder.class));
         }
     }
@@ -366,7 +369,7 @@ public class ManageDocumentService {
         Element<SupportingEvidenceBundle> removed = null;
         if (targetBundle != null) {
             removed = ElementUtils.findElement(documentElementId, targetBundle.getSupportingEvidenceBundle())
-                .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                .orElseThrow(() -> new AssertionError(format(ELEMENT_NOT_FOUND_ERR, documentElementId)));
             List<Element<SupportingEvidenceBundle>> newList = targetBundle
                 .getSupportingEvidenceBundle().stream()
                 .filter(el -> !documentElementId.equals(el.getId()))
@@ -394,7 +397,7 @@ public class ManageDocumentService {
             AdditionalApplicationsBundle aab = targetBundle.getValue();
             removed = ElementUtils.findElement(documentElementId, aab.getOtherApplicationsBundle()
                     .getSupportingEvidenceBundle())
-                .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                .orElseThrow(() -> new AssertionError(format(ELEMENT_NOT_FOUND_ERR, documentElementId)));
             List<Element<SupportingEvidenceBundle>> newList = aab.getOtherApplicationsBundle()
                 .getSupportingEvidenceBundle().stream()
                 .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
@@ -429,7 +432,7 @@ public class ManageDocumentService {
                 removed = ElementUtils.findElement(documentElementId, c2DocumentBundle
                         .getSupportingEvidenceBundle())
                     .orElseThrow(
-                        () -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                        () -> new AssertionError(format(ELEMENT_NOT_FOUND_ERR, documentElementId)));
                 List<Element<SupportingEvidenceBundle>> newList = c2DocumentBundle.getSupportingEvidenceBundle()
                     .stream()
                     .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
@@ -545,15 +548,15 @@ public class ManageDocumentService {
             .translationRequirements(e.getValue().getTranslationRequirements())
             .build()));
         caseData.setPlacementNoticeResponses(placementNoticeResponses);
-        if (changes.containsKey("placements")) {
-            caseData.getPlacementEventData().setPlacements((List<Element<Placement>>) changes.get("placements"));
+        if (changes.containsKey(PLACEMENTS)) {
+            caseData.getPlacementEventData().setPlacements((List<Element<Placement>>) changes.get(PLACEMENTS));
         }
 
         PlacementEventData eventData = isAdmin
             ? updatePlacementNoticesAdmin(caseData)
             : ((isLocalAuthority ? updatePlacementNoticesLA(caseData) : updatePlacementNoticesSolicitor(caseData)));
 
-        changes.put("placements", eventData.getPlacements());
+        changes.put(PLACEMENTS, eventData.getPlacements());
         changes.put("placementsNonConfidential", eventData
             .getPlacementsNonConfidential(true));
         changes.put("placementsNonConfidentialNotices", eventData
