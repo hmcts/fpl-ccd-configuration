@@ -95,7 +95,7 @@ withNightlyPipeline(type, product, component) {
         yarnBuilder.yarn('yarn-update')
         yarnBuilder.yarn('install-dependencies')
         env.MOCKED_PAYMENTS = false
-        env.TEST_RETRIES = 5
+        env.TEST_RETRIES = 2
         env.TESTS_FOR_ACCESSIBILITY = true
         env.ENV = 'aat'
     }
@@ -148,6 +148,40 @@ withNightlyPipeline(type, product, component) {
             reportDir: 'playwright-report',
             reportFiles: 'index.html',
             reportName: 'UITestWebkitReport'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+        }
+      }
+      stage('Functional UI tests ipadPro11 ') {
+        try {
+          yarnBuilder.yarn('test:functional-ipadPro11')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'UITestipadPro11Report'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+        }
+      }
+      stage('Functional UI tests galaxyS4 ') {
+        try {
+          yarnBuilder.yarn('test:functional-galaxyS4')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'UITestGalaxyS4Report'
           ])
           steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
         }

@@ -75,9 +75,9 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             .build();
 
         when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(allow);
-        when(manageDocumentService.buildDocumentTypeDynamicListForRemoval(any()))
+        when(manageDocumentService.buildExistingDocumentTypeDynamicList(any()))
             .thenReturn(DynamicList.builder().listItems(List.of()).build());
-        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any()))
+        when(manageDocumentService.buildAvailableDocumentsDynamicList(any()))
             .thenReturn(DynamicList.builder().listItems(List.of()).build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
@@ -202,7 +202,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             .build();
 
         when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(true);
-        when(manageDocumentService.buildDocumentTypeDynamicListForRemoval(any())).thenReturn(DynamicList.builder()
+        when(manageDocumentService.buildExistingDocumentTypeDynamicList(any())).thenReturn(DynamicList.builder()
             .listItems(List.of())
             .build());
 
@@ -212,7 +212,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).contains("There is no document to be removed.");
 
         when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(false);
-        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any())).thenReturn(DynamicList.builder()
+        when(manageDocumentService.buildAvailableDocumentsDynamicList(any())).thenReturn(DynamicList.builder()
             .listItems(List.of())
             .build());
 
@@ -475,7 +475,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             .build();
 
         DynamicList expectedDynamicList = DynamicList.builder().listItems(List.of()).build();
-        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any(), eq(DocumentType.CASE_SUMMARY)))
+        when(manageDocumentService.buildAvailableDocumentsDynamicList(any(), eq(DocumentType.CASE_SUMMARY)))
             .thenReturn(expectedDynamicList);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
@@ -501,7 +501,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             .build();
 
         DynamicList expectedDynamicList = DynamicList.builder().listItems(List.of()).build();
-        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any(), eq(documentType)))
+        when(manageDocumentService.buildAvailableDocumentsDynamicList(any(), eq(documentType)))
             .thenReturn(expectedDynamicList);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
