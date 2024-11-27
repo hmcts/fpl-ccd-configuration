@@ -49,8 +49,7 @@
     "ListElementCode": "addressKnow",
     "FieldType": "YesOrNo",
     "ElementLabel": "*Current address known?",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
