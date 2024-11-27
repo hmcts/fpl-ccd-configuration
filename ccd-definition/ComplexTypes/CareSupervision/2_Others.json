@@ -47,9 +47,11 @@
     "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "addressKnow",
-    "FieldType": "YesOrNo",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "IsAddressKnowList",
     "ElementLabel": "*Current address known?",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
