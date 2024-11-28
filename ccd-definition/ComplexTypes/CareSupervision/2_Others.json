@@ -50,7 +50,8 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "IsAddressKnowList",
     "ElementLabel": "*Current address known?",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
