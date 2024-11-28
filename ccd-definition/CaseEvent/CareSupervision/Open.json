@@ -22,7 +22,6 @@
     "Name": "Orders and directions sought",
     "Description": "Selecting the orders needed for application",
     "DisplayOrder": 2,
-    "TTLIncrement": 180,
     "PreConditionState(s)": "Open",
     "PostConditionState": "Open",
     "SecurityClassification": "Public",
