@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -97,7 +96,7 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
                         .county("Some county")
                         .country("UK")
                         .build())
-                    .addressKnow(IsAddressKnowType.YES)
+                    .addressKnow("Yes")
                     .dateOfBirth(LocalDate.of(2005, Month.JUNE, 4))
                     .firstName("Kyle Stafford")
                     .placeOfBirth("Newry")
@@ -118,7 +117,7 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
                         .county("Some county")
                         .country("UK")
                         .build())
-                    .addressKnow(IsAddressKnowType.YES)
+                    .addressKnow("Yes")
                     .dateOfBirth(LocalDate.of(2002, Month.FEBRUARY, 5))
                     .firstName("Sarah Simpson")
                     .placeOfBirth("Craigavon")

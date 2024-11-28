@@ -361,8 +361,7 @@
     "FieldTypeParameter": "Others",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "type = \"DO NOT SHOW\"",
-    "Searchable": "N"
+    "FieldShowCondition": "type = \"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

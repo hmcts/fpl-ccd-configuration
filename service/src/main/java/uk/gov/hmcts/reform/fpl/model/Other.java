@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
-import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -48,7 +47,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
     private final String detailsHiddenReason;
     private List<Element<UUID>> representedBy;
     private final String addressNotKnowReason;
-    private final IsAddressKnowType addressKnow;
+    private final String addressKnow;
 
     public List<Element<UUID>> getRepresentedBy() {
         if (this.representedBy == null) {
@@ -159,4 +158,13 @@ public class Other implements Representable, ConfidentialParty<Other> {
         return AddressNotKnowReason.DECEASED.getType().equals(addressNotKnowReason)
             || AddressNotKnowReason.NO_FIXED_ABODE.getType().equals(addressNotKnowReason);
     }
+
+    public Other removeAddress() {
+        return this.toBuilder().address(null).build();
+    }
+
+    public Other removeAddressNotKnowReason() {
+        return this.toBuilder().addressNotKnowReason(null).build();
+    }
+
 }

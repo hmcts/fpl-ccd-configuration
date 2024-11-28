@@ -74,19 +74,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
     "ListElementCode": "addressKnow",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "IsAddressKnowList",
+    "FieldType": "YesOrNo",
     "ElementLabel": "*Current address known?",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentParty",
-    "ListElementCode": "addressAutoConfidentialLabel",
-    "FieldType": "Label",
-    "ElementLabel": "## This address is automatically made confidential",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnow=\"LIVE_IN_REFUGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -95,7 +85,7 @@
     "FieldType": "AddressUK",
     "ElementLabel": "Current address",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnow=\"Yes\" OR addressKnow=\"LIVE_IN_REFUGE\""
+    "FieldShowCondition": "addressKnow=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -139,7 +129,6 @@
     "ListElementCode": "contactDetailsHidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need contact details hidden from other parties?",
-    "FieldShowCondition": "addressKnow!=\"LIVE_IN_REFUGE\"",
     "SecurityClassification": "Public"
   },
   {
@@ -148,7 +137,7 @@
     "ListElementCode": "contactDetailsHiddenReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "contactDetailsHidden=\"Yes\" AND addressKnow!=\"LIVE_IN_REFUGE\"",
+    "FieldShowCondition": "contactDetailsHidden=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
