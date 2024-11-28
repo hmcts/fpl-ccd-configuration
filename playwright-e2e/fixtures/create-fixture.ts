@@ -35,6 +35,7 @@ import { ShareCase } from "../pages/share-case";
 import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
 import { ReturnApplication } from "../pages/return-application";
 import { Orders } from "../pages/orders";
+import { LogExpertReport } from "../pages/log-expert-report";
 
 
 type CreateFixtures = {
@@ -74,6 +75,7 @@ type CreateFixtures = {
   otherPeopleInCase: OtherPeopleInCase;
   returnApplication: ReturnApplication;
   orders: Orders;
+  logExpertReport: LogExpertReport;
 
 };
 
@@ -221,4 +223,9 @@ export const test = base.extend<CreateFixtures>({
    orders: async ({page}, use) => {
         await use(new Orders(page));
    },
+
+   logExpertReport: async ({page}, use) => {
+    await use(new LogExpertReport(page));
+},
+
 });
