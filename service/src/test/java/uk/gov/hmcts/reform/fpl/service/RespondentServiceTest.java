@@ -12,7 +12,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
-import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -136,7 +135,7 @@ class RespondentServiceTest {
             .solicitor(RespondentSolicitor.builder().firstName("Steven").build())
             .build()));
 
-        List<Element<Respondent>> updatedRespondents = service.consolidateAndRemoveHiddenFields(respondents);
+        List<Element<Respondent>> updatedRespondents = service.removeHiddenFields(respondents);
         assertThat(updatedRespondents.get(0).getValue().getSolicitor()).isNull();
     }
 
@@ -151,7 +150,7 @@ class RespondentServiceTest {
                 .build())
             .build()));
 
-        List<Element<Respondent>> updatedRespondents = service.consolidateAndRemoveHiddenFields(respondents);
+        List<Element<Respondent>> updatedRespondents = service.removeHiddenFields(respondents);
         assertThat(updatedRespondents.get(0).getValue().getSolicitor().getUnregisteredOrganisation()).isNull();
     }
 
@@ -170,7 +169,7 @@ class RespondentServiceTest {
                 .build())
             .build()));
 
-        List<Element<Respondent>> updatedRespondents = service.consolidateAndRemoveHiddenFields(respondents);
+        List<Element<Respondent>> updatedRespondents = service.removeHiddenFields(respondents);
         assertThat(updatedRespondents.get(0).getValue().getSolicitor().getUnregisteredOrganisation())
             .isEqualTo(unregisteredOrg);
     }
@@ -185,19 +184,8 @@ class RespondentServiceTest {
                 .build())
             .build()));
 
-        List<Element<Respondent>> updatedRespondents = service.consolidateAndRemoveHiddenFields(respondents);
+        List<Element<Respondent>> updatedRespondents = service.removeHiddenFields(respondents);
         assertThat(updatedRespondents.get(0).getValue().getSolicitor().getRegionalOfficeAddress()).isNull();
-    }
-
-    @Test
-    void shouldSetConfidentWhenLiveInRefugeIsSelected() {
-        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
-            .party(RespondentParty.builder().addressKnow(IsAddressKnowType.LIVE_IN_REFUGE).build())
-            .build()));
-
-        List<Element<Respondent>> updatedRespondents = service.consolidateAndRemoveHiddenFields(respondents);
-        assertThat(updatedRespondents.get(0).getValue().getParty().getContactDetailsHidden())
-            .isEqualTo(YES.getValue());
     }
 
     @Test
@@ -626,7 +614,7 @@ class RespondentServiceTest {
                 .postcode("XXX YYY")
                 .addressLine1("addressLine1")
                 .build())
-            .addressKnow(IsAddressKnowType.YES)
+            .addressKnow("Yes")
             .addressNotKnowReason("addressNotKnowReason")
             .detailsHidden("Yes")
             .detailsHiddenReason("detailsHiddenReason")
@@ -650,7 +638,7 @@ class RespondentServiceTest {
                     .postcode("XXX YYY")
                     .addressLine1("addressLine1")
                     .build())
-                .addressKnow(IsAddressKnowType.YES)
+                .addressKnow("Yes")
                 .addressNotKnowReason("addressNotKnowReason")
                 .contactDetailsHiddenReason("detailsHiddenReason")
                 .contactDetailsHidden("Yes")
