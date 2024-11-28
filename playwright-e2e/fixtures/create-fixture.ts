@@ -36,6 +36,7 @@ import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
 import { ReturnApplication } from "../pages/return-application";
 import { Orders } from "../pages/orders";
 import { LogExpertReport } from "../pages/log-expert-report";
+import {ListingHearingAction} from "../pages/list-hearing-action";
 
 
 type CreateFixtures = {
@@ -76,7 +77,7 @@ type CreateFixtures = {
   returnApplication: ReturnApplication;
   orders: Orders;
   logExpertReport: LogExpertReport;
-
+  listHearingAction: ListingHearingAction;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -219,7 +220,7 @@ export const test = base.extend<CreateFixtures>({
   shareCase: async ({ page }, use) => {
     await use(new ShareCase(page));
   },
-  
+
    orders: async ({page}, use) => {
         await use(new Orders(page));
    },
@@ -227,5 +228,7 @@ export const test = base.extend<CreateFixtures>({
    logExpertReport: async ({page}, use) => {
     await use(new LogExpertReport(page));
 },
-
+   listHearingAction: async({page},use)=>{
+       await use(new ListingHearingAction(page));
+   },
 });
