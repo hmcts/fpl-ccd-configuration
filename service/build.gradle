@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1475'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1480'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -451,7 +451,7 @@ pitest {
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2023.0.3'
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2023.0.4'
   }
 }
 
