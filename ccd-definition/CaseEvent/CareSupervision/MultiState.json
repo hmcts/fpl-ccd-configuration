@@ -1124,5 +1124,21 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "trigger-ttl-increment",
+    "Name": "Trigger TTL increment",
+    "Description": "Adds 180 days to the TTL",
+    "DisplayOrder": 1000,
+    "TTLIncrement": 180,
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "Publish": "Y",
+    "EndButtonLabel": "Done"
   }
 ]

@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseInitiationService;
 import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
+import uk.gov.hmcts.reform.fpl.service.ttl.TTLService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.HashMap;
@@ -47,6 +48,8 @@ public class CaseInitiationController extends CallbackController {
     private final AuthTokenGenerator authToken;
 
     private final CourtLookUpService courtLookUpService;
+
+    private final TTLService ttlService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -143,5 +146,6 @@ public class CaseInitiationController extends CallbackController {
             Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
         coreCaseDataApi.submitSupplementaryData(requestData.authorisation(), authToken.generate(),
             caseData.getId().toString(), supplementaryData);
+        ttlService.triggerTimeToLiveIncrement(caseData);
     }
 }
