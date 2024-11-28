@@ -12,6 +12,10 @@ export class BasePage {
   readonly postCode: Locator;
   readonly findAddress: Locator;
   readonly rateLimit: Locator;
+  readonly requestButton: Locator;
+  readonly assignToMeButton: Locator;
+  readonly  taskDone: Locator;
+  readonly reviewedButton: Locator;
 
 
   constructor(page: Page) {
@@ -26,6 +30,10 @@ export class BasePage {
     this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
     this.findAddress = page.getByRole('button', { name: 'Find address' });
     this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
+    this.requestButton = page.getByRole('button', { name: 'Make request' });
+    this.assignToMeButton = page.getByText('Assign to me');
+    this.taskDone = page.getByRole('link', { name: 'Mark request as done' });
+    this.reviewedButton = page.getByRole('button', { name: 'Mark as reviewed' });
   }
 
   async gotoNextStep(eventName: string) {
@@ -67,7 +75,7 @@ export class BasePage {
   async waitForTask(taskName: string) {
     // waits for upto a minute, refreshing every 5 seconds to see if the task has appeared
     // initial reconfiguration could take upto a minute based on the job scheduling
-    expect(await this.reloadAndCheckForText(taskName, 5000, 12)).toBeTruthy();
+    expect(await this.reloadAndCheckForText(taskName, 10000, 12)).toBeTruthy();
   }
 
   async waitForRoleAndAccessTab(userName: string) {
@@ -108,5 +116,17 @@ export class BasePage {
         let day = new Intl.DateTimeFormat('en', { day: 'numeric'}).format(date);
         let todayDate = `${day} ${month} ${year}`;
         return todayDate;
+    }
+    async clickRequest(){
+       await this.requestButton.click();
+    }
+    async assignTaskToMe(){
+        await this.assignToMeButton.click();
+    }
+    async markTaskDone(){
+       await this.taskDone.click()
+    }
+    async confirmListedTaskReviewed(){
+        await this.reviewedButton.click();
     }
 }
