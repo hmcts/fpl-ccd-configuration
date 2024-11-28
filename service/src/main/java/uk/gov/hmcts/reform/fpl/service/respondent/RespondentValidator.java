@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.respondent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -88,7 +88,7 @@ public class RespondentValidator {
     private List<String> validateAddress(CaseData caseData) {
         return caseData.getAllRespondents().stream()
             .map(Element::getValue).map(Respondent::getParty)
-            .filter(party -> YesNo.YES.getValue().equals(party.getAddressKnow()))
+            .filter(party -> IsAddressKnowType.YES.equals(party.getAddressKnow()))
             .map(Party::getAddress)
             .map(address -> {
                 List<String> addErrs = new ArrayList<>();
