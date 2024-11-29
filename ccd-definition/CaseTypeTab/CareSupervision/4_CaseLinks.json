@@ -8,8 +8,7 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "LinkedCasesComponentLauncher",
     "DisplayContextParameter" : "#ARGUMENT(LinkedCases)",
-    "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "caseLinks!=\"\""
+    "TabFieldDisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
