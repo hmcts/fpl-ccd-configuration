@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLIC
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NON_MOLESTATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
@@ -52,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SECURE_ACCO
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSPARENCY_ORDER_BLOCK;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_AMENDED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.VARY_OR_EXTEND_SUPERVISION_ORDER;
@@ -186,7 +188,7 @@ public enum Order {
         IsFinalOrder.MAYBE,
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ORDER_BY_CONSENT,
-            DETAILS, FURTHER_DIRECTIONS, CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS, CLOSE_CASE,
+            DETAILS, CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS, CLOSE_CASE,
             REVIEW_DRAFT_ORDER)
     ),
     C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
@@ -236,9 +238,9 @@ public enum Order {
     ),
     C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS(
         DIGITAL,
-        "Variation or extension of supervision orders (C36)",
+        "Variation or extension of education supervision orders (C36)",
         "Sections 39(2), 39(3) and 39(4) and Paragraph 6(3) Schedule 3 Children Act 1989",
-        "Variation or extension of supervision orders (C36)",
+        "Variation or extension of education supervision orders (C36)",
         IsFinalOrder.MAYBE,
         List.of(
             APPROVER,
@@ -261,6 +263,20 @@ public enum Order {
             WHICH_CHILDREN,
             LEAVE_TO_CHANGE_CHILD_SURNAME,
             ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
+    TRANSPARENCY_ORDER(
+        DIGITAL,
+        "Transparency Order",
+        "The Children Act 1989",
+        "Transparency Order",
+        IsFinalOrder.MAYBE,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            ORDER_BY_CONSENT,
+            TRANSPARENCY_ORDER_BLOCK,
             REVIEW_DRAFT_ORDER
         )
     ),
@@ -341,14 +357,6 @@ public enum Order {
         List.of(ORDER_BY_CONSENT, REFUSE_CONTACT_ORDER, RESPONDENTS_REFUSED,
             APPROVER, APPROVAL_DATE, WHICH_CHILDREN, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
-    C36_VARIATION_EXTENSION_OF_EDUCATION_SUPERVISION_ORDER(
-        MANUAL_UPLOAD,
-        "Variation/extension of Education supervision order (C36)",
-        "",
-        "Variation/extension of Education supervision order (C36)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
     C37_EDUCATION_SUPERVISION_ORDER_DIGITAL(
         DIGITAL,
         "Education supervision order (C37)",
@@ -363,14 +371,6 @@ public enum Order {
             ORDER_BY_CONSENT,
             REVIEW_DRAFT_ORDER,
             CLOSE_CASE)
-    ),
-    C37_EDUCATION_SUPERVISION_ORDER(
-        MANUAL_UPLOAD,
-        "Education supervision order (C37)",
-        "",
-        "Education supervision order (C37)",
-        IsFinalOrder.MAYBE,
-        Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C38A_DISCHARGE_EDUCATION_SUPERVISION_ORDER(
         MANUAL_UPLOAD,
@@ -404,14 +404,6 @@ public enum Order {
             REVIEW_DRAFT_ORDER,
             CLOSE_CASE
         )
-    ),
-    C44A_LEAVE_TO_CHANGE_SURNAME(
-        MANUAL_UPLOAD,
-        "Leave to change surname (C44A)",
-        "",
-        "Leave to change surname (C44A)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C44B_LEAVE_TO_REMOVE_A_CHILD_FROM_THE_UK(
         MANUAL_UPLOAD,
@@ -537,6 +529,22 @@ public enum Order {
             REVIEW_DRAFT_ORDER
         )
     ),
+    FL404A_NON_MOLESTATION_ORDER(
+        DIGITAL,
+        "Non-molestation order (FL404A)",
+        "Section 42 Family Law Act 1996",
+        "Non-molestation order (FL404A)",
+        IsFinalOrder.NO,
+        List.of(
+            LINKED_TO_HEARING,
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            NON_MOLESTATION_ORDER,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
     FL406_POWER_OF_ARREST(
         MANUAL_UPLOAD,
         "",
@@ -550,7 +558,7 @@ public enum Order {
         "",
         "",
         "Other",
-        IsFinalOrder.MAYBE,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     // although this isn't an order, by defining this we get to take advantage of the existing framework

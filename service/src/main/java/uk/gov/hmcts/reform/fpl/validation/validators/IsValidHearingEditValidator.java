@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.fpl.validation.validators;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;

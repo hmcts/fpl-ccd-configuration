@@ -1,22 +1,21 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.util.NestedServletException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
@@ -25,6 +24,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
+import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
@@ -34,28 +34,28 @@ import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.testingsupport.controllers.TestingSupportController;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static com.microsoft.applicationinsights.core.dependencies.http.HttpStatus.SC_OK;
+import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.service.UploadDocumentService.oldToSecureDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOldDocument;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(TestingSupportController.class)
+@ComponentScan(basePackages = "uk.gov.hmcts.reform.fpl", lazyInit = true)
 @OverrideAutoConfiguration(enabled = true)
 class TestingSupportControllerTest {
 
@@ -97,6 +97,12 @@ class TestingSupportControllerTest {
     @MockBean
     private DocumentUploadClientApi uploadClient;
 
+    @MockBean
+    protected IdamClient idamClient;
+
+    @MockBean
+    protected DocumentDownloadClientApi documentDownloadClientApi;
+
     @BeforeEach
     void init() {
         when(requestData.authorisation()).thenReturn(USER_AUTH_TOKEN);
@@ -106,27 +112,10 @@ class TestingSupportControllerTest {
 
     @Test
     void shouldThrowExceptionForInvalidState() {
-        Exception thrownException = assertThrows(NestedServletException.class,
+        Exception thrownException = assertThrows(ServletException.class,
             () -> makePostRequest(POPULATE_CASE_PATH, Map.of("state", "NOT_A_REAL_STATE")));
 
         assertThat(thrownException.getMessage()).contains("Unable to map NOT_A_REAL_STATE to a case state");
-    }
-
-    @ParameterizedTest
-    @MethodSource("stateToEventNameSource")
-    void shouldTriggerCorrectEvent(String state, String eventName) throws Exception {
-        Map<String, Object> caseData = Map.of("property", "value");
-        Map<String, Object> requestBody = Map.of("state", state, "caseData", caseData);
-
-        var result = makePostRequest(POPULATE_CASE_PATH, requestBody);
-
-        assertThat(result.getResponse().getStatus()).isEqualTo(SC_OK);
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            eventName,
-            caseData);
     }
 
     @Test

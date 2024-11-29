@@ -140,8 +140,6 @@ class C2DocumentBundleSerializationTest {
             entry("uploadedDateTime", "uploadedDatetime"),
             entry("author", "Author"),
             entry("supportingEvidenceBundle", expectedBundles),
-            entry("supportingEvidenceLA", expectedBundles),
-            entry("supportingEvidenceNC", List.of()),
             entry("supplementsBundle", expectedSupplementBundle)
         );
 
@@ -226,8 +224,6 @@ class C2DocumentBundleSerializationTest {
             entry("uploadedDateTime", "uploadedDatetime"),
             entry("author", "Author"),
             entry("supportingEvidenceBundle", expectedBundles),
-            entry("supportingEvidenceLA", expectedBundles),
-            entry("supportingEvidenceNC", expectedBundles),
             entry("supplementsBundle", expectedSupplementBundle)
         );
 

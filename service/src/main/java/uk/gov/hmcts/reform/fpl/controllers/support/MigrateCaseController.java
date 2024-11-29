@@ -13,13 +13,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
 import java.time.ZonedDateTime;
@@ -32,6 +33,7 @@ import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 
 @Slf4j
@@ -41,16 +43,17 @@ import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADV
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
-    private final JudicialService judicialService;
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
+    private final RoleAssignmentService roleAssignmentService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1930", this::run1930,
-        "DFPL-2205", this::run2205,
-        "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1233", this::run1233,
-        "DFPL-1233Rollback", this::run1233Rollback
+        "DFPL-log", this::runLog,
+        "DFPL-2610", this::run2610,
+        "DFPL-2585", this::run2585,
+        "DFPL-2585Rollback", this::run2585Rollback
     );
+    private final CaseConverter caseConverter;
+    private final JudicialService judicialService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -72,7 +75,37 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void migrateRoles(CaseData caseData) {
+    private void runLog(CaseDetails caseDetails) {
+        log.info("Logging migration on case {}", caseDetails.getId());
+    }
+
+    private void run2610(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2610";
+        final long expectedCaseId = 1722860335639318L;
+        CaseData firstInstanceCaseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService
+            .removeCharactersFromThresholdDetails(firstInstanceCaseData, migrationId,
+                416, 423, "****"));
+
+        CaseData secondInstanceCaseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService
+            .removeCharactersFromThresholdDetails(secondInstanceCaseData, migrationId,
+                462, 468, "****"));
+    }
+
+    private void run2585(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2585";
+        migrateCaseService.doStateCheck(
+            caseDetails.getState(), State.CLOSED.toString(), caseDetails.getId(), migrationId);
+        roleAssignmentService.deleteAllRolesOnCase(caseDetails.getId());
+    }
+
+    private void run2585Rollback(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2585Rollback";
+        CaseData caseData = getCaseData(caseDetails);
+
         List<RoleAssignment> rolesToAssign = new ArrayList<>();
 
         // If we have an allocated judge with an IDAM ID (added in about-to-submit step from mapping)
@@ -81,22 +114,18 @@ public class MigrateCaseController extends CallbackController {
             && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
             && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
 
-            Optional<RoleCategory> userRoleCategory = judicialService
-                .getUserRoleCategory(allocatedJudge.get().getJudgeEmailAddress());
+            boolean isLegalAdviser = LEGAL_ADVISOR
+                .equals(allocatedJudge.get().getJudgeTitle());
 
-            if (userRoleCategory.isPresent()) {
-                // attempt to assign allocated-[role]
-                boolean isLegalAdviser = userRoleCategory.get().equals(RoleCategory.LEGAL_OPERATIONS);
-
-                rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
-                    caseData.getId(),
-                    allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
-                    isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
-                    userRoleCategory.get(),
-                    ZonedDateTime.now(),
-                    null // no end date
-                ));
-            }
+            // attempt to assign allocated-[role]
+            rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
+                caseData.getId(),
+                allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
+                isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
+                isLegalAdviser ? RoleCategory.LEGAL_OPERATIONS : RoleCategory.JUDICIAL,
+                ZonedDateTime.now(),
+                null // no end date
+            ));
         } else {
             log.error("Could not assign allocated-judge on case {}, no UUID found on the case", caseData.getId());
         }
@@ -106,126 +135,5 @@ public class MigrateCaseController extends CallbackController {
 
         log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
         judicialService.migrateJudgeRoles(rolesToAssign);
-    }
-
-    private void runAmRollback(CaseDetails caseDetails) {
-        var migrationId = "DFPL-AM-Rollback";
-        CaseData caseData = getCaseData(caseDetails);
-
-        Judge allocatedJudge = caseData.getAllocatedJudge();
-        if (!isEmpty(allocatedJudge)) {
-            caseDetails.getData().put("allocatedJudge", allocatedJudge.toBuilder()
-                .judgeEnterManually(null)
-                .judgeJudicialUser(null)
-                .build());
-        }
-
-        List<Element<HearingBooking>> hearingsWithIdamIdsStripped = caseData.getAllNonCancelledHearings()
-            .stream().map(hearing -> {
-                HearingBooking booking = hearing.getValue();
-
-                booking.setJudgeAndLegalAdvisor(booking.getJudgeAndLegalAdvisor().toBuilder()
-                    .judgeEnterManually(null)
-                    .judgeJudicialUser(null)
-                    .build());
-                hearing.setValue(booking);
-                return hearing;
-            }).toList();
-
-        if (caseData.getAllNonCancelledHearings().size() > 0) {
-            caseDetails.getData().put("hearingDetails", hearingsWithIdamIdsStripped);
-        }
-        caseDetails.getData().remove("hasBeenAMMigrated");
-
-        // delete all roles on the case - if this fails we WANT the migration to stop, as it has not been rolled back
-        judicialService.deleteAllRolesOnCase(caseData.getId());
-    }
-
-    private void run2205(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2205";
-        var possibleCaseIds = List.of(1708678873141424L);
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().remove("urgentDirectionsOrder");
-    }
-
-    private void run1930(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.setCaseManagementLocation(caseData, "DFPL-1930"));
-    }
-
-    private void runAM(CaseDetails caseDetails) {
-        var migrationId = "DFPL-AM";
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        // 1. cleanup from past migration
-        judicialService.deleteAllRolesOnCase(caseData.getId());
-
-        // 2. Add UUIDs for judges + legal advisers
-        Judge allocatedJudge = caseData.getAllocatedJudge();
-        if (!isEmpty(allocatedJudge) && !isEmpty(allocatedJudge.getJudgeEmailAddress())) {
-            String email = allocatedJudge.getJudgeEmailAddress();
-            Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
-            // add the UUID to the allocated judge and save on the case
-
-            if (uuid.isEmpty()) {
-                log.info("Could not find judge UUID, caseId={}, allocatedJudge, ejudiciary={}, judgeTitle={}",
-                    caseData.getId(), email.toLowerCase().endsWith("@ejudiciary.net"), allocatedJudge.getJudgeTitle());
-            }
-
-            uuid.ifPresent(s -> caseDetails.getData().put("allocatedJudge", allocatedJudge.toBuilder()
-                .judgeJudicialUser(JudicialUser.builder()
-                    .idamId(s)
-                    .build())
-                .build()));
-        }
-
-        List<Element<HearingBooking>> hearings = caseData.getAllNonCancelledHearings();
-        List<Element<HearingBooking>> modified = hearings.stream()
-            .map(el -> {
-                HearingBooking val = el.getValue();
-                if (!isEmpty(val.getJudgeAndLegalAdvisor())
-                    && !isEmpty(val.getJudgeAndLegalAdvisor().getJudgeEmailAddress())) {
-
-                    String email = val.getJudgeAndLegalAdvisor().getJudgeEmailAddress();
-                    Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
-                    if (uuid.isPresent()) {
-                        el.setValue(val.toBuilder()
-                            .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
-                                .judgeJudicialUser(JudicialUser.builder()
-                                    .idamId(uuid.get())
-                                    .build())
-                                .build())
-                            .build());
-                        return el;
-                    } else {
-                        log.info("Could not find judge UUID, caseId={}, hearingId={}, ejudiciary={}, judgeTitle={}",
-                            caseData.getId(), el.getId(), email.toLowerCase().endsWith("@ejudiciary.net"),
-                            val.getJudgeAndLegalAdvisor().getJudgeTitle());
-                    }
-                }
-                return el;
-            }).toList();
-
-        if (!hearings.isEmpty()) {
-            // don't add an empty array if there weren't any hearings beforehand
-            caseDetails.getData().put("hearingDetails", modified);
-        }
-        caseDetails.getData().put("hasBeenAMMigrated", "Yes");
-
-        // Convert our newly annotated case details payload to a case data object
-        CaseData newCaseData = getCaseData(caseDetails);
-
-        // 3. Attempt to assign the new roles in AM
-        migrateRoles(newCaseData);
-    }
-
-    private void run1233Rollback(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(migrateCaseService.rollbackHearingType(getCaseData(caseDetails)));
-    }
-
-    private void run1233(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
     }
 }

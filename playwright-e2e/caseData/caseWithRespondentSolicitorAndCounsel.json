@@ -1,0 +1,254 @@
+
+{
+  "state": "SUBMITTED",
+  "caseData": {
+    "amountToPay": "221500",
+    "sendToCtsc": "Yes",
+    "caseSummaryNextHearingType": null,
+    "caseSummaryNextHearingDateTime": null,
+    "caseSummaryFlagAddedByFullName": null,
+    "caseSummaryPreviousHearingDate": null,
+    "caseName": "RespondentSolicitorAddCounsel",
+    "submittedForm": {
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+      "document_filename": "RespondentSolicitorAddCounsel.pdf",
+      "document_url": "${TEST_DOCUMENT_URL}"
+    },
+    "caseSummaryCafcassGuardian": null,
+    "caseSummaryFlagAssessmentForm": null,
+    "caseSummaryNextHearingCMO": null,
+    "caseSummaryLASolicitorName": "Social worker",
+    "dfjArea": "BRISTOL",
+    "caseSummaryPreviousHearingType": null,
+    "caseLocalAuthority": "SA",
+    "caseSummaryHasFinalHearing": null,
+    "caseSummaryCourtName": "Family Court sitting at Bath",
+    "deadline26week": "2024-09-24",
+    "grounds": {
+      "thresholdReason": [
+        "beyondControl"
+      ],
+      "thresholdDetails": "Test"
+    },
+    "caseSummaryNextHearingEmailAddress": null,
+    "allocationProposal": {
+      "proposal": "Section 9 circuit judge",
+      "proposalReason": "Give Reason"
+    },
+    "localAuthorities": [
+      {
+        "id": "29524a9f-5db2-41c0-ab62-37e535b5731c",
+        "value": {
+          "address": {
+            "AddressLine3": "40 Fleet street",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "PostTown": "Swansea",
+            "PostCode": "CR0 2GE",
+            "County": "United Kingdom"
+          },
+          "designated": "Yes",
+          "phone": "06547568678",
+          "pbaNumber": "PBA0082848",
+          "clientCode": "011234",
+          "legalTeamManager": null,
+          "customerReference": "Customer",
+          "colleagues": [
+            {
+              "id": "e432188c-9efc-4caf-80a9-8da682337ac7",
+              "value": {
+                "reference": null,
+                "mainContact": "Yes",
+                "notificationRecipient": "No",
+                "role": "SOCIAL_WORKER",
+                "dx": null,
+                "phone": null,
+                "fullName": "Social worker",
+                "title": null,
+                "email": "socialworker@eamil.com"
+              }
+            }
+          ],
+          "name": "Swansea City Council",
+          "id": "W9V61CP",
+          "email": "FamilyPublicLaw+sa@gmail.com"
+        }
+      }
+    ],
+    "caseSummaryAllocatedJudgeName": null,
+     "submissionConsent": [
+      "agree"
+    ],
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
+    "orders": {
+      "particularsOfChildren": [],
+      "orderType": [
+        "CARE_ORDER"
+      ],
+      "emergencyProtectionOrders": [],
+      "directionDetails": null,
+      "epoType": null,
+      "emergencyProtectionOrderDirections": [],
+      "childAssessmentOrderContactDirections": null,
+      "court": "123",
+      "particularsOfChildrenDetails": null,
+      "childRecoveryOrderDirectionsAppliedFor": null,
+      "educationSupervisionOrderPriorConsultationType": [],
+      "excluded": null,
+      "educationSupervisionOrderDirectionsAppliedFor": null,
+      "directions": "No",
+      "educationSupervisionOrderPriorConsultationOtherLA": null,
+      "childAssessmentOrderAssessmentDirections": null,
+      "emergencyProtectionOrderDirectionDetails": null,
+      "emergencyProtectionOrderDetails": null,
+      "otherOrder": null
+    },
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "caseSummaryNextHearingDate": null,
+    "caseSummaryCaseFlagNotes": null,
+    "caseSummaryOrdersRequested": "Care order",
+    "caseSummaryFlagAddedByEmail": null,
+    "caseSummaryLASolicitorEmail": "socialworker@eamil.com",
+    "caseSummaryLanguageRequirement": "No",
+    "caseSummaryDateOfIssue": "2024-03-26",
+    "caseSummaryPreviousCourtName": null,
+    "hearing": {
+      "reason": null,
+      "reducedNoticeReason": null,
+      "reducedNotice": "No",
+      "respondentsAwareReason": null,
+      "reason12Days": null,
+      "type": "Standard case management hearing",
+      "timeFrame": "Within 18 days",
+      "withoutNotice": "No",
+      "respondentsAware": "No",
+      "reason2Days": null,
+      "type_GiveReason": "Test",
+      "reason7Days": null,
+      "withoutNoticeReason": null
+    },
+    "caseSummaryFinalHearingDate": null,
+    "caseSummaryHighCourtCase": "No",
+    "caseSummaryHasUnresolvedMessages": null,
+    "caseSummaryFirstRespondentLastName": "Respondent",
+    "respondents1": [
+      {
+        "id": "7901ce82-e415-4c8d-9058-182e3903304f",
+        "value": {
+          "legalRepresentation": "Yes",
+          "legalCounsellors": [
+            {
+                "id":
+  "9fff9729-790e-448c-80c5-dd2d8c79cb88",
+                "value": {
+                  "firstName": "FPLOrg",
+                  "lastName": "Solicitor",
+                  "telephoneNumber": null,
+                  "organisation": {
+                    "OrganisationID": "4ZYL0HK",
+                    "OrganisationName": "FPLSolicitorOrg"
+                  },
+                  "userId":
+  "45ae9b95-a1ac-4aa9-900e-7bd773998e6b"
+  ,
+                  "email": "fpl_sol_org_01@mailinator.com"
+                }
+              }
+          ],
+          "solicitor": {
+            "firstName": "Solicitor",
+            "lastName": "Sohan",
+            "telephoneNumber": {
+              "telephoneNumber": "787978978978"
+            },
+            "colleaguesToBeNotified": [],
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "email": "sohan@email.com",
+            "unregisteredOrganisation": {},
+            "regionalOfficeAddress": {}
+          },
+          "representedBy": [],
+          "party": {
+            "litigationIssues": "NO",
+            "lastName": "Respondent",
+            "firstName": "Charlie",
+            "telephoneNumber": {
+              "telephoneNumber": "098679689"
+            },
+            "address": {
+              "AddressLine3": "Pears Road",
+              "AddressLine2": "",
+              "AddressLine1": "91a",
+              "Country": "United Kingdom",
+              "PostTown": "Hounslow",
+              "PostCode": "TW3 1SS",
+              "County": ""
+            },
+            "gender": "Female",
+            "contactDetailsHidden": "No",
+            "dateOfBirth": "1980-03-04",
+            "addressKnow": "Yes",
+            "relationshipToChild": "Mother",
+            "partyId": "b19966c2-c0ce-476b-8f6b-9e372a246df8"
+          }
+        }
+      }
+    ],
+    "displayAmountToPay": "Yes",
+    "caseSummaryNumberOfChildren": 1,
+    "caseSummaryAllocatedJudgeEmail": null,
+    "caseSummaryFirstRespondentLegalRep": null,
+    "bristolDFJCourt": "123",
+    "caseSummaryHasNextHearing": null,
+    "children1": [
+      {
+        "id": "ce3e88bf-a297-4351-90ba-9ab4c3078ea6",
+        "value": {
+          "legalCounsellors": [],
+          "party": {
+            "lastName": "katie",
+            "address": {
+              "AddressLine3": "",
+              "AddressLine2": "",
+              "AddressLine1": "101 Oakley Close",
+              "Country": "United Kingdom",
+              "PostTown": "Isleworth",
+              "PostCode": "TW7 4HY",
+              "County": ""
+            },
+            "gender": "Girl",
+            "fathersName": "Father",
+            "careAndContactPlan": "Brief",
+            "detailsHidden": "No",
+            "dateOfBirth": "2018-04-02",
+            "fathersResponsibility": "Yes",
+            "litigationIssues": "NO",
+            "firstName": "Child",
+            "adoption": "No",
+            "addressChangeDate": "2023-02-02",
+            "mothersName": "Motherr",
+            "additionalNeeds": "No",
+            "livingSituation": "Living with respondents",
+            "partyId": "2061244d-675a-4b09-878e-51980d192c44",
+            "keyDates": "Key"
+          }
+        }
+      }
+    ],
+    "caseSummaryNextHearingJudge": null,
+    "caseSummaryHasPreviousHearing": null,
+    "caseSummaryPreviousHearingCMO": null
+  }
+}
+
+

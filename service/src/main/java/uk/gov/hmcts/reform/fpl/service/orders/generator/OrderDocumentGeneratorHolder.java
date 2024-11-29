@@ -47,6 +47,8 @@ public class OrderDocumentGeneratorHolder {
         c36VariationOrExtensionOfSupervisionOrdersParameterGenerator;
     private final A206PlacementOrderNotificationParameterGenerator a206PlacementOrderNotificationParameterGenerator;
     private final C42FamilyAssistanceOrderDocumentParameterGenerator c42FamilyAssistanceOrderDocumentParameterGenerator;
+    private final NonMolestationOrderDocumentParameterGenerator nonMolestationOrderDocumentParameterGenerator;
+    private final TransparencyOrderParameterGenerator transparencyOrderParameterGenerator;
 
     // additional document collectors
     private final C23EPOAdditionalDocumentsCollector c23EPOAdditionalDocumentsCollector;
@@ -80,7 +82,9 @@ public class OrderDocumentGeneratorHolder {
                 c34BAuthorityToRefuseContactOrderParameterGenerator,
                 c34aContactWithAChildInCareOrderDocumentParameterGenerator,
                 c63aDeclarationOfParentageDocumentParameterGenerator,
-                c42FamilyAssistanceOrderDocumentParameterGenerator
+                c42FamilyAssistanceOrderDocumentParameterGenerator,
+                nonMolestationOrderDocumentParameterGenerator,
+                transparencyOrderParameterGenerator
             ).stream().collect(Collectors.toMap(DocmosisParameterGenerator::accept, Function.identity()));
         }
         return typeToGenerator;

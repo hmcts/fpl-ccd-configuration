@@ -2,7 +2,6 @@ import { type Page, type Locator, expect } from "@playwright/test";
 
 export class OrdersAndDirectionSought {
   readonly page: Page;
-  readonly OrdersAndDirectionsLink: Locator;
   readonly OrdersAndDirectionsHeading: Locator;
   readonly OrdersAndDirectionsSought: Locator;
   readonly WhichOrdersDoYouNeedCareOrder: Locator;
@@ -25,9 +24,10 @@ export class OrdersAndDirectionSought {
   }
 
   async ordersAndDirectionsNeeded() {
-    await this.OrdersAndDirectionsHeading.isVisible;
+      await expect(this.OrdersAndDirectionsSought).toBeVisible();
     await this.OrdersAndDirectionsSought.click();
-    await this.WhichOrdersDoYouNeedCareOrder.check();
+    await expect(this.OrdersAndDirectionsHeading).toBeVisible();
+    await this.WhichOrdersDoYouNeedCareOrder.click();
     await this.DoYouNeedAnyOtherDirectionsRadioNo.check();
     await this.WhichCourtAreYouIssuingFor.selectOption('2: 117');
     await this.Continue.click();

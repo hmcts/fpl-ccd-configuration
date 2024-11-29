@@ -188,15 +188,17 @@ class PlacementEventsHandlerPaymentTest {
 
         final LocalDateTime now = LocalDateTime.now();
         when(time.now()).thenReturn(now);
-        ObjectMapper mapper = new ObjectMapper();
-
-        underTest.getUpdates(CaseDetails.builder().data(mapper.convertValue(caseData, MAP_TYPE)).build());
 
         final Map<String, Object> expectedCaseUpdates = new HashMap<>();
         expectedCaseUpdates.put("placementLastPaymentTime", now);
         expectedCaseUpdates.put("placementPaymentRequired", null);
         expectedCaseUpdates.put("placementPayment", null);
-        expectedCaseUpdates.put("placement", null);
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> caseMap =
+            underTest.getUpdates(CaseDetails.builder().data(mapper.convertValue(caseData, MAP_TYPE)).build());
+
+        assertThat(caseMap).containsAllEntriesOf(expectedCaseUpdates);
     }
 
     @ParameterizedTest

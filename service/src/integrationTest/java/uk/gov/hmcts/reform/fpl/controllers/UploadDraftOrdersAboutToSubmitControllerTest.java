@@ -2,15 +2,19 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -20,19 +24,26 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -45,8 +56,17 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
     private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
 
+    @MockBean
+    private ManageDocumentService manageDocumentService;
+
     UploadDraftOrdersAboutToSubmitControllerTest() {
         super();
+    }
+
+    @BeforeEach
+    void before() {
+        when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+        when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
     }
 
     @Test
@@ -82,8 +102,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         hearings.get(0).getValue().setCaseManagementOrderId(unsealedCMOs.get(0).getId());
 
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
-
-        assertThat(responseData.getHearingFurtherEvidenceDocuments()).isEmpty();
     }
 
     @Test
@@ -178,8 +196,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         hearings.get(0).getValue().setCaseManagementOrderId(unsealedCMOs.get(0).getId());
 
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
-
-        assertThat(responseData.getHearingFurtherEvidenceDocuments()).isEmpty();
     }
 
     @Test
@@ -245,6 +261,107 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         assertThat(response.getData().keySet()).isEqualTo(keys);
     }
 
+    @Test
+    void shouldSetWATaskFieldIfAgreedCMOUploaded() {
+        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
+        List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
+        List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+        List<Element<HearingOrder>> draftCMOs = List.of();
+
+        CaseData caseData = CaseData.builder()
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
+                .hearingOrderDraftKind(List.of(CMO))
+                .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
+                .pastHearingsForCMO(dynamicList(hearings))
+                .futureHearingsForCMO(dynamicList(futureHearings))
+                .cmoJudgeInfo("DUMMY DATA")
+                .cmoHearingInfo("DUMMY DATA")
+                .showReplacementCMO(YesNo.NO)
+                .replacementCMO(DOCUMENT_REFERENCE)
+                .previousCMO(DOCUMENT_REFERENCE)
+                .cmoToSend(DOCUMENT_REFERENCE)
+                .showCMOsSentToJudge(YesNo.NO)
+                .cmosSentToJudge("DUMMY DATA")
+                .cmoUploadType(CMOType.AGREED).build())
+            .hearingDetails(allHearings)
+            .draftUploadedCMOs(draftCMOs)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
+
+        assertThat(response.getData())
+            .extracting("draftOrderNeedsReviewUploaded")
+            .isEqualTo("YES");
+    }
+
+    @Test
+    void shouldSetWATaskFieldIfC21Uploaded() {
+        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
+        List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
+        List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+        List<Element<HearingOrder>> draftOrders = List.of();
+
+        CaseData caseData = CaseData.builder()
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
+                .hearingOrderDraftKind(List.of(C21))
+                .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
+                .pastHearingsForCMO(dynamicList(hearings))
+                .futureHearingsForCMO(dynamicList(futureHearings))
+                .cmoToSend(DOCUMENT_REFERENCE)
+                .currentHearingOrderDrafts(draftOrders)
+                .showReplacementCMO(YesNo.NO)
+                .build())
+            .hearingDetails(allHearings)
+            .draftUploadedCMOs(draftOrders)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
+
+        assertThat(response.getData())
+            .extracting("draftOrderNeedsReviewUploaded")
+            .isEqualTo("YES");
+    }
+
+    @Test
+    void shouldSetWATaskFieldToNoIfDraftCMOUploaded() {
+        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
+        List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
+        List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+        List<Element<HearingOrder>> draftCMOs = List.of();
+
+        CaseData caseData = CaseData.builder()
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
+                .hearingOrderDraftKind(List.of(CMO))
+                .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
+                .pastHearingsForCMO(dynamicList(hearings))
+                .futureHearingsForCMO(dynamicList(futureHearings))
+                .cmoJudgeInfo("DUMMY DATA")
+                .cmoHearingInfo("DUMMY DATA")
+                .showReplacementCMO(YesNo.NO)
+                .replacementCMO(DOCUMENT_REFERENCE)
+                .previousCMO(DOCUMENT_REFERENCE)
+                .cmoToSend(DOCUMENT_REFERENCE)
+                .showCMOsSentToJudge(YesNo.NO)
+                .cmosSentToJudge("DUMMY DATA")
+                .cmoUploadType(CMOType.DRAFT).build())
+            .hearingDetails(allHearings)
+            .draftUploadedCMOs(draftCMOs)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
+
+        assertThat(response.getData())
+            .extracting("draftOrderNeedsReviewUploaded")
+            .isEqualTo("NO");
+
+    }
+
     private HearingOrder orderWithDocs(HearingBooking hearing, HearingOrderType type, CMOStatus status,
                                        List<Element<SupportingEvidenceBundle>> supportingDocs, UUID hearingId) {
         return HearingOrder.builder()
@@ -257,6 +374,8 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .dateSent(dateNow())
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
             .supportingDocs(supportingDocs)
+            .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+            .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
             .build();
     }
 

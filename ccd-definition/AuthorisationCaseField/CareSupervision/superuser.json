@@ -226,6 +226,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hiddenUrgentDirectionOrders",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "removeStandardDirectionOrderWarning",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "R"
@@ -696,6 +703,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "reviewDecision10",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "draftOrdersApproved",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
   },
@@ -1669,6 +1683,27 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryApplicationDocuments",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "refusedOrdersTabHeading",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "refusedHearingOrders",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "urgentDirectionsOrder",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   }

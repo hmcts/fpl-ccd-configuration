@@ -71,7 +71,9 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersDirections")),
     CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS("childArrangementSpecificIssueProhibitedSteps",
         OrderSection.ORDER_DETAILS,
-        List.of("manageOrdersMultiSelectListForC43", "manageOrdersRecitalsAndPreambles")),
+        List.of("manageOrdersMultiSelectListForC43", "manageOrdersRecitalsAndPreambles",
+            "manageOrdersChildArrangementsLiveWithDetails", "manageOrdersChildArrangementsContactWithDetails",
+            "manageOrdersSpecificIssueOrderDetails", "manageOrdersProhibitedStepsOrderDetails")),
     DISCHARGE_DETAILS("dischargeOfCareDetails", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersCareOrderIssuedDate", "manageOrdersCareOrderIssuedCourt")),
     REVIEW_DRAFT_ORDER("previewOrder", OrderSection.REVIEW,
@@ -130,7 +132,18 @@ public enum OrderQuestionBlock {
             "manageOrdersConditionsOfContact")),
     FAMILY_ASSISTANCE_ORDER("familyAssistanceOrder", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersPartyToBeBefriended1", "manageOrdersPartyToBeBefriended2",
-            "manageOrdersPartyToBeBefriended3", "manageOrdersFamilyAssistanceEndDate"));
+            "manageOrdersPartyToBeBefriended3", "manageOrdersFamilyAssistanceEndDate")),
+    NON_MOLESTATION_ORDER("nonMolestationOrder", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersRecitalsAndPreamblesOptional", "manageOrdersNonMolestationOrder",
+            "manageOrdersNonMolestationOrderApplicant", "manageOrdersNonMolestationOrderRespondent")),
+    TRANSPARENCY_ORDER_BLOCK("manageOrdersTransparencyOrder", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersTransparencyOrderExpiration", "manageOrdersTransparencyOrderEndDate",
+            "manageOrdersTransparencyOrderPublishInformationLabel",
+            "manageOrdersTransparencyOrderPublishInformationDetails",
+            "manageOrdersTransparencyOrderPublishIdentityLabel", "manageOrdersTransparencyOrderPublishIdentityDetails",
+            "manageOrdersTransparencyOrderPublishDocumentsLabel",
+            "manageOrdersTransparencyOrderPublishDocumentsDetails",
+            "manageOrdersTransparencyOrderPermissionToReportEffectiveDate"));
 
     private final String showHideField;
     private final OrderSection section;

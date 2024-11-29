@@ -33,5 +33,33 @@
     "CaseFieldID": "caseSummaryNextHearingDateTime",
     "UserRole": "caseworker-wa-task-configuration",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "draftOrderUrgency",
+    "UserRole": "caseworker-wa-task-configuration",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "allocatedJudge",
+    "UserRole": "caseworker-wa-task-configuration",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderReviewUrgency",
+    "UserRole": "caseworker-wa-task-configuration",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingDetails",
+    "UserRole": "caseworker-wa-task-configuration",
+    "CRUD": "R"
   }
 ]
