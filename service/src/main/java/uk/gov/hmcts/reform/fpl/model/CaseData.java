@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.caselink.CaseLink;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.CaseLinksElement;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -181,7 +182,7 @@ public class CaseData extends CaseDataParent {
     private String dfjArea;
 
     @JsonProperty("caseLinks")
-    private List<Element<CaseLink>> caseLinks;
+    private List<CaseLinksElement<CaseLink>> caseLinks;
 
     private final JudicialUser judicialUser;
     private final JudicialUser judicialUserHearingJudge;
