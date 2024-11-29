@@ -19,5 +19,5 @@ public class CaseLinksElement<T> {
     @NotNull
     @Valid
     @JsonProperty("value")
-    private final T Value;
+    private T value;
 }
