@@ -121,6 +121,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "addressAutoConfidentialLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## This address is automatically made confidential",
+    "FieldShowCondition": "livingSituation=\"Living in a refuge\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
@@ -237,6 +246,7 @@
     "ListElementCode": "detailsHidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need contact details hidden from other parties?",
+    "FieldShowCondition": "livingSituation!=\"Living in a refuge\"",
     "SecurityClassification": "Public"
   },
   {
@@ -245,7 +255,7 @@
     "ListElementCode": "detailsHiddenReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "detailsHidden=\"Yes\"",
+    "FieldShowCondition": "detailsHidden=\"Yes\" AND livingSituation!=\"Living in a refuge\"",
     "SecurityClassification": "Public"
   },
   {
