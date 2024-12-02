@@ -626,7 +626,7 @@ class RespondentServiceTest {
                 .postcode("XXX YYY")
                 .addressLine1("addressLine1")
                 .build())
-            .addressKnow(IsAddressKnowType.YES)
+            .addressKnowV2(IsAddressKnowType.YES)
             .addressNotKnowReason("addressNotKnowReason")
             .detailsHidden("Yes")
             .detailsHiddenReason("detailsHiddenReason")
