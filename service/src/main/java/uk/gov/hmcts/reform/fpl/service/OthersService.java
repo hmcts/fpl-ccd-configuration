@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -183,24 +182,20 @@ public class OthersService {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
     }
 
-    public Others consolidateAndRemoveHiddenFields(CaseData caseData) {
-        return Others.from(caseData.getAllOthers().stream()
-            .map(otherElement -> {
-                Other other = otherElement.getValue();
-                if (!isNull(other.getAddressKnowV2())) {
-                    Other.OtherBuilder builder = other.toBuilder();
-                    if (IsAddressKnowType.NO.equals(other.getAddressKnowV2())) {
-                        builder = builder.address(null);
-                    } else {
-                        builder = builder.addressNotKnowReason(null);
-                    }
+    public Others removeAddressOrAddressNotKnowReason(CaseData caseData) {
+        List<Element<Other>> updatedOthers = new ArrayList<>();
 
-                    if (IsAddressKnowType.LIVE_IN_REFUGE.equals(other.getAddressKnowV2())) {
-                        builder = builder.detailsHidden(YesNo.YES.getValue());
-                    }
-                    return element(otherElement.getId(), builder.build());
-                }
-                return otherElement;
-            }).toList());
+        caseData.getAllOthers().forEach(element -> {
+            Other other = element.getValue();
+            if (!isNull(other.getAddressKnow())) {
+                updatedOthers.add(other.getAddressKnow().equals(YesNo.NO.getValue())
+                    ? element(element.getId(), other.removeAddress())
+                    : element(element.getId(), other.removeAddressNotKnowReason()));
+            } else {
+                updatedOthers.add(element);
+            }
+        });
+
+        return Others.from(updatedOthers);
     }
 }

@@ -2,17 +2,12 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
-import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -30,13 +25,11 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
-@Jacksonized
+@AllArgsConstructor
 @Builder(toBuilder = true)
 public class Other implements Representable, ConfidentialParty<Other> {
     @JsonProperty("DOB")
@@ -54,12 +47,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
     private final String detailsHiddenReason;
     private List<Element<UUID>> representedBy;
     private final String addressNotKnowReason;
-
-    // Flag for preventing from purging the converted old field value during deserialization if addressKnowV2 is null
-    @Builder.Default
-    @Getter(AccessLevel.NONE)
-    private final boolean isConvertedAddressKnow = false;
-    private final IsAddressKnowType addressKnowV2;
+    private final String addressKnow;
 
     public List<Element<UUID>> getRepresentedBy() {
         if (this.representedBy == null) {
@@ -171,36 +159,12 @@ public class Other implements Representable, ConfidentialParty<Other> {
             || AddressNotKnowReason.NO_FIXED_ABODE.getType().equals(addressNotKnowReason);
     }
 
-    public static class OtherBuilder {
-        private boolean isConvertedAddressKnow = false;
-
-        /** <h2>Deprecated. use addressKnowV2 instead</h2>
-         * <h3>This builder method will convert the old addressKnow field to addressKnowV2 during deserialization</h3>
-         * <p>Was having ElasticSearch initialisation exception during the release:
-         * <br>
-         * <i>ElasticSearch initialisation exception" mapper [data.hearingDetails.value.others.value.addressKnow]
-         * cannot be changed from type [keyword] to [text]</i></p>
-         * <p>Creating a new field to avoid updating the existing indexed field.
-         * Review all indexed field in the future</p>
-         * @see IsAddressKnowType
-         **/
-        @Deprecated(since = "DFPL-2546")
-        public OtherBuilder addressKnow(String addressKnow) {
-            if (this.addressKnowV2 == null && isNotEmpty(addressKnow)) {
-                this.addressKnowV2 = (YES.getValue().equalsIgnoreCase(addressKnow))
-                    ? IsAddressKnowType.YES : IsAddressKnowType.NO;
-                this.isConvertedAddressKnow = true;
-            }
-            return this;
-        }
-
-        public OtherBuilder addressKnowV2(IsAddressKnowType addressKnowV2) {
-            // Prevent from purging the converted old field value during deserialization if addressKnowV2 is null
-            if (!isConvertedAddressKnow || addressKnowV2 != null) {
-                this.addressKnowV2 = addressKnowV2;
-                this.isConvertedAddressKnow = false;
-            }
-            return this;
-        }
+    public Other removeAddress() {
+        return this.toBuilder().address(null).build();
     }
+
+    public Other removeAddressNotKnowReason() {
+        return this.toBuilder().addressNotKnowReason(null).build();
+    }
+
 }
