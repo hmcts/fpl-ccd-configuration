@@ -35,9 +35,9 @@ import { ShareCase } from "../pages/share-case";
 import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
 import { ReturnApplication } from "../pages/return-application";
 import { Orders } from "../pages/orders";
+import { CaseProgressionReort } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
 import { ChangeCaseName} from "../pages/change-case-name";
-
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -75,9 +75,8 @@ type CreateFixtures = {
   shareCase: ShareCase;
   otherPeopleInCase: OtherPeopleInCase;
   returnApplication: ReturnApplication;
-  orders: Orders;
   logExpertReport: LogExpertReport;
-  changeCaseName: ChangeCaseName;
+  changeCaseName: ChangeCaseName
 
 };
 
@@ -234,4 +233,7 @@ export const test = base.extend<CreateFixtures>({
     await use(new ChangeCaseName(page));
   },
 
+  caseProgressionReport: async ({ page }, use) => {
+    await use(new CaseProgressionReort(page));
+  },
 });
