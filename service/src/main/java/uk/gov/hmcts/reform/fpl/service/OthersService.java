@@ -187,15 +187,15 @@ public class OthersService {
         return Others.from(caseData.getAllOthers().stream()
             .map(otherElement -> {
                 Other other = otherElement.getValue();
-                if (!isNull(other.getAddressKnow())) {
+                if (!isNull(other.getAddressKnowV2())) {
                     Other.OtherBuilder builder = other.toBuilder();
-                    if (IsAddressKnowType.NO.equals(other.getAddressKnow())) {
+                    if (IsAddressKnowType.NO.equals(other.getAddressKnowV2())) {
                         builder = builder.address(null);
                     } else {
                         builder = builder.addressNotKnowReason(null);
                     }
 
-                    if (IsAddressKnowType.LIVE_IN_REFUGE.equals(other.getAddressKnow())) {
+                    if (IsAddressKnowType.LIVE_IN_REFUGE.equals(other.getAddressKnowV2())) {
                         builder = builder.detailsHidden(YesNo.YES.getValue());
                     }
                     return element(otherElement.getId(), builder.build());

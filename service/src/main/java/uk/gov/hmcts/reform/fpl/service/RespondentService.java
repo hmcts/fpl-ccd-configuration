@@ -270,7 +270,7 @@ public class RespondentService {
     public Respondent transformOtherToRespondent(Other other) {
         RespondentParty respondentParty = RespondentParty.builder()
             .address(other.getAddress())
-            .addressKnow(other.getAddressKnow())
+            .addressKnow(other.getAddressKnowV2())
             .addressNotKnowReason(other.getAddressNotKnowReason())
             .contactDetailsHidden(other.getDetailsHidden())
             .contactDetailsHiddenReason(other.getDetailsHiddenReason())
