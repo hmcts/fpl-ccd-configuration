@@ -69,6 +69,7 @@ type CreateFixtures = {
   otherProceedings: OtherProceedings;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
+  caseLink : CaseLink ;
   courtServicesNeeded: CourtServicesNeeded;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
@@ -194,10 +195,6 @@ export const test = base.extend<CreateFixtures>({
     caseLink: async ({ page }, use) => {
         await use(new CaseLink(page));
     },
-  otherProceedings: async ({ page }, use) => {
-    await use(new OtherProceedings(page));
-  },
-
   courtServicesNeeded: async ({ page }, use) => {
     await use(new CourtServicesNeeded(page));
   },

@@ -58,7 +58,6 @@ test.describe('Manage case linking', () => {
             await expect(page.getByRole('link', {name: 'linkedCase2 ' + caseLink.hypenateCaseNumber(linkedCase2)})).toBeVisible();
             await caseLink.openLinkedCase(caseLink.hypenateCaseNumber(linkedCase1));
             await expect(caseLink.linkedCasePage.getByRole('link', {name: 'e2e case ' + caseLink.hypenateCaseNumber(caseNumber)})).toBeVisible();
-
             await caseLink.gotoNextStep('Manage case links');
             await expect.soft(page.getByRole('heading', {name: 'Before you start'})).toBeVisible();
             await expect.soft(page.getByText('If there are linked hearings for the case you need to un-link then you must unlink the hearing first.')).toBeVisible();
@@ -66,7 +65,7 @@ test.describe('Manage case linking', () => {
             await expect.soft(page.getByText('Select the cases you want to unlink from this case')).toBeVisible();
             await caseLink.selectCaseToUnlink(linkedCase1);
             await caseLink.clickNext();
-            await caseLink.checkYourAnsAndSubmit();
+            await caseLink.clickSubmit();
 
             // assert
             await caseLink.tabNavigation("Linked Cases");
