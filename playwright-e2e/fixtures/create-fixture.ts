@@ -192,10 +192,6 @@ export const test = base.extend<CreateFixtures>({
     await use(new OtherProceedings(page));
   },
 
-  internationalElement: async ({ page }, use) => {
-    await use(new InternationalElement(page));
-  },
-
   courtServicesNeeded: async ({ page }, use) => {
     await use(new CourtServicesNeeded(page));
   },
@@ -227,7 +223,7 @@ export const test = base.extend<CreateFixtures>({
   shareCase: async ({ page }, use) => {
     await use(new ShareCase(page));
   },
-  
+
    orders: async ({page}, use) => {
         await use(new Orders(page));
    },
