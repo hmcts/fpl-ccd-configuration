@@ -16,7 +16,6 @@ export class BasePage {
 
   constructor(page: Page) {
     this.page = page;
-
     this.nextStep = page.getByLabel('Next step');
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
     this.continueButton = page.getByRole("button", { name: 'Continue' });
