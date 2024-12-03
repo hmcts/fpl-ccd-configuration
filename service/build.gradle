@@ -334,7 +334,7 @@ dependencies {
 
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
-  implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
+  implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 
   implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.18.2'
 
