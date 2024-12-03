@@ -1,7 +1,7 @@
 import { Locator, Page, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
-export class CaseProgressionReort extends BasePage {
+export class CaseProgressionReport extends BasePage {
     readonly caseProgressionReport: Locator;
     readonly region: Locator;
     readonly selectDfjArea: Locator;
