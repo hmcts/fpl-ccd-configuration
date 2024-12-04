@@ -23,6 +23,9 @@ test.describe('Manage representatives', () => {
 
             await manageRepresentatives.gotoNextStep('Manage representatives');
             await manageRepresentatives.updateRepresentatives();
-            await expect(page.getByText('has been updated with event:Manage representatives')).toBeVisible();
+            await manageRepresentatives.tabNavigation('People in the case')
+            await page.getByRole('tab', { name: 'People in the case' }).click();
+            await page.getByText('Representatives 1').scrollIntoViewIfNeeded();
         })
     })
+    

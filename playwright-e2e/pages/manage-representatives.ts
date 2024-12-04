@@ -32,7 +32,7 @@ export class ManageRepresentatives extends BasePage {
         await this.phoneNumber.fill('07818213677');
         await this.enterPostCode('sk3 8pp');
         await this.byEmail.click();
-        await this.whoAreThey.selectOption('1: LA_LEGAL_REPRESENTATIVE');
+        await this.whoAreThey.selectOption('5: REPRESENTING_RESPONDENT_1');
         await this.clickSubmit();
     }
 };
