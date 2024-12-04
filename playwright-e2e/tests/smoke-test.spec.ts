@@ -2,7 +2,7 @@ import { test, expect } from "../fixtures/fixtures";
 import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test("Smoke Test @smoke-test @accessibility", async ({
+test("Smoke Test @smoke-test  @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,

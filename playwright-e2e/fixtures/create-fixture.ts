@@ -27,6 +27,7 @@ import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { OtherProceedings } from "../pages/other-proceedings";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
+import { CaseLink } from "../pages/link-cases"
 import { CourtServicesNeeded } from "../pages/court-services-needed";
 import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
@@ -68,6 +69,7 @@ type CreateFixtures = {
   otherProceedings: OtherProceedings;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
+  caseLink : CaseLink ;
   courtServicesNeeded: CourtServicesNeeded;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
@@ -190,7 +192,9 @@ export const test = base.extend<CreateFixtures>({
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
   },
-
+    caseLink: async ({ page }, use) => {
+        await use(new CaseLink(page));
+    },
   courtServicesNeeded: async ({ page }, use) => {
     await use(new CourtServicesNeeded(page));
   },
