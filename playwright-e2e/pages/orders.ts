@@ -50,7 +50,7 @@ export class Orders extends BasePage {
     readonly childThirdContact: Locator;
     readonly costOrderDetails: Locator;
     readonly costOrder: Locator;
-    readonly orderTile: Locator;
+    readonly orderTitle: Locator;
     readonly orderDirectionDetails: Locator
 
     constructor(page: Page) {
@@ -102,8 +102,9 @@ export class Orders extends BasePage {
         this.childThirdContact = page.getByLabel('Child\'s third contact');
         this.costOrder =  page.getByRole('group', { name: 'Is there a costs order?' });
         this.costOrderDetails = page.getByLabel('Cost order details');
-        this.orderTile = page.getByLabel('Add order title (Optional)');
+        this.orderTitle = page.getByLabel('Add order title (Optional)');
         this.orderDirectionDetails = page.getByLabel('Add order directions');
+
 
     }
 
@@ -241,7 +242,7 @@ export class Orders extends BasePage {
         await this.costOrderDetails.fill('Cost to cover the  assessment and transportation');
     }
     async addC21BlankOrderDetails(){
-        await this.orderTile.fill('Prohibited Steps Order');
+        await this.orderTitle.fill('Prohibited Steps Order');
         await this.orderDirectionDetails.fill('Both father and mother have to get court permission before taking all the children out of country');
     }
 
