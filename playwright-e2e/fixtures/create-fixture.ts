@@ -37,6 +37,7 @@ import { ReturnApplication } from "../pages/return-application";
 import { Orders } from "../pages/orders";
 import { CaseProgressionReort } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
+import { ManageRepresentatives } from "../pages/manage-representatives";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -77,6 +78,7 @@ type CreateFixtures = {
   logExpertReport: LogExpertReport;
   orders: Orders;
   caseProgressionReport: CaseProgressionReort
+  manageRepresentatives: ManageRepresentatives
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -229,5 +231,9 @@ await use(new LogExpertReport(page));
 
   caseProgressionReport: async ({ page }, use) => {
     await use(new CaseProgressionReort(page));
+  },
+
+  manageRepresentatives: async ({ page }, use) => {
+    await use(new ManageRepresentatives(page));
   },
 });
