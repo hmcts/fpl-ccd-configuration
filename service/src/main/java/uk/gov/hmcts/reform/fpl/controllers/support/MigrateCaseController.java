@@ -105,7 +105,7 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, CaseRole.SOLICITORD.formattedName()));
+            orgId, null));
     }
 
     private void run2585(CaseDetails caseDetails) {
