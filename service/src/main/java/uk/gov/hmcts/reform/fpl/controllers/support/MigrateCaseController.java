@@ -50,7 +50,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-log", this::runLog,
         "DFPL-2610", this::run2610,
         "DFPL-2585", this::run2585,
-        "DFPL-2585Rollback", this::run2585Rollback
+        "DFPL-2585Rollback", this::run2585Rollback,
+        "DFPL-2613", this::run2613
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -135,5 +136,16 @@ public class MigrateCaseController extends CallbackController {
 
         log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
         judicialService.migrateJudgeRoles(rolesToAssign);
+    }
+
+    private void run2613(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2613";
+        final long expectedCaseId = 1730762581559473L;
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService
+            .removeCharactersFromThresholdDetails(caseData, migrationId,
+                6606, 6844, "\n"));
     }
 }
