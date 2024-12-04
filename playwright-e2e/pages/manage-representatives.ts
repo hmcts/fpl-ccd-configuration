@@ -7,7 +7,7 @@ export class ManageRepresentatives extends BasePage {
     readonly positionInACase: Locator;
     readonly emailAddress: Locator;
     readonly phoneNumber: Locator;
-    readonly enterPostcode: Locator;
+    readonly Postcode: Locator;
     readonly buildingAndStreet: Locator;
     readonly findAddress: Locator;
     readonly townOrCity: Locator;
@@ -24,7 +24,7 @@ export class ManageRepresentatives extends BasePage {
         this.phoneNumber = page.getByLabel('Phone number (Optional)');
         this.buildingAndStreet = page.getByLabel('Select an address');
         this.townOrCity = page.getByLabel('Town or City');
-        this.enterPostcode = page.getByLabel('Enter a UK postcode');
+        this.Postcode = page.getByLabel('Enter a UK postcode');
         this.findAddress = page.getByRole('button', { name: 'Find address' });
         this.selectAnAddress = page.getByText('Select an address');
         this.byEmail = page.getByLabel('By email');
@@ -37,7 +37,7 @@ export class ManageRepresentatives extends BasePage {
         await this.positionInACase.fill('FPL');
         await this.emailAddress.fill('solicitors1@solicitors.uk');
         await this.phoneNumber.fill('07818213677');
-        await this.enterPostcode.fill('sk3 8pp');
+        await this.Postcode.fill('sk3 8pp');
         await this.findAddress.click();
         await this.selectAnAddress.selectOption('1: Object');
         await this.townOrCity.fill('Stockport')
