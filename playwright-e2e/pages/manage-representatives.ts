@@ -41,7 +41,7 @@ export class ManageRepresentatives extends BasePage {
         await this.findAddress.click();
         await this.selectAnAddress.selectOption('1: Object');
         await this.townOrCity.fill('Stockport')
-        await this.enterPostcode.fill('sk3 8pp');
+        await this.Postcode.fill('sk3 8pp');
         await this.byEmail.click();
         await this.whoAreThey.selectOption('1: LA_LEGAL_REPRESENTATIVE');
         await this.clickSubmit();
