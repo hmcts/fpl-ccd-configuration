@@ -25,7 +25,7 @@ test.describe('Manage case linking', () => {
         //  await updateCase('linkedCase3',linkedCase3,caseData);
     });
 
-    test.only('CTSC user  link cases ',
+    test('CTSC user  link cases ',
         async ({page, signInPage, caseLink}) => {
             test.slow();
 
