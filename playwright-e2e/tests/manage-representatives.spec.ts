@@ -23,6 +23,6 @@ test.describe('Manage representatives', () => {
 
             await manageRepresentatives.gotoNextStep('Manage representatives');
             await manageRepresentatives.updateRepresentatives();
-            await expect(page.getByText('Manage representatives')).toBeVisible();
+            await expect(page.getByText('has been updated with event:Manage representatives')).toBeVisible();
         })
-});
+    })

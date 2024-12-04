@@ -39,6 +39,7 @@ import { CaseProgressionReport } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
 import { ManageRepresentatives } from "../pages/manage-representatives";
 import { ChangeCaseName} from "../pages/change-case-name";
+import { ManageLA} from "../pages/manage-la";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -80,7 +81,8 @@ type CreateFixtures = {
   changeCaseName: ChangeCaseName;
   caseProgressionReport: CaseProgressionReport;
   orders: Orders;
-  manageRepresentatives: ManageRepresentatives
+  manageRepresentatives: ManageRepresentatives;
+
 };
 
 export const test = base.extend<CreateFixtures>({
