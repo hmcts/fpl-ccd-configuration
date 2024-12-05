@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarmToChildrenList",
+    "ListElementCode": "PHYSICAL_HARM",
+    "ListElement": "Physical harm including non-accidental injury",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarmToChildrenList",
+    "ListElementCode": "EMOTIONAL_HARM",
+    "ListElement": "Emotional harm",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarmToChildrenList",
+    "ListElementCode": "SEXUAL_ABUSE",
+    "ListElement": "Sexual abuse",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarmToChildrenList",
+    "ListElementCode": "NEGLECT",
+    "ListElement": "Neglect",
+    "DisplayOrder": 4
+  }
+]
