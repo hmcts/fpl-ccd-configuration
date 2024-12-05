@@ -346,7 +346,7 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
   implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.6.2'
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.4.12'
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.6.2'
 
   implementation 'org.postgresql:postgresql:42.7.4'
 
