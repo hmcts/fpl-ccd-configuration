@@ -6,11 +6,9 @@ export class ManageRepresentatives extends BasePage {
     readonly fullName: Locator;
     readonly positionInACase: Locator;
     readonly emailAddress: Locator;
-    readonly phoneNumber: Locator;
-    readonly buildingAndStreet: Locator;
     readonly byEmail: Locator;
     readonly whoAreThey: Locator;
-   
+
 
     public constructor(page: Page) {
         super(page);
@@ -18,8 +16,6 @@ export class ManageRepresentatives extends BasePage {
         this.fullName = page.getByLabel('Full name (Optional)');
         this.positionInACase = page.getByLabel('Position in a case (Optional)');
         this.emailAddress = page.getByLabel('Email address (Optional)');
-        this.phoneNumber = page.getByLabel('Phone number (Optional)');
-        this.buildingAndStreet = page.getByLabel('Select an address');
         this.byEmail = page.getByLabel('By email');
         this.whoAreThey = page.getByLabel('Who are they? (Optional)');
 
@@ -29,7 +25,6 @@ export class ManageRepresentatives extends BasePage {
         await this.fullName.fill('Charlie Chaplin');
         await this.positionInACase.fill('FPL');
         await this.emailAddress.fill('solicitors1@solicitors.uk');
-        await this.phoneNumber.fill('07818213677');
         await this.enterPostCode('sk3 8pp');
         await this.byEmail.click();
         await this.whoAreThey.selectOption('5: REPRESENTING_RESPONDENT_1');
