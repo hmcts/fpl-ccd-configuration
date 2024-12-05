@@ -929,22 +929,12 @@ public class CaseSubmissionGenerationService
 
         return DocmosisHearing.builder()
             .timeFrame(hearingPresent
-                       ? concatenateKeyAndValue(hearing.getTimeFrame(),
-                addPrefixReason(hearing.getReason(), applicationLanguage))
+                       ? concatenateKeyAndValue(hearing.getHearingUrgencyType().getLabel(),
+                addPrefixReason(hearing.getHearingUrgencyDetails(), applicationLanguage))
                        : DEFAULT_STRING)
-            .typeAndReason(hearingPresent
-                           ? concatenateKeyAndValue(hearing.getType(), addPrefixReason(hearing.getTypeGiveReason(),
-                applicationLanguage))
-                           : DEFAULT_STRING)
-            .withoutNoticeDetails(hearingPresent
+            .withoutNoticeDetails(hearingPresent && isNotEmpty(hearing.getWithoutNotice())
                                   ? concatenateYesOrNoKeyAndValue(hearing.getWithoutNotice().getValue(),
                 addPrefixReason(hearing.getWithoutNoticeReason(),
-                    applicationLanguage),
-                applicationLanguage)
-                                  : DEFAULT_STRING)
-            .reducedNoticeDetails(hearingPresent
-                                  ? concatenateYesOrNoKeyAndValue(hearing.getReducedNotice(),
-                addPrefixReason(hearing.getReducedNoticeReason(),
                     applicationLanguage),
                 applicationLanguage)
                                   : DEFAULT_STRING)
