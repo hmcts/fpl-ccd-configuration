@@ -24,7 +24,8 @@ test.describe('Manage representatives', () => {
             await manageRepresentatives.gotoNextStep('Manage representatives');
             await manageRepresentatives.updateRepresentatives();
             await manageRepresentatives.tabNavigation('People in the case');
-            await page.getByText('Representatives 1').scrollIntoViewIfNeeded();
+            await expect(page.getByText('Representatives 1')).toBeVisible();
+            await expect(page.getByText('Charlie Chaplin')).toBeVisible();
         })
     })
     
