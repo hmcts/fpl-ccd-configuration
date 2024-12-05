@@ -48,8 +48,10 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-2610", this::run2610,
         "DFPL-2585", this::run2585,
-        "DFPL-2585Rollback", this::run2585Rollback
+        "DFPL-2585Rollback", this::run2585Rollback,
+        "DFPL-2613", this::run2613
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -78,11 +80,26 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
+    private void run2610(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2610";
+        final long expectedCaseId = 1722860335639318L;
+        CaseData firstInstanceCaseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService
+            .removeCharactersFromThresholdDetails(firstInstanceCaseData, migrationId,
+                416, 423, "****"));
+
+        CaseData secondInstanceCaseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService
+            .removeCharactersFromThresholdDetails(secondInstanceCaseData, migrationId,
+                462, 468, "****"));
+    }
+
     private void run2585(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2585";
         migrateCaseService.doStateCheck(
             caseDetails.getState(), State.CLOSED.toString(), caseDetails.getId(), migrationId);
-
         roleAssignmentService.deleteAllRolesOnCase(caseDetails.getId());
     }
 
@@ -121,4 +138,14 @@ public class MigrateCaseController extends CallbackController {
         judicialService.migrateJudgeRoles(rolesToAssign);
     }
 
+    private void run2613(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2613";
+        final long expectedCaseId = 1730762581559473L;
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService
+            .removeCharactersFromThresholdDetails(caseData, migrationId,
+                6606, 6844, "\n"));
+    }
 }

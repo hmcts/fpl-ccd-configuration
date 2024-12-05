@@ -16,7 +16,8 @@ class LocalAuthorityIdLookupConfigurationTest {
     @NullAndEmptySource
     @ValueSource(strings = " ")
     void shouldLoadEmptyConfig(String config) {
-        new LocalAuthorityIdLookupConfiguration(config);
+        assertThat(new LocalAuthorityIdLookupConfiguration(config))
+            .isInstanceOf(LocalAuthorityIdLookupConfiguration.class);
     }
 
     @Test

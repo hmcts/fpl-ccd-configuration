@@ -20,9 +20,10 @@ export class OrdersAndDirectionSought extends BasePage{
   }
 
   async ordersAndDirectionsNeeded() {
+      await expect(this.OrdersAndDirectionsSought).toBeVisible();
     await this.OrdersAndDirectionsSought.click();
     await expect(this.OrdersAndDirectionsHeading).toBeVisible();
-    await this.WhichOrdersDoYouNeedCareOrder.check();
+    await this.WhichOrdersDoYouNeedCareOrder.click();
     await this.DoYouNeedAnyOtherDirectionsRadioNo.check();
     await this.WhichCourtAreYouIssuingFor.selectOption('Barnet');
     await this.clickContinue();
