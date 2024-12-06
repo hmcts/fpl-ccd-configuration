@@ -114,7 +114,7 @@
     "ListElementCode": "detailsHiddenReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "detailsHidden=\"Yes\" AND addressKnow!=\"LIVE_IN_REFUGE\"",
+    "FieldShowCondition": "detailsHidden=\"Yes\" AND addressKnowV2!=\"LIVE_IN_REFUGE\"",
     "SecurityClassification": "Public"
   },
   {
