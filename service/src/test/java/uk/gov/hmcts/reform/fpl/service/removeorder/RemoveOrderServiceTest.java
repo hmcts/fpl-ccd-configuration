@@ -64,6 +64,7 @@ class RemoveOrderServiceTest {
     private static final LocalDate NOW = LocalDate.now();
     private static final java.util.UUID REMOVED_UUID = java.util.UUID.randomUUID();
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    private static final UUID UDO_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
 
     @Mock
     private OrderRemovalActions orderRemovalActions;
@@ -303,6 +304,30 @@ class RemoveOrderServiceTest {
         assertThat(listOfOrders).isEqualTo(expectedList);
     }
 
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(value = State.class, names = {"SUBMITTED", "GATEKEEPING", "CASE_MANAGEMENT", "CLOSED"})
+    void shouldMakeDynamicListOfUDOrderTypesInExpectedCaseStates(State state) {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .orderStatus(SEALED)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .state(state)
+            .urgentDirectionsOrder(standardDirectionOrder)
+            .build();
+
+        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
+
+        DynamicList expectedList = DynamicList.builder()
+            .value(DynamicListElement.EMPTY)
+            .listItems(List.of(
+                buildListElement(UDO_ID, format("Urgent directions order - %s",
+                    formatLocalDateToString(NOW, "d MMMM yyyy")))))
+            .build();
+
+        assertThat(listOfOrders).isEqualTo(expectedList);
+    }
+
     @Test
     void shouldNotBuildDynamicListOfSDOrdersInFinalHearingState() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
@@ -312,6 +337,27 @@ class RemoveOrderServiceTest {
         CaseData caseData = CaseData.builder()
             .state(FINAL_HEARING)
             .standardDirectionOrder(standardDirectionOrder)
+            .build();
+
+        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
+
+        DynamicList expectedList = DynamicList.builder()
+            .value(DynamicListElement.EMPTY)
+            .listItems(List.of())
+            .build();
+
+        assertThat(listOfOrders).isEqualTo(expectedList);
+    }
+
+    @Test
+    void shouldNotBuildDynamicListOfUDOrdersInFinalHearingState() {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .orderStatus(SEALED)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .state(FINAL_HEARING)
+            .urgentDirectionsOrder(standardDirectionOrder)
             .build();
 
         DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);

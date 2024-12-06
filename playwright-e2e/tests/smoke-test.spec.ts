@@ -35,7 +35,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   //this has to be refracted to new test as the test execution time exceed 8m
-//  await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+  //await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
   // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
