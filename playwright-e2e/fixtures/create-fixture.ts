@@ -38,6 +38,7 @@ import { ReturnApplication } from "../pages/return-application";
 import { Orders } from "../pages/orders";
 import { CaseProgressionReport } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
+import { ManageRepresentatives } from "../pages/manage-representatives";
 import { ChangeCaseName} from "../pages/change-case-name";
 
 type CreateFixtures = {
@@ -81,6 +82,7 @@ type CreateFixtures = {
   changeCaseName: ChangeCaseName;
   caseProgressionReport: CaseProgressionReport;
   orders: Orders;
+  manageRepresentatives: ManageRepresentatives;
 
 };
 
@@ -241,5 +243,9 @@ export const test = base.extend<CreateFixtures>({
 
   caseProgressionReport: async ({ page }, use) => {
     await use(new CaseProgressionReport(page));
+  },
+
+  manageRepresentatives: async ({ page }, use) => {
+    await use(new ManageRepresentatives(page));
   },
 });
