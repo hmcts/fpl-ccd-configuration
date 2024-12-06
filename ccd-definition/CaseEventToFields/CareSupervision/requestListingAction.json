@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "requestListingAction",
+    "CaseFieldID": "selectListingActions",
+    "DisplayContext": "MANDATORY",
+    "PageID": "ListingActions",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "requestListingAction",
+    "CaseFieldID": "listingDetails",
+    "DisplayContext": "MANDATORY",
+    "PageID": "ListingActions",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 2,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "selectListingActions=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "requestListingAction",
+    "CaseFieldID": "lastListingRequestType",
+    "DisplayContext": "MANDATORY",
+    "PageID": "ListingActions",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 3,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "selectListingActions=\"DO_NOT_SHOW\"",
+    "Publish": "Y"
+  }
+]

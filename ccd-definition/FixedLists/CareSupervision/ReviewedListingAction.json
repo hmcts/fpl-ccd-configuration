@@ -1,0 +1,9 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewedListingAction",
+    "ListElementCode": "REVIEWED",
+    "ListElement": "Confirm appropriate action taken as requested",
+    "DisplayOrder": 1
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ListingActionType",
+    "ListElementCode": "LISTING_REQUIRED",
+    "ListElement": "Listing required",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ListingActionType",
+    "ListElementCode": "AMEND_VACATE_HEARING",
+    "ListElement": "Amend/vacate a hearing",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ListingActionType",
+    "ListElementCode": "SPECIAL_MEASURES_REQUIRED",
+    "ListElement": "Special measures required",
+    "DisplayOrder": 3
+  }
+]
