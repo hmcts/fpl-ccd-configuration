@@ -9,8 +9,9 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.ARCHIVED_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C2_APPLICATION_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DRUG_AND_ALCOHOL_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.EXPERT_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.LETTER_OF_INSTRUCTION;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_RESPONDENT;
@@ -75,7 +76,7 @@ class DocumentTypeTest {
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromLAUpload()))
             .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
                 C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS, EXPERT_REPORTS, DRUG_AND_ALCOHOL_REPORTS,
-                LETTER_OF_INSTRUCTION);
+                LETTER_OF_INSTRUCTION, GUARDIAN_REPORT);
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromCTSCUpload()))
             .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
                 C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS, EXPERT_REPORTS, DRUG_AND_ALCOHOL_REPORTS,
@@ -83,6 +84,6 @@ class DocumentTypeTest {
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromSolicitorUpload()))
             .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
                 C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS, EXPERT_REPORTS, DRUG_AND_ALCOHOL_REPORTS,
-                LETTER_OF_INSTRUCTION);
+                LETTER_OF_INSTRUCTION, GUARDIAN_REPORT);
     }
 }

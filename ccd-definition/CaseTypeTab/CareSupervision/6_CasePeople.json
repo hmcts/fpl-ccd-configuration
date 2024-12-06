@@ -48,7 +48,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 6,
-    "CaseFieldID": "respondents1",
+    "CaseFieldID": "guardians",
     "TabFieldDisplayOrder": 3
   },
   {
@@ -58,8 +58,18 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 6,
+    "CaseFieldID": "respondents1",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 6,
     "CaseFieldID": "applicants",
-    "TabFieldDisplayOrder": 4,
+    "TabFieldDisplayOrder": 5,
     "FieldShowCondition": "localAuthorities != \"*\""
   },
   {
@@ -70,16 +80,6 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 6,
     "CaseFieldID": "localAuthorities",
-    "TabFieldDisplayOrder": 4
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
-    "CaseFieldID": "legalRepresentatives",
     "TabFieldDisplayOrder": 5
   },
   {
@@ -89,8 +89,18 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 6,
+    "CaseFieldID": "legalRepresentatives",
+    "TabFieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 6,
     "CaseFieldID": "solicitor",
-    "TabFieldDisplayOrder": 6,
+    "TabFieldDisplayOrder": 7,
     "FieldShowCondition": "localAuthorities != \"*\""
   },
   {
@@ -101,7 +111,7 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 6,
     "CaseFieldID": "others",
-    "TabFieldDisplayOrder": 7
+    "TabFieldDisplayOrder": 8
   },
   {
     "LiveFrom": "01/01/2017",
@@ -111,6 +121,6 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 6,
     "CaseFieldID": "representatives",
-    "TabFieldDisplayOrder": 8
+    "TabFieldDisplayOrder": 9
   }
 ]
