@@ -52,11 +52,6 @@ public class Other implements Representable, ConfidentialParty<Other> {
     private final String detailsHiddenReason;
     private List<Element<UUID>> representedBy;
     private final String addressNotKnowReason;
-
-    // Flag for preventing from purging the converted old field value during deserialization if addressKnowV2 is null
-    @Builder.Default
-    @Getter(AccessLevel.NONE)
-    private final boolean isConvertedAddressKnow = false;
     private final IsAddressKnowType addressKnowV2;
 
     public List<Element<UUID>> getRepresentedBy() {
@@ -170,8 +165,9 @@ public class Other implements Representable, ConfidentialParty<Other> {
     }
 
     public static class OtherBuilder {
+        // Flag for preventing from purging the converted old field value during deserialization
+        // if addressKnowV2 is null
         private boolean isConvertedAddressKnow = false;
-
         /** <h2>Deprecated. use addressKnowV2 instead</h2>
          * <h3>This builder method will convert the old addressKnow field to addressKnowV2 during deserialization</h3>
          * <p>Was having ElasticSearch initialisation exception during the release:
@@ -194,7 +190,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
         public OtherBuilder addressKnowV2(IsAddressKnowType addressKnowV2) {
             // Prevent from purging the converted old field value during deserialization if addressKnowV2 is null
-            if (!isConvertedAddressKnow || addressKnowV2 != null) {
+            if (!this.isConvertedAddressKnow || addressKnowV2 != null) {
                 this.addressKnowV2 = addressKnowV2;
                 this.isConvertedAddressKnow = false;
             }
