@@ -56,6 +56,7 @@ public class CourtService {
     /**
      * This method is intended to not send a notification to CTSC but will continue to send to court email when
      * required.
+     *
      * <p>
      * Returns null if the CaseData sendToCtsc field is set to Yes.<br/>
      * Otherwise will return the RCJ High Court email or the selected court email.
