@@ -88,7 +88,7 @@
     "FieldTypeParameter":  "AddressNotKnowType",
     "ElementLabel": "*Reason the address is not known",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnow=\"No\""
+    "FieldShowCondition": "addressKnowV2=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
