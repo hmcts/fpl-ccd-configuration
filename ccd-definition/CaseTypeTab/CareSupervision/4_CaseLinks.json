@@ -1,0 +1,36 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CaseLinksTab",
+    "TabLabel": "Linked Cases",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "LinkedCasesComponentLauncher",
+    "DisplayContextParameter" : "#ARGUMENT(LinkedCases)",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CaseLinksTab",
+    "TabLabel": "Linked Cases",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "caseLinks",
+    "DisplayContextParameter" : "#ARGUMENT(LinkedCases)",
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition": "LinkedCasesComponentLauncher!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CaseLinksTab",
+    "TabLabel": "Linked Cases",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "caseNameHmctsInternal",
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition": "caseLinks=\"DO_NOT_SHOW\""
+  }
+]
