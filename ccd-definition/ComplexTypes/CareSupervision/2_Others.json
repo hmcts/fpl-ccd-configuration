@@ -69,7 +69,7 @@
     "FieldType": "Label",
     "ElementLabel": "## This address is automatically made confidential",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnow=\"LIVE_IN_REFUGE\""
+    "FieldShowCondition": "addressKnowV2=\"LIVE_IN_REFUGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -78,7 +78,7 @@
     "FieldType": "AddressUK",
     "ElementLabel": "Current address",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnow=\"Yes\" OR addressKnow=\"LIVE_IN_REFUGE\""
+    "FieldShowCondition": "addressKnowV2=\"Yes\" OR addressKnowV2=\"LIVE_IN_REFUGE\""
   },
   {
     "LiveFrom": "01/01/2017",
