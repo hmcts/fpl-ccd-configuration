@@ -106,7 +106,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need contact details hidden from other parties?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnow!=\"LIVE_IN_REFUGE\""
+    "FieldShowCondition": "addressKnowV2!=\"LIVE_IN_REFUGE\""
   },
   {
     "LiveFrom": "01/01/2017",
