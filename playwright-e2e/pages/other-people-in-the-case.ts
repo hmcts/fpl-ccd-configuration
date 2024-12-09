@@ -57,7 +57,7 @@ export class OtherPeopleInCase extends BasePage {
     await this.page.locator('#others_additionalOthers #DOB-year').fill("1999");
     await this.page.locator('#others_additionalOthers_0_gender').selectOption('2: Female');
     await this.page.locator('#others_additionalOthers_0_birthPlace').fill("Leeds");
-    await this.page.locator('#others_additionalOthers_0_addressKnow_No').check();
+    await this.page.locator('#others_additionalOthers_0_addressKnowV2-No').check();
     await this.page.locator('#others_additionalOthers_0_addressNotKnowReason').selectOption('1: No fixed abode');
     await this.page.locator('#others_additionalOthers_0_telephone').fill("0123456789");
     await this.page.locator('#others_additionalOthers_0_childInformation').fill("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum augue velit, eget bibendum est viverra vel. Sed id urna mollis");
