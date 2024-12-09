@@ -2,11 +2,9 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
@@ -168,6 +166,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
         // Flag for preventing from purging the converted old field value during deserialization
         // if addressKnowV2 is null
         private boolean isConvertedAddressKnow = false;
+
         /** <h2>Deprecated. use addressKnowV2 instead</h2>
          * <h3>This builder method will convert the old addressKnow field to addressKnowV2 during deserialization</h3>
          * <p>Was having ElasticSearch initialisation exception during the release:
