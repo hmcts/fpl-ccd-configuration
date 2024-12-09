@@ -15,7 +15,7 @@
     "FieldType": "TextArea",
     "ElementLabel": "Details and reason",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "hearingUrgencyType!=\"STANDARD\""
+    "FieldShowCondition": "hearingUrgencyType=\"SAME_DAY\" OR hearingUrgencyType=\"URGENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -24,7 +24,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need a without notice hearing?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "hearingUrgencyType!=\"STANDARD\""
+    "FieldShowCondition": "hearingUrgencyType=\"SAME_DAY\" OR hearingUrgencyType=\"URGENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,7 +33,7 @@
     "FieldType": "TextArea",
     "ElementLabel": "Details and reason",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "withoutNotice=\"Yes\" AND hearingUrgencyType!=\"STANDARD\""
+    "FieldShowCondition": "withoutNotice=\"Yes\" AND (hearingUrgencyType=\"SAME_DAY\" OR hearingUrgencyType=\"URGENT\")"
   },
   {
     "LiveFrom": "01/01/2017",

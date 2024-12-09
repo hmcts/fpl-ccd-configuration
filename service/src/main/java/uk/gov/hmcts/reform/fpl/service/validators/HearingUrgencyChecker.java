@@ -44,10 +44,11 @@ public class HearingUrgencyChecker extends PropertiesChecker {
 
         switch (hearing.getHearingUrgencyType()) {
             case SAME_DAY:
-            case URGENT: if (isEmpty(hearing.getHearingUrgencyDetails()) || isEmpty(hearing.getWithoutNotice())
-                             || (YES.equals(hearing.getWithoutNotice()) && isEmpty(hearing.getWithoutNoticeReason()))) {
-                return false;
-            }
+            case URGENT:
+                if (isEmpty(hearing.getHearingUrgencyDetails()) || isEmpty(hearing.getWithoutNotice())
+                    || (YES.equals(hearing.getWithoutNotice()) && isEmpty(hearing.getWithoutNoticeReason()))) {
+                    return false;
+                }
         }
 
         return true;
