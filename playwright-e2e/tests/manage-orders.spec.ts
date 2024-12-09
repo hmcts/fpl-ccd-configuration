@@ -274,5 +274,43 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('link', { name: 'c39_child_assessment_order.pdf' })).toBeVisible();
 
     })
+    test('C21 blank order ', async ({page,signInPage, orders}) => {
+        caseName = 'C21 blank Order ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+
+        await orders.gotoNextStep('Manage orders');
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Blank order (C21)');
+        await orders.clickContinue();
+
+        await orders.addIssuingDetailsOfApprovedOrder('Yes');
+        await orders.clickContinue();
+
+        await orders.addChildDetails('Yes');
+        await orders.clickContinue();
+
+        await orders.addC21BlankOrderDetails();
+        await orders.clickContinue();
+
+        await expect.soft(page.getByRole('heading', {name: 'Check your order', exact: true})).toBeVisible();
+        await expect.soft(page.getByText('Check the details now. You can use the next page to correct any errors')).toBeVisible();
+        await orders.openOrderDoc('Preview order.pdf');
+        await expect(orders.orderPage.getByText('Prohibited Steps Order')).toBeVisible();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByText('Blank order (C21)')).toBeVisible();
+        await expect(page.getByText('Prohibited Steps Order')).toBeVisible();
+        await expect(page.getByRole('link', { name: 'c21_blank_order.pdf' })).toBeVisible();
+
+    })
+
 
 });
