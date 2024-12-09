@@ -1,20 +1,25 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
+import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 
 
 @Data
+@Jacksonized
 @Builder(toBuilder = true)
-@AllArgsConstructor
 public class Hearing {
     private final HearingUrgencyType hearingUrgencyType;
     private final String hearingUrgencyDetails;
+    @JsonDeserialize(using = YesNoDeserializer.class)
     private final YesNo withoutNotice;
     private final String withoutNoticeReason;
+    @JsonDeserialize(using = YesNoDeserializer.class)
     private final YesNo respondentsAware;
     private final String respondentsAwareReason;
 
