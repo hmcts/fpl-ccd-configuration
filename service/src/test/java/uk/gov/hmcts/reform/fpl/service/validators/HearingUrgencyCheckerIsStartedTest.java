@@ -46,7 +46,7 @@ class HearingUrgencyCheckerIsStartedTest {
     private static Stream<Arguments> nonEmptyHearingUrgency() {
         return Stream.of(
                 Hearing.builder().hearingUrgencyType(HearingUrgencyType.STANDARD),
-                Hearing.builder().respondentsAware(YES).build())
+                Hearing.builder().respondentsAware(YES.getValue()).build())
                 .map(Arguments::of);
     }
 

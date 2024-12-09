@@ -142,22 +142,22 @@ class HearingUrgencyCheckerTest {
                 .withoutNotice(null)
                 .build(),
             completedHearing()
-                .withoutNotice(YES)
+                .withoutNotice(YES.getValue())
                 .withoutNoticeReason(null)
                 .build(),
             completedHearing()
-                .withoutNotice(YES)
+                .withoutNotice(YES.getValue())
                 .withoutNoticeReason("")
                 .build(),
             completedHearing()
                 .respondentsAware(null)
                 .build(),
             completedHearing()
-                .respondentsAware(NO)
+                .respondentsAware(NO.getValue())
                 .respondentsAwareReason(null)
                 .build(),
             completedHearing()
-                .respondentsAware(NO)
+                .respondentsAware(NO.getValue())
                 .respondentsAwareReason("")
                 .build()
         ).map(Arguments::of);
@@ -170,11 +170,11 @@ class HearingUrgencyCheckerTest {
                 .hearingUrgencyDetails(null)
                 .build(),
             completedHearing()
-                .respondentsAware(YES)
+                .respondentsAware(YES.getValue())
                 .respondentsAwareReason(null)
                 .build(),
             completedHearing()
-                .withoutNotice(NO)
+                .withoutNotice(NO.getValue())
                 .withoutNoticeReason(null)
                 .build(),
             completedHearing()
@@ -187,9 +187,9 @@ class HearingUrgencyCheckerTest {
         return Hearing.builder()
             .hearingUrgencyType(HearingUrgencyType.URGENT)
             .hearingUrgencyDetails("Test")
-            .withoutNotice(YES)
+            .withoutNotice(YES.getValue())
             .withoutNoticeReason("Test")
-            .respondentsAware(NO)
+            .respondentsAware(NO.getValue())
             .respondentsAwareReason("Test");
     }
 }

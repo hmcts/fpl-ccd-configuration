@@ -38,7 +38,8 @@ public class HearingUrgencyChecker extends PropertiesChecker {
             return false;
         }
 
-        if (NO.equals(hearing.getRespondentsAware()) && isEmpty(hearing.getRespondentsAwareReason())) {
+        if (NO.getValue().equalsIgnoreCase(hearing.getRespondentsAware())
+            && isEmpty(hearing.getRespondentsAwareReason())) {
             return false;
         }
 
@@ -46,7 +47,8 @@ public class HearingUrgencyChecker extends PropertiesChecker {
             case SAME_DAY:
             case URGENT:
                 if (isEmpty(hearing.getHearingUrgencyDetails()) || isEmpty(hearing.getWithoutNotice())
-                    || (YES.equals(hearing.getWithoutNotice()) && isEmpty(hearing.getWithoutNoticeReason()))) {
+                    || (YES.getValue().equalsIgnoreCase(hearing.getWithoutNotice())
+                        && isEmpty(hearing.getWithoutNoticeReason()))) {
                     return false;
                 }
         }

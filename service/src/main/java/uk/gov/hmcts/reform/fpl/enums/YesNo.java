@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 @Getter
 public enum YesNo {
+
     YES("Yes", "Ie"),
     NO("No", "Na"),
     DONT_KNOW("Don't know", "Ddim yn gwybod"),

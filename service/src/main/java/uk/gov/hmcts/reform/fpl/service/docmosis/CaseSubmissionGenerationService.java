@@ -933,13 +933,13 @@ public class CaseSubmissionGenerationService
                 addPrefixReason(hearing.getHearingUrgencyDetails(), applicationLanguage))
                        : DEFAULT_STRING)
             .withoutNoticeDetails(hearingPresent && isNotEmpty(hearing.getWithoutNotice())
-                                  ? concatenateYesOrNoKeyAndValue(hearing.getWithoutNotice().getValue(),
+                                  ? concatenateYesOrNoKeyAndValue(hearing.getWithoutNotice(),
                 addPrefixReason(hearing.getWithoutNoticeReason(),
                     applicationLanguage),
                 applicationLanguage)
                                   : DEFAULT_STRING)
             .respondentsAware(hearingPresent && isNotEmpty(hearing.getRespondentsAware())
-                              ? hearing.getRespondentsAware().getValue(applicationLanguage)
+                              ? hearing.getRespondentsAware()
                               : DEFAULT_STRING)
             .respondentsAwareReason(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAwareReason())
                                     ? hearing.getRespondentsAwareReason()

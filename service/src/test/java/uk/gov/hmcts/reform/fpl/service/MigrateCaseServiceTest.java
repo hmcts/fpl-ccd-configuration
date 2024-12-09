@@ -3516,7 +3516,7 @@ class MigrateCaseServiceTest {
                 .type("test")
                 .reason("reason")
                 .timeFrame("timeFrame")
-                .withoutNotice(YES)
+                .withoutNotice(YES.getValue())
                 .withoutNoticeReason("withoutNoticeReason")
                 .build();
 
