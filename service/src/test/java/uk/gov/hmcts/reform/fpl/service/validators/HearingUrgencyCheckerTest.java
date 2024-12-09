@@ -11,6 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 
 @ExtendWith(SpringExtension.class)
@@ -34,7 +38,6 @@ class HearingUrgencyCheckerTest {
         void shouldReturnEmptyErrorsAndCompletedState() {
             final CaseData caseData = CaseData.builder()
                 .hearing(Hearing.builder()
-                    .timeFrame("Within 18 days")
                     .build()).build();
 
             final List<String> errors = hearingUrgencyChecker.validate(caseData);
@@ -117,87 +120,62 @@ class HearingUrgencyCheckerTest {
     private static Stream<Arguments> incompleteHearing() {
         return Stream.of(
             completedHearing()
-                .timeFrame(null)
+                .hearingUrgencyType(null)
                 .build(),
             completedHearing()
-                .timeFrame("")
+                .hearingUrgencyType(HearingUrgencyType.URGENT)
+                .hearingUrgencyDetails(null)
                 .build(),
             completedHearing()
-                .timeFrame("Same day")
-                .reason(null)
+                .hearingUrgencyType(HearingUrgencyType.URGENT)
+                .hearingUrgencyDetails("")
                 .build(),
             completedHearing()
-                .timeFrame("Same day")
-                .reason("")
-                .build(),
-
-            completedHearing()
-                .type(null)
+                .hearingUrgencyType(HearingUrgencyType.SAME_DAY)
+                .hearingUrgencyDetails(null)
                 .build(),
             completedHearing()
-                .type("")
+                .hearingUrgencyType(HearingUrgencyType.SAME_DAY)
+                .hearingUrgencyDetails("")
                 .build(),
-
             completedHearing()
                 .withoutNotice(null)
                 .build(),
             completedHearing()
-                .withoutNotice("")
-                .build(),
-            completedHearing()
-                .withoutNotice("Yes")
+                .withoutNotice(YES)
                 .withoutNoticeReason(null)
                 .build(),
             completedHearing()
-                .withoutNotice("Yes")
+                .withoutNotice(YES)
                 .withoutNoticeReason("")
                 .build(),
-
-            completedHearing()
-                .reducedNotice(null)
-                .build(),
-            completedHearing()
-                .reducedNotice("")
-                .build(),
-            completedHearing()
-                .reducedNotice("Yes")
-                .reducedNoticeReason(null)
-                .build(),
-            completedHearing()
-                .reducedNotice("Yes")
-                .reducedNoticeReason("")
-                .build(),
-
             completedHearing()
                 .respondentsAware(null)
                 .build(),
             completedHearing()
-                .respondentsAware("")
-                .build(),
-            completedHearing()
-                .respondentsAware("Yes")
+                .respondentsAware(NO)
                 .respondentsAwareReason(null)
                 .build(),
             completedHearing()
-                .respondentsAware("Yes")
+                .respondentsAware(NO)
                 .respondentsAwareReason("")
-                .build(),
-
-            completedHearing()
-                .respondentsAware(null)
                 .build()
         ).map(Arguments::of);
     }
 
     private static Stream<Arguments> completeHearing() {
         return Stream.of(
-            Hearing.builder()
-                .timeFrame("Within 18 days")
-                .type("Standard case management hearing")
-                .typeGiveReason("Test")
-                .withoutNotice("No")
-                .reducedNotice("No")
-                .respondentsAware("No")
+            completedHearing()
+                .hearingUrgencyType(HearingUrgencyType.STANDARD)
+                .hearingUrgencyDetails(null)
+                .build(),
+            completedHearing()
+                .respondentsAware(YES)
+                .respondentsAwareReason(null)
+                .build(),
+            completedHearing()
+                .withoutNotice(NO)
+                .withoutNoticeReason(null)
                 .build(),
             completedHearing()
                 .build()
@@ -207,15 +185,11 @@ class HearingUrgencyCheckerTest {
 
     private static Hearing.HearingBuilder completedHearing() {
         return Hearing.builder()
-            .timeFrame("Same day")
-            .reason("Test")
-            .type("Standard case management hearing")
-            .typeGiveReason("Test")
-            .withoutNotice("Yes")
+            .hearingUrgencyType(HearingUrgencyType.URGENT)
+            .hearingUrgencyDetails("Test")
+            .withoutNotice(YES)
             .withoutNoticeReason("Test")
-            .reducedNotice("No")
-            .reducedNoticeReason("Test")
-            .respondentsAware("No")
+            .respondentsAware(NO)
             .respondentsAwareReason("Test");
     }
 }
