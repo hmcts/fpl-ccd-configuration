@@ -2,69 +2,20 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing",
-    "ListElementCode": "timeFrame",
+    "ListElementCode": "hearingUrgencyType",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "TimeFrameList",
-    "ElementLabel": "When do you need a hearing?",
+    "FieldTypeParameter": "HearingUrgencyTypeFixedList",
+    "ElementLabel": "Hearing type",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing",
-    "ListElementCode": "reason",
+    "ListElementCode": "hearingUrgencyDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "timeFrame=\"Same day\" OR timeFrame=\"Other\"",
-    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Hearing",
-    "ListElementCode": "reason2Days",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason and proposed dates",
-    "FieldShowCondition": "timeFrame=\"Within 2 days\"",
-    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Hearing",
-    "ListElementCode": "reason7Days",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason and proposed dates",
-    "FieldShowCondition": "timeFrame=\"Within 7 days\"",
-    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Hearing",
-    "ListElementCode": "reason12Days",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason and proposed dates",
-    "FieldShowCondition": "timeFrame=\"Within 12 days\"",
-    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Hearing",
-    "ListElementCode": "type",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "HearingTypeFixedList",
-    "ElementLabel": "What type of hearing do you need?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Hearing",
-    "ListElementCode": "type_GiveReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "type=\"*\"",
-    "SecurityClassification": "Public"
+    "ElementLabel": "Details and reason",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "hearingUrgencyType=\"SAME_DAY\" OR hearingUrgencyType=\"URGENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -72,34 +23,17 @@
     "ListElementCode": "withoutNotice",
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need a without notice hearing?",
-    "HintText": "You can only do this if you're applying for an Emergency Protection Order",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "hearingUrgencyType=\"SAME_DAY\" OR hearingUrgencyType=\"URGENT\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "withoutNoticeReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "withoutNotice=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Hearing",
-    "ListElementCode": "reducedNotice",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need a hearing with reduced notice?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Hearing",
-    "ListElementCode": "reducedNoticeReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "reducedNotice=\"Yes\"",
-    "SecurityClassification": "Public"
+    "ElementLabel": "Details and reason",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "withoutNotice=\"Yes\" AND (hearingUrgencyType=\"SAME_DAY\" OR hearingUrgencyType=\"URGENT\")"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -114,8 +48,101 @@
     "ID": "Hearing",
     "ListElementCode": "respondentsAwareReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give respondent's views on proceedings",
-    "FieldShowCondition": "respondentsAware=\"Yes\"",
-    "SecurityClassification": "Public"
+    "ElementLabel": "Details and reason",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "respondentsAware=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing",
+    "ListElementCode": "timeFrame",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "TimeFrameList",
+    "ElementLabel": "When do you need a hearing?",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated by DFPL-2304."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing",
+    "ListElementCode": "reason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "timeFrame=\"Same day\" OR timeFrame=\"Other\"",
+    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated by DFPL-2304."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing",
+    "ListElementCode": "reason2Days",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason and proposed dates",
+    "FieldShowCondition": "timeFrame=\"Within 2 days\"",
+    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated by DFPL-2304."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing",
+    "ListElementCode": "reason7Days",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason and proposed dates",
+    "FieldShowCondition": "timeFrame=\"Within 7 days\"",
+    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated by DFPL-2304."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing",
+    "ListElementCode": "reason12Days",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason and proposed dates",
+    "FieldShowCondition": "timeFrame=\"Within 12 days\"",
+    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated by DFPL-2304."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingTypeFixedList",
+    "ElementLabel": "What type of hearing do you need?",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated by DFPL-2304."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing",
+    "ListElementCode": "type_GiveReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "type=\"*\"",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated by DFPL-2304."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing",
+    "ListElementCode": "reducedNotice",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you need a hearing with reduced notice?",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated by DFPL-2304."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing",
+    "ListElementCode": "reducedNoticeReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "reducedNotice=\"Yes\"",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated by DFPL-2304."
   }
 ]
