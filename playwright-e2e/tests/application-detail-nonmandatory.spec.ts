@@ -195,7 +195,7 @@ test.describe('Non mandatory application details before application submit', () 
 
         });
 
-    test.only('@LA add other people',
+    test('@LA add other people',
         async ({startApplication, signInPage, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
             casename = 'Other people in case ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
@@ -211,7 +211,6 @@ test.describe('Non mandatory application details before application submit', () 
 //add other people in the case
             await startApplication.addOtherPeopleInCase()
             await otherPeopleInCase.personOneToBeGivenNotice();
-            await signInPage.page.pause();
             await otherPeopleInCase.personTwoToBeGivenNotice();
             await otherPeopleInCase.continueAndCheck();
 
