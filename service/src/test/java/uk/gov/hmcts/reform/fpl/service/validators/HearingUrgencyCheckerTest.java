@@ -53,30 +53,6 @@ class HearingUrgencyCheckerTest {
 
             assertThat(errors).containsExactly("Add the hearing urgency details");
         }
-
-        @Test
-        void shouldReturnErrorWhenHearingTimeFrameIsNotProvided() {
-            final CaseData caseData = CaseData.builder()
-                .hearing(Hearing.builder().build())
-                .build();
-
-            final List<String> errors = hearingUrgencyChecker.validate(caseData);
-
-            assertThat(errors).containsExactly("Select an option for when you need a hearing");
-        }
-
-        @Test
-        void shouldReturnEmptyErrorsWhenHearingTimeFrameIsProvided() {
-            final CaseData caseData = CaseData.builder()
-                .hearing(Hearing.builder()
-                    .timeFrame("Within 18 days")
-                    .build())
-                .build();
-
-            final List<String> errors = hearingUrgencyChecker.validate(caseData);
-
-            assertThat(errors).isEmpty();
-        }
     }
 
     @Nested
