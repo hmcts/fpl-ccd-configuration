@@ -1,14 +1,14 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 
 
 @Data
+@Jacksonized
 @Builder(toBuilder = true)
-@AllArgsConstructor
 public class Hearing {
     private final HearingUrgencyType hearingUrgencyType;
     private final String hearingUrgencyDetails;
