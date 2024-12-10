@@ -18,36 +18,37 @@ public class Hearing {
     private final String respondentsAwareReason;
 
     /**
-     * This historical hearing urgency field is deprecated since DFPL-2304
+     * This historical hearing urgency field is deprecated since DFPL-2304.
      * @deprecated (DFPL-2304, historical hearing urgency field)
      */
     @Deprecated(since = "DFPL-2304")
     private final String type;
     /**
-     * This historical hearing urgency field is deprecated since DFPL-2304
+     * This historical hearing urgency field is deprecated since DFPL-2304.
      * @deprecated (DFPL-2304, historical hearing urgency field)
      */
     @Deprecated(since = "DFPL-2304")
     private final String reason;
     /**
-     * This historical hearing urgency field is deprecated since DFPL-2304
+     * This historical hearing urgency field is deprecated since DFPL-2304.
      * @deprecated (DFPL-2304, historical hearing urgency field)
      */
     @Deprecated(since = "DFPL-2304")
     private final String timeFrame;
     /**
+     * This historical hearing urgency field is deprecated since DFPL-2304.
      * @deprecated (DFPL-2304, historical hearing urgency field)
      */
     @Deprecated
     private final String reducedNotice;
     /**
-     * This historical hearing urgency field is deprecated since DFPL-2304
+     * This historical hearing urgency field is deprecated since DFPL-2304.
      * @deprecated (DFPL-2304, historical hearing urgency field)
      */
     @Deprecated(since = "DFPL-2304")
     private final String typeGiveReason;
     /**
-     * This historical hearing urgency field is deprecated since DFPL-2304
+     * This historical hearing urgency field is deprecated since DFPL-2304.
      * @deprecated (DFPL-2304, historical hearing urgency field)
      */
     @Deprecated(since = "DFPL-2304")
