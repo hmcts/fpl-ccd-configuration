@@ -51,7 +51,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2610", this::run2610,
         "DFPL-2585", this::run2585,
         "DFPL-2585Rollback", this::run2585Rollback,
-        "DFPL-2613", this::run2613
+        "DFPL-2619", this::run2619
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -96,6 +96,16 @@ public class MigrateCaseController extends CallbackController {
                 462, 468, "****"));
     }
 
+    private void run2619(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2619";
+        final long expectedCaseId = 1721982839307738L;
+        final String orgId = "OQ2VUY2";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
+            orgId, null));
+    }
+
     private void run2585(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2585";
         migrateCaseService.doStateCheck(
@@ -136,16 +146,5 @@ public class MigrateCaseController extends CallbackController {
 
         log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
         judicialService.migrateJudgeRoles(rolesToAssign);
-    }
-
-    private void run2613(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2613";
-        final long expectedCaseId = 1730762581559473L;
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService
-            .removeCharactersFromThresholdDetails(caseData, migrationId,
-                6606, 6844, "\n"));
     }
 }

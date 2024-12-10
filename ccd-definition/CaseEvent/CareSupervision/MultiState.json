@@ -1091,5 +1091,35 @@
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "createCaseLink",
+    "Name": "Link cases",
+    "Description": "Link cases",
+    "DisplayOrder": 40,
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "Publish": "Y",
+    "EndButtonLabel": "Create Case Link"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "maintainCaseLinks",
+    "Name": "Manage case links",
+    "Description": "Manage case links",
+    "DisplayOrder": 41,
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "Publish": "Y",
+    "EndButtonLabel": "Remove Case Links"
   }
 ]
