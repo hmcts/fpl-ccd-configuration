@@ -33,7 +33,7 @@
     "FieldType": "TextArea",
     "ElementLabel": "Details and reason",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "( hearingUrgencyType=\"SAME_DAY\" OR hearingUrgencyType=\"URGENT\" ) AND withoutNotice=\"Yes\""
+    "FieldShowCondition": "(hearingUrgencyType=\"SAME_DAY\" OR hearingUrgencyType=\"URGENT\") AND withoutNotice=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
