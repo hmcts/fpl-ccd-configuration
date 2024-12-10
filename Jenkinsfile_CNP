@@ -151,16 +151,6 @@ def setupShutteringSecret() {
   }
 }
 
-before('akschartsinstall') {
-  onPR {
-    def githubApi = new GithubAPI(this)
-    if (githubApi.checkForLabel(env.BRANCH_NAME, 'enable_wa')) {
-      env.ENABLE_WA = true
-    } else {
-      env.ENABLE_WA = false
-    }
-  }
-}
 
 def deployWADmns() {
   def githubApi = new GithubAPI(this)
@@ -229,6 +219,17 @@ withPipeline(type, product, component) {
 
   before('test') {
     setupSecretsForIntegrationTests(pipelineConf)
+  }
+
+  before('akschartsinstall') {
+    onPR {
+      def githubApi = new GithubAPI(this)
+      if (githubApi.checkForLabel(env.BRANCH_NAME, 'enable_wa')) {
+        env.ENABLE_WA = true
+      } else {
+        env.ENABLE_WA = false
+      }
+    }
   }
 
   afterAlways('test') {
