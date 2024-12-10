@@ -10,6 +10,8 @@ import java.util.List;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType.SAME_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType.URGENT;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
@@ -43,16 +45,17 @@ public class HearingUrgencyChecker extends PropertiesChecker {
             return false;
         }
 
-        switch (hearing.getHearingUrgencyType()) {
-            case SAME_DAY:
-            case URGENT:
-                if (isEmpty(hearing.getHearingUrgencyDetails()) || isEmpty(hearing.getWithoutNotice())
-                    || (YES.getValue().equalsIgnoreCase(hearing.getWithoutNotice())
-                        && isEmpty(hearing.getWithoutNoticeReason()))) {
-                    return false;
-                }
-            default: return true;
+        if (URGENT.equals(hearing.getHearingUrgencyType()) || SAME_DAY.equals(hearing.getHearingUrgencyType())) {
+            if (isEmpty(hearing.getHearingUrgencyDetails()) || isEmpty(hearing.getWithoutNotice())) {
+                return false;
+            }
+            if (YES.getValue().equalsIgnoreCase(hearing.getWithoutNotice())
+                && isEmpty(hearing.getWithoutNoticeReason())) {
+                return false;
+            }
         }
+
+        return true;
     }
 
     @Override
