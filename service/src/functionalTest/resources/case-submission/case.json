@@ -5,10 +5,11 @@
     ]
   },
   "grounds": {
-    "thresholdReason": [
+    "groundsReason": [
       "beyondControl",
       "noCare"
     ],
+    "hasThresholdDocument": "NO",
     "thresholdDetails": "Details"
   },
   "hearing": {
