@@ -929,29 +929,19 @@ public class CaseSubmissionGenerationService
 
         return DocmosisHearing.builder()
             .timeFrame(hearingPresent
-                       ? concatenateKeyAndValue(hearing.getTimeFrame(),
-                addPrefixReason(hearing.getReason(), applicationLanguage))
+                       ? concatenateKeyAndValue(hearing.getHearingUrgencyType().getLabel(),
+                addPrefixReason(hearing.getHearingUrgencyDetails(), applicationLanguage))
                        : DEFAULT_STRING)
-            .typeAndReason(hearingPresent
-                           ? concatenateKeyAndValue(hearing.getType(), addPrefixReason(hearing.getTypeGiveReason(),
-                applicationLanguage))
-                           : DEFAULT_STRING)
-            .withoutNoticeDetails(hearingPresent
+            .withoutNoticeDetails(hearingPresent && isNotEmpty(hearing.getWithoutNotice())
                                   ? concatenateYesOrNoKeyAndValue(hearing.getWithoutNotice(),
                 addPrefixReason(hearing.getWithoutNoticeReason(),
                     applicationLanguage),
                 applicationLanguage)
                                   : DEFAULT_STRING)
-            .reducedNoticeDetails(hearingPresent
-                                  ? concatenateYesOrNoKeyAndValue(hearing.getReducedNotice(),
-                addPrefixReason(hearing.getReducedNoticeReason(),
-                    applicationLanguage),
-                applicationLanguage)
-                                  : DEFAULT_STRING)
-            .respondentsAware(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
-                              ? YesNo.fromString(hearing.getRespondentsAware()).getValue(applicationLanguage)
+            .respondentsAware(hearingPresent && isNotEmpty(hearing.getRespondentsAware())
+                              ? hearing.getRespondentsAware()
                               : DEFAULT_STRING)
-            .respondentsAwareReason(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
+            .respondentsAwareReason(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAwareReason())
                                     ? hearing.getRespondentsAwareReason()
                                     : DEFAULT_STRING)
             .build();
