@@ -39,7 +39,7 @@ public class Hearing {
      * This historical hearing urgency field is deprecated since DFPL-2304.
      * @deprecated (DFPL-2304, historical hearing urgency field)
      */
-    @Deprecated
+    @Deprecated(since = "DFPL-2304")
     private final String reducedNotice;
     /**
      * This historical hearing urgency field is deprecated since DFPL-2304.

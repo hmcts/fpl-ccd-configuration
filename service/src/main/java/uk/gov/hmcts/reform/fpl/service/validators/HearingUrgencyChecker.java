@@ -51,9 +51,8 @@ public class HearingUrgencyChecker extends PropertiesChecker {
                         && isEmpty(hearing.getWithoutNoticeReason()))) {
                     return false;
                 }
+            default: return true;
         }
-
-        return true;
     }
 
     @Override
