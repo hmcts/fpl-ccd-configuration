@@ -44,15 +44,11 @@ class InternationalElementCheckerIsStartedTest {
     private static Stream<Arguments> nonEmptyInternationalElement() {
         return Stream.of(
                 InternationalElement.builder()
-                        .issues("Yes").build(),
+                        .whichCountriesInvolved("Test").build(),
                 InternationalElement.builder()
-                        .proceedings("No").build(),
+                        .outsideHagueConvention("No").build(),
                 InternationalElement.builder()
-                        .possibleCarer("Yes").build(),
-                InternationalElement.builder()
-                        .significantEvents("No").build(),
-                InternationalElement.builder()
-                        .internationalAuthorityInvolvement("Yes").build())
+                        .importantDetails("Test").build())
                 .map(Arguments::of);
     }
 
@@ -61,11 +57,9 @@ class InternationalElementCheckerIsStartedTest {
                 InternationalElement.builder()
                         .build(),
                 InternationalElement.builder()
-                        .issues("")
-                        .proceedings("")
-                        .possibleCarer("")
-                        .significantEvents("")
-                        .internationalAuthorityInvolvement("")
+                        .whichCountriesInvolved("")
+                        .outsideHagueConvention("")
+                        .importantDetails("")
                         .build())
                 .map(Arguments::of);
     }
