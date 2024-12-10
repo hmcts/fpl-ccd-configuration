@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -479,7 +480,7 @@ class SendDocumentServiceTest {
                 .party(RespondentParty.builder()
                     .firstName("Not Represented Deceased")
                     .lastName("Respondent")
-                    .addressKnow(NO.getValue())
+                    .addressKnow(IsAddressKnowType.NO)
                     .addressNotKnowReason(AddressNotKnowReason.DECEASED.getType())
                     .build())
                 .legalRepresentation(null)
@@ -489,7 +490,7 @@ class SendDocumentServiceTest {
                 .party(RespondentParty.builder()
                     .firstName("Not Represented NFA")
                     .lastName("Respondent")
-                    .addressKnow(NO.getValue())
+                    .addressKnow(IsAddressKnowType.NO)
                     .addressNotKnowReason(AddressNotKnowReason.NO_FIXED_ABODE.getType())
                     .build())
                 .legalRepresentation(null)
@@ -504,7 +505,7 @@ class SendDocumentServiceTest {
                 .party(RespondentParty.builder()
                     .firstName("Represented Deceased")
                     .lastName("Respondent")
-                    .addressKnow(NO.getValue())
+                    .addressKnow(IsAddressKnowType.NO)
                     .addressNotKnowReason(AddressNotKnowReason.DECEASED.getType())
                     .build())
                 .legalRepresentation(null)
@@ -515,7 +516,7 @@ class SendDocumentServiceTest {
                 .party(RespondentParty.builder()
                     .firstName("Represented NFA")
                     .lastName("Respondent")
-                    .addressKnow(NO.getValue())
+                    .addressKnow(IsAddressKnowType.NO)
                     .addressNotKnowReason(AddressNotKnowReason.NO_FIXED_ABODE.getType())
                     .build())
                 .legalRepresentation(YES.getValue())

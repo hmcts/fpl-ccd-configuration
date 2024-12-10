@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
 import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
@@ -353,7 +353,7 @@ class PlacementEventsHandlerNotificationTest {
                 .party(RespondentParty.builder()
                     .firstName("Jodie")
                     .lastName("Smith")
-                    .addressKnow(YesNo.NO.getValue())
+                    .addressKnow(IsAddressKnowType.NO)
                     .addressNotKnowReason(AddressNotKnowReason.DECEASED.getType())
                     .build())
                 .build());
@@ -361,7 +361,7 @@ class PlacementEventsHandlerNotificationTest {
                 .party(RespondentParty.builder()
                     .firstName("Marry")
                     .lastName("Smith")
-                    .addressKnow(YesNo.NO.getValue())
+                    .addressKnow(IsAddressKnowType.NO)
                     .addressNotKnowReason(AddressNotKnowReason.NO_FIXED_ABODE.getType())
                     .build())
                 .build());
