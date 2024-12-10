@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.ccd;
 
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,10 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -37,6 +39,7 @@ public class CoreCaseDataService {
     private final RequestData requestData;
     private final SystemUserService systemUserService;
     private final CCDConcurrencyHelper concurrencyHelper;
+    private final ConcurrentHashMap<Long, AtomicInteger> concurrentMap = new ConcurrentHashMap<>();
 
     // Required so calls to the same class get proxied correctly and have the retry annotation applied
     @Lazy
@@ -58,23 +61,31 @@ public class CoreCaseDataService {
                                                  String eventName,
                                                  Function<CaseDetails, Map<String, Object>> changeFunction,
                                                  boolean submitIfEmpty) {
+        AtomicInteger lock = concurrentMap.computeIfAbsent(caseId, (key) -> new AtomicInteger(0));
+        lock.addAndGet(1);
 
-        StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
-        CaseDetails caseDetails = startEventResponse.getCaseDetails();
-        // Work around immutable maps
-        HashMap<String, Object> caseDetailsMap = new HashMap<>(caseDetails.getData());
-        caseDetails.setData(caseDetailsMap);
+        try {
+            synchronized (lock) {
+                StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
+                CaseDetails caseDetails = startEventResponse.getCaseDetails();
+                // Work around immutable maps
+                HashMap<String, Object> caseDetailsMap = new HashMap<>(caseDetails.getData());
+                caseDetails.setData(caseDetailsMap);
 
-        Map<String, Object> updates = changeFunction.apply(caseDetails);
+                Map<String, Object> updates = changeFunction.apply(caseDetails);
 
-        if (!updates.isEmpty() || submitIfEmpty) {
-            log.info("Submitting event {} on case {}", eventName, caseId);
-            concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
-        } else {
-            log.info("No updates, skipping submit event");
+                if (!updates.isEmpty() || submitIfEmpty) {
+                    log.info("Submitting event {} on case {}", eventName, caseId);
+                    concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
+                } else {
+                    log.info("No updates, skipping submit event");
+                }
+                caseDetails.getData().putAll(updates);
+                return caseDetails;
+            }
+        } finally {
+            concurrentMap.computeIfPresent(caseId, (key, value) -> value.addAndGet(-1) <= 0 ? null : value);
         }
-        caseDetails.getData().putAll(updates);
-        return caseDetails;
     }
 
     @Recover

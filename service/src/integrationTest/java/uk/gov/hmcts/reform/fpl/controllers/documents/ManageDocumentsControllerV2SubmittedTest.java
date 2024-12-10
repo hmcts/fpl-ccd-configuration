@@ -68,7 +68,7 @@ class ManageDocumentsControllerV2SubmittedTest extends AbstractCallbackTest {
             Map.of(DocumentType.CASE_SUMMARY,
                 wrapElementsWithUUIDs(CaseSummary.builder().document(mock(DocumentReference.class)).build()));
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocumentsLA =
-            Map.of(DocumentType.EXPERT_REPORTS,
+            Map.of(DocumentType.TOXICOLOGY_REPORT,
                 wrapElementsWithUUIDs(ManagedDocument.builder().document(mock(DocumentReference.class)).build()));
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocumentsCTSC =
             Map.of(DocumentType.COURT_BUNDLE,

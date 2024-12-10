@@ -20,5 +20,29 @@
     "CaseFieldID": "componentLauncher",
     "DisplayContextParameter": "#ARGUMENT(CaseFileView)",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "caseFileView",
+    "TabLabel": "Case File View",
+    "TabDisplayOrder": 2,
+    "CaseFieldID": "familyManCaseNumber",
+    "TabFieldDisplayOrder": 100,
+    "FieldShowCondition": "familyManCaseNumber = \"DO_NOT_SHOW\"",
+    "Comment": "A field should be loaded in case tab first to show it in the case title"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "caseFileView",
+    "TabLabel": "Case File View",
+    "TabDisplayOrder": 2,
+    "CaseFieldID": "caseName",
+    "TabFieldDisplayOrder": 101,
+    "FieldShowCondition": "familyManCaseNumber = \"DO_NOT_SHOW\"",
+    "Comment": "A field should be loaded in case tab first to show it in the case title"
   }
 ]

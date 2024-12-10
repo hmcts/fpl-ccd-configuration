@@ -83,5 +83,18 @@
     "ShowSummaryChangeOption": "N",
     "Publish": "Y",
     "FieldShowCondition": "judicialMessageReply=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "court",
+    "PageFieldDisplayOrder": 100,
+    "DisplayContext": "READONLY",
+    "PageID": "ReplyToMessage",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "Publish": "Y",
+    "FieldShowCondition": "judicialMessageReply=\"DO_NOT_SHOW\""
   }
 ]

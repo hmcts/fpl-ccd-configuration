@@ -3,6 +3,13 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -116,13 +123,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.validation.Valid;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
@@ -536,7 +536,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public SealType getSealType() {
-        return isWelshLanguageRequested() ? SealType.BILINGUAL : SealType.ENGLISH;
+        return isWelshLanguageRequested() ? SealType.WELSH : SealType.ENGLISH;
     }
 
     @JsonIgnore
@@ -768,6 +768,13 @@ public class CaseData extends CaseDataParent {
     }
 
     @JsonIgnore
+    public Optional<HearingBooking> getLastHearingBefore(LocalDateTime time) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.getStartDate().isBefore(time))
+            .max(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return getNextHearingAfter(time).orElseThrow(NoHearingBookingException::new);
     }
@@ -829,6 +836,8 @@ public class CaseData extends CaseDataParent {
                                        || isNotEmpty(bundle.getValue().getAllConfidentialOrdersByStatus(SEND_TO_JUDGE)))
             .collect(toList());
     }
+
+    private final YesNo draftOrderNeedsReviewUploaded;
 
     @JsonUnwrapped
     @Builder.Default
@@ -911,6 +920,7 @@ public class CaseData extends CaseDataParent {
             .collect(toList());
     }
 
+    private DraftOrderUrgencyOption draftOrderUrgency;
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;

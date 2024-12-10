@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
@@ -74,7 +76,9 @@ public class DraftOrderService {
     private final ObjectMapper mapper;
     private final Time time;
     private final HearingOrderKindEventDataBuilder hearingOrderKindEventDataBuilder;
+    private final ManageDocumentService manageDocumentService;
     private final UserService userService;
+    private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
         final UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
@@ -150,10 +154,10 @@ public class DraftOrderService {
         return newEventDataBuilder.build();
     }
 
-    public UUID updateCase(UploadDraftOrdersData eventData, List<Element<HearingBooking>> hearings,
+    public UUID updateCase(CaseData caseData, List<Element<HearingBooking>> hearings,
                            List<Element<HearingOrder>> cmoDrafts,
                            Map<HearingOrderType, List<Element<HearingOrdersBundle>>> combinedBundles) {
-
+        UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
         final UUID selectedHearingId = getSelectedHearingId(eventData);
         final List<HearingOrderKind> hearingOrderKinds = getHearingOrderKinds(eventData);
 
@@ -163,6 +167,7 @@ public class DraftOrderService {
                 .flatMap(id -> findElement(id, hearings))
                 .orElseThrow(() -> new HearingNotFoundException(selectedHearingId));
 
+            boolean isNewCMO = isNewCMO(eventData);
             DocumentReference cmo = getCMO(eventData, hearing.getValue(), cmoDrafts);
 
             Element<HearingOrder> order = element(from(
@@ -174,6 +179,12 @@ public class DraftOrderService {
                 eventData.getCmoToSendTranslationRequirements(),
                 hearing.getId()
             ));
+            if (isNewCMO) {
+                order = element(order.getValue().toBuilder()
+                    .uploaderType(manageDocumentService.getUploaderType(caseData))
+                    .uploaderCaseRoles(manageDocumentService.getUploaderCaseRoles(caseData))
+                    .build());
+            }
 
             Optional<UUID> previousCmoId = updateHearingWithCmoId(hearing.getValue(), order);
 
@@ -214,6 +225,8 @@ public class DraftOrderService {
                 if (!existingC21Documents.contains(hearingOrder.getValue())) {
                     hearingOrder.getValue().setDateSent(time.now().toLocalDate());
                     hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+                    hearingOrder.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
+                    hearingOrder.getValue().setUploaderCaseRoles(manageDocumentService.getUploaderCaseRoles(caseData));
                 }
                 hearingOrder.getValue().setTranslationRequirements(eventData.getOrderToSendTranslationRequirements(i));
             }
@@ -259,7 +272,7 @@ public class DraftOrderService {
                 hearingOrder.getValue().setOrderConfidential(hearingOrder.getValue().getOrder());
                 hearingOrder.getValue().setOrder(null);
             }
-            hearingOrder.getValue().setUploaderEmail(userService.getUserEmail());
+            hearingOrder.getValue().setUploaderEmail(getUploaderEmail());
         }
 
         HearingOrdersBundle hearingOrdersBundle = bundles.stream()
@@ -283,6 +296,13 @@ public class DraftOrderService {
                 ConfidentialOrderBundle.SUFFIX_CHILD, caseRoles, suffixes::add);
         }
         hearingOrdersBundle.updateConfidentialOrders(draftOrders, C21, suffixes);
+    }
+
+    private String getUploaderEmail() {
+        if (userService.isHmctsAdminUser()) {
+            return ctscEmailLookupConfiguration.getEmail();
+        }
+        return userService.getUserEmail();
     }
 
     private boolean isInCmoDrafts(Element<HearingOrder> draft, List<Element<HearingOrder>> cmoDrafts) {
@@ -454,6 +474,11 @@ public class DraftOrderService {
         return ofNullable(eventData)
             .map(UploadDraftOrdersData::getHearingOrderDraftKind)
             .orElse(emptyList());
+    }
+
+    private boolean isNewCMO(UploadDraftOrdersData currentEventData) {
+        return !(currentEventData.getUploadedCaseManagementOrder() == null
+            && currentEventData.getReplacementCMO() == null);
     }
 
     private DocumentReference getCMO(UploadDraftOrdersData currentEventData,

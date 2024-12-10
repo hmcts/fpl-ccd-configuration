@@ -17,7 +17,7 @@ import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
 import { AdditionalApplications } from "../pages/additional-applications";
-import { ApproveOrders} from "../pages/approve-orders";
+import { ApproveOrders } from "../pages/approve-orders";
 import { Placement } from "../pages/placement";
 import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
@@ -33,6 +33,12 @@ import { SubmitCase } from "../pages/submit-case";
 import { Organisation } from "../pages/manage-organisation";
 import { ShareCase } from "../pages/share-case";
 import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
+import { ReturnApplication } from "../pages/return-application";
+import { Orders } from "../pages/orders";
+import { CaseProgressionReport } from "../pages/case-progression-report";
+import { LogExpertReport } from "../pages/log-expert-report";
+import { ManageRepresentatives } from "../pages/manage-representatives";
+import { ChangeCaseName} from "../pages/change-case-name";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -69,6 +75,12 @@ type CreateFixtures = {
   organisation: Organisation;
   shareCase: ShareCase;
   otherPeopleInCase: OtherPeopleInCase;
+  returnApplication: ReturnApplication;
+  logExpertReport: LogExpertReport;
+  changeCaseName: ChangeCaseName;
+  caseProgressionReport: CaseProgressionReport;
+  orders: Orders;
+  manageRepresentatives: ManageRepresentatives;
 
 };
 
@@ -186,26 +198,50 @@ export const test = base.extend<CreateFixtures>({
   },
 
   addAdminCaseFlag: async ({ page }, use) => {
-        await use(new AddAndRemoveAdminCaseFlag(page));
+    await use(new AddAndRemoveAdminCaseFlag(page));
   },
 
   c1WithSupplement: async ({ page }, use) => {
-     await use(new C1WithSupplement(page));
+    await use(new C1WithSupplement(page));
   },
 
   otherPeopleInCase: async ({ page }, use) => {
     await use(new OtherPeopleInCase(page));
- },
+  },
+
+  returnApplication: async ({ page }, use) => {
+    await use(new ReturnApplication(page));
+  },
 
   submitCase: async ({ page }, use) => {
     await use(new SubmitCase(page));
   },
 
-  organisation: async ({page}, use) => {
-      await use(new Organisation(page));
+  organisation: async ({ page }, use) => {
+    await use(new Organisation(page));
   },
 
-  shareCase: async ({page}, use) => {
-      await use(new ShareCase(page));
+  shareCase: async ({ page }, use) => {
+    await use(new ShareCase(page));
+  },
+
+  orders: async ({ page }, use) => {
+    await use(new Orders(page));
+  },
+
+  logExpertReport: async ({ page }, use) => {
+    await use(new LogExpertReport(page));
+  },
+
+  changeCaseName: async ({ page }, use) => {
+    await use(new ChangeCaseName(page));
+  },
+
+  caseProgressionReport: async ({ page }, use) => {
+    await use(new CaseProgressionReport(page));
+  },
+
+  manageRepresentatives: async ({ page }, use) => {
+    await use(new ManageRepresentatives(page));
   },
 });
