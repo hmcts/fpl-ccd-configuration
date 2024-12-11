@@ -16,7 +16,8 @@
     "CaseFieldID": "hearing",
     "ListElementCode": "hearingUrgencyDetails",
     "EventElementLabel": "How soon do you need the hearing? Tell us why",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hearing.hearingUrgencyType=\"SAME_DAY\" OR hearing.hearingUrgencyType=\"URGENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -25,7 +26,8 @@
     "CaseFieldID": "hearing",
     "ListElementCode": "withoutNotice",
     "EventElementLabel": "Do you need a without notice hearing?",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hearing.hearingUrgencyType=\"SAME_DAY\" OR hearing.hearingUrgencyType=\"URGENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -34,7 +36,8 @@
     "CaseFieldID": "hearing",
     "ListElementCode": "withoutNoticeReason",
     "EventElementLabel": "Give us clear details why you need a without notice hearing",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hearing.hearingUrgencyType!=\"STANDARD\" AND hearing.withoutNotice=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -52,6 +55,7 @@
     "CaseFieldID": "hearing",
     "ListElementCode": "respondentsAwareReason",
     "EventElementLabel": "Tell us which respondents are not aware and why",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hearing.respondentsAware=\"No\""
   }
 ]
