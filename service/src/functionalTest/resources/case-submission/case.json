@@ -12,8 +12,8 @@
     "thresholdDetails": "Details"
   },
   "hearing": {
-    "hearingUrgencyType": "URGENT",
-    "hearingUrgencyDetails": "Baby will be discharged from hospital on 21 June 2018"
+    "hearingUrgencyType": "STANDARD",
+    "respondentsAware": "Yes"
   },
   "caseName": "Api test",
   "representativeType": "LOCAL_AUTHORITY",
