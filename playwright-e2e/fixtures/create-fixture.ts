@@ -28,7 +28,7 @@ import { OtherProceedings } from "../pages/other-proceedings";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
 import { CaseLink } from "../pages/link-cases"
-import { CourtServicesNeeded } from "../pages/court-services-needed";
+import { CourtServices } from "../pages/court-services";
 import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
 import { Organisation } from "../pages/manage-organisation";
@@ -71,7 +71,7 @@ type CreateFixtures = {
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
   caseLink : CaseLink ;
-  courtServicesNeeded: CourtServicesNeeded;
+  courtServices: CourtServices;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
   organisation: Organisation;
@@ -197,8 +197,8 @@ export const test = base.extend<CreateFixtures>({
     caseLink: async ({ page }, use) => {
         await use(new CaseLink(page));
     },
-  courtServicesNeeded: async ({ page }, use) => {
-    await use(new CourtServicesNeeded(page));
+  courtServices: async ({ page }, use) => {
+    await use(new CourtServices(page));
   },
 
   addAdminCaseFlag: async ({ page }, use) => {
