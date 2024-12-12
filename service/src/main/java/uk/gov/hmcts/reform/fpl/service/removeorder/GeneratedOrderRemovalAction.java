@@ -4,11 +4,14 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,7 +38,14 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
 
         List<Element<GeneratedOrder>> generatedOrders = caseData.getOrderCollection();
-        boolean removed = generatedOrders.remove(element(removedOrderId, generatedRemovableOrder));
+        boolean removed = false;
+        if (ElementUtils.findElement(removedOrderId, generatedOrders).isPresent()) {
+            removed = generatedOrders.remove(element(removedOrderId, generatedRemovableOrder));
+            data.putIfNotEmpty("orderCollection", generatedOrders);
+        } else {
+            removed = removeConfidentialOrder(data, removedOrderId, generatedRemovableOrder,
+                caseData.getConfidentialOrders());
+        }
 
         if (!removed) {
             throw new RemovableOrderOrApplicationNotFoundException(removedOrderId);
@@ -51,7 +61,6 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
 
         data.put("children1", removeFinalOrderPropertiesFromChildren(caseData, generatedRemovableOrder));
         data.put("hiddenOrders", hiddenGeneratedOrders);
-        data.putIfNotEmpty("orderCollection", generatedOrders);
     }
 
     @Override
@@ -90,5 +99,21 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
                 }
                 return element;
             }).collect(Collectors.toList());
+    }
+
+    private <T> boolean removeConfidentialOrder(CaseDetailsMap data, UUID removedOrderId,
+                                                             T removableOrder,
+                                                             ConfidentialOrderBundle<T> confidentialOrderBundle) {
+        final List<String> fieldNames = new ArrayList<>();
+        confidentialOrderBundle.processAllConfidentialOrders((suffix, orders) -> {
+           if (orders != null && orders.remove(element(removedOrderId, removableOrder))) {
+                String fieldName = confidentialOrderBundle.getFieldBaseName() + suffix;
+                data.putIfNotEmpty(fieldName, orders);
+                fieldNames.add(fieldName);
+           }
+        });
+
+        // Same order can potentially exist in multiple collection.
+        return !fieldNames.isEmpty();
     }
 }

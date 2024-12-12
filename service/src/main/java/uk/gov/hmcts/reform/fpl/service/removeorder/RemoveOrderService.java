@@ -95,7 +95,7 @@ public class RemoveOrderService {
 
     private List<Element<? extends RemovableOrder>> getRemovableOrderList(CaseData caseData) {
         List<Element<? extends RemovableOrder>> orders = new ArrayList<>();
-        orders.addAll(caseData.getOrderCollection());
+        orders.addAll(caseData.getAllOrderCollections());
         orders.addAll(caseData.getSealedCMOs());
         orders.addAll(getDraftHearingOrders(caseData));
 
