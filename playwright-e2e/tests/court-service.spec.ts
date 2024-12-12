@@ -67,9 +67,8 @@ test.describe('Court Service', () => {
     test('CTSC user update court service',
         async ({ signInPage, courtServices}) => {
             let casename = 'Amend Court service  ' + dateTime.slice(0, 10);
-            console.log('caseNumber' + caseNumber);
 
-            await updateCase(casename, caseNumber, caseWithCourtService)
+            await updateCase(casename, caseNumber, caseWithCourtService);
 
             // 1. Sign in as local-authority user
             await signInPage.visit();
