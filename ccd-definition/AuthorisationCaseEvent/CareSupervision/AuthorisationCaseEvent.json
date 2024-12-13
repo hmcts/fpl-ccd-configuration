@@ -1596,7 +1596,7 @@
         "CRUD": "CRUD"
       }
     ]
-  },  
+  },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -1752,26 +1752,6 @@
           "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageCaseTTL",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "TTL_profile",
-          "caseworker-publiclaw-superuser"
-        ],
-        "CRUD": "CRU"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-systemupdate"
-        ],
-        "CRUD": "CRUD"
       }
     ]
   }
