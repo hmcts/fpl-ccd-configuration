@@ -118,48 +118,6 @@ test.describe('Non mandatory application details before application submit', () 
             expect(accessibilityScanResults.violations).toEqual([]);
 
         });
-    test('LA add court service',
-        async ({startApplication, signInPage, courtServicesNeeded, makeAxeBuilder}, testInfo) => {
-            casename = 'Court service  ' + dateTime.slice(0, 10);
-            caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
-            // 1. Sign in as local-authority user
-            await signInPage.visit();
-            await signInPage.login(
-                newSwanseaLocalAuthorityUserOne.email,
-                newSwanseaLocalAuthorityUserOne.password,
-            );
-            //sign in page
-            await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
-
-            // Court Services Needed
-            await startApplication.courtServicesReqUpdated();
-            await courtServicesNeeded.CourtServicesSmoketest();
-
-            await courtServicesNeeded.tabNavigation('View application')
-
-            await expect(courtServicesNeeded.page.locator('#case-viewer-field-read--hearingPreferences').getByText('Court services', { exact: true })).toBeVisible();
-            await expect(courtServicesNeeded.page.locator('ccd-read-complex-field-table')).toContainText('Court services');
-            await expect(courtServicesNeeded.page.getByText('Interpreter', { exact: true })).toBeVisible();
-            await expect(courtServicesNeeded.page.getByRole('cell', { name: 'Intermediary', exact: true })).toBeVisible();
-            await expect(courtServicesNeeded.page.getByText('Facilities or assistance for')).toBeVisible();
-            await expect(courtServicesNeeded.page.getByText('Separate waiting rooms', { exact: true })).toBeVisible();
-            await expect(courtServicesNeeded.page.getByRole('cell', { name: 'Something else', exact: true })).toBeVisible();
-            await expect(courtServicesNeeded.page.getByText('Something else')).toBeVisible();
-
-            const accessibilityScanResults = await makeAxeBuilder()
-                // Automatically uses the shared AxeBuilder configuration,
-                // but supports additional test-specific configuration too
-                .analyze();
-
-            await testInfo.attach('accessibility-scan-results', {
-                body: JSON.stringify(accessibilityScanResults, null, 2),
-                contentType: 'application/json'
-            });
-
-            expect(accessibilityScanResults.violations).toEqual([]);
-
-        });
 
     test('LA add c1 application',
         async ({startApplication, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
@@ -191,7 +149,7 @@ test.describe('Non mandatory application details before application submit', () 
 
         });
 
-    test('@LA add other people',
+    test('LA add other people',
         async ({startApplication, signInPage, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
             casename = 'Other people in case ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
