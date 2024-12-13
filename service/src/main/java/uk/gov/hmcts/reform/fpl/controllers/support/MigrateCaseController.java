@@ -48,7 +48,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2610", this::run2610,
+        "DFPL-2572", this::run2572,
         "DFPL-2585", this::run2585,
         "DFPL-2585Rollback", this::run2585Rollback,
         "DFPL-2619", this::run2619
@@ -80,20 +80,11 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2610(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2610";
-        final long expectedCaseId = 1722860335639318L;
-        CaseData firstInstanceCaseData = getCaseData(caseDetails);
+    private void run2572(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2572";
+        final long expectedCaseId = 1732805239399608L;
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService
-            .removeCharactersFromThresholdDetails(firstInstanceCaseData, migrationId,
-                416, 423, "****"));
-
-        CaseData secondInstanceCaseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService
-            .removeCharactersFromThresholdDetails(secondInstanceCaseData, migrationId,
-                462, 468, "****"));
     }
 
     private void run2619(CaseDetails caseDetails) {
