@@ -98,7 +98,7 @@ public class RemoveOrderService {
         orders.addAll(caseData.getOrderCollection());
         orders.addAll(caseData.getSealedCMOs());
         orders.addAll(getDraftHearingOrders(caseData));
-        orders.addAll(caseData.getRefusedHearingOrders());
+        orders.addAll(Optional.ofNullable(caseData.getRefusedHearingOrders()).orElse(new ArrayList<>()));
 
         if (!FINAL_HEARING.equals(caseData.getState())) {
             if (caseData.getStandardDirectionOrder() != null)  {
