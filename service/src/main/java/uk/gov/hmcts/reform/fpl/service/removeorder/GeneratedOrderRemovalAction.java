@@ -106,11 +106,11 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
                                                              ConfidentialOrderBundle<T> confidentialOrderBundle) {
         final List<String> fieldNames = new ArrayList<>();
         confidentialOrderBundle.processAllConfidentialOrders((suffix, orders) -> {
-           if (orders != null && orders.remove(element(removedOrderId, removableOrder))) {
+            if (orders != null && orders.remove(element(removedOrderId, removableOrder))) {
                 String fieldName = confidentialOrderBundle.getFieldBaseName() + suffix;
                 data.putIfNotEmpty(fieldName, orders);
                 fieldNames.add(fieldName);
-           }
+            }
         });
 
         // Same order can potentially exist in multiple collection.
