@@ -13,17 +13,25 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 public class TaskSection {
 
     private final String name;
+    private final String welshName;
     private List<Task> tasks;
     private String hint;
+    private String hintWelsh;
     private String info;
+    private String infoWelsh;
 
-    private TaskSection(String name, List<Task> tasks) {
+    private TaskSection(String name, String welshName, List<Task> tasks) {
         this.name = name;
+        this.welshName = welshName;
         this.tasks = tasks;
     }
 
     public static TaskSection newSection(String name) {
-        return new TaskSection(name, new ArrayList<>());
+        return newSection(name, null);
+    }
+
+    public static TaskSection newSection(String name, String welshName) {
+        return new TaskSection(name, welshName, new ArrayList<>());
     }
 
     public TaskSection withTask(Task task) {
@@ -36,8 +44,20 @@ public class TaskSection {
         return this;
     }
 
+    public TaskSection withHint(String hint, String hintWelsh) {
+        this.hint = hint;
+        this.hintWelsh = hintWelsh;
+        return this;
+    }
+
     public TaskSection withInfo(String info) {
         this.info = info;
+        return this;
+    }
+
+    public TaskSection withInfo(String info, String infoWelsh) {
+        this.info = info;
+        this.infoWelsh = infoWelsh;
         return this;
     }
 
@@ -52,4 +72,17 @@ public class TaskSection {
     public boolean hasAnyTask() {
         return isNotEmpty(tasks);
     }
+
+    public String getNameInLang(boolean welsh) {
+        return welsh ? welshName : name;
+    }
+
+    public Optional<String> getHintInLang(boolean welsh) {
+        return Optional.ofNullable(welsh ? hintWelsh : hint);
+    }
+
+    public Optional<String> getInfoInLang(boolean welsh) {
+        return Optional.ofNullable(welsh ? infoWelsh : info);
+    }
+
 }

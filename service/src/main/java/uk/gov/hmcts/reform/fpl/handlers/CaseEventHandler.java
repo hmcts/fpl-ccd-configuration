@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
+import uk.gov.hmcts.reform.fpl.service.TemplateRenderer;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
@@ -37,9 +38,25 @@ public class CaseEventHandler {
         final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
         final List<EventValidationErrors> eventErrors = caseSubmissionChecker.validateAsGroups(caseData);
         final Map<Event, String> taskHintsMap = taskListService.getTaskHints(caseData);
-        final String taskList = taskListRenderer.render(tasks, eventErrors, getApplicationType(caseData),
-            Optional.of(taskHintsMap));
-        return Map.of("taskList", taskList);
+        final String taskList = taskListRenderer.renderTasks(tasks, eventErrors,
+            getApplicationType(caseData),
+            Optional.of(taskHintsMap),
+            caseDetails.getId(), false);
+
+        final String taskListWelsh = taskListRenderer.renderTasks(tasks, eventErrors,
+            getApplicationType(caseData),
+            Optional.of(taskHintsMap),
+            caseDetails.getId(), true);
+
+        final String taskListCombined = taskListRenderer.renderTasksCombined(tasks, eventErrors,
+            getApplicationType(caseData),
+            Optional.of(taskHintsMap),
+            caseDetails.getId());
+//        final String taskList = taskListRenderer.render(tasks, eventErrors, getApplicationType(caseData),
+//            Optional.of(taskHintsMap), true);
+        return Map.of("taskList", taskList,
+            "taskListWelsh", taskListWelsh,
+            "taskListCombined", taskListCombined);
     }
 
     @EventListener

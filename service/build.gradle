@@ -302,6 +302,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.retry', name: 'spring-retry'
 
+  implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.33'
+
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '6.2.3'
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '6.2.3'
 

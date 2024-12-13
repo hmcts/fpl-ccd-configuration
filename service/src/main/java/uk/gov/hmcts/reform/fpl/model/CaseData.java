@@ -137,6 +137,14 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_APPLICANT_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_CHILD_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_GROUNDS;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_HEARING_URGENCY;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_ORDERS_DIRECTIONS;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_RESPONDENTS_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ENTER_CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -161,7 +169,7 @@ public class CaseData extends CaseDataParent {
     public static final int DEFAULT_CASE_COMPLETION = 26;
     private final Long id;
     private final State state;
-    @NotBlank(message = "Enter a case name")
+    @NotBlank(message = ENTER_CASE_NAME)
     private final String caseName;
     private String caseLocalAuthority;
     private String caseLocalAuthorityName;
@@ -197,30 +205,30 @@ public class CaseData extends CaseDataParent {
     private YesNo multiCourts;
 
     private final Risks risks;
-    @NotNull(message = "Add the orders and directions sought")
+    @NotNull(message = ADD_ORDERS_DIRECTIONS)
     @Valid
     private final Orders orders;
     private final Orders ordersSolicitor;
-    @NotNull(message = "Add the grounds for the application")
+    @NotNull(message = ADD_GROUNDS)
     @Valid
     private final Grounds grounds;
-    @NotNull(message = "Add the grounds for the application")
+    @NotNull(message = ADD_GROUNDS)
     @Valid
     private final GroundsForChildAssessmentOrder groundsForChildAssessmentOrder;
-    @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
+    @NotNull(message = ADD_GROUNDS, groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
-    @NotEmpty(message = "Add applicant's details")
+    @NotEmpty(message = ADD_APPLICANT_DETAILS)
     @Valid
     @Deprecated
-    private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
+    private final List<@NotNull(message = ADD_APPLICANT_DETAILS) Element<Applicant>> applicants;
 
     // This holds all applicants, not just LA's
-    private List<@NotNull(message = "Add applicant's details") Element<LocalAuthority>> localAuthorities;
+    private List<@NotNull(message = ADD_APPLICANT_DETAILS) Element<LocalAuthority>> localAuthorities;
 
     @Valid
-    @NotEmpty(message = "Add the respondents' details")
-    private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
+    @NotEmpty(message = ADD_RESPONDENTS_DETAILS)
+    private final List<@NotNull(message = ADD_RESPONDENTS_DETAILS) Element<Respondent>> respondents1;
 
     private final Proceeding proceeding;
 
@@ -230,7 +238,7 @@ public class CaseData extends CaseDataParent {
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
 
-    @NotNull(message = "Add the allocation proposal")
+    @NotNull(message = ADD_ALLOCATION_PROPOSAL)
     @Valid
     private final Allocation allocationProposal;
     private final Allocation allocationDecision;
@@ -263,7 +271,7 @@ public class CaseData extends CaseDataParent {
     @Temp
     private final YesNo useAllocatedJudge;
 
-    @NotNull(message = "Add the hearing urgency details")
+    @NotNull(message = ADD_HEARING_URGENCY)
     @Valid
     private final Hearing hearing;
     private final HearingPreferences hearingPreferences;
@@ -274,35 +282,36 @@ public class CaseData extends CaseDataParent {
     private final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments;
 
     @JsonProperty("documents_socialWorkCarePlan_document")
-    @NotNull(message = "Add social work documents, or details of when you'll send them")
+    @NotNull(message = "Add social work documents, or details of when you'll send them") // unused checker
     @Valid
     public final Document socialWorkCarePlanDocument;
     @JsonProperty("documents_socialWorkStatement_document")
-    @NotNull(message = "Add social work documents, or details of when you'll send them")
+    @NotNull(message = "Add social work documents, or details of when you'll send them") // unused checker
     @Valid
     public final Document socialWorkStatementDocument;
     @JsonProperty("documents_socialWorkAssessment_document")
-    @NotNull(message = "Add social work documents, or details of when you'll send them")
+    @NotNull(message = "Add social work documents, or details of when you'll send them") // unused checker
     @Valid
     public final Document socialWorkAssessmentDocument;
     @JsonProperty("documents_socialWorkChronology_document")
-    @NotNull(message = "Add social work documents, or details of when you'll send them")
+    @NotNull(message = "Add social work documents, or details of when you'll send them") // unused checker
     @Valid
     public final Document socialWorkChronologyDocument;
     @JsonProperty("documents_checklist_document")
-    @NotNull(message = "Add social work documents, or details of when you'll send them")
+    @NotNull(message = "Add social work documents, or details of when you'll send them") // unused checker
     @Valid
     public final Document checklistDocument;
     @JsonProperty("documents_threshold_document")
-    @NotNull(message = "Add social work documents, or details of when you'll send them")
+    @NotNull(message = "Add social work documents, or details of when you'll send them") // unused checker
     @Valid
     public final Document thresholdDocument;
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    @NotEmpty(message = "Add the child's details")
+
+    @NotEmpty(message = ADD_CHILD_DETAILS)
     @Valid
-    private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
+    private final List<@NotNull(message = ADD_CHILD_DETAILS) Element<Child>> children1;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
