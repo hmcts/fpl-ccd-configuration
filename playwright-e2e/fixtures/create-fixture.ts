@@ -40,6 +40,8 @@ import { CaseProgressionReport } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
 import { ManageRepresentatives } from "../pages/manage-representatives";
 import { ChangeCaseName} from "../pages/change-case-name";
+import {CtscUserPage} from "../pages/ctsc-user-browser-context";
+import config from "../settings/test-docs/config";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -83,6 +85,7 @@ type CreateFixtures = {
   caseProgressionReport: CaseProgressionReport;
   orders: Orders;
   manageRepresentatives: ManageRepresentatives;
+  ctscUserPage: CtscUserPage;
 
 };
 
@@ -247,5 +250,10 @@ export const test = base.extend<CreateFixtures>({
 
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
+  },
+  ctscUserPage: async({ browser }, use)=>{
+    const context = await browser.newContext({ storageState: config.CTSCUserAuthFile });
+    await use( new CtscUserPage(await context.newPage()));
+    await context.close();
   },
 });

@@ -1,9 +1,11 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import { type Page, type Locator, Browser,expect } from "@playwright/test";
+import {urlConfig} from "../settings/urls";
+import config from "../settings/test-docs/config";
 
 export class BasePage {
   readonly nextStep: Locator;
   readonly goButton: Locator;
-  readonly page: Page;
+  private page: Page;
   readonly continueButton: Locator;
   readonly signOut: Locator;
   readonly checkYourAnswersHeader: Locator;
@@ -16,16 +18,20 @@ export class BasePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.nextStep = page.getByLabel('Next step');
-    this.goButton = page.getByRole('button', { name: 'Go', exact: true });
-    this.continueButton = page.getByRole("button", { name: 'Continue' });
-    this.signOut = page.getByText('Sign out');
-    this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-    this.saveAndContinue = page.getByRole("button", { name: 'Save and Continue'});
-    this.submit = page.getByRole('button', { name: 'Submit' });
-    this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
-    this.findAddress = page.getByRole('button', { name: 'Find address' });
-    this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
+    this.nextStep = this.page.getByLabel('Next step');
+    this.goButton = this.page.getByRole('button', { name: 'Go', exact: true });
+    this.continueButton = this.page.getByRole("button", { name: 'Continue' });
+    this.signOut = this.page.getByText('Sign out');
+    this.checkYourAnswersHeader = this.page.getByRole('heading', { name: 'Check your answers' });
+    this.saveAndContinue = this.page.getByRole("button", { name: 'Save and Continue'});
+    this.submit = this.page.getByRole('button', { name: 'Submit' });
+    this.postCode = this.page.getByRole('textbox', { name: 'Enter a UK postcode' });
+    this.findAddress = this.page.getByRole('button', { name: 'Find address' });
+    this.rateLimit = this.page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
+  }
+
+  async switchUser(page:Page){
+      this.page = page;
   }
 
   async gotoNextStep(eventName: string) {
@@ -108,5 +114,8 @@ export class BasePage {
         let day = new Intl.DateTimeFormat('en', { day: 'numeric'}).format(date);
         let todayDate = `${day} ${month} ${year}`;
         return todayDate;
+    }
+    async navigateTOCaseDetails(caseNumber: string) {
+        await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
     }
 }

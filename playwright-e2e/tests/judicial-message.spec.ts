@@ -5,6 +5,7 @@ import caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json'
 import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 import {createCase, updateCase} from "../utils/api-helper";
+import {CtscUserPage} from "../pages/ctsc-user-browser-context";
 
 
 test.describe('send and reply message',()=>{
@@ -15,14 +16,15 @@ test.describe('send and reply message',()=>{
       caseNumber =  await createCase('e2e case',newSwanseaLocalAuthorityUserOne);
   });
 
-  test('CTSC admin send message to Judge with application',
-    async ({page,signInPage,judicialMessages}) => {
+  test.only('CTSC admin send message to Judge with application',
+    async ({page,signInPage,judicialMessages,ctscUserPage}) => {
         casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
 
         await updateCase(casename,caseNumber,caseData);
-        await signInPage.visit();
-        await signInPage.login(CTSCUser.email,CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+
+        await judicialMessages.switchUser(ctscUserPage.page);
+
+        await judicialMessages.navigateTOCaseDetails(caseNumber);
         await judicialMessages.gotoNextStep('Send messages');
         await judicialMessages.sendMessageToAllocatedJudgeWithApplication();
         await judicialMessages.checkYourAnsAndSubmit();
