@@ -16,6 +16,15 @@ elastic:
 aac-manage-case-assignment:
   enabled: false
 
+wa:
+  enabled: false
+
+servicebus:
+  enabled: false
+
+ccd-message-publisher:
+  enabled: false
+
 java:
   aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest

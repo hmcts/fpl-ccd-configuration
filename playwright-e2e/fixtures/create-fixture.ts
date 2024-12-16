@@ -27,6 +27,7 @@ import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { OtherProceedings } from "../pages/other-proceedings";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
+import { CaseLink } from "../pages/link-cases"
 import { CourtServicesNeeded } from "../pages/court-services-needed";
 import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
@@ -39,6 +40,8 @@ import { CaseProgressionReport } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
 import { ChangeCaseName } from "../pages/change-case-name";
 import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
+import { ManageRepresentatives } from "../pages/manage-representatives";
+import { ChangeCaseName} from "../pages/change-case-name";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -69,6 +72,7 @@ type CreateFixtures = {
   otherProceedings: OtherProceedings;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
+  caseLink : CaseLink ;
   courtServicesNeeded: CourtServicesNeeded;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
@@ -81,6 +85,7 @@ type CreateFixtures = {
   caseProgressionReport: CaseProgressionReport;
   orders: Orders;
   manageLaTransferToCourts: ManageLaTransferToCourts
+  manageRepresentatives: ManageRepresentatives;
 
 };
 
@@ -192,7 +197,9 @@ export const test = base.extend<CreateFixtures>({
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
   },
-
+    caseLink: async ({ page }, use) => {
+        await use(new CaseLink(page));
+    },
   courtServicesNeeded: async ({ page }, use) => {
     await use(new CourtServicesNeeded(page));
   },
@@ -243,5 +250,10 @@ export const test = base.extend<CreateFixtures>({
 
   manageLaTransferToCourts: async ({ page }, use) => {
     await use(new ManageLaTransferToCourts(page));
+},
+      
+  manageRepresentatives: async ({ page }, use) => {
+    await use(new ManageRepresentatives(page));
+
   },
 });
