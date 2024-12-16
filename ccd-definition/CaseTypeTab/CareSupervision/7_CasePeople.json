@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "caseSummaryFlagAddedTag",
     "FieldShowCondition": "caseFlagAdded=\"Yes\"",
     "TabFieldDisplayOrder": -1
@@ -16,7 +16,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "manageLegalRepresentativesLink",
     "TabFieldDisplayOrder": 0
   },
@@ -26,7 +26,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "allocatedJudge",
     "TabFieldDisplayOrder": 1
   },
@@ -36,7 +36,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "children1",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 2
@@ -47,7 +47,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "respondents1",
     "TabFieldDisplayOrder": 3
   },
@@ -57,7 +57,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "applicants",
     "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "localAuthorities != \"*\""
@@ -68,7 +68,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "localAuthorities",
     "TabFieldDisplayOrder": 4
   },
@@ -78,7 +78,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "legalRepresentatives",
     "TabFieldDisplayOrder": 5
   },
@@ -88,7 +88,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 6,
     "FieldShowCondition": "localAuthorities != \"*\""
@@ -99,7 +99,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "others",
     "TabFieldDisplayOrder": 7
   },
@@ -109,7 +109,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "representatives",
     "TabFieldDisplayOrder": 8
   }
