@@ -37,7 +37,8 @@ import { ReturnApplication } from "../pages/return-application";
 import { Orders } from "../pages/orders";
 import { CaseProgressionReport } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
-import { ChangeCaseName} from "../pages/change-case-name";
+import { ChangeCaseName } from "../pages/change-case-name";
+import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -79,6 +80,7 @@ type CreateFixtures = {
   changeCaseName: ChangeCaseName;
   caseProgressionReport: CaseProgressionReport;
   orders: Orders;
+  manageLaTransferToCourts: ManageLaTransferToCourts
 
 };
 
@@ -237,5 +239,9 @@ export const test = base.extend<CreateFixtures>({
 
   caseProgressionReport: async ({ page }, use) => {
     await use(new CaseProgressionReport(page));
+  },
+
+  manageLaTransferToCourts: async ({ page }, use) => {
+    await use(new ManageLaTransferToCourts(page));
   },
 });
