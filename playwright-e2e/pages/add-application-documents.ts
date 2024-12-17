@@ -14,7 +14,7 @@ export class AddApplicationDocuments {
       this.page = page;
       this.applicationDocumentsHeading = page.getByRole('heading', { name: 'Application documents' });
       this.addNewButton = page.getByRole('button', { name: 'Add new' });
-      this.typeOfDocument = page.getByLabel('Type of document');
+      this.typeOfDocument = page.getByLabel('Document type');
       this.chooseFileButton = page.locator('input#temporaryApplicationDocuments_0_document').first();
       this.giveDetailsText = page.getByLabel('Give details of documents to follow, including why you\'re not sending them now, and when you think they\'ll be ready. (Optional)');
     }
