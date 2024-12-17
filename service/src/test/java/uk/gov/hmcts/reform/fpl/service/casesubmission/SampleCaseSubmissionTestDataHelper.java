@@ -208,10 +208,8 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static DocmosisHearing expectedDocmosisHearing() {
         return DocmosisHearing.builder()
-            .typeAndReason("Contested interim care order\nReason: Standard case management hearing")
-            .timeFrame("Same day\nReason: Baby will be discharged from hospital on 21 June 2018")
+            .timeFrame("Urgent (not same day)\nReason: Baby will be discharged from hospital on 21 June 2018")
             .withoutNoticeDetails("Yes\nReason: Notice without hearing needed")
-            .reducedNoticeDetails("Yes\nReason: Baby needs to be discharged from the hospital")
             .respondentsAware("Yes")
             .respondentsAwareReason("They seek to care for baby in mother and baby unit")
             .build();

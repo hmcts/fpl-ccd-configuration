@@ -8,6 +8,7 @@ Applicant Test
 Respondents John Wall
 Application from Test submitted on ${issueDate}
 
+
 Orders
 
 Orders needed                                                       Interim care order
@@ -15,11 +16,9 @@ Direction needed                                                    -
 
 Hearing needed
 
-Hearing date requested                                              Same day
-Hearing type                                                        -
+Hearing date requested                                              Standard (between days 12-18)
 Without notice                                                      -
-Reduced notice                                                      -
-Respondents aware of proceedings                                    -
+Respondents aware of proceedings                                    Yes
 Respondents’ view on proceedings                                    -
 
 Allocation proposal
