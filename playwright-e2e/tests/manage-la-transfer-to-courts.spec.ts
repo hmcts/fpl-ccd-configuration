@@ -23,8 +23,8 @@ test.describe('Manage LAs / Transfer to court', () => {
 
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateManageLaTransferToCourts();
-            await manageLaTransferToCourts.tabNavigation('People in the case');
-            await expect(page.getByText('Designated local authority')).toBeVisible();
+            await manageLaTransferToCourts.tabNavigation('Summary');
+            await expect(page.getByText('Family Court sitting at Central Family Court')).toBeVisible();
 
         })
     test('CTSC gives access to another local authority',
@@ -38,7 +38,7 @@ test.describe('Manage LAs / Transfer to court', () => {
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateCourtAccess();
             await manageLaTransferToCourts.tabNavigation('People in the case');
-            await expect(page.getByText('Applicant 2')).toBeVisible();
+            await expect(page.getByText('London Borough Hillingdon')).toBeVisible();
 
         })
     test('CTSC removes access',
@@ -48,10 +48,11 @@ test.describe('Manage LAs / Transfer to court', () => {
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
+
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateRemoveAccess();
             await manageLaTransferToCourts.tabNavigation('People in the case');
-            await expect(page.getByText('Applicant 1')).toBeVisible();
+            await expect(page.getByText('Colleague 1')).toBeVisible();
         })
     test('CTSC tranfers to another local authority',
         async ({ page, signInPage, manageLaTransferToCourts }) => {
@@ -64,6 +65,6 @@ test.describe('Manage LAs / Transfer to court', () => {
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateTranferToLa();
             await manageLaTransferToCourts.tabNavigation('People in the case');
-            await expect(page.getByText('Designated local authority')).toBeVisible();
+            await expect(page.getByText('London Borough Hillingdon')).toBeVisible();
         })
 });
