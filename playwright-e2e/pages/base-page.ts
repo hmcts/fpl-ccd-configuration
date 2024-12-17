@@ -3,68 +3,52 @@ import {urlConfig} from "../settings/urls";
 import config from "../settings/test-docs/config";
 
 export class BasePage {
-  readonly nextStep: Locator;
-  readonly goButton: Locator;
-  private page: Page;
-  readonly continueButton: Locator;
-  readonly signOut: Locator;
-  readonly checkYourAnswersHeader: Locator;
-  readonly saveAndContinue: Locator;
-  readonly submit: Locator;
-  readonly postCode: Locator;
-  readonly findAddress: Locator;
-  readonly rateLimit: Locator;
+ // readonly nextStep: string;
+    protected currentPage: Page;
 
 
   constructor(page: Page) {
-    this.page = page;
-    this.nextStep = this.page.getByLabel('Next step');
-    this.goButton = this.page.getByRole('button', { name: 'Go', exact: true });
-    this.continueButton = this.page.getByRole("button", { name: 'Continue' });
-    this.signOut = this.page.getByText('Sign out');
-    this.checkYourAnswersHeader = this.page.getByRole('heading', { name: 'Check your answers' });
-    this.saveAndContinue = this.page.getByRole("button", { name: 'Save and Continue'});
-    this.submit = this.page.getByRole('button', { name: 'Submit' });
-    this.postCode = this.page.getByRole('textbox', { name: 'Enter a UK postcode' });
-    this.findAddress = this.page.getByRole('button', { name: 'Find address' });
-    this.rateLimit = this.page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
-  }
+this.currentPage = page;
+          }
 
   async switchUser(page:Page){
-      this.page = page;
+this.currentPage =page;
+page.pause();
+
   }
 
   async gotoNextStep(eventName: string) {
       await expect(async () => {
-          await this.page.reload();
-          await this.nextStep.selectOption(eventName);
-          await this.goButton.click({clickCount:2,delay:300});
-          await expect(this.page.getByRole('button', { name: 'Previous' })).toBeDisabled();
+          await this.currentPage.reload();
+          await this.currentPage.getByLabel('Next step').selectOption(eventName);
+          await this.currentPage
+          await this.currentPage.getByRole('button', { name: 'Go', exact: true }).click({clickCount:2,delay:300});
+          await expect(this.currentPage.getByRole('button', { name: 'Previous' })).toBeDisabled();
       }).toPass();
   }
 
   async expectAllUploadsCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
+    let locs = await this.currentPage.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
         await expect(locs[i]).toBeDisabled();
     }
   }
 
   async checkYourAnsAndSubmit(){
-    await expect(this.checkYourAnswersHeader).toBeVisible();
-    await this.saveAndContinue.click();
+    await expect(this.currentPage.getByRole('heading', { name: 'Check your answers' })).toBeVisible();
+    await this.currentPage.getByRole('button', { name: 'Save and Continue'}).click();
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByRole('tab', { name: tabName,exact: true }).click();
+    await this.currentPage.getByRole('tab', { name: tabName,exact: true }).click();
   }
 
   async clickContinue() {
-    await this.continueButton.click();
+    await this.currentPage.getByRole('button', { name: 'Continue' }).click();
   }
 
   async waitForAllUploadsToBeCompleted() {
-    const locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this.currentPage.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
       await expect(locs[i]).toBeDisabled();
     }
@@ -83,10 +67,10 @@ export class BasePage {
   async reloadAndCheckForText(text: string, timeout?: number, maxAttempts?: number): Promise<boolean> {
     // reload the page, wait 5s, see if it's there
     for (let attempt = 0; attempt < (maxAttempts ?? 12); attempt++) {
-      await this.page.reload();
-      await this.page.waitForLoadState();
-      await this.page.waitForTimeout(timeout ?? 5000);
-      if (await this.page.getByText(text).isVisible()) {
+      await this.currentPage.reload();
+      await this.currentPage.waitForLoadState();
+      await this.currentPage.waitForTimeout(timeout ?? 5000);
+      if (await this.currentPage.getByText(text).isVisible()) {
         return true;
       }
     }
@@ -94,17 +78,17 @@ export class BasePage {
   }
 
   async clickSignOut() {
-    await this.signOut.click();
+    await this.currentPage.getByText('Sign out').click();
   }
 
   async clickSubmit() {
-    await this.submit.click();
+    await this.currentPage.getByRole('button', { name: 'Submit' }).click();
   }
 
   async enterPostCode(postcode:string){
-      await this.postCode.fill(postcode);
-      await this.findAddress.click();
-      await this.page.getByLabel('Select an address').selectOption('1: Object');
+      await this.currentPage.getByRole('textbox', { name: 'Enter a UK postcode' }).fill(postcode);
+      await this.currentPage.getByRole('button', { name: 'Find address' }).click();
+      await this.currentPage.getByLabel('Select an address').selectOption('1: Object');
 
   }
     getCurrentDate():string {
@@ -116,6 +100,7 @@ export class BasePage {
         return todayDate;
     }
     async navigateTOCaseDetails(caseNumber: string) {
-        await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+     console.log(await this.currentPage.context().storageState()) ;
+        await this.currentPage.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
     }
 }

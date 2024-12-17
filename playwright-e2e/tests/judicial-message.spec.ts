@@ -5,7 +5,8 @@ import caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json'
 import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 import {createCase, updateCase} from "../utils/api-helper";
-import {CtscUserPage} from "../pages/ctsc-user-browser-context";
+import {LegalUserPage} from "../pages/legal-user-browser";
+
 
 
 test.describe('send and reply message',()=>{
@@ -16,8 +17,8 @@ test.describe('send and reply message',()=>{
       caseNumber =  await createCase('e2e case',newSwanseaLocalAuthorityUserOne);
   });
 
-  test.only('CTSC admin send message to Judge with application',
-    async ({page,signInPage,judicialMessages,ctscUserPage}) => {
+  test('CTSC admin send message to Judge with application',
+    async ({judicialMessages,ctscUserPage}) => {
         casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
 
         await updateCase(casename,caseNumber,caseData);
@@ -29,47 +30,49 @@ test.describe('send and reply message',()=>{
         await judicialMessages.sendMessageToAllocatedJudgeWithApplication();
         await judicialMessages.checkYourAnsAndSubmit();
         await judicialMessages.tabNavigation('Judicial messages');
-        await expect(page.getByText('FamilyPublicLaw+ctsc@gmail.com - Message send to Allocated Judge')).toBeVisible();
+        await expect(ctscUserPage.page.getByText('FamilyPublicLaw+ctsc@gmail.com - Message send to Allocated Judge')).toBeVisible();
     });
 
     test('CTSC admin send message to Judge with document',
-    async ({page,signInPage,judicialMessages}) => {
+    async ({judicialMessages,ctscUserPage}) => {
         casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
         await updateCase(casename,caseNumber,caseData);
-        await signInPage.visit();
-        await signInPage.login(CTSCUser.email,CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await judicialMessages.switchUser(ctscUserPage.page);
+        await judicialMessages.navigateTOCaseDetails(caseNumber);
         await judicialMessages.gotoNextStep('Send messages');
         await judicialMessages.sendMessageToAllocatedJudgeWithDocument();
         await judicialMessages.checkYourAnsAndSubmit();
         await judicialMessages.tabNavigation('Judicial messages');
-        await expect(page.getByText('FamilyPublicLaw+ctsc@gmail.com - Message send to Allocated Judge')).toBeVisible();
+        await expect(ctscUserPage.page.getByText('FamilyPublicLaw+ctsc@gmail.com - Message send to Allocated Judge')).toBeVisible();
     });
 
-    test('Judge reply CTCS message',async({page,signInPage,judicialMessages})=>{
+    test.only('Judge reply CTCS message',async({judicialMessages,legalUserPage})=>{
         casename = 'Judge Reply ' + dateTime.slice(0, 10);
         await updateCase(casename,caseNumber,caseDataJudgeMessage);
-        await  signInPage.visit();
-        await signInPage.login(judgeUser.email,judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        console.log(await legalUserPage.page.context().storageState());
+        await judicialMessages.switchUser(legalUserPage.page);
+        // await  signInPage.visit();
+        // await signInPage.login(judgeUser.email,judgeUser.password);
+        await judicialMessages.navigateTOCaseDetails(caseNumber);
         await judicialMessages.gotoNextStep('Reply to messages');
         await judicialMessages.judgeReplyMessage();
         await judicialMessages.checkYourAnsAndSubmit();
         await judicialMessages.tabNavigation('Judicial messages');
-        await expect(page.getByText('FamilyPublicLaw+ctsc@gmail.com - Some note judiciary-only@mailnesia.com - Reply CTSC admin about the hearing.')).toBeVisible();
+        await expect(legalUserPage.page.getByText('FamilyPublicLaw+ctsc@gmail.com - Some note judiciary-only@mailnesia.com - Reply CTSC admin about the hearing.')).toBeVisible();
     });
 
-    test('CTSC admin close the Message',async({page,signInPage,judicialMessages}) =>{
+    test('CTSC admin close the Message',async({judicialMessages,ctscUserPage}) =>{
       casename = 'CTSC Admin Close Message ' + dateTime.slice(0, 10);
       await updateCase(casename,caseNumber,caseDataCloseMessage);
-      await signInPage.visit();
-      await signInPage.login(CTSCUser.email,CTSCUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      // await signInPage.visit();
+      // await signInPage.login(CTSCUser.email,CTSCUser.password);
+        await judicialMessages.switchUser(ctscUserPage.page);
+      await judicialMessages.navigateTOCaseDetails(caseNumber);
       await judicialMessages.gotoNextStep('Reply to messages');
       await judicialMessages.CTSCUserCloseMessage();
       await judicialMessages.checkYourAnsAndSubmit();
       await judicialMessages.tabNavigation('Judicial messages');
-      await expect(page.getByRole('cell', { name: 'Closed', exact: true })).toBeVisible();
+      await expect(ctscUserPage.page.getByRole('cell', { name: 'Closed', exact: true })).toBeVisible();
     })
 
 });

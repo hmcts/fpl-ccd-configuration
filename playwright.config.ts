@@ -40,13 +40,13 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
       {
-          name: 'user session-setup',
+          name: 'user-session-setup',
           testMatch: '**/*user-auth-setup.ts',
       },
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
-        dependencies: ['user session-setup'],
+        dependencies: ['user-session-setup'],
     },
 
     {

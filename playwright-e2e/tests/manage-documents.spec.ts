@@ -21,12 +21,12 @@ test.describe('Manage Documents', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('LA uploads documents', async ({ page, signInPage, manageDocuments, caseFileView }) => {
+    test.only('LA uploads documents', async ({ page, signInPage, manageDocuments, caseFileView }) => {
         caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
-        await signInPage.visit();
-        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        // await signInPage.visit();
+        // await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+        await manageDocuments.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Court correspondence');
 

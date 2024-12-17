@@ -42,6 +42,8 @@ import { ManageRepresentatives } from "../pages/manage-representatives";
 import { ChangeCaseName} from "../pages/change-case-name";
 import {CtscUserPage} from "../pages/ctsc-user-browser-context";
 import config from "../settings/test-docs/config";
+import {LegalUserPage} from "../pages/legal-user-browser";
+import {LAUserPage} from "../pages/local-authority-user-browser";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -86,6 +88,8 @@ type CreateFixtures = {
   orders: Orders;
   manageRepresentatives: ManageRepresentatives;
   ctscUserPage: CtscUserPage;
+  legalUserPage: LegalUserPage;
+    localAuthoirtyUserPage : LAUserPage
 
 };
 
@@ -256,4 +260,15 @@ export const test = base.extend<CreateFixtures>({
     await use( new CtscUserPage(await context.newPage()));
     await context.close();
   },
+    legalUserPage: async({ browser }, use)=>{
+        const context = await browser.newContext({ storageState: config.legalUserAuthFile });
+        await use( new LegalUserPage(await context.newPage()));
+         await context.close();
+    },
+    localAuthoirtyUserPage: async({ browser }, use)=>{
+        const context = await browser.newContext({ storageState: config.LAUserAuthFile });
+        await use( new LAUserPage(await context.newPage()));
+        await context.close();
+    },
+
 });
