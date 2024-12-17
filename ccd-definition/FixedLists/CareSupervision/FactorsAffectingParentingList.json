@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsAffectingParentingList",
+    "ListElementCode": "ALCOHOL_DRUG_ABUSE",
+    "ListElement": "Alcohol or drug abuse",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsAffectingParentingList",
+    "ListElementCode": "DOMESTIC_ABUSE",
+    "ListElement": "Domestic abuse",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsAffectingParentingList",
+    "ListElementCode": "ANYTHING_ELSE",
+    "ListElement": "Anything else",
+    "DisplayOrder": 3
+  }
+]

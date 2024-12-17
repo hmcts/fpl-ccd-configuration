@@ -9,13 +9,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import uk.gov.hmcts.reform.fpl.enums.FactorsAffectingParentingType;
+import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
@@ -71,31 +74,17 @@ class RiskAndHarmCheckerTest {
         return Stream.of(
             Risks.builder().build(),
             completedRisk()
-                .emotionalHarmOccurrences(null)
+                .whatKindOfRiskAndHarmToChildren(null)
                 .build(),
             completedRisk()
-                .emotionalHarmOccurrences(emptyList())
-                .build(),
-
-            completedRisk()
-                .physicalHarmOccurrences(null)
-                .build(),
-            completedRisk()
-                .physicalHarmOccurrences(emptyList())
+                .whatKindOfRiskAndHarmToChildren(emptyList())
                 .build(),
 
             completedRisk()
-                .sexualAbuseOccurrences(null)
+                .factorsAffectingParenting(null)
                 .build(),
             completedRisk()
-                .sexualAbuseOccurrences(emptyList())
-                .build(),
-
-            completedRisk()
-                .neglectOccurrences(null)
-                .build(),
-            completedRisk()
-                .neglectOccurrences(emptyList())
+                .factorsAffectingParenting(emptyList())
                 .build()
         ).map(Arguments::of);
     }
@@ -103,10 +92,8 @@ class RiskAndHarmCheckerTest {
     private static Stream<Arguments> completeRisks() {
         return Stream.of(
             Risks.builder()
-                .emotionalHarm("No")
-                .physicalHarm("No")
-                .sexualAbuse("No")
-                .neglect("No")
+                .whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.EMOTIONAL_HARM))
+                .factorsAffectingParenting(List.of(FactorsAffectingParentingType.DOMESTIC_ABUSE))
                 .build(),
             completedRisk()
                 .build()
@@ -115,13 +102,8 @@ class RiskAndHarmCheckerTest {
 
     private static Risks.RisksBuilder completedRisk() {
         return Risks.builder()
-            .emotionalHarm("Yes")
-            .emotionalHarmOccurrences(singletonList("Past harm"))
-            .physicalHarm("Yes")
-            .physicalHarmOccurrences(singletonList("Past harm"))
-            .sexualAbuse("Yes")
-            .sexualAbuseOccurrences(singletonList("Past harm"))
-            .neglect("Yes")
-            .neglectOccurrences(singletonList("Past harm"));
+            .whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.EMOTIONAL_HARM))
+            .factorsAffectingParenting(List.of(FactorsAffectingParentingType.ANYTHING_ELSE))
+            .anythingElseAffectingParenting("Something else");
     }
 }
