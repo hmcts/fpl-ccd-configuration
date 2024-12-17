@@ -41,7 +41,6 @@ import { LogExpertReport } from "../pages/log-expert-report";
 import { ChangeCaseName } from "../pages/change-case-name";
 import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
-import { ChangeCaseName } from "../pages/change-case-name";
 
 type CreateFixtures = {
   signInPage: SignInPage;
