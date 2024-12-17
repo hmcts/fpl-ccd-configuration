@@ -15,6 +15,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_APPLICANT_DETAILS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
@@ -25,7 +26,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
         final List<LocalAuthority> localAuthorities = unwrapElements(caseData.getLocalAuthorities());
 
         if (isEmpty(localAuthorities)) {
-            return List.of("Add applicant's details");
+            return List.of(ADD_APPLICANT_DETAILS);
         }
 
         return validateLocalAuthority(localAuthorities.get(0));
@@ -33,7 +34,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
 
     private List<String> validateLocalAuthority(LocalAuthority localAuthority) {
         if (isNull(localAuthority)) {
-            return List.of("Add applicant's details");
+            return List.of(ADD_APPLICANT_DETAILS);
         }
 
         final List<String> errors = new ArrayList<>();
