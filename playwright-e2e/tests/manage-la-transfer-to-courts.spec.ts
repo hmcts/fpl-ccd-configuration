@@ -52,7 +52,8 @@ test.describe('Manage LAs / Transfer to court', () => {
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateRemoveAccess();
             await manageLaTransferToCourts.tabNavigation('People in the case');
-            await expect(page.getByText('Colleague 1')).toBeVisible();
+            await expect(page.getByText('Applicant 2')).toBeHidden();
+            await expect(page.getByText('London Borough Hillingdon')).toBeHidden();
         })
     test('CTSC tranfers to another local authority',
         async ({ page, signInPage, manageLaTransferToCourts }) => {
