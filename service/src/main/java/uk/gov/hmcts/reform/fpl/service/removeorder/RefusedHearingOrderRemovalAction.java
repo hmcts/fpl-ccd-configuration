@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 
 @Component
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RefusedHearingOrderRemovalAction implements OrderRemovalAction {
 
     @Override

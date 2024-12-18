@@ -19,7 +19,7 @@
     "TabDisplayOrder": 2,
     "CaseFieldID": "componentLauncher",
     "DisplayContextParameter": "#ARGUMENT(CaseFileView)",
-    "TabShowCondition": "[STATE]!=\"RETURNED\""
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\""
   },
   {
     "LiveFrom": "01/01/2017",
