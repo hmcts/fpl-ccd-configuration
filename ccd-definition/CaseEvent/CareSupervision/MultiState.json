@@ -918,6 +918,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "recordFinalDecisions",
     "Name": "Record final decisions",
+    "TTLIncrement": 6575,
     "Description": "Record final decisions",
     "DisplayOrder": 31,
     "PreConditionState(s)": "Submitted;RETURNED;Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING",
