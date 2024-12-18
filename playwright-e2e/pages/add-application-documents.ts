@@ -16,7 +16,7 @@ export class AddApplicationDocuments {
       this.addNewButton = page.getByRole('button', { name: 'Add new' });
       this.typeOfDocument = page.getByLabel('Document type');
       this.chooseFileButton = page.locator('input#temporaryApplicationDocuments_0_document').first();
-      this.giveDetailsText = page.getByLabel('Give details of documents to follow, including why you\'re not sending them now, and when you think they\'ll be ready. (Optional)');
+      this.giveDetailsText = page.getByLabel('Give details of any documents you will upload at a later date.');
     }
 
     async uploadDocumentSmokeTest() {
