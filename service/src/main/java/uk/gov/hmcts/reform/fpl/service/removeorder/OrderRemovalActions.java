@@ -16,6 +16,7 @@ public class OrderRemovalActions {
     private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private final SDORemovalAction sdoRemovalAction;
     private final DraftCMORemovalAction draftCMORemovalAction;
+    private final RefusedHearingOrderRemovalAction refusedDraftOrderRemovalAction;
 
     public OrderRemovalAction getAction(RemovableOrder removableOrder) {
         return getActions()
@@ -31,7 +32,8 @@ public class OrderRemovalActions {
             generatedOrderRemovalAction,
             sdoRemovalAction,
             draftOrderRemovalAction,
-            draftCMORemovalAction
+            draftCMORemovalAction,
+            refusedDraftOrderRemovalAction
         );
     }
 }

@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
@@ -40,12 +41,16 @@ class OrderRemovalActionsTest {
     @Mock
     private DraftOrderRemovalAction draftOrderRemovalAction;
 
+    @Mock
+    private RefusedHearingOrderRemovalAction refusedHearingOrderRemovalAction;
+
     @InjectMocks
     private OrderRemovalActions orderRemovalActions;
 
     private static final HearingOrder SEALED_CASE_MANAGEMENT_ORDER = hearingOrder(AGREED_CMO, APPROVED);
     private static final HearingOrder DRAFT_CASE_MANAGEMENT_ORDER = hearingOrder(DRAFT_CMO, DRAFT);
     private static final HearingOrder DRAFT_ORDER = hearingOrder(C21, SEND_TO_JUDGE);
+    private static final HearingOrder RETURNED_ORDER = hearingOrder(C21, RETURNED);
     private static final GeneratedOrder GENERATED_ORDER = GeneratedOrder.builder().build();
     private static final StandardDirectionOrder STANDARD_DIRECTION_ORDER = StandardDirectionOrder.builder().build();
 
@@ -82,6 +87,14 @@ class OrderRemovalActionsTest {
 
     @Test
     void shouldReturnSDOActionWhenGettingActionForSDO() {
+        when(sdoRemovalAction.isAccepted(STANDARD_DIRECTION_ORDER)).thenReturn(true);
+
+        assertThat(orderRemovalActions.getAction(STANDARD_DIRECTION_ORDER))
+            .isEqualTo(sdoRemovalAction);
+    }
+
+    @Test
+    void shouldReturnRefusedHearingOrderActionWhenGettingActionForRefusedOrder() {
         when(sdoRemovalAction.isAccepted(STANDARD_DIRECTION_ORDER)).thenReturn(true);
 
         assertThat(orderRemovalActions.getAction(STANDARD_DIRECTION_ORDER))
