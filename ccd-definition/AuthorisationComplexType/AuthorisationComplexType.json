@@ -249,7 +249,7 @@
     "CaseFieldID": "TTL",
     "ListElementCode": "SystemTTL",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
