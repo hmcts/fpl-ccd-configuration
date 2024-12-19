@@ -1,0 +1,32 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageCaseTTL",
+    "CaseEventID": "manageCaseTTL",
+    "CaseFieldID": "TTL",
+    "ListElementCode": "SystemTTL",
+    "EventElementLabel": "System TTL",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageCaseTTL",
+    "CaseEventID": "manageCaseTTL",
+    "CaseFieldID": "TTL",
+    "ListElementCode": "OverrideTTL",
+    "EventElementLabel": "Override TTL",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageCaseTTL",
+    "CaseEventID": "manageCaseTTL",
+    "CaseFieldID": "TTL",
+    "ListElementCode": "Suspended",
+    "EventElementLabel": "Suspend Deletion",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  }
+]
