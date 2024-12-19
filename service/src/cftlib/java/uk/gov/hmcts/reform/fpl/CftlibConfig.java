@@ -31,9 +31,9 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-ras-validation",
             "GS_profile",
             "caseworker-wa-task-configuration",
+            "TTL_profile",
             "ctsc",
-            "hearing-centre-admin",
-            "TTL_profile"
+            "hearing-centre-admin"
         };
         lib.createRoles(roles);
 
