@@ -3,6 +3,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "openCase",
+    "TTLIncrement": 180,
     "Name": "Start application",
     "Description": "Create a new case – add a title",
     "DisplayOrder": 1,
