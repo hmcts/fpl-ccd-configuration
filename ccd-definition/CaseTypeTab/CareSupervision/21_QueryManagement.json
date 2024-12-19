@@ -233,7 +233,7 @@
     "TabID": "QueryManagementTab",
     "TabLabel": "Queries",
     "TabDisplayOrder": 21,
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolOne",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolA",
     "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "QueryManagementComponentLauncher!=\"\""
@@ -245,7 +245,7 @@
     "TabID": "QueryManagementTab",
     "TabLabel": "Queries",
     "TabDisplayOrder": 21,
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolTwo",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolB",
     "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "QueryManagementComponentLauncher!=\"\""
@@ -257,7 +257,7 @@
     "TabID": "QueryManagementTab",
     "TabLabel": "Queries",
     "TabDisplayOrder": 21,
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolThree",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolC",
     "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "QueryManagementComponentLauncher!=\"\""
@@ -427,6 +427,6 @@
     "TabDisplayOrder": 21,
     "CaseFieldID": "caseName",
     "TabFieldDisplayOrder": 1,
-    "FieldShowCondition": "qmCaseQueriesCollectionChildSolOne=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "qmCaseQueriesCollectionChildSolA=\"DO_NOT_SHOW\""
   }
 ]

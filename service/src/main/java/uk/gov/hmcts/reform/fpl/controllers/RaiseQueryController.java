@@ -95,9 +95,9 @@ public class RaiseQueryController extends CallbackController {
         logQueryCollection(caseDetails, "qmCaseQueriesCollectionSolicitorH");
         logQueryCollection(caseDetails, "qmCaseQueriesCollectionSolicitorI");
         logQueryCollection(caseDetails, "qmCaseQueriesCollectionSolicitorJ");
-        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolOne");
-        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolTwo");
-        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolThree");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolA");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolB");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolC");
         logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolD");
         logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolE");
         logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolF");
@@ -132,9 +132,9 @@ public class RaiseQueryController extends CallbackController {
         collectionMapping.put(CaseRole.SOLICITORH, "qmCaseQueriesCollectionSolicitorH");
         collectionMapping.put(CaseRole.SOLICITORI, "qmCaseQueriesCollectionSolicitorI");
         collectionMapping.put(CaseRole.SOLICITORJ, "qmCaseQueriesCollectionSolicitorJ");
-        collectionMapping.put(CaseRole.CHILDSOLICITORA, "qmCaseQueriesCollectionChildSolOne");
-        collectionMapping.put(CaseRole.CHILDSOLICITORB, "qmCaseQueriesCollectionChildSolTwo");
-        collectionMapping.put(CaseRole.CHILDSOLICITORC, "qmCaseQueriesCollectionChildSolThree");
+        collectionMapping.put(CaseRole.CHILDSOLICITORA, "qmCaseQueriesCollectionChildSolA");
+        collectionMapping.put(CaseRole.CHILDSOLICITORB, "qmCaseQueriesCollectionChildSolB");
+        collectionMapping.put(CaseRole.CHILDSOLICITORC, "qmCaseQueriesCollectionChildSolC");
         collectionMapping.put(CaseRole.CHILDSOLICITORD, "qmCaseQueriesCollectionChildSolD");
         collectionMapping.put(CaseRole.CHILDSOLICITORE, "qmCaseQueriesCollectionChildSolE");
         collectionMapping.put(CaseRole.CHILDSOLICITORF, "qmCaseQueriesCollectionChildSolF");

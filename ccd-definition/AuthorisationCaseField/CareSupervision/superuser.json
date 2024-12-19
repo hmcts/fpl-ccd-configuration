@@ -1570,21 +1570,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolOne",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolA",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolTwo",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolB",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolThree",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolC",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },
