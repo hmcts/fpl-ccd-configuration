@@ -20,7 +20,7 @@ test("Create legal user session state", async ({ page,signInPage, context }) => 
     await signInPage.login(judgeUser.email,judgeUser.password);
     await context.storageState({ path: config.legalUserAuthFile });
 });
-test("Create legal user session state", async ({ page,signInPage, context }) => {
+test("Create LA user session state", async ({ page,signInPage, context }) => {
     await signInPage.visit();
     await signInPage.login(newSwanseaLocalAuthorityUserOne.email,newSwanseaLocalAuthorityUserOne.password);
     await context.storageState({ path: config.LAUserAuthFile });

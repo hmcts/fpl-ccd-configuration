@@ -16,14 +16,14 @@ export class ManageDocuments extends BasePage {
    // readonly isDocumentRelatedToCase: Locator;
  //   readonly removeDocumentsTest: Locator;
   //  readonly uploadedDocumentsTest: Locator;
-    readonly thereIsAMistakeOnTheDocument: Locator;
-    readonly caseFileviewTest: Locator;
-    readonly togglePositionStatements: Locator;
-    readonly moreDocumentsOptions: Locator;
-    readonly changeFolder: Locator;
-    readonly threshold: Locator;
-    readonly addNew: Locator;
-    readonly no: Locator;
+  //  readonly thereIsAMistakeOnTheDocument: Locator;
+   // readonly caseFileviewTest: Locator;
+  //  readonly togglePositionStatements: Locator;
+  //  readonly moreDocumentsOptions: Locator;
+  //  readonly changeFolder: Locator;
+ //   readonly threshold: Locator;
+//    readonly addNew: Locator;
+ //   readonly no: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -38,14 +38,14 @@ export class ManageDocuments extends BasePage {
       //  this.isDocumentRelatedToCase = page.getByRole('checkbox', { name: 'Yes' });
        // this.removeDocumentsTest = page.getByLabel('Remove documents');
        // this.uploadedDocumentsTest = page.getByRole('group', { name: '1: hearingDocuments.posStmtList###3ad0ca08-1c4c-48' });
-        this.thereIsAMistakeOnTheDocument = page.getByLabel('There is a mistake on the');
-        this.caseFileviewTest = page.getByText('Case File View');
-        this.togglePositionStatements = page.getByRole('button', { name: 'toggle Position Statements' });
-        this.moreDocumentsOptions = page.getByRole('button', { name: 'More document options', exact: true });
-        this.changeFolder = page.getByText('Change folder');
-        this.threshold = page.getByLabel('Threshold', { exact: true });
-        this.addNew = page.getByRole('button', { name: 'Add new' });
-        this.no = page.getByRole('radio', { name: 'No' });
+      //  this.thereIsAMistakeOnTheDocument = page.getByLabel('There is a mistake on the');
+      //  this.caseFileviewTest = page.getByText('Case File View');
+      //  this.togglePositionStatements = page.getByRole('button', { name: 'toggle Position Statements' });
+     //   this.moreDocumentsOptions = page.getByRole('button', { name: 'More document options', exact: true });
+     //  this.changeFolder = page.getByText('Change folder');
+      //  this.threshold = page.getByLabel('Threshold', { exact: true });
+    //    this.addNew = page.getByRole('button', { name: 'Add new' });
+    //    this.no = page.getByRole('radio', { name: 'No' });
 
     }
     async uploadDocuments(type: string,isConfidential: string= 'No') {

@@ -46,7 +46,7 @@ test.describe('send and reply message',()=>{
         await expect(ctscUserPage.page.getByText('FamilyPublicLaw+ctsc@gmail.com - Message send to Allocated Judge')).toBeVisible();
     });
 
-    test.only('Judge reply CTCS message',async({judicialMessages,legalUserPage})=>{
+    test('Judge reply CTCS message',async({judicialMessages,legalUserPage})=>{
         casename = 'Judge Reply ' + dateTime.slice(0, 10);
         await updateCase(casename,caseNumber,caseDataJudgeMessage);
         console.log(await legalUserPage.page.context().storageState());

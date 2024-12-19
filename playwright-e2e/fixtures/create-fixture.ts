@@ -94,6 +94,8 @@ type CreateFixtures = {
 };
 
 export const test = base.extend<CreateFixtures>({
+
+
   signInPage: async ({ page }, use) => {
     await use(new SignInPage(page));
   },

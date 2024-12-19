@@ -13,8 +13,6 @@ this.currentPage = page;
 
   async switchUser(page:Page){
 this.currentPage =page;
-page.pause();
-
   }
 
   async gotoNextStep(eventName: string) {
