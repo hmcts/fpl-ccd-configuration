@@ -91,6 +91,7 @@
             "litigationIssues": "NO",
             "litigationIssuesDetails": null,
             "detailsHidden": "Yes",
+            "addressKnowV2": null,
             "detailsHiddenReason": null,
             "representedBy": [],
             "DOB": "2000-07-12",
