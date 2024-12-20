@@ -278,7 +278,7 @@ def versions = [
   reformLogging   : '5.1.9',
   springBoot      : springBoot.class.package.implementationVersion,
   log4j           : '2.23.1',
-  logbackVersion  : '1.5.12',
+  logbackVersion  : '1.5.14',
   jackson         : '2.18.2',
   pdfbox          : '2.0.32',
   mockito         : '5.2.0',
