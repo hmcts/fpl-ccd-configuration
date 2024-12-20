@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
@@ -110,6 +111,13 @@ class DraftCMORemovalActionTest {
         RemovableOrder order = HearingOrder.builder().build();
 
         assertThat(underTest.isAccepted(order)).isTrue();
+    }
+
+    @Test
+    void isNotAcceptedWhenDraftCMOStatusIsReturned() {
+        RemovableOrder order = HearingOrder.builder().type(DRAFT_CMO).status(CMOStatus.RETURNED).build();
+
+        assertThat(underTest.isAccepted(order)).isFalse();
     }
 
     @Test
