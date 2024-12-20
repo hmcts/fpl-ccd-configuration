@@ -2,7 +2,7 @@
 
 <br/>
 
-## Add application details
+## Application details
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -20,23 +20,45 @@
 
 <br/>
 
-## Add application documents
-
-<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information </span>
+## Grounds for the application
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>
+
+<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
+
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/in-progress.png' title='In progress'/>
+
+<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
+
+<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
+
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>
+
+<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
 <br/>
 
-## Add information about the parties
+## Application documents
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Applicant's details</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>
+
+<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
+
+<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
+
+<br/>
+
+## Details of people involved
+
+<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
+
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -50,7 +72,7 @@
 
 <br/>
 
-## Add court requirements
+## Court requirements
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -60,7 +82,7 @@
 
 <br/>
 
-## Add additional information
+## Additional information
 
 <div class='panel panel-border-wide govuk-!-font-size-16'>Only complete if relevant</div>
 
@@ -74,11 +96,11 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case</a>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people to be given notice</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/in-progress.png' title='In progress'/>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/in-progress.png' title='In progress'/>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -88,7 +110,7 @@
 
 <br/>
 
-## Send application
+## Review and submit application
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -97,3 +119,23 @@
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
 </div>
+
+<details class='govuk-details'>
+
+<summary class='govuk-details__summary'>
+
+<span class='govuk-details__summary-text'>
+
+Why can't I submit my application?
+
+</span>
+
+</summary>
+
+<div class='govuk-details__text'>
+
+Add the orders and directions sought in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>
+
+</div>
+
+</details>

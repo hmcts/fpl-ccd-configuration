@@ -1,0 +1,49 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "TasksCy",
+    "TabLabel": "Cychwyn y cais",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "taskListLabelWelsh",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "TasksCy",
+    "TabLabel": "Cychwyn y cais",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "taskListWelsh",
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "taskList = \"DO_NOT_SHOW\"",
+    "TabShowCondition": "[STATE] = \"Open\" AND taskListWelsh !=\"\"",
+    "Comment": "taskListLabel is defined as '${taskList}' thus taskList must be present on tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "TasksCy",
+    "TabLabel": "Cychwyn y cais",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "familyManCaseNumber",
+    "TabFieldDisplayOrder": 100,
+    "FieldShowCondition": "familyManCaseNumber = \"DO_NOT_SHOW\"",
+    "Comment": "A field should be loaded in case tab first to show it in the case title"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "TasksCy",
+    "TabLabel": "Cychwyn y cais",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseName",
+    "TabFieldDisplayOrder": 101,
+    "FieldShowCondition": "familyManCaseNumber = \"DO_NOT_SHOW\"",
+    "Comment": "A field should be loaded in case tab first to show it in the case title"
+  }
+]
