@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -71,6 +72,7 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
     public Respondent extractConfidentialDetails() {
         return Respondent.builder()
             .party(RespondentParty.builder()
+                .addressKnow(this.party.getAddressKnow())
                 .firstName(this.party.getFirstName())
                 .lastName(this.party.getLastName())
                 .addressKnow(this.party.getAddressKnow())
@@ -83,14 +85,19 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
 
     @Override
     public Respondent addConfidentialDetails(Party party) {
+        RespondentParty.RespondentPartyBuilder partyBuilder = this.getParty().toBuilder()
+            .firstName(party.getFirstName())
+            .lastName(party.getLastName())
+            .address(party.getAddress())
+            .telephoneNumber(party.getTelephoneNumber())
+            .email(party.getEmail());
+
+        if (!isEmpty(((RespondentParty) party).getAddressKnow())) {
+            partyBuilder.addressKnow(((RespondentParty) party).getAddressKnow());
+        }
+
         return this.toBuilder()
-            .party(this.getParty().toBuilder()
-                .firstName(party.getFirstName())
-                .lastName(party.getLastName())
-                .address(party.getAddress())
-                .telephoneNumber(party.getTelephoneNumber())
-                .email(party.getEmail())
-                .build())
+            .party(partyBuilder.build())
             .build();
     }
 
@@ -98,6 +105,7 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
     public Respondent removeConfidentialDetails() {
         return this.toBuilder()
             .party(this.party.toBuilder()
+                .addressKnow(null)
                 .address(null)
                 .telephoneNumber(null)
                 .email(null)

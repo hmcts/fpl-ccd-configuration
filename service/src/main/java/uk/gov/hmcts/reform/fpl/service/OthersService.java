@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialOtherToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
 
@@ -71,7 +71,7 @@ public class OthersService {
 
         caseData.getAllOthers().forEach(element -> {
             if (element.getValue().containsConfidentialDetails()) {
-                Other confidentialOther = getConfidentialItemToAdd(caseData.getConfidentialOthers(), element);
+                Other confidentialOther = getConfidentialOtherToAdd(caseData.getConfidentialOthers(), element);
                 others.add(element(element.getId(), addConfidentialDetails(confidentialOther, element)));
             } else {
                 others.add(element);
@@ -146,11 +146,15 @@ public class OthersService {
     }
 
     public Other addConfidentialDetails(Other confidentialOther, Element<Other> other) {
-        Other ret = other.getValue().toBuilder()
+        Other.OtherBuilder retBuilder = other.getValue().toBuilder()
             .telephone(confidentialOther.getTelephone())
-            .address(confidentialOther.getAddress())
-            .build();
-        return ret;
+            .address(confidentialOther.getAddress());
+
+        if (isEmpty(other.getValue().getAddressKnowV2())) {
+            retBuilder.addressKnowV2(confidentialOther.getAddressKnowV2());
+        }
+
+        return retBuilder.build();
     }
 
     // This finds firstOther element id in confidential others that doesn't match.

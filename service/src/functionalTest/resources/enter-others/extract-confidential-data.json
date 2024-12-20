@@ -24,7 +24,6 @@
               "DOB": "2000-07-12",
               "gender": "Male",
               "birthPlace": "London",
-              "addressKnowV2": "Yes",
               "address": {
                 "AddressLine1": "1st Avenue",
                 "AddressLine2": "5 Saffron Central Square",
@@ -37,7 +36,8 @@
               "telephone": null,
               "childInformation": null,
               "litigationIssues": "NO",
-              "detailsHidden": "Yes"
+              "detailsHidden": "Yes",
+              "addressKnowV2": "Yes"
             },
             "additionalOthers": []
           }
@@ -91,10 +91,10 @@
             "litigationIssues": "NO",
             "litigationIssuesDetails": null,
             "detailsHidden": "Yes",
+            "addressKnowV2": null,
             "detailsHiddenReason": null,
             "representedBy": [],
             "DOB": "2000-07-12",
-            "addressKnowV2": "Yes",
             "addressNotKnowReason": null
           },
           "additionalOthers": []
@@ -124,7 +124,7 @@
               "detailsHiddenReason": null,
               "representedBy": [],
               "DOB": null,
-              "addressKnowV2": null,
+              "addressKnowV2": "Yes",
               "addressNotKnowReason": null
             }
           }
