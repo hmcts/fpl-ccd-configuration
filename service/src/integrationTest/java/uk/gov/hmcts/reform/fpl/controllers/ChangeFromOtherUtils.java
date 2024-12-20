@@ -102,6 +102,7 @@ public abstract class ChangeFromOtherUtils {
             (selectedOtherSeq == 0 ? firstOther : additionalOthers.get(selectedOtherSeq - 1).getValue())
                 .toBuilder()
                 .detailsHidden(null)
+                .addressKnowV2(IsAddressKnowType.YES)
                 .telephone("123456789")
                 .address(buildHiddenAddress("selected other"))
                 .build())
@@ -145,6 +146,7 @@ public abstract class ChangeFromOtherUtils {
                 e.getValue()
                     .toBuilder()
                     .detailsHidden(null)
+                    .addressKnowV2(IsAddressKnowType.YES)
                     .telephone("123456789")
                     .address(buildHiddenAddress(e.getValue().getName()))
                     .build())
@@ -194,15 +196,15 @@ public abstract class ChangeFromOtherUtils {
             .build();
     }
 
-    public static Respondent prepareExpectedTransformedRespondent(boolean contactDeatilsHidden) {
+    public static Respondent prepareExpectedTransformedRespondent(boolean contactDetailsHidden) {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("Johnny")
-                .telephoneNumber(contactDeatilsHidden ? null : Telephone.builder()
+                .telephoneNumber(contactDetailsHidden ? null : Telephone.builder()
                     .telephoneNumber("123456789").build())
-                .address(contactDeatilsHidden ? null : buildHiddenAddress("Converting"))
-                .addressKnow(IsAddressKnowType.YES)
-                .contactDetailsHidden(YesNo.from(contactDeatilsHidden).getValue())
+                .address(contactDetailsHidden ? null : buildHiddenAddress("Converting"))
+                .addressKnow(contactDetailsHidden ? null : IsAddressKnowType.YES)
+                .contactDetailsHidden(YesNo.from(contactDetailsHidden).getValue())
                 .build())
             .legalRepresentation("No")
             .build();
