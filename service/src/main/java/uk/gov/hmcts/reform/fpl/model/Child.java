@@ -16,6 +16,7 @@ import java.util.List;
 
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Data
 @Builder(toBuilder = true)
@@ -49,6 +50,8 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
     public Child extractConfidentialDetails() {
         return this.toBuilder()
             .party(ChildParty.builder()
+                .livingSituation(this.party.getLivingSituation())
+                .livingSituationDetails(this.party.getLivingSituationDetails())
                 .firstName(this.party.getFirstName())
                 .lastName(this.party.getLastName())
                 .address(this.party.getAddress())
@@ -61,14 +64,24 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
     @Override
     public Child addConfidentialDetails(Party party) {
+        ChildParty.ChildPartyBuilder partyBuilder = this.getParty().toBuilder()
+            .firstName(party.getFirstName())
+            .lastName(party.getLastName())
+            .address(party.getAddress())
+            .telephoneNumber(party.getTelephoneNumber())
+            .email(party.getEmail());
+
+        // Do not nullify old data that may not have been moved over prior to DFPL-2639
+        if (!isEmpty(((ChildParty) party).getLivingSituation())) {
+            partyBuilder.livingSituation(((ChildParty) party).getLivingSituation());
+        }
+
+        if (!isEmpty(((ChildParty) party).getLivingSituationDetails())) {
+            partyBuilder.livingSituationDetails(((ChildParty) party).getLivingSituationDetails());
+        }
+
         return this.toBuilder()
-            .party(this.getParty().toBuilder()
-                .firstName(party.getFirstName())
-                .lastName(party.getLastName())
-                .address(party.getAddress())
-                .telephoneNumber(party.getTelephoneNumber())
-                .email(party.getEmail())
-                .build())
+            .party(partyBuilder.build())
             .build();
     }
 
@@ -76,6 +89,8 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
     public Child removeConfidentialDetails() {
         return this.toBuilder()
             .party(this.party.toBuilder()
+                .livingSituation(null)
+                .livingSituationDetails(null)
                 .address(null)
                 .telephoneNumber(null)
                 .email(null)
