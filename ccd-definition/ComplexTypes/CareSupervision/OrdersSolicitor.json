@@ -13,7 +13,7 @@
     "ID": "OrdersSolicitor",
     "ListElementCode": "otherOrderLabel",
     "FieldType": "Label",
-    "ElementLabel": "## Variation or discharge of care or supervision order",
+    "ElementLabel": "## Variation of supervision order or discharge of care order",
     "FieldShowCondition": "orderType CONTAINS \"OTHER\"",
     "SecurityClassification": "Public"
   },
@@ -32,7 +32,8 @@
     "ListElementCode": "directionLabel",
     "FieldType": "Label",
     "ElementLabel": "## Directions",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderType = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
