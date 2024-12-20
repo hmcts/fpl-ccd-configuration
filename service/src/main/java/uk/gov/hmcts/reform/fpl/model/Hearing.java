@@ -1,26 +1,56 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 
 
 @Data
+@Jacksonized
 @Builder(toBuilder = true)
-@AllArgsConstructor
 public class Hearing {
-    private final String type;
-    private final String reason;
-    @NotBlank(message = "Select an option for when you need a hearing")
-    private final String timeFrame;
-    private final String reducedNotice;
+    private final HearingUrgencyType hearingUrgencyType;
+    private final String hearingUrgencyDetails;
     private final String withoutNotice;
-    @JsonProperty("type_GiveReason")
-    private final String typeGiveReason;
-    private final String respondentsAware;
-    private final String reducedNoticeReason;
     private final String withoutNoticeReason;
+    private final String respondentsAware;
     private final String respondentsAwareReason;
+
+    /**
+     * This historical hearing urgency field is deprecated since DFPL-2304.
+     * @deprecated (DFPL-2304, historical hearing urgency field)
+     */
+    @Deprecated(since = "DFPL-2304")
+    private final String type;
+    /**
+     * This historical hearing urgency field is deprecated since DFPL-2304.
+     * @deprecated (DFPL-2304, historical hearing urgency field)
+     */
+    @Deprecated(since = "DFPL-2304")
+    private final String reason;
+    /**
+     * This historical hearing urgency field is deprecated since DFPL-2304.
+     * @deprecated (DFPL-2304, historical hearing urgency field)
+     */
+    @Deprecated(since = "DFPL-2304")
+    private final String timeFrame;
+    /**
+     * This historical hearing urgency field is deprecated since DFPL-2304.
+     * @deprecated (DFPL-2304, historical hearing urgency field)
+     */
+    @Deprecated(since = "DFPL-2304")
+    private final String reducedNotice;
+    /**
+     * This historical hearing urgency field is deprecated since DFPL-2304.
+     * @deprecated (DFPL-2304, historical hearing urgency field)
+     */
+    @Deprecated(since = "DFPL-2304")
+    private final String typeGiveReason;
+    /**
+     * This historical hearing urgency field is deprecated since DFPL-2304.
+     * @deprecated (DFPL-2304, historical hearing urgency field)
+     */
+    @Deprecated(since = "DFPL-2304")
+    private final String reducedNoticeReason;
 }
