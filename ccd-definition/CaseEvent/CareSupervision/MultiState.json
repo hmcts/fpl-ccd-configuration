@@ -141,6 +141,7 @@
     "DisplayOrder": 10,
     "PreConditionState(s)": "Submitted;Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
+    "TTLIncrement": 6575,
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
