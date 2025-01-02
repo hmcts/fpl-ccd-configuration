@@ -23,8 +23,8 @@ test.describe('Manage LAs / Transfer to court', () => {
 
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateManageLaTransferToCourts();
-            await manageLaTransferToCourts.tabNavigation('Summary');
-            await expect(page.getByText('Family Court sitting at Central Family Court')).toBeVisible();
+            await manageLaTransferToCourts.tabNavigation('People in the case');
+            await expect(page.getByText('Applicant 1')).toBeVisible();
 
         })
     test('CTSC gives access to another local authority',
