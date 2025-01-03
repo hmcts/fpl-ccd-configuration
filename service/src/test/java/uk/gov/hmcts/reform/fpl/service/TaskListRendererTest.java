@@ -44,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 class TaskListRendererTest {
 
-    private final static Long CASE_ID = 1L;
+    private static final Long CASE_ID = 1L;
 
     private final FeatureToggleService toggleService = mock(FeatureToggleService.class);
     private final TemplateRenderer templateRenderer = new TemplateRenderer();

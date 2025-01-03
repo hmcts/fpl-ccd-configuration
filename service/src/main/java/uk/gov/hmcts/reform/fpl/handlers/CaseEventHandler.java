@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
-import uk.gov.hmcts.reform.fpl.service.TemplateRenderer;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
@@ -52,8 +51,7 @@ public class CaseEventHandler {
             getApplicationType(caseData),
             Optional.of(taskHintsMap),
             caseDetails.getId());
-//        final String taskList = taskListRenderer.render(tasks, eventErrors, getApplicationType(caseData),
-//            Optional.of(taskHintsMap), true);
+
         return Map.of("taskList", taskList,
             "taskListWelsh", taskListWelsh,
             "taskListCombined", taskListCombined);

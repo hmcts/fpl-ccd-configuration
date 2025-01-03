@@ -20,11 +20,6 @@ public class Task {
         return this;
     }
 
-    public Task withHintWelsh(String hintWelsh) {
-        this.setHint(hintWelsh);
-        return this;
-    }
-
     public Task withHint(String hint, String hintWelsh) {
         this.setHint(hint);
         this.setHintWelsh(hintWelsh);
