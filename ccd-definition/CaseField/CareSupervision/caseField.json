@@ -101,15 +101,6 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "taskListCombined",
-    "Label": "Case name",
-    "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "taskListLabel",
     "Label": "${taskList}",
     "FieldType": "Label",
@@ -121,15 +112,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "taskListLabelWelsh",
     "Label": "${taskListWelsh}",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "taskListLabelCombined",
-    "Label": "${taskListCombined}",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
