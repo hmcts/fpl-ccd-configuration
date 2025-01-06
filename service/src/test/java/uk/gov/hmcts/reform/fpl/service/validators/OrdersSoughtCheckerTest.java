@@ -59,7 +59,9 @@ class OrdersSoughtCheckerTest {
 
             final List<String> errors = ordersSoughtChecker.validate(caseData);
 
-            assertThat(errors).containsExactly("Add the orders and directions sought");
+            assertThat(errors)
+                .containsExactly("Add the orders and directions sought|"
+                    + "Ychwanegu'r gorchmynion a'r cyfarwyddiadau a geisir");
         }
 
         @Test

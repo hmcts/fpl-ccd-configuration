@@ -48,7 +48,8 @@ class HearingUrgencyCheckerTest {
 
             final List<String> errors = hearingUrgencyChecker.validate(caseData);
 
-            assertThat(errors).containsExactly("Add the hearing urgency details");
+            assertThat(errors)
+                .containsExactly("Add the hearing urgency details|Ychwanegu manylion brys y gwrandawiad");
         }
 
         @Test

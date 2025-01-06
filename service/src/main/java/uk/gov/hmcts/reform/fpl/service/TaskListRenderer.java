@@ -89,27 +89,6 @@ public class TaskListRenderer {
             .collect(Collectors.joining(System.lineSeparator()));
     }
 
-    // TODO - REMOVE WHEN CONFIRMED NOT USING
-    public String renderTasksCombined(List<Task> allTasks,
-                                      List<EventValidationErrors> tasksErrors,
-                                      Optional<String> applicationType,
-                                      Optional<Map<Event, String>> tasksHints,
-                                      Long caseId) {
-        Map<String, Object> templateData = new HashMap<>();
-        templateData.put("jurisdiction", JURISDICTION);
-        templateData.put("caseType", CASE_TYPE);
-        templateData.put("caseId", caseId.toString());
-        templateData.put("sections", groupInSections(allTasks, tasksHints));
-        templateData.put("taskErrors", tasksErrors);
-
-        applicationType.ifPresent((type) -> templateData.put("applicationType", type));
-
-        String rendered = templateRenderer.renderTaskListCombined(templateData);
-        return Arrays.stream(rendered.split(System.lineSeparator()))
-            .map(String::trim)
-            .collect(Collectors.joining(System.lineSeparator()));
-    }
-
     @Deprecated
     public String render(List<Task> allTasks, List<EventValidationErrors> taskErrors) {
         return render(allTasks, taskErrors, Optional.empty(), Optional.empty());

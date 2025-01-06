@@ -41,14 +41,4 @@ public class TemplateRenderer {
         }
     }
 
-    // TODO - REMOVE THIS WHEN CONFIRMED NOT USING
-    public String renderTaskListCombined(Map<String, Object> data) {
-        try {
-            return this.renderTemplate("taskListCombined.ftlh", data);
-        } catch (Exception e) {
-            log.error("Error rendering task list", e);
-            return "";
-        }
-    }
-
 }

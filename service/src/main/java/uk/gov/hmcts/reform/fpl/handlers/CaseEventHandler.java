@@ -47,14 +47,8 @@ public class CaseEventHandler {
             Optional.of(taskHintsMap),
             caseDetails.getId(), true);
 
-        final String taskListCombined = taskListRenderer.renderTasksCombined(tasks, eventErrors,
-            getApplicationType(caseData),
-            Optional.of(taskHintsMap),
-            caseDetails.getId());
-
         return Map.of("taskList", taskList,
-            "taskListWelsh", taskListWelsh,
-            "taskListCombined", taskListCombined);
+            "taskListWelsh", taskListWelsh);
     }
 
     @EventListener
