@@ -117,6 +117,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @Override
     public Other extractConfidentialDetails() {
         return Other.builder()
+            .addressKnowV2(this.addressKnowV2)
             .name(this.name)
             .address(this.address)
             .telephone(this.telephone)
@@ -131,6 +132,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @Override
     public Other removeConfidentialDetails() {
         Other other =  this.toBuilder()
+            .addressKnowV2(null)
             .address(null)
             .telephone(null)
             .build();
