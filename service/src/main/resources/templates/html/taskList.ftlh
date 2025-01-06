@@ -1,3 +1,4 @@
+<#ftl auto_esc=false>
 <div class='width-50'>
 <br/>
 <#if applicationType??>

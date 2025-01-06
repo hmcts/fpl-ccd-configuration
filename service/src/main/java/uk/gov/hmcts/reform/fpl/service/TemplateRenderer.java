@@ -12,14 +12,16 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
+import static freemarker.template.Configuration.VERSION_2_3_33;
+
 @Slf4j
 @Service
 public class TemplateRenderer {
 
     private final Configuration cfg;
 
-    public TemplateRenderer() throws IOException {
-        this.cfg = new Configuration();
+    public TemplateRenderer() {
+        this.cfg = new Configuration(VERSION_2_3_33);
         cfg.setClassForTemplateLoading(Application.class, "/templates/html");
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);

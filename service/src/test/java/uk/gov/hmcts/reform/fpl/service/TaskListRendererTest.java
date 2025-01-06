@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHE
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_ORDERS_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 class TaskListRendererTest {
@@ -53,7 +55,7 @@ class TaskListRendererTest {
             "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/"
         ), toggleService, templateRenderer);
 
-    TaskListRendererTest() throws IOException {
+    TaskListRendererTest() {
 
     }
 
@@ -99,12 +101,26 @@ class TaskListRendererTest {
             List<EventValidationErrors> eventErrors = List.of(
                 EventValidationErrors.builder()
                     .event(ORDERS_SOUGHT)
-                    .errors(List.of("Add the orders and directions sought"))
+                    .errors(List.of(ADD_ORDERS_DIRECTIONS))
                     .build());
 
             assertThat(taskListRenderer.renderTasks(tasks, eventErrors, CASE_ID))
                 .isEqualTo(read("task-list/freemarker/legacy-applicant/expected-task-list.md"));
         }
+
+        @Test
+        void shouldRenderWelshTaskListWithApplicationDocumentsFreemarker() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+            List<EventValidationErrors> eventErrors = List.of(
+                EventValidationErrors.builder()
+                    .event(ORDERS_SOUGHT)
+                    .errors(List.of(ADD_ORDERS_DIRECTIONS))
+                    .build());
+
+            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, Optional.empty(), Optional.empty(), CASE_ID, true))
+                .isEqualTo(read("task-list/freemarker/legacy-applicant/expected-task-list-welsh.md"));
+        }
+
 
         @ParameterizedTest
         @NullAndEmptySource
@@ -166,11 +182,25 @@ class TaskListRendererTest {
             List<EventValidationErrors> eventErrors = List.of(
                 EventValidationErrors.builder()
                     .event(ORDERS_SOUGHT)
-                    .errors(List.of("Add the orders and directions sought"))
+                    .errors(List.of(ADD_ORDERS_DIRECTIONS))
                     .build());
 
             assertThat(taskListRenderer.renderTasks(tasks, eventErrors, CASE_ID))
                 .isEqualTo(read("task-list/freemarker/expected-task-list.md"));
+        }
+
+        @Test
+        void shouldRenderWelshTaskListWithApplicationDocumentsFreemarker() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+            List<EventValidationErrors> eventErrors = List.of(
+                EventValidationErrors.builder()
+                    .event(ORDERS_SOUGHT)
+                    .errors(List.of(ADD_ORDERS_DIRECTIONS))
+                    .build());
+
+            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, Optional.empty(),
+                Optional.empty(), CASE_ID, true))
+                .isEqualTo(read("task-list/freemarker/expected-task-list-welsh.md"));
         }
 
         @ParameterizedTest
