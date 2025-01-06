@@ -173,6 +173,31 @@ def deployWADmns() {
   }
 }
 
+def deployWADmns() {
+  def githubApi = new GithubAPI(this)
+
+  def waStandaloneBranch = "master"
+  // For testing DMNs, change this to the branch on the DMN repo, but ensure it is changed back to master before merging
+  def dmnBranch = "master"
+
+  echo "Checking if we should use WA"
+  if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
+    env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
+    env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
+    env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
+    env.ENABLE_WA = true
+    echo "WA enabled, loading DMNs"
+    sh """
+        eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+        ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+        ./bin/pull-camunda-bpmn-files.sh ${waStandaloneBranch}
+        ./bin/import-dmn-diagram.sh . publiclaw fpl
+        """
+  } else {
+    env.ENABLE_WA = false
+  }
+}
+
 // Vars for Kubernetes
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
@@ -215,6 +240,17 @@ withPipeline(type, product, component) {
 
   before('test') {
     setupSecretsForIntegrationTests(pipelineConf)
+  }
+
+  before('akschartsinstall') {
+    onPR {
+      def githubApi = new GithubAPI(this)
+      if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
+        env.ENABLE_WA = true
+      } else {
+        env.ENABLE_WA = false
+      }
+    }
   }
 
   afterAlways('test') {

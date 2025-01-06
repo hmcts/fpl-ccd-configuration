@@ -35,6 +35,7 @@ public class CftlibConfig implements CFTLibConfigurer {
             "hearing-centre-admin"
         };
         lib.createRoles(roles);
+
         var json = Resources.toString(Resources.getResource("cftlib-am-role-assignments.json"), StandardCharsets.UTF_8);
         lib.configureRoleAssignments(json);
 
