@@ -48,7 +48,7 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"],
           storageState: config.CTSCUserAuthFile
       },
-        dependencies: ['user-session-setup'],
+        //dependencies: ['user-session-setup'],
 
     },
 

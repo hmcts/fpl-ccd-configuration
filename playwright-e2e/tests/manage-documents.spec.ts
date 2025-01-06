@@ -21,10 +21,10 @@ test.describe('Manage Documents', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test.only('LA uploads documents', async ({ localAuthoirtyUserPage,ctscUserPage, manageDocuments, caseFileView }) => {
+    test('LA uploads documents', async ({ localAuthorityUser,ctscUser, manageDocuments, caseFileView }) => {
         caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
-        await manageDocuments.switchUser(localAuthoirtyUserPage.page);
+        await manageDocuments.switchUser(localAuthorityUser.page);
         // await signInPage.visit();
         // await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await manageDocuments.navigateTOCaseDetails(caseNumber);
@@ -32,11 +32,11 @@ test.describe('Manage Documents', () => {
         await manageDocuments.uploadDocuments('Court correspondence');
 
         // Check CFV
-        await caseFileView.switchUser(localAuthoirtyUserPage.page);
+        await caseFileView.switchUser(localAuthorityUser.page);
         await caseFileView.goToCFVTab();
        // await manageDocuments.tabNavigation('Case File View')
         await caseFileView.openFolder('Court Correspondence');
-        await expect(localAuthoirtyUserPage.page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(localAuthorityUser.page.getByRole('tree')).toContainText('testTextFile.txt');
 
         // If WA is enabled
         if (testConfig.waEnabled) {
@@ -44,7 +44,7 @@ test.describe('Manage Documents', () => {
           //  await manageDocuments.clickSignOut();
           //   await signInPage.visit();
           //   await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await manageDocuments.switchUser(ctscUserPage.page)
+            await manageDocuments.switchUser(ctscUser.page)
 
             await manageDocuments.navigateTOCaseDetails(caseNumber);
 
@@ -53,22 +53,22 @@ test.describe('Manage Documents', () => {
             await manageDocuments.waitForTask('Review Correspondence');
 
             // Assign and complete the task
-            await ctscUserPage.page.getByText('Assign to me').click();
-            await ctscUserPage.page.getByText('Mark as done').click();
-            await ctscUserPage.page.getByRole('button', { name: "Mark as done" }).click();
+            await ctscUser.page.getByText('Assign to me').click();
+            await ctscUser.page.getByText('Mark as done').click();
+            await ctscUser.page.getByRole('button', { name: "Mark as done" }).click();
 
             // Should be no more tasks on the page
-            await expect(ctscUserPage.page.getByText('Review Correspondence')).toHaveCount(0);
+            await expect(ctscUser.page.getByText('Review Correspondence')).toHaveCount(0);
         }
     });
 
 
-    test('LA uploads Position Statements visible in CFV', async ({localAuthoirtyUserPage,signInPage, manageDocuments, caseFileView, page }) => {
+    test('LA uploads Position Statements visible in CFV', async ({localAuthorityUser,signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'LA uploads Position Statements visible in CFV ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithResSolicitor);
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
-        await manageDocuments.switchUser(localAuthoirtyUserPage.page);
-        await caseFileView.switchUser(localAuthoirtyUserPage.page);
+        await manageDocuments.switchUser(localAuthorityUser.page);
+        await caseFileView.switchUser(localAuthorityUser.page);
         // await signInPage.visit();
         // await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await manageDocuments.navigateTOCaseDetails(caseNumber);
@@ -78,7 +78,7 @@ test.describe('Manage Documents', () => {
         // position is visble under CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(localAuthoirtyUserPage.page.getByRole('tree')).toContainText(' testTextFile.txt ');
+        await expect(localAuthorityUser.page.getByRole('tree')).toContainText(' testTextFile.txt ');
       //  await signInPage.logout();
 
         //Login as respondence solicitor

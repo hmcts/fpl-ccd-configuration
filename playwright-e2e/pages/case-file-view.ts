@@ -12,15 +12,15 @@ export class CaseFileView extends BasePage {
     }
 
     async openFolder(name: string) {
-        await this.currentPage.getByRole('button', { name: 'toggle ' + name }).click();
+        await this._page.getByRole('button', { name: 'toggle ' + name }).click();
     }
 
     async moveDocument(fromFolder: string,toFolder:string ) {
         await this.openFolder(fromFolder);
-        await this.currentPage.getByRole('button', { name: 'More document options', exact: true }).click();
-        await this.currentPage.getByText('Change folder').click();
-        await this.currentPage.getByLabel(toFolder, { exact: true }).check();
-        await this.currentPage.getByRole('button', { name: 'Save', exact: true }).click();
+        await this._page.getByRole('button', { name: 'More document options', exact: true }).click();
+        await this._page.getByText('Change folder').click();
+        await this._page.getByLabel(toFolder, { exact: true }).check();
+        await this._page.getByRole('button', { name: 'Save', exact: true }).click();
     }
 
 }
