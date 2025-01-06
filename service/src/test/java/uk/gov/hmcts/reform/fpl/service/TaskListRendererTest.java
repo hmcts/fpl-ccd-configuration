@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,7 +116,8 @@ class TaskListRendererTest {
                     .errors(List.of(ADD_ORDERS_DIRECTIONS))
                     .build());
 
-            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, Optional.empty(), Optional.empty(), CASE_ID, true))
+            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, Optional.empty(),
+                Optional.empty(), CASE_ID, true))
                 .isEqualTo(read("task-list/freemarker/legacy-applicant/expected-task-list-welsh.md"));
         }
 
