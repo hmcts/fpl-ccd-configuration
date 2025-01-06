@@ -47,6 +47,10 @@ const config: Config = {
         __dirname,
         "../.auth/LALogin.json",
     ),
+    courtAdminAuthFile:join(
+        __dirname,
+        "../.auth/courtAdminLogin.json",
+    ),
 };
 
 export default config as {
@@ -59,4 +63,5 @@ export default config as {
   CTSCUserAuthFile: string;
   legalUserAuthFile: string;
   LAUserAuthFile:string;
+  courtAdminAuthFile:string;
 };

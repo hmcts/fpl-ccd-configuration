@@ -44,6 +44,7 @@ import {CtscUserPage} from "../pages/ctsc-user-browser-context";
 import config from "../settings/test-docs/config";
 import {LegalUserPage} from "../pages/legal-user-browser";
 import {LAUserPage} from "../pages/local-authority-user-browser";
+import {CourtAdminUserPage} from "../pages/court-admin-user-browser.ts";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -87,9 +88,10 @@ type CreateFixtures = {
   caseProgressionReport: CaseProgressionReport;
   orders: Orders;
   manageRepresentatives: ManageRepresentatives;
-  ctscUserPage: CtscUserPage;
-  legalUserPage: LegalUserPage;
-    localAuthoirtyUserPage : LAUserPage
+  ctscUser: CtscUserPage;
+  legalUser: LegalUserPage;
+  localAuthorityUser : LAUserPage;
+  courtAdminUser: CourtAdminUserPage;
 
 };
 
@@ -257,20 +259,25 @@ export const test = base.extend<CreateFixtures>({
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
   },
-  ctscUserPage: async({ browser }, use)=>{
-    const context = await browser.newContext({ storageState: config.CTSCUserAuthFile });
-    await use( new CtscUserPage(await context.newPage()));
-    await context.close();
+
+  ctscUser: async({ page}, use)=>{
+      await use( new CtscUserPage(page));
+
   },
-    legalUserPage: async({ browser }, use)=>{
+    legalUser: async({ browser }, use)=>{
         const context = await browser.newContext({ storageState: config.legalUserAuthFile });
         await use( new LegalUserPage(await context.newPage()));
          await context.close();
     },
-    localAuthoirtyUserPage: async({ browser }, use)=>{
+    localAuthorityUser: async({ browser }, use)=>{
         const context = await browser.newContext({ storageState: config.LAUserAuthFile });
         await use( new LAUserPage(await context.newPage()));
         await context.close();
     },
+    courtAdminUser: async({ browser }, use)=>{
+        const context = await browser.newContext({ storageState: config.courtAdminAuthFile });
+        await use( new CourtAdminUserPage(await context.newPage()));
+        await context.close();
+    }
 
 });

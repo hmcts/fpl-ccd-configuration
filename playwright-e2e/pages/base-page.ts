@@ -1,52 +1,54 @@
-import { type Page, type Locator, Browser,expect } from "@playwright/test";
+import {expect, type Locator, Page} from "@playwright/test";
 import {urlConfig} from "../settings/urls";
-import config from "../settings/test-docs/config";
+import config from "../settings/test-docs/config.ts";
 
 export class BasePage {
- // readonly nextStep: string;
-    protected currentPage: Page;
+    get page(): Page {
+        return this._page;
+    }
+
+    public _page: Page;
 
 
   constructor(page: Page) {
-this.currentPage = page;
+this._page = page;
           }
 
-  async switchUser(page:Page){
-this.currentPage =page;
-  }
+  async switchUser(page:Page)       {
+          this._page =page;
+     }
 
   async gotoNextStep(eventName: string) {
       await expect(async () => {
-          await this.currentPage.reload();
-          await this.currentPage.getByLabel('Next step').selectOption(eventName);
-          await this.currentPage
-          await this.currentPage.getByRole('button', { name: 'Go', exact: true }).click({clickCount:2,delay:300});
-          await expect(this.currentPage.getByRole('button', { name: 'Previous' })).toBeDisabled();
+          await this._page.reload();
+          await this._page.getByLabel('Next step').selectOption(eventName);
+          await this._page.getByRole('button', { name: 'Go', exact: true }).click({clickCount:2,delay:300});
+          await expect(this.page.getByRole('button', { name: 'Previous' })).toBeDisabled();
       }).toPass();
   }
 
   async expectAllUploadsCompleted() {
-    let locs = await this.currentPage.getByText('Cancel upload').all();
+    let locs = await this._page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
         await expect(locs[i]).toBeDisabled();
     }
   }
 
   async checkYourAnsAndSubmit(){
-    await expect(this.currentPage.getByRole('heading', { name: 'Check your answers' })).toBeVisible();
-    await this.currentPage.getByRole('button', { name: 'Save and Continue'}).click();
+    await expect(this.page.getByRole('heading', { name: 'Check your answers' })).toBeVisible();
+    await this._page.getByRole('button', { name: 'Save and Continue'}).click();
   }
 
   async tabNavigation(tabName: string) {
-    await this.currentPage.getByRole('tab', { name: tabName,exact: true }).click();
+    await this._page.getByRole('tab', { name: tabName,exact: true }).click();
   }
 
   async clickContinue() {
-    await this.currentPage.getByRole('button', { name: 'Continue' }).click();
+    await this._page.getByRole('button', { name: 'Continue' }).click();
   }
 
   async waitForAllUploadsToBeCompleted() {
-    const locs = await this.currentPage.getByText('Cancel upload').all();
+    const locs = await this._page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
       await expect(locs[i]).toBeDisabled();
     }
@@ -65,10 +67,10 @@ this.currentPage =page;
   async reloadAndCheckForText(text: string, timeout?: number, maxAttempts?: number): Promise<boolean> {
     // reload the page, wait 5s, see if it's there
     for (let attempt = 0; attempt < (maxAttempts ?? 12); attempt++) {
-      await this.currentPage.reload();
-      await this.currentPage.waitForLoadState();
-      await this.currentPage.waitForTimeout(timeout ?? 5000);
-      if (await this.currentPage.getByText(text).isVisible()) {
+      await this._page.reload();
+      await this._page.waitForLoadState();
+      await this._page.waitForTimeout(timeout ?? 5000);
+      if (await this._page.getByText(text).isVisible()) {
         return true;
       }
     }
@@ -76,17 +78,17 @@ this.currentPage =page;
   }
 
   async clickSignOut() {
-    await this.currentPage.getByText('Sign out').click();
+    await this._page.getByText('Sign out').click();
   }
 
   async clickSubmit() {
-    await this.currentPage.getByRole('button', { name: 'Submit' }).click();
+    await this._page.getByRole('button', { name: 'Submit' }).click();
   }
 
   async enterPostCode(postcode:string){
-      await this.currentPage.getByRole('textbox', { name: 'Enter a UK postcode' }).fill(postcode);
-      await this.currentPage.getByRole('button', { name: 'Find address' }).click();
-      await this.currentPage.getByLabel('Select an address').selectOption('1: Object');
+      await this._page.getByRole('textbox', { name: 'Enter a UK postcode' }).fill(postcode);
+      await this._page.getByRole('button', { name: 'Find address' }).click();
+      await this._page.getByLabel('Select an address').selectOption('1: Object');
 
   }
     getCurrentDate():string {
@@ -98,7 +100,15 @@ this.currentPage =page;
         return todayDate;
     }
     async navigateTOCaseDetails(caseNumber: string) {
-     console.log(await this.currentPage.context().storageState()) ;
-        await this.currentPage.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+        await this._page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+        await this._page.waitForLoadState("load");
+    }
+    public async uploadDoc(locator : Locator,file:string = config.testTextFile ){
+        await expect(async  ()=>{
+            await this.page.waitForTimeout(6000);
+            await locator.setInputFiles(file);
+            await this.expectAllUploadsCompleted();
+            await  expect( this.page.getByText('rate limited')).toHaveCount(0);
+        }).toPass();
     }
 }

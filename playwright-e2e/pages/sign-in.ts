@@ -1,10 +1,8 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { urlConfig } from "../settings/urls";
 import { BasePage } from "./base-page";
-import config from "../settings/test-docs/config";
 
 export class SignInPage extends BasePage {
-    readonly page: Page;
     readonly url: string;
     readonly mourl: string;
     readonly emailInputLocator: Locator;
@@ -18,7 +16,6 @@ export class SignInPage extends BasePage {
 
     public constructor(page: Page) {
         super(page);
-        this.page = page;
         this.url = urlConfig.frontEndBaseURL;
         this.mourl = urlConfig.manageOrgURL;
         this.emailInputLocator = page.getByLabel("Email address");
