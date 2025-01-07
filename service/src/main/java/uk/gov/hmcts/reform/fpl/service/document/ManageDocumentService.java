@@ -91,9 +91,12 @@ public class ManageDocumentService {
     private final DynamicListService dynamicListService;
     private final UserService userService;
 
+    public static final String PROPERTY_FAILED_ERR = "Fail to get property %s from %s";
+    public static final String ELEMENT_NOT_FOUND_ERR = "target element not found (%s)";
+    public static final String PLACEMENTS = "placements";
     public static final String DOCUMENT_ACKNOWLEDGEMENT_KEY = "ACK_RELATED_TO_CASE";
 
-    private static final String DOCUMENT_TO_BE_REMOVED_SEPARATOR = "###";
+    public static final String DOCUMENT_TO_BE_REMOVED_SEPARATOR = "###";
 
     private final CaseConverter caseConverter;
 
@@ -201,7 +204,7 @@ public class ManageDocumentService {
         noticeDocumentsRemoved.add(target);
         placement.getValue().setNoticeDocumentsRemoved(noticeDocumentsRemoved);
 
-        output.put("placements", caseData.getPlacementEventData().getPlacements());
+        output.put(PLACEMENTS, caseData.getPlacementEventData().getPlacements());
         output.put("placementsNonConfidential", caseData.getPlacementEventData()
             .getPlacementsNonConfidential(true));
         output.put("placementsNonConfidentialNotices", caseData.getPlacementEventData()
@@ -295,14 +298,14 @@ public class ManageDocumentService {
                                                         String propertyName) {
         PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(AdditionalApplicationsBundle.class, propertyName);
         if (pd == null) {
-            throw new AssertionError(format("Fail to get property %s from %s", propertyName,
+            throw new AssertionError(format(PROPERTY_FAILED_ERR, propertyName,
                 AdditionalApplicationsBundle.class));
         }
         Method getter = pd.getReadMethod();
         try {
             return (C2DocumentBundle) getter.invoke(aab);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new AssertionError(format("Fail to get property %s from %s", propertyName,
+            throw new AssertionError(format(PROPERTY_FAILED_ERR, propertyName,
                 AdditionalApplicationsBundle.class));
         }
     }
@@ -320,7 +323,7 @@ public class ManageDocumentService {
             return ((AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder)
                 builderPropertySetter.invoke(aab.toBuilder(), newC2DocumentBundle)).build();
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new AssertionError(format("Fail to get property %s from %s", propertyName,
+            throw new AssertionError(format(PROPERTY_FAILED_ERR, propertyName,
                 AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder.class));
         }
     }
@@ -366,7 +369,7 @@ public class ManageDocumentService {
         Element<SupportingEvidenceBundle> removed = null;
         if (targetBundle != null) {
             removed = ElementUtils.findElement(documentElementId, targetBundle.getSupportingEvidenceBundle())
-                .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                .orElseThrow(() -> new AssertionError(format(ELEMENT_NOT_FOUND_ERR, documentElementId)));
             List<Element<SupportingEvidenceBundle>> newList = targetBundle
                 .getSupportingEvidenceBundle().stream()
                 .filter(el -> !documentElementId.equals(el.getId()))
@@ -394,7 +397,7 @@ public class ManageDocumentService {
             AdditionalApplicationsBundle aab = targetBundle.getValue();
             removed = ElementUtils.findElement(documentElementId, aab.getOtherApplicationsBundle()
                     .getSupportingEvidenceBundle())
-                .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                .orElseThrow(() -> new AssertionError(format(ELEMENT_NOT_FOUND_ERR, documentElementId)));
             List<Element<SupportingEvidenceBundle>> newList = aab.getOtherApplicationsBundle()
                 .getSupportingEvidenceBundle().stream()
                 .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
@@ -429,7 +432,7 @@ public class ManageDocumentService {
                 removed = ElementUtils.findElement(documentElementId, c2DocumentBundle
                         .getSupportingEvidenceBundle())
                     .orElseThrow(
-                        () -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                        () -> new AssertionError(format(ELEMENT_NOT_FOUND_ERR, documentElementId)));
                 List<Element<SupportingEvidenceBundle>> newList = c2DocumentBundle.getSupportingEvidenceBundle()
                     .stream()
                     .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
@@ -484,15 +487,24 @@ public class ManageDocumentService {
             removalReason = eventData.getManageDocumentRemoveDocReason().getDescription();
         }
 
+        final Map<String, Object> output = new HashMap<>();
         DynamicListElement selected = eventData.getDocumentsToBeRemoved().getValue();
+        List<Element<? extends WithDocument>> targetElements = getSelectedDocuments(
+            caseData, selected, Optional.of(output));
+        targetElements.forEach(t -> t.getValue().setRemovalReason(removalReason));
 
+        return output;
+    }
+
+    public List<Element<? extends WithDocument>> getSelectedDocuments(CaseData caseData, DynamicListElement selected,
+                                                                      Optional<Map<String, Object>> fieldsToUpdate) {
         String[] split = selected.getCode().split(DOCUMENT_TO_BE_REMOVED_SEPARATOR);
         String fieldName = split[0];
         DocumentType documentType = DocumentType.fromFieldName(fieldName);
         UUID documentElementId = UUID.fromString(split[1]);
         List<Element<? extends WithDocument>> targetElements = new ArrayList<>();
 
-        final Map<String, Object> output = new HashMap<>();
+        final Map<String, Object> output = fieldsToUpdate.orElse(new HashMap<>());
         if (documentType == PLACEMENT_RESPONSES) {
             targetElements.add(handlePlacementResponseRemoval(caseData, documentElementId, output));
         } else {
@@ -503,8 +515,8 @@ public class ManageDocumentService {
                     documentElementId, output));
             }
         }
-        targetElements.forEach(t -> t.getValue().setRemovalReason(removalReason));
-        return output;
+
+        return targetElements;
     }
 
     @SuppressWarnings("unchecked")
@@ -536,15 +548,15 @@ public class ManageDocumentService {
             .translationRequirements(e.getValue().getTranslationRequirements())
             .build()));
         caseData.setPlacementNoticeResponses(placementNoticeResponses);
-        if (changes.containsKey("placements")) {
-            caseData.getPlacementEventData().setPlacements((List<Element<Placement>>) changes.get("placements"));
+        if (changes.containsKey(PLACEMENTS)) {
+            caseData.getPlacementEventData().setPlacements((List<Element<Placement>>) changes.get(PLACEMENTS));
         }
 
         PlacementEventData eventData = isAdmin
             ? updatePlacementNoticesAdmin(caseData)
             : ((isLocalAuthority ? updatePlacementNoticesLA(caseData) : updatePlacementNoticesSolicitor(caseData)));
 
-        changes.put("placements", eventData.getPlacements());
+        changes.put(PLACEMENTS, eventData.getPlacements());
         changes.put("placementsNonConfidential", eventData
             .getPlacementsNonConfidential(true));
         changes.put("placementsNonConfidentialNotices", eventData
@@ -623,11 +635,13 @@ public class ManageDocumentService {
         }
     }
 
+    // Also used in SendNewJudgeMessageService for document attachment type dropdown
     public DynamicList buildDocumentTypeDynamicList(CaseData caseData) {
         boolean hasPlacementNotices = caseData.getPlacementEventData().getPlacements().stream()
             .anyMatch(el -> el.getValue().getPlacementNotice() != null);
+        final DocumentUploaderType documentUploaderType = getUploaderType(caseData);
         final List<Pair<String, String>> documentTypes = Arrays.stream(DocumentType.values())
-            .filter(documentType -> !isHiddenFromUpload(documentType, getUploaderType(caseData)))
+            .filter(documentType -> !isHiddenFromUpload(documentType, documentUploaderType))
             .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
@@ -802,12 +816,12 @@ public class ManageDocumentService {
         return ret;
     }
 
-    public DynamicList buildAvailableDocumentsToBeRemoved(CaseData caseData) {
-        return buildAvailableDocumentsToBeRemoved(caseData, null);
+    public DynamicList buildAvailableDocumentsDynamicList(CaseData caseData) {
+        return buildAvailableDocumentsDynamicList(caseData, null);
     }
 
     // Return all documents when documentType is null
-    public DynamicList buildAvailableDocumentsToBeRemoved(CaseData caseData, DocumentType documentType) {
+    public DynamicList buildAvailableDocumentsDynamicList(CaseData caseData, DocumentType documentType) {
         DocumentUploaderType currentUserType = getUploaderType(caseData);
 
         Map<String, List<Element<?>>> fieldNameToListOfElementMap = new LinkedHashMap<>();
@@ -851,7 +865,7 @@ public class ManageDocumentService {
     }
 
     // For HMCTS admin's journey
-    public DynamicList buildDocumentTypeDynamicListForRemoval(CaseData caseData) {
+    public DynamicList buildExistingDocumentTypeDynamicList(CaseData caseData) {
         Map<String, Object> map = caseConverter.toMap(caseData);
 
         Set<DocumentType> availableDocumentTypes = Arrays.stream(DocumentType.values())
