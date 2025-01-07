@@ -151,7 +151,9 @@ ccd:
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-service-${SERVICE_FQDN}
         CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: fpl_case_service,aac_manage_case_assignment
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,fpl_case_service,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
@@ -274,6 +276,7 @@ ccd:
       initialDelaySeconds: 90
   am-role-assignment-service:
     java:
+      ingressHost: am-role-assignment-service-${SERVICE_FQDN}
       autoscaling:
         enabled: false
         minReplicas: 1
@@ -309,6 +312,7 @@ aac-manage-case-assignment:
       CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
       CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-service-${SERVICE_FQDN}
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -379,3 +383,8 @@ postgresql:
     - name: "pr-${CHANGE_ID}-evidence"
     - name: "pr-${CHANGE_ID}-annotation"
     - name: "pr-${CHANGE_ID}-role-assignment"
+    - name: "pr-${CHANGE_ID}-wa-case-event-handler"
+    - name: "pr-${CHANGE_ID}-wa_workflow_api"
+    - name: "pr-${CHANGE_ID}-camunda"
+    - name: "pr-${CHANGE_ID}-cft_task_db"
+    - name: "pr-${CHANGE_ID}-cft_task_db_replica"
