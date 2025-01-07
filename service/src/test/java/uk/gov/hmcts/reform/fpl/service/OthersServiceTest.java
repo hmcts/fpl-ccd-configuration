@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -182,10 +184,11 @@ class OthersServiceTest {
 
     @Test
     void shouldPrepareOthersWithConfidentialValuesWhenConfidentialOthersIsNotEmpty() {
-        List<Element<Other>> additionalOthersList = othersWithConfidentialFields(randomUUID());
+        List<Element<Other>> additionalOthersList = othersWithConfidentialFields(randomUUID(), "John");
 
-        Other firstOther = othersWithRemovedConfidentialFields().get(0).getValue();
-        List<Element<Other>> confidentialOthers = othersWithConfidentialFields(ID);
+        // firstOther should be the "same" (in name) as the first confidential other, if they have conf data
+        Other firstOther = othersWithRemovedConfidentialFields("Jack").get(0).getValue();
+        List<Element<Other>> confidentialOthers = othersWithConfidentialFields(ID, "Jack");
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOthersList, confidentialOthers);
 
@@ -196,8 +199,8 @@ class OthersServiceTest {
 
     @Test
     void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
-        Other firstOther = othersWithRemovedConfidentialFields().get(0).getValue();
-        List<Element<Other>> additionalOther = othersWithRemovedConfidentialFields();
+        Other firstOther = othersWithRemovedConfidentialFields("James").get(0).getValue();
+        List<Element<Other>> additionalOther = othersWithRemovedConfidentialFields("Jack");
         List<Element<Other>> confidentialOther = othersWithConfidentialFields(randomUUID());
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOther, confidentialOther);
@@ -225,14 +228,14 @@ class OthersServiceTest {
         UUID otherId = randomUUID();
 
         List<Element<Other>> others = List.of(
-            othersWithRemovedConfidentialFields().get(0),
+            othersWithRemovedConfidentialFields("James").get(0),
             othersWithConfidentialFields(otherId).get(0));
 
         List<Element<Other>> confidentialOthers = List.of(othersWithConfidentialFields(otherId).get(0));
 
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
-                .firstOther(othersWithRemovedConfidentialFields().get(0).getValue())
+                .firstOther(othersWithRemovedConfidentialFields("Jack").get(0).getValue())
                 .additionalOthers(others)
                 .build())
             .confidentialOthers(confidentialOthers)
@@ -345,8 +348,12 @@ class OthersServiceTest {
     }
 
     private List<Element<Other>> othersWithConfidentialFields(UUID id) {
+        return othersWithConfidentialFields(id, "Joan");
+    }
+
+    private List<Element<Other>> othersWithConfidentialFields(UUID id, String name) {
         return newArrayList(element(id, Other.builder()
-            .name("James")
+            .name(name)
             .gender("Female")
             .detailsHidden("Yes")
             .address(Address.builder().addressLine1("Address Line 1").build())
@@ -355,12 +362,17 @@ class OthersServiceTest {
     }
 
     private List<Element<Other>> othersWithRemovedConfidentialFields() {
+        return othersWithRemovedConfidentialFields("James");
+    }
+
+    private List<Element<Other>> othersWithRemovedConfidentialFields(String name) {
         return newArrayList(element(ID, Other.builder()
-            .name("James")
+            .name(name)
             .gender("Female")
             .detailsHidden("Yes")
             .build()));
     }
+
 
     private DynamicList buildSingleSelector(int selectedIdx) {
         return buildSingleSelector(selectedIdx, null);
@@ -474,11 +486,11 @@ class OthersServiceTest {
             .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
-            .addressKnow(null)
+            .addressKnowV2(null)
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
-        Others updatedOthers = service.removeAddressOrAddressNotKnowReason(caseData);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
         assertThat(updatedOthers.getFirstOther()).isEqualTo(firstOther);
     }
@@ -489,11 +501,11 @@ class OthersServiceTest {
             .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
-            .addressKnow("No")
+            .addressKnowV2(IsAddressKnowType.NO)
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
-        Others updatedOthers = service.removeAddressOrAddressNotKnowReason(caseData);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
         assertThat(updatedOthers.getFirstOther().getAddressNotKnowReason()).isNotNull();
         assertThat(updatedOthers.getFirstOther().getAddress()).isNull();
@@ -505,13 +517,26 @@ class OthersServiceTest {
             .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
-            .addressKnow("Yes")
+            .addressKnowV2(IsAddressKnowType.YES)
             .build();
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
-        Others updatedOthers = service.removeAddressOrAddressNotKnowReason(caseData);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
         assertThat(updatedOthers.getFirstOther().getAddressNotKnowReason()).isNull();
         assertThat(updatedOthers.getFirstOther().getAddress()).isNotNull();
+    }
+
+    @Test
+    void shouldSetConfidentialWhenLiveInRefugeIsSelected() {
+        Other firstOther = Other.builder()
+            .name("First Other")
+            .addressKnowV2(IsAddressKnowType.LIVE_IN_REFUGE)
+            .build();
+
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
+        assertThat(updatedOthers).isNotNull();
+        assertThat(updatedOthers.getFirstOther().getDetailsHidden()).isEqualTo(YesNo.YES.getValue());
     }
 }
