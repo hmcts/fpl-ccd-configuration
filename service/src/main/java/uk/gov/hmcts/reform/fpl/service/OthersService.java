@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -22,7 +23,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialOtherToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
 
@@ -70,7 +71,7 @@ public class OthersService {
 
         caseData.getAllOthers().forEach(element -> {
             if (element.getValue().containsConfidentialDetails()) {
-                Other confidentialOther = getConfidentialItemToAdd(caseData.getConfidentialOthers(), element);
+                Other confidentialOther = getConfidentialOtherToAdd(caseData.getConfidentialOthers(), element);
                 others.add(element(element.getId(), addConfidentialDetails(confidentialOther, element)));
             } else {
                 others.add(element);
@@ -145,11 +146,15 @@ public class OthersService {
     }
 
     public Other addConfidentialDetails(Other confidentialOther, Element<Other> other) {
-        Other ret = other.getValue().toBuilder()
+        Other.OtherBuilder retBuilder = other.getValue().toBuilder()
             .telephone(confidentialOther.getTelephone())
-            .address(confidentialOther.getAddress())
-            .build();
-        return ret;
+            .address(confidentialOther.getAddress());
+
+        if (isEmpty(other.getValue().getAddressKnowV2())) {
+            retBuilder.addressKnowV2(confidentialOther.getAddressKnowV2());
+        }
+
+        return retBuilder.build();
     }
 
     // This finds firstOther element id in confidential others that doesn't match.
@@ -182,20 +187,24 @@ public class OthersService {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
     }
 
-    public Others removeAddressOrAddressNotKnowReason(CaseData caseData) {
-        List<Element<Other>> updatedOthers = new ArrayList<>();
+    public Others consolidateAndRemoveHiddenFields(CaseData caseData) {
+        return Others.from(caseData.getAllOthers().stream()
+            .map(otherElement -> {
+                Other other = otherElement.getValue();
+                if (!isNull(other.getAddressKnowV2())) {
+                    Other.OtherBuilder builder = other.toBuilder();
+                    if (IsAddressKnowType.NO.equals(other.getAddressKnowV2())) {
+                        builder = builder.address(null);
+                    } else {
+                        builder = builder.addressNotKnowReason(null);
+                    }
 
-        caseData.getAllOthers().forEach(element -> {
-            Other other = element.getValue();
-            if (!isNull(other.getAddressKnow())) {
-                updatedOthers.add(other.getAddressKnow().equals(YesNo.NO.getValue())
-                    ? element(element.getId(), other.removeAddress())
-                    : element(element.getId(), other.removeAddressNotKnowReason()));
-            } else {
-                updatedOthers.add(element);
-            }
-        });
-
-        return Others.from(updatedOthers);
+                    if (IsAddressKnowType.LIVE_IN_REFUGE.equals(other.getAddressKnowV2())) {
+                        builder = builder.detailsHidden(YesNo.YES.getValue());
+                    }
+                    return element(otherElement.getId(), builder.build());
+                }
+                return otherElement;
+            }).toList());
     }
 }

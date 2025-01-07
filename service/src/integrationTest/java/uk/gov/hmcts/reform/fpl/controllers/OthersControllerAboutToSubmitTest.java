@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -110,7 +111,7 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
             .name("other")
             .address(Address.builder().addressLine1("506 Abbey Lane").build())
             .telephone("01227 123456")
-            .addressKnow("Yes")
+            .addressKnowV2(IsAddressKnowType.YES)
             .detailsHidden("Yes")
             .build();
     }
@@ -118,7 +119,6 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
     private Other otherWithDetailsRemoved() {
         return Other.builder()
             .name("other")
-            .addressKnow("Yes")
             .detailsHidden("Yes")
             .build();
     }
@@ -128,6 +128,7 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
             .name("additional other")
             .address(Address.builder().addressLine1("101 London Road").build())
             .telephone("07122 123456")
+            .addressKnowV2(IsAddressKnowType.YES)
             .detailsHidden("No")
             .build()));
     }
@@ -137,7 +138,7 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
             .name("additional other")
             .address(Address.builder().addressLine1("101 London Road").build())
             .telephone("07122 123456")
-            .addressKnow("No")
+            .addressKnowV2(IsAddressKnowType.NO)
             .detailsHidden("Yes")
             .build()));
     }
@@ -147,6 +148,7 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
             .name("other")
             .address(Address.builder().addressLine1("506 Abbey Lane").build())
             .telephone("01227 123456")
+            .addressKnowV2(IsAddressKnowType.YES)
             .build();
     }
 
@@ -154,6 +156,7 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
         return Other.builder()
             .name("additional other")
             .telephone("07122 123456")
+            .addressKnowV2(IsAddressKnowType.NO)
             .build();
     }
 }
