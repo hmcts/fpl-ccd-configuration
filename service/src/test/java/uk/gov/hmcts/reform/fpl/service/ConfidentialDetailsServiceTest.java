@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -190,6 +191,22 @@ class ConfidentialDetailsServiceTest {
             assertThat(caseDetails.getData()).isEmpty();
         }
 
+        @Test
+        void shouldNotOverrideOldDataIfLivingDetailsNotHiddenYet() {
+            Element<Child> originalChild = childWithRemovedConfidentialFieldsWithLivingSituation(ID);
+            Element<Child> confDetails = childWithConfidentialFieldsAndShowAddressButNoLivingSituation(ID);
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(originalChild))
+                .confidentialChildren(List.of(confDetails))
+                .build();
+
+            List<Element<Child>> updatedChildren = service.prepareCollection(caseData.getAllChildren(),
+                caseData.getConfidentialChildren(), Child.expandCollection());
+
+            assertThat(updatedChildren.get(0).getValue().getParty())
+                .extracting("livingSituation", "livingSituationDetails")
+                .containsExactly("Living with parents", "Details here");
+        }
 
         private ChildParty.ChildPartyBuilder baseChildBuilder(String detailsHidden) {
             return ChildParty.builder()
@@ -204,12 +221,34 @@ class ConfidentialDetailsServiceTest {
                 .build());
         }
 
+        private Element<Child> childWithRemovedConfidentialFieldsWithLivingSituation(UUID id) {
+            // Prior to DFPL-2639, living situation + details were not confidential
+            return element(id, Child.builder()
+                .party(baseChildBuilder(CONFIDENTIAL)
+                    .livingSituation("Living with parents")
+                    .livingSituationDetails("Details here")
+                    .build())
+                .build());
+        }
+
+        private Element<Child> childWithConfidentialFieldsAndShowAddressButNoLivingSituation(UUID id) {
+            return element(id, Child.builder()
+                .party(baseChildBuilder(NO_VALUE)
+                    .email(EmailAddress.builder().email("email@email.com").build())
+                    .address(Address.builder().addressLine1("Address Line 1").build())
+                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .showAddressInConfidentialTab("Yes")
+                    .build())
+                .build());
+        }
+
         private Element<Child> childWithConfidentialFields(UUID id, String detailsHidden) {
             return element(id, Child.builder()
                 .party(baseChildBuilder(detailsHidden)
                     .email(EmailAddress.builder().email("email@email.com").build())
                     .address(Address.builder().addressLine1("Address Line 1").build())
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .livingSituation("Living in a refuge")
                     .build())
                 .build());
         }
@@ -221,6 +260,7 @@ class ConfidentialDetailsServiceTest {
                     .address(Address.builder().addressLine1("Address Line 1").build())
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                     .showAddressInConfidentialTab("Yes")
+                    .livingSituation("Living in a refuge")
                     .build())
                 .build());
         }
@@ -379,6 +419,23 @@ class ConfidentialDetailsServiceTest {
             assertThat(updatedRespondent.get(2)).isEqualTo(confidentialRespondent.get(1));
         }
 
+        @Test
+        void shouldNotOverrideDataIfAddressKnownNotHiddenYet() {
+            Element<Respondent> originalRespondent = respondentWithRemovedConfidentialFieldsWithKnownValue(ID);
+            Element<Respondent> confDetails = respondentWithConfidentialFieldsButNoAddrKnownValue(ID, CONFIDENTIAL);
+
+            CaseData caseData = CaseData.builder()
+                .respondents1(List.of(originalRespondent))
+                .confidentialRespondents(List.of(confDetails))
+                .build();
+
+            List<Element<Respondent>> updatedRespondents = service.prepareCollection(caseData.getAllRespondents(),
+                caseData.getConfidentialRespondents(), Respondent.expandCollection());
+
+            assertThat(updatedRespondents.get(0).getValue().getParty())
+                .extracting("addressKnow").isEqualTo(IsAddressKnowType.YES);
+        }
+
         private RespondentParty.RespondentPartyBuilder baseRespondentBuilder(String detailsHidden) {
             return RespondentParty.builder()
                 .firstName("James")
@@ -392,12 +449,32 @@ class ConfidentialDetailsServiceTest {
                 .build());
         }
 
+        private Element<Respondent> respondentWithRemovedConfidentialFieldsWithKnownValue(UUID id) {
+            return element(id, Respondent.builder()
+                .party(baseRespondentBuilder(CONFIDENTIAL)
+                    .addressKnow(IsAddressKnowType.YES)
+                    .build())
+                .build());
+        }
+
+        private Element<Respondent> respondentWithConfidentialFieldsButNoAddrKnownValue(UUID id, String detailsHidden) {
+            return element(id, Respondent.builder()
+                .party(baseRespondentBuilder(detailsHidden)
+                    .email(EmailAddress.builder().email("email@email.com").build())
+                    .address(Address.builder().addressLine1("Address Line 1").build())
+                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .build())
+                .build());
+        }
+
+
         private Element<Respondent> respondentWithConfidentialFields(UUID id, String detailsHidden) {
             return element(id, Respondent.builder()
                 .party(baseRespondentBuilder(detailsHidden)
                     .email(EmailAddress.builder().email("email@email.com").build())
                     .address(Address.builder().addressLine1("Address Line 1").build())
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .addressKnow(IsAddressKnowType.LIVE_IN_REFUGE)
                     .build())
                 .build());
         }
@@ -483,6 +560,7 @@ class ConfidentialDetailsServiceTest {
         private Element<Other> otherWithConfidentialFields(UUID id, String detailsHidden) {
             return element(id, baseOtherBuilder(detailsHidden)
                 .address(Address.builder().addressLine1("Address Line 1").build())
+                .addressKnowV2(IsAddressKnowType.LIVE_IN_REFUGE)
                 .telephone("01227 831393")
                 .build());
         }
