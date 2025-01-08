@@ -49,7 +49,7 @@
     "ListElementCode": "gender",
     "FieldType": "FixedList",
     "FieldTypeParameter": "GenderList",
-    "ElementLabel": "Gender",
+    "ElementLabel": "What is the respondent's gender?",
     "SecurityClassification": "Public"
   },
   {
@@ -76,7 +76,7 @@
     "ListElementCode": "addressKnow",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "IsAddressKnowList",
-    "ElementLabel": "*Current address known?",
+    "ElementLabel": "Current address known?",
     "SecurityClassification": "Public"
   },
   {
@@ -110,9 +110,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
+    "ListElementCode": "whereaboutsUnknownDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give more details",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "addressNotKnowReason=\"Whereabouts unknown\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentParty",
     "ListElementCode": "telephoneNumber",
     "FieldType": "Telephone",
-    "ElementLabel": "Telephone",
+    "ElementLabel": " ",
     "SecurityClassification": "Public"
   },
   {
@@ -129,8 +138,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "relationshipToChild",
     "FieldType": "TextArea",
-    "ElementLabel": "What is the respondent's relationship to the child or children in this case?",
-    "HintText": "Include: the name of the child or children, the respondent's relationship to them and any details if you're not sure this person has parental responsibility",
+    "ElementLabel": "Which children does the respondent have parental responsibility for and what is their relationship?",
     "SecurityClassification": "Public"
   },
   {
@@ -166,7 +174,7 @@
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LitigationCapacityIssues",
-    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
+    "ElementLabel": "Do you believe this person will have difficulty understanding what's happening with the case?",
     "SecurityClassification": "Public"
   },
   {

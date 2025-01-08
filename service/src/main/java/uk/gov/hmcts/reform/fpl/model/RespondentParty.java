@@ -33,6 +33,8 @@ public final class RespondentParty extends Party {
     private final String litigationIssuesDetails;
     private final String addressNotKnowReason;
     private final IsAddressKnowType addressKnow;
+    private final YesNo hideAddress;
+    private final YesNo hideTelephone;
 
 
     @Override
@@ -72,7 +74,10 @@ public final class RespondentParty extends Party {
                            String contactDetailsHiddenReason,
                            String litigationIssues,
                            String litigationIssuesDetails,
-                           String addressNotKnowReason,  IsAddressKnowType addressKnow) {
+                           String addressNotKnowReason,
+                           IsAddressKnowType addressKnow,
+                           YesNo hideAddress,
+                           YesNo hideTelephone) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
         this.gender = gender;
@@ -85,6 +90,8 @@ public final class RespondentParty extends Party {
         this.litigationIssuesDetails = litigationIssuesDetails;
         this.addressNotKnowReason = addressNotKnowReason;
         this.addressKnow = addressKnow;
+        this.hideAddress = hideAddress;
+        this.hideTelephone = hideTelephone;
     }
 
     @JsonPOJOBuilder(withPrefix = "")

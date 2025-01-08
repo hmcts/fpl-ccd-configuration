@@ -5,9 +5,9 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.firstName",
-    "EventElementLabel": "*First name",
+    "EventElementLabel": "First name",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -15,9 +15,9 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.lastName",
-    "EventElementLabel": "*Last name",
+    "EventElementLabel": "Last name",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -62,6 +62,15 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.addressNotKnowReason",
     "FieldDisplayOrder": 7,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.whereaboutsUnknownDetails",
+    "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -183,7 +192,7 @@
     "ListElementCode": "party.relationshipLabel",
     "FieldDisplayOrder": 12,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "party!=\"SHOW_LABEL\""
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -191,7 +200,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.relationshipToChild",
-    "EventElementLabel": "*What is the respondent's relationship to the child or children in this case?",
+    "EventElementLabel": "Which children does the respondent have parental responsibility for and what is their relationship?",
     "FieldDisplayOrder": 13,
     "DisplayContext": "OPTIONAL"
   },
@@ -203,7 +212,7 @@
     "ListElementCode": "party.proceedingsLabel",
     "FieldDisplayOrder": 14,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "party!=\"SHOW_LABEL\""
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -237,8 +246,8 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "legalRepresentation",
-    "EventElementLabel": "*Do they have legal representation?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Do they have legal representation?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
