@@ -59,13 +59,13 @@ export class ManageLaTransferToCourts extends BasePage {
         await expect(this.manageLaTransferToCourts).toBeVisible();
         await this.transferToAnotherLa.click();
         await this.continueButton.click();
-        await this.localAuthorityToTransfer.selectOption('4: HN');
+        await this.localAuthorityToTransfer.selectOption('London Borough Hillingdon');
         await this.continueButton.click();
         await this.fullName.fill('Sam Hill');
         await this.email.fill('sam@hillingdon.gov.uk');
         await this.continueButton.click();
         await this.courtTransfer.getByLabel('Yes').check();
-        await this.selectNewCourt.selectOption('2: 332');
+        await this.selectNewCourt.selectOption('Family Court sitting at West London');
         await this.continueButton.click();
         await this.saveAndContinue.click();
     }
