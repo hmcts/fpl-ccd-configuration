@@ -42,13 +42,13 @@
 
 <br/>
 
-## Add application documents
-
-<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information </span>
+## Application documents
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
 <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>
+
+<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
