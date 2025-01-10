@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty.RespondentPartyBuilder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
@@ -58,9 +60,10 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
     }
 
     public boolean containsConfidentialDetails() {
-        String hiddenValue = defaultIfNull(party.getContactDetailsHidden(), "");
+        String hiddenAddress = defaultIfNull(party.getHideAddress(), YesNo.NO.getValue());
+        String hiddenTelephone = defaultIfNull(party.getHideTelephone(), YesNo.NO.getValue());
 
-        return hiddenValue.equalsIgnoreCase("Yes");
+        return YesNo.YES.getValue().equals(hiddenAddress) || YesNo.YES.getValue().equals(hiddenTelephone);
     }
 
     @Override
@@ -70,30 +73,44 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
 
     @Override
     public Respondent extractConfidentialDetails() {
+        RespondentParty.RespondentPartyBuilder partyBuilder = RespondentParty.builder()
+            .firstName(this.party.getFirstName())
+            .lastName(this.party.getLastName())
+            .email(this.party.getEmail())
+            .hideAddress(this.party.getHideAddress())
+            .hideTelephone(this.party.getHideTelephone());
+
+        if (YesNo.YES.equalsString(this.party.getHideAddress())) {
+            partyBuilder = partyBuilder.addressKnow(this.party.getAddressKnow())
+                .address(this.party.getAddress());
+        }
+
+        if (YesNo.YES.equalsString(this.party.getHideTelephone())) {
+            partyBuilder = partyBuilder.telephoneNumber(this.party.getTelephoneNumber());
+        }
+
         return Respondent.builder()
-            .party(RespondentParty.builder()
-                .addressKnow(this.party.getAddressKnow())
-                .firstName(this.party.getFirstName())
-                .lastName(this.party.getLastName())
-                .addressKnow(this.party.getAddressKnow())
-                .address(this.party.getAddress())
-                .telephoneNumber(this.party.getTelephoneNumber())
-                .email(this.party.getEmail())
-                .build())
+            .party(partyBuilder.build())
             .build();
     }
 
     @Override
     public Respondent addConfidentialDetails(Party party) {
-        RespondentParty.RespondentPartyBuilder partyBuilder = this.getParty().toBuilder()
+        RespondentPartyBuilder partyBuilder = this.getParty().toBuilder()
             .firstName(party.getFirstName())
             .lastName(party.getLastName())
-            .address(party.getAddress())
-            .telephoneNumber(party.getTelephoneNumber())
             .email(party.getEmail());
 
-        if (!isEmpty(((RespondentParty) party).getAddressKnow())) {
-            partyBuilder.addressKnow(((RespondentParty) party).getAddressKnow());
+        if (YesNo.YES.equalsString(this.party.getHideAddress())) {
+            partyBuilder = partyBuilder.address(party.getAddress());
+
+            if (!isEmpty(((RespondentParty) party).getAddressKnow())) {
+                partyBuilder = partyBuilder.addressKnow(((RespondentParty) party).getAddressKnow());
+            }
+        }
+
+        if (YesNo.YES.equalsString(this.party.getHideTelephone())) {
+            partyBuilder = partyBuilder.telephoneNumber(party.getTelephoneNumber());
         }
 
         return this.toBuilder()
@@ -103,13 +120,18 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
 
     @Override
     public Respondent removeConfidentialDetails() {
+        RespondentPartyBuilder partyBuilder = this.party.toBuilder();
+        if (YesNo.YES.equalsString(this.party.getHideAddress())) {
+            partyBuilder = partyBuilder.addressKnow(null)
+                .address(null);
+        }
+
+        if (YesNo.YES.equalsString(this.party.getHideTelephone())) {
+            partyBuilder = partyBuilder.telephoneNumber(null);
+        }
+
         return this.toBuilder()
-            .party(this.party.toBuilder()
-                .addressKnow(null)
-                .address(null)
-                .telephoneNumber(null)
-                .email(null)
-                .build())
+            .party(partyBuilder.build())
             .build();
     }
 

@@ -243,6 +243,8 @@ public class RespondentController extends CallbackController {
             transformedRespondent = transformedRespondent.toBuilder()
                 .party(transformedRespondent.getParty().toBuilder()
                     .contactDetailsHidden(YesNo.YES.getValue())
+                    .hideAddress(YesNo.YES.getValue())
+                    .hideTelephone(YesNo.YES.getValue())
                     .contactDetailsHiddenReason(null)
                     .build())
                 .build();

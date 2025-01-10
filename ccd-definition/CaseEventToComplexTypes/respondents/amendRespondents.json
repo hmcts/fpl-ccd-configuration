@@ -134,8 +134,17 @@
     "ID": "AmendRespondents",
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.telephoneNumber",
+    "ListElementCode": "party.hideAddress",
     "FieldDisplayOrder": 9,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendRespondents",
+    "CaseEventID": "amendRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.telephoneNumber",
+    "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -160,16 +169,7 @@
     "ID": "AmendRespondents",
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.contactDetailsHidden",
-    "FieldDisplayOrder": 10,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
-    "CaseFieldID": "respondents1",
-    "ListElementCode": "party.contactDetailsHiddenReason",
+    "ListElementCode": "party.hideTelephone",
     "FieldDisplayOrder": 11,
     "DisplayContext": "OPTIONAL"
   },
@@ -178,9 +178,9 @@
     "ID": "AmendRespondents",
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.relationshipLabel",
+    "ListElementCode": "party.contactDetailsHidden",
     "FieldDisplayOrder": 12,
-    "DisplayContext": "READONLY",
+    "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
   {
@@ -188,16 +188,17 @@
     "ID": "AmendRespondents",
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.relationshipToChild",
+    "ListElementCode": "party.contactDetailsHiddenReason",
     "FieldDisplayOrder": 13,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AmendRespondents",
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.proceedingsLabel",
+    "ListElementCode": "party.relationshipLabel",
     "FieldDisplayOrder": 14,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "party=\"DO_NOT_SHOW\""
@@ -207,7 +208,7 @@
     "ID": "AmendRespondents",
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.litigationIssues",
+    "ListElementCode": "party.relationshipToChild",
     "FieldDisplayOrder": 15,
     "DisplayContext": "OPTIONAL"
   },
@@ -216,8 +217,27 @@
     "ID": "AmendRespondents",
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.litigationIssuesDetails",
+    "ListElementCode": "party.proceedingsLabel",
     "FieldDisplayOrder": 16,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendRespondents",
+    "CaseEventID": "amendRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.litigationIssues",
+    "FieldDisplayOrder": 17,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendRespondents",
+    "CaseEventID": "amendRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.litigationIssuesDetails",
+    "FieldDisplayOrder": 18,
     "DisplayContext": "OPTIONAL"
   },
   {

@@ -101,9 +101,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
     "ListElementCode": "addressNotKnowReason",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter":  "AddressNotKnowType",
-    "ElementLabel": "*Reason the address is not known",
+    "ElementLabel": "Why is this address unknown?",
     "SecurityClassification": "Public",
     "FieldShowCondition": "addressKnow=\"No\""
   },
@@ -114,7 +114,7 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give more details",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "addressNotKnowReason=\"Whereabouts unknown\""
+    "FieldShowCondition": "addressKnow=\"No\" AND addressNotKnowReason=\"Whereabouts unknown\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -184,6 +184,23 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentParty",
+    "ListElementCode": "hideAddress",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you need to keep the address confidential?",
+    "FieldShowCondition": "addressKnow=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentParty",
+    "ListElementCode": "hideTelephone",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you need to keep the contact number confidential?",
     "SecurityClassification": "Public"
   }
 ]
