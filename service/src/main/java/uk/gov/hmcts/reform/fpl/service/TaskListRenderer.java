@@ -99,10 +99,10 @@ public class TaskListRenderer {
             .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
             .ifPresent(applicationGrounds::withTask);
 
-        final TaskSection documents = newSection("Add application documents")
-            .withTask(tasks.get(APPLICATION_DOCUMENTS))
-            .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
-                + "you can send your application without this information ");
+        final TaskSection documents = newSection("Application documents");
+            ofNullable(tasks.get(APPLICATION_DOCUMENTS))
+                .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
+                .ifPresent(documents::withTask);
 
         final TaskSection parties = newSection("Add information about the parties")
             .withTask(tasks.containsKey(ORGANISATION_DETAILS)
