@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -38,7 +39,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
         return removableOrder instanceof HearingOrder && Optional.of((HearingOrder) removableOrder)
-            .filter(order -> order.getType() != HearingOrderType.C21)
+            .filter(order -> order.getType() != HearingOrderType.C21 && order.getStatus() != CMOStatus.RETURNED)
             .isPresent();
     }
 
