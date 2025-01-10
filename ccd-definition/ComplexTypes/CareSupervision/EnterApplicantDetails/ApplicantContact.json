@@ -1,0 +1,43 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContact",
+    "ListElementCode": "fullName",
+    "FieldType": "Text",
+    "ElementLabel": "Full name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContact",
+    "ListElementCode": "phone",
+    "FieldType": "PhoneUK",
+    "ElementLabel": "Phone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContact",
+    "ListElementCode": "alternativePhone",
+    "FieldType": "PhoneUK",
+    "ElementLabel": "Alternative phone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContact",
+    "ListElementCode": "directEmail",
+    "FieldType": "Email",
+    "ElementLabel": "Direct email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContact",
+    "ListElementCode": "applicantContactOthers",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ApplicantContactOther",
+    "ElementLabel": "Person",
+    "SecurityClassification": "Public"
+  }
+]

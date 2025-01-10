@@ -1,0 +1,67 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantLa",
+    "EventElementLabel": "##Main contact",
+    "EventHintText": "HMCTS will contact this person if they have any question",
+    "FieldType": "Label",
+    "DisplayContext": "READONLY",
+    "FieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantLa",
+    "CaseFieldID": "applicantContact",
+    "ListElementCode": "fullName",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantLa",
+    "CaseFieldID": "applicantContact",
+    "ListElementCode": "phone",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantLa",
+    "CaseFieldID": "applicantContact",
+    "ListElementCode": "alternativePhone",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantLa",
+    "CaseFieldID": "applicantContact",
+    "ListElementCode": "directEmail",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantLa",
+    "EventElementLabel": "Others within your organisation who need notifications",
+    "EventHintText": "Only people with myHMCTS login can receive notifications",
+    "FieldType": "Label",
+    "DisplayContext": "READONLY",
+    "FieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantLa",
+    "CaseFieldID": "applicantContact",
+    "ListElementCode": "applicantContactOthers",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 6
+  }
+]

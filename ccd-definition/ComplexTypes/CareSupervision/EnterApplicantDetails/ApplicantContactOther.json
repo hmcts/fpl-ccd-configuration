@@ -1,0 +1,36 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "fullName",
+    "FieldType": "Text",
+    "ElementLabel": "Full name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "email",
+    "FieldType": "Email",
+    "ElementLabel": "Email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "role",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ApplicantContactRoleFixedList",
+    "ElementLabel": "Role",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "roleOther",
+    "FieldType": "Text",
+    "ElementLabel": "Enter their role",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "role=\"OTHER\""
+  }
+]
