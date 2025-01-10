@@ -123,7 +123,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sdoRouter",
-    "FieldType": "`FixedRadioList`",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "SDORoutes",
     "Label": "What do you want to do?",
     "HintText": "You can upload the final order to send to all parties now, or just upload it and save.",
