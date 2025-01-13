@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "caseSummaryFlagAddedTag",
     "FieldShowCondition": "caseFlagAdded=\"Yes\"",
     "TabFieldDisplayOrder": -1
@@ -16,7 +16,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "draftSDOLabel",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\"",
@@ -28,7 +28,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "reviewCMOLink",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "hearingOrdersBundlesDrafts!=\"\""
@@ -39,7 +39,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\""
@@ -50,7 +50,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "urgentDirectionsOrder",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "urgentDirectionsOrder.orderStatus=\"DRAFT\""
@@ -61,7 +61,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "draftSDOLinkDraftOrdersTab",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "standardDirectionOrder!=\"\" AND [STATE]=\"Gatekeeping\""
@@ -72,7 +72,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "sharedDraftCMODocument",
     "TabFieldDisplayOrder": 2
   },
@@ -82,7 +82,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "cmoToAction",
     "TabFieldDisplayOrder": 2
   },
@@ -92,7 +92,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "caseManagementOrder",
     "TabFieldDisplayOrder": 2
   },
@@ -102,7 +102,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "draftUploadedCMOs",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "hearingOrdersBundlesDrafts=\"DO_NOT_SHOW\""
@@ -113,7 +113,7 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "hearingOrdersBundlesDrafts",
     "TabFieldDisplayOrder": 4
   }
