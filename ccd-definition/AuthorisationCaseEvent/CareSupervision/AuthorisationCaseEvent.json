@@ -1755,8 +1755,7 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "TTL_profile",
-          "caseworker-publiclaw-superuser"
+          "TTL_profile"
         ],
         "CRUD": "CRU"
       },
