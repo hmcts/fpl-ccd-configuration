@@ -25,7 +25,10 @@ test.describe('Manage LAs / Transfer to court', () => {
             await manageLaTransferToCourts.updateManageLaTransferToCourts();
             await manageLaTransferToCourts.tabNavigation('Summary');
             await expect(page.getByText('Family Court sitting at Swansea')).toBeHidden();
-            await expect(page.getByText('Central Family Court')).toBeVisible();
+            await manageLaTransferToCourts.tabNavigation('People in the case');
+            await expect(page.getByText('Family Court sitting at Central Family Court')).toBeHidden();
+            await manageLaTransferToCourts.tabNavigation('Summary');
+            await expect(page.getByText('Family Court sitting at Central Family Court')).toBeVisible();
 
         })
     test('CTSC gives access to another local authority',
@@ -69,9 +72,9 @@ test.describe('Manage LAs / Transfer to court', () => {
             await manageLaTransferToCourts.updateTranferToLa();
             await manageLaTransferToCourts.tabNavigation('Summary');
             await expect(page.getByText('Family Court sitting at Swansea')).toBeHidden();
-            await expect(page.getByText('Family Court sitting at West London')).toBeVisible();
             await manageLaTransferToCourts.tabNavigation('People in the case');
-            await expect(page.getByText('Swansea City Council')).toBeHidden();
-            await expect(page.getByText('London Borough Hillingdon')).toBeVisible();
+            await expect(page.getByText('Family Court sitting at West London')).toBeHidden();
+            await manageLaTransferToCourts.tabNavigation('Summary');
+            await expect(page.getByText('Family Court sitting at West London')).toBeVisible();
         })
 });
