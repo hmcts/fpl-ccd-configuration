@@ -382,7 +382,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "ctsc-team-leader",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-superuser,caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan, TTL_profile"
+    "AccessProfiles": "caseworker-publiclaw-superuser,caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan,TTL_profile"
   },
   {
     "LiveFrom": "01/01/2017",
