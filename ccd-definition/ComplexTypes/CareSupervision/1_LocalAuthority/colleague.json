@@ -62,6 +62,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Colleague",
+    "ListElementCode": "alternativePhone",
+    "FieldType": "PhoneUK",
+    "ElementLabel": "Alternative phone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
     "ListElementCode": "notificationRecipient",
     "FieldType": "YesOrNo",
     "ElementLabel": "Send them case update notifications?",

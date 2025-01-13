@@ -30,14 +30,5 @@
     "FieldType": "Email",
     "ElementLabel": "Direct email address",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ApplicantContact",
-    "ListElementCode": "applicantContactOthers",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "ApplicantContactOther",
-    "ElementLabel": "Person",
-    "SecurityClassification": "Public"
   }
 ]

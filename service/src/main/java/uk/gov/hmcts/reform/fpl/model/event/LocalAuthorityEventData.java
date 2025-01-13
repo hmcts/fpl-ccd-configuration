@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -23,5 +24,8 @@ public class LocalAuthorityEventData {
     @Temp
     private DynamicList localAuthorityColleaguesList;
     @Temp
+    private Colleague applicantContact;
+    @Temp
+    @JsonAlias("applicantContactOthers")
     private List<Element<Colleague>> localAuthorityColleagues;
 }

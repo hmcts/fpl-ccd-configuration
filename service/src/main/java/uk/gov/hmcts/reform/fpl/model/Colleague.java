@@ -18,6 +18,7 @@ public class Colleague {
     private String fullName;
     private String email;
     private String phone;
+    private String alternativePhone;
     private String dx;
     private String reference;
     private String notificationRecipient;

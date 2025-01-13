@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "EnterApplicantLa",
-    "CaseEventID": "enterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
     "CaseFieldID": "applicantContactOthers",
     "ListElementCode": "fullName",
     "DisplayContext": "MANDATORY",
@@ -11,7 +11,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "EnterApplicantLa",
-    "CaseEventID": "enterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
     "CaseFieldID": "applicantContactOthers",
     "ListElementCode": "email",
     "DisplayContext": "MANDATORY",
@@ -20,7 +20,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "EnterApplicantLa",
-    "CaseEventID": "enterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
     "CaseFieldID": "applicantContactOthers",
     "ListElementCode": "role",
     "DisplayContext": "MANDATORY",
@@ -29,7 +29,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "EnterApplicantLa",
-    "CaseEventID": "enterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
     "CaseFieldID": "applicantContactOthers",
     "ListElementCode": "roleOther",
     "DisplayContext": "Optional",
