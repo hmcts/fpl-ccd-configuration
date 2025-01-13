@@ -20,15 +20,15 @@ this._page = page;
 
   async gotoNextStep(eventName: string) {
       await expect(async () => {
-          await this._page.reload();
-          await this._page.getByLabel('Next step').selectOption(eventName);
-          await this._page.getByRole('button', { name: 'Go', exact: true }).click({clickCount:2,delay:300});
+          await this.page.reload();
+          await this.page.getByLabel('Next step').selectOption(eventName);
+          await this.page.getByRole('button', { name: 'Go', exact: true }).click({clickCount:2,delay:300});
           await expect(this.page.getByRole('button', { name: 'Previous' })).toBeDisabled();
       }).toPass();
   }
 
   async expectAllUploadsCompleted() {
-    let locs = await this._page.getByText('Cancel upload').all();
+    let locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
         await expect(locs[i]).toBeDisabled();
     }
@@ -36,15 +36,15 @@ this._page = page;
 
   async checkYourAnsAndSubmit(){
     await expect(this.page.getByRole('heading', { name: 'Check your answers' })).toBeVisible();
-    await this._page.getByRole('button', { name: 'Save and Continue'}).click();
+    await this.page.getByRole('button', { name: 'Save and Continue'}).click();
   }
 
   async tabNavigation(tabName: string) {
-    await this._page.getByRole('tab', { name: tabName,exact: true }).click();
+    await this.page.getByRole('tab', { name: tabName,exact: true }).click();
   }
 
   async clickContinue() {
-    await this._page.getByRole('button', { name: 'Continue' }).click();
+    await this.page.getByRole('button', { name: 'Continue' }).click();
   }
 
   async waitForAllUploadsToBeCompleted() {
@@ -67,10 +67,10 @@ this._page = page;
   async reloadAndCheckForText(text: string, timeout?: number, maxAttempts?: number): Promise<boolean> {
     // reload the page, wait 5s, see if it's there
     for (let attempt = 0; attempt < (maxAttempts ?? 12); attempt++) {
-      await this._page.reload();
-      await this._page.waitForLoadState();
-      await this._page.waitForTimeout(timeout ?? 5000);
-      if (await this._page.getByText(text).isVisible()) {
+      await this.page.reload();
+      await this.page.waitForLoadState();
+      await this.page.waitForTimeout(timeout ?? 5000);
+      if (await this.page.getByText(text).isVisible()) {
         return true;
       }
     }
@@ -78,17 +78,17 @@ this._page = page;
   }
 
   async clickSignOut() {
-    await this._page.getByText('Sign out').click();
+    await this.page.getByText('Sign out').click();
   }
 
   async clickSubmit() {
-    await this._page.getByRole('button', { name: 'Submit' }).click();
+    await this.page.getByRole('button', { name: 'Submit' }).click();
   }
 
   async enterPostCode(postcode:string){
-      await this._page.getByRole('textbox', { name: 'Enter a UK postcode' }).fill(postcode);
-      await this._page.getByRole('button', { name: 'Find address' }).click();
-      await this._page.getByLabel('Select an address').selectOption('1: Object');
+      await this.page.getByRole('textbox', { name: 'Enter a UK postcode' }).fill(postcode);
+      await this.page.getByRole('button', { name: 'Find address' }).click();
+      await this.page.getByLabel('Select an address').selectOption('1: Object');
 
   }
     getCurrentDate():string {
@@ -100,8 +100,11 @@ this._page = page;
         return todayDate;
     }
     async navigateTOCaseDetails(caseNumber: string) {
-        await this._page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
-        await this._page.waitForLoadState("load");
+        await expect(async () => {
+            await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+            expect(this.page.getByText(this.hypenateCaseNumber(caseNumber))).toBeVisible();
+            await this.page.reload();
+        }).toPass()
     }
     public async uploadDoc(locator : Locator,file:string = config.testTextFile ){
         await expect(async  ()=>{
@@ -110,5 +113,10 @@ this._page = page;
             await this.expectAllUploadsCompleted();
             await  expect( this.page.getByText('rate limited')).toHaveCount(0);
         }).toPass();
+    }
+    hypenateCaseNumber(caseNumber: string) {
+        let hypenatedCaseNumber: string;
+        hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);
+        return hypenatedCaseNumber
     }
 }
