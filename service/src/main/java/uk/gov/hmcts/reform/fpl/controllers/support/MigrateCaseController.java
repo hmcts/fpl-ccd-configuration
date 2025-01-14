@@ -48,6 +48,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-2572", this::run2572,
         "DFPL-2635", this::run2635,
         "DFPL-2636", this::run2636
     );
@@ -76,6 +77,10 @@ public class MigrateCaseController extends CallbackController {
 
     private void runLog(CaseDetails caseDetails) {
         log.info("Logging migration on case {}", caseDetails.getId());
+    }
+
+    private void run2572(CaseDetails caseDetails) {
+        //Required to run migration for TTL
     }
 
     private void run2635(CaseDetails caseDetails) {
