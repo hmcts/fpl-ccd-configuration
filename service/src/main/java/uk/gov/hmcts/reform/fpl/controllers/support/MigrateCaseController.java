@@ -48,9 +48,6 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2610", this::run2610,
-        "DFPL-2585", this::run2585,
-        "DFPL-2585Rollback", this::run2585Rollback,
         "DFPL-2635", this::run2635,
         "DFPL-2636", this::run2636
     );
@@ -81,22 +78,6 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2610(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2610";
-        final long expectedCaseId = 1722860335639318L;
-        CaseData firstInstanceCaseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService
-            .removeCharactersFromThresholdDetails(firstInstanceCaseData, migrationId,
-                416, 423, "****"));
-
-        CaseData secondInstanceCaseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService
-            .removeCharactersFromThresholdDetails(secondInstanceCaseData, migrationId,
-                462, 468, "****"));
-    }
-
     private void run2635(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2635";
         final long expectedCaseId = 1721982839307738L;
@@ -115,47 +96,5 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
             orgId, null));
-    }
-
-    private void run2585(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2585";
-        migrateCaseService.doStateCheck(
-            caseDetails.getState(), State.CLOSED.toString(), caseDetails.getId(), migrationId);
-        roleAssignmentService.deleteAllRolesOnCase(caseDetails.getId());
-    }
-
-    private void run2585Rollback(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2585Rollback";
-        CaseData caseData = getCaseData(caseDetails);
-
-        List<RoleAssignment> rolesToAssign = new ArrayList<>();
-
-        // If we have an allocated judge with an IDAM ID (added in about-to-submit step from mapping)
-        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
-        if (allocatedJudge.isPresent()
-            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
-            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
-
-            boolean isLegalAdviser = LEGAL_ADVISOR
-                .equals(allocatedJudge.get().getJudgeTitle());
-
-            // attempt to assign allocated-[role]
-            rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
-                caseData.getId(),
-                allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
-                isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
-                isLegalAdviser ? RoleCategory.LEGAL_OPERATIONS : RoleCategory.JUDICIAL,
-                ZonedDateTime.now(),
-                null // no end date
-            ));
-        } else {
-            log.error("Could not assign allocated-judge on case {}, no UUID found on the case", caseData.getId());
-        }
-
-        // get hearing judge roles to add (if any)
-        rolesToAssign.addAll(judicialService.getHearingJudgeRolesForMigration(caseData));
-
-        log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
-        judicialService.migrateJudgeRoles(rolesToAssign);
     }
 }
