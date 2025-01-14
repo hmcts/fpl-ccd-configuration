@@ -53,7 +53,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "idam:caseworker-publiclaw-systemupdate",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-systemupdate,GS_profile"
+    "AccessProfiles": "caseworker-publiclaw-systemupdate,GS_profile,TTL_profile"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -467,5 +467,12 @@
     "RoleName": "idam:caseworker-publiclaw-judiciary",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:cft-ttl-manager",
+    "ReadOnly": "N",
+    "AccessProfiles": "TTL_profile"
   }
 ]
