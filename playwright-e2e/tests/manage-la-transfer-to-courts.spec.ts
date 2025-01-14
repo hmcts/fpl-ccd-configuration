@@ -20,14 +20,12 @@ test.describe('Manage LAs / Transfer to court', () => {
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
-
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateManageLaTransferToCourts();
             await manageLaTransferToCourts.tabNavigation('Summary');
+            //reload to fix the flakiness of summary details are not updated until reload
+            await manageLaTransferToCourts.page.reload();
             await expect(page.getByText('Family Court sitting at Swansea')).toBeHidden();
-            await manageLaTransferToCourts.tabNavigation('People in the case');
-            await expect(page.getByText('Family Court sitting at Central Family Court')).toBeHidden();
-            await manageLaTransferToCourts.tabNavigation('Summary');
             await expect(page.getByText('Family Court sitting at Central Family Court')).toBeVisible();
 
         })

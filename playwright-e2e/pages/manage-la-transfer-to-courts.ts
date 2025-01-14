@@ -14,7 +14,6 @@ export class ManageLaTransferToCourts extends BasePage {
     readonly fullName: Locator;
     readonly email: Locator;
     readonly courtTransfer: Locator;
-    readonly saveAndContinueButton: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -30,30 +29,29 @@ export class ManageLaTransferToCourts extends BasePage {
         this.fullName = page.getByRole('textbox', { name: 'Full name' });
         this.email = page.getByLabel('Email', { exact: true });
         this.courtTransfer = page.getByRole('group', { name: 'Is the case transferring to a different court' });
-        this.saveAndContinueButton = page.getByRole("button", {name: "Save and continue"});
     }
     public async updateManageLaTransferToCourts() {
         await expect(this.manageLaTransferToCourts).toBeVisible();
         await this.transferAnotherCourt.click();
         await this.continueButton.click();
         await this.selectNewCourt.selectOption('Central Family Court');
-        await this.continueButton.click();
-        await this.saveAndContinue.click();
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
     }
     public async updateCourtAccess() {
         await expect(this.manageLaTransferToCourts).toBeVisible();
         await this.giveAccessToAnotherLa.click();
         await this.selectLocalAuthority.selectOption('London Borough Hillingdon');
-        await this.continueButton.click();
-        await this.continueButton.click();
-        await this.saveAndContinue.click();
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
     }
     public async updateRemoveAccess() {
         await expect(this.manageLaTransferToCourts).toBeVisible();
         await this.removeAccess.click();
-        await this.continueButton.click();
-        await this.continueButton.click();
-        await this.saveAndContinue.click();
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
     }
     public async updateTranferToLa() {
         await expect(this.manageLaTransferToCourts).toBeVisible();
@@ -63,10 +61,10 @@ export class ManageLaTransferToCourts extends BasePage {
         await this.continueButton.click();
         await this.fullName.fill('Sam Hill');
         await this.email.fill('sam@hillingdon.gov.uk');
-        await this.continueButton.click();
+        await this.clickContinue();
         await this.courtTransfer.getByLabel('Yes').check();
         await this.selectNewCourt.selectOption('Family Court sitting at West London');
-        await this.continueButton.click();
-        await this.saveAndContinue.click();
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
     }
 }
