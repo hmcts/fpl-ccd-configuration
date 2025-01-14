@@ -12,6 +12,16 @@
         "readOnly": false,
         "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
         "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-ctsc",
+        "grantType": "BASIC",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "authorisations": []
       }
     ],
     "overrideAll": true
@@ -264,6 +274,16 @@
         "classification": "PUBLIC",
         "readOnly": false,
         "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324", "region": "7"},
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-admin",
+        "grantType": "BASIC",
+        "roleCategory": "ADMIN",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324", "region": "7" },
         "authorisations": []
       }
     ],
