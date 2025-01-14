@@ -1758,12 +1758,46 @@
           "TTL_profile"
         ],
         "CRUD": "CRU"
+      }
+    ]
+  },   
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "requestListingAction",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "ctsc"
+        ],
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-systemupdate"
+          "caseworker-publiclaw-judiciary",
+          "hearing-centre-admin"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewListingAction",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "hearing-centre-admin"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "ctsc"
+        ],
+        "CRUD": "R"
       }
     ]
   }
