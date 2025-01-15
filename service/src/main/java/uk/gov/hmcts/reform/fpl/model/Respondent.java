@@ -76,7 +76,7 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
         RespondentParty.RespondentPartyBuilder partyBuilder = RespondentParty.builder()
             .firstName(this.party.getFirstName())
             .lastName(this.party.getLastName())
-            .email(this.party.getEmail())
+            .email(this.party.getEmail()) // legacy behaviour, extract email if present (no longer entered)
             .hideAddress(this.party.getHideAddress())
             .hideTelephone(this.party.getHideTelephone());
 
@@ -99,7 +99,7 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
         RespondentPartyBuilder partyBuilder = this.getParty().toBuilder()
             .firstName(party.getFirstName())
             .lastName(party.getLastName())
-            .email(party.getEmail());
+            .email(party.getEmail()); // legacy behaviour, always remove/readd email (no longer entered)
 
         if (YesNo.YES.equalsString(this.party.getHideAddress())) {
             partyBuilder = partyBuilder.address(party.getAddress());
@@ -121,6 +121,8 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
     @Override
     public Respondent removeConfidentialDetails() {
         RespondentPartyBuilder partyBuilder = this.party.toBuilder();
+        partyBuilder.email(null); // legacy behaviour, always hide email if present (no longer entered)
+
         if (YesNo.YES.equalsString(this.party.getHideAddress())) {
             partyBuilder = partyBuilder.addressKnow(null)
                 .address(null);
