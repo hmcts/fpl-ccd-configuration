@@ -83,6 +83,8 @@ public class ApplicantLocalAuthorityService {
             .dx(null)
             .reference(null)
             .notificationRecipient(null)
+            .phone((colleague.isMainContact()) ? colleague.getPhone() : null)
+            .alternativePhone(null)
             .build();
     }
 

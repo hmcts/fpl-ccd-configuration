@@ -8,6 +8,7 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
 @Jacksonized
@@ -34,5 +35,10 @@ public class Colleague {
         return ofNullable(role)
             .map(ColleagueRole::getLabel)
             .orElse(null);
+    }
+
+    @JsonIgnore
+    public boolean isMainContact() {
+        return YES.getValue().equals(mainContact);
     }
 }

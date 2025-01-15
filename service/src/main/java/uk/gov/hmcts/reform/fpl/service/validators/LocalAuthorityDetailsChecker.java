@@ -15,6 +15,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
@@ -47,11 +48,6 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
         }
 
         errors.addAll(validateAddress(localAuthority.getAddress()));
-
-        if (isBlank(localAuthority.getPhone())) {
-            errors.add("Enter local authority's phone number");
-        }
-
         errors.addAll(validateAdditionalContacts(unwrapElements(localAuthority.getColleagues())));
 
         return errors;
@@ -78,7 +74,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
     private List<String> validateAdditionalContacts(List<Colleague> colleagues) {
         final List<String> errors = new ArrayList<>();
 
-        if (colleagues.size() == 0) {
+        if (colleagues.isEmpty()) {
             errors.add("Add a colleague");
         } else if (colleagues.size() == 1) {
             errors.addAll(validateAdditionalContact(colleagues.get(0)));
@@ -104,12 +100,8 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
             errors.add("Enter colleague full name");
         }
 
-        if (isBlank(colleague.getEmail())) {
+        if (!colleague.isMainContact() && isBlank(colleague.getEmail())) {
             errors.add("Enter colleague email");
-        }
-
-        if (isBlank(colleague.getNotificationRecipient())) {
-            errors.add("Select send them case update notifications");
         }
 
         return errors;
@@ -128,12 +120,8 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
             errors.add(format("Enter full name for colleague %d", index));
         }
 
-        if (isBlank(colleague.getEmail())) {
+        if (!colleague.isMainContact() && isBlank(colleague.getEmail())) {
             errors.add(format("Enter email for colleague %d", index));
-        }
-
-        if (isBlank(colleague.getNotificationRecipient())) {
-            errors.add(format("Select send them case update notifications for colleague %d", index));
         }
 
         return errors;
