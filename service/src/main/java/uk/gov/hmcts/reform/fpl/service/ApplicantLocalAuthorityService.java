@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -37,13 +36,12 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.addMissingIds;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +63,30 @@ public class ApplicantLocalAuthorityService {
                 .orElseGet(() -> getLocalAuthority(organisation)));
     }
 
+    public Colleague getMainContact(LocalAuthority localAuthority) {
+        return localAuthority.getMainContact()
+            .map(this::migrateFromLegacyColleague)
+            .orElse(Colleague.builder().build());
+    }
+
+    public List<Element<Colleague>> getOtherContact(LocalAuthority localAuthority) {
+        return localAuthority.getOtherContact().stream()
+            .map(colleague -> element(colleague.getId(),
+                migrateFromLegacyColleague(colleague.getValue())))
+            .toList();
+    }
+
+    private Colleague migrateFromLegacyColleague(Colleague colleague) {
+        return colleague.toBuilder()
+            .role((SOCIAL_WORKER.equals(colleague.getRole())) ? OTHER : colleague.getRole())
+            .title((SOCIAL_WORKER.equals(colleague.getRole())) ? SOCIAL_WORKER.getLabel() : colleague.getTitle())
+            .dx(null)
+            .reference(null)
+            .notificationRecipient(null)
+            .build();
+    }
+
+
     public void normalisePba(LocalAuthority localAuthority) {
 
         localAuthority.setPbaNumber(pbaNumberService.update(localAuthority.getPbaNumber()));
@@ -80,38 +102,13 @@ public class ApplicantLocalAuthorityService {
         return errors;
     }
 
-    public List<String> validateColleagues(List<Element<Colleague>> colleagues) {
+    public List<String> validateColleagues(List<Colleague> colleagues) {
 
-        final List<String> colleaguesEmails = unwrapElements(colleagues)
-            .stream()
+        final List<String> colleaguesEmails = colleagues.stream()
             .map(Colleague::getEmail)
             .collect(toList());
 
         return validateEmailService.validate(colleaguesEmails, "Colleague");
-    }
-
-    public List<Element<Colleague>> updateMainContact(LocalAuthorityEventData eventData) {
-
-        final List<Element<Colleague>> colleagues = eventData.getLocalAuthorityColleagues();
-
-        if (isEmpty(colleagues)) {
-            return colleagues;
-        }
-
-        final UUID mainContactId = getMainContactId(eventData);
-
-        colleagues.forEach(colleague -> {
-            boolean isMainContact = Objects.equals(colleague.getId(), mainContactId);
-            colleague.getValue().setMainContact(YesNo.from(isMainContact).getValue());
-        });
-
-        return colleagues;
-    }
-
-    public DynamicList buildContactsList(List<Element<Colleague>> colleagues) {
-
-        final UUID mainContact = getMainContactId(colleagues);
-        return asDynamicList(addMissingIds(colleagues), mainContact, Colleague::getFullName);
     }
 
     public List<String> getDesignatedLocalAuthorityContactsEmails(CaseData caseData) {
@@ -132,7 +129,7 @@ public class ApplicantLocalAuthorityService {
         final LocalAuthority editedLocalAuthority = eventData.getLocalAuthority();
         final String userOrgId = editedLocalAuthority.getId();
 
-        editedLocalAuthority.setColleagues(updateMainContact(eventData));
+        editedLocalAuthority.setColleagues(buildColleagueList(eventData));
 
         final List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
 
@@ -143,29 +140,20 @@ public class ApplicantLocalAuthorityService {
         return updateDesignatedLocalAuthority(caseData);
     }
 
-    private UUID getMainContactId(List<Element<Colleague>> colleagues) {
-
-        return nullSafeList(colleagues).stream()
-            .filter(colleague -> Objects.equals(colleague.getValue().getMainContact(), YES.getValue()))
-            .map(Element::getId)
-            .findFirst()
-            .orElse(null);
+    private Optional<UUID> getMainContactId(LocalAuthority localAuthority) {
+        return localAuthority.getMainContactElement().map(Element::getId);
     }
 
-    private UUID getMainContactId(LocalAuthorityEventData eventData) {
-
-        final List<Element<Colleague>> colleagues = eventData.getLocalAuthorityColleagues();
-
-        if (isEmpty(colleagues)) {
-            return null;
-        }
-        if (colleagues.size() == 1) {
-            return colleagues.get(0).getId();
-        }
-        return ofNullable(eventData.getLocalAuthorityColleaguesList())
-            .map(DynamicList::getValueCodeAsUUID)
-            .orElse(null);
+    private List<Element<Colleague>> buildColleagueList(LocalAuthorityEventData eventData) {
+        return Stream.concat(
+            Stream.of(element(getMainContactId(eventData.getLocalAuthority()).orElse(UUID.randomUUID()),
+                eventData.getApplicantContact().toBuilder().mainContact(YES.getValue()).build())),
+            eventData.getApplicantContactOthers().stream()
+                .map(otherContact -> element(otherContact.getId(),
+                    otherContact.getValue().toBuilder().mainContact(NO.getValue()).build())))
+            .toList();
     }
+
 
     private Address getOrganisationAddress(Organisation organisation) {
 

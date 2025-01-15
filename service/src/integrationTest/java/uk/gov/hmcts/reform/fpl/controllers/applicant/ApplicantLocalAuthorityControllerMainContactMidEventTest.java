@@ -49,7 +49,7 @@ class ApplicantLocalAuthorityControllerMainContactMidEventTest extends AbstractC
             of(colleague3.getId(), colleague3.getValue().getFullName()));
 
         final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-            .localAuthorityColleagues(List.of(colleague1, colleague2, colleague3))
+            .applicantContactOthers(List.of(colleague1, colleague2, colleague3))
             .localAuthorityColleaguesList(listOfColleagues)
             .build();
 
@@ -59,7 +59,7 @@ class ApplicantLocalAuthorityControllerMainContactMidEventTest extends AbstractC
 
         final CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "main-contact"));
 
-        assertThat(updatedCaseData.getLocalAuthorityEventData().getLocalAuthorityColleagues())
+        assertThat(updatedCaseData.getLocalAuthorityEventData().getApplicantContactOthers())
             .extracting(Element::getValue)
             .containsExactly(
                 Colleague.builder()
@@ -96,7 +96,7 @@ class ApplicantLocalAuthorityControllerMainContactMidEventTest extends AbstractC
             of(colleague2.getId(), colleague2.getValue().getFullName()));
 
         final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-            .localAuthorityColleagues(List.of(colleague1, colleague2))
+            .applicantContactOthers(List.of(colleague1, colleague2))
             .localAuthorityColleaguesList(listOfColleagues)
             .build();
 
@@ -106,7 +106,7 @@ class ApplicantLocalAuthorityControllerMainContactMidEventTest extends AbstractC
 
         final CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "main-contact"));
 
-        assertThat(updatedCaseData.getLocalAuthorityEventData().getLocalAuthorityColleagues())
+        assertThat(updatedCaseData.getLocalAuthorityEventData().getApplicantContactOthers())
             .extracting(Element::getValue)
             .containsExactly(
                 Colleague.builder()

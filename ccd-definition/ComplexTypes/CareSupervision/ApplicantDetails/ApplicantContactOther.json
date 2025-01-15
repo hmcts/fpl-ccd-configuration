@@ -27,10 +27,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantContactOther",
-    "ListElementCode": "roleOther",
+    "ListElementCode": "title",
     "FieldType": "Text",
     "ElementLabel": "Enter their role",
     "SecurityClassification": "Public",
     "FieldShowCondition": "role=\"OTHER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "mainContact",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Main contact",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "role=\"DO_NOT_SHOW\""
   }
 ]

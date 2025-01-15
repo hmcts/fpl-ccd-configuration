@@ -42,10 +42,28 @@ public class LocalAuthority {
     }
 
     @JsonIgnore
+    public Optional<Element<Colleague>> getMainContactElement() {
+        return colleagues.stream()
+            .filter(colleague -> isMainContact(colleague.getValue()))
+            .findFirst();
+    }
+
+    @JsonIgnore
     public Optional<Colleague> getMainContact() {
         return unwrapElements(colleagues).stream()
-            .filter(colleague -> YES.getValue().equals(colleague.getMainContact()))
+            .filter(this::isMainContact)
             .findFirst();
+    }
+
+    private boolean isMainContact(Colleague colleague) {
+        return YES.getValue().equals(colleague.getMainContact());
+    }
+
+    @JsonIgnore
+    public List<Element<Colleague>> getOtherContact() {
+        return colleagues.stream()
+            .filter(colleague -> !YES.getValue().equals(colleague.getValue().getMainContact()))
+            .toList();
     }
 
     @JsonIgnore

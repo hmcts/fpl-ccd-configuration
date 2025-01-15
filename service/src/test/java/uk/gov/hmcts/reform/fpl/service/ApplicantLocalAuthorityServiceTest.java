@@ -611,7 +611,7 @@ class ApplicantLocalAuthorityServiceTest {
             .email("email2@test.com")
             .build();
 
-        final List<Element<Colleague>> colleagues = wrapElements(colleague1, colleague2);
+        final List<Element<Colleague>> colleagues = List.of(colleague1, colleague2);
 
         @Test
         void shouldReturnValidationErrors() {
@@ -662,7 +662,7 @@ class ApplicantLocalAuthorityServiceTest {
                 Pair.of(colleague3.getId(), "3"));
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-                .localAuthorityColleagues(List.of(colleague1, colleague2, colleague3))
+                .applicantContactOthers(List.of(colleague1, colleague2, colleague3))
                 .localAuthorityColleaguesList(expectedDynamicList)
                 .build();
 
@@ -692,7 +692,7 @@ class ApplicantLocalAuthorityServiceTest {
                 Pair.of(colleague3.getId(), "3"));
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-                .localAuthorityColleagues(List.of(colleague1, colleague2, colleague3))
+                .applicantContactOthers(List.of(colleague1, colleague2, colleague3))
                 .localAuthorityColleaguesList(expectedDynamicList)
                 .build();
 
@@ -711,7 +711,7 @@ class ApplicantLocalAuthorityServiceTest {
                 .build());
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-                .localAuthorityColleagues(List.of(colleague1))
+                .applicantContactOthers(List.of(colleague1))
                 .build();
 
             final List<Element<Colleague>> colleagues = underTest.updateMainContact(eventData);
@@ -724,7 +724,7 @@ class ApplicantLocalAuthorityServiceTest {
         void shouldDoNothingWhenNoContactsAvailable() {
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-                .localAuthorityColleagues(emptyList())
+                .applicantContactOthers(emptyList())
                 .build();
 
             final List<Element<Colleague>> colleagues = underTest.updateMainContact(eventData);
@@ -917,7 +917,7 @@ class ApplicantLocalAuthorityServiceTest {
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
                 .localAuthority(localAuthority)
-                .localAuthorityColleagues(colleagues)
+                .applicantContactOthers(colleagues)
                 .build();
 
             final OrganisationPolicy organisationPolicy = organisationPolicy(localAuthority.getId(), "LA", LASOLICITOR);
@@ -1008,7 +1008,7 @@ class ApplicantLocalAuthorityServiceTest {
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
                 .localAuthority(updatedLocalAuthority)
-                .localAuthorityColleagues(updatedColleagues)
+                .applicantContactOthers(updatedColleagues)
                 .build();
 
             final CaseData caseData = CaseData.builder()

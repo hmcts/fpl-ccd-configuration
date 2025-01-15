@@ -54,7 +54,7 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
         final CaseData caseData = CaseData.builder()
             .localAuthorityEventData(LocalAuthorityEventData.builder()
                 .localAuthority(newLocalAuthority)
-                .localAuthorityColleagues(newColleagues)
+                .applicantContactOthers(newColleagues)
                 .build())
             .build();
 
@@ -123,8 +123,7 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
             .localAuthorities(wrapElements(existingLocalAuthority))
             .localAuthorityEventData(LocalAuthorityEventData.builder()
                 .localAuthority(updatedLocalAuthority)
-                .localAuthorityColleagues(updatedColleagues)
-                .localAuthorityColleaguesList(listOfColleagues)
+                .applicantContactOthers(updatedColleagues)
                 .build())
             .build();
 

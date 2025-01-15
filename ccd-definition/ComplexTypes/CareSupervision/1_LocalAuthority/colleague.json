@@ -63,7 +63,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Colleague",
     "ListElementCode": "alternativePhone",
-    "FieldType": "PhoneUK",
+    "FieldType": "Text",
     "ElementLabel": "Alternative phone number",
     "SecurityClassification": "Public"
   },

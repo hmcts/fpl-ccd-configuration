@@ -44,7 +44,7 @@ class ApplicantLocalAuthorityControllerColleaguesMidEventTest extends AbstractCa
             .build();
 
         final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-            .localAuthorityColleagues(wrapElements(colleague1, colleague2, colleague3))
+            .applicantContactOthers(wrapElements(colleague1, colleague2, colleague3))
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -71,7 +71,7 @@ class ApplicantLocalAuthorityControllerColleaguesMidEventTest extends AbstractCa
             .build());
 
         final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-            .localAuthorityColleagues(List.of(colleague1, colleague2))
+            .applicantContactOthers(List.of(colleague1, colleague2))
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -100,7 +100,7 @@ class ApplicantLocalAuthorityControllerColleaguesMidEventTest extends AbstractCa
             .build());
 
         final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-            .localAuthorityColleagues(List.of(colleague1))
+            .applicantContactOthers(List.of(colleague1))
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -117,7 +117,7 @@ class ApplicantLocalAuthorityControllerColleaguesMidEventTest extends AbstractCa
     void shouldNotShowListOfColleaguesWhenNonePresent() {
 
         final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-            .localAuthorityColleagues(emptyList())
+            .applicantContactOthers(emptyList())
             .build();
 
         final CaseData caseData = CaseData.builder()

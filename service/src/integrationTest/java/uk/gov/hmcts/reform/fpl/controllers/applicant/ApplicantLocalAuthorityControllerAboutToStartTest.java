@@ -113,7 +113,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
                     .postcode(organisation.getContactInformation().get(0).getPostCode())
                     .build())
                 .build())
-            .localAuthorityColleagues(emptyList())
+            .applicantContactOthers(emptyList())
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedData);
@@ -157,7 +157,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
                 .name(legacyApplicant.getOrganisationName())
                 .colleagues(expectedColleagues)
                 .build())
-            .localAuthorityColleagues(expectedColleagues)
+            .applicantContactOthers(expectedColleagues)
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
@@ -187,7 +187,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
         final LocalAuthorityEventData expectedEventData = LocalAuthorityEventData.builder()
             .localAuthority(localAuthority)
-            .localAuthorityColleagues(colleagues)
+            .applicantContactOthers(colleagues)
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
