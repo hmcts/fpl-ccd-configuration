@@ -72,10 +72,6 @@ public class FeatureToggleService {
             createLDContext(), false);
     }
 
-    public boolean isApplicantAdditionalContactsEnabled() {
-        return ldClient.boolVariation("applicant-additional-contacts", createLDContext(), false);
-    }
-
     public boolean isLanguageRequirementsEnabled() {
         return ldClient.boolVariation("language-requirements", createLDContext(), false);
     }
