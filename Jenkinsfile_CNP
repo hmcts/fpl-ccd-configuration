@@ -151,7 +151,6 @@ def setupShutteringSecret() {
   }
 }
 
-
 def deployWADmns() {
   def githubApi = new GithubAPI(this)
 
