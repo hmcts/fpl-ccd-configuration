@@ -58,7 +58,7 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicantDetailsLA'>Applicant's details</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 

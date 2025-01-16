@@ -27,14 +27,13 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ApplicantLocalAuthorityController.class)
@@ -113,7 +112,8 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
                     .postcode(organisation.getContactInformation().get(0).getPostCode())
                     .build())
                 .build())
-            .applicantContactOthers(emptyList())
+            .applicantContact(Colleague.builder().build())
+            .applicantContactOthers(List.of())
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedData);
@@ -144,20 +144,21 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
         final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
 
-        final List<Element<Colleague>> expectedColleagues = wrapElements(Colleague.builder()
+        final Colleague expectedColleague = Colleague.builder()
             .role(SOLICITOR)
             .fullName(legacySolicitor.getName())
-            .mainContact("Yes")
-            .notificationRecipient("Yes")
-            .build());
+            .mainContact(YES.getValue())
+            .notificationRecipient(YES.getValue())
+            .build();
 
         final LocalAuthorityEventData expectedEventData = LocalAuthorityEventData.builder()
             .localAuthority(LocalAuthority.builder()
                 .id(organisation.getOrganisationIdentifier())
                 .name(legacyApplicant.getOrganisationName())
-                .colleagues(expectedColleagues)
+                .colleagues(wrapElements(expectedColleague))
                 .build())
-            .applicantContactOthers(expectedColleagues)
+            .applicantContact(expectedColleague)
+            .applicantContactOthers(List.of())
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
@@ -167,7 +168,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
     void shouldGetExistingLocalAuthorityDetails() {
 
         final List<Element<Colleague>> colleagues = wrapElements(Colleague.builder()
-            .role(SOCIAL_WORKER)
+            .role(SOLICITOR)
             .fullName("Alex Smith")
             .build());
 
@@ -187,6 +188,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
         final LocalAuthorityEventData expectedEventData = LocalAuthorityEventData.builder()
             .localAuthority(localAuthority)
+            .applicantContact(Colleague.builder().build())
             .applicantContactOthers(colleagues)
             .build();
 

@@ -13,7 +13,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.Collections;
 import java.util.List;
 
+import static org.apache.commons.lang3.BooleanUtils.NO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class LocalAuthorityDetailsCheckerTest {
@@ -37,11 +39,11 @@ class LocalAuthorityDetailsCheckerTest {
             .build();
 
         assertThat(underTest.validate(caseData)).containsExactly(
-            "Enter local authority's name",
-            "Enter local authority's pba number",
-            "Enter local authority's address",
-            "Enter local authority's phone number",
-            "Add a colleague"
+            "Enter applicant's name",
+            "Enter applicant's pba number",
+            "Enter applicant's customer reference",
+            "Enter applicant's address",
+            "Enter main contact"
         );
     }
 
@@ -54,8 +56,8 @@ class LocalAuthorityDetailsCheckerTest {
             .build();
 
         assertThat(underTest.validate(caseData)).containsExactly(
-            "Enter local authority's postcode",
-            "Enter valid local authority's address"
+            "Enter applicant's postcode",
+            "Enter valid applicant's address"
         );
     }
 
@@ -77,7 +79,9 @@ class LocalAuthorityDetailsCheckerTest {
                     .role(ColleagueRole.SOCIAL_WORKER)
                     .fullName("Alex Brown")
                     .email("test@test.com")
-                    .notificationRecipient("Yes")
+                    .phone("123456789")
+                    .mainContact(YES.getValue())
+                    .notificationRecipient(YES.getValue())
                     .build()))
                 .build()))
             .build();
@@ -94,7 +98,7 @@ class LocalAuthorityDetailsCheckerTest {
                         .build()))
                 .build();
         assertThat(underTest.validate(caseData))
-                .containsExactly("Add a colleague");
+                .containsExactly("Enter main contact");
     }
 
     @Test
@@ -104,14 +108,15 @@ class LocalAuthorityDetailsCheckerTest {
                 .toBuilder()
                 .colleagues(wrapElements(Colleague.builder()
                     .fullName("Alex Brown")
+                    .mainContact(NO)
                     .build()))
                 .build()))
             .build();
 
         assertThat(underTest.validate(caseData)).containsExactly(
-            "Select colleague case role",
-            "Enter colleague email",
-            "Select send them case update notifications"
+            "Enter main contact",
+            "Select case role for other contact 1",
+            "Enter email for other contact 1"
         );
     }
 
@@ -132,11 +137,10 @@ class LocalAuthorityDetailsCheckerTest {
             .build();
 
         assertThat(underTest.validate(caseData)).containsExactly(
-            "Select case role for colleague 1",
-            "Enter email for colleague 1",
-            "Select send them case update notifications for colleague 1",
-            "Enter email for colleague 2",
-            "Select send them case update notifications for colleague 2"
+            "Enter main contact",
+            "Select case role for other contact 1",
+            "Enter email for other contact 1",
+            "Enter email for other contact 2"
         );
     }
 
@@ -146,6 +150,7 @@ class LocalAuthorityDetailsCheckerTest {
             .email("org@test.com")
             .legalTeamManager("John Smith")
             .pbaNumber("PBA1234567")
+            .customerReference("customerReference")
             .address(Address.builder()
                 .postcode("AB 1CD")
                 .addressLine1("Line 1")
@@ -155,7 +160,9 @@ class LocalAuthorityDetailsCheckerTest {
                 .role(ColleagueRole.SOLICITOR)
                 .fullName("Alex Brown")
                 .email("test@test.com")
-                .notificationRecipient("Yes")
+                .phone("123456789")
+                .notificationRecipient(YES.getValue())
+                .mainContact(YES.getValue())
                 .build()))
             .build();
     }

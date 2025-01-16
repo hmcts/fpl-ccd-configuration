@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -39,11 +40,15 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
         final List<String> errors = new ArrayList<>();
 
         if (isBlank(localAuthority.getName())) {
-            errors.add("Enter local authority's name");
+            errors.add("Enter applicant's name");
         }
 
         if (isBlank(localAuthority.getPbaNumber())) {
-            errors.add("Enter local authority's pba number");
+            errors.add("Enter applicant's pba number");
+        }
+
+        if (isBlank(localAuthority.getCustomerReference())) {
+            errors.add("Enter applicant's customer reference");
         }
 
         errors.addAll(validateAddress(localAuthority.getAddress()));
@@ -54,17 +59,17 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
 
     private List<String> validateAddress(Address address) {
         if (isEmpty(address)) {
-            return List.of("Enter local authority's address");
+            return List.of("Enter applicant's address");
         }
 
         final List<String> errors = new ArrayList<>();
 
         if (isBlank(address.getPostcode())) {
-            errors.add("Enter local authority's postcode");
+            errors.add("Enter applicant's postcode");
         }
 
         if (isBlank(address.getAddressLine1())) {
-            errors.add("Enter valid local authority's address");
+            errors.add("Enter valid applicant's address");
         }
 
         return errors;
@@ -73,54 +78,60 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
     private List<String> validateAdditionalContacts(List<Colleague> colleagues) {
         final List<String> errors = new ArrayList<>();
 
-        if (colleagues.isEmpty()) {
-            errors.add("Add a colleague");
-        } else if (colleagues.size() == 1) {
-            errors.addAll(validateAdditionalContact(colleagues.get(0)));
+        final Optional<Colleague> mainContact = colleagues.stream()
+            .filter(Colleague::checkIfMainContact)
+            .findFirst();
+
+        if (mainContact.isPresent()) {
+            errors.addAll(validateMainContact(mainContact.get()));
         } else {
-            for (int i = 0; i < colleagues.size(); i++) {
-                errors.addAll(validateAdditionalContact(colleagues.get(i), i + 1));
+            errors.add("Enter main contact");
+        }
+
+        final List<Colleague> otherContacts = colleagues.stream()
+            .filter(colleague -> !colleague.checkIfMainContact())
+            .toList();
+
+        for (int i = 0; i < otherContacts.size(); i++) {
+            errors.addAll(validateOtherContact(otherContacts.get(i), i + 1));
+        }
+
+        return errors;
+    }
+
+    private List<String> validateMainContact(Colleague colleague) {
+        final List<String> errors = new ArrayList<>();
+
+        if (colleague.checkIfMainContact()) {
+            if (isBlank(colleague.getFullName())) {
+                errors.add("Enter main contact full name");
             }
+
+            if (isBlank(colleague.getPhone())) {
+                errors.add("Enter main contact phone number");
+            }
+        } else {
+            errors.add("Enter main contact");
         }
 
         return errors;
     }
 
-    private List<String> validateAdditionalContact(Colleague colleague) {
+    private List<String> validateOtherContact(Colleague colleague, int index) {
         final List<String> errors = new ArrayList<>();
 
         if (isEmpty(colleague.getRole())) {
-            errors.add("Select colleague case role");
+            errors.add(format("Select case role for other contact %d", index));
         } else if (colleague.getRole().equals(OTHER) && isBlank(colleague.getTitle())) {
-            errors.add("Enter colleague title");
+            errors.add(format("Enter title for other contact %d", index));
         }
 
         if (isBlank(colleague.getFullName())) {
-            errors.add("Enter colleague full name");
+            errors.add(format("Enter full name for other contact %d", index));
         }
 
-        if (!colleague.checkIfMainContact() && isBlank(colleague.getEmail())) {
-            errors.add("Enter colleague email");
-        }
-
-        return errors;
-    }
-
-    private List<String> validateAdditionalContact(Colleague colleague, int index) {
-        final List<String> errors = new ArrayList<>();
-
-        if (isEmpty(colleague.getRole())) {
-            errors.add(format("Select case role for colleague %d", index));
-        } else if (colleague.getRole().equals(OTHER) && isBlank(colleague.getTitle())) {
-            errors.add(format("Enter title for colleague %d", index));
-        }
-
-        if (isBlank(colleague.getFullName())) {
-            errors.add(format("Enter full name for colleague %d", index));
-        }
-
-        if (!colleague.checkIfMainContact() && isBlank(colleague.getEmail())) {
-            errors.add(format("Enter email for colleague %d", index));
+        if (isBlank(colleague.getEmail())) {
+            errors.add(format("Enter email for other contact %d", index));
         }
 
         return errors;

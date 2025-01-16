@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
@@ -37,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.LANGUAGE_REQUIREMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
@@ -177,6 +177,7 @@ class EventsCheckerTest {
             Arguments.of(ORDERS_SOUGHT, ordersSoughtChecker),
             Arguments.of(GROUNDS, groundsChecker),
             Arguments.of(APPLICANT_DETAILS_LA, localAuthorityDetailsChecker),
+            Arguments.of(APPLICANT_DETAILS_SOLICITOR, localAuthorityDetailsChecker),
             Arguments.of(ALLOCATION_PROPOSAL, allocationProposalChecker),
             Arguments.of(APPLICATION_DOCUMENTS, applicationDocumentChecker),
             Arguments.of(SUBMIT_APPLICATION, caseSubmissionChecker),

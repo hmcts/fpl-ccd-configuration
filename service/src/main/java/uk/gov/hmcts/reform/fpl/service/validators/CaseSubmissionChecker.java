@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +23,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Service
 public class CaseSubmissionChecker extends CompoundEventChecker {
-
-    @Autowired
-    private FeatureToggleService featureToggles;
 
     @Override
     public List<String> validate(CaseData caseData) {

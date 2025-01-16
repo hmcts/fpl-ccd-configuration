@@ -46,7 +46,6 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
 public class TaskListService {
 
     private final EventsChecker eventsChecker;
-    private final FeatureToggleService featureToggles;
 
     public List<Task> getTasksForOpenCase(CaseData caseData) {
         return getEvents(caseData).stream()

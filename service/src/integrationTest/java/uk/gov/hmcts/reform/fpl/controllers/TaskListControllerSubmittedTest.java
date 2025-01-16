@@ -18,6 +18,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 @WebMvcTest(AddCaseNumberController.class)
@@ -37,6 +39,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
     final CaseData caseData = CaseData.builder()
         .id(10L)
         .state(State.OPEN)
+        .isLocalAuthority(YES)
         .build();
 
     @BeforeEach
@@ -49,14 +52,13 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldUpdateTaskListWithAdditionalContactsToggledOff() {
+    void shouldUpdateTaskListWithIfNotLocalAuthority() {
         final CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .id(10L)
             .state(State.OPEN)
+            .isLocalAuthority(NO)
             .build();
-
-        when(featureToggleService.isApplicantAdditionalContactsEnabled()).thenReturn(false);
 
         postSubmittedEvent(caseData);
 
@@ -68,8 +70,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldUpdateTaskListWithAdditionalContactsToggledOn() {
-        when(featureToggleService.isApplicantAdditionalContactsEnabled()).thenReturn(true);
+    void shouldUpdateTaskListWithIfLocalAuthority() {
         when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(false);
 
         postSubmittedEvent(caseData);
