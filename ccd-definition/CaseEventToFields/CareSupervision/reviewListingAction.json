@@ -1,0 +1,36 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewListingAction",
+    "CaseFieldID": "listingRequestsList",
+    "DisplayContext": "MANDATORY",
+    "PageID": "SelectListingAction",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 1,
+    "ShowSummaryChangeOption": "N",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/review-listing-action/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewListingAction",
+    "CaseFieldID": "listingRequestToReview",
+    "DisplayContext": "READONLY",
+    "PageID": "ReviewListingAction",
+    "PageDisplayOrder": 2,
+    "PageFieldDisplayOrder": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewListingAction",
+    "CaseFieldID": "markListingActionReviewed",
+    "DisplayContext": "MANDATORY",
+    "PageID": "ReviewListingAction",
+    "PageDisplayOrder": 2,
+    "PageFieldDisplayOrder": 2,
+    "ShowSummaryChangeOption": "Y"
+  }
+]
