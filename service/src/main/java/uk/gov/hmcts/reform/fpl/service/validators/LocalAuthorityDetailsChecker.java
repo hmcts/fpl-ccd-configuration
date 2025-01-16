@@ -15,7 +15,6 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
@@ -100,7 +99,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
             errors.add("Enter colleague full name");
         }
 
-        if (!colleague.isMainContact() && isBlank(colleague.getEmail())) {
+        if (!colleague.checkIfMainContact() && isBlank(colleague.getEmail())) {
             errors.add("Enter colleague email");
         }
 
@@ -120,7 +119,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
             errors.add(format("Enter full name for colleague %d", index));
         }
 
-        if (!colleague.isMainContact() && isBlank(colleague.getEmail())) {
+        if (!colleague.checkIfMainContact() && isBlank(colleague.getEmail())) {
             errors.add(format("Enter email for colleague %d", index));
         }
 

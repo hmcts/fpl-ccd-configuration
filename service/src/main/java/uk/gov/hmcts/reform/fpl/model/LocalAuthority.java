@@ -44,7 +44,7 @@ public class LocalAuthority {
     @JsonIgnore
     public Optional<Element<Colleague>> getMainContactElement() {
         return colleagues.stream()
-            .filter(colleague -> colleague.getValue().isMainContact())
+            .filter(colleague -> colleague.getValue().checkIfMainContact())
             .findFirst();
     }
 
@@ -56,7 +56,7 @@ public class LocalAuthority {
     @JsonIgnore
     public List<Element<Colleague>> getOtherContact() {
         return colleagues.stream()
-            .filter(colleague -> !colleague.getValue().isMainContact())
+            .filter(colleague -> !colleague.getValue().checkIfMainContact())
             .toList();
     }
 

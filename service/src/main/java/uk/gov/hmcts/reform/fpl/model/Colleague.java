@@ -38,7 +38,8 @@ public class Colleague {
     }
 
     @JsonIgnore
-    public boolean isMainContact() {
+    // cannot name this method as isMainContact as it will override the default getter method when serialising
+    public boolean checkIfMainContact() {
         return YES.getValue().equals(mainContact);
     }
 }

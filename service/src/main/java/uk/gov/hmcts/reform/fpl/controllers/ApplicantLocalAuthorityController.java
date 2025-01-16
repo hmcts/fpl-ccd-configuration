@@ -88,10 +88,8 @@ public class ApplicantLocalAuthorityController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
         final LocalAuthorityEventData eventData = caseData.getLocalAuthorityEventData();
 
-        List<Colleague> allContacts = new ArrayList<>(unwrapElements(eventData.getApplicantContactOthers()));
-        allContacts.add(eventData.getApplicantContact());
-
-        List<String> errors = applicantLocalAuthorityService.validateColleagues(allContacts);
+        List<String> errors = applicantLocalAuthorityService.validateMainContact(eventData.getApplicantContact());
+        errors.addAll(applicantLocalAuthorityService.validateOtherContacts(eventData.getApplicantContactOthers()));
 
         if (isNotEmpty(errors)) {
             return respond(caseDetails, errors);

@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -42,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor
@@ -83,8 +86,8 @@ public class ApplicantLocalAuthorityService {
             .dx(null)
             .reference(null)
             .notificationRecipient(null)
-            .phone((colleague.isMainContact()) ? colleague.getPhone() : null)
-            .alternativePhone(null)
+            .phone(colleague.checkIfMainContact() ? colleague.getPhone() : null)
+            .alternativePhone(colleague.checkIfMainContact() ? colleague.getAlternativePhone() : null)
             .build();
     }
 
@@ -104,13 +107,16 @@ public class ApplicantLocalAuthorityService {
         return errors;
     }
 
-    public List<String> validateColleagues(List<Colleague> colleagues) {
+    public List<String> validateMainContact(Colleague mainContact) {
+        return validateEmailService.validate(List.of(mainContact.getEmail()), "Main contact");
+    }
 
-        final List<String> colleaguesEmails = colleagues.stream()
+    public List<String> validateOtherContacts(List<Element<Colleague>> otherContacts) {
+        final List<String> colleaguesEmails = unwrapElements(otherContacts).stream()
             .map(Colleague::getEmail)
             .collect(toList());
 
-        return validateEmailService.validate(colleaguesEmails, "Colleague");
+        return validateEmailService.validate(colleaguesEmails, "Other contact");
     }
 
     public List<String> getDesignatedLocalAuthorityContactsEmails(CaseData caseData) {
@@ -147,13 +153,25 @@ public class ApplicantLocalAuthorityService {
     }
 
     private List<Element<Colleague>> buildColleagueList(LocalAuthorityEventData eventData) {
-        return Stream.concat(
-            Stream.of(element(getMainContactId(eventData.getLocalAuthority()).orElse(UUID.randomUUID()),
-                eventData.getApplicantContact().toBuilder().mainContact(YES.getValue()).build())),
-            eventData.getApplicantContactOthers().stream()
+        List<Element<Colleague>> colleagues = new ArrayList<>();
+        if (!isNull(eventData.getApplicantContact())) {
+            colleagues.add(element(getMainContactId(eventData.getLocalAuthority()).orElse(UUID.randomUUID()),
+                eventData.getApplicantContact().toBuilder()
+                    .mainContact(YES.getValue())
+                    .notificationRecipient(YES.getValue())
+                    .build()));
+        }
+
+        if (!isNull(eventData.getApplicantContactOthers())) {
+            colleagues.addAll(eventData.getApplicantContactOthers().stream()
                 .map(otherContact -> element(otherContact.getId(),
-                    otherContact.getValue().toBuilder().mainContact(NO.getValue()).build())))
-            .toList();
+                    otherContact.getValue().toBuilder()
+                        .mainContact(NO.getValue())
+                        .notificationRecipient(YES.getValue()).build()))
+                .toList());
+        }
+
+        return Collections.unmodifiableList(colleagues);
     }
 
 
