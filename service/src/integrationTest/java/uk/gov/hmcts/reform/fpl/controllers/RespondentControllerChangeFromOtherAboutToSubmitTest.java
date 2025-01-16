@@ -8,13 +8,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseService;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
@@ -43,6 +48,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.buildHiddenAddress;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.localAuthorities;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.otherToRespondentEventData;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareConfidentialOthersFromAllOthers;
@@ -529,6 +535,47 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
                         ).isEqualTo(Set.of(resolveOtherRepresentativeRole(finalI)));
                     });
         }
+    }
+
+    @Test
+    void shouldConvertRefugeOtherToRefugeRespondentAndKeepHidingAddressTelephone() {
+        Others others = Others.builder()
+            .firstOther(Other.builder()
+                .name("Johnny")
+                .build())
+            .build();
+        Respondent transformedRespondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("Johnny")
+                .telephoneNumber(Telephone.builder().telephoneNumber("123456789").build())
+                .address(buildHiddenAddress("Converting"))
+                .addressKnow(IsAddressKnowType.LIVE_IN_REFUGE)
+                .contactDetailsHidden(YesNo.YES.getValue())
+                .build())
+            .legalRepresentation("No")
+            .build();
+
+        UUID refugeOtherId = UUID.randomUUID();
+        CaseData caseData = CaseData.builder()
+            .confidentialOthers(List.of(element(refugeOtherId, Other.builder()
+                .name("Johnny")
+                .addressKnowV2(IsAddressKnowType.LIVE_IN_REFUGE)
+                .address(Address.builder().build())
+                .build())))
+            .others(others)
+            .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, SELECTED_OTHER))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
+        CaseData responseCaseData = extractCaseData(callbackResponse);
+
+
+        assertThat(responseCaseData.getConfidentialRespondents().get(0).getValue().getParty())
+            .extracting("hideAddress", "hideTelephone").containsExactly("Yes", "Yes");
+        assertThat(responseCaseData.getAllRespondents().get(0).getValue().getParty().getAddress())
+            .isNull();
+        assertThat(responseCaseData.getAllRespondents().get(0).getValue().getParty().getTelephoneNumber())
+            .isNull();
     }
 
 }
