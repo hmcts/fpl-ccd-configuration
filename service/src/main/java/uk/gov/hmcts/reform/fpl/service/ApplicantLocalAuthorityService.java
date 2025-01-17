@@ -108,7 +108,11 @@ public class ApplicantLocalAuthorityService {
     }
 
     public List<String> validateMainContact(Colleague mainContact) {
-        return validateEmailService.validate(List.of(mainContact.getEmail()), "Main contact");
+        if (isEmpty(mainContact.getEmail())) {
+            return List.of();
+        } else {
+            return validateEmailService.validate(List.of(mainContact.getEmail()), "Main contact");
+        }
     }
 
     public List<String> validateOtherContacts(List<Element<Colleague>> otherContacts) {
