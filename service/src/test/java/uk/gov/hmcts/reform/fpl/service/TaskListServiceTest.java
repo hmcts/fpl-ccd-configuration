@@ -51,7 +51,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.Task.task;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
@@ -78,7 +77,7 @@ class TaskListServiceTest {
         void shouldReturnTasksInProgress(boolean isLocalAuthority) {
             when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
-            when(caseData.getIsLocalAuthority()).thenReturn(isLocalAuthority ? YES : NO);
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(isLocalAuthority ? true : false);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(IN_PROGRESS, isLocalAuthority, false, false, false,
@@ -94,7 +93,7 @@ class TaskListServiceTest {
         void shouldReturnCompletedTasks(boolean isLocalAuthority) {
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
             when(eventsChecker.completedState(any(Event.class))).thenReturn(COMPLETED_TASK_STATE);
-            when(caseData.getIsLocalAuthority()).thenReturn(isLocalAuthority ? YES : NO);
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(isLocalAuthority ? true : false);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, isLocalAuthority,
@@ -111,7 +110,7 @@ class TaskListServiceTest {
         void shouldReturnNotAvailableTasks(boolean isLocalAuthority) {
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
             when(eventsChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(false);
-            when(caseData.getIsLocalAuthority()).thenReturn(isLocalAuthority ? YES : NO);
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(isLocalAuthority ? true : false);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, isLocalAuthority, false, false, false,
@@ -131,6 +130,7 @@ class TaskListServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .multiCourts(YesNo.from(multiCourts))
+                .isLocalAuthority(NO)
                 .build();
 
             when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
@@ -150,6 +150,7 @@ class TaskListServiceTest {
         void shouldReturnCompletedTasks(boolean multiCourts) {
             final CaseData caseData = CaseData.builder()
                 .multiCourts(YesNo.from(multiCourts))
+                .isLocalAuthority(NO)
                 .build();
 
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
