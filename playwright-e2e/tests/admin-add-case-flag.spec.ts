@@ -19,7 +19,7 @@ test.describe('Add a case flag @sessionreuse', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test.only('Add and remove a case flag as admin user',
+    test('Add and remove a case flag as admin user',
         async ({ addAdminCaseFlag,ctscUser}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
@@ -27,7 +27,7 @@ test.describe('Add a case flag @sessionreuse', () => {
             await runTest( addAdminCaseFlag);
         });
 
-    test.only('Add and remove a case flag as judicial user',
+    test('Add and remove a case flag as judicial user',
         async ({ addAdminCaseFlag,legalUser}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);

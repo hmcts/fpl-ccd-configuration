@@ -9,7 +9,7 @@ import { createCase, updateCase } from "../utils/api-helper";
 //Mark the test serial as document upload are time rated for a user by EXUI
 test.describe.configure({ mode: 'serial' });
 
-test.describe('Upload additional applications', () => {
+test.describe('Upload additional applications @sessionreuse', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
