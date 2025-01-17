@@ -29,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @ExtendWith(SpringExtension.class)
@@ -314,7 +313,7 @@ class CaseSubmissionCheckerTest {
 
         @Test
         void shouldValidateApplicantLAIfLocalAuthorityIsYes() {
-            when(caseData.getIsLocalAuthority()).thenReturn(YES);
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(true);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
             when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
@@ -358,7 +357,7 @@ class CaseSubmissionCheckerTest {
 
         @Test
         void shouldValidateApplicantSolIfLocalAuthorityIsNo() {
-            when(caseData.getIsLocalAuthority()).thenReturn(NO);
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(false);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
             when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
@@ -460,7 +459,7 @@ class CaseSubmissionCheckerTest {
 
         @Test
         void shouldValidateApplicantLAIfLocalAuthorityIsYes() {
-            when(caseData.getIsLocalAuthority()).thenReturn(YES);
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(true);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
             when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
@@ -493,7 +492,7 @@ class CaseSubmissionCheckerTest {
 
         @Test
         void shouldValidateApplicantLAIfLocalAuthorityIsNo() {
-            when(caseData.getIsLocalAuthority()).thenReturn(NO);
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(false);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
             when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
