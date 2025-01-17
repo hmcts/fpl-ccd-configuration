@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
@@ -43,7 +44,7 @@ public class LocalAuthority {
 
     @JsonIgnore
     public Optional<Element<Colleague>> getMainContactElement() {
-        return colleagues.stream()
+        return nullSafeCollection(colleagues).stream()
             .filter(colleague -> colleague.getValue().checkIfMainContact())
             .findFirst();
     }
@@ -55,7 +56,7 @@ public class LocalAuthority {
 
     @JsonIgnore
     public List<Element<Colleague>> getOtherContact() {
-        return colleagues.stream()
+        return nullSafeCollection(colleagues).stream()
             .filter(colleague -> !colleague.getValue().checkIfMainContact())
             .toList();
     }
