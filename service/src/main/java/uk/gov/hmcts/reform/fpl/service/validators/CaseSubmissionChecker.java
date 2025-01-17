@@ -64,7 +64,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
             events.add(GROUNDS);
         }
 
-        if (YES.equals(caseData.getIsLocalAuthority())) {
+        if (caseData.checkIfCaseIsSubmittedByLA()) {
             events.add(APPLICANT_DETAILS_LA);
         } else {
             events.add(APPLICANT_DETAILS_SOLICITOR);

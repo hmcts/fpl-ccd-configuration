@@ -77,7 +77,7 @@ public class TaskListService {
         // Core Events for all combinations of C110a + C1 apps
         final List<Event> events = new ArrayList<>(List.of(
             ORDERS_SOUGHT,
-            YES.equals(caseData.getIsLocalAuthority()) ? APPLICANT_DETAILS_LA : APPLICANT_DETAILS_SOLICITOR,
+            caseData.checkIfCaseIsSubmittedByLA() ? APPLICANT_DETAILS_LA : APPLICANT_DETAILS_SOLICITOR,
             CHILDREN,
             RESPONDENTS,
             OTHER_PROCEEDINGS,
