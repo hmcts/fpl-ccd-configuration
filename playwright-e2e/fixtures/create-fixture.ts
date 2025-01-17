@@ -41,7 +41,6 @@ import { LogExpertReport } from "../pages/log-expert-report";
 import { ChangeCaseName } from "../pages/change-case-name";
 import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
-import { ChangeCaseName} from "../pages/change-case-name";
 import {CtscUserPage} from "../pages/ctsc-user-browser-context";
 import config from "../settings/test-docs/config";
 import {LegalUserPage} from "../pages/legal-user-browser";
@@ -263,7 +262,7 @@ export const test = base.extend<CreateFixtures>({
   manageLaTransferToCourts: async ({ page }, use) => {
     await use(new ManageLaTransferToCourts(page));
 },
-      
+
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
 
