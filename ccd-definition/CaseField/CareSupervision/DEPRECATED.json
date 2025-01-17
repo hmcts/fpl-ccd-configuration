@@ -875,5 +875,14 @@
     "FieldTypeParameter": "Colleague",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "mainContactLabel",
+    "FieldType": "Label",
+    "Label": "<h2>Main contact</h2>",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
