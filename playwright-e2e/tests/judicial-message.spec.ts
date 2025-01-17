@@ -6,7 +6,7 @@ import { newSwanseaLocalAuthorityUserOne} from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe('send and reply message',()=>{
+test.describe('send and reply message @sessionreuse',()=>{
   const dateTime = new Date().toISOString();
   let caseNumber : string;
   let casename : string;

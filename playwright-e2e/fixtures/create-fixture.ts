@@ -269,8 +269,10 @@ export const test = base.extend<CreateFixtures>({
 
   },
 
-  ctscUser: async({ page}, use)=>{
-      await use( new CtscUserPage(page));
+  ctscUser: async({ browser}, use)=>{
+      const context = await browser.newContext({ storageState: config.CTSCUserAuthFile });
+      await use( new CtscUserPage(await context.newPage()));
+      await context.close();
 
   },
     legalUser: async({ browser }, use)=>{
