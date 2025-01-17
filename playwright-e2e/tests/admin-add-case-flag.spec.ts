@@ -10,7 +10,7 @@ import {AddAndRemoveAdminCaseFlag} from '../pages/add-and-remove-admin-case-flag
 import {SignInPage} from '../pages/sign-in';
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe('Add a case flag', () => {
+test.describe('Add a case flag @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
@@ -19,31 +19,31 @@ test.describe('Add a case flag', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('Add and remove a case flag as admin user',
-        async ({page, signInPage, addAdminCaseFlag}) => {
+    test.only('Add and remove a case flag as admin user',
+        async ({ addAdminCaseFlag,ctscUser}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
-            await signInPage.visit();
-            await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await runTest(signInPage, addAdminCaseFlag, page);
+           await addAdminCaseFlag.switchUser(ctscUser.page);
+            await runTest( addAdminCaseFlag);
         });
 
-    test('Add and remove a case flag as judicial user',
-        async ({page, signInPage, addAdminCaseFlag}) => {
+    test.only('Add and remove a case flag as judicial user',
+        async ({ addAdminCaseFlag,legalUser}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
-            await signInPage.visit();
-            await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
-            await runTest(signInPage, addAdminCaseFlag, page);
+            await addAdminCaseFlag.switchUser(legalUser.page);
+            // await signInPage.visit();
+            // await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
+            await runTest(addAdminCaseFlag);
         });
 
-    async function runTest(signInPage: SignInPage, addAdminCaseFlag: AddAndRemoveAdminCaseFlag, page: Page) {
-        await signInPage.navigateTOCaseDetails(caseNumber);
+    async function runTest( addAdminCaseFlag: AddAndRemoveAdminCaseFlag) {
+        await addAdminCaseFlag.navigateTOCaseDetails(caseNumber);
         await addAdminCaseFlag.runAddCaseFlagTest();
-        await expect(page.getByText('Potentially violent person',{exact: true})).toBeVisible();
-        await expect(page.getByText('Case Flag Added')).toBeVisible();
+        await expect(addAdminCaseFlag.page.getByText('Potentially violent person',{exact: true})).toBeVisible();
+        await expect(addAdminCaseFlag.page.getByText('Case Flag Added')).toBeVisible();
         await  addAdminCaseFlag.runRemoveCaseFlagTest();
-        await expect(page.getByText('Potentially violent person',{exact: true})).toBeHidden();
+        await expect(addAdminCaseFlag.page.getByText('Potentially violent person',{exact: true})).toBeHidden();
     }
 
 

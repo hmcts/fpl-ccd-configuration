@@ -38,8 +38,16 @@ import { ReturnApplication } from "../pages/return-application";
 import { Orders } from "../pages/orders";
 import { CaseProgressionReport } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
+import { ChangeCaseName } from "../pages/change-case-name";
+import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
 import { ChangeCaseName} from "../pages/change-case-name";
+import {CtscUserPage} from "../pages/ctsc-user-browser-context";
+import config from "../settings/test-docs/config";
+import {LegalUserPage} from "../pages/legal-user-browser";
+import {LAUserPage} from "../pages/local-authority-user-browser";
+import {CourtAdminUserPage} from "../pages/court-admin-user-browser.ts";
+
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -82,11 +90,18 @@ type CreateFixtures = {
   changeCaseName: ChangeCaseName;
   caseProgressionReport: CaseProgressionReport;
   orders: Orders;
+  manageLaTransferToCourts: ManageLaTransferToCourts
   manageRepresentatives: ManageRepresentatives;
+  ctscUser: CtscUserPage;
+  legalUser: LegalUserPage;
+  localAuthorityUser : LAUserPage;
+  courtAdminUser: CourtAdminUserPage;
 
 };
 
 export const test = base.extend<CreateFixtures>({
+
+
   signInPage: async ({ page }, use) => {
     await use(new SignInPage(page));
   },
@@ -245,7 +260,33 @@ export const test = base.extend<CreateFixtures>({
     await use(new CaseProgressionReport(page));
   },
 
+  manageLaTransferToCourts: async ({ page }, use) => {
+    await use(new ManageLaTransferToCourts(page));
+},
+      
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
+
   },
+
+  ctscUser: async({ page}, use)=>{
+      await use( new CtscUserPage(page));
+
+  },
+    legalUser: async({ browser }, use)=>{
+        const context = await browser.newContext({ storageState: config.legalUserAuthFile });
+        await use( new LegalUserPage(await context.newPage()));
+         await context.close();
+    },
+    localAuthorityUser: async({ browser }, use)=>{
+        const context = await browser.newContext({ storageState: config.LAUserAuthFile });
+        await use( new LAUserPage(await context.newPage()));
+        await context.close();
+    },
+    courtAdminUser: async({ browser }, use)=>{
+        const context = await browser.newContext({ storageState: config.courtAdminAuthFile });
+        await use( new CourtAdminUserPage(await context.newPage()));
+        await context.close();
+    }
+
 });
