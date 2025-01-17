@@ -157,7 +157,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
                 .name(legacyApplicant.getOrganisationName())
                 .colleagues(wrapElements(expectedColleague))
                 .build())
-            .applicantContact(expectedColleague)
+            .applicantContact(expectedColleague.toBuilder().notificationRecipient(null).build())
             .applicantContactOthers(List.of())
             .build();
 
