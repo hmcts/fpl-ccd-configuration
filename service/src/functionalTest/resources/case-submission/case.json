@@ -48,6 +48,7 @@
         "name": "Test",
         "email": "test@test.com",
         "phone": "077766655544",
+        "customerReference": "ABC123456",
         "address": {
           "PostCode": "CR0 2GE",
           "AddressLine1": "Line 1"
@@ -70,6 +71,7 @@
               "title": "Solicitor",
               "fullName": "test",
               "email": "test2@test.com",
+              "phone": "1111111111",
               "notificationRecipient": "Yes",
               "mainContact": "Yes"
             }
