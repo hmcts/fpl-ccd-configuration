@@ -1,5 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
-
+import config from './playwright-e2e/settings/test-docs/config.ts'
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -39,9 +39,17 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+      {
+          name: 'user-session-setup',
+          testMatch: '**/*user-auth-setup.ts',
+      },
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"],
+          storageState: config.CTSCUserAuthFile
+      },
+        //dependencies: ['user-session-setup'],
+
     },
 
     {

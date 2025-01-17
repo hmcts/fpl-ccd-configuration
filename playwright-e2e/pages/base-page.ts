@@ -1,38 +1,28 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import {expect, type Locator, Page} from "@playwright/test";
+import {urlConfig} from "../settings/urls";
+import config from "../settings/test-docs/config.ts";
 
 export class BasePage {
-  readonly nextStep: Locator;
-  readonly goButton: Locator;
-  readonly page: Page;
-  readonly continueButton: Locator;
-  readonly signOut: Locator;
-  readonly checkYourAnswersHeader: Locator;
-  readonly saveAndContinue: Locator;
-  readonly submit: Locator;
-  readonly postCode: Locator;
-  readonly findAddress: Locator;
-  readonly rateLimit: Locator;
+    get page(): Page {
+        return this._page;
+    }
+
+    public _page: Page;
 
 
   constructor(page: Page) {
-    this.page = page;
-    this.nextStep = page.getByLabel('Next step');
-    this.goButton = page.getByRole('button', { name: 'Go', exact: true });
-    this.continueButton = page.getByRole("button", { name: 'Continue' });
-    this.signOut = page.getByText('Sign out');
-    this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-    this.saveAndContinue = page.getByRole("button", { name: 'Save and Continue'});
-    this.submit = page.getByRole('button', { name: 'Submit' });
-    this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
-    this.findAddress = page.getByRole('button', { name: 'Find address' });
-    this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
-  }
+this._page = page;
+          }
+
+  async switchUser(page:Page)       {
+          this._page =page;
+     }
 
   async gotoNextStep(eventName: string) {
       await expect(async () => {
           await this.page.reload();
-          await this.nextStep.selectOption(eventName);
-          await this.goButton.click({clickCount:2,delay:300});
+          await this.page.getByLabel('Next step').selectOption(eventName);
+          await this.page.getByRole('button', { name: 'Go', exact: true }).click({clickCount:2,delay:300});
           await expect(this.page.getByRole('button', { name: 'Previous' })).toBeDisabled();
       }).toPass();
   }
@@ -45,8 +35,8 @@ export class BasePage {
   }
 
   async checkYourAnsAndSubmit(){
-    await expect(this.checkYourAnswersHeader).toBeVisible();
-    await this.saveAndContinue.click();
+    await expect(this.page.getByRole('heading', { name: 'Check your answers' })).toBeVisible();
+    await this.page.getByRole('button', { name: 'Save and Continue'}).click();
   }
 
   async tabNavigation(tabName: string) {
@@ -54,11 +44,11 @@ export class BasePage {
   }
 
   async clickContinue() {
-    await this.continueButton.click();
+    await this.page.getByRole('button', { name: 'Continue' }).click();
   }
 
   async waitForAllUploadsToBeCompleted() {
-    const locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this._page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
       await expect(locs[i]).toBeDisabled();
     }
@@ -88,16 +78,16 @@ export class BasePage {
   }
 
   async clickSignOut() {
-    await this.signOut.click();
+    await this.page.getByText('Sign out').click();
   }
 
   async clickSubmit() {
-    await this.submit.click();
+    await this.page.getByRole('button', { name: 'Submit' }).click();
   }
 
   async enterPostCode(postcode:string){
-      await this.postCode.fill(postcode);
-      await this.findAddress.click();
+      await this.page.getByRole('textbox', { name: 'Enter a UK postcode' }).fill(postcode);
+      await this.page.getByRole('button', { name: 'Find address' }).click();
       await this.page.getByLabel('Select an address').selectOption('1: Object');
 
   }
@@ -108,5 +98,25 @@ export class BasePage {
         let day = new Intl.DateTimeFormat('en', { day: 'numeric'}).format(date);
         let todayDate = `${day} ${month} ${year}`;
         return todayDate;
+    }
+    async navigateTOCaseDetails(caseNumber: string) {
+        await expect(async () => {
+            await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+            expect(this.page.getByText(this.hypenateCaseNumber(caseNumber))).toBeVisible();
+            await this.page.reload();
+        }).toPass()
+    }
+    public async uploadDoc(locator : Locator,file:string = config.testTextFile ){
+        await expect(async  ()=>{
+            await this.page.waitForTimeout(6000);
+            await locator.setInputFiles(file);
+            await this.expectAllUploadsCompleted();
+            await  expect( this.page.getByText('rate limited')).toHaveCount(0);
+        }).toPass();
+    }
+    hypenateCaseNumber(caseNumber: string) {
+        let hypenatedCaseNumber: string;
+        hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);
+        return hypenatedCaseNumber
     }
 }

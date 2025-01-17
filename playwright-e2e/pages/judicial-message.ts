@@ -4,33 +4,56 @@ import { BasePage } from "./base-page";
 
 export class JudicialMessage extends BasePage
 {
-    readonly whichApplication: Locator;
-    readonly sender:Locator;
-    readonly recipient:Locator;
-    readonly subject:Locator;
-    readonly urgency:Locator;
-    readonly recipientEmail:Locator;
-    readonly message:Locator;
-    readonly messageToReply:Locator;
-    readonly haveToReply : Locator;
-    readonly reply: Locator;
-    readonly documentType: Locator;
-    readonly whichDocument: Locator;
+    get whichApplication(): Locator {
+        return this.page.getByLabel('Which application?');
+    }
+
+    get sender(): Locator {
+        return this.page.getByLabel('Sender', { exact: true });
+    }
+
+    get recipient(): Locator {
+        return this.page.getByLabel('Recipient', { exact: true });
+    }
+
+    get subject(): Locator {
+        return this.page.getByLabel('Message subject');
+    }
+
+    get urgency(): Locator {
+        return this.page.getByLabel('Urgency (Optional)');
+    }
+
+    get recipientEmail(): Locator {
+        return this.page.getByLabel('Recipient\'s email address');
+    }
+
+    get message(): Locator {
+        return this.page.getByLabel('Message', { exact: true });
+    }
+
+    get messageToReply(): Locator {
+        return this.page.getByLabel('Your messages');
+    }
+
+    get haveToReply(): Locator {
+        return this.page.getByRole('group', { name: 'Do you need to reply?' });
+    }
+
+    get reply(): Locator {
+        return this.page.getByRole('textbox', { name: 'Reply' });
+    }
+
+    get documentType(): Locator {
+        return this.page.getByLabel('Document type');
+    }
+
+    get whichDocument(): Locator {
+        return this.page.getByLabel('Which document?');
+    }
 
     constructor(page:Page){
         super(page);
-        this.whichApplication =page.getByLabel('Which application?');
-        this.sender = page.getByLabel('Sender', { exact: true });
-        this.recipient = page.getByLabel('Recipient', { exact: true });
-        this.subject = page.getByLabel('Message subject');
-        this.urgency = page.getByLabel('Urgency (Optional)');
-        this.recipientEmail =page.getByLabel('Recipient\'s email address');
-        this.message = page.getByLabel('Message', { exact: true });
-        this.messageToReply = page.getByLabel('Your messages');
-        this.haveToReply = page.getByRole('group', { name: 'Do you need to reply?' });
-        this.reply = page.getByRole('textbox', { name: 'Reply' });
-        this.documentType = page.getByLabel('Document type');
-        this.whichDocument = page.getByLabel('Which document?');
     }
 
     async sendMessageToAllocatedJudgeWithApplication(){
