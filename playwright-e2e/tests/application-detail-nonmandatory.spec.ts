@@ -1,26 +1,28 @@
 import {expect, test} from "../fixtures/fixtures";
 import {newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
 import {createCase} from "../utils/api-helper";
+import {LAUserPage} from "../pages/local-authority-user-browser.ts";
 
-test.describe('Non mandatory application details before application submit', () => {
+test.describe('Non mandatory application details before application submit @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
 
-    test('LA add risk and harm to children',
-        async ({startApplication, signInPage, riskAndHarmToChildren, makeAxeBuilder}, testInfo) => {
+    test.only('LA add risk and harm to children',
+        async ({startApplication,localAuthorityUser, riskAndHarmToChildren, makeAxeBuilder}, testInfo) => {
 
             casename = 'Risk and harm  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
             // 1. Sign in as local-authority user
-            await signInPage.visit();
-            await signInPage.login(
-                newSwanseaLocalAuthorityUserOne.email,
-                newSwanseaLocalAuthorityUserOne.password,
-            );
-            //sign in page
-            await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            // await signInPage.visit();
+            // await signInPage.login(
+            //     newSwanseaLocalAuthorityUserOne.email,
+            //     newSwanseaLocalAuthorityUserOne.password,
+            // );
+            // //sign in page
+            // await signInPage.isSignedIn();
+            await riskAndHarmToChildren.switchUser(localAuthorityUser.page);
+            await riskAndHarmToChildren.navigateTOCaseDetails(caseNumber);
             // Risk and harm to children
             await startApplication.riskAndHarmToChildren();
             await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();

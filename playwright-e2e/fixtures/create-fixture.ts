@@ -284,10 +284,10 @@ export const test = base.extend<CreateFixtures>({
         await use( new LAUserPage(await context.newPage()));
         await context.close();
     },
-    courtAdminUser: async({ browser }, use)=>{
-        const context = await browser.newContext({ storageState: config.courtAdminAuthFile });
-        await use( new CourtAdminUserPage(await context.newPage()));
-        await context.close();
-    }
+    // courtAdminUser: async({ browser }, use)=>{
+    //     const context = await browser.newContext({ storageState: config.courtAdminAuthFile });
+    //     await use( new CourtAdminUserPage(await context.newPage()));
+    //     await context.close();
+    // }
 
 });
