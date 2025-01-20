@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "caseSummaryFlagAddedTag",
     "FieldShowCondition": "caseFlagAdded=\"Yes\"",
     "TabFieldDisplayOrder": -1
@@ -16,7 +16,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderTabHeading",
     "TabFieldDisplayOrder": 0
   },
@@ -26,7 +26,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "createOrderLink",
     "TabFieldDisplayOrder": 1
   },
@@ -36,7 +36,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "uploadCMOLink",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "[STATE] = \"PREPARE_FOR_HEARING\" OR [STATE] = \"FINAL_HEARING\""
@@ -47,7 +47,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "servedCaseManagementOrders",
     "TabFieldDisplayOrder": 3
   },
@@ -57,7 +57,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "sealedCMOs",
     "TabFieldDisplayOrder": 3
   },
@@ -67,7 +67,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "draftSDOLinkOrdersTab",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "standardDirectionOrder!=\"*\"",
@@ -79,7 +79,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "urgentDirectionsOrder",
     "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "urgentDirectionsOrder.orderStatus=\"SEALED\""
@@ -90,7 +90,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 5,
     "FieldShowCondition": "standardDirectionOrder.orderStatus=\"SEALED\""
@@ -101,7 +101,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "urgentHearingOrder",
     "TabFieldDisplayOrder": 6
   },
@@ -111,7 +111,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orders",
     "TabFieldDisplayOrder": 7,
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\""
@@ -122,7 +122,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollection",
     "TabFieldDisplayOrder": 8
   },
@@ -132,7 +132,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionCTSC",
     "TabFieldDisplayOrder": 9
   },
@@ -142,7 +142,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionLA",
     "TabFieldDisplayOrder": 10
   },
@@ -152,7 +152,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp0",
     "TabFieldDisplayOrder": 11
   },
@@ -162,7 +162,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp1",
     "TabFieldDisplayOrder": 12
   },
@@ -172,7 +172,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp2",
     "TabFieldDisplayOrder": 13
   },
@@ -182,7 +182,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp3",
     "TabFieldDisplayOrder": 14
   },
@@ -192,7 +192,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp4",
     "TabFieldDisplayOrder": 15
   },
@@ -202,7 +202,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp5",
     "TabFieldDisplayOrder": 16
   },
@@ -212,7 +212,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp6",
     "TabFieldDisplayOrder": 17
   },
@@ -222,7 +222,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp7",
     "TabFieldDisplayOrder": 18
   },
@@ -232,7 +232,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp8",
     "TabFieldDisplayOrder": 19
   },
@@ -242,7 +242,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionResp9",
     "TabFieldDisplayOrder": 20
   },
@@ -252,7 +252,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild0",
     "TabFieldDisplayOrder": 21
   },
@@ -262,7 +262,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild1",
     "TabFieldDisplayOrder": 22
   },
@@ -272,7 +272,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild2",
     "TabFieldDisplayOrder": 23
   },
@@ -282,7 +282,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild3",
     "TabFieldDisplayOrder": 24
   },
@@ -292,7 +292,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild4",
     "TabFieldDisplayOrder": 25
   },
@@ -302,7 +302,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild5",
     "TabFieldDisplayOrder": 26
   },
@@ -312,7 +312,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild6",
     "TabFieldDisplayOrder": 27
   },
@@ -322,7 +322,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild7",
     "TabFieldDisplayOrder": 28
   },
@@ -332,7 +332,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild8",
     "TabFieldDisplayOrder": 29
   },
@@ -342,7 +342,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild9",
     "TabFieldDisplayOrder": 30
   },
@@ -352,7 +352,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild10",
     "TabFieldDisplayOrder": 31
   },
@@ -362,7 +362,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild11",
     "TabFieldDisplayOrder": 32
   },
@@ -372,7 +372,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild12",
     "TabFieldDisplayOrder": 33
   },
@@ -382,7 +382,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild13",
     "TabFieldDisplayOrder": 34
   },
@@ -392,7 +392,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderCollectionChild14",
     "TabFieldDisplayOrder": 35
   },
@@ -402,7 +402,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "hiddenCaseManagementOrders",
     "TabFieldDisplayOrder": 9
   },
@@ -412,7 +412,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "hiddenStandardDirectionOrders",
     "TabFieldDisplayOrder": 10
   },
@@ -422,8 +422,18 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
-    "CaseFieldID": "hiddenOrders",
+    "TabDisplayOrder": 6,
+    "CaseFieldID": "hiddenUrgentDirectionOrders",
     "TabFieldDisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersTab",
+    "TabLabel": "Orders",
+    "TabDisplayOrder": 6,
+    "CaseFieldID": "hiddenOrders",
+    "TabFieldDisplayOrder": 12
   }
 ]

@@ -83,6 +83,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
 
+    private static final String CANCELLED_HEARING_DETAIL = "cancelledHearingDetails";
+    private static final String CLOSE_CASE_TAB = "closeCaseTabField";
+    private static final String CASE_MANAGEMENT_LOCATION = "caseManagementLocation";
+    private static final String COURT = "court";
+    private static final String HEARING_DETAILS = "hearingDetails";
+    private static final String ORDERS = "orders";
     private static final String PLACEMENT = "placements";
     private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
     private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
@@ -373,7 +379,7 @@ public class MigrateCaseService {
                         + "(courtCode = %s, localAuthorityPolicy.organisation.organisationID = %s)",
                     caseData.getCourt().getCode(),
                     caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())));
-            return Map.of("court", caseData.getCourt().toBuilder()
+            return Map.of(COURT, caseData.getCourt().toBuilder()
                 .code(config.getCorrectCourtCode())
                 .name(config.getCorrectCourtName())
                 .build());
@@ -411,12 +417,12 @@ public class MigrateCaseService {
             hearingDetails.removeAll(hearingBookingsToBeRemoved);
             if (!hearingDetails.isEmpty()) {
                 return Map.of(
-                    "hearingDetails", hearingDetails,
+                    HEARING_DETAILS, hearingDetails,
                     "selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId()
                 );
             } else {
                 Map<String, Object> ret = new HashMap<>(Map.of(
-                        "hearingDetails", hearingDetails
+                    HEARING_DETAILS, hearingDetails
                 ));
                 ret.put("selectedHearingId", null);
                 return ret;
@@ -739,7 +745,7 @@ public class MigrateCaseService {
         Optional<Court> court = courtService.getCourt(courtId);
 
         if (court.isPresent()) {
-            return Map.of("court", court.get());
+            return Map.of(COURT, court.get());
         } else {
             throw new IllegalArgumentException(format("Court not found with ID %s", courtId));
         }
@@ -758,7 +764,7 @@ public class MigrateCaseService {
         String invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
         String validOrderType = "EDUCATION_SUPERVISION_ORDER";
 
-        Optional<Map> orders = Optional.ofNullable((Map) caseDetails.getData().get("orders"));
+        Optional<Map> orders = Optional.ofNullable((Map) caseDetails.getData().get(ORDERS));
         if (orders.isPresent()) {
             Optional<List<String>> orderType = Optional.ofNullable((List<String>) orders.get().get(ORDER_TYPE));
             if (orderType.isPresent() && orderType.get().contains(invalidOrderType)) {
@@ -766,7 +772,7 @@ public class MigrateCaseService {
                 List<String> newOrderType = new ArrayList<>(((List<String>) ordersMap.get(ORDER_TYPE)));
                 newOrderType.replaceAll(target -> target.equals(invalidOrderType) ? validOrderType : target);
                 ordersMap.put(ORDER_TYPE, newOrderType);
-                return Map.of("orders", ordersMap);
+                return Map.of(ORDERS, ordersMap);
             } else {
                 throw new AssertionError(format("Migration {id = %s}, case does not have [orders.orderType] "
                         + "or missing target invalid order type [%s]",
@@ -907,7 +913,7 @@ public class MigrateCaseService {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> caseManagementLocation = (Map<String, Object>) caseDetails.getData()
-            .get("caseManagementLocation");
+            .get(CASE_MANAGEMENT_LOCATION);
         if (!isTargetCourtCode) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, Case data does not contain the target court: %s",
@@ -921,8 +927,8 @@ public class MigrateCaseService {
                 migrationId, caseData.getId()));
         }
 
-        return Map.of("court", court.toBuilder().epimmsId(correctBaseLocation).build(),
-            "caseManagementLocation", CaseLocation.builder()
+        return Map.of(COURT, court.toBuilder().epimmsId(correctBaseLocation).build(),
+            CASE_MANAGEMENT_LOCATION, CaseLocation.builder()
             .baseLocation(correctBaseLocation)
             .region(correctRegion)
             .build());
@@ -934,7 +940,8 @@ public class MigrateCaseService {
     public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
                                                                     String migrationId,
                                                                     int startIndex,
-                                                                    int endIndex) {
+                                                                    int endIndex,
+                                                                    String replacement) {
         Long caseId = caseData.getId();
         String thresholdDetails = caseData.getGrounds().getThresholdDetails();
         String textToRemove;
@@ -953,7 +960,7 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
 
-        thresholdDetails = thresholdDetails.replace(textToRemove, "");
+        thresholdDetails = thresholdDetails.replace(textToRemove, replacement);
         Grounds updatedGrounds = caseData.getGrounds().toBuilder().thresholdDetails(thresholdDetails).build();
 
         return Map.of("grounds", updatedGrounds);
@@ -1002,7 +1009,7 @@ public class MigrateCaseService {
         Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
 
         if (lookedUpCourt.isPresent()) {
-            return Map.of("caseManagementLocation", CaseLocation.builder()
+            return Map.of(CASE_MANAGEMENT_LOCATION, CaseLocation.builder()
                 .baseLocation(lookedUpCourt.get().getEpimmsId())
                 .region(lookedUpCourt.get().getRegionId())
                 .build());
@@ -1086,7 +1093,7 @@ public class MigrateCaseService {
         CloseCase existingCloseCaseField = Optional.ofNullable(caseData.getCloseCaseTabField())
             .orElse(CloseCase.builder().build());
 
-        return Map.of("closeCaseTabField", existingCloseCaseField.toBuilder()
+        return Map.of(CLOSE_CASE_TAB, existingCloseCaseField.toBuilder()
             .date(latestApprovalDate)
             .dateBackup((isEmpty(existingCloseCaseField.getDateBackup())
                 ? existingCloseCaseField.getDate() : existingCloseCaseField.getDateBackup()))
@@ -1099,14 +1106,14 @@ public class MigrateCaseService {
             throw new AssertionError(format("Migration {id = %s, case reference = %s} closeCaseField is null",
                 migrationId, caseData.getId()));
         }
-        return Map.of("closeCaseTabField", closeCaseField.toBuilder()
+        return Map.of(CLOSE_CASE_TAB, closeCaseField.toBuilder()
             .date(closeCaseField.getDateBackup())
             .dateBackup(null).build());
     }
 
     public Map<String, Object> clearCloseCaseTabBackupField(CaseData caseData) {
         CloseCase closeCaseField = caseData.getCloseCaseTabField();
-        return Map.of("closeCaseTabField", closeCaseField.toBuilder().dateBackup(null).build());
+        return Map.of(CLOSE_CASE_TAB, closeCaseField.toBuilder().dateBackup(null).build());
     }
 
     public Map<String, Object> migrateCaseRemoveUnknownAllocatedJudgeTitle(CaseData caseData,
@@ -1149,10 +1156,10 @@ public class MigrateCaseService {
 
         Map<String, Object> hearingDetailsMap = new HashMap<>();
         if (!updatedHearingDetails.isEmpty()) {
-            hearingDetailsMap.put("hearingDetails", updatedHearingDetails);
+            hearingDetailsMap.put(HEARING_DETAILS, updatedHearingDetails);
         }
         if (!updatedCancelledHearingDetails.isEmpty()) {
-            hearingDetailsMap.put("cancelledHearingDetails", updatedCancelledHearingDetails);
+            hearingDetailsMap.put(CANCELLED_HEARING_DETAIL, updatedCancelledHearingDetails);
         }
 
         return hearingDetailsMap;
@@ -1169,7 +1176,7 @@ public class MigrateCaseService {
         Map<String, Object> hearingDetailsMap = new HashMap<>();
 
         if (!updatedCancelledHearingDetails.isEmpty()) {
-            hearingDetailsMap.put("cancelledHearingDetails", updatedCancelledHearingDetails);
+            hearingDetailsMap.put(CANCELLED_HEARING_DETAIL, updatedCancelledHearingDetails);
         } else {
             throw new AssertionError(format("Migration {id = %s}, CancelledHearingDetails not found", migrationId));
         }
@@ -1190,13 +1197,13 @@ public class MigrateCaseService {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
         if (!isNull(hearingDetails) && !hearingDetails.isEmpty()) {
             rollbackHearingBooking(hearingDetails);
-            hearingDetailsMap.put("hearingDetails", hearingDetails);
+            hearingDetailsMap.put(HEARING_DETAILS, hearingDetails);
         }
 
         List<Element<HearingBooking>> cancelledHearingDetails = caseData.getCancelledHearingDetails();
         if (!isNull(cancelledHearingDetails) && !cancelledHearingDetails.isEmpty()) {
             rollbackHearingBooking(cancelledHearingDetails);
-            hearingDetailsMap.put("cancelledHearingDetails", cancelledHearingDetails);
+            hearingDetailsMap.put(CANCELLED_HEARING_DETAIL, cancelledHearingDetails);
         }
 
         return hearingDetailsMap.isEmpty() ? emptyMap() : hearingDetailsMap;
@@ -1304,6 +1311,6 @@ public class MigrateCaseService {
             throw new AssertionError(format("Migration {id = %s}, this is not an EPO", migrationId));
         }
 
-        return Map.of("orders", caseData.getOrders().toBuilder().address(null).build());
+        return Map.of(ORDERS, caseData.getOrders().toBuilder().address(null).build());
     }
 }
