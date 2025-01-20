@@ -8,7 +8,7 @@ test.describe('Non mandatory application details before application submit @sess
     let caseNumber: string;
     let casename: string;
 
-    test.only('LA add risk and harm to children',
+    test('LA add risk and harm to children',
         async ({startApplication,localAuthorityUser, riskAndHarmToChildren, makeAxeBuilder}, testInfo) => {
 
             casename = 'Risk and harm  ' + dateTime.slice(0, 10);
