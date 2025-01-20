@@ -69,6 +69,8 @@ public class SubmitCaseApiTest extends AbstractApiTest {
         CallbackResponse response = callback(caseData, LA_SWANSEA_USER_1, "case-submission/mid-event");
 
         assertThat(response.getErrors()).containsExactly(
+            "In the applicant's details section:",
+            "• Enter main contact phone number",
             "In the allocation proposal section:",
             "• Add the allocation proposal");
 
