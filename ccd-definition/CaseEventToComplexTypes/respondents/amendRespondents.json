@@ -210,7 +210,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.relationshipToChild",
     "FieldDisplayOrder": 15,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",

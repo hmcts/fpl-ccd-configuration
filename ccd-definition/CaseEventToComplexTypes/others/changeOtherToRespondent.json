@@ -175,7 +175,7 @@
     "CaseFieldID": "transformedRespondent",
     "ListElementCode": "party.relationshipToChild",
     "FieldDisplayOrder": 13,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "ChangeOtherToRespondent",

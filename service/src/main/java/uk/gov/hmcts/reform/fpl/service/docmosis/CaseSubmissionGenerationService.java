@@ -738,7 +738,6 @@ public class CaseSubmissionGenerationService
 
     private DocmosisRespondent buildRespondent(final RespondentParty respondent,
                                                Language applicationLanguage) {
-        final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
             .age(formatAge(respondent.getDateOfBirth(), applicationLanguage))
@@ -747,11 +746,11 @@ public class CaseSubmissionGenerationService
             .dateOfBirth(formatDateDisplay(respondent.getDateOfBirth(), applicationLanguage))
             .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
             .address(
-                isConfidential
+                YES.equalsString(respondent.getHideAddress())
                 ? getConfidential(applicationLanguage)
                 : formatAddress(respondent.getAddress()))
             .telephoneNumber(
-                isConfidential
+                YES.equalsString(respondent.getHideTelephone())
                 ? getConfidential(applicationLanguage)
                 : getDefaultIfNullOrEmpty(getTelephoneNumber(respondent.getTelephoneNumber())))
             .contactDetailsHidden(getValidAnswerOrDefaultValue(respondent.getContactDetailsHidden(),

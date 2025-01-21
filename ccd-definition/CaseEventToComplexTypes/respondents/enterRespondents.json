@@ -222,7 +222,7 @@
     "ListElementCode": "party.relationshipToChild",
     "EventElementLabel": "Which children does the respondent have parental responsibility for and what is their relationship?",
     "FieldDisplayOrder": 15,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
