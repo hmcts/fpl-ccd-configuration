@@ -171,8 +171,8 @@ def deployWADmns() {
         ./bin/pull-camunda-bpmn-files.sh ${waStandaloneBranch}
         ./bin/import-dmn-diagram.sh . publiclaw fpl
         """
-    } else {
-      env.ENABLE_WA = false
+  } else {
+    env.ENABLE_WA = false
   }
 }
 
