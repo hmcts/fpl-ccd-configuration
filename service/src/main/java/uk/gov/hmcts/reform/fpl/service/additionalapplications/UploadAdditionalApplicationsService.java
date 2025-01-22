@@ -117,6 +117,23 @@ public class UploadAdditionalApplicationsService {
         return additionalApplicationsBundleBuilder.build();
     }
 
+    public AdditionalApplicationsBundle sealAllDocuments(AdditionalApplicationsBundle bundle, CaseData caseData) {
+        AdditionalApplicationsBundleBuilder bundleBuilder = bundle.toBuilder();
+
+        if (!isEmpty(bundle.getC2DocumentBundle())) {
+            bundleBuilder.c2DocumentBundle(convertC2Bundle(bundle.getC2DocumentBundle(), caseData));
+        }
+        if (!isEmpty(bundle.getC2DocumentBundleConfidential())) {
+            convertConfidentialC2Bundle(caseData, bundle.getC2DocumentBundleConfidential(), bundleBuilder);
+        }
+
+        // If we have an other application, do conversion if needed
+        if (!isEmpty(bundle.getOtherApplicationsBundle())) {
+            bundleBuilder.otherApplicationsBundle(convertOtherBundle(bundle.getOtherApplicationsBundle(), caseData));
+        }
+        return bundleBuilder.build();
+    }
+
     private void buildC2BundleByPolicy(CaseData caseData, C2DocumentBundle c2Bundle,
                                       AdditionalApplicationsBundleBuilder builder) {
         final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
@@ -216,7 +233,7 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle, CaseData caseData) {
+    private OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
             .document(sealDocument(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
@@ -225,7 +242,7 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle, CaseData caseData) {
+    private C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
             .document(sealDocument(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
@@ -234,7 +251,7 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public void convertConfidentialC2Bundle(CaseData caseData, C2DocumentBundle bundle,
+    private void convertConfidentialC2Bundle(CaseData caseData, C2DocumentBundle bundle,
                                             AdditionalApplicationsBundleBuilder builder) {
         C2DocumentBundle convertedC2 = convertC2Bundle(bundle, caseData);
         builder.c2DocumentBundleConfidential(convertedC2);
