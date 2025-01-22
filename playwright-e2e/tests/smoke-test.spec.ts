@@ -18,8 +18,8 @@ test("Smoke Test @smoke-test @accessibility", async ({
   page,
   makeAxeBuilder
 }, testInfo) => {
- // Marking this test slow to increase the time for 3 times of other test
-    test.slow();
+  // Marking this test slow to increase the time for 3 times of other test
+  test.slow();
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
@@ -42,20 +42,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.addApplicationDetailsHeading.isVisible();
 
   // Hearing urgency
-  await startApplication.hearingUrgencyLink.isVisible();
-  await startApplication.hearingUrgencyLink.click();
-  await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
-  await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
-  await hearingUrgency.giveReasonTextBoxFill();
-  await hearingUrgency.withoutNoticeHearing("No");
-  await hearingUrgency.needAHearingWithReducedNoise("No");
-  await hearingUrgency.respondentsAwareOfProceedings("No");
-  await hearingUrgency.continueButton.click();
-  await hearingUrgency.checkYourAnswers.isVisible();
-  await hearingUrgency.saveAndContinueButton.click();
-  await startApplication.addApplicationDetailsHeading.isVisible();
-
-  // Grounds for the application
+  await startApplication.hearingUrgency();
+  await hearingUrgency.hearingUrgencyHeading.isVisible();
+  await hearingUrgency.hearingUrgencySmokeTest();
+  
+ // Grounds for the application
   await startApplication.groundsForTheApplication();
   await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
