@@ -9,12 +9,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
+import uk.gov.hmcts.reform.fpl.exceptions.EncryptedPdfUploadedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -34,6 +36,9 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -62,6 +67,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
@@ -74,17 +81,29 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
     private static final String APPLICANT = "applicant";
     private static final String OTHER_APPLICANT_NAME = "some other name";
-    private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
     private static final String ADMIN_ROLE = "caseworker-publiclaw-courtadmin";
 
-    private static final DocumentReference UPLOADED_DOCUMENT = testDocumentReference();
-    private static final DocumentReference PDF_DOCUMENT = testDocumentReference();
+    private static final DocumentReference SUPPORTING_DOC_REF = testDocumentReference();
+    private static final DocumentReference APPLICATION_DOC_REF = testDocumentReference();
+    private static final Document SEALED_APPLICATION_DOC = testDocument();
+    private static final DocumentReference SEALED_APPLICATION_DOC_REF = testDocumentReference();
+    private static final byte[] SEALED_APPLICATION_BINARY = testDocumentBinary();
+    private static final byte[] APPLICATION_BINARY = testDocumentBinary();
 
     @MockBean
     private ManageDocumentService manageDocumentService;
 
     @MockBean
     private DocumentConversionService documentConversionService;
+
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
+
+    @MockBean
+    private DocumentSealingService documentSealingService;
 
     @MockBean
     private RequestData requestData;
@@ -104,10 +123,18 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
         given(requestData.userRoles()).willReturn(Set.of(ADMIN_ROLE));
         given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
-        given(documentConversionService.convertToPdf(UPLOADED_DOCUMENT)).willReturn(PDF_DOCUMENT);
+        given(documentConversionService.convertToPdf(SUPPORTING_DOC_REF)).willReturn(SUPPORTING_DOC_REF);
         given(userService.isHmctsUser()).willReturn(true);
         when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
         when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
+        given(documentDownloadService.downloadDocument(APPLICATION_DOC_REF.getBinaryUrl()))
+            .willReturn(APPLICATION_BINARY);
+        given(uploadDocumentService.uploadPDF(SEALED_APPLICATION_BINARY, SEALED_APPLICATION_DOC_REF.getFilename()))
+            .willReturn(SEALED_APPLICATION_DOC);
+        given(documentSealingService.sealDocument(eq(APPLICATION_BINARY), any(), any()))
+            .willReturn(SEALED_APPLICATION_BINARY);
+        given(documentSealingService.sealDocument(eq(APPLICATION_DOC_REF), any(), any()))
+            .willReturn(SEALED_APPLICATION_DOC_REF);
     }
 
     @Test
@@ -353,12 +380,34 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .isEqualTo(caseData.getTemporaryC2Document().getDraftOrdersBundle().get(0).getValue().getDocument());
     }
 
+    @Test
+    void shouldRespondWithErrorIfEncrpytedPdf() {
+        when(documentSealingService.sealDocument(any(DocumentReference.class), any(), any()))
+            .thenThrow(EncryptedPdfUploadedException.class);
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
+            .temporaryC2Document(createTemporaryC2Document())
+            .applicantsList(createApplicantsDynamicList(APPLICANT))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build())
+                .build()
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(caseData);
+
+        assertThat(resp.getErrors()).containsExactly("The uploaded document is password protected. "
+            + "Please remove the password protection and try again.");
+    }
+
     private void assertC2DocumentBundle(C2DocumentBundle uploadedC2DocumentBundle) {
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
         assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
 
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
+        assertThat(uploadedC2DocumentBundle.getDocument()).isEqualTo(SEALED_APPLICATION_DOC_REF);
         // This is no longer true - PDF conversion has been moved to post submit
         // assertDocument(uploadedC2DocumentBundle.getDocument(), PDF_DOCUMENT);
         assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle());
@@ -373,6 +422,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(uploadedOtherApplicationsBundle.getApplicationType())
             .isEqualTo(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN);
         assertThat(uploadedOtherApplicationsBundle.getAuthor()).isEqualTo(USER_NAME);
+        assertThat(uploadedOtherApplicationsBundle.getDocument()).isEqualTo(SEALED_APPLICATION_DOC_REF);
 
         assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedOtherApplicationsBundle.getSupplementsBundle());
@@ -412,7 +462,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             "Supporting document",
             "Document notes",
             time.now(),
-            UPLOADED_DOCUMENT,
+            SUPPORTING_DOC_REF,
             USER_NAME
         );
     }
@@ -442,7 +492,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private C2DocumentBundle createTemporaryC2Document() {
         return C2DocumentBundle.builder()
             .type(WITH_NOTICE)
-            .document(UPLOADED_DOCUMENT)
+            .document(APPLICATION_DOC_REF)
             .draftOrdersBundle(createDraftOrderBundle())
             .supplementsBundle(wrapElements(createSupplementsBundle()))
             .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundle()))
@@ -466,7 +516,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private OtherApplicationsBundle createTemporaryOtherApplicationDocument() {
         return OtherApplicationsBundle.builder()
             .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
-            .document(UPLOADED_DOCUMENT)
+            .document(APPLICATION_DOC_REF)
             .supplementsBundle(wrapElements(createSupplementsBundle()))
             .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundle()))
             .build();
@@ -477,7 +527,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .name("Supporting document")
             .notes("Document notes")
             .dateTimeUploaded(time.now())
-            .document(UPLOADED_DOCUMENT)
+            .document(SUPPORTING_DOC_REF)
             .build();
     }
 
@@ -486,7 +536,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .name(SupplementType.C13A_SPECIAL_GUARDIANSHIP)
             .notes("Supplement notes")
             .dateTimeUploaded(time.now())
-            .document(UPLOADED_DOCUMENT)
+            .document(SUPPORTING_DOC_REF)
             .build();
     }
 
@@ -508,7 +558,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         return element(DraftOrder.builder()
             .title("Test")
             .dateUploaded(dateNow())
-            .document(DOCUMENT_REFERENCE)
+            .document(SUPPORTING_DOC_REF)
             .build());
     }
 }
