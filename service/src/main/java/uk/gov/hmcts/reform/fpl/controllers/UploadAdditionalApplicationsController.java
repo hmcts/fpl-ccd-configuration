@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEv
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.order.AdditonalAppLicationDraftOrderUploadedEvent;
+import uk.gov.hmcts.reform.fpl.exceptions.EncryptedPdfUploadedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -40,13 +41,11 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -199,9 +198,16 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseData.getAdditionalApplicationsBundle(), new ArrayList<>()
         );
 
-        AdditionalApplicationsBundle additionalApplicationsBundle =
+        AdditionalApplicationsBundle bundle =
             uploadAdditionalApplicationsService.buildAdditionalApplicationsBundle(caseData);
-        additionalApplications.add(0, element(additionalApplicationsBundle));
+
+        try {
+            bundle = uploadAdditionalApplicationsService.sealAllDocuments(bundle, caseData);
+        } catch (EncryptedPdfUploadedException exception) {
+            return respond(caseDetails, List.of("The uploaded document is password protected. Please remove the "
+                + "password protection and try again."));
+        }
+        additionalApplications.add(0, element(bundle));
 
         caseDetails.getData().put("additionalApplicationsBundle", additionalApplications);
 
@@ -223,61 +229,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
         @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails oldCaseDetails = callbackRequest.getCaseDetails();
-        CaseData oldCaseData = getCaseData(oldCaseDetails);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
         final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        final UUID lastBundleId = oldCaseData.getAdditionalApplicationsBundle().get(0).getId();
+        final UUID lastBundleId = caseData.getAdditionalApplicationsBundle().get(0).getId();
 
-        CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
-            "internal-change-upload-add-apps",
-            caseDetailsCurrent -> {
-                CaseData caseDataCurrent = getCaseData(caseDetailsCurrent);
-                final AdditionalApplicationsBundle lastBundle = ElementUtils.findElement(lastBundleId,
-                    caseDataCurrent.getAdditionalApplicationsBundle()).map(Element::getValue)
-                    .orElseGet(() -> AdditionalApplicationsBundle.builder().build());
-                AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder bundleBuilder = lastBundle.toBuilder();
-
-                // If we have a C2 application, do the conversion if needed
-                if (!isEmpty(lastBundle.getC2DocumentBundle())) {
-                    bundleBuilder.c2DocumentBundle(
-                        uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle(),
-                            caseDataCurrent)
-                    );
-                }
-                if (!isEmpty(lastBundle.getC2DocumentBundleConfidential())) {
-                    uploadAdditionalApplicationsService.convertConfidentialC2Bundle(caseDataCurrent,
-                        lastBundle.getC2DocumentBundleConfidential(), bundleBuilder);
-                }
-
-                // If we have a other application, do conversion if needed
-                if (!isEmpty(lastBundle.getOtherApplicationsBundle())) {
-                    bundleBuilder.otherApplicationsBundle(
-                        uploadAdditionalApplicationsService.convertOtherBundle(lastBundle.getOtherApplicationsBundle(),
-                            caseDataCurrent)
-                    );
-                }
-
-                // update with our newly converted bundles (may not have changed at all, but we can't tell easily as it
-                // could be a supplement
-                List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle
-                    = caseDataCurrent.getAdditionalApplicationsBundle().stream()
-                    .filter(bundle -> !bundle.getId().equals(lastBundleId))
-                    .collect(Collectors.toList());
-
-                additionalApplicationsBundle.add(0, element(lastBundleId, bundleBuilder.build()));
-
-                return Map.of(
-                    "additionalApplicationsBundle", additionalApplicationsBundle
-                );
-            });
-
-        if (isEmpty(caseDetails)) {
-            // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
-            caseDetails = oldCaseDetails;
-        }
-
-        CaseData caseData = getCaseData(caseDetails);
         final AdditionalApplicationsBundle lastBundle = ElementUtils.findElement(lastBundleId,
                 caseData.getAdditionalApplicationsBundle()).map(Element::getValue)
             .orElseGet(() -> AdditionalApplicationsBundle.builder().build());
