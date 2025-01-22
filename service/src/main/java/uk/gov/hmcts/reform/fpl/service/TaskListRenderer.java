@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
@@ -106,7 +106,7 @@ public class TaskListRenderer {
 
         final TaskSection parties = newSection("Add information about the parties")
             .withTask(tasks.containsKey(APPLICANT_DETAILS_LA)
-                ? tasks.get(APPLICANT_DETAILS_LA) : tasks.get(APPLICANT_DETAILS_SOLICITOR))
+                ? tasks.get(APPLICANT_DETAILS_LA) : tasks.get(APPLICANT_DETAILS_RESPONDENT))
             .withTask(tasks.get(CHILDREN))
             .withTask(tasks.get(RESPONDENTS));
 

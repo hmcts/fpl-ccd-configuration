@@ -1,0 +1,78 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterApplicantDetailsRespondent",
+    "CaseFieldID": "representingDetails",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "ApplicantDetails",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-local-authority/organisation/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterApplicantDetailsRespondent",
+    "CaseFieldID": "solicitorDetails",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "ApplicantDetails",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 2,
+    "ShowSummaryChangeOption": "Y",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-local-authority/organisation/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterApplicantDetailsRespondent",
+    "CaseFieldID": "applicantContactLabel",
+    "CaseEventFieldLabel": "<h2>People within your organization who need notifications</h2><br/><h2>Main contact</h2><span class=\"form-hint\">HMCTS will contact this person if they have any questions</span>",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "ApplicantContact",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-local-authority/colleagues/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterApplicantDetailsRespondent",
+    "CaseFieldID": "applicantContact",
+    "CaseEventFieldLabel": " ",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "COMPLEX",
+    "PageID": "ApplicantContact",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterApplicantDetailsRespondent",
+    "CaseFieldID": "applicantOtherContactLabel",
+    "CaseEventFieldLabel": "<h2>Others within your organisation who need notifications</h2><span class=\"form-hint\">Only people with myHMCTS login can receive notifications</span>",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "ApplicantContact",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterApplicantDetailsRespondent",
+    "CaseFieldID": "applicantContactOthers",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "COMPLEX",
+    "PageID": "ApplicantContact",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  }
+]
