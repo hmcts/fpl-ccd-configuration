@@ -43,7 +43,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Hearing urgency
   await startApplication.hearingUrgency();
-  await hearingUrgency.hearingUrgencyHeading.isVisible();
+  await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
   await hearingUrgency.hearingUrgencySmokeTest();
   
  // Grounds for the application
@@ -52,7 +52,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-  // Add application documents
+  //Add application documents
   await startApplication.addApplicationDetailsHeading.isVisible();
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();

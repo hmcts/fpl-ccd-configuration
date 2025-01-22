@@ -19,6 +19,7 @@ export class HearingUrgency extends BasePage {
   }
   async hearingUrgencySmokeTest() {
     await expect(this.hearingUrgencyHeading).toBeVisible();
+    await this.hearingUrgency.click();
     await expect(this.hearingUrgency).toBeVisible();
     await this.selectTypeOfHearing.click();
     await this.areRespondentsAwareOfProceedings.click();
