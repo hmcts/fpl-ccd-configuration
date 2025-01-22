@@ -56,7 +56,6 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static java.util.UUID.randomUUID;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -112,9 +111,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private static final Long CASE_ID = 12345L;
     private static final FeesData FEES_DATA = FeesData.builder().totalAmount(BigDecimal.TEN).build();
     private static final UUID LETTER_1_ID = randomUUID();
-    private static final Document ORDER_DOCUMENT = testDocument();
     private static final Document COVERSHEET_OTHER_REPRESENTATIVE = testDocument();
-    private static final byte[] ORDER_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_OTHER_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final DocumentReference ORDER = testDocumentReference();
 
@@ -198,9 +195,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void init() {
         other.addRepresentative(OTHER_REP_BY_POST.getId());
         givenFplService();
-        given(documentDownloadService.downloadDocument(ORDER.getBinaryUrl())).willReturn(ORDER_BINARY);
-        given(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
-            .willReturn(ORDER_DOCUMENT);
         given(documentService.createCoverDocuments(any(), any(), eq(OTHER_REP_BY_POST.getValue()), any()))
             .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_OTHER_REPRESENTATIVE_BINARY).build());
         given(uploadDocumentService.uploadPDF(COVERSHEET_OTHER_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
@@ -209,10 +203,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .willAnswer(returnsFirstArg());
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTER_1_ID));
-        given(uploadAdditionalApplicationsService.convertC2Bundle(any(), any()))
-            .willAnswer(returnsFirstArg());
-        given(uploadAdditionalApplicationsService.convertOtherBundle(any(), any()))
-            .willAnswer(returnsFirstArg());
 
         doNothing().when(sendDocumentService).sendDocuments(any());
         doNothing().when(cafcassNotificationService).sendEmail(any(), any(), any());
@@ -568,81 +558,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyString(),
             anyMap(),
             anyString());
-    }
-
-    @Test
-    void shouldConvertBundles() {
-        UUID additionalApplicationsBundleId = UUID.randomUUID();
-        C2DocumentBundle c2Bundle = C2DocumentBundle.builder()
-            .type(WITH_NOTICE)
-            .supplementsBundle(new ArrayList<>())
-            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build();
-        OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
-            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
-            .supplementsBundle(new ArrayList<>())
-            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build();
-
-        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
-            .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
-            .c2DocumentBundle(c2Bundle)
-            .otherApplicationsBundle(otherBundle)
-            .build();
-
-        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters())
-            .put("additionalApplicationType", List.of(C2_ORDER, OTHER_ORDER))
-            .put("additionalApplicationsBundle",
-                List.of(element(additionalApplicationsBundleId, additionalApplicationsBundle)))
-            .put("sendToCtsc", NO.getValue())
-            .build());
-
-        when(coreCaseDataService.performPostSubmitCallback(any(),
-                eq("internal-change-upload-add-apps"),
-                changeFunctionCaptor.capture())).thenReturn(caseDetails);
-
-        C2DocumentBundle expectedC2 = c2Bundle.toBuilder().applicantName("Converted C2").build();
-        when(uploadAdditionalApplicationsService.convertC2Bundle(any(), any())).thenReturn(expectedC2);
-        OtherApplicationsBundle expectedOtherBundle = otherBundle.toBuilder().applicantName("Converted Other").build();
-        when(uploadAdditionalApplicationsService.convertOtherBundle(any(), any())).thenReturn(expectedOtherBundle);
-
-        postSubmittedEvent(caseDetails);
-        Map<String, Object> actual = changeFunctionCaptor.getValue().apply(caseDetails);
-
-        assertEquals(actual.get("additionalApplicationsBundle"), List.of(element(additionalApplicationsBundleId,
-                additionalApplicationsBundle.toBuilder()
-                    .c2DocumentBundle(expectedC2)
-                    .otherApplicationsBundle(expectedOtherBundle)
-                    .build())));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    void shouldConvertC2ConfidentialBundle() {
-        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
-            .willReturn(List.of(ApplicationType.C2_APPLICATION));
-
-        C2DocumentBundle c2 = C2DocumentBundle.builder()
-            .type(WITH_NOTICE)
-            .supplementsBundle(new ArrayList<>())
-            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
-            .build();
-
-        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters())
-            .put("sendToCtsc", NO)
-            .put("additionalApplicationType", List.of(C2_ORDER))
-            .put("additionalApplicationsBundle", wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
-                .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
-                .c2DocumentBundleConfidential(c2)
-                .build()))
-            .build());
-
-        postSubmittedEvent(caseDetails);
-
-        verify(coreCaseDataService).performPostSubmitCallback(eq(caseDetails.getId()),
-            eq("internal-change-upload-add-apps"), changeFunctionCaptor.capture());
-        changeFunctionCaptor.getValue().apply(caseDetails);
-        verify(uploadAdditionalApplicationsService).convertConfidentialC2Bundle(any(), eq(c2), any());
     }
 
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
