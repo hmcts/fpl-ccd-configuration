@@ -22,6 +22,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentsConfirmPR",
+    "UserRoles": ["[SOLICITORA]", "[CHILDSOLICITORA]"],
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherCourtAdminDocuments",
     "UserRole": "caseworker-publiclaw-solicitor",
     "Comment": "This should have [SOLICITOR] role but not implemented properly in ccd yet",
