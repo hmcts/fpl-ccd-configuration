@@ -641,20 +641,20 @@ class RoboticsDataServiceTest {
         void shouldReturnRoboticsDataWithExpectedAllocationWhenAllocationProposalHasValue() {
             CaseData caseData = prepareCaseData().toBuilder()
                 .allocationProposal(Allocation.builder()
-                    .proposal("To be moved")
+                    .proposalV2("To be moved")
                     .build())
                 .build();
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
-            assertThat(roboticsData.getAllocation()).isEqualTo(caseData.getAllocationProposal().getProposal());
+            assertThat(roboticsData.getAllocation()).isEqualTo(caseData.getAllocationProposal().getProposalV2());
         }
 
         @Test
         void shouldReturnRoboticsDataWithoutAllocationWhenAllocationProposalHasEmptyProposal() {
             CaseData caseData = prepareCaseData().toBuilder()
                 .allocationProposal(Allocation.builder()
-                    .proposal("")
+                    .proposalV2("")
                     .build())
                 .build();
 
