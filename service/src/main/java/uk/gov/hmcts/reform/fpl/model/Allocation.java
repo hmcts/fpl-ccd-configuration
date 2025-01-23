@@ -1,17 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.AllocationProposaJudgeTypes.CIRCUIT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.AllocationProposaJudgeTypes.CIRCUIT_JUDGE_SECTION_9;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 
 @Data
