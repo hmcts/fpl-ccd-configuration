@@ -97,7 +97,7 @@ class UploadAdditionalApplicationsServiceTest {
     private static final DocumentReference CONVERTED_SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.pdf");
     private static final DocumentReference SEALED_SUPPLEMENT_DOCUMENT =
         testDocumentReference("Sealed_SupplementFile.pdf");
-    private static final DocumentReference SEALED_DOCUMENT = testDocumentReference("Sealed_TestDocument.pdf");
+    private static final DocumentReference  SEALED_DOCUMENT = testDocumentReference("Sealed_TestDocument.pdf");
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
@@ -582,58 +582,50 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Nested
-    class Sealing {
+    class PostSubmitProcessing {
         private static final CaseData CASE_DATA = CaseData.builder().court(COURT_1).build();
 
         @Test
         void shouldSetSupplementsToEmptyListIfNonePresent() {
-            AdditionalApplicationsBundle bundle = AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .document(DOCUMENT)
-                    .supplementsBundle(List.of())
-                    .build())
+            C2DocumentBundle bundle = C2DocumentBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(List.of())
                 .build();
-            AdditionalApplicationsBundle converted = underTest.sealAllDocuments(bundle, CASE_DATA);
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle, CASE_DATA);
 
-            assertThat(converted.getC2DocumentBundle().getSupplementsBundle()).isEmpty();
-            assertThat(converted.getC2DocumentBundle().getSupplementsBundle()).isNotNull();
+            assertThat(converted.getSupplementsBundle()).isEmpty();
+            assertThat(converted.getSupplementsBundle()).isNotNull();
         }
 
         @Test
         void shouldSealC2Document() {
-            AdditionalApplicationsBundle bundle = AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .document(DOCUMENT)
-                    .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
-                        .document(SUPPLEMENT_DOCUMENT)
-                        .build()))
-                    .build())
+            C2DocumentBundle bundle = C2DocumentBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
+                    .document(SUPPLEMENT_DOCUMENT)
+                    .build()))
                 .build();
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle, CASE_DATA);
 
-            AdditionalApplicationsBundle converted = underTest.sealAllDocuments(bundle, CASE_DATA);
-
-            assertThat(converted.getC2DocumentBundle().getDocument())
+            assertThat(converted.getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
-            assertThat(converted.getC2DocumentBundle().getSupplementsBundle().get(0).getValue().getDocument())
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test
         void shouldSealOtherDocument() {
-            AdditionalApplicationsBundle bundle = AdditionalApplicationsBundle.builder()
-                .otherApplicationsBundle(OtherApplicationsBundle.builder()
-                    .document(DOCUMENT)
-                    .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
-                        .document(SUPPLEMENT_DOCUMENT)
-                        .build()))
-                    .build())
+            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
+                    .document(SUPPLEMENT_DOCUMENT)
+                    .build()))
                 .build();
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
 
-            AdditionalApplicationsBundle converted = underTest.sealAllDocuments(bundle, CASE_DATA);
-
-            assertThat(converted.getOtherApplicationsBundle().getDocument())
+            assertThat(converted.getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
-            assertThat(converted.getOtherApplicationsBundle().getSupplementsBundle().get(0).getValue().getDocument())
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
 
@@ -654,27 +646,25 @@ class UploadAdditionalApplicationsServiceTest {
                     .build())
                 .build();
 
-            AdditionalApplicationsBundle applicationsBundle =
-                AdditionalApplicationsBundle.builder()
-                    .c2DocumentBundleConfidential(bundle)
-                    .c2DocumentBundleResp0(bundle)
-                    .build();
-
+            AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder builder =
+                AdditionalApplicationsBundle.builder();
 
             given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
-            AdditionalApplicationsBundle result = underTest.sealAllDocuments(applicationsBundle, caseData);
+            underTest.convertConfidentialC2Bundle(caseData, bundle, builder);
 
-            assertThat(result.getC2DocumentBundleConfidential()
+            AdditionalApplicationsBundle additionalApplicationsBundle = builder.build();
+
+            assertThat(additionalApplicationsBundle.getC2DocumentBundleConfidential()
                 .getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
-            assertThat(result.getC2DocumentBundleConfidential()
+            assertThat(additionalApplicationsBundle.getC2DocumentBundleConfidential()
                 .getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
 
-            assertThat(result.getC2DocumentBundleResp0()
+            assertThat(additionalApplicationsBundle.getC2DocumentBundleResp0()
                 .getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
-            assertThat(result.getC2DocumentBundleResp0()
+            assertThat(additionalApplicationsBundle.getC2DocumentBundleResp0()
                 .getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
