@@ -821,7 +821,7 @@ class RoboticsDataServiceTest {
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-            assertEquals(returnedRoboticsJson, expectedJsonWithCommaSeparatedApplicationType, false);
+            assertEquals(expectedJsonWithCommaSeparatedApplicationType, returnedRoboticsJson, false);
         }
 
         @Test

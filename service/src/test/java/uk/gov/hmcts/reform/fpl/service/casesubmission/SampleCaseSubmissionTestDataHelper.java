@@ -219,7 +219,7 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static Allocation expectedAllocation() {
         return Allocation.builder()
-            .proposalV2("Section 9 circuit judge")
+            .proposalV2("Circuit judge")
             .proposalReason("allocation proposal reason")
             .build();
     }
