@@ -106,7 +106,7 @@ this._page = page;
             await this.page.reload();
         }).toPass()
     }
-    public async uploadDoc(locator : Locator,file:string = config.testTextFile ){
+    public async uploadDoc(locator : Locator,file:string = config.testPdfFile ){
         await expect(async  ()=>{
             await this.page.waitForTimeout(6000);
             await locator.setInputFiles(file);

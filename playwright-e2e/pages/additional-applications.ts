@@ -88,7 +88,7 @@ export class AdditionalApplications extends BasePage {
 
         // upload application form
         await this.page.waitForTimeout(8000);
-        await this.uploadDoc(this.applicationForm, config.testTextFile);
+        await this.uploadDoc(this.applicationForm, config.testPdfFile);
         await this.acknowledgeOtherApplicationForm.check();
         await this.sameDay.click();
         await this.uploadOtherSupplement();
