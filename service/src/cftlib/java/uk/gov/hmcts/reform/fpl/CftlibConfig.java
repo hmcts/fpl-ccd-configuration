@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl;
 
+import com.google.common.io.Resources;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -28,10 +30,15 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-caa",
             "caseworker-ras-validation",
             "GS_profile",
-            "caseworker-wa-task-configuration"
+            "caseworker-wa-task-configuration",
+            "TTL_profile",
+            "ctsc",
+            "hearing-centre-admin"
         };
         lib.createRoles(roles);
 
+        var json = Resources.toString(Resources.getResource("cftlib-am-role-assignments.json"), StandardCharsets.UTF_8);
+        lib.configureRoleAssignments(json);
 
         var def = Files.readAllBytes(Path.of("../build/fpl.xlsx"));
         lib.importDefinition(def);

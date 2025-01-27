@@ -1563,6 +1563,36 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createCaseLink",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "maintainCaseLinks",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-change-manage-order",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
@@ -1715,6 +1745,59 @@
           "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageCaseTTL",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "TTL_profile"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },   
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "requestListingAction",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "ctsc"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "hearing-centre-admin"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewListingAction",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "hearing-centre-admin"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "ctsc"
+        ],
+        "CRUD": "R"
       }
     ]
   }

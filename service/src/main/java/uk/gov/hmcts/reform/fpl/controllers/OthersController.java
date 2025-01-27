@@ -28,12 +28,14 @@ public class OthersController extends CallbackController {
     private final ConfidentialDetailsService confidentialService;
     private final OthersService othersService;
 
+    private static final String OTHERS = "others";
+
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("others", othersService.prepareOthers(caseData));
+        caseDetails.getData().put(OTHERS, othersService.prepareOthers(caseData));
 
         return respond(caseDetails);
     }
@@ -41,8 +43,8 @@ public class OthersController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Others updatedOthers = othersService.removeAddressOrAddressNotKnowReason(getCaseData(caseDetails));
-        caseDetails.getData().put("others", updatedOthers);
+        Others updatedOthers = othersService.consolidateAndRemoveHiddenFields(getCaseData(caseDetails));
+        caseDetails.getData().put(OTHERS, updatedOthers);
 
         CaseData caseData = getCaseData(caseDetails);
         List<Element<Other>> allOthers = caseData.getAllOthers();
@@ -53,9 +55,9 @@ public class OthersController extends CallbackController {
 
         Others others = Others.from(othersList);
         if (isNull(others)) {
-            caseDetails.getData().remove("others");
+            caseDetails.getData().remove(OTHERS);
         } else {
-            caseDetails.getData().put("others", others);
+            caseDetails.getData().put(OTHERS, others);
         }
 
         return respond(caseDetails);
