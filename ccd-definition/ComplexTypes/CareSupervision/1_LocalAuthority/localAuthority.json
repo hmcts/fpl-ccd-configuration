@@ -121,7 +121,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthority",
     "ListElementCode": "solicitorDetailsLabel",
-    "ElementLabel": "<h2>Solicitors details</h2>",
+    "ElementLabel": " ",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   }
