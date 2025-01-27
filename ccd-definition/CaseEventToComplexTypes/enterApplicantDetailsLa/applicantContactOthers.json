@@ -31,7 +31,7 @@
     "ID": "EnterApplicantLa",
     "CaseEventID": "enterApplicantDetailsLA",
     "CaseFieldID": "applicantContactOthers",
-    "ListElementCode": "roleOther",
+    "ListElementCode": "title",
     "DisplayContext": "Optional",
     "FieldDisplayOrder": 4
   }
