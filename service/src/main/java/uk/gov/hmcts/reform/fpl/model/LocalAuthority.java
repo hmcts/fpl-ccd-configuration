@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -31,6 +32,7 @@ public class LocalAuthority {
     private String pbaNumber;
     private String clientCode;
     private String customerReference;
+    private RepresentingDetails representingDetails;
     @Builder.Default
     private List<Element<Colleague>> colleagues = new ArrayList<>();
     private String designated;

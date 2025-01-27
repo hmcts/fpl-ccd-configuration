@@ -1,8 +1,8 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EnterApplicantRespondent",
-    "CaseEventID": "enterApplicantDetailsRespondent",
+    "ID": "enterThirdPartyApplicant",
+    "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "applicantContact",
     "ListElementCode": "fullName",
     "DisplayContext": "MANDATORY",
@@ -10,8 +10,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EnterApplicantRespondent",
-    "CaseEventID": "enterApplicantDetailsRespondent",
+    "ID": "enterThirdPartyApplicant",
+    "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "applicantContact",
     "ListElementCode": "phone",
     "DisplayContext": "MANDATORY",
@@ -19,8 +19,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EnterApplicantRespondent",
-    "CaseEventID": "enterApplicantDetailsRespondent",
+    "ID": "enterThirdPartyApplicant",
+    "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "applicantContact",
     "ListElementCode": "alternativePhone",
     "DisplayContext": "OPTIONAL",
@@ -28,8 +28,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EnterApplicantRespondent",
-    "CaseEventID": "enterApplicantDetailsRespondent",
+    "ID": "enterThirdPartyApplicant",
+    "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "applicantContact",
     "ListElementCode": "email",
     "EventElementLabel": "Direct email address",

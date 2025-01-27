@@ -108,5 +108,21 @@
     "ElementLabel": " ",
     "FieldType": "Label",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "representingDetails",
+    "ElementLabel": "Details of person you are representing",
+    "FieldType": "RepresentingDetails",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "solicitorDetailsLabel",
+    "ElementLabel": "<h2>Solicitors details</h2>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
   }
 ]

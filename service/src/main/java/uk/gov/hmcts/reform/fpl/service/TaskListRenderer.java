@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_THIRD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
@@ -104,11 +104,11 @@ public class TaskListRenderer {
             .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
                 + "you can send your application without this information ");
 
-        final TaskSection parties = newSection("Add information about the parties")
-            .withTask(tasks.containsKey(APPLICANT_DETAILS_LA)
-                ? tasks.get(APPLICANT_DETAILS_LA) : tasks.get(APPLICANT_DETAILS_RESPONDENT))
-            .withTask(tasks.get(CHILDREN))
-            .withTask(tasks.get(RESPONDENTS));
+        final TaskSection parties = newSection("Add information about the parties");
+        ofNullable(tasks.get(APPLICANT_DETAILS_LA)).ifPresent(parties::withTask);
+        ofNullable(tasks.get(APPLICANT_DETAILS_THIRD_PARTY)).ifPresent(parties::withTask);
+        ofNullable(tasks.get(CHILDREN)).ifPresent(parties::withTask);
+        ofNullable(tasks.get(RESPONDENTS)).ifPresent(parties::withTask);
 
         final TaskSection courtRequirements = newSection("Add court requirements")
             .withTask(tasks.get(ALLOCATION_PROPOSAL));

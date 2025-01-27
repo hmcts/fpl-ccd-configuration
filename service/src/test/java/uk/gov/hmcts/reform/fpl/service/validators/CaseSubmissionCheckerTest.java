@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_THIRD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
@@ -67,7 +67,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -106,7 +106,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -147,7 +147,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -190,7 +190,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -235,7 +235,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -278,7 +278,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -321,7 +321,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -352,7 +352,7 @@ class CaseSubmissionCheckerTest {
             );
 
             assertThat(isAvailable).isFalse();
-            verify(eventsChecker, never()).validate(eq(APPLICANT_DETAILS_RESPONDENT), any());
+            verify(eventsChecker, never()).validate(eq(APPLICANT_DETAILS_THIRD_PARTY), any());
         }
 
         @Test
@@ -365,7 +365,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -467,7 +467,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -485,7 +485,7 @@ class CaseSubmissionCheckerTest {
                 eventValidationErrors(ALLOCATION_PROPOSAL, allocationProposalErrors)
             );
 
-            verify(eventsChecker, never()).validate(eq(APPLICANT_DETAILS_RESPONDENT), any());
+            verify(eventsChecker, never()).validate(eq(APPLICANT_DETAILS_THIRD_PARTY), any());
         }
 
 
@@ -500,7 +500,7 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
             when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
-            when(eventsChecker.validate(APPLICANT_DETAILS_RESPONDENT, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -512,7 +512,7 @@ class CaseSubmissionCheckerTest {
                 eventValidationErrors(ORDERS_SOUGHT, ordersNeededErrors),
                 eventValidationErrors(HEARING_URGENCY, hearingNeededErrors),
                 eventValidationErrors(GROUNDS, groundsErrors),
-                eventValidationErrors(APPLICANT_DETAILS_RESPONDENT, applicantSolicitorErrors),
+                eventValidationErrors(APPLICANT_DETAILS_THIRD_PARTY, applicantSolicitorErrors),
                 eventValidationErrors(CHILDREN, childrenErrors),
                 eventValidationErrors(RESPONDENTS, respondentsErrors),
                 eventValidationErrors(ALLOCATION_PROPOSAL, allocationProposalErrors)
