@@ -793,13 +793,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "allocationProposal_label",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationProposal",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRU"
