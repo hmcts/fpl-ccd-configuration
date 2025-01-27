@@ -1064,10 +1064,10 @@ public class CaseSubmissionGenerationService
     }
 
     private DocmosisAllocation buildDocmosisAllocation(Allocation allocation) {
-        return DocmosisAllocation.builder()
+        return isNotEmpty(allocation) ? DocmosisAllocation.builder()
             .proposal(allocation.getProposalV2())
             .proposalReason(allocation.getProposalReason())
-            .build();
+            .build() : null;
     }
 
     private String concatenateKeyAndValue(final String key, final String value) {
