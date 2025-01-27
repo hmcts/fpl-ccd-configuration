@@ -159,7 +159,7 @@ def deployWADmns() {
   def dmnBranch = "DFPL-2439-v2"
 
   echo "Checking if we should use WA"
-  if (githubApi.checkForLabel(env.BRANCH_NAME, 'enable_wa')) {
+  if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
     env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
     env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
     env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
