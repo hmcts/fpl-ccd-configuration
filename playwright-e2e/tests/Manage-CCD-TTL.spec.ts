@@ -12,7 +12,7 @@ test.describe('Manage the Retain and Dispose Config', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test.only('CTSC suspend case disposal',
+    test('CTSC suspend case disposal',
         async ({page, signInPage, manageTTL}) => {
             caseName = 'Suspend system case disposal ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
@@ -25,7 +25,7 @@ test.describe('Manage the Retain and Dispose Config', () => {
             await manageTTL.clickSaveAndContinue();
         });
 
-    test.only('CTSC leader override the system disposal date',
+    test('CTSC leader override the system disposal date',
         async ({page, signInPage, manageTTL}) => {
             caseName = 'Override system case disposal date ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
