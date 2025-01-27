@@ -5,8 +5,8 @@ import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
-import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAllocation;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
@@ -217,10 +217,9 @@ public class SampleCaseSubmissionTestDataHelper {
             .build();
     }
 
-    private static Allocation expectedAllocation() {
-        return Allocation.builder()
-            .proposal("Section 9 circuit judge")
-            .proposalV2("Circuit judge")
+    private static DocmosisAllocation expectedAllocation() {
+        return DocmosisAllocation.builder()
+            .proposal("Circuit judge")
             .proposalReason("allocation proposal reason")
             .build();
     }
