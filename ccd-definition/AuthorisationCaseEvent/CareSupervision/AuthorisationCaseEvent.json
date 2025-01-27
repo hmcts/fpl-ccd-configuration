@@ -1788,6 +1788,13 @@
           "TTL_profile"
         ],
         "CRUD": "CRU"
+
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
       }
     ]
   },
