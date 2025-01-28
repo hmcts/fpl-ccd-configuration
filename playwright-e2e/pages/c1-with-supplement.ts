@@ -29,7 +29,7 @@ export class C1WithSupplement extends BasePage {
     async c1WithSupplementSmokeTest() {
         await this.gotoNextStep('C1 with supplement');
         await this.yesRadio.check();
-        await this.uploadApplicationTextbox.setInputFiles(config.testTextFile);
+        await this.uploadApplicationTextbox.setInputFiles(config.testWordFile);
         await this.expectAllUploadsCompleted();
         await this.page.waitForTimeout(6000);
         await this.onTheSameDay.check();
