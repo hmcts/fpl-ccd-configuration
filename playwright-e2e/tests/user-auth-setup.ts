@@ -25,12 +25,9 @@ test("Create LA user session state", async ({ signInPage, context }) => {
 });
 
 test("Create court admin user session state", async ({ signInPage, context }) => {
-    if (testConfig.waEnabled){
         await signInPage.visit();
-        await signInPage.login(HighCourtAdminUser.email,HighCourtAdminUser.password);
+        await signInPage.login(CTSCUser.email,CTSCUser.password);
         await context.storageState({ path: config.courtAdminAuthFile });
-    }
-
 });
 
 

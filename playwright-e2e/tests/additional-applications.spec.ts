@@ -206,10 +206,11 @@ test.describe('Upload additional applications @sessionreuse', () => {
         await additionalApplications.uploadBasicC2Application(false);
 
         // Check CFV
+          await caseFileView.switchUser(localAuthorityUser.page);
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Application');
         await caseFileView.openFolder('C2 applications');
-        await expect(localAuthorityUser.page.getByRole('tree')).toContainText('testTPdf.pdf');
+        await expect(caseFileView.page.getByRole('tree')).toContainText('testPdf.pdf');
 
         // If WA is enabled
         if (testConfig.waEnabled) {

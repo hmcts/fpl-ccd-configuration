@@ -96,7 +96,7 @@ test.describe('Non mandatory application details before application submit @sess
 
         });
 
-    test.only('@LA add other people',
+    test('@LA add other people',
         async ({startApplication, localAuthorityUser, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
             casename = 'Other people in case ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
