@@ -1,33 +1,43 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import {BasePage} from "./base-page.ts";
 
-export class FactorsAffectingParenting {
-  readonly page: Page;
-  readonly factorsAffectingParentingHeading: Locator;
-  readonly factorsAffectingParentingLink: Locator;
-  readonly alcoholOrDrugAbuse: Locator;
-  readonly detailsAlcoholOrDrugAbuse: Locator;
-  readonly domesticViolence: Locator;
-  readonly detailsDomesticViolence: Locator;
-  readonly anythingElse: Locator;
-  readonly detailsAnythingElse: Locator;
-  readonly Continue: Locator;
-  readonly CheckYourAnswers: Locator;
-  readonly SaveAndContinue: Locator;
+export class FactorsAffectingParenting extends BasePage{
+    get factorsAffectingParentingHeading(): Locator {
+        return this.page.getByRole("heading", {name: "Factors affecting parenting",exact:true});
+    }
+
+    get factorsAffectingParentingLink(): Locator {
+        return this.page.getByRole("link", { name: "Factors affecting parenting" });
+    }
+
+    get alcoholOrDrugAbuse(): Locator {
+        return this.page.getByRole('group', { name: 'Alcohol or drug abuse (Optional)' });
+    }
+
+    get detailsAlcoholOrDrugAbuse(): Locator {
+        return this. page.locator('#factorsParenting_alcoholDrugAbuseReason');
+    }
+
+    get domesticViolence(): Locator {
+        return this.page.getByRole('group', { name: 'Domestic violence (Optional)' }).getByLabel('Yes');
+    }
+
+    get detailsDomesticViolence(): Locator {
+        return this.page.locator('#factorsParenting_domesticViolenceReason');
+    }
+
+    get anythingElse(): Locator {
+        return this.page.getByRole('group', { name: 'Anything else (Optional)' }).getByLabel('Yes');
+    }
+
+    get detailsAnythingElse(): Locator {
+        return this.page.locator('#factorsParenting_anythingElseReason');
+    }
+
 
   public constructor(page: Page) {
-    this.page = page;
-    this.factorsAffectingParentingHeading = page.getByRole("heading", {name: "Factors affecting parenting",exact:true});
-    this.factorsAffectingParentingLink = page.getByRole("link", { name: "Factors affecting parenting" });
-    this.alcoholOrDrugAbuse = page.getByRole('group', { name: 'Alcohol or drug abuse (Optional)' });
-    this.detailsAlcoholOrDrugAbuse = page.locator('#factorsParenting_alcoholDrugAbuseReason');
-    this.domesticViolence = page.getByRole('group', { name: 'Domestic violence (Optional)' }).getByLabel('Yes');
-    this.detailsDomesticViolence = page.locator('#factorsParenting_domesticViolenceReason');
-    this.anythingElse = page.getByRole('group', { name: 'Anything else (Optional)' }).getByLabel('Yes');
-    this.detailsAnythingElse = page.locator('#factorsParenting_anythingElseReason');
-    this.Continue = page.getByRole('button', { name: 'Continue' });
-    this.CheckYourAnswers = page.getByRole('heading', { name: 'Check your answers' });
-    this.SaveAndContinue = page.getByRole('button', { name: 'Save and continue' });
-  }
+      super(page);
+     }
 
   async addFactorsAffectingParenting() {
     await this.factorsAffectingParentingLink.click();
@@ -38,8 +48,7 @@ export class FactorsAffectingParenting {
     await this.detailsDomesticViolence.fill('details domestic violence');
     await this.anythingElse.check();
     await this.detailsAnythingElse.fill('details anything else');
-    await this.Continue.click();
-    expect(this.CheckYourAnswers).toBeVisible;
-    await this.SaveAndContinue.click();
+    await this.clickContinue()
+   await this.checkYourAnsAndSubmit();
   }
 }
