@@ -180,7 +180,7 @@ class EventsCheckerTest {
             Arguments.of(ORDERS_SOUGHT, ordersSoughtChecker),
             Arguments.of(GROUNDS, groundsChecker),
             Arguments.of(APPLICANT_DETAILS_LA, localAuthorityDetailsChecker),
-            Arguments.of(APPLICANT_DETAILS_THIRD_PARTY, localAuthorityDetailsChecker),
+            Arguments.of(APPLICANT_DETAILS_THIRD_PARTY, thirdPartyApplicantDetailsChecker),
             Arguments.of(ALLOCATION_PROPOSAL, allocationProposalChecker),
             Arguments.of(APPLICATION_DOCUMENTS, applicationDocumentChecker),
             Arguments.of(SUBMIT_APPLICATION, caseSubmissionChecker),
