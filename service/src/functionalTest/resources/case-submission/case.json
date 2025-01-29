@@ -60,7 +60,8 @@
             "value": {
               "role": "SOLICITOR",
               "email": "test@test.com",
-              "fullName": "Sol 1",
+              "firstName": "Sol",
+              "lastName": "1",
               "notificationRecipient": "Yes"
             }
           },
