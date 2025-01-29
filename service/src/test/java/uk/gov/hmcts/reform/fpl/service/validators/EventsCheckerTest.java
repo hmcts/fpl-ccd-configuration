@@ -64,9 +64,9 @@ class EventsCheckerTest {
     private OrdersSoughtChecker ordersSoughtChecker;
     @MockBean
     private GroundsChecker groundsChecker;
-    @MockBean
+    @MockBean(name = "localAuthorityDetailsChecker")
     private LocalAuthorityDetailsChecker localAuthorityDetailsChecker;
-    @MockBean
+    @MockBean(name = "localAuthorityDetailsChecker")
     private ThirdPartyApplicantDetailsChecker thirdPartyApplicantDetailsChecker;
     @MockBean
     private AllocationProposalChecker allocationProposalChecker;
