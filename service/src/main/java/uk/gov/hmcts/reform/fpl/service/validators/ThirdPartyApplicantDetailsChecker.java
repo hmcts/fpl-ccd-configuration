@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -35,26 +35,23 @@ public class ThirdPartyApplicantDetailsChecker implements EventChecker {
     private List<String> validateLocalAuthority(LocalAuthority localAuthority) {
 
         if (isNull(localAuthority)) {
-            return List.of("Add Solicitor's details");
+            return List.of("Add solicitor's details");
         }
 
         final List<String> errors = new ArrayList<>();
 
-        if (isBlank(localAuthority.getRepresentingDetails().getFirstName())
-            || isBlank(localAuthority.getRepresentingDetails().getLastName())) {
-            errors.add("Enter details of person you are representing");
-        }
+        errors.addAll(validateRepresentingDetails(localAuthority.getRepresentingDetails()));
 
         if (isBlank(localAuthority.getName())) {
-            errors.add("Enter applicant's name");
+            errors.add("Enter solicitor's name");
         }
 
         if (isBlank(localAuthority.getPbaNumber())) {
-            errors.add("Enter applicant's pba number");
+            errors.add("Enter solicitor's pba number");
         }
 
         if (isBlank(localAuthority.getCustomerReference())) {
-            errors.add("Enter applicant's customer reference");
+            errors.add("Enter solicitor's customer reference");
         }
 
         errors.addAll(validateAddress(localAuthority.getAddress()));
@@ -63,19 +60,34 @@ public class ThirdPartyApplicantDetailsChecker implements EventChecker {
         return errors;
     }
 
+    private List<String> validateRepresentingDetails(RepresentingDetails representingDetails) {
+        final List<String> errors = new ArrayList<>();
+
+        if (isNull(representingDetails)) {
+            errors.add("Enter details of person you are representing");
+        } else {
+            if (isBlank(representingDetails.getFirstName())
+                || isBlank(representingDetails.getLastName())) {
+                errors.add("Enter details of person you are representing");
+            }
+        }
+
+        return errors;
+    }
+
     private List<String> validateAddress(Address address) {
         if (isEmpty(address)) {
-            return List.of("Enter applicant's address");
+            return List.of("Enter solicitor's address");
         }
 
         final List<String> errors = new ArrayList<>();
 
         if (isBlank(address.getPostcode())) {
-            errors.add("Enter applicant's postcode");
+            errors.add("Enter solicitor's postcode");
         }
 
         if (isBlank(address.getAddressLine1())) {
-            errors.add("Enter valid applicant's address");
+            errors.add("Enter valid solicitor's address");
         }
 
         return errors;
