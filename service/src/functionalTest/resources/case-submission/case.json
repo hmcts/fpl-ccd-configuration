@@ -70,7 +70,8 @@
             "value": {
               "role": "OTHER",
               "title": "Solicitor",
-              "fullName": "test",
+              "firstName": "testFirst",
+              "lastName": "testLast",
               "phone": "077766655544",
               "email": "test2@test.com",
               "notificationRecipient": "Yes",
