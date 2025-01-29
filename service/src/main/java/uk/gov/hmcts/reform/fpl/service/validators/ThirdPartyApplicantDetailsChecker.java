@@ -25,10 +25,10 @@ public class ThirdPartyApplicantDetailsChecker extends LocalAuthorityDetailsChec
             return List.of("Add applicant's details");
         }
 
-        return validateLocalAuthority(localAuthorities.get(0));
+        return validateThirdPartyApplicant(localAuthorities.get(0));
     }
 
-    private List<String> validateLocalAuthority(LocalAuthority localAuthority) {
+    private List<String> validateThirdPartyApplicant(LocalAuthority localAuthority) {
 
         if (isNull(localAuthority)) {
             return List.of("Add solicitor's details");

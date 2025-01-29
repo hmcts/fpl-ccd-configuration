@@ -1235,19 +1235,19 @@ class ApplicantLocalAuthorityServiceTest {
             .colleagues(List.of(MAIN_CONTACT, OTHER_CONTACT)).build();
 
         @Test
-        public void shouldReturnMainContactOfLocalAuthority() {
+        void shouldReturnMainContactOfLocalAuthority() {
             Colleague actualMainContact = underTest.getMainContact(LOCAL_AUTHORITY);
             assertThat(actualMainContact).isEqualTo(MAIN_CONTACT.getValue());
         }
 
         @Test
-        public void shouldReturnOtherContactsOfLocalAuthority() {
+        void shouldReturnOtherContactsOfLocalAuthority() {
             List<Element<Colleague>> actualOtherContacts = underTest.getOtherContact(LOCAL_AUTHORITY);
             assertThat(actualOtherContacts).containsExactly(OTHER_CONTACT);
         }
 
         @Test
-        public void shouldMigrateMainContactFromLegacyColleague() {
+        void shouldMigrateMainContactFromLegacyColleague() {
             Colleague legacyColleague = Colleague.builder()
                 .role(ColleagueRole.SOCIAL_WORKER)
                 .fullName("Legacy")
@@ -1273,7 +1273,7 @@ class ApplicantLocalAuthorityServiceTest {
         }
 
         @Test
-        public void shouldMigrateOtherContactFromLegacyColleague() {
+        void shouldMigrateOtherContactFromLegacyColleague() {
             Colleague legacyColleague = Colleague.builder()
                 .role(ColleagueRole.OTHER)
                 .title("Other title")
