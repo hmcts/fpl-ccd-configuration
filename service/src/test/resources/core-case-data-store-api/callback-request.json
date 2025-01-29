@@ -287,7 +287,8 @@
                   "role": "SOLICITOR",
                   "phone": "111111111",
                   "email": "Solicitor@test.com",
-                  "fullName": "Solicitor Full name",
+                  "firstName": "Main",
+                  "lastName": "Contact",
                   "mainContact": "Yes"
                 }
               }
