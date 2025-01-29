@@ -3,25 +3,19 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
-public class ThirdPartyApplicantDetailsChecker implements EventChecker {
-
-    private LocalAuthorityDetailsChecker localAuthorityDetailsChecker;
+public class ThirdPartyApplicantDetailsChecker extends LocalAuthorityDetailsChecker {
 
     @Override
     public List<String> validate(CaseData caseData) {
@@ -56,8 +50,8 @@ public class ThirdPartyApplicantDetailsChecker implements EventChecker {
             errors.add("Enter solicitor's customer reference");
         }
 
-        errors.addAll(localAuthorityDetailsChecker.validateAddress(localAuthority.getAddress()));
-        errors.addAll(localAuthorityDetailsChecker.validateAdditionalContacts(unwrapElements(localAuthority.getColleagues())));
+        errors.addAll(validateAddress(localAuthority.getAddress()));
+        errors.addAll(validateAdditionalContacts(unwrapElements(localAuthority.getColleagues())));
 
         return errors;
     }
@@ -72,6 +66,25 @@ public class ThirdPartyApplicantDetailsChecker implements EventChecker {
                 || isBlank(representingDetails.getLastName())) {
                 errors.add("Enter details of person you are representing");
             }
+        }
+
+        return errors;
+    }
+
+    @Override
+    public List<String> validateAddress(Address address) {
+        if (isEmpty(address)) {
+            return List.of("Enter solicitor's address");
+        }
+
+        final List<String> errors = new ArrayList<>();
+
+        if (isBlank(address.getPostcode())) {
+            errors.add("Enter solicitor's postcode");
+        }
+
+        if (isBlank(address.getAddressLine1())) {
+            errors.add("Enter valid solicitor's address");
         }
 
         return errors;
