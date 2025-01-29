@@ -21,6 +21,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Component
 public class ThirdPartyApplicantDetailsChecker implements EventChecker {
 
+    private LocalAuthorityDetailsChecker localAuthorityDetailsChecker;
+
     @Override
     public List<String> validate(CaseData caseData) {
         final List<LocalAuthority> localAuthorities = unwrapElements(caseData.getLocalAuthorities());
@@ -54,8 +56,8 @@ public class ThirdPartyApplicantDetailsChecker implements EventChecker {
             errors.add("Enter solicitor's customer reference");
         }
 
-        errors.addAll(validateAddress(localAuthority.getAddress()));
-        errors.addAll(validateAdditionalContacts(unwrapElements(localAuthority.getColleagues())));
+        errors.addAll(localAuthorityDetailsChecker.validateAddress(localAuthority.getAddress()));
+        errors.addAll(localAuthorityDetailsChecker.validateAdditionalContacts(unwrapElements(localAuthority.getColleagues())));
 
         return errors;
     }
@@ -70,86 +72,6 @@ public class ThirdPartyApplicantDetailsChecker implements EventChecker {
                 || isBlank(representingDetails.getLastName())) {
                 errors.add("Enter details of person you are representing");
             }
-        }
-
-        return errors;
-    }
-
-    private List<String> validateAddress(Address address) {
-        if (isEmpty(address)) {
-            return List.of("Enter solicitor's address");
-        }
-
-        final List<String> errors = new ArrayList<>();
-
-        if (isBlank(address.getPostcode())) {
-            errors.add("Enter solicitor's postcode");
-        }
-
-        if (isBlank(address.getAddressLine1())) {
-            errors.add("Enter valid solicitor's address");
-        }
-
-        return errors;
-    }
-
-    private List<String> validateAdditionalContacts(List<Colleague> colleagues) {
-        final List<String> errors = new ArrayList<>();
-
-        final Optional<Colleague> mainContact = colleagues.stream()
-            .filter(Colleague::checkIfMainContact)
-            .findFirst();
-
-        if (mainContact.isPresent()) {
-            errors.addAll(validateMainContact(mainContact.get()));
-        } else {
-            errors.add("Enter main contact");
-        }
-
-        final List<Colleague> otherContacts = colleagues.stream()
-            .filter(colleague -> !colleague.checkIfMainContact())
-            .toList();
-
-        for (int i = 0; i < otherContacts.size(); i++) {
-            errors.addAll(validateOtherContact(otherContacts.get(i), i + 1));
-        }
-
-        return errors;
-    }
-
-    private List<String> validateMainContact(Colleague colleague) {
-        final List<String> errors = new ArrayList<>();
-
-        if (colleague.checkIfMainContact()) {
-            if (isBlank(colleague.getFullName())) {
-                errors.add("Enter main contact full name");
-            }
-
-            if (isBlank(colleague.getPhone())) {
-                errors.add("Enter main contact phone number");
-            }
-        } else {
-            errors.add("Enter main contact");
-        }
-
-        return errors;
-    }
-
-    private List<String> validateOtherContact(Colleague colleague, int index) {
-        final List<String> errors = new ArrayList<>();
-
-        if (isEmpty(colleague.getRole())) {
-            errors.add(format("Select case role for other contact %d", index));
-        } else if (colleague.getRole().equals(OTHER) && isBlank(colleague.getTitle())) {
-            errors.add(format("Enter title for other contact %d", index));
-        }
-
-        if (isBlank(colleague.getFullName())) {
-            errors.add(format("Enter full name for other contact %d", index));
-        }
-
-        if (isBlank(colleague.getEmail())) {
-            errors.add(format("Enter email for other contact %d", index));
         }
 
         return errors;
