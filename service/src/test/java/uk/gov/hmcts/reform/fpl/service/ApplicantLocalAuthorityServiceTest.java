@@ -1228,9 +1228,9 @@ class ApplicantLocalAuthorityServiceTest {
     @Nested
     class GetContact {
         private static final Element<Colleague> MAIN_CONTACT =
-            element(Colleague.builder().fullName("Main contact").mainContact(YES.getValue()).build());
+            element(Colleague.builder().firstName("Main").lastName("contact").mainContact(YES.getValue()).build());
         private static final Element<Colleague> OTHER_CONTACT =
-            element(Colleague.builder().fullName("Other contact").mainContact(NO.getValue()).build());
+            element(Colleague.builder().firstName("Main").lastName("contact").mainContact(NO.getValue()).build());
         private static final LocalAuthority LOCAL_AUTHORITY = LocalAuthority.builder()
             .colleagues(List.of(MAIN_CONTACT, OTHER_CONTACT)).build();
 
@@ -1267,6 +1267,8 @@ class ApplicantLocalAuthorityServiceTest {
                 .role(ColleagueRole.OTHER)
                 .title(ColleagueRole.SOCIAL_WORKER.getLabel())
                 .dx(null)
+                .fullName(null)
+                .firstName(legacyColleague.getFullName())
                 .reference(null)
                 .notificationRecipient(null)
                 .build());
@@ -1291,6 +1293,8 @@ class ApplicantLocalAuthorityServiceTest {
                 LocalAuthority.builder().colleagues(List.of(MAIN_CONTACT, element(legacyColleague))).build());
 
             assertThat(actualOtherContacts.get(0).getValue()).isEqualTo(legacyColleague.toBuilder()
+                .firstName(legacyColleague.getFullName())
+                .fullName(null)
                 .dx(null)
                 .reference(null)
                 .notificationRecipient(null)

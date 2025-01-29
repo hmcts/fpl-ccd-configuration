@@ -65,6 +65,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -126,6 +127,9 @@ class CaseSubmissionGenerationServiceTest {
     @Mock
     private CourtService courtService;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private CaseSubmissionGenerationService underTest;
 
@@ -139,6 +143,7 @@ class CaseSubmissionGenerationServiceTest {
         given(courtService.getCourtName(any())).willReturn(COURT_NAME);
         given(courtService.getCourtSeal(any(), eq(OrderStatus.SEALED)))
             .willReturn(COURT_SEAL.getValue(ENGLISH));
+        given(featureToggleService.isHideJobTitleInCaseSubmissionFormEnabled()).willReturn(true);
     }
 
     @Test
@@ -1469,6 +1474,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName(localAuthority.getName())
+                .hideJobTitleFeatureFlag(true)
                 .jobTitle(mainContact.getTitle())
                 .mobileNumber(mainContact.getPhone())
                 .telephoneNumber(localAuthority.getPhone())
@@ -1526,6 +1532,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("-")
+                .hideJobTitleFeatureFlag(true)
                 .jobTitle("-")
                 .mobileNumber("-")
                 .telephoneNumber("-")
@@ -1572,6 +1579,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("-")
+                .hideJobTitleFeatureFlag(true)
                 .jobTitle("-")
                 .mobileNumber("-")
                 .telephoneNumber("-")
@@ -1686,6 +1694,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName(localAuthority.getName())
+                .hideJobTitleFeatureFlag(true)
                 .jobTitle(mainContact.getTitle())
                 .mobileNumber(mainContact.getPhone())
                 .telephoneNumber(localAuthority.getPhone())
