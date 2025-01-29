@@ -44,6 +44,10 @@ idam-pr:
     XUIMO:
       - https://xui-mo-${SERVICE_FQDN}/oauth2/callback
 
+camunda-bpm:
+  java:
+    image: hmctsprivatetemp.azurecr.io/camunda/bpm:latest
+
 xui-webapp:
   enabled: true
   redis:
