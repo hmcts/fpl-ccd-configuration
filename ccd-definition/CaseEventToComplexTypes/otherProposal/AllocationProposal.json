@@ -15,7 +15,7 @@
     "CaseEventID": "otherProposal",
     "CaseFieldID": "allocationProposal",
     "ListElementCode": "reasonLabel1",
-    "EventElementLabel": "You must give case specific reasons for your recommendation. You should refer to the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and to the [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf).",
+    "EventElementLabel": "Give case specific reasons for your recommendation, including details of any previous proceedings. You should refer to the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and to the [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf). This will help the court appoint an appropriate judge to the case.",
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY"
   },
@@ -25,7 +25,7 @@
     "CaseEventID": "otherProposal",
     "CaseFieldID": "allocationProposal",
     "ListElementCode": "proposalReason",
-    "EventElementLabel": "Include details of any previous proceedings. The detail you provide will help the court appoint an appropriate judge to the case.",
+    "EventElementLabel": "Why do you recommend this level of judge?",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   }
