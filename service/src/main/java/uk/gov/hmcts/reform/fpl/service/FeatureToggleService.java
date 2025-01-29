@@ -97,6 +97,10 @@ public class FeatureToggleService {
             createLDContext(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
     }
 
+    public boolean isHideJobTitleInCaseSubmissionFormEnabled() {
+        return ldClient.boolVariation("hide-job-title-in-case-submission-form", createLDContext(), false);
+    }
+
     private LDContext createLDContext() {
         return createLDContext(Map.of());
     }

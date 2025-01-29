@@ -88,6 +88,10 @@ public class ApplicantLocalAuthorityService {
             .notificationRecipient(null)
             .phone(colleague.checkIfMainContact() ? colleague.getPhone() : null)
             .alternativePhone(colleague.checkIfMainContact() ? colleague.getAlternativePhone() : null)
+            .fullName(null)
+            .firstName(isNotEmpty(colleague.buildFullName()) && isEmpty(colleague.getFirstName())
+                       && isEmpty(colleague.getLastName())
+                ? colleague.buildFullName() : colleague.getFirstName())
             .build();
     }
 
@@ -109,7 +113,7 @@ public class ApplicantLocalAuthorityService {
 
     public List<String> validateMainContact(Colleague mainContact) {
         if (isEmpty(mainContact.getEmail())) {
-            return List.of();
+            return new ArrayList<>();
         } else {
             return validateEmailService.validate(List.of(mainContact.getEmail()), "Main contact");
         }

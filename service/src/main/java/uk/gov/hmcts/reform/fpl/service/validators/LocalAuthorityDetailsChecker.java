@@ -103,8 +103,12 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
         final List<String> errors = new ArrayList<>();
 
         if (colleague.checkIfMainContact()) {
-            if (isBlank(colleague.getFullName())) {
-                errors.add("Enter main contact full name");
+            if (isBlank(colleague.getFirstName())) {
+                errors.add("Enter main contact first name");
+            }
+
+            if (isBlank(colleague.getLastName())) {
+                errors.add("Enter main contact last name");
             }
 
             if (isBlank(colleague.getPhone())) {
@@ -126,8 +130,12 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
             errors.add(format("Enter title for other contact %d", index));
         }
 
-        if (isBlank(colleague.getFullName())) {
-            errors.add(format("Enter full name for other contact %d", index));
+        if (isBlank(colleague.getFirstName())) {
+            errors.add(format("Enter first name for other contact %d", index));
+        }
+
+        if (isBlank(colleague.getLastName())) {
+            errors.add(format("Enter last name for other contact %d", index));
         }
 
         if (isBlank(colleague.getEmail())) {
