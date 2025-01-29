@@ -45,7 +45,7 @@ public class Colleague {
     @JsonIgnore
     public String buildFullName() {
         return (isNotEmpty(firstName) && isNotEmpty(lastName))
-            ? StringUtils.joinWith(", ", firstName, lastName) : fullName;
+            ? StringUtils.joinWith(" ", firstName, lastName) : fullName;
     }
 
     @JsonIgnore
