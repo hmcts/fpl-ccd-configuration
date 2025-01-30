@@ -97,7 +97,7 @@ Confidential contact details                                        -
 Applicant
 
 Name                                                                Test
-Contact name                                                        test
+Contact name                                                        testFirst testLast
 Job title                                                           Solicitor
 Address                                                             Line 1
                                                                     CR0 2GE
