@@ -63,8 +63,8 @@ public class SampleCaseSubmissionTestDataHelper {
                 + " significant harm if they’re not moved to accommodation provided by you, or on your behalf\n\n"
                 + "There’s reasonable cause to believe the child is likely to suffer significant harm if they don’t "
                 + "stay in their current accommodation")
-            .groundsThresholdReason("Child is not receiving care that would be reasonably expected "
-                + "from someone with parental responsibility.\nChild is beyond parental control.")
+            .groundsThresholdReason("The care given to the child not being what it would be "
+                + "reasonable to expect a parent to give.\nChild is beyond parental control.")
             .thresholdDetails("Details")
             .risks(expectedDocmosisRisks())
             .proceeding(expectedDocmosisProceeding())

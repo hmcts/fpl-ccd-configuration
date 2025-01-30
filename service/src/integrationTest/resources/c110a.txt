@@ -175,7 +175,7 @@ Confidential contact details                      Yes Other two hide from partie
 
 Grounds for the application
 Grounds for emergency protection order                                                                There’s reasonable cause to believe the child is likely to suffer significant harm if they’re not moved to accommodation provided by you, or on your behalf There’s reasonable cause to believe the child is likely to suffer significant harm if they don’t stay in their current accommodation
-The reason(s) behind the child suffering or being likely to suffer significant harm                   Child is not receiving care that would be reasonably expected from someone with parental responsibility. Child is beyond parental control.
+The reason(s) behind the child suffering or being likely to suffer significant harm                   The care given to the child not being what it would be reasonable to expect a parent to give. Child is beyond parental control.
 
 Threshold evidence
 Details

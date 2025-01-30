@@ -10,7 +10,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
     "ListElementCode": "noCare",
-    "ListElement": "Child is not receiving care that would be reasonably expected from someone with parental responsibility",
+    "ListElement": "The care given to the child not being what it would be reasonable to expect a parent to give",
     "DisplayOrder": 2
   }
 ]

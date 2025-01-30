@@ -114,7 +114,7 @@ public class CaseSubmissionGenerationService
             "Child is beyond parental control.", "Y tu hwnt i reolaeth rhiant."
         ),
         TranslationSection.NOT_RECEIVING_CARE, LanguagePair.of(
-            "Child is not receiving care that would be reasonably expected from someone with parental responsibility.",
+            "The care given to the child not being what it would be reasonable to expect a parent to give.",
             "Ddim yn derbyn y gofal a fyddai'n rhesymol ddisgwyliedig gan riant."
         ),
         TranslationSection.REASON, LanguagePair.of("Reason:", "Rheswm:"),
