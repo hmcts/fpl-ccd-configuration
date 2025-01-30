@@ -60,7 +60,8 @@
             "value": {
               "role": "SOLICITOR",
               "email": "test@test.com",
-              "fullName": "Sol 1",
+              "firstName": "Sol",
+              "lastName": "1",
               "notificationRecipient": "Yes"
             }
           },
@@ -69,7 +70,8 @@
             "value": {
               "role": "OTHER",
               "title": "Solicitor",
-              "fullName": "test",
+              "firstName": "testFirst",
+              "lastName": "testLast",
               "phone": "077766655544",
               "email": "test2@test.com",
               "notificationRecipient": "Yes",

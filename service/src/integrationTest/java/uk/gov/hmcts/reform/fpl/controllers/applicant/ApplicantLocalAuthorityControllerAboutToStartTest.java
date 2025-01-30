@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolic
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ApplicantLocalAuthorityController.class)
@@ -157,7 +158,11 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
                 .name(legacyApplicant.getOrganisationName())
                 .colleagues(wrapElements(expectedColleague))
                 .build())
-            .applicantContact(expectedColleague.toBuilder().notificationRecipient(null).build())
+            .applicantContact(expectedColleague.toBuilder()
+                .notificationRecipient(null)
+                .fullName(null)
+                .firstName(legacySolicitor.getName())
+                .build())
             .applicantContactOthers(List.of())
             .build();
 
@@ -166,16 +171,16 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldGetExistingLocalAuthorityDetails() {
-
-        final List<Element<Colleague>> colleagues = wrapElements(Colleague.builder()
+        final Element<Colleague> colleague = element(Colleague.builder()
             .role(SOLICITOR)
             .fullName("Alex Smith")
             .build());
 
+
         final LocalAuthority localAuthority = LocalAuthority.builder()
             .id(organisation.getOrganisationIdentifier())
             .email("org@test.com")
-            .colleagues(colleagues)
+            .colleagues(List.of(colleague))
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -189,7 +194,8 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
         final LocalAuthorityEventData expectedEventData = LocalAuthorityEventData.builder()
             .localAuthority(localAuthority)
             .applicantContact(Colleague.builder().build())
-            .applicantContactOthers(colleagues)
+            .applicantContactOthers(List.of(element(colleague.getId(),
+                colleague.getValue().toBuilder().fullName(null).firstName("Alex Smith").build())))
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);

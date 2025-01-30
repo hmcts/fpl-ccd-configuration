@@ -2,9 +2,17 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantContactOther",
-    "ListElementCode": "fullName",
+    "ListElementCode": "firstName",
     "FieldType": "Text",
-    "ElementLabel": "Full name",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
     "SecurityClassification": "Public"
   },
   {

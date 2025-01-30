@@ -93,7 +93,7 @@ public class RoboticsDataService {
 
             return Applicant.builder()
                 .name(localAuthority.getName())
-                .contactName(mainContact.map(Colleague::getFullName).orElse(null))
+                .contactName(mainContact.map(Colleague::buildFullName).orElse(null))
                 .jobTitle(mainContact.map(Colleague::getJobTitle).orElse(null))
                 .address(convertAddress(localAuthority.getAddress()).orElse(null))
                 .mobileNumber(mainContact
@@ -174,7 +174,7 @@ public class RoboticsDataService {
         if (isNotEmpty(designatedLA)) {
             return designatedLA
                 .getFirstSolicitor()
-                .map(Colleague::getFullName);
+                .map(Colleague::buildFullName);
         }
         return ofNullable(caseData.getSolicitor())
             .map(uk.gov.hmcts.reform.fpl.model.Solicitor::getName);

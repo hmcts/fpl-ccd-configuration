@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
@@ -18,7 +20,10 @@ public class Colleague {
 
     private final ColleagueRole role;
     private String title;
+    @Deprecated
     private String fullName;
+    private String firstName;
+    private String lastName;
     private String email;
     private String phone;
     private String alternativePhone;
@@ -35,6 +40,12 @@ public class Colleague {
         return ofNullable(role)
             .map(ColleagueRole::getLabel)
             .orElse(null);
+    }
+
+    @JsonIgnore
+    public String buildFullName() {
+        return (isNotEmpty(firstName) && isNotEmpty(lastName))
+            ? StringUtils.joinWith(" ", firstName, lastName) : fullName;
     }
 
     @JsonIgnore
