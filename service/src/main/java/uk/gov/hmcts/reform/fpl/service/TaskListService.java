@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS_3RD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
@@ -80,7 +82,6 @@ public class TaskListService {
             ORDERS_SOUGHT,
             featureToggles.isApplicantAdditionalContactsEnabled() ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
             CHILDREN,
-            RESPONDENTS,
             OTHER_PROCEEDINGS,
             OTHERS,
             COURT_SERVICES,
@@ -90,6 +91,14 @@ public class TaskListService {
             HEARING_URGENCY,
             ALLOCATION_PROPOSAL
         ));
+
+        // if we're a (new) 3rd party standalone, use that event, otherwise use default event
+        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())
+            && isNotEmpty(caseData.getRespondentLocalAuthority())) {
+            events.add(RESPONDENTS_3RD_PARTY);
+        } else {
+            events.add(RESPONDENTS);
+        }
 
         if (YES.equals(caseData.getMultiCourts())) {
             events.add(SELECT_COURT);

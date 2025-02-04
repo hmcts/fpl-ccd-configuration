@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS_3RD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
@@ -107,8 +108,9 @@ public class TaskListRenderer {
         final TaskSection parties = newSection("Add information about the parties")
             .withTask(tasks.containsKey(ORGANISATION_DETAILS)
                 ? tasks.get(ORGANISATION_DETAILS) : tasks.get(LOCAL_AUTHORITY_DETAILS))
-            .withTask(tasks.get(CHILDREN))
-            .withTask(tasks.get(RESPONDENTS));
+            .withTask(tasks.get(CHILDREN));
+        ofNullable(tasks.get(RESPONDENTS)).ifPresent(parties::withTask);
+        ofNullable(tasks.get(RESPONDENTS_3RD_PARTY)).ifPresent(parties::withTask);
 
         final TaskSection courtRequirements = newSection("Add court requirements")
             .withTask(tasks.get(ALLOCATION_PROPOSAL));

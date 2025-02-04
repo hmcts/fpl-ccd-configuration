@@ -5,7 +5,8 @@
     "Name": "Public Law Applications",
     "Description": "Public Law Applications",
     "JurisdictionID": "PUBLICLAW",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CallbackGetCaseUrl": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/getCase/metadata"
   },
   {
     "LiveFrom": "01/01/2017",

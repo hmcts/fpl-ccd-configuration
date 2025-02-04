@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -42,6 +44,7 @@ import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APP
 import static uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType.LIVE_IN_REFUGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority.DUMMY_UUID;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -51,6 +54,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class RespondentService {
 
     private final Time time;
+
+    private final LocalAuthorityService localAuthorityService;
 
     public String buildRespondentLabel(List<Element<Respondent>> respondents) {
         StringBuilder sb = new StringBuilder();
@@ -292,6 +297,31 @@ public class RespondentService {
         return Respondent.builder()
             .representedBy(other.getRepresentedBy())
             .party(respondentParty).build();
+    }
+
+    public void transformRespondentLocalAuthority(CaseDetails caseDetails, CaseData caseData, CaseData caseDataBefore) {
+        List<Element<Respondent>> respondents = caseData.getRespondents1();
+        Element<Respondent> oldFakeRespondentLA = caseDataBefore.getRespondents1().get(0);
+
+        if (!oldFakeRespondentLA.getId().equals(DUMMY_UUID)) {
+            throw new IllegalArgumentException("This is not a valid Respondent Local Authority");
+        }
+
+        RespondentLocalAuthority respondentLA = caseData.getRespondentLocalAuthority();
+
+        if (NO.equals(respondentLA.getUsingOtherOrg())) {
+            // using the onboarding organisation
+            Organisation laOrg = Organisation.builder()
+                .organisationID(localAuthorityService.getLocalAuthorityId(caseData.getRelatingLA()))
+                .organisationName(localAuthorityService.getLocalAuthorityName(caseData.getRelatingLA()))
+                .build();
+            respondentLA.setOrganisation(laOrg);
+        }
+        // using the old "fake" respondentLA as a base, update data modified on UI
+        // so we persist data attached to the "Respondent" instance, i.e. colleaguesToNotify, and any new "respondent"
+        // specific functionality in the future
+        respondents.add(0, respondentLA.toRespondent(oldFakeRespondentLA.getValue()));
+        caseDetails.getData().put("respondents1", respondents);
     }
 
 }

@@ -329,6 +329,10 @@ public class CaseData extends CaseDataParent {
         return representativeType != null ? representativeType : RepresentativeType.LOCAL_AUTHORITY;
     }
 
+    // This is a clone of the first respondent on the case in new 3rd party standalone apps, used for pre-filling data
+    // on case creation.
+    public final RespondentLocalAuthority respondentLocalAuthority;
+
     @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
