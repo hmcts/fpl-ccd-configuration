@@ -1,30 +1,41 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import {BasePage} from "./base-page.ts";
 
-export class RiskAndHarmToChildren {
-    readonly page: Page;
-    readonly physicalHarmRadio: Locator;
-    readonly emotionalHarmRadio: Locator;
-    readonly sexualAbuseRadio: Locator;
-    readonly neglectRadio: Locator;
-    readonly futureRiskOfHarmCheckbox: Locator;
-    readonly pastHarmCheckbox: Locator;
-    readonly continueButton: Locator;
-    readonly checkYourAnswersHeader: Locator;
-    readonly saveAndContinueButton: Locator;
-    readonly riskAndHarmToChildrenHeader: Locator;
+export class RiskAndHarmToChildren extends BasePage {
+
+
+    get physicalHarmRadio(): Locator {
+        return this.page.getByRole('group', { name: 'Physical harm including non-' });;
+    }
+
+    get emotionalHarmRadio(): Locator {
+        return this.page.getByRole('group', { name: 'Emotional harm (Optional)' });
+    }
+
+    get sexualAbuseRadio(): Locator {
+        return this.page.getByRole('group', { name: 'Sexual abuse (Optional)' });
+    }
+
+    get neglectRadio(): Locator {
+        return this.page.getByRole('group', { name: 'Neglect (Optional)' });
+    }
+
+    get futureRiskOfHarmCheckbox(): Locator {
+        return this.page.getByRole('checkbox', { name: 'Future risk of harm' });
+    }
+
+    get pastHarmCheckbox(): Locator {
+        return this.page.locator('[id="risks_neglectOccurrences-Past\\ harm"]');
+    }
+
+
+    get riskAndHarmToChildrenHeader(): Locator {
+        return this.page.getByRole('heading', { name: 'Risk and harm to children' });
+    }
+
 
     public constructor(page: Page) {
-        this.page = page;
-        this.physicalHarmRadio = page.getByRole('group', { name: 'Physical harm including non-' });
-        this.emotionalHarmRadio = page.getByRole('group', { name: 'Emotional harm (Optional)' });
-        this.sexualAbuseRadio = page.getByRole('group', { name: 'Sexual abuse (Optional)' });
-        this.neglectRadio = page.getByRole('group', { name: 'Neglect (Optional)' });
-        this.futureRiskOfHarmCheckbox = page.getByRole('checkbox', { name: 'Future risk of harm' });
-        this.pastHarmCheckbox = page.locator('[id="risks_neglectOccurrences-Past\\ harm"]');
-        this.continueButton = page.getByRole('button', { name: 'Continue' });
-        this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-        this.saveAndContinueButton = page.getByRole('button', { name: 'Save and continue' });
-        this.riskAndHarmToChildrenHeader = page.getByRole('heading', { name: 'Risk and harm to children' });
+        super(page);
     }
 
     async riskAndHarmToChildrenSmokeTest() {
@@ -35,8 +46,7 @@ export class RiskAndHarmToChildren {
         await this.sexualAbuseRadio.getByLabel('No').check();
         await this.neglectRadio.getByLabel('Yes').check();
         await this.pastHarmCheckbox.check();
-        await this.continueButton.click();
-        await expect(this.checkYourAnswersHeader).toBeVisible();
-        await this.saveAndContinueButton.click();
-    }
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
+          }
 }

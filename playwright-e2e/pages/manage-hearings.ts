@@ -2,7 +2,7 @@ import {type Page, type Locator } from "@playwright/test";
 import {BasePage} from "./base-page";
 import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
-export class ManageHearings extends HearingDetailsMixin(BasePage)
+export class ManageHearings extends HearingDetailsMixin({BasePage: BasePage})
 {
   readonly hearingDetails: Locator;
   readonly hearingDay: Locator;

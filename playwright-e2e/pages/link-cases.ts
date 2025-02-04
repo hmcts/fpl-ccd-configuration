@@ -2,20 +2,35 @@ import {type Locator, type Page} from "@playwright/test";
 import {BasePage} from "./base-page";
 
 export class CaseLink extends BasePage {
+    set linkedCasePage(value: Page) {
+        this._linkedCasePage = value;
+    }
+    get linkedCasePage(): Page {
+        return this._linkedCasePage;
+    }
+    get caseNumber(): Locator {
+        return this.page.locator('#width-20');
+    }
 
-    readonly caseNumber: Locator;
-    readonly proposeLink: Locator;
-    readonly next: Locator;
-    readonly submit: Locator;
-    linkedCasePage: Page;
+    get proposeLink(): Locator {
+        return this.page.getByRole('button', {name: 'Propose case link'});
+    }
+
+    get next(): Locator {
+        return this.page.getByRole('button', {name: 'Next'});
+    }
+
+    get submit(): Locator {
+        return this.page.getByRole('button', {name: 'Submit'});;
+    }
+
+
+    private _linkedCasePage: Page ;
 
     constructor(page: Page) {
         super(page);
-        this.caseNumber = page.locator('#width-20');
-        this.proposeLink = page.getByRole('button', {name: 'Propose case link'});
-        this.next = page.getByRole('button', {name: 'Next'});
-        this.submit = page.getByRole('button', {name: 'Submit'});
-        this.linkedCasePage = page;
+        this._linkedCasePage = page;
+
     }
 
     async clickNext() {
@@ -28,12 +43,6 @@ export class CaseLink extends BasePage {
             await this.page.getByLabel(linktype).check();
         }
         await this.proposeLink.click();
-    }
-    hypenateCaseNumber(caseNumber: string) {
-        let hypenatedCaseNumber: string;
-        hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);
-        console.log(hypenatedCaseNumber);
-        return hypenatedCaseNumber
     }
     async submitCaseLink() {
         this.submit.click();
