@@ -41,28 +41,28 @@ export class ChangeOtherToRespondent extends BasePage {
 
     async ChangeOtherToRespondent() {
         await expect(this.changeOtherToRespondent).toBeVisible;
-        await this.giveNotice.selectOption('1: b4ef35b4-3287-4d51-8a5d-b8e1fc6da18f');
+        await this.giveNotice.selectOption('Doel Sany');
         await this.continueButton.click();
-        await this.firstName.fill('Tom ');
-        await this.lastName.fill('Cruise');
+        await this.firstName.fill('Doel');
+        await this.lastName.fill('Sany');
         await this.dobDay.fill("1");
         await this.dobMonth.fill("10");
-        await this.dobYear.fill("1990")
+        await this.dobYear.fill('1999');
         await this.gender.selectOption('1: Male');
-        await this.placeOfBirth.fill("London");
+        await this.placeOfBirth.fill("london");
         await this.currentAddress.getByLabel('No').check();
         await this.reasonUnknownAddress.selectOption('1: No fixed abode');
-        await this.telephoneNumber.fill("00000000000")
-        await this.relationshipToChild.fill("Uncle")
+        await this.telephoneNumber.fill("00000000000");
+        await this.relationshipToChild.fill("Uncle");
         await this.abilityToTakeProceeding.getByLabel('No', { exact: true }).check();
         await this.anyLegalRepresentation.getByLabel('No').check();
     }
 
     async continueAndCheck() {
         await this.clickContinue();
-        await this.page.getByText("Tom Cruise", { exact: true });
-        await this.page.getByText("1990", { exact: true });
-        await this.page.getByText("London", { exact: true });
+        await this.page.getByText("Doel Sany", { exact: true });
+        await this.page.getByText("2000", { exact: true });
+        await this.page.getByText("london", { exact: true });
         await this.page.getByText("0000000000", { exact: true });
         await this.checkYourAnsAndSubmit();
     }

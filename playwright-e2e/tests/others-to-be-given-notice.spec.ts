@@ -22,9 +22,10 @@ test.describe('Others to be given notice', () => {
             await signInPage.navigateTOCaseDetails(caseNumber);
 
             await signInPage.navigateTOCaseDetails(caseNumber);
-            await othersToBeGivenNotice.gotoNextStep('16: Object');
+            await othersToBeGivenNotice.gotoNextStep('Others to be given notice');
             await othersToBeGivenNotice.othersToBeGivenNotice();
             await othersToBeGivenNotice.tabNavigation('People in the case');
-            await expect(page.getByText('Other person ',{exact: true})).toBeVisible();
+            await expect(page.getByText('Other person 1',{exact: true})).toBeVisible();
         })
     });
+   

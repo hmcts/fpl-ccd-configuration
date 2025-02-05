@@ -49,9 +49,6 @@ export class OthersToBeGivenNotice extends BasePage {
         await this.relationshipToChild.fill("uncle")
         await this.contactDetailsHidden.getByLabel('No').check();
         await this.page.getByLabel('Don\'t know').check();
-    }
-
-    async OtherPerson() {
         await this.addNew.click();
         await this.page.locator('#others_additionalOthers_0_name').fill('John Grey');
         await this.page.locator('#others_additionalOthers #DOB-day').fill("12");
@@ -64,14 +61,7 @@ export class OthersToBeGivenNotice extends BasePage {
         await this.page.locator('#others_additionalOthers_0_telephone').fill("0000000000");
         await this.page.locator('#others_additionalOthers_0_childInformation').fill('test');
         await this.page.locator('#others_additionalOthers_0_litigationIssues-NO').check();
-    }
-
-    async continueAndCheck() {
-        await this.clickContinue();
-        await this.page.getByText("John Grey", { exact: true });
-        await this.page.getByText("1999", { exact: true });
-        await this.page.getByText("London", { exact: true });
-        await this.page.getByText("0000000000", { exact: true });
-        await this.checkYourAnsAndSubmit();
+        await this.submit.click();
+        await this.saveAndContinue.click();
     }
 }

@@ -45,7 +45,5 @@ test.describe('Add a case flag', () => {
         await  addAdminCaseFlag.runRemoveCaseFlagTest();
         await expect(page.getByText('Potentially violent person',{exact: true})).toBeHidden();
     }
-
-
 });
 

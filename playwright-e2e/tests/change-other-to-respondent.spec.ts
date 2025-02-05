@@ -22,7 +22,7 @@ test.describe('Change other to respondent', () => {
             await signInPage.navigateTOCaseDetails(caseNumber);
 
             await signInPage.navigateTOCaseDetails(caseNumber);
-            await changeOtherToRespondent.gotoNextStep('16: Object');
+            await changeOtherToRespondent.gotoNextStep('Change other to respondent');
             await changeOtherToRespondent.ChangeOtherToRespondent();
             await changeOtherToRespondent.tabNavigation('People in the case');
             await expect(page.getByText('Other person 1', { exact: true })).toBeVisible();
