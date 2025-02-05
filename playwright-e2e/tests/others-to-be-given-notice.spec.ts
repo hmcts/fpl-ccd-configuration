@@ -1,5 +1,6 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
+<<<<<<< Updated upstream
 import caseData from '../caseData/caseSentToGatekeeper.json' assert { type: "json" };
 import { newSwanseaLocalAuthorityUserOne, CTSCUser} from "../settings/user-credentials";
 import { expect } from "@playwright/test";
@@ -29,3 +30,32 @@ test.describe('Others to be given notice', () => {
         })
     });
    
+=======
+import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
+import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: "json" };
+import { expect } from '@playwright/test';
+
+test.describe('others to be given notice', () => {
+    const dateTime = new Date().toISOString();
+    let caseNumber: string;
+    let caseName: string;
+
+    test.beforeEach(async () => {
+        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    });
+
+    test('others to be given notice',
+        async ({ page, signInPage, othersToBeGivenNotice }) => {
+            caseName = 'CTSC updates event and added other person' + dateTime.slice(0, 10);
+            await updateCase(caseName, caseNumber, caseData);
+            await signInPage.visit();
+            await signInPage.login(CTSCUser.email, CTSCUser.password)
+            await signInPage.navigateTOCaseDetails(caseNumber);
+
+            await othersToBeGivenNotice.gotoNextStep('others to be given notice');
+            await othersToBeGivenNotice.othersToBeGivenNotice();
+            await othersToBeGivenNotice.tabNavigation('others to be given notice')
+            await expect(page.getByText('Other person 1')).toBeVisible();
+        })
+});
+>>>>>>> Stashed changes

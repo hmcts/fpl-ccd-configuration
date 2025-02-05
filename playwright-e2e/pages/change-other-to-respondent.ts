@@ -18,7 +18,6 @@ export class ChangeOtherToRespondent extends BasePage {
     readonly abilityToTakeProceeding: Locator;
     readonly anyLegalRepresentation: Locator;
 
-
     constructor(page: Page) {
         super(page);
         this.changeOtherToRespondent = page.getByRole('heading', { name: 'Change other to respondent', exact: true });
@@ -36,34 +35,26 @@ export class ChangeOtherToRespondent extends BasePage {
         this.relationshipToChild = page.getByText('What is this person\'s relationship to the child or children in this case? (Optional)');
         this.abilityToTakeProceeding = page.getByRole('group', { name: 'Do you believe this person' });
         this.anyLegalRepresentation = page.getByRole('group', { name: 'Do they have legal' });
-
     }
 
     async ChangeOtherToRespondent() {
         await expect(this.changeOtherToRespondent).toBeVisible;
         await this.giveNotice.selectOption('Doel Sany');
         await this.continueButton.click();
-        await this.firstName.fill('Doel');
-        await this.lastName.fill('Sany');
-        await this.dobDay.fill("1");
-        await this.dobMonth.fill("10");
-        await this.dobYear.fill('1999');
+        await this.firstName.fill('Thierry');
+        await this.lastName.fill('John');
+        await this.dobDay.fill('11');
+        await this.dobMonth.fill('04');
+        await this.dobYear.fill('2000');
         await this.gender.selectOption('1: Male');
-        await this.placeOfBirth.fill("london");
+        await this.placeOfBirth.fill('london');
         await this.currentAddress.getByLabel('No').check();
         await this.reasonUnknownAddress.selectOption('1: No fixed abode');
         await this.telephoneNumber.fill("00000000000");
         await this.relationshipToChild.fill("Uncle");
         await this.abilityToTakeProceeding.getByLabel('No', { exact: true }).check();
         await this.anyLegalRepresentation.getByLabel('No').check();
-    }
-
-    async continueAndCheck() {
-        await this.clickContinue();
-        await this.page.getByText("Doel Sany", { exact: true });
-        await this.page.getByText("2000", { exact: true });
-        await this.page.getByText("london", { exact: true });
-        await this.page.getByText("0000000000", { exact: true });
+        await this.continueButton.click();
         await this.checkYourAnsAndSubmit();
     }
 }

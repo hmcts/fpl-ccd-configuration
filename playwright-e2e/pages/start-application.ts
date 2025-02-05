@@ -30,6 +30,7 @@ export class StartApplication {
   readonly submitApplicationLink: Locator;
   readonly otherPeopleInCaseLink: Locator;
   readonly returnApplicationLink: Locator;
+  readonly othersToBeGivenNoticeHeading: Locator;
 
   // readonly logExpertReportLink: Locator;
   public constructor(page: Page) {
@@ -63,6 +64,7 @@ export class StartApplication {
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
     this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case' });
     this.returnApplicationLink = page.getByRole('link', { name: 'Return application' });
+    this.othersToBeGivenNoticeHeading = page.getByRole('heading', { name: 'others to be given notice' });
   }
   async groundsForTheApplication() {
     expect(await this.groundsForTheApplicationLink).toBeVisible();
@@ -77,6 +79,11 @@ export class StartApplication {
   async riskAndHarmToChildren() {
     await expect(this.riskAndHarmToChildrenLink).toBeVisible();
     await this.riskAndHarmToChildrenLink.click();
+  }
+
+  async othersToBeGivenNoticeHeading() {
+    await expect(this.othersToBeGivenNoticeHeading).toBeVisible();
+    await this.othersToBeGivenNoticeHeading.click();
   }
 
   async addApplicationDocuments() {
