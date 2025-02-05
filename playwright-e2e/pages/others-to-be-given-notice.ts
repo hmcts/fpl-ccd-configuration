@@ -13,7 +13,6 @@ export class OthersToBeGivenNotice extends BasePage {
     readonly reasonUnknownAddress: Locator;
     readonly telephoneNumber: Locator;
     readonly relationshipToChild: Locator;
-<<<<<<< Updated upstream
     readonly contactDetailsHidden: Locator;
     readonly addNew: Locator;
     readonly hiddenDetails: Locator;
@@ -21,7 +20,6 @@ export class OthersToBeGivenNotice extends BasePage {
     public constructor(page: Page) {
         super(page);
         this.othersToBeGivenNoticeHeading = page.getByRole("heading", { name: "Other people in the case", exact: true });
-=======
     readonly litigationIssues: Locator;
     readonly addNew: Locator;
     readonly otherPerson: Locator;
@@ -29,14 +27,12 @@ export class OthersToBeGivenNotice extends BasePage {
     public constructor(page: Page) {
         super(page);
         this.othersToBeGivenNoticeHeading = page.getByRole("heading", { name: "Others to be given notice", exact: true });
->>>>>>> Stashed changes
         this.fullName = page.getByLabel('Full name (Optional)');
         this.dobDay = page.getByLabel('Day');
         this.dobMonth = page.getByLabel('Month');
         this.dobYear = page.getByLabel('Year');
         this.gender = page.getByLabel('Gender (Optional)');
         this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
-<<<<<<< Updated upstream
         this.currentAddress = page.getByRole('group', { name: '*Current address known? (' });
         this.reasonUnknownAddress = page.getByLabel('*Reason the address is not');
         this.telephoneNumber = page.getByLabel('Telephone number (Optional)');
@@ -75,17 +71,7 @@ export class OthersToBeGivenNotice extends BasePage {
         await this.submit.click();
         await this.saveAndContinue.click();
     }
-}
-=======
-        this.currentAddress = page.getByRole('group', { name: '*Current address known? (' }).getByLabel('No')
-        this.reasonUnknownAddress = page.getByLabel('*Reason the address is not');
-        this.telephoneNumber = page.getByLabel('Telephone number (Optional)');
-        this.relationshipToChild = page.getByLabel('What is this person\'s');
-        this.litigationIssues = page.getByRole('group', { name: 'Do you believe this person' });
-        this.addNew = page.getByRole('button', { name: 'Add new' });
-        this.otherPerson = page.getByRole("heading", { name: "Other person", exact: true });
-    }
-
+        
     async othersToBeGivenNotice() {
         await expect(this.othersToBeGivenNoticeHeading).toBeVisible();
         await this.fullName.fill('Tom Jones');
@@ -116,12 +102,4 @@ export class OthersToBeGivenNotice extends BasePage {
         await this.clickSubmit();
         await this.checkYourAnsAndSubmit();
     }
-
-    async changeRespondentDetailEvent() {
-
-
-
-
-    }
 };
->>>>>>> Stashed changes
