@@ -46,6 +46,5 @@ test.describe('Add a case flag', () => {
         await expect(page.getByText('Potentially violent person',{exact: true})).toBeHidden();
     }
 
-
-    
+   
 });
