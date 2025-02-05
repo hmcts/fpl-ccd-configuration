@@ -25,7 +25,6 @@
     "CaseEventID": "otherProposal",
     "CaseFieldID": "allocationProposal",
     "ListElementCode": "proposalReason",
-    "EventElementLabel": "Why do you recommend this level of judge?",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   }

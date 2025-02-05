@@ -33,7 +33,7 @@
     "ID": "AllocationProposal",
     "ListElementCode": "proposalReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Why do you recommend this level of judge?",
+    "ElementLabel": "Reasons for recommendation",
     "SecurityClassification": "Public"
   }
 ]
