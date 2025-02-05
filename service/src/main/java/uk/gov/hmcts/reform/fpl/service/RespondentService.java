@@ -301,11 +301,11 @@ public class RespondentService {
 
     public void transformRespondentLocalAuthority(CaseDetails caseDetails, CaseData caseData, CaseData caseDataBefore) {
         List<Element<Respondent>> respondents = caseData.getRespondents1();
-        Element<Respondent> oldFakeRespondentLA = caseDataBefore.getRespondents1().get(0);
 
-        if (!oldFakeRespondentLA.getId().equals(DUMMY_UUID)) {
-            throw new IllegalArgumentException("This is not a valid Respondent Local Authority");
-        }
+        // get the current respondentLA stored in collection, if not use a new blank respondent as the base
+        Element<Respondent> oldFakeRespondentLA = isEmpty(caseData.getRespondents1())
+            ? element(DUMMY_UUID, Respondent.builder().build())
+            : caseDataBefore.getRespondents1().get(0);
 
         RespondentLocalAuthority respondentLA = caseData.getRespondentLocalAuthority();
 
@@ -320,7 +320,11 @@ public class RespondentService {
         // using the old "fake" respondentLA as a base, update data modified on UI
         // so we persist data attached to the "Respondent" instance, i.e. colleaguesToNotify, and any new "respondent"
         // specific functionality in the future
-        respondents.add(0, respondentLA.toRespondent(oldFakeRespondentLA.getValue()));
+        if (isNotEmpty(oldFakeRespondentLA) && DUMMY_UUID.equals(oldFakeRespondentLA.getId())) {
+            respondents.add(0, respondentLA.toRespondent(oldFakeRespondentLA.getValue()));
+        } else {
+            respondents.add(0, respondentLA.toRespondent(Respondent.builder().build()));
+        }
         caseDetails.getData().put("respondents1", respondents);
     }
 
