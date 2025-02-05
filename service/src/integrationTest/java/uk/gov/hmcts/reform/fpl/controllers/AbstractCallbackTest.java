@@ -283,6 +283,11 @@ public abstract class AbstractCallbackTest extends AbstractTest {
         return postEvent(path, data, expectedStatus, AboutToStartOrSubmitCallbackResponse.class, userRoles);
     }
 
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> postMetadataCallback(String path, CallbackRequest callbackRequest) {
+        return postEvent(path, toBytes(callbackRequest), SC_OK, Map.class);
+    }
+
     private <T> T postEvent(String path, byte[] data, int expectedStatus, Class<T> responseType, String... userRoles) {
         try {
             MvcResult response = mockMvc
