@@ -67,8 +67,7 @@ public class RespondentLocalAuthority {
             .representativeLastName(respondent.getSolicitor().getLastName())
             .address(respondent.getParty().getAddress())
             .usingOtherOrg(respondent.getUsingOtherOrg())
-            .organisation(YES.equals(respondent.getUsingOtherOrg())
-                ? respondent.getSolicitor().getOrganisation() : null)
+            .organisation(respondent.getSolicitor().getOrganisation())
             .legalCounsellors(respondent.getLegalCounsellors())
             .build();
     }
