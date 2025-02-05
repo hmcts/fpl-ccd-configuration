@@ -59,6 +59,8 @@ class EventsCheckerTest {
     @MockBean
     private RespondentsChecker respondentsChecker;
     @MockBean
+    private Respondents3rdPartyChecker respondents3rdPartyChecker;
+    @MockBean
     private HearingUrgencyChecker hearingUrgencyChecker;
     @MockBean
     private OrdersSoughtChecker ordersSoughtChecker;
