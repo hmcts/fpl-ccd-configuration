@@ -1,7 +1,7 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
-import caseData from '../caseData/mandatorySubmissionFields.json' with { type: "json" };
-import returnedCase from '../caseData/returnCase.json' with { type: "json" };
+import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
+import returnedCase from '../caseData/returnCase.json' assert { type: 'json' };
 import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
@@ -22,9 +22,9 @@ test.describe('log expert report', () => {
             await signInPage.login(CTSCUser.email, CTSCUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
 
-            await logExpertReport.gotoNextStep('Others to be given notice');
+            await logExpertReport.gotoNextStep('Log expert report');
             await logExpertReport.logExpertReport();
-            await logExpertReport.tabNavigation('Others to be given notice')
+            await logExpertReport.tabNavigation('Expert Reports')
             await expect(page.getByText('Report 1')).toBeVisible();
             await expect(page.getByText('Psychiatric - On child only')).toBeVisible();
         })
