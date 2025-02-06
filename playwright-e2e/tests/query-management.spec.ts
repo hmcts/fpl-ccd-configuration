@@ -1,10 +1,16 @@
 import { test } from '../fixtures/create-fixture';
-import { createCase, updateCase } from "../utils/api-helper";
-import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: "json" };
-import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
+import {createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
+import {
+    CTSCUser,
+    newSwanseaLocalAuthorityUserOne,
+    privateSolicitorOrgUser
+} from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
+import {urlConfig} from "../settings/urls";
+import caseWithChildrenCafcassSolicitorDemo from "../caseData/caseWithMultipleChildCafcassSolicitorDemo.json";
+import caseWithChildrenCafcassSolicitor from "../caseData/caseWithMultipleChildCafcassSolicitor.json";
 
 test.describe('Query management', () => {
     const dateTime = new Date().toISOString();
@@ -16,11 +22,17 @@ test.describe('Query management', () => {
 
     test.only('LA raise query',
         async ({
-                   page, signInPage, queryManagement
+                   page, signInPage, queryManagement,caseFileView
 
                }) => {
             caseName = 'LA raise a query ' + dateTime.slice(0, 10);
-           await  updateCase(caseName,caseNumber,caseData);
+            if(urlConfig.env=='demo') {
+                await updateCase(caseName, caseNumber, caseWithChildrenCafcassSolicitorDemo);
+            }
+            else{
+                await updateCase(caseName, caseNumber, caseWithChildrenCafcassSolicitor);
+            }
+            await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]');
             await signInPage.visit();
            await signInPage.login(newSwanseaLocalAuthorityUserOne.email,newSwanseaLocalAuthorityUserOne.password);
            await signInPage.navigateTOCaseDetails(caseNumber);
@@ -38,11 +50,20 @@ test.describe('Query management', () => {
             await expect(page.getByRole('heading', { name: 'Query submitted' })).toBeVisible();
             await expect(page.getByText('Your query has been sent to')).toBeVisible();
             await queryManagement.page.getByRole('link', { name: 'Go back to the case' }).click();
+            await caseFileView.openFolder('Uncategorised');
+            await expect(caseFileView.page.getByText('testPdf2.pdf')).toBeVisible();
+            await queryManagement.tabNavigation('Queries');
              await expect(page.getByRole('table', { name: 'Local Authority' }).locator('div')).toBeVisible();
              await expect(page.getByRole('cell', { name: 'Birth certificate format' })).toBeVisible();
              await expect(page.getByRole('cell', { name: 'Awaiting Response' })).toBeVisible();
              await expect(page.getByRole('cell', { name: `${queryManagement.getCurrentDate()}` })).toBeVisible();
              await expect(page.getByRole('cell', { name: 'Local Authority' })).toBeVisible();
+
+
+             // login in as respondent solicitor and assert the query is not visible
+
+            await signInPage.signOut();
+            await signInPage.
 
 
            await signInPage.page.pause();
@@ -55,13 +76,13 @@ test.describe('Query management', () => {
 
 
            // await page.getByRole('button', { name: 'Continue' }).click();
-
-            await page.getByText('Previous Continue').click();
-            await page.getByRole('button', { name: 'Continue' }).click();
-            await page.getByRole('button', { name: 'Submit' }).click();
-
-
-            await page.getByText('Queries').click();
+           //
+           //  await page.getByText('Previous Continue').click();
+           //  await page.getByRole('button', { name: 'Continue' }).click();
+           //  await page.getByRole('button', { name: 'Submit' }).click();
+           //
+           //
+           //  await page.getByText('Queries').click();
             // await expect(page.getByRole('table', { name: 'Local Authority' }).locator('div')).toBeVisible();
             // await expect(page.getByRole('cell', { name: 'Query subject' })).toBeVisible();
             // await expect(page.getByRole('cell', { name: 'Awaiting Response' })).toBeVisible();

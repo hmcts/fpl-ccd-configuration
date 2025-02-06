@@ -121,7 +121,8 @@ export class BasePage {
       await this.page.pause();
       await this.dateOfHearing.getByText('Day').fill(date.getDay().toString());
         await this.dateOfHearing.getByText('Month').fill(date.getMonth().toString());
-        await this.dateOfHearing.getByText('Year').fill(date.getFullYear().toString());
+        await this.page.locator('[id="formControlName\\ \\+\\ \\\'-year\\\'"]').fill(date.getFullYear().toString());
+      //  await this.dateOfHearing.getByText('Year').fill(date.getFullYear().toString());
 
          // await this.day.fill(date.getDay().toString());
          // await this.month.fill(date.getMonth().toString());
