@@ -19,13 +19,6 @@ export class OthersToBeGivenNotice extends BasePage {
 
     public constructor(page: Page) {
         super(page);
-        this.othersToBeGivenNoticeHeading = page.getByRole("heading", { name: "Other people in the case", exact: true });
-    readonly litigationIssues: Locator;
-    readonly addNew: Locator;
-    readonly otherPerson: Locator;
-
-    public constructor(page: Page) {
-        super(page);
         this.othersToBeGivenNoticeHeading = page.getByRole("heading", { name: "Others to be given notice", exact: true });
         this.fullName = page.getByLabel('Full name (Optional)');
         this.dobDay = page.getByLabel('Day');
@@ -71,35 +64,4 @@ export class OthersToBeGivenNotice extends BasePage {
         await this.submit.click();
         await this.saveAndContinue.click();
     }
-        
-    async othersToBeGivenNotice() {
-        await expect(this.othersToBeGivenNoticeHeading).toBeVisible();
-        await this.fullName.fill('Tom Jones');
-        await this.dobDay.fill('1');
-        await this.dobMonth.fill('10');
-        await this.dobYear.fill('1999');
-        await this.gender.selectOption('1: Male');
-        await this.placeOfBirth.fill('London');
-        await this.currentAddress.click();
-        await this.reasonUnknownAddress.selectOption('1: No fixed abode');
-        await this.telephoneNumber.fill('000000000');
-        await this.relationshipToChild.fill('uncle');
-        await this.litigationIssues.getByLabel('No', { exact: true }).check();
-        await this.addNew.click();
-        await expect(this.otherPerson).toBeVisible();
-        await this.fullName.fill('Dianah Ross');
-        await this.dobDay.fill('5');
-        await this.dobMonth.fill('10');
-        await this.dobYear.fill('2000');
-        await this.gender.selectOption('2: Female');
-        await this.placeOfBirth.fill('Scotland');
-        await this.currentAddress.click();
-        await this.reasonUnknownAddress.selectOption('1: No fixed abode');
-        await this.telephoneNumber.fill('000000000');
-        await this.relationshipToChild.fill('uncle');
-        await this.litigationIssues.getByLabel('No', { exact: true }).check();
-        await this.addNew.click();
-        await this.clickSubmit();
-        await this.checkYourAnsAndSubmit();
-    }
-};
+}
