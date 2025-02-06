@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseViewField;
 import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 
 import java.util.List;
@@ -32,15 +33,15 @@ public class MetadataControllerTest extends AbstractCallbackTest {
 
         Map<String, Object> response = postMetadataCallback("/callback/getCase/metadata", cb);
 
-        List<MetadataController.CaseViewField> metadataFields = mapper.convertValue(
+        List<CaseViewField> metadataFields = mapper.convertValue(
             response.get("metadataFields"), new TypeReference<>() {});
 
         assertThat(metadataFields)
-            .contains(MetadataController.CaseViewField.builder()
+            .contains(CaseViewField.builder()
                 .id("[INJECTED_DATA.HAS_3RD_PARTY]")
                 .label("Has a respondent local authority been added to the case?")
                 .value("Yes")
-                .fieldType(MetadataController.FieldType.TEXT)
+                .fieldType(CaseViewField.FieldType.TEXT)
                 .build());
     }
 
@@ -53,15 +54,15 @@ public class MetadataControllerTest extends AbstractCallbackTest {
 
         Map<String, Object> response = postMetadataCallback("/callback/getCase/metadata", cb);
 
-        List<MetadataController.CaseViewField> metadataFields = mapper.convertValue(
+        List<CaseViewField> metadataFields = mapper.convertValue(
             response.get("metadataFields"), new TypeReference<>() {});
 
         assertThat(metadataFields)
-            .contains(MetadataController.CaseViewField.builder()
+            .contains(CaseViewField.builder()
                 .id("[INJECTED_DATA.HAS_3RD_PARTY]")
                 .label("Has a respondent local authority been added to the case?")
                 .value("No")
-                .fieldType(MetadataController.FieldType.TEXT)
+                .fieldType(CaseViewField.FieldType.TEXT)
                 .build());
     }
 
