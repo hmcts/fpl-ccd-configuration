@@ -41,6 +41,7 @@ import { LogExpertReport } from "../pages/log-expert-report";
 import { ChangeCaseName } from "../pages/change-case-name";
 import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
+import {QueryManagement} from "../pages/query-management";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -85,6 +86,7 @@ type CreateFixtures = {
   orders: Orders;
   manageLaTransferToCourts: ManageLaTransferToCourts
   manageRepresentatives: ManageRepresentatives;
+  queryManagement: QueryManagement;
 
 };
 
@@ -250,9 +252,13 @@ export const test = base.extend<CreateFixtures>({
   manageLaTransferToCourts: async ({ page }, use) => {
     await use(new ManageLaTransferToCourts(page));
 },
-      
+
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
+
+  },
+    queryManagement: async ({ page }, use) => {
+        await use(new QueryManagement(page));
 
   },
 });
