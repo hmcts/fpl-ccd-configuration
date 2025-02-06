@@ -26,7 +26,7 @@ public class RespondentsCommonFormatHelper {
 
     public static String getRespondentsLabel(CaseData caseData) {
         List<Element<Respondent>> respondents = caseData.getAllRespondents();
-        List<Element<Other>> others = caseData.getAllOthers();
+        List<Element<Other>> others = caseData.getOthersV2();
         if (isEmpty(respondents) && isEmpty(others)) {
             return "No respondents or others to be given notice on the case";
         }
@@ -75,7 +75,7 @@ public class RespondentsCommonFormatHelper {
         Stream<String> respondentsNames = caseData.getAllRespondents().stream()
             .map(respondent -> respondent.getValue().getParty().getFullName());
 
-        Stream<String> othersNames = caseData.getAllOthers().stream()
+        Stream<String> othersNames = caseData.getOthersV2().stream()
             .map(other -> other.getValue().getName());
 
         List<String> respondentsAndOthersNames = Stream.concat(respondentsNames, othersNames).collect(

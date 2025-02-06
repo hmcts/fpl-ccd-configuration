@@ -40,7 +40,7 @@ class OthersListGeneratorTest {
 
     @Test
     void shouldReturnAllApplicantsList() {
-        DynamicList actualDynamicList = underTest.buildOthersList(caseData.getAllOthers());
+        DynamicList actualDynamicList = underTest.buildOthersList(caseData.getOthersV2());
         assertThat(actualDynamicList.getListItems())
             .extracting(DynamicListElement::getLabel)
             .containsExactly("Ross", "Bob", "Smith");

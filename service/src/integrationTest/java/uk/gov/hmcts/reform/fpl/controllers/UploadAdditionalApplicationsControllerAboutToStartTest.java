@@ -62,9 +62,9 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
                     .label(respondent1Party.getFullName() + ", Respondent 1").build(),
                 DynamicListElement.builder().code(respondents.get(1).getId().toString())
                     .label(respondent2Party.getFullName() + ", Respondent 2").build(),
-                DynamicListElement.builder().code(caseData.getAllOthers().get(0).getId().toString())
+                DynamicListElement.builder().code(caseData.getOthersV2().get(0).getId().toString())
                     .label("Bob, Other to be given notice 1").build(),
-                DynamicListElement.builder().code(caseData.getAllOthers().get(1).getId().toString())
+                DynamicListElement.builder().code(caseData.getOthersV2().get(1).getId().toString())
                     .label("Tom, Other to be given notice 2").build(),
                 DynamicListElement.builder().code("SOMEONE_ELSE").label("Someone else").build()))
             .value(DynamicListElement.EMPTY).build();

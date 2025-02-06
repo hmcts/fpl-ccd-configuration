@@ -187,7 +187,7 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
-                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getOthersV2(),
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
@@ -261,7 +261,7 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getOthersV2(),
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(

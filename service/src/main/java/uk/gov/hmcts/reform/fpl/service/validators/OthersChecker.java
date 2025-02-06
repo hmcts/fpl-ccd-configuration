@@ -26,11 +26,11 @@ public class OthersChecker implements EventChecker {
 
     @Override
     public boolean isStarted(CaseData caseData) {
-        switch (caseData.getAllOthers().size()) {
+        switch (caseData.getOthersV2().size()) {
             case 0:
                 return false;
             case 1:
-                return !isEmptyOther(caseData.getOthers().getFirstOther());
+                return !isEmptyOther(caseData.getOthersV2().get(0).getValue());
             default:
                 return true;
         }
@@ -42,15 +42,16 @@ public class OthersChecker implements EventChecker {
         }
 
         return isEmptyAddress(other.getAddress()) && allEmpty(
-                other.getName(),
+                other.getFirstName(),
+                other.getLastName(),
                 other.getDateOfBirth(),
-                other.getGender(),
-                other.getBirthPlace(),
                 other.getChildInformation(),
-                other.getDetailsHidden(),
                 other.getLitigationIssues(),
                 other.getTelephone(),
-                other.getAddressNotKnowReason());
+                other.getAddressKnowV2(),
+                other.getAddressNotKnowReason()
+                other.getHideAddress(),
+                other.getHideTelephone());
     }
 
 }

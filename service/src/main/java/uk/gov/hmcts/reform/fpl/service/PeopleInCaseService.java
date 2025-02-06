@@ -89,7 +89,7 @@ public class PeopleInCaseService {
 
     public List<Element<Other>> getSelectedOthers(CaseData caseData) {
         final List<Element<Respondent>> respondents = caseData.getAllRespondents();
-        final List<Element<Other>> others = caseData.getAllOthers();
+        final List<Element<Other>> others = caseData.getOthersV2();
         final Selector selector = caseData.getPersonSelector();
         final String allPeopleSelected = caseData.getNotifyApplicationsToAllOthers();
 

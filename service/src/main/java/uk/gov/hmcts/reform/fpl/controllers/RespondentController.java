@@ -156,7 +156,7 @@ public class RespondentController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<Other>> others = caseData.getAllOthers();
+        List<Element<Other>> others = caseData.getOthersV2();
         DynamicList otherList = othersListGenerator.buildOthersList(others);
 
         List<String> errors = new ArrayList<>();
@@ -202,24 +202,12 @@ public class RespondentController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-    private UUID getFirstOtherId(CaseData caseData) {
-        // if firstOther exists confidentialOthers, it should return its uuid in confidentialOthers
-        // otherwise, it returns a random UUID
-        Set<UUID> additionalOtherIds = nullSafeList(caseData.getOthers().getAdditionalOthers())
-            .stream().map(Element::getId).collect(Collectors.toSet());
-        return caseData.getConfidentialOthers().stream().map(Element::getId)
-            .filter(co -> !additionalOtherIds.contains(co)).findFirst()
-            .orElse(UUID.randomUUID());
-    }
-
     private Element<Other> getSelectedOther(CaseData caseData) {
-        UUID firstOtherUUID = getFirstOtherId(caseData);
-        return othersService.getSelectedOther(caseData,
-            caseData.getOtherToRespondentEventData().getOthersList(), firstOtherUUID);
+        return othersService.getSelectedOther(caseData, caseData.getOtherToRespondentEventData().getOthersList());
     }
 
     private Others prepareNewOthers(CaseData caseData, CaseDetails caseDetails, Element<Other> selectedOther) {
-        List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
+        List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getOthersV2());
         newAllOthers.removeIf(ele -> Objects.equals(ele.getValue(), selectedOther.getValue()));
 
         // remove the other person from confidentialOthers if any

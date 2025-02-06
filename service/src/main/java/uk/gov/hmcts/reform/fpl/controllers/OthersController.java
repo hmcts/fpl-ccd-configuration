@@ -28,8 +28,9 @@ public class OthersController extends CallbackController {
     private final ConfidentialDetailsService confidentialService;
     private final OthersService othersService;
 
-    private static final String OTHERS = "others";
+    private static final String OTHERS = "othersV2";
 
+    // TODO DFPL-2421 update unit test
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -40,20 +41,21 @@ public class OthersController extends CallbackController {
         return respond(caseDetails);
     }
 
+    // TODO DFPL-2421 update unit test
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Others updatedOthers = othersService.consolidateAndRemoveHiddenFields(getCaseData(caseDetails));
+
+        List<Element<Other>> updatedOthers = othersService.consolidateAndRemoveHiddenFields(getCaseData(caseDetails));
         caseDetails.getData().put(OTHERS, updatedOthers);
-
         CaseData caseData = getCaseData(caseDetails);
-        List<Element<Other>> allOthers = caseData.getAllOthers();
 
-        confidentialService.addConfidentialDetailsToCase(caseDetails, allOthers, OTHER);
+        List<Element<Other>> others = caseData.getOthersV2();
 
-        List<Element<Other>> othersList = confidentialService.removeConfidentialDetails(allOthers);
+        confidentialService.addConfidentialDetailsToCase(caseDetails, others, OTHER);
 
-        Others others = Others.from(othersList);
+        others = confidentialService.removeConfidentialDetails(others);
+
         if (isNull(others)) {
             caseDetails.getData().remove(OTHERS);
         } else {

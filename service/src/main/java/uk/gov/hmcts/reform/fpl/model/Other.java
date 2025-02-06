@@ -37,20 +37,33 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class Other implements Representable, ConfidentialParty<Other> {
     @JsonProperty("DOB")
     private final String dateOfBirth;
+    @Deprecated
     private final String name;
+    private final String firstName;
+    private final String lastName;
+
+    @Deprecated
     private final String gender;
     private final Address address;
     private final String telephone;
+    @Deprecated
     private final String birthPlace;
     private final String childInformation;
+    @Deprecated
     private final String genderIdentification;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
+    @Deprecated
     private final String detailsHidden;
+    @Deprecated
     private final String detailsHiddenReason;
+    @Deprecated
     private List<Element<UUID>> representedBy;
     private final String addressNotKnowReason;
     private final IsAddressKnowType addressKnowV2;
+    private final String whereaboutsUnknownDetails;
+    private final String hideAddress;
+    private final String hideTelephone;
 
     public List<Element<UUID>> getRepresentedBy() {
         if (this.representedBy == null) {
@@ -78,7 +91,9 @@ public class Other implements Representable, ConfidentialParty<Other> {
     }
 
     public boolean containsConfidentialDetails() {
-        return "Yes".equals(detailsHidden);
+        return YES.getValue().equals(detailsHidden)
+               || YES.getValue().equals(hideAddress)
+               || YES.getValue().equals(hideTelephone);
     }
 
     @Data
@@ -106,7 +121,8 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @Override
     public Party toParty() {
         return OtherParty.builder()
-            .firstName(this.getName())
+            .firstName(ObjectUtils.isEmpty(this.getFirstName()) ? this.getName() : this.getFirstName())
+            .lastName(this.getLastName())
             .address(this.getAddress())
             .dateOfBirth(nonNull(this.getDateOfBirth()) ? LocalDate.parse(this.getDateOfBirth(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null)
@@ -116,12 +132,22 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @Override
     public Other extractConfidentialDetails() {
-        return Other.builder()
-            .addressKnowV2(this.addressKnowV2)
-            .name(this.name)
-            .address(this.address)
-            .telephone(this.telephone)
-            .build();
+        Other.OtherBuilder otherBuilder = Other.builder()
+            .name(this.name) // legacy data
+            .firstName(this.firstName)
+            .lastName(this.lastName)
+            .hideAddress(this.getHideAddress())
+            .hideTelephone(this.getHideTelephone());
+
+        if (YES.equalsString(this.detailsHidden) || YES.equalsString(this.getHideAddress())) {
+            otherBuilder = otherBuilder.addressKnowV2(this.addressKnowV2).address(this.address);
+        }
+
+        if (YES.equalsString(this.detailsHidden) || YES.equalsString(this.getHideTelephone())) {
+            otherBuilder = otherBuilder.telephone(this.telephone);
+        }
+
+        return otherBuilder.build();
     }
 
     @Override
@@ -131,12 +157,17 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @Override
     public Other removeConfidentialDetails() {
-        Other other =  this.toBuilder()
-            .addressKnowV2(null)
-            .address(null)
-            .telephone(null)
-            .build();
-        return other;
+        Other.OtherBuilder otherBuilder =  this.toBuilder();
+
+        if (YES.equalsString(this.detailsHidden) || YES.equalsString(this.getHideAddress())) {
+            otherBuilder = otherBuilder.addressKnowV2(null).address(null);
+        }
+
+        if (YES.equalsString(this.detailsHidden) || YES.equalsString(this.getHideTelephone())) {
+            otherBuilder = otherBuilder.telephone(null);
+        }
+
+        return otherBuilder.build();
     }
 
     @JsonIgnore

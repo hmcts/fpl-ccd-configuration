@@ -18,14 +18,4 @@ public class ConfidentialDetailsHelper {
             .findFirst()
             .orElse(element.getValue());
     }
-
-    // TODO - Move this back into the above function, once Others has been refactored into a collection like respondents
-    public static Other getConfidentialOtherToAdd(List<Element<Other>> confidential, Element<Other> element) {
-        return confidential.stream()
-            .filter(item -> item.getId().equals(element.getId())
-                || item.getValue().getName().equals(element.getValue().getName()))
-            .map(Element::getValue)
-            .findFirst()
-            .orElse(element.getValue());
-    }
 }

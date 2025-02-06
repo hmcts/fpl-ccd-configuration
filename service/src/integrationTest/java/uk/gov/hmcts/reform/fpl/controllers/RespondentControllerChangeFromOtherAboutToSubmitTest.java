@@ -138,8 +138,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
         CaseData responseCaseData = extractCaseData(callbackResponse);
 
-        assertThat(responseCaseData.getAllOthers()).hasSize(NUM_ADDITIONAL_OTHERS);
-        assertThat(responseCaseData.getAllOthers().stream()
+        assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
+        assertThat(responseCaseData.getOthersV2().stream()
             .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
@@ -172,8 +172,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
         CaseData responseCaseData = extractCaseData(callbackResponse);
 
-        assertThat(responseCaseData.getAllOthers()).hasSize(NUM_ADDITIONAL_OTHERS);
-        assertThat(responseCaseData.getAllOthers().stream()
+        assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
+        assertThat(responseCaseData.getOthersV2().stream()
             .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
@@ -219,8 +219,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
         CaseData responseCaseData = extractCaseData(callbackResponse);
 
-        assertThat(responseCaseData.getAllOthers()).hasSize(NUM_ADDITIONAL_OTHERS);
-        assertThat(responseCaseData.getAllOthers().stream()
+        assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
+        assertThat(responseCaseData.getOthersV2().stream()
             .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
@@ -282,8 +282,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
         CaseData responseCaseData = extractCaseData(callbackResponse);
 
-        assertThat(responseCaseData.getAllOthers()).hasSize(NUM_ADDITIONAL_OTHERS);
-        assertThat(responseCaseData.getAllOthers().stream()
+        assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
+        assertThat(responseCaseData.getOthersV2().stream()
             .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
@@ -342,8 +342,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
         CaseData responseCaseData = extractCaseData(callbackResponse);
 
-        assertThat(responseCaseData.getAllOthers()).hasSize(NUM_ADDITIONAL_OTHERS);
-        assertThat(responseCaseData.getAllOthers().stream()
+        assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
+        assertThat(responseCaseData.getOthersV2().stream()
             .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
@@ -397,8 +397,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
         CaseData responseCaseData = extractCaseData(callbackResponse);
 
-        assertThat(responseCaseData.getAllOthers()).hasSize(NUM_ADDITIONAL_OTHERS);
-        assertThat(responseCaseData.getAllOthers().stream()
+        assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
+        assertThat(responseCaseData.getOthersV2().stream()
             .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
         Other expectedFirstOther = Other.builder()
             .name(String.format("Marco %s", 1))
@@ -430,7 +430,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             ).isEqualTo(Set.of(resolveRespondentRepresentativeRole(NUM_RESPONDENTS + 1)));
         });
         // verify the non-affected other's representatives
-        List<Element<Other>> responseAllOthers = responseCaseData.getAllOthers();
+        List<Element<Other>> responseAllOthers = responseCaseData.getOthersV2();
         for (int i = 0; i < responseAllOthers.size(); i++) {
             final int finalI = i;
             assertThat(unwrapElements(responseAllOthers).get(i).getRepresentedBy()).isNotEmpty();
@@ -488,8 +488,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
         CaseData responseCaseData = extractCaseData(callbackResponse);
 
-        assertThat(responseCaseData.getAllOthers()).hasSize(NUM_ADDITIONAL_OTHERS);
-        assertThat(responseCaseData.getAllOthers().stream()
+        assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
+        assertThat(responseCaseData.getOthersV2().stream()
             .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
 
         Other expectedFirstOther = Other.builder()
@@ -520,7 +520,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             ).isEqualTo(Set.of(resolveRespondentRepresentativeRole(NUM_RESPONDENTS + 1)));
         });
         // verify the non-affected other's representatives
-        List<Element<Other>> responseAllOthers = responseCaseData.getAllOthers();
+        List<Element<Other>> responseAllOthers = responseCaseData.getOthersV2();
         for (int i = 0; i < responseAllOthers.size(); i++) {
             final int finalI = i;
             assertThat(unwrapElements(responseAllOthers).get(i).getRepresentedBy()).isNotEmpty();

@@ -259,8 +259,8 @@ class OthersServiceTest {
 
         List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
 
-        assertThat(selectedOthers.get(0).getValue()).isEqualTo(caseData.getAllOthers().get(0).getValue());
-        assertThat(selectedOthers.get(1).getValue()).isEqualTo(caseData.getAllOthers().get(1).getValue());
+        assertThat(selectedOthers.get(0).getValue()).isEqualTo(caseData.getOthersV2().get(0).getValue());
+        assertThat(selectedOthers.get(1).getValue()).isEqualTo(caseData.getOthersV2().get(1).getValue());
     }
 
     @Test
@@ -317,7 +317,7 @@ class OthersServiceTest {
 
         List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
 
-        assertThat(selectedOthers).containsExactly(caseData.getAllOthers().get(selectedOther));
+        assertThat(selectedOthers).containsExactly(caseData.getOthersV2().get(selectedOther));
     }
 
     private CaseData buildCaseDataWithOthers(Other firstOther,

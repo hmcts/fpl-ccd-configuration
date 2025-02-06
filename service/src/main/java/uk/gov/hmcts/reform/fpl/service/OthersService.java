@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -13,19 +12,19 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.Optional.ofNullable;
-import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialOtherToAdd;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 
 @Service
 public class OthersService {
@@ -66,22 +65,16 @@ public class OthersService {
         return sb.toString();
     }
 
-    public Others prepareOthers(CaseData caseData) {
-        List<Element<Other>> others = new ArrayList<>();
-
-        caseData.getAllOthers().forEach(element -> {
-            if (element.getValue().containsConfidentialDetails()) {
-                Other confidentialOther = getConfidentialOtherToAdd(caseData.getConfidentialOthers(), element);
-                others.add(element(element.getId(), addConfidentialDetails(confidentialOther, element)));
-            } else {
-                others.add(element);
-            }
-        });
-
-        return Others.builder()
-            .firstOther(getFirstOther(caseData.getConfidentialOthers(), others))
-            .additionalOthers(getAdditionalOthers(others))
-            .build();
+    public List<Element<Other>> prepareOthers(CaseData caseData) {
+        return caseData.getOthersV2().stream()
+            .map(element -> {
+                if (element.getValue().containsConfidentialDetails()) {
+                    Other confidentialOther = getConfidentialItemToAdd(caseData.getConfidentialOthers(), element);
+                    return element(element.getId(), addConfidentialDetails(confidentialOther, element));
+                } else {
+                    return element;
+                }
+            }).toList();
     }
 
     public String getOthersLabel(List<Element<Other>> others) {
@@ -98,7 +91,7 @@ public class OthersService {
     }
 
     public List<Element<Other>> getSelectedOthers(CaseData caseData) {
-        return getSelectedOthers(caseData.getAllOthers(), caseData.getOthersSelector(),
+        return getSelectedOthers(caseData.getOthersV2(), caseData.getOthersSelector(),
             caseData.getSendOrderToAllOthers());
     }
 
@@ -118,40 +111,30 @@ public class OthersService {
     }
 
     public Element<Other> getSelectedPreparedOther(CaseData caseData, DynamicList singleSelector) {
-        return getSelectedOther(prepareOthers(caseData), singleSelector, randomUUID());
-    }
-
-    private Element<Other> getSelectedOther(Others others, DynamicList singleSelector, UUID firstOtherUUID) {
-        if (others == null) {
-            return null;
-        }
-        return ofNullable(singleSelector).map(DynamicList::getValueCodeAsUUID)
-            .flatMap(otherId -> nullSafeCollection(others.getAdditionalOthers()).stream()
-                .filter(o -> otherId.equals(o.getId()))
-                .findFirst())
-            .orElseGet(() -> nonNull(others.getFirstOther())
-                ? element(firstOtherUUID, others.getFirstOther()) : null);
+        return getElement(singleSelector.getValueCodeAsUUID(), prepareOthers(caseData));
     }
 
     public Element<Other> getSelectedOther(CaseData caseData, DynamicList singleSelector) {
-        return getSelectedOther(caseData, singleSelector, randomUUID());
-    }
-
-    public Element<Other> getSelectedOther(CaseData caseData, DynamicList singleSelector, UUID firstOtherUUID) {
-        return getSelectedOther(caseData.getOthers(), singleSelector, firstOtherUUID);
+        return getElement(singleSelector.getValueCodeAsUUID(), caseData.getOthersV2());
     }
 
     private boolean useAllOthers(String sendOrdersToAllOthers) {
         return "Yes".equals(sendOrdersToAllOthers);
     }
 
-    public Other addConfidentialDetails(Other confidentialOther, Element<Other> other) {
-        Other.OtherBuilder retBuilder = other.getValue().toBuilder()
-            .telephone(confidentialOther.getTelephone())
-            .address(confidentialOther.getAddress());
+    public Other addConfidentialDetails(Other confidentialOther, Element<Other> otherElement) {
+        Other other = otherElement.getValue();
+        Other.OtherBuilder retBuilder = other.toBuilder();
 
-        if (isEmpty(other.getValue().getAddressKnowV2())) {
-            retBuilder.addressKnowV2(confidentialOther.getAddressKnowV2());
+        if (YES.equalsString(other.getHideTelephone())) {
+            retBuilder.telephone(confidentialOther.getTelephone());
+        }
+        if (YES.equalsString(other.getHideAddress())) {
+            retBuilder.address(confidentialOther.getAddress());
+
+            if (isEmpty(other.getAddressKnowV2())) {
+                retBuilder.addressKnowV2(confidentialOther.getAddressKnowV2());
+            }
         }
 
         return retBuilder.build();
@@ -187,8 +170,9 @@ public class OthersService {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
     }
 
-    public Others consolidateAndRemoveHiddenFields(CaseData caseData) {
-        return Others.from(caseData.getAllOthers().stream()
+    // TODO DFPL-2421 update unit test
+    public List<Element<Other>> consolidateAndRemoveHiddenFields(CaseData caseData) {
+        return caseData.getOthersV2().stream()
             .map(otherElement -> {
                 Other other = otherElement.getValue();
                 if (!isNull(other.getAddressKnowV2())) {
@@ -200,11 +184,11 @@ public class OthersService {
                     }
 
                     if (IsAddressKnowType.LIVE_IN_REFUGE.equals(other.getAddressKnowV2())) {
-                        builder = builder.detailsHidden(YesNo.YES.getValue());
+                        builder = builder.hideAddress(YES.getValue());
                     }
                     return element(otherElement.getId(), builder.build());
                 }
                 return otherElement;
-            }).toList());
+            }).toList();
     }
 }

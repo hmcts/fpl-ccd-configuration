@@ -45,7 +45,7 @@ class ManageHearingsOthersGeneratorTest {
         CaseData caseData = CaseData.builder().others(Others.builder().firstOther(OTHER).build()).build();
         HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(OTHER)).build();
 
-        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getOthersV2()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
 
@@ -66,7 +66,7 @@ class ManageHearingsOthersGeneratorTest {
         CaseData caseData = CaseData.builder().others(Others.builder().firstOther(OTHER).build()).build();
         HearingBooking hearingBooking = HearingBooking.builder().build();
 
-        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getOthersV2()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
 
@@ -87,7 +87,7 @@ class ManageHearingsOthersGeneratorTest {
         CaseData caseData = CaseData.builder().others(Others.builder().firstOther(OTHER).build()).build();
         HearingBooking hearingBooking = HearingBooking.builder().others(Collections.emptyList()).build();
 
-        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getOthersV2()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
 
@@ -111,7 +111,7 @@ class ManageHearingsOthersGeneratorTest {
             .build();
         HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(OTHER)).build();
 
-        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getOthersV2()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
 

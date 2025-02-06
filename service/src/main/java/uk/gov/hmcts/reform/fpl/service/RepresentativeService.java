@@ -219,7 +219,7 @@ public class RepresentativeService {
             .map(Element::getValue)
             .map(Representable::getRepresentedBy)
             .forEach(List::clear);
-        caseData.getAllOthers().forEach(o -> o.getValue().getRepresentedBy().clear());
+        caseData.getOthersV2().forEach(o -> o.getValue().getRepresentedBy().clear());
 
         caseData.getRepresentatives()
             .forEach(representative -> associatedRepresentativeWithParty(caseData, representative));

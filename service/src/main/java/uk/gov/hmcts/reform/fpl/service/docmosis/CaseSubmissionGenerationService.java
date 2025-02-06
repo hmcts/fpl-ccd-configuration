@@ -331,7 +331,7 @@ public class CaseSubmissionGenerationService
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents(), applicationLanguage))
             .applicants(buildDocmosisApplicants(caseData))
             .children(buildDocmosisChildren(caseData.getAllChildren(), applicationLanguage))
-            .others(buildDocmosisOthers(caseData.getAllOthers(), applicationLanguage))
+            .others(buildDocmosisOthers(caseData.getOthersV2(), applicationLanguage))
             .proceeding(buildDocmosisProceedings(caseData.getAllProceedings(), applicationLanguage))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings(), applicationLanguage))
             .dischargeOfOrder(caseData.isDischargeOfCareApplication())
