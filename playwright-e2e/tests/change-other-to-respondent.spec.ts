@@ -26,6 +26,6 @@ test.describe('Change other to respondent', () => {
             await changeOtherToRespondent.ChangeOtherToRespondent();
             await changeOtherToRespondent.tabNavigation('People in the case');
             await expect(page.getByText('Respondents 3', { exact: true })).toBeVisible();
-            await expect(page.getByText('Doel Sany', { exact: true })).toBeVisible();
+            await expect(page.getByText('Thierry', { exact: true })).toBeVisible();
         })
 });
