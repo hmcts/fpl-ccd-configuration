@@ -300,12 +300,12 @@ public class RespondentService {
     }
 
     public void transformRespondentLocalAuthority(CaseDetails caseDetails, CaseData caseData, CaseData caseDataBefore) {
-        List<Element<Respondent>> respondents = caseData.getRespondents1();
+        List<Element<Respondent>> respondents = caseData.getAllRespondents();
 
         // get the current respondentLA stored in collection, if not use a new blank respondent as the base
-        Element<Respondent> oldFakeRespondentLA = isEmpty(caseData.getRespondents1())
+        Element<Respondent> oldFakeRespondentLA = isEmpty(caseData.getAllRespondents())
             ? element(DUMMY_UUID, Respondent.builder().build())
-            : caseDataBefore.getRespondents1().get(0);
+            : caseDataBefore.getAllRespondents().get(0);
 
         RespondentLocalAuthority respondentLA = caseData.getRespondentLocalAuthority();
 
