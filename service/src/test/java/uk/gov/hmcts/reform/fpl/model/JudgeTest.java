@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
@@ -70,6 +71,21 @@ class JudgeTest {
 
         Judge allocatedJudge = buildAllocatedJudge(judgeOrMagistrateTitle);
         assertThat(allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)).isFalse();
+    }
+
+    @Test
+    void shouldHandlePostNominalsWhenConvertingJudicialUserProfile() {
+        JudicialUserProfile jup = JudicialUserProfile.builder()
+            .title("HHJ")
+            .surname("Smith")
+            .fullName("HHJ John Smith")
+            .postNominals("KC")
+            .build();
+
+        Judge judge = Judge.fromJudicialUserProfile(jup);
+
+        assertThat(judge.getJudgeLastName()).isEqualTo("Smith KC");
+        assertThat(judge.getJudgeFullName()).isEqualTo("HHJ John Smith KC");
     }
 
     private Judge buildAllocatedJudge(JudgeOrMagistrateTitle title) {
