@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -20,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS_3RD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -59,7 +61,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
 
         events.add(CASE_NAME);
         events.add(ORDERS_SOUGHT);
-        if (!caseData.isC1Application() 
+        if (!caseData.isC1Application()
             || caseData.isRefuseContactWithChildApplication()
             || caseData.isContactWithChildInCareApplication()) {
             events.add(HEARING_URGENCY); // present but optional for C1s
@@ -76,7 +78,15 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
         }
 
         events.add(CHILDREN);
-        events.add(RESPONDENTS);
+
+        // if we're a (new) 3rd party standalone, use that event, otherwise use default event
+        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())
+            && isNotEmpty(caseData.getRespondentLocalAuthority())) {
+            events.add(RESPONDENTS_3RD_PARTY);
+        } else {
+            events.add(RESPONDENTS);
+        }
+
         events.add(ALLOCATION_PROPOSAL);
 
         if (YES.equals(caseData.getMultiCourts())) {

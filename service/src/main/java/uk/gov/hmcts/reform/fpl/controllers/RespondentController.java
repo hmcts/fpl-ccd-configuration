@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
@@ -40,12 +42,14 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
+import static uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority.DUMMY_UUID;
 import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -77,8 +81,20 @@ public class RespondentController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(RESPONDENTS_KEY, confidentialDetailsService.prepareCollection(
-            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection()));
+        List<Element<Respondent>> respondents = confidentialDetailsService.prepareCollection(
+            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
+
+        // if we have a respondent LA, remove from collection and migrate to the other field
+        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())
+            && isNotEmpty(respondents) && respondents.get(0).getId().equals(DUMMY_UUID)) {
+            Respondent fakeRespondentLA = respondents.get(0).getValue();
+            RespondentLocalAuthority respondentLA = RespondentLocalAuthority.fromRespondent(fakeRespondentLA);
+            caseDetails.getData().put("respondentLocalAuthority", respondentLA);
+
+            respondents.remove(0);
+        }
+
+        caseDetails.getData().put(RESPONDENTS_KEY, respondents);
 
         return respond(caseDetails);
     }
@@ -129,6 +145,16 @@ public class RespondentController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+
+        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())
+            && isNotEmpty(caseData.getRespondentLocalAuthority())) {
+
+            try {
+                respondentService.transformRespondentLocalAuthority(caseDetails, caseData, caseDataBefore);
+            } catch (IllegalArgumentException ex) {
+                log.error("Failed to transform respondent local authority on case {}", caseDetails.getId(), ex);
+            }
+        }
 
         prepareNewRespondents(caseDetails, caseData, caseDataBefore);
 
