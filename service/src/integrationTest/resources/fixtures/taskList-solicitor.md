@@ -58,7 +58,7 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/TODO'>Applicant's details</a>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterThirdPartyApplicantDetails'>Applicant's details</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -138,7 +138,7 @@ Add the hearing urgency details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION
 
 Add the grounds for the application in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>
 
-Add applicant's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/TODO'>Applicant's details</a>
+Add applicant's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterThirdPartyApplicantDetails'>Applicant's details</a>
 
 Add the child's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>
 

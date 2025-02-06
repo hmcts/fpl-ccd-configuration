@@ -57,7 +57,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
         return errors;
     }
 
-    private List<String> validateAddress(Address address) {
+    public List<String> validateAddress(Address address) {
         if (isEmpty(address)) {
             return List.of("Enter applicant's address");
         }
@@ -75,7 +75,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
         return errors;
     }
 
-    private List<String> validateAdditionalContacts(List<Colleague> colleagues) {
+    public List<String> validateAdditionalContacts(List<Colleague> colleagues) {
         final List<String> errors = new ArrayList<>();
 
         final Optional<Colleague> mainContact = colleagues.stream()
