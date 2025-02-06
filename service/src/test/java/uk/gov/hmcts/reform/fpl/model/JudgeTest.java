@@ -88,6 +88,22 @@ class JudgeTest {
         assertThat(judge.getJudgeFullName()).isEqualTo("HHJ John Smith KC");
     }
 
+    @Test
+    void shouldIgnoreNullPostNominalsWhenConvertingJudicialUserProfile() {
+        JudicialUserProfile jup = JudicialUserProfile.builder()
+            .title("HHJ")
+            .surname("Smith")
+            .fullName("HHJ John Smith")
+            .postNominals(null)
+            .build();
+
+        Judge judge = Judge.fromJudicialUserProfile(jup);
+
+        assertThat(judge.getJudgeLastName()).isEqualTo("Smith");
+        assertThat(judge.getJudgeFullName()).isEqualTo("HHJ John Smith");
+    }
+
+
     private Judge buildAllocatedJudge(JudgeOrMagistrateTitle title) {
         return Judge.builder()
             .judgeTitle(title)
