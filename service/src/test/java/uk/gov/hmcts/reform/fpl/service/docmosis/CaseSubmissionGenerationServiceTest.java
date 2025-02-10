@@ -1190,8 +1190,11 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnCorrectDocmosisRisks() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .risks(Risks.builder()
-                    .whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.PHYSICAL_HARM, RiskAndHarmToChildrenType.EMOTIONAL_HARM))
-                    .factorsAffectingParenting(List.of(FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE))
+                    .whatKindOfRiskAndHarmToChildren(List.of(
+                        RiskAndHarmToChildrenType.PHYSICAL_HARM,
+                        RiskAndHarmToChildrenType.EMOTIONAL_HARM))
+                    .factorsAffectingParenting(List.of(
+                        FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE))
                     .build())
                 .factorsParenting(null)
                 .build();
@@ -1211,8 +1214,11 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnCorrectDocmosisRisksWhenOldAndNewRisksFieldsArePopulated() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .risks(Risks.builder()
-                    .whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.PHYSICAL_HARM, RiskAndHarmToChildrenType.EMOTIONAL_HARM))
-                    .factorsAffectingParenting(List.of(FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE))
+                    .whatKindOfRiskAndHarmToChildren(List.of(
+                        RiskAndHarmToChildrenType.PHYSICAL_HARM,
+                        RiskAndHarmToChildrenType.EMOTIONAL_HARM))
+                    .factorsAffectingParenting(List.of(
+                        FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE))
                     .physicalHarm("No")
                     .emotionalHarm("No")
                     .sexualAbuse("No")
