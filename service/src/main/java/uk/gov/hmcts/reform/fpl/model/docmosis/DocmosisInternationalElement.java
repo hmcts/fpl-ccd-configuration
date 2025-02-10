@@ -10,10 +10,15 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisInternationalElement {
+    @Deprecated
     private final String possibleCarer;
+    @Deprecated
     private final String significantEvents;
+    @Deprecated
     private final String proceedings;
+    @Deprecated
     private final String internationalAuthorityInvolvement;
+    @Deprecated
     private final String issues;
     private final String whichCountriesInvolved;
     private final String outsideHagueConvention;
