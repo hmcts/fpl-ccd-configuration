@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildRecoveryOrder;
@@ -327,7 +328,7 @@ public class CaseSubmissionGenerationService
             .hearingPreferences(buildDocmosisHearingPreferences(caseData.getHearingPreferences()))
             .internationalElement(buildDocmosisInternationalElement(caseData.getInternationalElement(),
                 applicationLanguage))
-            .risks(buildDocmosisRisks(caseData.getRisks(), applicationLanguage))
+            .risks(buildDocmosisRisks(caseData.getRisks(), caseData.getFactorsParenting(), applicationLanguage))
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents(), applicationLanguage))
             .applicants(buildDocmosisApplicants(caseData))
             .children(buildDocmosisChildren(caseData.getAllChildren(), applicationLanguage))
@@ -979,37 +980,55 @@ public class CaseSubmissionGenerationService
             .build();
     }
 
-    private DocmosisRisks buildDocmosisRisks(final Risks risks,
+    private DocmosisRisks buildDocmosisRisks(final Risks risks, final FactorsParenting factorsParenting,
                                              Language applicationLanguage) {
         final boolean risksPresent = (risks != null);
+        final boolean factorsParentingPresent = (factorsParenting != null);
+        final boolean newRisksPresent = (risksPresent && isNotEmpty(risks.getWhatKindOfRiskAndHarmToChildren()));
+        final boolean newFactorsParentingPresent = (risksPresent && isNotEmpty(risks.getFactorsAffectingParenting()));
         return DocmosisRisks.builder()
-            .physicalHarm(risksPresent
+            .physicalHarm(newRisksPresent
                 ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.PHYSICAL_HARM)
                     ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : DEFAULT_STRING)
-            .emotionalHarm(risksPresent
+                : risksPresent
+                    ? getValidAnswerOrDefaultValue(risks.getPhysicalHarm(), applicationLanguage)
+                    : DEFAULT_STRING)
+            .emotionalHarm(newRisksPresent
                 ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.EMOTIONAL_HARM)
                     ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : DEFAULT_STRING)
-            .sexualAbuse(risksPresent
+                : risksPresent
+                    ? getValidAnswerOrDefaultValue(risks.getEmotionalHarm(), applicationLanguage)
+                    : DEFAULT_STRING)
+            .sexualAbuse(newRisksPresent
                 ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.SEXUAL_ABUSE)
                     ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : DEFAULT_STRING)
-            .neglect(risksPresent
+                : risksPresent
+                    ? getValidAnswerOrDefaultValue(risks.getSexualAbuse(), applicationLanguage)
+                    : DEFAULT_STRING)
+            .neglect(newRisksPresent
                 ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.NEGLECT)
                     ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : DEFAULT_STRING)
-            .alcoholDrugAbuse(risksPresent
+                : risksPresent
+                    ? getValidAnswerOrDefaultValue(risks.getNeglect(), applicationLanguage)
+                    : DEFAULT_STRING)
+            .alcoholDrugAbuse(newFactorsParentingPresent
                 ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE)
                     ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : DEFAULT_STRING)
-            .domesticAbuse(risksPresent
+                : factorsParentingPresent
+                    ? getValidAnswerOrDefaultValue(factorsParenting.getAlcoholDrugAbuse(), applicationLanguage)
+                    : DEFAULT_STRING)
+            .domesticAbuse(newFactorsParentingPresent
                 ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.DOMESTIC_ABUSE)
                     ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : DEFAULT_STRING)
-            .anythingElse(risksPresent
-                ? risks.getAnythingElseAffectingParenting()
-                : DEFAULT_STRING)
+                : factorsParentingPresent
+                    ? getValidAnswerOrDefaultValue(factorsParenting.getDomesticViolence(), applicationLanguage)
+                    : DEFAULT_STRING)
+            .anythingElse(newFactorsParentingPresent
+                ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.ANYTHING_ELSE)
+                    ? risks.getAnythingElseAffectingParenting() : DEFAULT_STRING)
+                : factorsParentingPresent
+                    ? (factorsParenting.getAnythingElse().equals("Yes") ? factorsParenting.getAnythingElseReason() : DEFAULT_STRING)
+                    : DEFAULT_STRING)
             .build();
     }
 
