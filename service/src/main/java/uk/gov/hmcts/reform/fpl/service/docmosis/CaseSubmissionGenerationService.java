@@ -1027,7 +1027,8 @@ public class CaseSubmissionGenerationService
                 ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.ANYTHING_ELSE)
                     ? risks.getAnythingElseAffectingParenting() : DEFAULT_STRING)
                 : factorsParentingPresent
-                    ? (factorsParenting.getAnythingElse().equals("Yes") ? factorsParenting.getAnythingElseReason() : DEFAULT_STRING)
+                    ? (factorsParenting.getAnythingElse().equals("Yes")
+                        ? factorsParenting.getAnythingElseReason() : DEFAULT_STRING)
                     : DEFAULT_STRING)
             .build();
     }
