@@ -1028,8 +1028,8 @@ public class CaseSubmissionGenerationService
                                                          Language applicationLanguage) {
         final boolean anyRisksPresent = (risks != null);
         final boolean oldFactorsParentingPresent = (factorsParenting != null);
-        final boolean newFactorsParentingPresent = (anyRisksPresent &&
-            isNotEmpty(risks.getFactorsAffectingParenting()));
+        final boolean newFactorsParentingPresent = (anyRisksPresent
+            && isNotEmpty(risks.getFactorsAffectingParenting()));
 
         if (type.equals(FactorsAffectingParentingType.ANYTHING_ELSE)) {
             if (newFactorsParentingPresent) {
