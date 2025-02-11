@@ -8,25 +8,25 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class InternationalElement {
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String issues;
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String proceedings;
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String issuesReason;
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String possibleCarer;
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String proceedingsReason;
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String significantEvents;
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String possibleCarerReason;
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String significantEventsReason;
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String internationalAuthorityInvolvement;
-    @Deprecated
+    @Deprecated(since = "DFPL-2295")
     private final String internationalAuthorityInvolvementDetails;
     private final String whichCountriesInvolved;
     private final String outsideHagueConvention;
