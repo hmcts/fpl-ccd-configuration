@@ -982,55 +982,81 @@ public class CaseSubmissionGenerationService
 
     private DocmosisRisks buildDocmosisRisks(final Risks risks, final FactorsParenting factorsParenting,
                                              Language applicationLanguage) {
-        final boolean risksPresent = (risks != null);
-        final boolean factorsParentingPresent = (factorsParenting != null);
-        final boolean newRisksPresent = (risksPresent && isNotEmpty(risks.getWhatKindOfRiskAndHarmToChildren()));
-        final boolean newFactorsParentingPresent = (risksPresent && isNotEmpty(risks.getFactorsAffectingParenting()));
+
         return DocmosisRisks.builder()
-            .physicalHarm(newRisksPresent
-                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.PHYSICAL_HARM)
-                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : risksPresent
-                    ? getValidAnswerOrDefaultValue(risks.getPhysicalHarm(), applicationLanguage)
-                    : DEFAULT_STRING)
-            .emotionalHarm(newRisksPresent
-                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.EMOTIONAL_HARM)
-                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : risksPresent
-                    ? getValidAnswerOrDefaultValue(risks.getEmotionalHarm(), applicationLanguage)
-                    : DEFAULT_STRING)
-            .sexualAbuse(newRisksPresent
-                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.SEXUAL_ABUSE)
-                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : risksPresent
-                    ? getValidAnswerOrDefaultValue(risks.getSexualAbuse(), applicationLanguage)
-                    : DEFAULT_STRING)
-            .neglect(newRisksPresent
-                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.NEGLECT)
-                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : risksPresent
-                    ? getValidAnswerOrDefaultValue(risks.getNeglect(), applicationLanguage)
-                    : DEFAULT_STRING)
-            .alcoholDrugAbuse(newFactorsParentingPresent
-                ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE)
-                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : factorsParentingPresent
-                    ? getValidAnswerOrDefaultValue(factorsParenting.getAlcoholDrugAbuse(), applicationLanguage)
-                    : DEFAULT_STRING)
-            .domesticAbuse(newFactorsParentingPresent
-                ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.DOMESTIC_ABUSE)
-                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
-                : factorsParentingPresent
-                    ? getValidAnswerOrDefaultValue(factorsParenting.getDomesticViolence(), applicationLanguage)
-                    : DEFAULT_STRING)
-            .anythingElse(newFactorsParentingPresent
-                ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.ANYTHING_ELSE)
-                    ? risks.getAnythingElseAffectingParenting() : DEFAULT_STRING)
-                : factorsParentingPresent
-                    ? (factorsParenting.getAnythingElse().equals("Yes")
-                        ? factorsParenting.getAnythingElseReason() : DEFAULT_STRING)
-                    : DEFAULT_STRING)
+            .physicalHarm(getDocmosisRisksRiskAndHarmField(risks, RiskAndHarmToChildrenType.PHYSICAL_HARM,
+                applicationLanguage))
+            .emotionalHarm(getDocmosisRisksRiskAndHarmField(risks, RiskAndHarmToChildrenType.EMOTIONAL_HARM,
+                applicationLanguage))
+            .sexualAbuse(getDocmosisRisksRiskAndHarmField(risks, RiskAndHarmToChildrenType.SEXUAL_ABUSE,
+                applicationLanguage))
+            .neglect(getDocmosisRisksRiskAndHarmField(risks, RiskAndHarmToChildrenType.NEGLECT,
+                applicationLanguage))
+            .alcoholDrugAbuse(getDocmosisRisksFactorsParentingField(risks, factorsParenting,
+                FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE, applicationLanguage))
+            .domesticAbuse(getDocmosisRisksFactorsParentingField(risks, factorsParenting,
+                FactorsAffectingParentingType.DOMESTIC_ABUSE, applicationLanguage))
+            .anythingElse(getDocmosisRisksFactorsParentingField(risks, factorsParenting,
+                FactorsAffectingParentingType.ANYTHING_ELSE, applicationLanguage))
             .build();
+    }
+
+    private String getDocmosisRisksRiskAndHarmField(Risks risks, RiskAndHarmToChildrenType type,
+                                                    Language applicationLanguage) {
+        final boolean anyRisksPresent = (risks != null);
+        final boolean newRisksPresent = (anyRisksPresent && isNotEmpty(risks.getWhatKindOfRiskAndHarmToChildren()));
+
+        if (newRisksPresent) {
+            return risks.getWhatKindOfRiskAndHarmToChildren().contains(type)
+                ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage);
+        } else if (anyRisksPresent) {
+            String risksField = switch (type) {
+                case PHYSICAL_HARM -> risks.getPhysicalHarm();
+                case EMOTIONAL_HARM -> risks.getEmotionalHarm();
+                case SEXUAL_ABUSE -> risks.getSexualAbuse();
+                case NEGLECT -> risks.getNeglect();
+            };
+
+            return getValidAnswerOrDefaultValue(risksField, applicationLanguage);
+        } else {
+            return DEFAULT_STRING;
+        }
+    }
+
+    private String getDocmosisRisksFactorsParentingField(Risks risks, FactorsParenting factorsParenting,
+                                                         FactorsAffectingParentingType type,
+                                                         Language applicationLanguage) {
+        final boolean anyRisksPresent = (risks != null);
+        final boolean oldFactorsParentingPresent = (factorsParenting != null);
+        final boolean newFactorsParentingPresent = (anyRisksPresent &&
+            isNotEmpty(risks.getFactorsAffectingParenting()));
+
+        if (type.equals(FactorsAffectingParentingType.ANYTHING_ELSE)) {
+            if (newFactorsParentingPresent) {
+                return risks.getFactorsAffectingParenting().contains(type)
+                    ? risks.getAnythingElseAffectingParenting() : DEFAULT_STRING;
+            } else if (oldFactorsParentingPresent) {
+                return factorsParenting.getAnythingElse().equals("Yes")
+                    ? factorsParenting.getAnythingElseReason() : DEFAULT_STRING;
+            } else {
+                return DEFAULT_STRING;
+            }
+        }
+
+        if (newFactorsParentingPresent) {
+            return risks.getFactorsAffectingParenting().contains(type)
+                ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage);
+        } else if (oldFactorsParentingPresent) {
+            String factorsField = switch (type) {
+                case ALCOHOL_DRUG_ABUSE -> factorsParenting.getAlcoholDrugAbuse();
+                case DOMESTIC_ABUSE -> factorsParenting.getDomesticViolence();
+                default -> DEFAULT_STRING;
+            };
+
+            return getValidAnswerOrDefaultValue(factorsField, applicationLanguage);
+        } else {
+            return DEFAULT_STRING;
+        }
     }
 
     private DocmosisInternationalElement buildDocmosisInternationalElement(InternationalElement internationalElement,
