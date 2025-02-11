@@ -1033,19 +1033,28 @@ public class CaseSubmissionGenerationService
 
         if (type.equals(FactorsAffectingParentingType.ANYTHING_ELSE)) {
             if (newFactorsParentingPresent) {
-                return risks.getFactorsAffectingParenting().contains(type)
-                    ? risks.getAnythingElseAffectingParenting() : DEFAULT_STRING;
+                if (risks.getFactorsAffectingParenting().contains(type)) {
+                    return risks.getAnythingElseAffectingParenting();
+                } else {
+                    return DEFAULT_STRING;
+                }
             } else if (oldFactorsParentingPresent) {
-                return factorsParenting.getAnythingElse().equals("Yes")
-                    ? factorsParenting.getAnythingElseReason() : DEFAULT_STRING;
+                if (factorsParenting.getAnythingElse().equals("Yes")) {
+                    return factorsParenting.getAnythingElseReason();
+                } else {
+                    return DEFAULT_STRING;
+                }
             } else {
                 return DEFAULT_STRING;
             }
         }
 
         if (newFactorsParentingPresent) {
-            return risks.getFactorsAffectingParenting().contains(type)
-                ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage);
+            if (risks.getFactorsAffectingParenting().contains(type)) {
+                return YES.getValue(applicationLanguage);
+            } else {
+                return NO.getValue(applicationLanguage);
+            }
         } else if (oldFactorsParentingPresent) {
             String factorsField = switch (type) {
                 case ALCOHOL_DRUG_ABUSE -> factorsParenting.getAlcoholDrugAbuse();
