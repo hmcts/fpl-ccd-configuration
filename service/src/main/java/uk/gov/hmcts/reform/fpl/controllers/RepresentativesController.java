@@ -79,6 +79,6 @@ public class RepresentativesController extends CallbackController {
     }
 
     private String getOthersLabel(CaseData caseData) {
-        return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
+        return othersService.buildOthersLabel(defaultIfNull(caseData.getOthersV2(), List.of()));
     }
 }

@@ -256,10 +256,10 @@ public class CaseDataGeneratorHelper {
         LinkedHashMap<UUID, String> codeAndValues = new LinkedHashMap<>();
 
         if (others.getFirstOther() != null) {
-            codeAndValues.put(firstOtherUUID, others.getFirstOther().getName());
+            codeAndValues.put(firstOtherUUID, others.getFirstOther().getFullName());
         }
         for (Element<Other> otherElement : nullSafeList(others.getAdditionalOthers())) {
-            codeAndValues.put(otherElement.getId(), otherElement.getValue().getName());
+            codeAndValues.put(otherElement.getId(), otherElement.getValue().getFullName());
         }
         List<DynamicListElement> listItems = codeAndValues.entrySet().stream()
             .map(kv -> DynamicListElement.builder().code(kv.getKey()).label(kv.getValue()).build())

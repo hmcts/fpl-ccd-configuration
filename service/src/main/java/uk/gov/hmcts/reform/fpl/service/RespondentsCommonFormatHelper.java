@@ -35,7 +35,7 @@ public class RespondentsCommonFormatHelper {
             .map(respondent -> "Respondent - " + respondent.getValue().getParty().getFullName());
 
         Stream<String> othersNames = others.stream()
-            .map(other -> "Other - " + other.getValue().getName());
+            .map(other -> "Other - " + other.getValue().getFullName());
 
         List<String> respondentsAndOthersNames = Stream.concat(respondentsNames, othersNames).collect(
             Collectors.toList());
@@ -76,7 +76,7 @@ public class RespondentsCommonFormatHelper {
             .map(respondent -> respondent.getValue().getParty().getFullName());
 
         Stream<String> othersNames = caseData.getOthersV2().stream()
-            .map(other -> other.getValue().getName());
+            .map(other -> other.getValue().getFullName());
 
         List<String> respondentsAndOthersNames = Stream.concat(respondentsNames, othersNames).collect(
             Collectors.toList());

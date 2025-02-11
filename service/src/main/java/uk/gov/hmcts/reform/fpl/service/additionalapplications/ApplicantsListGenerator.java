@@ -108,7 +108,7 @@ public class ApplicantsListGenerator {
         others.forEach(other -> applicants.add(
             InterlocutoryApplicant.builder()
                 .code(String.valueOf(other.getId()))
-                .name(other.getValue().getName() + ", Other to be given notice " + i.getAndIncrement())
+                .name(other.getValue().getFullName() + ", Other to be given notice " + i.getAndIncrement())
                 .build())
         );
 

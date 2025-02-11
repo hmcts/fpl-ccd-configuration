@@ -232,6 +232,7 @@ public class RespondentController extends CallbackController {
         return othersService.getSelectedOther(caseData, caseData.getOtherToRespondentEventData().getOthersList());
     }
 
+    // TODO
     private Others prepareNewOthers(CaseData caseData, CaseDetails caseDetails, Element<Other> selectedOther) {
         List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getOthersV2());
         newAllOthers.removeIf(ele -> Objects.equals(ele.getValue(), selectedOther.getValue()));

@@ -175,7 +175,7 @@ public class PeopleInCaseService {
     }
 
     private String getOtherPersonName(Other other) {
-        return defaultIfNull(other.getName(), "");
+        return defaultIfNull(other.getFullName(), "");
     }
 
     private boolean useAllPeopleInTheCase(String sendOrdersToAllPeopleInCase) {

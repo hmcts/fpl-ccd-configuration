@@ -49,7 +49,7 @@ public class OthersChecker implements EventChecker {
                 other.getLitigationIssues(),
                 other.getTelephone(),
                 other.getAddressKnowV2(),
-                other.getAddressNotKnowReason()
+                other.getAddressNotKnowReason(),
                 other.getHideAddress(),
                 other.getHideTelephone());
     }

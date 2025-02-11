@@ -148,7 +148,7 @@ public abstract class ChangeFromOtherUtils {
                     .detailsHidden(null)
                     .addressKnowV2(IsAddressKnowType.YES)
                     .telephone("123456789")
-                    .address(buildHiddenAddress(e.getValue().getName()))
+                    .address(buildHiddenAddress(e.getValue().getFullName()))
                     .build())
         ).collect(toList());
     }

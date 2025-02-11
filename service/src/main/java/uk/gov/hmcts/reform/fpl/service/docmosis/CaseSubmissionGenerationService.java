@@ -677,7 +677,7 @@ public class CaseSubmissionGenerationService
                                                Language applicationLanguage) {
         final boolean isConfidential = equalsIgnoreCase(other.getDetailsHidden(), YES.getValue());
         return DocmosisOtherParty.builder()
-            .name(other.getName())
+            .name(other.getFullName())
             .gender(formatGenderDisplay(Gender.fromLabel(other.getGender()).getLabel(applicationLanguage),
                 other.getGenderIdentification()))
             .dateOfBirth(StringUtils.isNotBlank(other.getDateOfBirth())

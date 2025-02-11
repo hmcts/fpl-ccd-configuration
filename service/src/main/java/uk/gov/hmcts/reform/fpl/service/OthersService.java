@@ -43,19 +43,19 @@ public class OthersService {
         return Selector.builder().selected(selected).build().setNumberOfOptions(allOthers.size());
     }
 
-    public String buildOthersLabel(Others others) {
+    public String buildOthersLabel(List<Element<Other>> others) {
         StringBuilder sb = new StringBuilder();
 
-        if (otherExists(others)) {
-            if (others.getFirstOther() != null) {
-                sb.append(String.format("Person 1 - %s", getName(others.getFirstOther()))).append("\n");
-            }
+        if (isNotEmpty(others)) {
+            sb.append(String.format("Person 1 - %s", defaultIfNull(others.get(0).getValue().getFullName(), "")))
+                .append("\n");
 
-            if (others.getAdditionalOthers() != null) {
-                for (int i = 0; i < others.getAdditionalOthers().size(); i++) {
-                    Other other = others.getAdditionalOthers().get(i).getValue();
+            if (others.size() > 1) {
+                for (int i = 1; i < others.size(); i++) {
+                    Other other = others.get(i).getValue();
 
-                    sb.append(String.format("Other person %d - %s", i + 1, getName(other))).append("\n");
+                    sb.append(String.format("Other person %d - %s", i, defaultIfNull(other.getFullName(), "")))
+                        .append("\n");
                 }
             }
         } else {
@@ -68,13 +68,21 @@ public class OthersService {
     public List<Element<Other>> prepareOthers(CaseData caseData) {
         return caseData.getOthersV2().stream()
             .map(element -> {
-                if (element.getValue().containsConfidentialDetails()) {
+                Other other = element.getValue();
+                if (other.containsConfidentialDetails()) {
                     Other confidentialOther = getConfidentialItemToAdd(caseData.getConfidentialOthers(), element);
-                    return element(element.getId(), addConfidentialDetails(confidentialOther, element));
-                } else {
-                    return element;
+                    other = addConfidentialDetails(confidentialOther, element);
                 }
+
+                return element(element.getId(), convertLegacyOther(other));
             }).toList();
+    }
+
+    public Other convertLegacyOther(Other other) {
+        return other.toBuilder()
+            .firstName(isEmpty(other.getFirstName()) ? other.getName() : other.getFirstName())
+            .name(null)
+            .build();
     }
 
     public String getOthersLabel(List<Element<Other>> others) {
@@ -83,7 +91,7 @@ public class OthersService {
         for (int i = 0; i < others.size(); i++) {
             Other other = others.get(i).getValue();
 
-            builder.append(String.format("Other %d: %s", i + 1, other.getName()));
+            builder.append(String.format("Other %d: %s", i + 1, other.getFullName()));
             builder.append("\n");
         }
 
@@ -160,14 +168,6 @@ public class OthersService {
             others.remove(0);
         }
         return others;
-    }
-
-    private String getName(Other other) {
-        return defaultIfNull(other.getName(), "");
-    }
-
-    private boolean otherExists(Others others) {
-        return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
     }
 
     // TODO DFPL-2421 update unit test

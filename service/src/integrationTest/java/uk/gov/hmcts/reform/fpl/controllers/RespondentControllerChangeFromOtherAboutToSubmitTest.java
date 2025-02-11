@@ -140,7 +140,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
         assertThat(responseCaseData.getOthersV2().stream()
-            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
+            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getFullName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
                 .detailsHidden("No")
@@ -174,7 +174,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
         assertThat(responseCaseData.getOthersV2().stream()
-            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
+            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getFullName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
                 .name(String.format("Marco %s", 1))
@@ -221,7 +221,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
         assertThat(responseCaseData.getOthersV2().stream()
-            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
+            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getFullName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
                 .name(String.format("Marco %s", 1))
@@ -284,7 +284,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
         assertThat(responseCaseData.getOthersV2().stream()
-            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
+            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getFullName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
                 .name(String.format("Marco %s", 1))
@@ -344,7 +344,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
         assertThat(responseCaseData.getOthersV2().stream()
-            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
+            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getFullName()))).isEmpty();
         assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
             Other.builder()
                 .name(String.format("Marco %s", 1))
@@ -399,7 +399,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
         assertThat(responseCaseData.getOthersV2().stream()
-            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
+            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getFullName()))).isEmpty();
         Other expectedFirstOther = Other.builder()
             .name(String.format("Marco %s", 1))
             .detailsHidden("No")
@@ -490,7 +490,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         assertThat(responseCaseData.getOthersV2()).hasSize(NUM_ADDITIONAL_OTHERS);
         assertThat(responseCaseData.getOthersV2().stream()
-            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getName()))).isEmpty();
+            .filter(o -> String.format("Marco %s", SELECTED_OTHER).equals(o.getValue().getFullName()))).isEmpty();
 
         Other expectedFirstOther = Other.builder()
             .name(String.format("Marco %s", SELECTED_OTHER == 0 ? 1 : 0))

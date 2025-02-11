@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
@@ -90,10 +91,19 @@ public class Other implements Representable, ConfidentialParty<Other> {
         }
     }
 
+    @JsonIgnore
     public boolean containsConfidentialDetails() {
         return YES.getValue().equals(detailsHidden)
                || YES.getValue().equals(hideAddress)
                || YES.getValue().equals(hideTelephone);
+    }
+
+    @JsonIgnore
+    public String getFullName() {
+        String fullName =  Stream.of(firstName, lastName)
+            .filter(ObjectUtils::isNotEmpty)
+            .collect(Collectors.joining(" "));
+        return (fullName.isEmpty()) ? name : fullName;
     }
 
     @Data
@@ -121,7 +131,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @Override
     public Party toParty() {
         return OtherParty.builder()
-            .firstName(ObjectUtils.isEmpty(this.getFirstName()) ? this.getName() : this.getFirstName())
+            .firstName(ObjectUtils.isEmpty(this.getFirstName()) ? this.getFullName() : this.getFirstName())
             .lastName(this.getLastName())
             .address(this.getAddress())
             .dateOfBirth(nonNull(this.getDateOfBirth()) ? LocalDate.parse(this.getDateOfBirth(),
@@ -184,7 +194,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
     public boolean isEmpty() {
         return Stream.of(dateOfBirth, name, gender, telephone, birthPlace, childInformation, genderIdentification,
             litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy,
-            addressNotKnowReason
+            addressNotKnowReason, firstName, lastName, hideAddress, hideAddress, whereaboutsUnknownDetails
         ).allMatch(ObjectUtils::isEmpty)
             && (isNull(address) || address.equals(Address.builder().build()));
     }
