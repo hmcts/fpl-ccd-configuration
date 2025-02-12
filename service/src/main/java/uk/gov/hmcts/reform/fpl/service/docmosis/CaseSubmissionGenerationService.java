@@ -1032,29 +1032,13 @@ public class CaseSubmissionGenerationService
             && isNotEmpty(risks.getFactorsAffectingParenting()));
 
         if (type.equals(FactorsAffectingParentingType.ANYTHING_ELSE)) {
-            if (newFactorsParentingPresent) {
-                if (risks.getFactorsAffectingParenting().contains(type)) {
-                    return risks.getAnythingElseAffectingParenting();
-                } else {
-                    return DEFAULT_STRING;
-                }
-            } else if (oldFactorsParentingPresent) {
-                if (factorsParenting.getAnythingElse().equals("Yes")) {
-                    return factorsParenting.getAnythingElseReason();
-                } else {
-                    return DEFAULT_STRING;
-                }
-            } else {
-                return DEFAULT_STRING;
-            }
+            return getDocmosisRisksAnythingElseField(risks, factorsParenting, type, newFactorsParentingPresent,
+                oldFactorsParentingPresent);
         }
 
         if (newFactorsParentingPresent) {
-            if (risks.getFactorsAffectingParenting().contains(type)) {
-                return YES.getValue(applicationLanguage);
-            } else {
-                return NO.getValue(applicationLanguage);
-            }
+            return risks.getFactorsAffectingParenting().contains(type)
+                ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage);
         } else if (oldFactorsParentingPresent) {
             String factorsField = switch (type) {
                 case ALCOHOL_DRUG_ABUSE -> factorsParenting.getAlcoholDrugAbuse();
@@ -1063,6 +1047,21 @@ public class CaseSubmissionGenerationService
             };
 
             return getValidAnswerOrDefaultValue(factorsField, applicationLanguage);
+        } else {
+            return DEFAULT_STRING;
+        }
+    }
+
+    private String getDocmosisRisksAnythingElseField(Risks risks, FactorsParenting factorsParenting,
+                                                     FactorsAffectingParentingType type,
+                                                     boolean newFactorsParentingPresent,
+                                                     boolean oldFactorsParentingPresent) {
+        if (newFactorsParentingPresent) {
+            return risks.getFactorsAffectingParenting().contains(type)
+                ? risks.getAnythingElseAffectingParenting() : DEFAULT_STRING;
+        } else if (oldFactorsParentingPresent) {
+            return factorsParenting.getAnythingElse().equals("Yes")
+                ? factorsParenting.getAnythingElseReason() : DEFAULT_STRING;
         } else {
             return DEFAULT_STRING;
         }
