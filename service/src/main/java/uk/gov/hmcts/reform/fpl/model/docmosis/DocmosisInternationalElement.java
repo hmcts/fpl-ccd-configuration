@@ -11,28 +11,33 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisInternationalElement {
     /**
-    * @deprecated (DFPL-2295)
-    */
+     * This historical field is deprecated since DFPL-2303.
+     * @deprecated (DFPL-2295, historical field)
+     */
     @Deprecated(since = "DFPL-2295")
     private final String possibleCarer;
     /**
-    * @deprecated (DFPL-2295)
-    */
+     * This historical field is deprecated since DFPL-2303.
+     * @deprecated (DFPL-2295, historical field)
+     */
     @Deprecated(since = "DFPL-2295")
     private final String significantEvents;
     /**
-    * @deprecated (DFPL-2295)
-    */
+     * This historical field is deprecated since DFPL-2303.
+     * @deprecated (DFPL-2295, historical field)
+     */
     @Deprecated(since = "DFPL-2295")
     private final String proceedings;
     /**
-    * @deprecated (DFPL-2295)
-    */
+     * This historical field is deprecated since DFPL-2303.
+     * @deprecated (DFPL-2295, historical field)
+     */
     @Deprecated(since = "DFPL-2295")
     private final String internationalAuthorityInvolvement;
     /**
-    * @deprecated (DFPL-2295)
-    */
+     * This historical field is deprecated since DFPL-2303.
+     * @deprecated (DFPL-2295, historical field)
+     */
     @Deprecated(since = "DFPL-2295")
     private final String issues;
     private final String whichCountriesInvolved;

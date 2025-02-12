@@ -16,8 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 public class Grounds {
     /**
-    * @deprecated (DFPL-2312)
-    */
+     * This historical field is deprecated since DFPL-2312.
+     * @deprecated (DFPL-2312, historical field)
+     */
     @Deprecated(since = "DFPL-2312")
     private final List<String> thresholdReason;
     @NotNull(message = "Select at least one option for how this case meets the threshold criteria")
