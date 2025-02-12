@@ -12,49 +12,49 @@ import java.util.List;
 @AllArgsConstructor
 public class HearingPreferences {
     /**
-     * This historical field is deprecated since DFPL-2303.
+     * This historical field is deprecated since DFPL-2316.
      * @deprecated (DFPL-2316, historical field)
      */
     @Deprecated(since = "DFPL-2316")
     private final String welsh;
     /**
-     * This historical field is deprecated since DFPL-2303.
+     * This historical field is deprecated since DFPL-2316.
      * @deprecated (DFPL-2316, historical field)
      */
     @Deprecated(since = "DFPL-2316")
     private final String interpreter;
     /**
-     * This historical field is deprecated since DFPL-2303.
+     * This historical field is deprecated since DFPL-2316.
      * @deprecated (DFPL-2316, historical field)
      */
     @Deprecated(since = "DFPL-2316")
     private final String intermediary;
     /**
-     * This historical field is deprecated since DFPL-2303.
+     * This historical field is deprecated since DFPL-2316.
      * @deprecated (DFPL-2316, historical field)
      */
     @Deprecated(since = "DFPL-2316")
     private final String welshDetails;
     /**
-     * This historical field is deprecated since DFPL-2303.
+     * This historical field is deprecated since DFPL-2316.
      * @deprecated (DFPL-2316, historical field)
      */
     @Deprecated(since = "DFPL-2316")
     private final String disabilityAssistance;
     /**
-     * This historical field is deprecated since DFPL-2303.
+     * This historical field is deprecated since DFPL-2316.
      * @deprecated (DFPL-2316, historical field)
      */
     @Deprecated(since = "DFPL-2316")
     private final String extraSecurityMeasures;
     /**
-     * This historical field is deprecated since DFPL-2303.
+     * This historical field is deprecated since DFPL-2316.
      * @deprecated (DFPL-2316, historical field)
      */
     @Deprecated(since = "DFPL-2316")
     private final String extraSecurityMeasuresDetails;
     /**
-     * This historical field is deprecated since DFPL-2303.
+     * This historical field is deprecated since DFPL-2316.
      * @deprecated (DFPL-2316, historical field)
      */
     @Deprecated(since = "DFPL-2316")
