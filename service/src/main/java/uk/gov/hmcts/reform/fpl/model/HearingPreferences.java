@@ -20,7 +20,7 @@ public class HearingPreferences {
     @Deprecated(since = "DFPL-2316")
     private final String welshDetails;
     @Deprecated(since = "DFPL-2316")
-    private final String disabilityAssistance; 
+    private final String disabilityAssistance;
     @Deprecated(since = "DFPL-2316")
     private final String extraSecurityMeasures;
     @Deprecated(since = "DFPL-2316")
