@@ -16,12 +16,24 @@ public class Risks {
     private final String sexualAbuse;
     private final String physicalHarm;
     private final String emotionalHarm;
+    /**
+    * @deprecated (DFPL-2303)
+    */
     @Deprecated(since = "DFPL-2303")
     private final List<String> neglectOccurrences;
+    /**
+    * @deprecated (DFPL-2303)
+    */
     @Deprecated(since = "DFPL-2303")
     private final List<String> sexualAbuseOccurrences;
+    /**
+    * @deprecated (DFPL-2303)
+    */
     @Deprecated(since = "DFPL-2303")
     private final List<String> physicalHarmOccurrences;
+    /**
+    * @deprecated (DFPL-2303)
+    */
     @Deprecated(since = "DFPL-2303")
     private final List<String> emotionalHarmOccurrences;
     private final List<RiskAndHarmToChildrenType> whatKindOfRiskAndHarmToChildren;

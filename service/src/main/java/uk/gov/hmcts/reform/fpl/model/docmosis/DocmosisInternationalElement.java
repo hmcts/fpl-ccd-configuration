@@ -10,14 +10,29 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisInternationalElement {
+    /**
+    * @deprecated (DFPL-2295)
+    */
     @Deprecated(since = "DFPL-2295")
     private final String possibleCarer;
+    /**
+    * @deprecated (DFPL-2295)
+    */
     @Deprecated(since = "DFPL-2295")
     private final String significantEvents;
+    /**
+    * @deprecated (DFPL-2295)
+    */
     @Deprecated(since = "DFPL-2295")
     private final String proceedings;
+    /**
+    * @deprecated (DFPL-2295)
+    */
     @Deprecated(since = "DFPL-2295")
     private final String internationalAuthorityInvolvement;
+    /**
+    * @deprecated (DFPL-2295)
+    */
     @Deprecated(since = "DFPL-2295")
     private final String issues;
     private final String whichCountriesInvolved;
