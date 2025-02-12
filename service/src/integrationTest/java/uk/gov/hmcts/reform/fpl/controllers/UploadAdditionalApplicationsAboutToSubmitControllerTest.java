@@ -10,8 +10,11 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -31,18 +34,23 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -73,10 +81,16 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private static final DocumentReference PDF_DOCUMENT = testDocumentReference();
 
     @MockBean
+    private ManageDocumentService manageDocumentService;
+
+    @MockBean
     private DocumentConversionService documentConversionService;
 
     @MockBean
     private RequestData requestData;
+
+    @MockBean
+    private UserService userService;
 
     @Autowired
     private Time time;
@@ -91,6 +105,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         given(requestData.userRoles()).willReturn(Set.of(ADMIN_ROLE));
         given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
         given(documentConversionService.convertToPdf(UPLOADED_DOCUMENT)).willReturn(PDF_DOCUMENT);
+        given(userService.isHmctsUser()).willReturn(true);
+        when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+        when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
     }
 
     @Test
@@ -308,6 +325,32 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
 
         assertThat(updatedCaseData.getHearingOrdersBundlesDrafts()).isEqualTo(hearingOrdersBundlesDrafts);
+    }
+
+    @Test
+    void shouldUpdateDraftBundleIfConfidentialDraftOrderUploaded() {
+        C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
+            .type(WITHOUT_NOTICE)
+            .uploadedDateTime("14 December 2020, 4:24pm")
+            .document(DocumentReference.builder().filename("Document 1").build())
+            .build();
+
+        List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = new ArrayList<>();
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .isC2Confidential(YesNo.YES)
+            .c2DocumentBundle(wrapElements(firstBundleAdded))
+            .applicantsList(createApplicantsDynamicList(APPLICANT))
+            .temporaryC2Document(createTemporaryC2Document())
+            .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
+
+        HearingOrdersBundle actualBundle = updatedCaseData.getHearingOrdersBundlesDrafts().get(0).getValue();
+        assertThat(actualBundle.getOrdersCTSC().get(0).getValue().getOrderConfidential())
+            .isEqualTo(caseData.getTemporaryC2Document().getDraftOrdersBundle().get(0).getValue().getDocument());
     }
 
     private void assertC2DocumentBundle(C2DocumentBundle uploadedC2DocumentBundle) {

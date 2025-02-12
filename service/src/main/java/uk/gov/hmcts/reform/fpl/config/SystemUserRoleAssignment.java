@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.config;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 
-import javax.annotation.PostConstruct;
 
 @Slf4j
 @Component

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,23 +59,23 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.JUDGE_AND_LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PREVIOUS_HEARING_VENUE_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
-@Api
 @RestController
 @RequestMapping("/callback/list-gatekeeping-hearing")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ListGatekeepingHearingController extends CallbackController {
 
+    private static final String ALLOCATED_JUDGE = "allocatedJudge";
     private static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String PRE_ATTENDANCE = "preHearingAttendanceDetails";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
-    private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
     private static final String HEARING_ORDERS_BUNDLES_DRAFTS = "hearingOrdersBundlesDrafts";
     private static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
     private static final String HAS_PREVIOUS_VENUE_HEARING = "hasPreviousHearingVenue";
@@ -166,7 +165,6 @@ public class ListGatekeepingHearingController extends CallbackController {
 
     @PostMapping("/allocated-judge/mid-event")
     public AboutToStartOrSubmitCallbackResponse allocatedJudgeMidEvent(@RequestBody CallbackRequest callbackRequest) {
-
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
@@ -184,7 +182,7 @@ public class ListGatekeepingHearingController extends CallbackController {
             Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
             if (jup.isPresent()) {
                 allocatedJudge = Judge.fromJudicialUserProfile(jup.get());
-                caseDetails.getData().put("allocatedJudge", allocatedJudge);
+                caseDetails.getData().put(ALLOCATED_JUDGE, allocatedJudge);
             } else {
                 return respond(caseDetails,
                     List.of("No Judge could be found, please retry your search or enter their details manually."));
@@ -196,7 +194,7 @@ public class ListGatekeepingHearingController extends CallbackController {
                 .getJudgeUserIdFromEmail(allocatedJudge.getJudgeEmailAddress());
             if (possibleId.isPresent()) {
                 // if they are in our maps - add their UUID extra info to the case
-                caseDetails.getData().put("allocatedJudge",
+                caseDetails.getData().put(ALLOCATED_JUDGE,
                     allocatedJudge.toBuilder()
                         .judgeJudicialUser(JudicialUser.builder()
                             .idamId(possibleId.get())
@@ -204,13 +202,13 @@ public class ListGatekeepingHearingController extends CallbackController {
                         .build());
             } else {
                 // put the temporary manual entry into the proper field
-                caseDetails.getData().put("allocatedJudge", caseData.getTempAllocatedJudge());
+                caseDetails.getData().put(ALLOCATED_JUDGE, caseData.getTempAllocatedJudge());
             }
         }
 
         // todo - test removal of this, as we use the manual label field now on the hearing judge page
         caseDetails.getData().put(
-            "judgeAndLegalAdvisor",
+            JUDGE_AND_LEGAL_ADVISOR,
             JudgeAndLegalAdvisor.builder()
                 .allocatedJudgeLabel(buildAllocatedJudgeLabel(allocatedJudge))
                 .build());
@@ -265,7 +263,7 @@ public class ListGatekeepingHearingController extends CallbackController {
             JudgeAndLegalAdvisor hearingJudge = JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
                 .legalAdvisorName(caseData.getLegalAdvisorName())
                 .build();
-            caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR, hearingJudge);
         }
 
 
@@ -323,7 +321,6 @@ public class ListGatekeepingHearingController extends CallbackController {
         caseData.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
 
         caseData.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, eventData.getCancelledHearingDetails());
-        caseData.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, eventData.getHearingFurtherEvidenceDocuments());
         caseData.putIfNotEmpty(HEARING_DETAILS_KEY, eventData.getHearingDetails());
         caseData.put(HEARING_ORDERS_BUNDLES_DRAFTS, eventData.getHearingOrdersBundlesDrafts());
         caseData.put(DRAFT_UPLOADED_CMOS, eventData.getDraftUploadedCMOs());

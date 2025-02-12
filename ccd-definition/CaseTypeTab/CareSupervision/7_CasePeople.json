@@ -1,0 +1,116 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "manageLegalRepresentativesLink",
+    "TabFieldDisplayOrder": 0
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "allocatedJudge",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "children1",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "respondents1",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "applicants",
+    "TabFieldDisplayOrder": 4,
+    "FieldShowCondition": "localAuthorities != \"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "localAuthorities",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "legalRepresentatives",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "solicitor",
+    "TabFieldDisplayOrder": 6,
+    "FieldShowCondition": "localAuthorities != \"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "others",
+    "TabFieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "representatives",
+    "TabFieldDisplayOrder": 8
+  }
+]

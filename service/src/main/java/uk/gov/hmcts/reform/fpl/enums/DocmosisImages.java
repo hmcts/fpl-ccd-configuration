@@ -11,7 +11,7 @@ import java.util.Optional;
 public enum DocmosisImages {
 
     DRAFT_WATERMARK("[userImage:draft-watermark.png]", null),
-    COURT_SEAL("[userImage:familycourtseal.png]", "[userImage:familycourtseal-bilingual.png]"),
+    COURT_SEAL("[userImage:FL-PLW-familycourtsealV2.png]", "[userImage:FL-PLW-familycourtseal-welshV2.png]"),
     CREST("[userImage:crest.png]", null),
     HMCTS_LOGO_LARGE("[userImage:hmcts-logo-large.png]", null),
     HMCTS_LOGO_SMALL("[userImage:hmcts-logo-small.png]", null);

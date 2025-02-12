@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.utils.matchers;
 
-import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.AttributeRef;
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.LDValue;
-import com.launchdarkly.sdk.UserAttribute;
 import org.mockito.ArgumentMatcher;
 import org.mockito.internal.matchers.ContainsExtraTypeInfo;
 import org.mockito.internal.matchers.text.ValuePrinter;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LDUserMatcher implements ArgumentMatcher<LDUser>, ContainsExtraTypeInfo, Serializable {
+public class LDUserMatcher implements ArgumentMatcher<LDContext>, ContainsExtraTypeInfo, Serializable {
     private final Map<String, LDValue> wanted;
 
     public static LDUserBuilder ldUser(String env) {
@@ -22,9 +22,9 @@ public class LDUserMatcher implements ArgumentMatcher<LDUser>, ContainsExtraType
         this.wanted = wanted;
     }
 
-    public boolean matches(LDUser actual) {
+    public boolean matches(LDContext actual) {
         return wanted.entrySet().stream()
-            .allMatch(entry -> entry.getValue().equals(actual.getAttribute(UserAttribute.forName(entry.getKey()))));
+            .allMatch(entry -> entry.getValue().equals(actual.getValue(AttributeRef.fromLiteral(entry.getKey()))));
     }
 
     public String toString() {
@@ -35,12 +35,16 @@ public class LDUserMatcher implements ArgumentMatcher<LDUser>, ContainsExtraType
         return ValuePrinter.print(object);
     }
 
-    public String toStringWithType() {
-        return "(" + wanted.getClass().getSimpleName() + ") " + describe(wanted);
+    public String toStringWithType(String className) {
+        return "(" + className + ") " + this.describe(this.wanted);
     }
 
     public boolean typeMatches(Object target) {
         return wanted != null && target != null && target.getClass() == wanted.getClass();
+    }
+
+    public final Object getWanted() {
+        return this.wanted;
     }
 
     public static class LDUserBuilder {

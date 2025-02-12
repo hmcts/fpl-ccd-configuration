@@ -24,7 +24,7 @@ public class TranslatedDocumentGenerator {
         byte[] bytes = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
 
         byte[] convertedPdfBytes = documentConversionService.convertToPdf(bytes, documentReference.getFilename());
-        return documentSealingService.sealDocument(convertedPdfBytes, caseData.getCourt(), SealType.BILINGUAL);
+        return documentSealingService.sealDocument(convertedPdfBytes, caseData.getCourt(), SealType.WELSH);
     }
 
 }

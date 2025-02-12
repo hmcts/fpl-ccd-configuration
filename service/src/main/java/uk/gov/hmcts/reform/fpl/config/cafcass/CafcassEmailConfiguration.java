@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.config.cafcass;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +10,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
 @Data
 @Configuration

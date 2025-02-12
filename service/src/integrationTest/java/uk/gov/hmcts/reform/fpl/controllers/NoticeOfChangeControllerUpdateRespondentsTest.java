@@ -69,6 +69,6 @@ public class NoticeOfChangeControllerUpdateRespondentsTest extends AbstractCallb
 
         AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(caseData);
 
-        assertThat(resp.getData()).extracting("changeOrganisationRequestField").isNull();
+        assertThat(resp.getData()).doesNotContainKey("changeOrganisationRequestField");
     }
 }

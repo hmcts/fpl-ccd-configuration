@@ -6,7 +6,7 @@ const output = require('codeceptjs').output;
 Feature('Smoke tests @smoke-tests @fixed');
 
 Scenario(
-  'Sign in as local authority and create a case',
+  'Sign in as Local Authority and create a case',
   async ({ I, caseListPage }) => {
     output.print('Smoke test triggered');
     await I.goToPage(config.baseUrl, config.newSwanseaLocalAuthorityUserOne);

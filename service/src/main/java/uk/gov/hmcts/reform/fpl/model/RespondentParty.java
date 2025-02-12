@@ -3,20 +3,20 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.groups.Default;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 
 import java.time.LocalDate;
-import javax.validation.constraints.NotBlank;
-import javax.validation.groups.Default;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -32,7 +32,7 @@ public final class RespondentParty extends Party {
     private final String litigationIssues;
     private final String litigationIssuesDetails;
     private final String addressNotKnowReason;
-    private final String addressKnow;
+    private final IsAddressKnowType addressKnow;
 
 
     @Override
@@ -72,7 +72,7 @@ public final class RespondentParty extends Party {
                            String contactDetailsHiddenReason,
                            String litigationIssues,
                            String litigationIssuesDetails,
-                           String addressNotKnowReason,  String addressKnow) {
+                           String addressNotKnowReason,  IsAddressKnowType addressKnow) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
         this.gender = gender;
@@ -91,11 +91,11 @@ public final class RespondentParty extends Party {
     public static class RespondentPartyBuilder {
     }
 
-    public String getAddressKnow() {
+    public IsAddressKnowType getAddressKnow() {
         if (addressKnow != null) {
             return addressKnow;
         }
         return this.address != null && StringUtils.isNotBlank(this.address.getAddressLine1())
-            ? YesNo.YES.getValue() : null;
+            ? IsAddressKnowType.YES : null;
     }
 }

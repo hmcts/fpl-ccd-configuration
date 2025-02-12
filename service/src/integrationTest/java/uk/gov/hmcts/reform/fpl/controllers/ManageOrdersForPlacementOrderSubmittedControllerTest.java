@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -59,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_SOLICITOR_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_FAMILY_MAN_NUMBER;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
@@ -66,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntilSecs;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -264,6 +268,11 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             .id(TEST_CASE_ID)
             .familyManCaseNumber(TEST_FAMILY_MAN_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_1_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .build()))
             .respondents1(List.of(ANOTHER_RESPONDENT, firstParent, secondParent))
             .children1(List.of(child))
             .placementEventData(PlacementEventData.builder()
@@ -357,7 +366,8 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
         return Map.of(
             "callout", "^Theodore Bailey, " + TEST_FAMILY_MAN_NUMBER,
             "courtName", DEFAULT_LA_COURT,
-            "documentLink", Map.of("file", encodedOrderDocument, "is_csv", false),
+            "documentLink", Map.of("file", encodedOrderDocument, "filename", JSONObject.NULL,
+                "confirm_email_before_download", JSONObject.NULL, "retention_period", JSONObject.NULL),
             "caseUrl", "http://fake-url/cases/case-details/" + TEST_CASE_ID + "#Orders",
             "childLastName", "Bailey"
         );

@@ -2,50 +2,78 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingType",
-    "ListElementCode": "CASE_MANAGEMENT",
-    "ListElement": "Case management",
+    "ListElementCode": "EMERGENCY_PROTECTION_ORDER",
+    "ListElement": "Emergency protection order",
     "DisplayOrder": 1
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingType",
-    "ListElementCode": "FURTHER_CASE_MANAGEMENT",
-    "ListElement": "Further case management",
-    "DisplayOrder": 2
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingType",
-    "ListElementCode": "ISSUE_RESOLUTION",
-    "ListElement": "Issue resolution",
-    "DisplayOrder": 3
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingType",
-    "ListElementCode": "FINAL",
-    "ListElement": "Final",
-    "DisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingType",
     "ListElementCode": "INTERIM_CARE_ORDER",
     "ListElement": "Interim care order",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "CASE_MANAGEMENT",
+    "ListElement": "Case management",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "FURTHER_CASE_MANAGEMENT",
+    "ListElement": "Further case management",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "FACT_FINDING",
+    "ListElement": "Fact finding",
     "DisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingType",
-    "ListElementCode": "ACCELERATED_DISCHARGE_OF_CARE",
-    "ListElement": "Accelerated discharge of care",
+    "ListElementCode": "ISSUE_RESOLUTION",
+    "ListElement": "Issue resolution",
     "DisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingType",
-    "ListElementCode": "OTHER",
-    "ListElement": "Other",
+    "ListElementCode": "FINAL",
+    "ListElement": "Final",
     "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "JUDGMENT_AFTER_HEARING",
+    "ListElement": "Judgment after hearing",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "ACCELERATED_DISCHARGE_OF_CARE",
+    "ListElement": "Discharge of care",
+    "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "FAMILY_DRUG_ALCOHOL_COURT",
+    "ListElement": "Family drug & alcohol court",
+    "DisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "PLACEMENT_HEARING",
+    "ListElement": "Placement hearing",
+    "DisplayOrder": 11
   }
 ]

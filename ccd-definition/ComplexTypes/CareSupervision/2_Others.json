@@ -49,7 +49,27 @@
     "ListElementCode": "addressKnow",
     "FieldType": "YesOrNo",
     "ElementLabel": "*Current address known?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "addressKnow=\"*\"",
+    "Comment": "Deprecated. Use addressKnowV2"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "addressKnowV2",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "IsAddressKnowList",
+    "ElementLabel": "*Current address known?",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "addressAutoConfidentialLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## This address is automatically made confidential",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "addressKnowV2=\"LIVE_IN_REFUGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -58,7 +78,7 @@
     "FieldType": "AddressUK",
     "ElementLabel": "Current address",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnow=\"Yes\""
+    "FieldShowCondition": "addressKnowV2=\"Yes\" OR addressKnowV2=\"LIVE_IN_REFUGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -68,7 +88,7 @@
     "FieldTypeParameter":  "AddressNotKnowType",
     "ElementLabel": "*Reason the address is not known",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnow=\"No\""
+    "FieldShowCondition": "addressKnowV2=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -82,19 +102,11 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Others",
-    "ListElementCode": "childInformation",
-    "FieldType": "TextArea",
-    "ElementLabel": "What is this person's relationship to the child or children in this case?",
-    "HintText": "Include: the name of the child or children, this person's relationship to them and whether this person has parental responsibility",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Others",
     "ListElementCode": "detailsHidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need contact details hidden from other parties?",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "addressKnowV2!=\"LIVE_IN_REFUGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -102,7 +114,16 @@
     "ListElementCode": "detailsHiddenReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "detailsHidden=\"Yes\"",
+    "FieldShowCondition": "detailsHidden=\"Yes\" AND addressKnowV2!=\"LIVE_IN_REFUGE\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "childInformation",
+    "FieldType": "TextArea",
+    "ElementLabel": "What is this person's relationship to the child or children in this case?",
+    "HintText": "Include: the name of the child or children, this person's relationship to them and whether this person has parental responsibility",
     "SecurityClassification": "Public"
   },
   {

@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.summary.NextHearingDetails;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -50,7 +52,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,6 +95,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
@@ -101,6 +103,7 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CO
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -269,7 +272,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         // and one of them was submitted with the case summary payload
         assertThat(eventDataCaptor.getAllValues())
-            .contains(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
+            .contains(caseSummary("Yes", "Case management",
+                LocalDateTime.of(2050, 5, 20, 13, 0, 0)));
 
         verifyNoInteractions(notificationClient);
         verifyNoMoreInteractions(concurrencyHelper);
@@ -327,7 +331,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .startEvent(CASE_ID, "internal-update-case-summary");
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID),
                 eq(caseSummary("Yes", "Case management",
-                    LocalDate.of(2050, 5, 20))));
+                    LocalDateTime.of(2050, 5, 20, 13, 0, 0))));
 
         verifyNoInteractions(notificationClient);
         verifyNoMoreInteractions(concurrencyHelper);
@@ -359,6 +363,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .id(CASE_ID)
             .familyManCaseNumber(FAMILY_MAN_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_3_CODE)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_3_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_3_INBOX)
+                .build()))
             .hearingDetails(List.of(existingHearing))
             .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
             .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
@@ -824,12 +833,13 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         return Direction.builder().directionText(text).dateToBeCompletedBy(dateTime).build();
     }
 
-    private Map<String, Object> caseSummary(String hasNextHearing, String hearingType, LocalDate hearingDate) {
+    private Map<String, Object> caseSummary(String hasNextHearing, String hearingType, LocalDateTime hearingDate) {
         return caseConverter.toMap(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing(hasNextHearing)
             .caseSummaryNextHearingType(hearingType)
-            .caseSummaryNextHearingDate(hearingDate)
-            .caseSummaryNextHearingDateTime(LocalDateTime.of(hearingDate, LocalTime.of(13, 0, 0)))
+            .caseSummaryNextHearingDate(hearingDate.toLocalDate())
+            .caseSummaryNextHearingDateTime(hearingDate)
+            .nextHearingDetails(NextHearingDetails.builder().hearingDateTime(hearingDate).build())
             .caseSummaryCourtName(COURT_NAME)
             .caseSummaryLanguageRequirement("No")
             .caseSummaryLALanguageRequirement("No")

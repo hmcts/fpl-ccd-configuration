@@ -49,6 +49,7 @@ export class UploadDraftOrders extends BasePage {
         await this.uploadOrderLocator.setInputFiles('./playwright-e2e/files/draftOrder2.docx');
         await this.page.getByLabel('Yes').nth(0).check();
         await this.waitForAllUploadsToBeCompleted();
+        await this.page.waitForTimeout(6000);
         await this.addNewLocator.nth(1).click();
         await this.page.getByLabel('Order title').nth(1).fill('Test2');
         await this.uploadOrderLocator.nth(1).setInputFiles('./playwright-e2e/files/draftOrder.docx');

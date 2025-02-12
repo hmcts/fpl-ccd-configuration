@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,7 +61,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 // TODO: 03/09/2020 refactor logic into sdo service
-@Api
 @RestController
 @RequestMapping("/callback/draft-standard-directions")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -70,6 +68,7 @@ public class StandardDirectionsOrderController extends CallbackController {
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
     private static final String STANDARD_DIRECTION_ORDER_KEY = "standardDirectionOrder";
     private static final String DATE_OF_ISSUE_KEY = "dateOfIssue";
+    private static final String SHOW_NOTICE = "showNoticeOfProceedings";
 
     private final DocumentService documentService;
     private final StandardDirectionOrderGenerationService sdoGenerationService;
@@ -199,7 +198,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
         // work around as I could not get the page hiding when using the [STATE] metadata field
         caseDetails.getData().put(
-            "showNoticeOfProceedings", YesNo.from(GATEKEEPING == caseData.getState())
+            SHOW_NOTICE, YesNo.from(GATEKEEPING == caseData.getState())
         );
 
         return respond(caseDetails);
@@ -216,7 +215,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, sdo);
         // work around as I could not get the page hiding when using the [STATE] metadata field
         caseDetails.getData().put(
-            "showNoticeOfProceedings", YesNo.from(GATEKEEPING == caseData.getState())
+            SHOW_NOTICE, YesNo.from(GATEKEEPING == caseData.getState())
         );
 
         return respond(caseDetails);
@@ -286,7 +285,7 @@ public class StandardDirectionsOrderController extends CallbackController {
 
         List<String> tempFields = GatekeepingOrderEventData.temporaryFields();
         tempFields.addAll(List.of(JUDGE_AND_LEGAL_ADVISOR_KEY, DATE_OF_ISSUE_KEY, "preparedSDO", "currentSDO",
-            "replacementSDO", "useServiceRoute", "useUploadRoute", "noticeOfProceedings", "showNoticeOfProceedings"
+            "replacementSDO", "useServiceRoute", "useUploadRoute", "noticeOfProceedings", SHOW_NOTICE
         ));
 
         if (order.isSealed()) {
