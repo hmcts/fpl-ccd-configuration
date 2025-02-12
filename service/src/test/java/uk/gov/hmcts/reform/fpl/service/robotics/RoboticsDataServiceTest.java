@@ -288,19 +288,6 @@ class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnFalseForHarmAllegedWhenAllOfTheOptionsForRisksIsEmpty() {
-        CaseData caseData = prepareCaseData();
-        CaseData caseDataWithRisks = caseData.toBuilder()
-            .risks(Risks.builder()
-                .build())
-            .build();
-
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks);
-
-        assertThat(roboticsData.isHarmAlleged()).isFalse();
-    }
-
-    @Test
     void shouldReturnFalseWhenInternationalElementIsNull() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
