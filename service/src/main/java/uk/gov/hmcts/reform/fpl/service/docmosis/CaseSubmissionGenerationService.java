@@ -972,7 +972,7 @@ public class CaseSubmissionGenerationService
                             ? hearingPreferences.getDisabilityAssistanceDetails()
                             : DEFAULT_STRING)
             .extraSecurityMeasures(hearingPreferencesPresent
-                            ? hearingPreferences.getSeparateWaitingRoomsDetails()
+                            ? hearingPreferences.getExtraSecurityMeasuresDetails()
                             : DEFAULT_STRING)
             .somethingElse(hearingPreferencesPresent
                             ? hearingPreferences.getSomethingElseDetails()

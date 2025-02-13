@@ -52,17 +52,11 @@ public class HearingPreferences {
      * @deprecated (DFPL-2316, historical field)
      */
     @Deprecated(since = "DFPL-2316")
-    private final String extraSecurityMeasuresDetails;
-    /**
-     * This historical field is deprecated since DFPL-2316.
-     * @deprecated (DFPL-2316, historical field)
-     */
-    @Deprecated(since = "DFPL-2316")
     private final String somethingElse;
     private final List<CourtServicesNeeded> whichCourtServices;
     private final String interpreterDetails;
     private final String intermediaryDetails;
     private final String disabilityAssistanceDetails;
-    private final String separateWaitingRoomsDetails;
+    private final String extraSecurityMeasuresDetails;
     private final String somethingElseDetails;
 }

@@ -374,7 +374,7 @@
       "interpreterDetails": "Interpreter required",
       "intermediaryDetails": "Intermediary hearing required",
       "disabilityAssistanceDetails": "Learning disability",
-      "separateWaitingRoomsDetails": "Separate waiting room required",
+      "extraSecurityMeasuresDetails": "Separate waiting room required",
       "somethingElseDetails": "I need this from someone"
     },
     "internationalElement": {

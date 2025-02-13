@@ -44,7 +44,7 @@
     "ID": "HearingPreferences",
     "CaseEventID": "amendAttendingHearing",
     "CaseFieldID": "hearingPreferences",
-    "ListElementCode": "separateWaitingRoomsDetails",
+    "ListElementCode": "extraSecurityMeasuresDetails",
     "EventElementLabel": "Separate waiting rooms details",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"

@@ -33,7 +33,7 @@ public class CourtServiceChecker implements EventChecker {
             hearingPreferences.getInterpreterDetails(),
             hearingPreferences.getIntermediaryDetails(),
             hearingPreferences.getDisabilityAssistanceDetails(),
-            hearingPreferences.getSeparateWaitingRoomsDetails(),
+            hearingPreferences.getExtraSecurityMeasuresDetails(),
             hearingPreferences.getSomethingElseDetails());
     }
 

@@ -52,7 +52,7 @@ class CourtServiceCheckerIsStartedTest {
                         .interpreterDetails("")
                         .intermediaryDetails("")
                         .disabilityAssistanceDetails("")
-                        .separateWaitingRoomsDetails("")
+                        .extraSecurityMeasuresDetails("")
                         .somethingElseDetails("")
                         .build())
                 .map(Arguments::of);
@@ -69,7 +69,7 @@ class CourtServiceCheckerIsStartedTest {
                 HearingPreferences.builder().interpreterDetails("Interpreter required").build(),
                 HearingPreferences.builder().intermediaryDetails("Intermediary hearing required").build(),
                 HearingPreferences.builder().disabilityAssistanceDetails("Learning disability").build(),
-                HearingPreferences.builder().separateWaitingRoomsDetails("Separate waiting room required").build(),
+                HearingPreferences.builder().extraSecurityMeasuresDetails("Separate waiting room required").build(),
                 HearingPreferences.builder().somethingElseDetails("I need this from someone").build())
                 .map(Arguments::of);
     }

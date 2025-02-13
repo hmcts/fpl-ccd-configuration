@@ -39,7 +39,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
-    "ListElementCode": "separateWaitingRoomsDetails",
+    "ListElementCode": "extraSecurityMeasuresDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Separate waiting rooms details",
     "FieldShowCondition": "whichCourtServices CONTAINS \"SEPARATE_WAITING_ROOMS\"",
