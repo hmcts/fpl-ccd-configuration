@@ -101,9 +101,9 @@ public class RespondentService {
             if (party != null) {
                 RespondentParty.RespondentPartyBuilder partyBuilder = party.toBuilder();
 
-                // Make as confidential if living in a refuge
+                // Make address confidential if living in a refuge
                 if (LIVE_IN_REFUGE.equals(party.getAddressKnow())) {
-                    partyBuilder = partyBuilder.contactDetailsHidden(YES.getValue());
+                    partyBuilder = partyBuilder.hideAddress(YES.getValue());
                 }
 
                 // Clear address not know reason if address is known

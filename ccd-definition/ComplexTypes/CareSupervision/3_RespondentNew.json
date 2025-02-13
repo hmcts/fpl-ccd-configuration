@@ -23,7 +23,7 @@
     "ID": "RespondentNew",
     "ListElementCode": "party",
     "FieldType": "RespondentParty",
-    "ElementLabel": "Party",
+    "ElementLabel": " ",
     "SecurityClassification": "Public"
   },
   {

@@ -196,8 +196,8 @@ class RespondentServiceTest {
             .build()));
 
         List<Element<Respondent>> updatedRespondents = service.consolidateAndRemoveHiddenFields(respondents);
-        assertThat(updatedRespondents.get(0).getValue().getParty().getContactDetailsHidden())
-            .isEqualTo(YES.getValue());
+        assertThat(updatedRespondents.get(0).getValue().getParty()).extracting("hideAddress", "hideTelephone")
+            .containsExactly(YES.getValue(), NO.getValue());
     }
 
     @Test
