@@ -84,7 +84,7 @@ public class GroundsChecker extends PropertiesChecker {
     }
 
     private static boolean isGroundsStarted(Grounds grounds) {
-        return isNotEmpty(grounds) && anyNonEmpty(grounds.getGroundsReason(), grounds.getThresholdDetails());
+        return isNotEmpty(grounds) && anyNonEmpty(grounds.getThresholdReason(), grounds.getThresholdDetails());
     }
 
     private static boolean isEPOGroundsStarted(GroundsForEPO grounds) {

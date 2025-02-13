@@ -1003,7 +1003,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnBeyondParentalControlForGroundsThresholdReasonWhenThresholdReasonIsBeyondControl() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .groundsReason(of(GroundsList.BEYOND_PARENTAL_CONTROL))
+                    .thresholdReason(of("beyondControl"))
                     .build())
                 .build();
 
@@ -1016,7 +1016,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldNotAppendBeyondParentalControlToGroundsThresholdReasonWhenThresholdReasonIsNotBeyondControl() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .groundsReason(of(GroundsList.NO_CARE))
+                .thresholdReason(of("noCare"))
                     .build())
                 .build();
 
@@ -1042,7 +1042,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnDefaultValueForGroundsThresholdReasonWhenTGroundsIsNotNullAndThresholdReasonEmpty() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .groundsReason(of())
+                    .thresholdReason(of())
                     .build())
                 .build();
 
@@ -1152,7 +1152,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
                     .thresholdDetails("")
-                    .groundsReason(of(GroundsList.NO_CARE))
+                    .thresholdReason(of("noCare"))
                     .build())
                 .build();
 

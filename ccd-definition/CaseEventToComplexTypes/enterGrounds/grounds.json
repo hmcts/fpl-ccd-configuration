@@ -4,7 +4,7 @@
     "ID": "Grounds",
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "grounds",
-    "ListElementCode": "groundsReason",
+    "ListElementCode": "thresholdReason",
     "EventElementLabel": "What is the reason behind the child suffering or being likely to suffer significant harm?",
     "DisplayContext": "MANDATORY"
   },

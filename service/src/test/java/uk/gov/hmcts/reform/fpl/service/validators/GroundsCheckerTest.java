@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
 import uk.gov.hmcts.reform.fpl.enums.GroundsList;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {GroundsChecker.class, LocalValidatorFactoryBean.class})
@@ -66,7 +68,7 @@ class GroundsCheckerTest {
     @Test
     void shouldReturnEmptyErrorsWhenGroundsForApplicationAreProvided() {
         final Grounds grounds = Grounds.builder()
-                .groundsReason(List.of(GroundsList.BEYOND_PARENTAL_CONTROL))
+                .thresholdReason(List.of("Beyond parental control"))
                 .thresholdDetails("Custom details")
                 .build();
         final CaseData caseData = CaseData.builder()
@@ -83,7 +85,7 @@ class GroundsCheckerTest {
     @Test
     void shouldReturnErrorWhenEpoOrderRequestedButNoGroundsProvided() {
         final Grounds grounds = Grounds.builder()
-                .groundsReason(List.of(GroundsList.BEYOND_PARENTAL_CONTROL))
+                .thresholdReason(List.of("Beyond parental control"))
                 .thresholdDetails("Custom details")
                 .build();
         final CaseData caseData = CaseData.builder()
@@ -103,7 +105,7 @@ class GroundsCheckerTest {
     @Test
     void shouldReturnEmptyErrorsWhenGroundsProvidedForRequestedEpoOrder() {
         final Grounds grounds = Grounds.builder()
-                .groundsReason(List.of(GroundsList.BEYOND_PARENTAL_CONTROL))
+                .thresholdReason(List.of("Beyond parental control"))
                 .thresholdDetails("Custom details")
                 .build();
         final GroundsForEPO groundsForEPO = GroundsForEPO.builder()
