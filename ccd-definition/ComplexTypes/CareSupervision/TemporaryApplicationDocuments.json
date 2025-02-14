@@ -5,7 +5,7 @@
     "ListElementCode": "documentType",
     "FieldType": "FixedList",
     "FieldTypeParameter": "ApplicationDocumentType",
-    "ElementLabel": "Type of document",
+    "ElementLabel": "Document type",
     "SecurityClassification": "Public"
   },
   {
