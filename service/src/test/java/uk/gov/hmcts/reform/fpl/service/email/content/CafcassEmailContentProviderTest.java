@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -102,7 +103,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
                 .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
                 .build())
             .hearing(Hearing.builder()
-                .timeFrame("Same day")
+                .hearingUrgencyType(HearingUrgencyType.SAME_DAY)
                 .build())
             .build();
 
@@ -158,7 +159,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
                 .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
                 .build())
             .hearing(Hearing.builder()
-                .timeFrame("Same day")
+                .hearingUrgencyType(HearingUrgencyType.SAME_DAY)
                 .build())
             .build();
 
@@ -190,7 +191,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
                 .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
                 .build())
             .hearing(Hearing.builder()
-                .timeFrame("Same day")
+                .hearingUrgencyType(HearingUrgencyType.SAME_DAY)
                 .build())
             .build();
         NewApplicationCafcassData newApplicationCafcassData = underTest.buildCafcassSubmissionSendGridData(caseData);
@@ -223,7 +224,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
                 .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
                 .build())
             .hearing(Hearing.builder()
-                .timeFrame("Same day")
+                .hearingUrgencyType(HearingUrgencyType.SAME_DAY)
                 .build())
             .build();
 
