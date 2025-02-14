@@ -7,7 +7,7 @@
     "ListElementCode": "senderType",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "isJudiciary!=\"YES\""
+    "FieldShowCondition": "isJudiciary=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -17,7 +17,7 @@
     "ListElementCode": "sender",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "judicialMessageMetaData.senderType=\"LOCAL_COURT_ADMIN\" OR judicialMessageMetaData.senderType=\"OTHER\" OR judicialMessageMetaData.senderType=\"HEARING_JUDGE\""
+    "FieldShowCondition": "judicialMessageMetaData.senderType=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -25,6 +25,16 @@
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
     "ListElementCode": "recipientType",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "judicialMessageMetaData.senderType=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageMetaData",
+    "ListElementCode": "recipientDynamicList",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
@@ -36,7 +46,7 @@
     "ListElementCode": "recipient",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "judicialMessageMetaData.recipientType=\"JUDICIARY\" OR judicialMessageMetaData.recipientType=\"LOCAL_COURT_ADMIN\" OR judicialMessageMetaData.recipientType=\"OTHER\" OR judicialMessageMetaData.recipientType=\"HEARING_JUDGE\""
+    "FieldShowCondition": "judicialMessageMetaData.recipientType=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

@@ -81,7 +81,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .urgency(selectedJudicialMessage.getUrgency())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage(EMPTY)
-            .replyFrom(isJudiciary() ? getEmailAddressByRoleType(JudicialMessageRoleType.JUDICIARY) : EMPTY)
+            .replyFrom(isJudiciary() ? getEmailAddressByRoleType(JudicialMessageRoleType.ALLOCATED_JUDGE) : EMPTY)
             .replyTo(selectedJudicialMessage.getSender())
             .build();
 

@@ -1,13 +1,19 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
+import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
+import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 import uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
@@ -15,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -26,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +47,6 @@ import java.util.function.Function;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Comparator.comparing;
-import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
@@ -60,15 +67,18 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SendNewMessageJudgeService extends MessageJudgeService {
-    @Autowired
-    private ValidateEmailService validateEmailService;
-    @Autowired
-    private IdentityService identityService;
-    @Autowired
-    private ObjectMapper mapper;
+
+    private final ValidateEmailService validateEmailService;
+    private final IdentityService identityService;
+    private final ObjectMapper mapper;
+    private final DynamicListService dynamicListService;
+    private final RoleAssignmentService roleAssignmentService;
+    private final JudicialService judicialService;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -77,7 +87,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             data.put("hasAdditionalApplications", YES.getValue());
         }
 
-        data.putAll(prePopulateSenderAndRecipient());
+        data.putAll(prePopulateSenderAndRecipient(caseData));
         data.put("documentTypesDynamicList", manageDocumentService.buildExistingDocumentTypeDynamicList(caseData));
 
         return data;
@@ -120,15 +130,6 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return data;
     }
 
-    public Optional<String> validateRecipientEmail(CaseData caseData) {
-        JudicialMessageMetaData judgeMetaData = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
-        if (nonNull(judgeMetaData)) {
-            String email = resolveRecipientEmailAddress(judgeMetaData.getRecipientType(), judgeMetaData.getRecipient());
-            return validateEmailService.validate(email);
-        }
-        return Optional.empty();
-    }
-
     public List<String> validateDynamicLists(CaseData caseData) {
         MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
 
@@ -150,18 +151,21 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         JudicialMessageMetaData judicialMessageMetaData = messageJudgeEventData.getJudicialMessageMetaData();
         String latestMessage = messageJudgeEventData.getJudicialMessageNote();
 
-        String sender = resolveSenderEmailAddress(judicialMessageMetaData.getSenderType(),
-            judicialMessageMetaData.getSender());
+        // identify roleType and email based off logged-in user org/case roles
+        JudicialMessageRoleType roleType = getSenderRole(caseData);
+        String senderEmail = getEmailAddressByRoleType(roleType);
+
+        JudicialMessageRoleType recipientRoleType = JudicialMessageRoleType.valueOf(
+            messageJudgeEventData.getJudicialMessageMetaData().getRecipientDynamicList().getValue().getCode());
 
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
-            .sender(sender)
-            .senderType(resolveSenderRoleType(judicialMessageMetaData.getSenderType()))
-            .recipient(resolveRecipientEmailAddress(judicialMessageMetaData.getRecipientType(),
-                judicialMessageMetaData.getRecipient()))
-            .recipientType(judicialMessageMetaData.getRecipientType())
+            .sender(senderEmail)
+            .senderType(roleType)
+            //.recipient(resolveRecipientEmailAddress(recipientRoleType, judicialMessageMetaData.getRecipient())) no longer needed
+            .recipientType(recipientRoleType)
             .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
-            .messageHistory(buildMessageHistory(latestMessage, sender))
+            .messageHistory(buildMessageHistory(latestMessage, "%s (%s)".formatted(roleType.getLabel(), senderEmail)))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(judicialMessageMetaData.getUrgency())
@@ -262,22 +266,66 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return caseData.getMessageJudgeEventData().getIsMessageRegardingDocuments();
     }
 
-    private Map<String, Object> prePopulateSenderAndRecipient() {
+    private Map<String, Object> prePopulateSenderAndRecipient(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        if (isJudiciary()) {
-            data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(getEmailAddressByRoleType(JudicialMessageRoleType.JUDICIARY))
-                .recipient(EMPTY)
-                .build());
-            data.put("isJudiciary", YES);
-        } else {
-            data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(EMPTY)
-                .recipient(EMPTY)
-                .build());
-            data.put("isJudiciary", NO);
-        }
+        JudicialMessageRoleType senderRole = getSenderRole(caseData);
+        List<RoleAssignment> currentRoles = roleAssignmentService
+            .getJudicialCaseRolesAtTime(caseData.getId(), ZonedDateTime.now());
+
+        boolean hasAllocatedJudgeRole = currentRoles.stream()
+            .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.ALLOCATED_JUDGE.getRoleName())
+                || role.getRoleName().equals(LegalAdviserRole.ALLOCATED_LEGAL_ADVISER.getRoleName()));
+
+        boolean hasHearingJudgeRole = currentRoles.stream()
+            .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.HEARING_JUDGE.getRoleName())
+                || role.getRoleName().equals(LegalAdviserRole.HEARING_LEGAL_ADVISER.getRoleName()));
+
+
+        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
+        Optional<JudgeAndLegalAdvisor> hearingJudge = judicialService.getCurrentHearingJudge(caseData);
+
+        List<DynamicListElement> elements = new ArrayList<>();
+
+        elements.add(DynamicListElement.builder()
+            .code(JudicialMessageRoleType.CTSC.toString())
+            .label(JudicialMessageRoleType.CTSC.getLabel())
+            .build());
+        elements.add(DynamicListElement.builder()
+            .code(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString())
+            .label(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel()
+                + " - %s".formatted(caseData.getCourt().getName())
+            )
+            .build());
+
+        allocatedJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
+            .code(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())
+            .label("Allocated %s - %s".formatted(
+                    (JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(judge.getJudgeTitle()) ? "Legal Adviser" : "Judge"),
+                    formatJudgeTitleAndName(judge.toJudgeAndLegalAdvisor()))
+                + (hasAllocatedJudgeRole ? "" : " (missing active role assignment)")
+            )
+            .build()));
+
+        hearingJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
+            .code(JudicialMessageRoleType.HEARING_JUDGE.toString())
+            .label("Hearing %s - %s".formatted(
+                    (JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(judge.getJudgeTitle()) ? "Legal Adviser" : "Judge"),
+                    formatJudgeTitleAndName(judge))
+                + (hasHearingJudgeRole ? "" : " (missing active role assignment)")
+            )
+            .build()));
+
+        DynamicList dyList = DynamicList.builder()
+            .listItems(elements.stream()
+                .filter(el -> !el.getCode().equals(senderRole.toString()))
+                .toList())
+            .build();
+
+        data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
+            .recipientDynamicList(dyList)
+            .build());
+        data.put("isJudiciary", NO);
 
         return data;
     }

@@ -28,6 +28,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessageMetaData",
+    "ListElementCode": "recipientDynamicList",
+    "FieldType": "DynamicList",
+    "ElementLabel": "Recipient",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
     "ListElementCode": "recipient",
     "FieldType": "Email",
     "ElementLabel": "Recipient's email address",

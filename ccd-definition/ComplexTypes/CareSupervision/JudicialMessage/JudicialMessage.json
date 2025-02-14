@@ -6,15 +6,14 @@
     "FieldType": "FixedList",
     "FieldTypeParameter": "JudicialMessageRoleTypes",
     "ElementLabel": "From",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "recipientType=\"DO NOT SHOW\""
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
     "ListElementCode": "sender",
     "FieldType": "Email",
-    "ElementLabel": "From",
+    "ElementLabel": "From email",
     "SecurityClassification": "Public"
   },
   {
@@ -24,8 +23,7 @@
     "FieldType": "FixedList",
     "FieldTypeParameter": "JudicialMessageRoleTypes",
     "ElementLabel": "Sent To",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "senderType=\"DO NOT SHOW\""
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",

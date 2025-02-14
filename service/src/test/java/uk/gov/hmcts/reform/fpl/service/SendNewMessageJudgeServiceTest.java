@@ -640,7 +640,7 @@ class SendNewMessageJudgeServiceTest {
     private static Stream<Arguments> argForShouldAppendNewJudicialMessageToExistingJudicialMessageList() {
         List<Arguments> args = new ArrayList<>();
         List<JudicialMessageRoleType> judicialMessageRoleTypes =
-            List.of(JudicialMessageRoleType.JUDICIARY, JudicialMessageRoleType.CTSC,
+            List.of(JudicialMessageRoleType.ALLOCATED_JUDGE, JudicialMessageRoleType.CTSC,
                 JudicialMessageRoleType.LOCAL_COURT_ADMIN,JudicialMessageRoleType.OTHER);
 
         List.of(true, false).stream()
@@ -691,7 +691,7 @@ class SendNewMessageJudgeServiceTest {
             .judicialMessages(existingJudicialMessages)
             .build();
 
-        JudicialMessageRoleType expectedSenderRole = (isJudiciary) ? JudicialMessageRoleType.JUDICIARY : senderRole;
+        JudicialMessageRoleType expectedSenderRole = (isJudiciary) ? JudicialMessageRoleType.ALLOCATED_JUDGE : senderRole;
         String expectedSender = MESSAGE_SENDER;
         if (JudicialMessageRoleType.CTSC.equals(expectedSenderRole)) {
             expectedSender = COURT_EMAIL;

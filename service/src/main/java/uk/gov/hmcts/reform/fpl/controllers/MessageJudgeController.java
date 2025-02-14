@@ -73,12 +73,6 @@ public class MessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         List<Element<JudicialMessage>> updatedMessages;
 
-        Optional<String> emailError = messageJudgeService.validateRecipientEmail(caseData);
-        if (!emailError.isEmpty()) {
-            removeTemporaryFields(caseDetailsMap, transientFields());
-            return respond(caseDetailsMap, List.of(emailError.get()));
-        }
-
         updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
         caseDetailsMap.put("judicialMessages", messageJudgeService.sortJudicialMessages(updatedMessages));
         caseDetailsMap.put("latestRoleSent", caseData.getMessageJudgeEventData().getJudicialMessageMetaData()

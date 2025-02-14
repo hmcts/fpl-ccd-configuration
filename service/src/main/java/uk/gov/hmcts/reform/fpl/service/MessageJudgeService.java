@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
+import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -11,10 +13,17 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.join;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 
 public abstract class MessageJudgeService {
@@ -29,6 +38,10 @@ public abstract class MessageJudgeService {
 
     @Autowired
     protected ManageDocumentService manageDocumentService;
+
+    @Autowired
+    protected JudicialService judicialService;
+
 
     protected boolean isJudiciary() {
         return userService.hasUserRole(JUDICIARY);
@@ -58,13 +71,11 @@ public abstract class MessageJudgeService {
     }
 
     protected String getEmailAddressByRoleType(JudicialMessageRoleType roleType) {
-        if (JudicialMessageRoleType.JUDICIARY.equals(roleType)) {
-            return userService.getUserEmail();
-        } else if (JudicialMessageRoleType.CTSC.equals(roleType)) {
+        if (JudicialMessageRoleType.CTSC.equals(roleType)) {
             return ctscEmailLookupConfiguration.getEmail();
         }
 
-        return EMPTY;
+        return userService.getUserEmail();
     }
 
     protected String resolveSenderEmailAddress(JudicialMessageRoleType roleType, String emailFilledByUser) {
@@ -79,8 +90,36 @@ public abstract class MessageJudgeService {
 
     protected JudicialMessageRoleType resolveSenderRoleType(JudicialMessageRoleType roleTypeSelectedByUser) {
         if (isJudiciary()) {
-            return JudicialMessageRoleType.JUDICIARY;
+            return JudicialMessageRoleType.ALLOCATED_JUDGE;
         }
         return roleTypeSelectedByUser;
+    }
+
+    public JudicialMessageRoleType getSenderRole(CaseData caseData) {
+        Set<OrganisationalRole> roles = userService.getOrgRoles();
+        Set<RoleCategory> categories = roles.stream().map(OrganisationalRole::getRoleCategory)
+            .collect(Collectors.toSet());
+
+        if (categories.contains(RoleCategory.JUDICIAL) || categories.contains(RoleCategory.LEGAL_OPERATIONS)) {
+            // need to identify if allocated or hearing judge/legal adviser
+            Set<String> judicialCaseRoles = userService.getJudicialCaseRoles(caseData.getId());
+
+            // if user has both allocated and hearing roles, prefer allocated, as less likely to change
+            if (judicialCaseRoles.contains(ALLOCATED_JUDGE.getRoleName())
+                || judicialCaseRoles.contains(ALLOCATED_LEGAL_ADVISER.getRoleName())) {
+                return JudicialMessageRoleType.ALLOCATED_JUDGE;
+            } else if (judicialCaseRoles.contains(HEARING_JUDGE.getRoleName())
+                || judicialCaseRoles.contains(HEARING_LEGAL_ADVISER.getRoleName())) {
+                return JudicialMessageRoleType.HEARING_JUDGE;
+            } else {
+                return JudicialMessageRoleType.OTHER;
+            }
+
+        } else if (categories.contains(RoleCategory.CTSC)) {
+            return JudicialMessageRoleType.CTSC;
+        } else if (categories.contains(RoleCategory.ADMIN)) {
+            return JudicialMessageRoleType.LOCAL_COURT_ADMIN;
+        }
+        return JudicialMessageRoleType.OTHER;
     }
 }
