@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -31,7 +32,8 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
         final Long caseId = caseData.getId();
         List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
         Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
-            .map(Hearing::getTimeFrame)
+            .map(hearing -> nonNull(hearing.getHearingUrgencyType())
+                ? hearing.getHearingUrgencyType().getLabel() : hearing.getTimeFrame())
             .filter(StringUtils::isNotBlank);
 
         template.setOrdersAndDirections(ordersAndDirections);
