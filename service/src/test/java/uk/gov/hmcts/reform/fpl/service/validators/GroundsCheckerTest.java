@@ -41,7 +41,7 @@ class GroundsCheckerTest {
         final List<String> errors = groundsChecker.validate(caseData);
         final boolean isCompleted = groundsChecker.isCompleted(caseData);
 
-        assertThat(errors).contains("Add the grounds for the application");
+        assertThat(errors).contains("Add the grounds for the application|Ychwanegu'r seiliau dros wneud y cais");
         assertThat(isCompleted).isFalse();
     }
 
@@ -95,7 +95,8 @@ class GroundsCheckerTest {
         final List<String> errors = groundsChecker.validate(caseData);
         final boolean isCompleted = groundsChecker.isCompleted(caseData);
 
-        assertThat(errors).containsExactlyInAnyOrder("Add the grounds for the application");
+        assertThat(errors)
+            .containsExactlyInAnyOrder("Add the grounds for the application|Ychwanegu'r seiliau dros wneud y cais");
         assertThat(isCompleted).isFalse();
     }
 
@@ -153,7 +154,8 @@ class GroundsCheckerTest {
         final List<String> errors = groundsChecker.validate(caseData);
         final boolean isCompleted = groundsChecker.isCompleted(caseData);
 
-        assertThat(errors).containsExactlyInAnyOrder("Add the grounds for the application");
+        assertThat(errors)
+            .containsExactlyInAnyOrder("Add the grounds for the application|Ychwanegu'r seiliau dros wneud y cais");
         assertThat(isCompleted).isFalse();
     }
 

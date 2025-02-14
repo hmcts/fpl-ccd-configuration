@@ -54,7 +54,7 @@ class RespondentsCheckerTest {
         final List<String> errors = respondentsChecker.validate(caseData);
         final boolean isCompleted = respondentsChecker.isCompleted(caseData);
 
-        assertThat(errors).contains("Add the respondents' details");
+        assertThat(errors).contains("Add the respondents' details|Ychwanegu manylion yr ymatebwyr");
         assertThat(isCompleted).isFalse();
     }
 

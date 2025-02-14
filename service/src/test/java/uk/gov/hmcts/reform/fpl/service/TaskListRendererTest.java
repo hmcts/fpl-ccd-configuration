@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,16 +40,23 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHE
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.ValidationErrorMessages.ADD_ORDERS_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 class TaskListRendererTest {
 
-    private final FeatureToggleService toggleService = mock(FeatureToggleService.class);
+    private static final Long CASE_ID = 1L;
 
+    private final FeatureToggleService toggleService = mock(FeatureToggleService.class);
+    private final TemplateRenderer templateRenderer = new TemplateRenderer();
     private final TaskListRenderer taskListRenderer = new TaskListRenderer(
         new TaskListRenderElements(
             "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/"
-        ), toggleService);
+        ), toggleService, templateRenderer);
+
+    TaskListRendererTest() {
+
+    }
 
     @Nested
     class WithLegacyApplicant {
@@ -73,7 +81,8 @@ class TaskListRendererTest {
             task(LANGUAGE_REQUIREMENTS, COMPLETED_FINISHED));
 
         @Test
-        void shouldRenderTaskListWithApplicationDocuments() {
+        @Deprecated
+        void shouldRenderTaskListWithApplicationDocumentsCode() {
             when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
             List<EventValidationErrors> eventErrors = List.of(
                 EventValidationErrors.builder()
@@ -82,15 +91,52 @@ class TaskListRendererTest {
                     .build());
 
             assertThat(taskListRenderer.render(tasks, eventErrors))
-                .isEqualTo(read("task-list/legacy-applicant/expected-task-list.md"));
+                .isEqualTo(read("task-list/deprecated/legacy-applicant/expected-task-list.md"));
+        }
+
+        @Test
+        void shouldRenderTaskListWithApplicationDocumentsFreemarker() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+            List<EventValidationErrors> eventErrors = List.of(
+                EventValidationErrors.builder()
+                    .event(ORDERS_SOUGHT)
+                    .errors(List.of(ADD_ORDERS_DIRECTIONS))
+                    .build());
+
+            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, CASE_ID))
+                .isEqualTo(read("task-list/freemarker/legacy-applicant/expected-task-list.md"));
+        }
+
+        @Test
+        void shouldRenderWelshTaskListWithApplicationDocumentsFreemarker() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+            List<EventValidationErrors> eventErrors = List.of(
+                EventValidationErrors.builder()
+                    .event(ORDERS_SOUGHT)
+                    .errors(List.of(ADD_ORDERS_DIRECTIONS))
+                    .build());
+
+            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, Optional.empty(),
+                Optional.empty(), CASE_ID, true))
+                .isEqualTo(read("task-list/freemarker/legacy-applicant/expected-task-list-welsh.md"));
+        }
+
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @Deprecated
+        void shouldRenderTaskListWithoutErrorsCode(List<EventValidationErrors> errors) {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+            assertThat(taskListRenderer.render(tasks, errors))
+                .isEqualTo(read("task-list/deprecated/legacy-applicant/expected-task-list-no-errors.md"));
         }
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldRenderTaskListWithoutErrors(List<EventValidationErrors> errors) {
+        void shouldRenderTaskListWithoutErrorsFreemarker(List<EventValidationErrors> errors) {
             when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
-            assertThat(taskListRenderer.render(tasks, errors))
-                .isEqualTo(read("task-list/legacy-applicant/expected-task-list-no-errors.md"));
+            assertThat(taskListRenderer.renderTasks(tasks, errors, CASE_ID))
+                .isEqualTo(read("task-list/freemarker/legacy-applicant/expected-task-list-no-errors.md"));
         }
 
     }
@@ -117,7 +163,8 @@ class TaskListRendererTest {
             task(LANGUAGE_REQUIREMENTS, COMPLETED_FINISHED));
 
         @Test
-        void shouldRenderTaskListWithApplicationDocuments() {
+        @Deprecated
+        void shouldRenderTaskListWithApplicationDocumentsCode() {
             when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
             List<EventValidationErrors> eventErrors = List.of(
                 EventValidationErrors.builder()
@@ -126,15 +173,51 @@ class TaskListRendererTest {
                     .build());
 
             assertThat(taskListRenderer.render(tasks, eventErrors))
-                .isEqualTo(read("task-list/expected-task-list.md"));
+                .isEqualTo(read("task-list/deprecated/expected-task-list.md"));
+        }
+
+        @Test
+        void shouldRenderTaskListWithApplicationDocumentsFreemarker() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+            List<EventValidationErrors> eventErrors = List.of(
+                EventValidationErrors.builder()
+                    .event(ORDERS_SOUGHT)
+                    .errors(List.of(ADD_ORDERS_DIRECTIONS))
+                    .build());
+
+            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, CASE_ID))
+                .isEqualTo(read("task-list/freemarker/expected-task-list.md"));
+        }
+
+        @Test
+        void shouldRenderWelshTaskListWithApplicationDocumentsFreemarker() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+            List<EventValidationErrors> eventErrors = List.of(
+                EventValidationErrors.builder()
+                    .event(ORDERS_SOUGHT)
+                    .errors(List.of(ADD_ORDERS_DIRECTIONS))
+                    .build());
+
+            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, Optional.empty(),
+                Optional.empty(), CASE_ID, true))
+                .isEqualTo(read("task-list/freemarker/expected-task-list-welsh.md"));
         }
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldRenderTaskListWithoutErrors(List<EventValidationErrors> errors) {
+        @Deprecated
+        void shouldRenderTaskListWithoutErrorsCode(List<EventValidationErrors> errors) {
             when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
             assertThat(taskListRenderer.render(tasks, errors))
-                .isEqualTo(read("task-list/expected-task-list-no-errors.md"));
+                .isEqualTo(read("task-list/deprecated/expected-task-list-no-errors.md"));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldRenderTaskListWithoutErrorsFreemarker(List<EventValidationErrors> errors) {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+            assertThat(taskListRenderer.renderTasks(tasks, errors, CASE_ID))
+                .isEqualTo(read("task-list/freemarker/expected-task-list-no-errors.md"));
         }
     }
 
@@ -162,7 +245,8 @@ class TaskListRendererTest {
         );
 
         @Test
-        void shouldRenderTaskListWithApplicationDocuments() {
+        @Deprecated
+        void shouldRenderTaskListWithApplicationDocumentsCode() {
             when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
 
             final List<EventValidationErrors> eventErrors = List.of(
@@ -172,16 +256,40 @@ class TaskListRendererTest {
                     .build());
 
             assertThat(taskListRenderer.render(tasks, eventErrors))
-                .isEqualTo(read("task-list/expected-task-list.md"));
+                .isEqualTo(read("task-list/deprecated/expected-task-list.md"));
+        }
+
+        @Test
+        void shouldRenderTaskListWithApplicationDocumentsFreemarker() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+
+            final List<EventValidationErrors> eventErrors = List.of(
+                EventValidationErrors.builder()
+                    .event(ORDERS_SOUGHT)
+                    .errors(List.of("Add the orders and directions sought"))
+                    .build());
+
+            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, CASE_ID))
+                .isEqualTo(read("task-list/freemarker/expected-task-list.md"));
         }
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldRenderTaskListWithoutErrors(List<EventValidationErrors> errors) {
+        @Deprecated
+        void shouldRenderTaskListWithoutErrorsCode(List<EventValidationErrors> errors) {
             when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
             assertThat(taskListRenderer.render(tasks, errors))
-                .isEqualTo(read("task-list/expected-task-list-no-errors.md"));
+                .isEqualTo(read("task-list/deprecated/expected-task-list-no-errors.md"));
         }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldRenderTaskListWithoutErrorsFreemarker(List<EventValidationErrors> errors) {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+            assertThat(taskListRenderer.renderTasks(tasks, errors, CASE_ID))
+                .isEqualTo(read("task-list/freemarker/expected-task-list-no-errors.md"));
+        }
+
     }
 
     @Nested
@@ -209,7 +317,8 @@ class TaskListRendererTest {
         );
 
         @Test
-        void shouldRenderTaskListWithApplicationDocuments() {
+        @Deprecated
+        void shouldRenderTaskListWithApplicationDocumentsCode() {
             when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
 
             final List<EventValidationErrors> eventErrors = List.of(
@@ -224,17 +333,48 @@ class TaskListRendererTest {
             );
 
             assertThat(taskListRenderer.render(tasks, eventErrors))
-                .isEqualTo(read("task-list/expected-task-list-multi-courts.md"));
+                .isEqualTo(read("task-list/deprecated/expected-task-list-multi-courts.md"));
+        }
+
+        @Test
+        void shouldRenderTaskListWithApplicationDocumentsFreemarker() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+
+            final List<EventValidationErrors> eventErrors = List.of(
+                EventValidationErrors.builder()
+                    .event(ORDERS_SOUGHT)
+                    .errors(List.of("Add the orders and directions sought"))
+                    .build(),
+                EventValidationErrors.builder()
+                    .event(SELECT_COURT)
+                    .errors(List.of("Select court"))
+                    .build()
+            );
+
+            assertThat(taskListRenderer.renderTasks(tasks, eventErrors, CASE_ID))
+                .isEqualTo(read("task-list/freemarker/expected-task-list-multi-courts.md"));
+        }
+
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @Deprecated
+        void shouldRenderTaskListWithoutErrorsCode(List<EventValidationErrors> errors) {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+
+            assertThat(taskListRenderer.render(tasks, errors))
+                .isEqualTo(read("task-list/deprecated/expected-task-list-no-errors-multi-courts.md"));
         }
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldRenderTaskListWithoutErrors(List<EventValidationErrors> errors) {
+        void shouldRenderTaskListWithoutErrorsFreemarker(List<EventValidationErrors> errors) {
             when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
 
-            assertThat(taskListRenderer.render(tasks, errors))
-                .isEqualTo(read("task-list/expected-task-list-no-errors-multi-courts.md"));
+            assertThat(taskListRenderer.renderTasks(tasks, errors, CASE_ID))
+                .isEqualTo(read("task-list/freemarker/expected-task-list-no-errors-multi-courts.md"));
         }
+
     }
 
     @Nested
@@ -258,12 +398,22 @@ class TaskListRendererTest {
         );
 
         @Test
-        void shouldRenderTaskList() {
+        @Deprecated
+        void shouldRenderTaskListCode() {
             when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
 
             assertThat(taskListRenderer.render(tasks, emptyList()))
-                .isEqualTo(read("task-list/expected-task-list-no-grounds.md"));
+                .isEqualTo(read("task-list/deprecated/expected-task-list-no-grounds.md"));
         }
+
+        @Test
+        void shouldRenderTaskListFreemarker() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+
+            assertThat(taskListRenderer.renderTasks(tasks, emptyList(), CASE_ID))
+                .isEqualTo(read("task-list/freemarker/expected-task-list-no-grounds.md"));
+        }
+
     }
 
     private static String read(String filename) {

@@ -31,7 +31,7 @@ class AllocationProposalCheckerTest {
 
             final List<String> errors = allocationProposalChecker.validate(caseData);
 
-            assertThat(errors).contains("Add the allocation proposal");
+            assertThat(errors).contains("Add the allocation proposal|Ychwanegu'r cynnig dyrannu");
         }
 
         @Test

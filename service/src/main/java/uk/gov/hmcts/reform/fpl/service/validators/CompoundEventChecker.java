@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -24,8 +25,10 @@ public abstract class CompoundEventChecker implements EventChecker {
             .flatMap(eventErrors -> {
                 String groupName = format("In the %s section:", eventErrors.getEvent().getName().toLowerCase());
 
+                // get the English errors (for now, until we can check user language inside events)
                 List<String> formattedEventErrors = eventErrors.getErrors().stream()
-                    .map(error -> format("• %s", error))
+                    .map(error -> format("• %s", Arrays.stream(error.split("\\|")).findFirst().orElse("")))
+                    .filter(s -> !s.isBlank())
                     .collect(toList());
 
                 formattedEventErrors.add(0, groupName);

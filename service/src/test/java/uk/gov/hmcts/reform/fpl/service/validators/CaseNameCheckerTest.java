@@ -30,7 +30,7 @@ class CaseNameCheckerTest {
         final List<String> errors = caseNameChecker.validate(caseData);
         final boolean isCompleted = caseNameChecker.isCompleted(caseData);
 
-        assertThat(errors).contains("Enter a case name");
+        assertThat(errors).contains("Enter a case name|Rhowch enw’r achos");
         assertThat(isCompleted).isFalse();
     }
 

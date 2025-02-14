@@ -23,7 +23,9 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -58,8 +60,9 @@ class CaseEventHandlerTest {
 
     @Test
     void shouldTriggerCaseDataChange() {
+        final long caseId = nextLong();
         final CaseData caseData = CaseData.builder()
-            .id(nextLong())
+            .id(caseId)
             .state(OPEN)
             .build();
 
@@ -85,14 +88,16 @@ class CaseEventHandlerTest {
         when(caseConverter.convert(caseDetails)).thenReturn(caseData);
         when(caseSubmissionChecker.validateAsGroups(caseData)).thenReturn(eventsErrors);
         when(taskListService.getTasksForOpenCase(caseData)).thenReturn(tasks);
-        when(taskListRenderer.render(tasks, eventsErrors, Optional.empty(), Optional.of(Map.of())))
+        when(taskListRenderer.renderTasks(eq(tasks), eq(eventsErrors), eq(Optional.empty()),
+            eq(Optional.of(Map.of())), eq(caseId), anyBoolean()))
             .thenReturn(renderedTaskLists);
 
         caseEventHandler.getUpdates(caseDetails);
 
         verify(taskListService).getTasksForOpenCase(caseData);
         verify(caseSubmissionChecker).validateAsGroups(caseData);
-        verify(taskListRenderer).render(tasks, eventsErrors, Optional.empty(), Optional.of(Map.of()));
+        verify(taskListRenderer, times(2)).renderTasks(eq(tasks), eq(eventsErrors), eq(Optional.empty()),
+            eq(Optional.of(Map.of())), eq(caseId), anyBoolean());
 
     }
 
