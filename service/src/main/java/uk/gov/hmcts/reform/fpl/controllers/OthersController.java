@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
@@ -28,15 +27,12 @@ public class OthersController extends CallbackController {
     private final ConfidentialDetailsService confidentialService;
     private final OthersService othersService;
 
-    private static final String OTHERS = "othersV2";
-
-    // TODO DFPL-2421 update unit test
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(OTHERS, othersService.prepareOthers(caseData));
+        caseDetails.getData().put(OTHER.getCaseDataKey(), othersService.prepareOthers(caseData));
 
         return respond(caseDetails);
     }
@@ -47,7 +43,7 @@ public class OthersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         List<Element<Other>> updatedOthers = othersService.consolidateAndRemoveHiddenFields(getCaseData(caseDetails));
-        caseDetails.getData().put(OTHERS, updatedOthers);
+        caseDetails.getData().put(OTHER.getCaseDataKey(), updatedOthers);
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<Other>> others = caseData.getOthersV2();
@@ -57,9 +53,9 @@ public class OthersController extends CallbackController {
         others = confidentialService.removeConfidentialDetails(others);
 
         if (isNull(others)) {
-            caseDetails.getData().remove(OTHERS);
+            caseDetails.getData().remove(OTHER.getCaseDataKey());
         } else {
-            caseDetails.getData().put(OTHERS, others);
+            caseDetails.getData().put(OTHER.getCaseDataKey(), others);
         }
 
         return respond(caseDetails);

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -33,11 +32,8 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.fromString;
@@ -52,7 +48,6 @@ import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CaseDataGeneratorHelper {
@@ -222,69 +217,38 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static Others createOthers() {
+    public static List<Element<Other>> createOthers() {
         return createOthers(randomUUID());
     }
 
-    public static Others createOthers(UUID otherPerson1Uuid) {
-        return createOthersFromListOfOther(
-            List.of(Other.builder()
-                    .birthPlace("Newry")
-                    .childInformation("Child suffers from ADD")
-                    .dateOfBirth("2005-06-04")
-                    .gender("Male")
-                    .name("Kyle Stafford")
-                    .telephone(TELEPHONE)
-                    .address(address())
-                .build(), Other.builder()
-                    .birthPlace("Craigavon")
-                    .dateOfBirth("2002-02-05")
-                    .gender("Female")
-                    .name("Sarah Simpson")
-                    .telephone(TELEPHONE)
-                    .address(address())
+    public static List<Element<Other>> createOthers(UUID otherPerson1Uuid) {
+        return List.of(
+            element(Other.builder()
+                .childInformation("Child suffers from ADD")
+                .dateOfBirth("2005-06-04")
+                .firstName("Kyle Stafford")
+                .telephone(TELEPHONE)
+                .address(address())
                 .build()),
-            List.of(randomUUID(), otherPerson1Uuid));
+            element(otherPerson1Uuid, Other.builder()
+                .dateOfBirth("2002-02-05")
+                .firstName("Sarah Simpson")
+                .telephone(TELEPHONE)
+                .address(address())
+                .build()));
     }
 
-    public static DynamicList buildDynamicListFromOthers(Others others, int selected) {
-        return buildDynamicListFromOthers(others, selected, randomUUID());
-
-    }
-
-    public static DynamicList buildDynamicListFromOthers(Others others, int selected, UUID firstOtherUUID) {
-        LinkedHashMap<UUID, String> codeAndValues = new LinkedHashMap<>();
-
-        if (others.getFirstOther() != null) {
-            codeAndValues.put(firstOtherUUID, others.getFirstOther().getFullName());
-        }
-        for (Element<Other> otherElement : nullSafeList(others.getAdditionalOthers())) {
-            codeAndValues.put(otherElement.getId(), otherElement.getValue().getFullName());
-        }
-        List<DynamicListElement> listItems = codeAndValues.entrySet().stream()
-            .map(kv -> DynamicListElement.builder().code(kv.getKey()).label(kv.getValue()).build())
-            .collect(Collectors.toList());
+    public static DynamicList buildDynamicListFromOthers(List<Element<Other>> others, int selected) {
+        List<DynamicListElement> listItems = others.stream()
+            .map(otherElement -> DynamicListElement.builder()
+                .code(otherElement.getId())
+                .label(otherElement.getValue().getFullName())
+                .build())
+            .toList();
         return DynamicList.builder()
             .listItems(listItems)
             .value(listItems.get(selected))
             .build();
-    }
-
-    public static Others createOthersFromListOfOther(List<Other> otherList, List<UUID> uuids) {
-        Others.OthersBuilder builder = Others.builder();
-        if (otherList.size() == 0) {
-            return builder.build();
-        }
-        List<Element<Other>> additionalOthers = new ArrayList<>();
-        for (int i = 0; i < otherList.size(); i++) {
-            if (i == 0) {
-                builder.firstOther(otherList.get(i));
-            } else {
-                additionalOthers.add(element(uuids.get(i), otherList.get(i)));
-            }
-        }
-        builder.additionalOthers(additionalOthers);
-        return builder.build();
     }
 
     public static List<Element<GeneratedOrder>> createOrders(DocumentReference lastOrderDocumentReference) {

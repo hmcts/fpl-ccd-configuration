@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
@@ -12,8 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
@@ -23,7 +20,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 
 @Service
@@ -148,29 +144,6 @@ public class OthersService {
         return retBuilder.build();
     }
 
-    // This finds firstOther element id in confidential others that doesn't match.
-    private Other getFirstOther(List<Element<Other>> confidentialOthers, List<Element<Other>> others) {
-        List<UUID> ids = others.stream().map(Element::getId).collect(toList());
-
-        if (!others.isEmpty()) {
-            return confidentialOthers.stream()
-                .filter(other -> !ids.contains(other.getId()))
-                .map(other -> addConfidentialDetails(other.getValue(), others.get(0)))
-                .findFirst()
-                .orElse(others.get(0).getValue());
-        }
-        return null;
-    }
-
-    // This removes firstOther element in others.
-    private List<Element<Other>> getAdditionalOthers(List<Element<Other>> others) {
-        if (isNotEmpty(others)) {
-            others.remove(0);
-        }
-        return others;
-    }
-
-    // TODO DFPL-2421 update unit test
     public List<Element<Other>> consolidateAndRemoveHiddenFields(CaseData caseData) {
         return caseData.getOthersV2().stream()
             .map(otherElement -> {

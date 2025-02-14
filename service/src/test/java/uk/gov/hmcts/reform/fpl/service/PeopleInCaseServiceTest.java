@@ -73,10 +73,9 @@ class PeopleInCaseServiceTest {
             Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build(),
             Respondent.builder().party(RespondentParty.builder().firstName("Tim").lastName("Jones").build()).build());
 
-        Others others = Others.builder()
-            .firstOther(Other.builder().name("James Daniels").build())
-            .additionalOthers(wrapElements(Other.builder().name("Bob Martyn").build()))
-            .build();
+        List<Element<Other>> others = wrapElements(
+            Other.builder().firstName("James Daniels").build(),
+            Other.builder().firstName("Bob Martyn").build());
 
         String expectedLabel = "Person 1: Respondent 1 - John Smith\nPerson 2: Respondent 2 - Tim Jones\n"
             + "Person 3: Other 1 - James Daniels\nPerson 4: Other 2 - Bob Martyn\n";
@@ -90,9 +89,7 @@ class PeopleInCaseServiceTest {
         List<Element<Respondent>> respondents = wrapElements(
             Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build());
 
-        Others others = Others.builder()
-            .additionalOthers(wrapElements(Other.builder().name("Bob Martyn").build()))
-            .build();
+        List<Element<Other>> others = wrapElements(Other.builder().firstName("Bob Martyn").build());
 
         String expectedLabel = "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - Bob Martyn\n";
 
@@ -106,15 +103,13 @@ class PeopleInCaseServiceTest {
             .party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build());
         String expectedLabel = "Person 1: Respondent 1 - John Smith\n";
 
-        String actual = underTest.buildPeopleInCaseLabel(respondents, Others.builder().build());
+        String actual = underTest.buildPeopleInCaseLabel(respondents, List.of());
         assertThat(actual).isEqualTo(expectedLabel);
     }
 
     @Test
     void shouldBuildExpectedLabelWhenRespondentsAreEmpty() {
-        Others others = Others.builder()
-            .firstOther(Other.builder().name("James Daniels").build())
-            .build();
+        List<Element<Other>> others = wrapElements(Other.builder().firstName("James Daniels").build());
 
         String expectedOthersLabel = "Person 1: Other 1 - James Daniels\n";
 
@@ -125,7 +120,7 @@ class PeopleInCaseServiceTest {
 
     @Test
     void shouldReturnExpectedMessageWhenRespondentsAndOthersAreEmpty() {
-        String actual = underTest.buildPeopleInCaseLabel(List.of(), Others.builder().build());
+        String actual = underTest.buildPeopleInCaseLabel(List.of(), List.of());
 
         assertThat(actual).isEqualTo("No respondents and others on the case");
     }

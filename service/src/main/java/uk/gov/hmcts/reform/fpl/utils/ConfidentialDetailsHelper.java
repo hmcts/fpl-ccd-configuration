@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -21,6 +20,8 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 
 @RestController
 @RequestMapping("/callback/manage-representatives")
@@ -61,8 +62,8 @@ public class RepresentativesController extends CallbackController {
         representativeService.updateRepresentatives(updatedCaseDetails.getId(), updatedCaseData, originalCaseData);
 
         updatedCaseDetails.getData().put("representatives", updatedCaseData.getRepresentatives());
-        updatedCaseDetails.getData().put("others", updatedCaseData.getOthers());
-        updatedCaseDetails.getData().put("respondents1", updatedCaseData.getRespondents1());
+        updatedCaseDetails.getData().put(OTHER.getCaseDataKey(), updatedCaseData.getOthersV2());
+        updatedCaseDetails.getData().put(RESPONDENT.getCaseDataKey(), updatedCaseData.getRespondents1());
 
         return respond(updatedCaseDetails);
     }
