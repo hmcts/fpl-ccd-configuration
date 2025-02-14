@@ -1483,10 +1483,8 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisHearing expectedDefaultHearing = DocmosisHearing.builder()
                 .timeFrame("-")
                 .respondentsAwareReason("-")
-                .reducedNoticeDetails("-")
                 .withoutNoticeDetails("-")
                 .respondentsAware("-")
-                .typeAndReason("-")
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
