@@ -138,6 +138,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -173,6 +174,14 @@ public class CaseData extends CaseDataParent {
     private OutsourcingType outsourcingType;
     private RepresentativeType representativeType;
     private YesNo isLocalAuthority;
+
+    @JsonIgnore
+    public boolean checkIfCaseIsSubmittedByLA() {
+        // isLocalAuthority is set to No if submitted by solicitor user and act as respondent / child solicitor
+        // otherwise, it could be null or Yes
+        return !NO.equals(isLocalAuthority);
+    }
+
     private Object outsourcingLAs;
     private String relatingLA;
     private Court court;

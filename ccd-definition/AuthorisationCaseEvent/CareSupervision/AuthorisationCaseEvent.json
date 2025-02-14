@@ -1419,7 +1419,7 @@
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
-        "CRUD": "CR"
+        "CRUD": "R"
       }
     ]
   },
@@ -1437,7 +1437,7 @@
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
-        "CRUD": "CR"
+        "CRUD": "R"
       }
     ]
   },
@@ -1741,6 +1741,22 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
+        ],
+        "CRUD": "CR"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[LASHARED]",
+          "[LAMANAGING]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       }

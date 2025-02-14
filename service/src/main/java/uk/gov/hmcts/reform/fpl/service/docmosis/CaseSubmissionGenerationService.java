@@ -64,6 +64,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.model.robotics.Gender;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.GrammarHelper;
@@ -124,6 +125,7 @@ public class CaseSubmissionGenerationService
     private final UserService userService;
     private final CourtService courtService;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
+    private final FeatureToggleService featureToggleService;
 
     public DocmosisC15Supplement getC15SupplementData(final CaseData caseData, boolean isDraft) {
         Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
@@ -801,14 +803,15 @@ public class CaseSubmissionGenerationService
 
         return DocmosisApplicant.builder()
             .organisationName(getDefaultIfNullOrEmpty(localAuthority.getName()))
-            .contactName(getDefaultIfNullOrEmpty(mainContact.map(Colleague::getFullName)))
+            .contactName(getDefaultIfNullOrEmpty(mainContact.map(Colleague::buildFullName)))
+            .hideJobTitleFeatureFlag(featureToggleService.isHideJobTitleInCaseSubmissionFormEnabled())
             .jobTitle(getDefaultIfNullOrEmpty(mainContact.map(Colleague::getJobTitle)))
             .address(formatAddress(localAuthority.getAddress()))
             .email(getDefaultIfNullOrEmpty(localAuthority.getEmail()))
             .mobileNumber(getDefaultIfNullOrEmpty(mainContact.map(Colleague::getPhone)))
             .telephoneNumber(getDefaultIfNullOrEmpty(localAuthority.getPhone()))
             .pbaNumber(getDefaultIfNullOrEmpty(localAuthority.getPbaNumber()))
-            .solicitorName(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getFullName)))
+            .solicitorName(getDefaultIfNullOrEmpty(solicitor.map(Colleague::buildFullName)))
             .solicitorMobile(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getPhone)))
             .solicitorTelephone(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getPhone)))
             .solicitorEmail(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getEmail)))

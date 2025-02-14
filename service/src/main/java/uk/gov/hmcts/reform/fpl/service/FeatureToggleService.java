@@ -72,10 +72,6 @@ public class FeatureToggleService {
             createLDContext(), false);
     }
 
-    public boolean isApplicantAdditionalContactsEnabled() {
-        return ldClient.boolVariation("applicant-additional-contacts", createLDContext(), false);
-    }
-
     public boolean isLanguageRequirementsEnabled() {
         return ldClient.boolVariation("language-requirements", createLDContext(), false);
     }
@@ -99,6 +95,10 @@ public class FeatureToggleService {
     public boolean isCourtNotificationEnabledForWa(Court court) {
         return ldClient.boolVariation("wa-test-court-notification",
             createLDContext(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
+    }
+
+    public boolean isHideJobTitleInCaseSubmissionFormEnabled() {
+        return ldClient.boolVariation("hide-job-title-in-case-submission-form", createLDContext(), false);
     }
 
     private LDContext createLDContext() {
