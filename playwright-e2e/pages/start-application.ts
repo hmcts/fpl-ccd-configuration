@@ -74,6 +74,12 @@ export class StartApplication {
     await expect(this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible();
   }
 
+  async hearingUrgency() {
+    expect(await this.hearingUrgencyLink).toBeVisible();
+    await this.hearingUrgencyLink.click();
+    await expect(this.hearingUrgencyHeader).toBeVisible();
+  }
+
   async riskAndHarmToChildren() {
     await expect(this.riskAndHarmToChildrenLink).toBeVisible();
     await this.riskAndHarmToChildrenLink.click();

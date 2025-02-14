@@ -38,8 +38,11 @@ import { ReturnApplication } from "../pages/return-application";
 import { Orders } from "../pages/orders";
 import { CaseProgressionReport } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
+import { ChangeCaseName } from "../pages/change-case-name";
+import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
-import { ChangeCaseName} from "../pages/change-case-name";
+import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
+import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -82,7 +85,10 @@ type CreateFixtures = {
   changeCaseName: ChangeCaseName;
   caseProgressionReport: CaseProgressionReport;
   orders: Orders;
+  manageLaTransferToCourts: ManageLaTransferToCourts
   manageRepresentatives: ManageRepresentatives;
+  othersToBeGivenNotice: OthersToBeGivenNotice;
+  changeOtherToRespondent: ChangeOtherToRespondent;
 
 };
 
@@ -245,7 +251,21 @@ export const test = base.extend<CreateFixtures>({
     await use(new CaseProgressionReport(page));
   },
 
+  manageLaTransferToCourts: async ({ page }, use) => {
+    await use(new ManageLaTransferToCourts(page));
+},
+
+othersToBeGivenNotice: async ({ page }, use) => {
+  await use(new OthersToBeGivenNotice(page));
+},
+      
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
+
+  },
+
+  changeOtherToRespondent: async ({ page }, use) => {
+    await use(new ChangeOtherToRespondent(page));
+
   },
 });
