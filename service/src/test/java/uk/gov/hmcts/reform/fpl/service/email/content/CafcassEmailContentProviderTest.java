@@ -131,12 +131,14 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .firstRespondentName("Smith")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE))
-            .documentLink(new HashMap<>() {{
-                put("retention_period", null);
-                put("filename", null);
-                put("confirm_email_before_download", null);
-                put("file", ENCODED_BINARY);
-            }})
+            .documentLink(new HashMap<>() {
+                {
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_BINARY);
+                }
+            })
             .childLastName(CHILD_LAST_NAME)
             .build();
 
