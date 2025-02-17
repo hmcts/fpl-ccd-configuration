@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -118,6 +119,12 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
     @Test
     @SuppressWarnings("unchecked")
     void shouldReturnCompletedNotifyDataIfLegacyHearingUrgency() {
+        Map<String, Object> documentLink = new HashMap<>();
+        documentLink.put("retention_period", null);
+        documentLink.put("filename", null);
+        documentLink.put("confirm_email_before_download", null);
+        documentLink.put("file", ENCODED_BINARY);
+
         SubmitCaseCafcassTemplate cafcassSubmissionTemplate = SubmitCaseCafcassTemplate.builder()
             .cafcass(CAFCASS_NAME)
             .localAuthority(LOCAL_AUTHORITY_NAME)
@@ -131,12 +138,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .firstRespondentName("Smith")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE))
-            .documentLink(new HashMap<>() {{
-                    put("retention_period", null);
-                    put("filename", null);
-                    put("confirm_email_before_download", null);
-                    put("file", ENCODED_BINARY);
-            }})
+            .documentLink(documentLink)
             .childLastName(CHILD_LAST_NAME)
             .build();
 
