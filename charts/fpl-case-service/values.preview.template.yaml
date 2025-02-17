@@ -72,6 +72,7 @@ xui-webapp:
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-cdam
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://${SERVICE_NAME}-aac
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
+      SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-service-${SERVICE_FQDN}
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
@@ -82,6 +83,7 @@ xui-webapp:
       FEATURE_HELMET_ENABLED: false
       FEATURE_OIDC_ENABLED: false
       FEATURE_JRD_E_LINKS_V2_ENABLED: true
+      FEATURE_WORKALLOCATION_ENABLED: false
       NOW: false
       REDISCLOUD_URL: redis://${SERVICE_NAME}-redis-master:6379
       PROTOCOL: http

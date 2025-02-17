@@ -4388,5 +4388,12 @@
     "CaseFieldID": "guardians",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "TTL",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
   }
 ]

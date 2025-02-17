@@ -16,7 +16,8 @@
       "caseworker-approver",
       "caseworker-ras-validation",
       "caseworker-wa-task-configuration",
-      "caseworker-publiclaw-cafcasssystemupdate"
+      "caseworker-publiclaw-cafcasssystemupdate",
+      "TTL_profile"
     ],
     "CRUD": "CRU"
   },

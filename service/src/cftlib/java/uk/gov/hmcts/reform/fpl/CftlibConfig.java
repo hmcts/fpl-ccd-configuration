@@ -32,6 +32,7 @@ public class CftlibConfig implements CFTLibConfigurer {
             "GS_profile",
             "caseworker-wa-task-configuration",
             "caseworker-publiclaw-cafcasssystemupdate",
+            "TTL_profile",
             "ctsc",
             "hearing-centre-admin"
         };
