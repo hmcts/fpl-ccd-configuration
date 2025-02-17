@@ -43,10 +43,10 @@ public class CafcassApiHelper {
         if (isAddressKnowType == null) {
             return null;
         } else {
-           return switch (isAddressKnowType) {
-               case YES, LIVE_IN_REFUGE -> true;
-               case NO -> false;
-           };
+            return switch (isAddressKnowType) {
+                case YES, LIVE_IN_REFUGE -> true;
+                case NO -> false;
+            };
         }
     }
 
