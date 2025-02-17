@@ -41,7 +41,7 @@ public class CafcassApiHelper {
 
     public static Boolean convertAddressKnow(IsAddressKnowType isAddressKnowType) {
         if (isAddressKnowType == null) {
-            return null
+            return null;
         } else {
            return switch (isAddressKnowType) {
                case YES, LIVE_IN_REFUGE -> true;
