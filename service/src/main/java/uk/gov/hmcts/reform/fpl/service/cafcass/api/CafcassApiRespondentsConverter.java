@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiRespondent;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.convertAdrewssKnown;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getCafcassApiAddress;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getCafcassApiSolicitor;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getGenderForApiResponse;
@@ -42,7 +43,7 @@ public class CafcassApiRespondentsConverter implements CafcassApiCaseDataConvert
                         .lastName(respondentParty.getLastName())
                         .gender(getGenderForApiResponse(respondentParty.getGender()))
                         .genderIdentification(respondentParty.getGenderIdentification())
-                        .addressKnown(isYes(respondentParty.getAddressKnow()))
+                        .addressKnown(convertAdrewssKnown(respondentParty.getAddressKnow()))
                         .addressUnknownReason(respondentParty.getAddressNotKnowReason())
                         .address(getCafcassApiAddress(respondentParty.getAddress()))
                         .dateOfBirth(respondentParty.getDateOfBirth())

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiAddress;
@@ -36,6 +37,11 @@ public class CafcassApiHelper {
 
     public static Boolean isYes(String yesNo) {
         return (isEmpty(yesNo)) ? null : YES.getValue().equalsIgnoreCase(yesNo);
+    }
+
+    public static Boolean convertAdrewssKnown(IsAddressKnowType isAddressKnowType) {
+        return IsAddressKnowType.YES.equals(isAddressKnowType)
+               || IsAddressKnowType.LIVE_IN_REFUGE.equals(isAddressKnowType);
     }
 
     public static String getTelephoneNumber(Telephone telephone) {
