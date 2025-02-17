@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
+
+import static java.util.Objects.nonNull;
 
 
 @Data
@@ -53,4 +56,9 @@ public class Hearing {
      */
     @Deprecated(since = "DFPL-2304")
     private final String reducedNoticeReason;
+
+    @JsonIgnore
+    public String getHearingUrgencyTypeOrTimeFrame() {
+        return nonNull(hearingUrgencyType) ? hearingUrgencyType.getLabel() : timeFrame;
+    }
 }
