@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
@@ -50,6 +51,14 @@ public class CafcassApiHelperTest {
         assertFalse(CafcassApiHelper.isYes("no"));
         assertNull(CafcassApiHelper.isYes(null));
         assertNull(CafcassApiHelper.isYes(""));
+    }
+
+    @Test
+    public void testConvertAddressKnow() {
+        assertTrue(CafcassApiHelper.convertAddressKnow(IsAddressKnowType.YES));
+        assertTrue(CafcassApiHelper.convertAddressKnow(IsAddressKnowType.LIVE_IN_REFUGE));
+        assertFalse(CafcassApiHelper.convertAddressKnow(IsAddressKnowType.NO));
+        assertNull(CafcassApiHelper.convertAddressKnow(null));
     }
 
     @Test

@@ -40,8 +40,12 @@ public class CafcassApiHelper {
     }
 
     public static Boolean convertAddressKnow(IsAddressKnowType isAddressKnowType) {
-        return IsAddressKnowType.YES.equals(isAddressKnowType)
-               || IsAddressKnowType.LIVE_IN_REFUGE.equals(isAddressKnowType);
+        return isAddressKnowType != null
+            ? switch (isAddressKnowType) {
+                case YES, LIVE_IN_REFUGE -> true;
+                case NO -> false;
+        }
+            : null;
     }
 
     public static String getTelephoneNumber(Telephone telephone) {
