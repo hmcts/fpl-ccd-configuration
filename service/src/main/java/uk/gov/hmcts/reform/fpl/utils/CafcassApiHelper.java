@@ -39,7 +39,7 @@ public class CafcassApiHelper {
         return (isEmpty(yesNo)) ? null : YES.getValue().equalsIgnoreCase(yesNo);
     }
 
-    public static Boolean convertAdrewssKnown(IsAddressKnowType isAddressKnowType) {
+    public static Boolean convertAddressKnow(IsAddressKnowType isAddressKnowType) {
         return IsAddressKnowType.YES.equals(isAddressKnowType)
                || IsAddressKnowType.LIVE_IN_REFUGE.equals(isAddressKnowType);
     }
