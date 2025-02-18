@@ -119,6 +119,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
@@ -174,6 +180,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "otherApplicationsBundle",
     "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
       {
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
@@ -561,7 +573,8 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcasssystemupdate"
         ],
         "CRUD": "R"
       }
@@ -793,7 +806,8 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcasssystemupdate"
         ],
         "CRUD": "R"
       },
@@ -1073,7 +1087,8 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcasssystemupdate"
         ],
         "CRUD": "R"
       }
@@ -1232,7 +1247,8 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcasssystemupdate"
         ],
         "CRUD": "R"
       }
@@ -1293,7 +1309,8 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcasssystemupdate"
         ],
         "CRUD": "R"
       },
@@ -1395,7 +1412,8 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcasssystemupdate"
         ],
         "CRUD": "R"
       }
@@ -1744,7 +1762,8 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "[BARRISTER]",
+          "caseworker-publiclaw-cafcasssystemupdate"
         ],
         "CRUD": "R"
       }
@@ -2031,6 +2050,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundleConfidential",
     "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
@@ -2710,6 +2735,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORA]"
@@ -2764,6 +2795,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundleChild1",
     "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -2822,6 +2859,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORC]"
@@ -2876,6 +2919,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundleChild3",
     "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -2934,6 +2983,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORE]"
@@ -2988,6 +3043,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundleChild5",
     "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -3046,6 +3107,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORG]"
@@ -3100,6 +3167,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundleChild7",
     "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -3158,6 +3231,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORI]"
@@ -3212,6 +3291,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundleChild9",
     "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -3270,6 +3355,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORK]"
@@ -3324,6 +3415,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundleChild11",
     "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -3382,6 +3479,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORM]"
@@ -3438,6 +3541,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORN]"
@@ -3492,6 +3601,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundleChild14",
     "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
