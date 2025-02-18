@@ -62,6 +62,7 @@ public class Hearing {
      * @return hearingUrgencyType if not null, otherwise return timeFrame
      */
     @JsonIgnore
+    @SuppressWarnings("java:S1874")
     public String getHearingUrgencyTypeOrTimeFrame() {
         return nonNull(hearingUrgencyType) ? hearingUrgencyType.getLabel() : timeFrame;
     }
