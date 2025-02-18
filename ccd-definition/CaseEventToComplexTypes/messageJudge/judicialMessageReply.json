@@ -18,6 +18,17 @@
     "ListElementCode": "recipient",
     "FieldDisplayOrder": 2,
     "EventElementLabel": "Message from",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "recipient=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "recipientLabel",
+    "FieldDisplayOrder": 2,
+    "EventElementLabel": "Message from",
     "DisplayContext": "READONLY"
   },
   {
@@ -71,7 +82,7 @@
     "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Sender",
-    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\" AND isJudiciary!=\"YES\""
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -82,7 +93,7 @@
     "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Sender's email address",
-    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\" AND isJudiciary!=\"YES\" AND judicialMessageReply.senderType!=\"CTSC\""
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -93,7 +104,38 @@
     "FieldDisplayOrder": 9,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Recipient",
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "recipientDynamicList",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "MANDATORY",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "otherJudgeWarningLabel",
+    "FieldDisplayOrder": 10,
+    "EventElementLabel": "Using this option will not auto-assign a task as they are not the hearing/allocated judge. After the task has been created, you must assign it manually on the Tasks tab to ensure it isn't missed.",
+    "FieldShowCondition": "judicialMessageReply.recipientDynamicList = \"OTHER\" AND isSendingEmailsInCourt = \"NO\"",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "otherJudgeLookup",
+    "FieldDisplayOrder": 11,
+    "FieldShowCondition": "judicialMessageReply.recipientDynamicList = \"OTHER\"",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -101,10 +143,10 @@
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "replyTo",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 12,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Recipient's email address",
-    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\" AND judicialMessageReply.recipientType!=\"CTSC\""
+    "FieldShowCondition": "judicialMessageReply.recipientDynamicList=\"LOCAL_COURT_ADMIN\" AND isSendingEmailsInCourt = \"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -112,7 +154,7 @@
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "latestMessage",
-    "FieldDisplayOrder": 11,
+    "FieldDisplayOrder": 13,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Reply",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
@@ -124,7 +166,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "closeMessageLabel",
     "EventElementLabel": "This message will now be marked as closed",
-    "FieldDisplayOrder": 12,
+    "FieldDisplayOrder": 14,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"No\""
   }

@@ -2,18 +2,13 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.am.model.RoleAssignment;
-import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
-import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 import uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
@@ -21,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -33,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +43,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.DOCUMENT;
@@ -67,18 +60,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SendNewMessageJudgeService extends MessageJudgeService {
 
-    private final ValidateEmailService validateEmailService;
     private final IdentityService identityService;
     private final ObjectMapper mapper;
-    private final DynamicListService dynamicListService;
-    private final RoleAssignmentService roleAssignmentService;
-    private final JudicialService judicialService;
+    private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -87,8 +76,12 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             data.put("hasAdditionalApplications", YES.getValue());
         }
 
+        data.put("isSendingEmailsInCourt",
+            YesNo.from(featureToggleService.isCourtNotificationEnabledForWa(caseData.getCourt())));
+
         data.putAll(prePopulateSenderAndRecipient(caseData));
         data.put("documentTypesDynamicList", manageDocumentService.buildExistingDocumentTypeDynamicList(caseData));
+        data.put("nextHearingLabel", getNextHearingLabel(caseData));
 
         return data;
     }
@@ -125,8 +118,6 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             data.put("relatedDocumentsLabel", selectedDocumentLabel);
         }
 
-        data.put("nextHearingLabel", getNextHearingLabel(caseData));
-
         return data;
     }
 
@@ -152,20 +143,25 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         String latestMessage = messageJudgeEventData.getJudicialMessageNote();
 
         // identify roleType and email based off logged-in user org/case roles
-        JudicialMessageRoleType roleType = getSenderRole(caseData);
-        String senderEmail = getEmailAddressByRoleType(roleType);
+        JudicialMessageRoleType senderRoleType = getSenderRole(caseData);
+        String senderEmail = getSenderEmailAddressByRoleType(senderRoleType);
 
         JudicialMessageRoleType recipientRoleType = JudicialMessageRoleType.valueOf(
-            messageJudgeEventData.getJudicialMessageMetaData().getRecipientDynamicList().getValue().getCode());
+            judicialMessageMetaData.getRecipientDynamicList().getValueCode());
+
+        String recipientEmail = resolveRecipientEmailAddress(recipientRoleType,
+            judicialMessageMetaData.getRecipient(), caseData);
 
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(senderEmail)
-            .senderType(roleType)
-            //.recipient(resolveRecipientEmailAddress(recipientRoleType, judicialMessageMetaData.getRecipient())) no longer needed
+            .senderType(senderRoleType)
+            .recipient(recipientEmail)
             .recipientType(recipientRoleType)
+            .fromLabel(formatLabel(senderRoleType, senderEmail))
+            .toLabel(formatLabel(recipientRoleType, recipientEmail))
             .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
-            .messageHistory(buildMessageHistory(latestMessage, "%s (%s)".formatted(roleType.getLabel(), senderEmail)))
+            .messageHistory(buildMessageHistory(latestMessage, formatLabel(senderRoleType, senderEmail)))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(judicialMessageMetaData.getUrgency())
@@ -241,11 +237,11 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
     }
 
     private boolean hasAdditionalApplications(CaseData caseData) {
-        return ObjectUtils.isNotEmpty(getApplications(caseData));
+        return isNotEmpty(getApplications(caseData));
     }
 
     private boolean hasPlacementApplications(CaseData caseData) {
-        return ObjectUtils.isNotEmpty(caseData.getPlacementEventData().getPlacements());
+        return isNotEmpty(caseData.getPlacementEventData().getPlacements());
     }
 
     private boolean hasSelectedAdditionalApplication(CaseData caseData) {
@@ -270,60 +266,9 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         Map<String, Object> data = new HashMap<>();
 
         JudicialMessageRoleType senderRole = getSenderRole(caseData);
-        List<RoleAssignment> currentRoles = roleAssignmentService
-            .getJudicialCaseRolesAtTime(caseData.getId(), ZonedDateTime.now());
-
-        boolean hasAllocatedJudgeRole = currentRoles.stream()
-            .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.ALLOCATED_JUDGE.getRoleName())
-                || role.getRoleName().equals(LegalAdviserRole.ALLOCATED_LEGAL_ADVISER.getRoleName()));
-
-        boolean hasHearingJudgeRole = currentRoles.stream()
-            .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.HEARING_JUDGE.getRoleName())
-                || role.getRoleName().equals(LegalAdviserRole.HEARING_LEGAL_ADVISER.getRoleName()));
-
-
-        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
-        Optional<JudgeAndLegalAdvisor> hearingJudge = judicialService.getCurrentHearingJudge(caseData);
-
-        List<DynamicListElement> elements = new ArrayList<>();
-
-        elements.add(DynamicListElement.builder()
-            .code(JudicialMessageRoleType.CTSC.toString())
-            .label(JudicialMessageRoleType.CTSC.getLabel())
-            .build());
-        elements.add(DynamicListElement.builder()
-            .code(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString())
-            .label(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel()
-                + " - %s".formatted(caseData.getCourt().getName())
-            )
-            .build());
-
-        allocatedJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
-            .code(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())
-            .label("Allocated %s - %s".formatted(
-                    (JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(judge.getJudgeTitle()) ? "Legal Adviser" : "Judge"),
-                    formatJudgeTitleAndName(judge.toJudgeAndLegalAdvisor()))
-                + (hasAllocatedJudgeRole ? "" : " (missing active role assignment)")
-            )
-            .build()));
-
-        hearingJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
-            .code(JudicialMessageRoleType.HEARING_JUDGE.toString())
-            .label("Hearing %s - %s".formatted(
-                    (JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(judge.getJudgeTitle()) ? "Legal Adviser" : "Judge"),
-                    formatJudgeTitleAndName(judge))
-                + (hasHearingJudgeRole ? "" : " (missing active role assignment)")
-            )
-            .build()));
-
-        DynamicList dyList = DynamicList.builder()
-            .listItems(elements.stream()
-                .filter(el -> !el.getCode().equals(senderRole.toString()))
-                .toList())
-            .build();
 
         data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
-            .recipientDynamicList(dyList)
+            .recipientDynamicList(buildRecipientDynamicList(caseData, senderRole, Optional.empty(), false))
             .build());
         data.put("isJudiciary", NO);
 
@@ -429,11 +374,11 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
 
         fileNamesBuilder.append("Application: " + placement.application.getFilename());
 
-        if (ObjectUtils.isNotEmpty(supportingDocuments)) {
+        if (isNotEmpty(supportingDocuments)) {
             fileNamesBuilder.append("\nSupporting documents: " + join(", ", supportingDocuments));
         }
 
-        if (ObjectUtils.isNotEmpty(confidentialDocuments)) {
+        if (isNotEmpty(confidentialDocuments)) {
             fileNamesBuilder.append("\nConfidential documents: " + join(", ", confidentialDocuments));
         }
 
@@ -441,7 +386,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             fileNamesBuilder.append("\nNotice: " + placement.getPlacementNotice().getFilename());
         }
 
-        if (ObjectUtils.isNotEmpty(noticesResponses)) {
+        if (isNotEmpty(noticesResponses)) {
             fileNamesBuilder.append("\nNotice responses: " + join(", ", noticesResponses));
         }
 

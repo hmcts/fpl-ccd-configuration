@@ -1,30 +1,40 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
+import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.join;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 public abstract class MessageJudgeService {
     @Autowired
@@ -42,6 +52,8 @@ public abstract class MessageJudgeService {
     @Autowired
     protected JudicialService judicialService;
 
+    @Autowired
+    protected RoleAssignmentService roleAssignmentService;
 
     protected boolean isJudiciary() {
         return userService.hasUserRole(JUDICIARY);
@@ -70,7 +82,7 @@ public abstract class MessageJudgeService {
         return join("\n \n", history, formattedLatestMessage);
     }
 
-    protected String getEmailAddressByRoleType(JudicialMessageRoleType roleType) {
+    protected String getSenderEmailAddressByRoleType(JudicialMessageRoleType roleType) {
         if (JudicialMessageRoleType.CTSC.equals(roleType)) {
             return ctscEmailLookupConfiguration.getEmail();
         }
@@ -78,21 +90,26 @@ public abstract class MessageJudgeService {
         return userService.getUserEmail();
     }
 
-    protected String resolveSenderEmailAddress(JudicialMessageRoleType roleType, String emailFilledByUser) {
-        String resolvedAddress = getEmailAddressByRoleType(resolveSenderRoleType(roleType));
-        return isNotEmpty(resolvedAddress) ? resolvedAddress : emailFilledByUser;
-    }
-
-    protected String resolveRecipientEmailAddress(JudicialMessageRoleType roleType, String emailFilledByUser) {
-        return (JudicialMessageRoleType.CTSC.equals(roleType))
-            ? getEmailAddressByRoleType(JudicialMessageRoleType.CTSC) : emailFilledByUser;
-    }
-
-    protected JudicialMessageRoleType resolveSenderRoleType(JudicialMessageRoleType roleTypeSelectedByUser) {
-        if (isJudiciary()) {
-            return JudicialMessageRoleType.ALLOCATED_JUDGE;
+    protected String formatLabel(JudicialMessageRoleType roleType, String email) {
+        if (JudicialMessageRoleType.CTSC.equals(roleType)) {
+            return JudicialMessageRoleType.CTSC.getLabel();
+        } else {
+            return roleType.getLabel() + (isNotEmpty(email) ? " (%s)".formatted(email) : "");
         }
-        return roleTypeSelectedByUser;
+    }
+
+    protected String resolveRecipientEmailAddress(JudicialMessageRoleType roleType,
+                                                  String emailFilledByUser,
+                                                  CaseData caseData) {
+        return switch (roleType) {
+            case CTSC -> ctscEmailLookupConfiguration.getEmail();
+            case ALLOCATED_JUDGE -> judicialService.getAllocatedJudge(caseData)
+                .map(Judge::getJudgeEmailAddress).orElse(null);
+            case HEARING_JUDGE -> judicialService.getCurrentHearingJudge(caseData)
+                .map(JudgeAndLegalAdvisor::getJudgeEmailAddress).orElse(null);
+            case LOCAL_COURT_ADMIN -> emailFilledByUser;
+            case OTHER -> emailFilledByUser;
+        };
     }
 
     public JudicialMessageRoleType getSenderRole(CaseData caseData) {
@@ -121,5 +138,72 @@ public abstract class MessageJudgeService {
             return JudicialMessageRoleType.LOCAL_COURT_ADMIN;
         }
         return JudicialMessageRoleType.OTHER;
+    }
+
+    public DynamicList buildRecipientDynamicList(CaseData caseData,
+                                                 JudicialMessageRoleType senderRole,
+                                                 Optional<String> chosen,
+                                                 boolean showOther) {
+        List<RoleAssignment> currentRoles = roleAssignmentService
+            .getJudicialCaseRolesAtTime(caseData.getId(), ZonedDateTime.now());
+
+        boolean hasAllocatedJudgeRole = currentRoles.stream()
+            .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.ALLOCATED_JUDGE.getRoleName())
+                || role.getRoleName().equals(LegalAdviserRole.ALLOCATED_LEGAL_ADVISER.getRoleName()));
+
+        boolean hasHearingJudgeRole = currentRoles.stream()
+            .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.HEARING_JUDGE.getRoleName())
+                || role.getRoleName().equals(LegalAdviserRole.HEARING_LEGAL_ADVISER.getRoleName()));
+
+        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
+        Optional<JudgeAndLegalAdvisor> hearingJudge = judicialService.getCurrentHearingJudge(caseData);
+
+        List<DynamicListElement> elements = new ArrayList<>();
+
+        elements.add(DynamicListElement.builder()
+            .code(JudicialMessageRoleType.CTSC.toString())
+            .label(JudicialMessageRoleType.CTSC.getLabel())
+            .build());
+        elements.add(DynamicListElement.builder()
+            .code(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString())
+            .label(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel()
+                + (isNotEmpty(caseData.getCourt()) ? " - %s".formatted( caseData.getCourt().getName()) : "")
+            )
+            .build());
+
+        allocatedJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
+            .code(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())
+            .label(getJudgeLabel(JudicialMessageRoleType.ALLOCATED_JUDGE, judge.toJudgeAndLegalAdvisor(),
+                hasAllocatedJudgeRole))
+            .build()));
+
+        hearingJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
+            .code(JudicialMessageRoleType.HEARING_JUDGE.toString())
+            .label(getJudgeLabel(JudicialMessageRoleType.HEARING_JUDGE, judge, hasHearingJudgeRole))
+            .build()));
+
+        if (showOther) {
+            elements.add(DynamicListElement.builder()
+                    .code(JudicialMessageRoleType.OTHER.toString())
+                    .label(JudicialMessageRoleType.OTHER.getLabel())
+                .build());
+        }
+
+        return DynamicList.builder()
+            .listItems(elements.stream()
+                .filter(el -> !el.getCode().equals(senderRole.toString()))
+                .toList())
+            .value(chosen.flatMap(s -> elements.stream().filter(el -> el.hasCode(s)).findFirst()).orElse(null))
+            .build();
+    }
+
+    protected String getJudgeLabel(JudicialMessageRoleType type, JudgeAndLegalAdvisor judge, boolean hasRole) {
+        return "%s %s - %s (%s)%s".formatted(
+            JudicialMessageRoleType.ALLOCATED_JUDGE.equals(type) ? "Allocated" : "Hearing",
+            JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(judge.getJudgeTitle()) ? "Legal Adviser" : "Judge",
+            formatJudgeTitleAndName(judge),
+            judge.getJudgeEmailAddress(),
+            (hasRole ? "" : " *")
+        );
     }
 }

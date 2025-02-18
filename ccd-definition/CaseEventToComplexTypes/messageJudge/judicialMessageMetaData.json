@@ -46,7 +46,7 @@
     "ListElementCode": "recipient",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "judicialMessageMetaData.recipientType=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "judicialMessageMetaData.recipientDynamicList=\"LOCAL_COURT_ADMIN\" AND isSendingEmailsInCourt=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
