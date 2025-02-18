@@ -36,7 +36,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2572", this::run2572,
         "DFPL-2635", this::run2635,
         "DFPL-2642", this::run2642,
-        "DFPL-2638", this::run2638
+        "DFPL-2640", this::run2640
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -89,10 +89,10 @@ public class MigrateCaseController extends CallbackController {
             orgId, null));
     }
 
-    private void run2638(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2638";
-        final long expectedCaseId = 1726575076142621L;
-        final String orgId = "CPYYWBZ";
+    private void run2640(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2640";
+        final long expectedCaseId = 1717064003872528L;
+        final String orgId = "1B8LGGK";
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
