@@ -58,7 +58,7 @@ public class Hearing {
     private final String reducedNoticeReason;
 
     /**
-     * Use this method if backward compatible with historical data if required
+     * Use this method if backward compatible with historical data if required.
      * @return hearingUrgencyType if not null, otherwise return timeFrame
      */
     @JsonIgnore
