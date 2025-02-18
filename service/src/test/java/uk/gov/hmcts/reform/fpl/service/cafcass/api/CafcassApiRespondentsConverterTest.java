@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -32,7 +33,7 @@ public class CafcassApiRespondentsConverterTest extends CafcassApiConverterTestB
                 .firstName("Respondent1")
                 .lastName("LastName")
                 .gender(Gender.MALE.getLabel())
-                .addressKnow(YesNo.YES.toString())
+                .addressKnow(IsAddressKnowType.YES)
                 .address(getTestAddress())
                 .dateOfBirth(LocalDate.of(2000, 1, 1))
                 .telephoneNumber(getTestTelephone())
@@ -50,7 +51,7 @@ public class CafcassApiRespondentsConverterTest extends CafcassApiConverterTestB
                 .lastName("LastName")
                 .gender(Gender.OTHER.getLabel())
                 .genderIdentification("genderIdentification")
-                .addressKnow(YesNo.NO.toString())
+                .addressKnow(IsAddressKnowType.NO)
                 .addressNotKnowReason("addressUnknownReason")
                 .relationshipToChild("relationshipToChild")
                 .build())
