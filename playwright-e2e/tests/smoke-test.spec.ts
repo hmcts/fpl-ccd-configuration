@@ -48,7 +48,6 @@ test("Smoke Test @smoke-test @accessibility", async ({
   
  // Grounds for the application
   await startApplication.groundsForTheApplication();
-  await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 

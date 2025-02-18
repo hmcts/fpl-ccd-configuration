@@ -16,6 +16,11 @@ import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyE
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Service
+/**
+ * This historical field is deprecated since DFPL-2303.
+ * @deprecated (DFPL-2303, historical field)
+ */
+@Deprecated(since = "DFPL-2303")
 public class FactorsAffectingParentingChecker implements EventChecker {
 
     @Override
