@@ -16,6 +16,31 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "isSendingEmailsInCourt",
+    "DisplayContext": "READONLY",
+    "PageID": "SelectMessage",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "judicialMessageDynamicList=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "court",
+    "PageFieldDisplayOrder": 100,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectMessage",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "Publish": "Y",
+    "FieldShowCondition": "judicialMessageReply=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageDynamicList",
     "DisplayContext": "MANDATORY",
     "PageID": "SelectMessage",
@@ -45,8 +70,7 @@
     "PageID": "ReplyToMessage",
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 1,
-    "ShowSummaryChangeOption": "N",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/reply-message-judge/validate/mid-event"
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -81,19 +105,6 @@
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 4,
     "ShowSummaryChangeOption": "N",
-    "Publish": "Y",
-    "FieldShowCondition": "judicialMessageReply=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
-    "CaseFieldID": "court",
-    "PageFieldDisplayOrder": 100,
-    "DisplayContext": "READONLY",
-    "PageID": "ReplyToMessage",
-    "PageDisplayOrder": 2,
-    "PageColumnNumber": 1,
     "Publish": "Y",
     "FieldShowCondition": "judicialMessageReply=\"DO_NOT_SHOW\""
   }

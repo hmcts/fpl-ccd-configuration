@@ -1,23 +1,30 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
@@ -37,8 +44,17 @@ class ReplyToMessageJudgeControllerMidEventTest extends AbstractCallbackTest {
     @SpyBean
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
+    @MockBean
+    private RoleAssignmentService roleAssignmentService;
+
     ReplyToMessageJudgeControllerMidEventTest() {
         super("reply-message-judge");
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        when(roleAssignmentService.getOrganisationalRolesForUser(any()))
+            .thenReturn(Set.of(OrganisationalRole.LOCAL_COURT_ADMIN));
     }
 
     @Test
