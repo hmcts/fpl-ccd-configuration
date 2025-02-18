@@ -57,6 +57,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
+    "ListElementCode": "extraSecurityMeasures",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Separate waiting room or other security measures",
+    "HintText": "For example, mother and father need to be in separate waiting rooms as history of domestic violence",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
     "ListElementCode": "somethingElse",
     "FieldType": "YesOrNo",
     "ElementLabel": "Something else",
