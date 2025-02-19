@@ -43,6 +43,7 @@ import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts"
 import { ManageRepresentatives } from "../pages/manage-representatives";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
+import { AddStatementOfService } from "../pages/add-statement-of-service";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -89,6 +90,7 @@ type CreateFixtures = {
   manageRepresentatives: ManageRepresentatives;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
+  addStatementOfService:AddStatementOfService;
 
 };
 
@@ -205,6 +207,10 @@ export const test = base.extend<CreateFixtures>({
     },
   courtServicesNeeded: async ({ page }, use) => {
     await use(new CourtServicesNeeded(page));
+  },
+
+  addStatementOfService: async ({ page }, use) => {
+    await use(new AddStatementOfService(page));
   },
 
   addAdminCaseFlag: async ({ page }, use) => {
