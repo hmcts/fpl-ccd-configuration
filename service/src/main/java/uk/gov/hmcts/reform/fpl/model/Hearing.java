@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 
+import static java.util.Objects.nonNull;
+
 
 @Data
 @Jacksonized
@@ -55,8 +57,13 @@ public class Hearing {
     @Deprecated(since = "DFPL-2304")
     private final String reducedNoticeReason;
 
+    /**
+     * Use this method if backward compatible with historical data if required.
+     * @return hearingUrgencyType if not null, otherwise return timeFrame
+     */
     @JsonIgnore
-    public String getHearingUrgencyLabel() {
-        return hearingUrgencyType.getLabel();
+    @SuppressWarnings("java:S1874")
+    public String getHearingUrgencyTypeOrTimeFrame() {
+        return nonNull(hearingUrgencyType) ? hearingUrgencyType.getLabel() : timeFrame;
     }
 }

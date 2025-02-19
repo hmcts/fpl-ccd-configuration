@@ -23,7 +23,7 @@ public class HearingUrgencyChecker extends PropertiesChecker {
     public List<String> validate(CaseData caseData) {
         List<String> errMsg = super.validate(caseData, List.of("hearing"));
         if (isEmpty(errMsg)) {
-            // check if legacy hearing urgency exist but not the latest one
+            // for historical data where legacy hearing urgency exist but not the latest one
             return isCompleted(caseData) ? List.of() : List.of("Complete the hearing urgency details");
         } else {
             return errMsg;
