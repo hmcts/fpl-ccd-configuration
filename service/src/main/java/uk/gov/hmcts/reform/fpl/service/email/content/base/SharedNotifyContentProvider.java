@@ -31,7 +31,7 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
         final Long caseId = caseData.getId();
         List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
         Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
-            .map(Hearing::getHearingUrgencyTypeOrTimeFrame)
+            .map(Hearing::getHearingUrgencyLabel)
             .filter(StringUtils::isNotBlank);
 
         template.setOrdersAndDirections(ordersAndDirections);

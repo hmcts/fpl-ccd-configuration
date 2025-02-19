@@ -929,7 +929,7 @@ public class CaseSubmissionGenerationService
 
         return DocmosisHearing.builder()
             .timeFrame(hearingPresent
-                       ? concatenateKeyAndValue(hearing.getHearingUrgencyTypeOrTimeFrame(),
+                       ? concatenateKeyAndValue(hearing.getHearingUrgencyLabel(),
                 addPrefixReason(hearing.getHearingUrgencyDetails(), applicationLanguage))
                        : DEFAULT_STRING)
             .withoutNoticeDetails(hearingPresent && isNotEmpty(hearing.getWithoutNotice())

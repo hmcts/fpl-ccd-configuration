@@ -46,7 +46,7 @@ public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
             .collect(Collectors.joining("\n"));
 
         Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
-            .map(Hearing::getHearingUrgencyTypeOrTimeFrame)
+            .map(Hearing::getHearingUrgencyLabel)
             .filter(StringUtils::isNotBlank);
 
         String eldestChildLastName = helper.getEldestChildLastName(caseData.getAllChildren());
