@@ -74,8 +74,8 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.document.SealType.WELSH;
 import static uk.gov.hmcts.reform.fpl.model.document.SealType.ENGLISH;
+import static uk.gov.hmcts.reform.fpl.model.document.SealType.WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -99,7 +99,7 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         Other other2 = otherWithName("Sam");
 
-        CaseData caseData = caseData(Others.builder().firstOther(other1).additionalOthers(wrapElements(other2)));
+        CaseData caseData = CaseData.builder().othersV2(wrapElements(other1, other2)).build();
 
         assertThat(caseData.getOthersV2().get(0).getValue()).isEqualTo(other1);
         assertThat(caseData.getOthersV2().get(1).getValue()).isEqualTo(other2);
@@ -110,7 +110,7 @@ class CaseDataTest {
         Other other1 = Other.builder().build();
         Other other2 = otherWithName("Sam");
 
-        CaseData caseData = caseData(Others.builder().firstOther(other1).additionalOthers(wrapElements(other2)));
+        CaseData caseData = CaseData.builder().othersV2(wrapElements(other1, other2)).build();
 
         assertThat(caseData.getOthersV2()).hasSize(1);
         assertThat(caseData.getOthersV2().get(0).getValue()).isEqualTo(other2);
@@ -125,23 +125,16 @@ class CaseDataTest {
 
     @Test
     void shouldGetEmptyListOfOthersWhenOthersAreEmpty() {
-        CaseData caseData = caseData(Others.builder());
+        CaseData caseData = CaseData.builder().othersV2(List.of()).build();
 
         assertThat(caseData.getOthersV2()).isEmpty();
     }
 
     @Test
-    void shouldGetFirstOtherWhenNoAdditionalOthers() {
+    void shouldFindOther() {
         Other other1 = otherWithName("John");
-        CaseData caseData = caseData(Others.builder().firstOther(other1));
-
-        assertThat(caseData.getOthersV2().get(0).getValue()).isEqualTo(other1);
-    }
-
-    @Test
-    void shouldFindFirstOther() {
-        Other other1 = otherWithName("John");
-        CaseData caseData = caseData(Others.builder().firstOther(other1));
+        Other other2 = otherWithName("Smith");
+        CaseData caseData = CaseData.builder().othersV2(wrapElements(other1, other2)).build();
 
         assertThat(caseData.findOther(0)).contains(other1);
     }
@@ -149,7 +142,7 @@ class CaseDataTest {
     @Test
     void shouldNotFindNonExistingOther() {
         Other other1 = otherWithName("John");
-        CaseData caseData = caseData(Others.builder().firstOther(other1));
+        CaseData caseData = CaseData.builder().othersV2(wrapElements(other1)).build();
 
         assertThat(caseData.findOther(1)).isEmpty();
     }
@@ -158,11 +151,7 @@ class CaseDataTest {
     void shouldFindExistingOther() {
         Other other1 = otherWithName("John");
         Other other2 = otherWithName("Sam");
-        CaseData caseData = CaseData.builder().others(Others.builder()
-            .firstOther(other1)
-            .additionalOthers(wrapElements(other2))
-            .build())
-            .build();
+        CaseData caseData = CaseData.builder().othersV2(wrapElements(other1, other2)).build();
 
         assertThat(caseData.findOther(1)).contains(other2);
     }
@@ -216,10 +205,6 @@ class CaseDataTest {
             .build();
 
         assertThat(caseData.hasSelectedTemporaryJudge(caseData.getJudgeAndLegalAdvisor())).isFalse();
-    }
-
-    private CaseData caseData(Others.OthersBuilder othersBuilder) {
-        return CaseData.builder().others(othersBuilder.build()).build();
     }
 
     private Other otherWithName(String name) {
@@ -1879,7 +1864,7 @@ class CaseDataTest {
         void shouldReturnTrueWhenRespondentsAndOthersExist() {
             CaseData caseData = CaseData.builder()
                 .respondents1(List.of(respondent))
-                .others(Others.builder().firstOther(firstOther).build())
+                .othersV2(wrapElements(firstOther))
                 .build();
 
             assertTrue(caseData.hasRespondentsOrOthers());
@@ -1895,7 +1880,7 @@ class CaseDataTest {
         @Test
         void shouldReturnTrueWhenOthersExist() {
             CaseData caseData = CaseData.builder()
-                .others(Others.builder().firstOther(firstOther).build())
+                .othersV2(wrapElements(firstOther))
                 .build();
 
             assertTrue(caseData.hasRespondentsOrOthers());
@@ -1910,7 +1895,7 @@ class CaseDataTest {
 
         @Test
         void shouldReturnFalseWhenFirstOtherDoesNotExist() {
-            CaseData caseData = CaseData.builder().others(Others.builder().build()).build();
+            CaseData caseData = CaseData.builder().build();
 
             assertFalse(caseData.hasRespondentsOrOthers());
         }

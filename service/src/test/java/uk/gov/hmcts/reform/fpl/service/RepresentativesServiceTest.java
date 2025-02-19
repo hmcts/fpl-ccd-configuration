@@ -107,7 +107,7 @@ class RepresentativesServiceTest {
     private static final String INVALID_EMAIL = "<John Doe> test@test.com";
 
     @BeforeEach
-    private void init() {
+    public void init() {
         when(requestData.authorisation()).thenReturn(authorisation);
         when(validateEmailService.isValid(VALID_EMAIL)).thenReturn(true);
         when(validateEmailService.isValid(INVALID_EMAIL)).thenReturn(false);
@@ -117,7 +117,7 @@ class RepresentativesServiceTest {
     }
 
     @AfterEach
-    private void verifyNoUnexpectedInteractions() {
+    public void verifyNoUnexpectedInteractions() {
         verifyNoMoreInteractions(organisationService);
         verifyNoMoreInteractions(caseService);
     }
@@ -149,7 +149,7 @@ class RepresentativesServiceTest {
 
         CaseData caseData = caseWithRepresentatives(representative1, representative2, representative3).toBuilder()
             .respondents1(wrapElements(Respondent.builder().build()))
-            .others(Others.from(wrapElements(testOther(), testOther())))
+            .othersV2(wrapElements(testOther(), testOther()))
             .build();
 
         List<String> validationErrors = representativesService.validateRepresentatives(caseData);
@@ -426,7 +426,7 @@ class RepresentativesServiceTest {
                 representative2Element,
                 representative3Element,
                 representative4Element))
-            .others(Others.builder().firstOther(other).build())
+            .othersV2(wrapElements(other))
             .build();
 
         CaseData originalCaseData = CaseData.builder()
@@ -435,7 +435,7 @@ class RepresentativesServiceTest {
                 representative1Element,
                 representative2Element,
                 representative3Element))
-            .others(Others.builder().firstOther(other).build())
+            .othersV2(wrapElements(other))
             .build();
 
         when(representativesCaseRoleService.calculateCaseRoleUpdates(
@@ -484,10 +484,7 @@ class RepresentativesServiceTest {
                 responded1Representative1,
                 responded1Representative2,
                 responded2Representative))
-            .others(Others.builder()
-                .firstOther(otherPerson1)
-                .additionalOthers(wrapElements(otherPerson2))
-                .build())
+            .othersV2(wrapElements(otherPerson1, otherPerson2))
             .respondents1(wrapElements(respondent1, respondent2))
             .build();
 

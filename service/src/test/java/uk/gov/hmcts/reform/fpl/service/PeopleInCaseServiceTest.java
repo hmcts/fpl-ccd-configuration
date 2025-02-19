@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -129,7 +128,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnAllRespondentsAndOthersWhenSelectedAll() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .others(Others.from(SELECTED_OTHERS))
+            .othersV2(SELECTED_OTHERS)
             .personSelector(Selector.builder().build())
             .notifyApplicationsToAllOthers("Yes")
             .build();
@@ -143,7 +142,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnSelectedOthers() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .others(Others.from(SELECTED_OTHERS))
+            .othersV2(SELECTED_OTHERS)
             .personSelector(Selector.builder().selected(List.of(0, 2)).build())
             .notifyApplicationsToAllOthers("No")
             .build();
@@ -159,7 +158,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnSelectedOthersWhenRespondentsAreNullEmpty(List<Element<Respondent>> respondents) {
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
-            .others(Others.from(SELECTED_OTHERS))
+            .othersV2(SELECTED_OTHERS)
             .personSelector(Selector.builder().selected(List.of(0, 2)).build())
             .notifyApplicationsToAllOthers("No")
             .build();
@@ -173,7 +172,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnEmptyWhenNoneOfTheOthersAreSelected() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .others(Others.from(SELECTED_OTHERS))
+            .othersV2(SELECTED_OTHERS)
             .personSelector(Selector.builder().selected(List.of()).build())
             .notifyApplicationsToAllOthers("No")
             .build();
@@ -185,7 +184,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnEmptyWhenSelectorIsNull() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .others(Others.from(SELECTED_OTHERS))
+            .othersV2(SELECTED_OTHERS)
             .personSelector(null)
             .notifyApplicationsToAllOthers("No")
             .build();
