@@ -341,7 +341,7 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted",
-    "EventEnablingCondition": "[INJECTED_DATA.HAS_3RD_PARTY] = \"No\"",
+    "EventEnablingCondition": "(representativeType != \"RESPONDENT_SOLICITOR\" AND representativeType != \"CHILD_SOLICITOR\") OR hasRespondentLA = \"NO\"",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
@@ -359,7 +359,7 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted",
-    "EventEnablingCondition": "[INJECTED_DATA.HAS_3RD_PARTY] = \"Yes\"",
+    "EventEnablingCondition": "hasRespondentLA = \"YES\"",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
@@ -683,7 +683,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
-    "EventEnablingCondition": "[INJECTED_DATA.HAS_3RD_PARTY] = \"No\"",
+    "EventEnablingCondition": "(representativeType != \"RESPONDENT_SOLICITOR\" AND representativeType != \"CHILD_SOLICITOR\") OR hasRespondentLA = \"NO\"",
     "Comment": "Can be removed when respondent journey toggled on (replace with enterRespondents)"
   },
   {
@@ -702,7 +702,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
-    "EventEnablingCondition": "[INJECTED_DATA.HAS_3RD_PARTY] = \"Yes\"",
+    "EventEnablingCondition": "hasRespondentLA = \"YES\"",
     "Comment": "Can be removed when respondent journey toggled on (replace with enterRespondents)"
   },
   {
