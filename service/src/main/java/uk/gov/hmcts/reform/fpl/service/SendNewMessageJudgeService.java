@@ -268,7 +268,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         JudicialMessageRoleType senderRole = getSenderRole(caseData);
 
         data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
-            .recipientDynamicList(buildRecipientDynamicList(caseData, senderRole, Optional.empty(), false))
+            .recipientDynamicList(buildRecipientDynamicList(caseData, senderRole, Optional.empty()))
             .build());
         data.put("isJudiciary", NO);
 

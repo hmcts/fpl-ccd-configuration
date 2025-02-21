@@ -43,10 +43,20 @@
     "ID": "JudicialMessageMetaData",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
-    "ListElementCode": "recipient",
+    "ListElementCode": "otherJudgeWarningLabel",
     "FieldDisplayOrder": 4,
+    "FieldShowCondition": "judicialMessageMetaData.recipientDynamicList = \"OTHER\" AND isSendingEmailsInCourt = \"NO\"",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageMetaData",
+    "ListElementCode": "recipient",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "judicialMessageMetaData.recipientDynamicList=\"LOCAL_COURT_ADMIN\" AND isSendingEmailsInCourt=\"YES\""
+    "FieldShowCondition": "(judicialMessageMetaData.recipientDynamicList=\"LOCAL_COURT_ADMIN\" OR judicialMessageMetaData.recipientDynamicList=\"OTHER\") AND isSendingEmailsInCourt=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -55,7 +65,7 @@
     "CaseFieldID": "judicialMessageMetaData",
     "ListElementCode": "requestedBy",
     "SecurityClassification": "Public",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
     "Comment": "Used for subject"
   },
@@ -65,7 +75,7 @@
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
     "ListElementCode": "urgency",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   }
 ]

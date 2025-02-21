@@ -74,7 +74,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .senderType(senderRole)
             .subject(selectedJudicialMessage.getSubject())
             .recipientDynamicList(buildRecipientDynamicList(
-                caseData, senderRole, Optional.of(selectedJudicialMessage.getSenderType().toString()), true))
+                caseData, senderRole, Optional.of(selectedJudicialMessage.getSenderType().toString())))
             .urgency(selectedJudicialMessage.getUrgency())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage(EMPTY)

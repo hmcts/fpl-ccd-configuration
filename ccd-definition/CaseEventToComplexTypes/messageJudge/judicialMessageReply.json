@@ -123,18 +123,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "otherJudgeWarningLabel",
     "FieldDisplayOrder": 10,
-    "EventElementLabel": "Using this option will not auto-assign a task as they are not the hearing/allocated judge. After the task has been created, you must assign it manually on the Tasks tab to ensure it isn't missed.",
-    "FieldShowCondition": "judicialMessageReply.recipientDynamicList = \"OTHER\" AND isSendingEmailsInCourt = \"NO\"",
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessageMetaData",
-    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
-    "CaseFieldID": "judicialMessageReply",
-    "ListElementCode": "otherJudgeLookup",
-    "FieldDisplayOrder": 11,
-    "FieldShowCondition": "judicialMessageReply.recipientDynamicList = \"OTHER\"",
+    "FieldShowCondition": "judicialMessageReply.recipientDynamicList = \"OTHER\" AND isSendingEmailsInCourt = \"NO\" AND judicialMessageReply.isReplying=\"Yes\"",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -146,7 +135,7 @@
     "FieldDisplayOrder": 12,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Recipient's email address",
-    "FieldShowCondition": "judicialMessageReply.recipientDynamicList=\"LOCAL_COURT_ADMIN\" AND isSendingEmailsInCourt = \"YES\""
+    "FieldShowCondition": "(judicialMessageReply.recipientDynamicList=\"LOCAL_COURT_ADMIN\" OR judicialMessageReply.recipientDynamicList=\"OTHER\") AND isSendingEmailsInCourt = \"YES\" AND judicialMessageReply.isReplying=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

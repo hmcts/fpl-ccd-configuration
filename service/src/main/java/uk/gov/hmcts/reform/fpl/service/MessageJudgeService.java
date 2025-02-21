@@ -142,8 +142,7 @@ public abstract class MessageJudgeService {
 
     public DynamicList buildRecipientDynamicList(CaseData caseData,
                                                  JudicialMessageRoleType senderRole,
-                                                 Optional<String> chosen,
-                                                 boolean showOther) {
+                                                 Optional<String> chosen) {
         List<RoleAssignment> currentRoles = roleAssignmentService
             .getJudicialCaseRolesAtTime(caseData.getId(), ZonedDateTime.now());
 
@@ -182,12 +181,10 @@ public abstract class MessageJudgeService {
             .label(getJudgeLabel(JudicialMessageRoleType.HEARING_JUDGE, judge, hasHearingJudgeRole))
             .build()));
 
-        if (showOther) {
-            elements.add(DynamicListElement.builder()
-                    .code(JudicialMessageRoleType.OTHER.toString())
-                    .label(JudicialMessageRoleType.OTHER.getLabel())
-                .build());
-        }
+        elements.add(DynamicListElement.builder()
+                .code(JudicialMessageRoleType.OTHER.toString())
+                .label(JudicialMessageRoleType.OTHER.getLabel())
+            .build());
 
         return DynamicList.builder()
             .listItems(elements.stream()

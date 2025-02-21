@@ -17,7 +17,7 @@ public enum JudicialMessageRoleType {
 
     LOCAL_COURT_ADMIN("Local Court Admin"),
 
-    OTHER("Other Judge");
+    OTHER("Other Judge/Legal Adviser");
 
     public final String label;
 }
