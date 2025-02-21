@@ -1318,8 +1318,8 @@ public class MigrateCaseService {
         return Map.of(ORDERS, caseData.getOrders().toBuilder().address(null).build());
     }
 
-    public Map<String, Object> migrateOthers(CaseData caseData, Map<String, Object> caseDetailsMap,
-                                             String migrationId) {
+    public Map<String, Object> migrateOthersToOthersV2(CaseData caseData, Map<String, Object> caseDetailsMap,
+                                                       String migrationId) {
         Others othersToBeMigrated = caseData.getOthers();
 
         if (othersToBeMigrated == null) {
@@ -1328,14 +1328,16 @@ public class MigrateCaseService {
         }
 
         List<Element<Other>> othersV2 = new ArrayList<>();
-        Element<Other> firstOther = element(getFirstOtherId(caseData), othersToBeMigrated.getFirstOther());
-        othersV2.add(firstOther);
+        if (othersToBeMigrated.getFirstOther() != null) {
+            Element<Other> firstOther = element(getFirstOtherId(caseData), othersToBeMigrated.getFirstOther());
+            othersV2.add(firstOther);
+        }
         othersV2.addAll(othersToBeMigrated.getAdditionalOthers());
 
         caseDetailsMap.remove("others");
         caseDetailsMap.put("othersV2", othersV2);
 
-        return Map.of(ORDERS, caseData.getOrders().toBuilder().address(null).build());
+        return caseDetailsMap;
     }
 
     private UUID getFirstOtherId(CaseData caseData) {

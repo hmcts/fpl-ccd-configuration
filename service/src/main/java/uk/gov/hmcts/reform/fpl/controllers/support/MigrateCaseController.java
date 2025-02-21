@@ -104,7 +104,7 @@ public class MigrateCaseController extends CallbackController {
     private void run2421(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2421";
 
-        caseDetails.getData().putAll(migrateCaseService.migrateOthers(getCaseData(caseDetails),
+        caseDetails.getData().putAll(migrateCaseService.migrateOthersToOthersV2(getCaseData(caseDetails),
             caseDetails.getData(), migrationId));
     }
 }
