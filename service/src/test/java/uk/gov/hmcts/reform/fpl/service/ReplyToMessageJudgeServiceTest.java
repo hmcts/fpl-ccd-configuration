@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -71,6 +72,8 @@ class ReplyToMessageJudgeServiceTest {
     private RoleAssignmentService roleAssignmentService;
     @Mock
     private FeatureToggleService featureToggleService;
+    @Mock
+    private JudicialService judicialService;
     @Spy
     private ObjectMapper mapper = new ObjectMapper();
     @InjectMocks
@@ -79,6 +82,8 @@ class ReplyToMessageJudgeServiceTest {
     @BeforeEach
     void init() {
         when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
+        when(judicialService.getAllocatedJudge(any())).thenReturn(Optional.empty());
+        when(judicialService.getCurrentHearingJudge(any())).thenReturn(Optional.empty());
         when(ctscEmailLookupConfiguration.getEmail()).thenReturn(COURT_EMAIL);
         when(roleAssignmentService.getJudicialCaseRolesAtTime(any(), any())).thenReturn(List.of());
 
