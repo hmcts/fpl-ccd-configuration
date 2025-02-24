@@ -250,7 +250,9 @@ public class RoleAssignmentService {
 
     @Retryable(retryFor = {FeignException.class}, label = "Query organisation roles for user")
     public Set<OrganisationalRole> getOrganisationalRolesForUser(String userId) {
-        QueryResponse response = amApi.queryRoleAssignments(systemUserService.getSysUserToken(), authTokenGenerator.generate(),
+        QueryResponse response = amApi.queryRoleAssignments(
+            systemUserService.getSysUserToken(),
+            authTokenGenerator.generate(),
             QueryRequest.builder()
                 .actorId(List.of(userId))
                 .roleType(List.of(RoleType.ORGANISATION.toString()))

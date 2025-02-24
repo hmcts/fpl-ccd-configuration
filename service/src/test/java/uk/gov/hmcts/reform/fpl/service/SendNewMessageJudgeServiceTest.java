@@ -691,7 +691,9 @@ class SendNewMessageJudgeServiceTest {
             .judicialMessages(existingJudicialMessages)
             .build();
 
-        JudicialMessageRoleType expectedSenderRole = (isJudiciary) ? JudicialMessageRoleType.ALLOCATED_JUDGE : senderRole;
+        JudicialMessageRoleType expectedSenderRole = (isJudiciary)
+            ? JudicialMessageRoleType.ALLOCATED_JUDGE
+            : senderRole;
         String expectedSender = MESSAGE_SENDER;
         if (JudicialMessageRoleType.CTSC.equals(expectedSenderRole)) {
             expectedSender = COURT_EMAIL;

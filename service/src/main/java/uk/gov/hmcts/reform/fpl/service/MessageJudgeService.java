@@ -146,11 +146,11 @@ public abstract class MessageJudgeService {
         List<RoleAssignment> currentRoles = roleAssignmentService
             .getJudicialCaseRolesAtTime(caseData.getId(), ZonedDateTime.now());
 
-        boolean hasAllocatedJudgeRole = currentRoles.stream()
+        final boolean hasAllocatedJudgeRole = currentRoles.stream()
             .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.ALLOCATED_JUDGE.getRoleName())
                 || role.getRoleName().equals(LegalAdviserRole.ALLOCATED_LEGAL_ADVISER.getRoleName()));
 
-        boolean hasHearingJudgeRole = currentRoles.stream()
+        final boolean hasHearingJudgeRole = currentRoles.stream()
             .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.HEARING_JUDGE.getRoleName())
                 || role.getRoleName().equals(LegalAdviserRole.HEARING_LEGAL_ADVISER.getRoleName()));
 
@@ -166,7 +166,7 @@ public abstract class MessageJudgeService {
         elements.add(DynamicListElement.builder()
             .code(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString())
             .label(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel()
-                + (isNotEmpty(caseData.getCourt()) ? " - %s".formatted( caseData.getCourt().getName()) : "")
+                + (isNotEmpty(caseData.getCourt()) ? " - %s".formatted(caseData.getCourt().getName()) : "")
             )
             .build());
 
