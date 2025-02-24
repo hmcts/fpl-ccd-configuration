@@ -154,8 +154,6 @@ public abstract class MessageJudgeService {
             .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.HEARING_JUDGE.getRoleName())
                 || role.getRoleName().equals(LegalAdviserRole.HEARING_LEGAL_ADVISER.getRoleName()));
 
-        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
-        Optional<JudgeAndLegalAdvisor> hearingJudge = judicialService.getCurrentHearingJudge(caseData);
 
         List<DynamicListElement> elements = new ArrayList<>();
 
@@ -170,12 +168,14 @@ public abstract class MessageJudgeService {
             )
             .build());
 
+        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
         allocatedJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
             .code(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())
             .label(getJudgeLabel(JudicialMessageRoleType.ALLOCATED_JUDGE, judge.toJudgeAndLegalAdvisor(),
                 hasAllocatedJudgeRole))
             .build()));
 
+        Optional<JudgeAndLegalAdvisor> hearingJudge = judicialService.getCurrentHearingJudge(caseData);
         hearingJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
             .code(JudicialMessageRoleType.HEARING_JUDGE.toString())
             .label(getJudgeLabel(JudicialMessageRoleType.HEARING_JUDGE, judge, hasHearingJudgeRole))
