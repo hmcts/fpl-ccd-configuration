@@ -206,7 +206,7 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static DocmosisHearing expectedDocmosisHearing() {
         return DocmosisHearing.builder()
-            .timeFrame("Urgent (not same day)\nReason: Baby will be discharged from hospital on 21 June 2018")
+            .timeFrame("Same day\nReason: Baby will be discharged from hospital on 21 June 2018")
             .withoutNoticeDetails("Yes\nReason: Notice without hearing needed")
             .respondentsAware("Yes")
             .respondentsAwareReason("They seek to care for baby in mother and baby unit")
