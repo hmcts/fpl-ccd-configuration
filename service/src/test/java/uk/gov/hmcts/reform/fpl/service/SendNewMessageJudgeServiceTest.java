@@ -734,7 +734,8 @@ class SendNewMessageJudgeServiceTest {
                 when(userService.getJudicialCaseRoles(any())).thenReturn(Set.of(HEARING_JUDGE.getRoleName()));
             }
             case OTHER -> when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.JUDGE));
-            case LOCAL_COURT_ADMIN -> when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.LOCAL_COURT_ADMIN));
+            case LOCAL_COURT_ADMIN -> when(userService.getOrgRoles())
+                .thenReturn(Set.of(OrganisationalRole.LOCAL_COURT_ADMIN));
             case CTSC -> when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.CTSC));
         }
 
