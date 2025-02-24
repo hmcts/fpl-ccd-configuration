@@ -70,7 +70,7 @@ class ReplyToMessageJudgeServiceTest {
     @Mock
     private RoleAssignmentService roleAssignmentService;
     @Mock
-    private JudicialService judicialService;
+    private FeatureToggleService featureToggleService;
     @Spy
     private ObjectMapper mapper = new ObjectMapper();
     @InjectMocks
@@ -78,6 +78,7 @@ class ReplyToMessageJudgeServiceTest {
 
     @BeforeEach
     void init() {
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(ctscEmailLookupConfiguration.getEmail()).thenReturn(COURT_EMAIL);
         when(roleAssignmentService.getJudicialCaseRolesAtTime(any(), any())).thenReturn(List.of());
 
@@ -123,6 +124,7 @@ class ReplyToMessageJudgeServiceTest {
 
         final Map<String, Object> expectedData = Map.of(
             "hasJudicialMessages", YES,
+            "isSendingEmailsInCourt", YES,
             "judicialMessageDynamicList", expectedJudicialDynamicList);
 
         assertThat(expectedEventData).isEqualTo(expectedData);
@@ -138,6 +140,7 @@ class ReplyToMessageJudgeServiceTest {
 
         final Map<String, Object> expectedData = Map.of(
             "hasJudicialMessages", NO,
+            "isSendingEmailsInCourt", YES,
             "judicialMessageDynamicList", expectedJudicialDynamicList);
 
         assertThat(expectedEventData).isEqualTo(expectedData);
@@ -314,10 +317,13 @@ class ReplyToMessageJudgeServiceTest {
             JudicialMessage.builder()
                 .sender(MESSAGE_RECIPIENT)
                 .recipientType(JudicialMessageRoleType.LOCAL_COURT_ADMIN)
+                .recipient(MESSAGE_SENDER)
                 .senderType(JudicialMessageRoleType.OTHER)
                 .subject(MESSAGE_REQUESTED_BY)
                 .updatedTime(time.now())
                 .status(OPEN)
+                .fromLabel("%s (%s)".formatted(JudicialMessageRoleType.OTHER.getLabel(), MESSAGE_RECIPIENT))
+                .toLabel("%s (%s)".formatted(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER))
                 .latestMessage(messageReply)
                 .messageHistory(formattedMessageHistory)
                 .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))

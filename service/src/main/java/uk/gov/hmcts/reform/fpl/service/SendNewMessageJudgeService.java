@@ -62,12 +62,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SendNewMessageJudgeService extends MessageJudgeService {
-
-    private final IdentityService identityService;
-    private final ObjectMapper mapper;
-    private final FeatureToggleService featureToggleService;
+    @Autowired
+    protected IdentityService identityService;
+    @Autowired
+    protected ObjectMapper mapper;
+    @Autowired
+    protected FeatureToggleService featureToggleService;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -81,7 +82,11 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
 
         data.putAll(prePopulateSenderAndRecipient(caseData));
         data.put("documentTypesDynamicList", manageDocumentService.buildExistingDocumentTypeDynamicList(caseData));
-        data.put("nextHearingLabel", getNextHearingLabel(caseData));
+
+        String nextHearingLabel = getNextHearingLabel(caseData);
+        if (isNotEmpty(nextHearingLabel)) {
+            data.put("nextHearingLabel", nextHearingLabel);
+        }
 
         return data;
     }
@@ -270,7 +275,6 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
             .recipientDynamicList(buildRecipientDynamicList(caseData, senderRole, Optional.empty()))
             .build());
-        data.put("isJudiciary", NO);
 
         return data;
     }

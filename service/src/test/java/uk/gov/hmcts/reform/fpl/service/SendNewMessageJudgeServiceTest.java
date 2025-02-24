@@ -14,11 +14,14 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
 import uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments;
+import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -27,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
@@ -37,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -51,17 +56,20 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Map.entry;
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -77,7 +85,6 @@ class SendNewMessageJudgeServiceTest {
 
     private static final String COURT_EMAIL = "ctsc@test.com";
     private static final String MESSAGE_NOTE = "Message note";
-    private static final String MESSAGE_SENDER_JUDICIARY = "judiciary@test.com";
     private static final String MESSAGE_SENDER = "sender@fpla.com";
     private static final String MESSAGE_REQUESTED_BY = "request review from some court";
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
@@ -89,6 +96,16 @@ class SendNewMessageJudgeServiceTest {
     private static final UUID DOCUMENT_1_ID = randomUUID();
     private static final DocumentReference DOCUMENT_REFERENCE_2 = testDocumentReference("Test Doc Two");
     private static final UUID DOCUMENT_2_ID = randomUUID();
+    private static final Judge ALLOCATED_JUDGE_FIELD = Judge.builder()
+        .judgeLastName("Smith")
+        .judgeTitle(JudgeOrMagistrateTitle.DISTRICT_JUDGE)
+        .judgeEmailAddress(MESSAGE_RECIPIENT)
+        .build();
+    private static final JudgeAndLegalAdvisor HEARING_JUDGE_FIELD = JudgeAndLegalAdvisor.builder()
+        .judgeLastName("Judge")
+        .judgeTitle(JudgeOrMagistrateTitle.DISTRICT_JUDGE)
+        .judgeEmailAddress(MESSAGE_RECIPIENT)
+        .build();
 
     @Mock
     private Time time;
@@ -100,6 +117,12 @@ class SendNewMessageJudgeServiceTest {
     private ManageDocumentService manageDocumentService;
     @Mock
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+    @Mock
+    private FeatureToggleService featureToggleService;
+    @Mock
+    private RoleAssignmentService roleAssignmentService;
+    @Mock
+    private JudicialService judicialService;
     @Spy
     private ObjectMapper mapper = new ObjectMapper();
     @InjectMocks
@@ -107,6 +130,18 @@ class SendNewMessageJudgeServiceTest {
 
     @BeforeEach
     void init() {
+        when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.LOCAL_COURT_ADMIN));
+        when(roleAssignmentService.getJudicialCaseRolesAtTime(any(), any())).thenReturn(List.of(
+            RoleAssignment.builder()
+                .roleName(ALLOCATED_JUDGE.getRoleName())
+                .build(),
+            RoleAssignment.builder()
+                .roleName(HEARING_JUDGE.getRoleName())
+                .build()
+        ));
+        when(judicialService.getAllocatedJudge(any())).thenReturn(Optional.of(ALLOCATED_JUDGE_FIELD));
+        when(judicialService.getCurrentHearingJudge(any())).thenReturn(Optional.of(HEARING_JUDGE_FIELD));
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(ctscEmailLookupConfiguration.getEmail()).thenReturn(COURT_EMAIL);
         when(time.now()).thenReturn(LocalDateTime.now());
         when(manageDocumentService.buildExistingDocumentTypeDynamicList(any()))
@@ -132,9 +167,9 @@ class SendNewMessageJudgeServiceTest {
             .build();
 
         final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(randomUUID(),
-            AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(c2DocumentBundle)
-                .build()),
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(c2DocumentBundle)
+                    .build()),
             element(randomUUID(), AdditionalApplicationsBundle.builder()
                 .c2DocumentBundleConfidential(confC2DocumentBundle)
                 .build()));
@@ -181,11 +216,11 @@ class SendNewMessageJudgeServiceTest {
         );
 
         final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(randomUUID(),
-                AdditionalApplicationsBundle.builder()
-                    .c2DocumentBundle(c2DocumentBundle)
-                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
-                        .supportingEvidenceBundle(supportingEvidenceBundle).build())
-                    .build()));
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(c2DocumentBundle)
+                .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                    .supportingEvidenceBundle(supportingEvidenceBundle).build())
+                .build()));
 
         final Element<Placement> placement = element(Placement.builder()
             .childName("Alex Green")
@@ -209,7 +244,6 @@ class SendNewMessageJudgeServiceTest {
         final Map<String, Object> expectedEventData = sendNewMessageJudgeService.populateNewMessageFields(caseData);
 
         final Map<String, Object> expectedData = Map.of(
-            "nextHearingLabel", "",
             "relatedDocumentsLabel",
             format("%s\n%s", DOCUMENT_REFERENCE_1.getFilename(), DOCUMENT_REFERENCE_2.getFilename()));
 
@@ -259,15 +293,18 @@ class SendNewMessageJudgeServiceTest {
     void shouldPrePopulateSenderAndRecipientEmailsWhenNewMessageIsInitiatedByJudge() {
         when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
+        when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.JUDGE));
+        when(userService.getJudicialCaseRoles(any())).thenReturn(Set.of(ALLOCATED_JUDGE.getRoleName()));
 
         CaseData caseData = CaseData.builder().build();
 
         assertThat(sendNewMessageJudgeService.initialiseCaseFields(caseData))
             .containsOnly(
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .recipient(EMPTY)
-                    .sender(MESSAGE_SENDER).build()),
-                entry("isJudiciary", YesNo.YES),
+                    .recipientDynamicList(buildRecipientList(
+                        List.of(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())))
+                    .build()),
+                entry("isSendingEmailsInCourt", YesNo.YES),
                 entry("documentTypesDynamicList",
                     manageDocumentService.buildExistingDocumentTypeDynamicList(caseData)));
     }
@@ -281,9 +318,10 @@ class SendNewMessageJudgeServiceTest {
         assertThat(sendNewMessageJudgeService.initialiseCaseFields(caseData))
             .containsOnly(
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .sender(EMPTY)
-                    .recipient(EMPTY).build()),
-                entry("isJudiciary", YesNo.NO),
+                    .recipientDynamicList(buildRecipientList(
+                        List.of(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString())))
+                    .build()),
+                entry("isSendingEmailsInCourt", YesNo.YES),
                 entry("documentTypesDynamicList",
                     manageDocumentService.buildExistingDocumentTypeDynamicList(caseData)));
     }
@@ -325,7 +363,7 @@ class SendNewMessageJudgeServiceTest {
                 .build())
             .build();
 
-        assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).containsOnlyKeys("nextHearingLabel");
+        assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).isEmpty();
     }
 
     @Test
@@ -333,7 +371,12 @@ class SendNewMessageJudgeServiceTest {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
             .subject(MESSAGE_REQUESTED_BY)
             .sender(MESSAGE_SENDER)
-            .recipient(MESSAGE_RECIPIENT)
+            .recipientDynamicList(buildRecipientList(List.of(JudicialMessageRoleType.ALLOCATED_JUDGE.toString()))
+                .toBuilder()
+                .value(new DynamicListElement(JudicialMessageRoleType.ALLOCATED_JUDGE.toString(),
+                    "Allocated Judge - District Judge Smith (%s)".formatted(MESSAGE_RECIPIENT)))
+                .build()
+            )
             .urgency("High urgency")
             .build();
 
@@ -356,10 +399,15 @@ class SendNewMessageJudgeServiceTest {
             .latestMessage(MESSAGE_NOTE)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .sender(MESSAGE_SENDER)
+            .senderType(JudicialMessageRoleType.LOCAL_COURT_ADMIN)
+            .fromLabel("Local Court Admin (%s)".formatted(MESSAGE_SENDER))
             .recipient(MESSAGE_RECIPIENT)
+            .recipientType(JudicialMessageRoleType.ALLOCATED_JUDGE)
+            .toLabel("Allocated Judge/Legal Adviser (%s)".formatted(MESSAGE_RECIPIENT))
             .subject(MESSAGE_REQUESTED_BY)
             .urgency("High urgency")
-            .messageHistory(format("%s - %s", MESSAGE_SENDER, MESSAGE_NOTE))
+            .messageHistory(format("%s (%s) - %s",
+                JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER, MESSAGE_NOTE))
             .build());
 
         assertThat(updatedMessages).hasSize(1).first().isEqualTo(expectedJudicialMessageElement);
@@ -369,6 +417,9 @@ class SendNewMessageJudgeServiceTest {
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenAdditionalApplicationDocumentHasBeenSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
             .recipient(MESSAGE_RECIPIENT)
+            .recipientDynamicList(buildRecipientList(
+                List.of(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString()),
+                JudicialMessageRoleType.ALLOCATED_JUDGE.toString()))
             .build();
 
         DocumentReference mainC2DocumentReference = DocumentReference.builder()
@@ -423,6 +474,9 @@ class SendNewMessageJudgeServiceTest {
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenOtherApplicationDocumentHasBeenSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
             .recipient(MESSAGE_RECIPIENT)
+            .recipientDynamicList(buildRecipientList(
+                List.of(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString()),
+                JudicialMessageRoleType.ALLOCATED_JUDGE.toString()))
             .build();
 
         DocumentReference mainC2DocumentReference = DocumentReference.builder()
@@ -511,6 +565,11 @@ class SendNewMessageJudgeServiceTest {
             .isMessageRegardingDocuments(MessageRegardingDocuments.APPLICATION)
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
                 .recipient(MESSAGE_RECIPIENT)
+                .recipientDynamicList(buildRecipientList(List.of(JudicialMessageRoleType.ALLOCATED_JUDGE.toString()))
+                    .toBuilder()
+                    .value(new DynamicListElement(JudicialMessageRoleType.ALLOCATED_JUDGE.toString(),
+                        "Allocated Judge - District Judge Smith (%s)".formatted(MESSAGE_RECIPIENT)))
+                    .build())
                 .build())
             .additionalApplicationsDynamicList(DynamicList.builder()
                 .value(DynamicListElement.builder()
@@ -563,6 +622,9 @@ class SendNewMessageJudgeServiceTest {
             .isMessageRegardingDocuments(MessageRegardingDocuments.APPLICATION)
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
                 .recipient(MESSAGE_RECIPIENT)
+                .recipientDynamicList(buildRecipientList(
+                    List.of(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString()),
+                    JudicialMessageRoleType.ALLOCATED_JUDGE.toString()))
                 .build())
             .additionalApplicationsDynamicList(DynamicList.builder()
                 .value(DynamicListElement.builder()
@@ -609,6 +671,10 @@ class SendNewMessageJudgeServiceTest {
             .isMessageRegardingDocuments(MessageRegardingDocuments.DOCUMENT)
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
                 .recipient(MESSAGE_RECIPIENT)
+                .recipientDynamicList(buildRecipientList(
+                    List.of(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString()),
+                    JudicialMessageRoleType.ALLOCATED_JUDGE.toString()
+                ))
                 .build())
             .documentDynamicList(DynamicList.builder()
                 .value(DynamicListElement.builder()
@@ -641,35 +707,41 @@ class SendNewMessageJudgeServiceTest {
         List<Arguments> args = new ArrayList<>();
         List<JudicialMessageRoleType> judicialMessageRoleTypes =
             List.of(JudicialMessageRoleType.ALLOCATED_JUDGE, JudicialMessageRoleType.CTSC,
-                JudicialMessageRoleType.LOCAL_COURT_ADMIN,JudicialMessageRoleType.OTHER);
+                JudicialMessageRoleType.LOCAL_COURT_ADMIN, JudicialMessageRoleType.OTHER);
 
-        List.of(true, false).stream()
-            .forEach(isJuducuary -> {
-                judicialMessageRoleTypes.stream().forEach(senderRole -> {
-                    judicialMessageRoleTypes.stream().forEach(recipientRole -> {
-                        args.add(Arguments.of(senderRole, recipientRole, isJuducuary));
-                    });
-                });
+        judicialMessageRoleTypes.stream().forEach(senderRole -> {
+            judicialMessageRoleTypes.stream().forEach(recipientRole -> {
+                if (!senderRole.equals(recipientRole)) {
+                    args.add(Arguments.of(senderRole, recipientRole));
+                }
             });
+        });
         return args.stream();
     }
 
     @ParameterizedTest
     @MethodSource("argForShouldAppendNewJudicialMessageToExistingJudicialMessageList")
     void shouldAppendNewJudicialMessageToExistingJudicialMessageList(JudicialMessageRoleType senderRole,
-                                                                     JudicialMessageRoleType recipientRole,
-                                                                     boolean isJudiciary) {
-        if (isJudiciary) {
-            when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
-            when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER_JUDICIARY);
-        } else {
-            when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
-            when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
+                                                                     JudicialMessageRoleType recipientRole) {
+        when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
+        switch (senderRole) {
+            case ALLOCATED_JUDGE -> {
+                when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.JUDGE));
+                when(userService.getJudicialCaseRoles(any())).thenReturn(Set.of(ALLOCATED_JUDGE.getRoleName()));
+            }
+            case HEARING_JUDGE -> {
+                when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.JUDGE));
+                when(userService.getJudicialCaseRoles(any())).thenReturn(Set.of(HEARING_JUDGE.getRoleName()));
+            }
+            case OTHER -> when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.JUDGE));
+            case LOCAL_COURT_ADMIN -> when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.LOCAL_COURT_ADMIN));
+            case CTSC -> when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.CTSC));
         }
 
         JudicialMessage newMessage = JudicialMessage.builder()
             .subject(MESSAGE_REQUESTED_BY)
             .recipientType(recipientRole)
+            .recipientDynamicList(buildRecipientList(List.of(senderRole.toString()), recipientRole.toString()))
             .recipient(MESSAGE_RECIPIENT)
             .senderType(senderRole)
             .sender(MESSAGE_SENDER)
@@ -691,29 +763,31 @@ class SendNewMessageJudgeServiceTest {
             .judicialMessages(existingJudicialMessages)
             .build();
 
-        JudicialMessageRoleType expectedSenderRole = (isJudiciary)
-            ? JudicialMessageRoleType.ALLOCATED_JUDGE
-            : senderRole;
-        String expectedSender = MESSAGE_SENDER;
-        if (JudicialMessageRoleType.CTSC.equals(expectedSenderRole)) {
-            expectedSender = COURT_EMAIL;
-        } else if (isJudiciary) {
-            expectedSender = MESSAGE_SENDER_JUDICIARY;
-        }
-
+        String expectedSender = JudicialMessageRoleType.CTSC.equals(senderRole)
+            ? COURT_EMAIL : MESSAGE_SENDER;
         String expectedRecipient = (JudicialMessageRoleType.CTSC.equals(recipientRole))
             ? COURT_EMAIL : MESSAGE_RECIPIENT;
 
+        String expectedSenderLabel = JudicialMessageRoleType.CTSC.equals(senderRole)
+            ? "CTSC"
+            : "%s (%s)".formatted(senderRole.getLabel(), expectedSender);
+
+        String expectedRecipientLabel = JudicialMessageRoleType.CTSC.equals(recipientRole)
+            ? "CTSC"
+            : "%s (%s)".formatted(recipientRole.getLabel(), expectedRecipient);
+
         JudicialMessage expectedNewJudicialMessage = JudicialMessage.builder()
-            .senderType(expectedSenderRole)
+            .senderType(senderRole)
             .sender(expectedSender)
+            .fromLabel(expectedSenderLabel)
+            .toLabel(expectedRecipientLabel)
             .recipientType(recipientRole)
             .recipient(expectedRecipient)
             .updatedTime(time.now())
             .status(OPEN)
             .subject(MESSAGE_REQUESTED_BY)
             .latestMessage(MESSAGE_NOTE)
-            .messageHistory(format("%s - %s", expectedSender, MESSAGE_NOTE))
+            .messageHistory(format("%s - %s", expectedSenderLabel, MESSAGE_NOTE))
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .build();
 
@@ -825,6 +899,32 @@ class SendNewMessageJudgeServiceTest {
 
         return DynamicList.builder()
             .listItems(List.of(skeletonArgumentElement, courtBundleElement))
+            .build();
+    }
+
+    private DynamicList buildRecipientList(List<String> codesToExclude) {
+        return DynamicList.builder()
+            .listItems(List.of(
+                new DynamicListElement(JudicialMessageRoleType.CTSC.toString(),
+                    JudicialMessageRoleType.CTSC.getLabel()),
+                new DynamicListElement(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString(),
+                    JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel()),
+                new DynamicListElement(JudicialMessageRoleType.ALLOCATED_JUDGE.toString(),
+                    "Allocated Judge - District Judge Smith (%s)".formatted(MESSAGE_RECIPIENT)),
+                new DynamicListElement(JudicialMessageRoleType.HEARING_JUDGE.toString(),
+                    "Hearing Judge - District Judge Judge (%s)".formatted(MESSAGE_RECIPIENT)),
+                new DynamicListElement(JudicialMessageRoleType.OTHER.toString(),
+                    JudicialMessageRoleType.OTHER.getLabel())
+            ).stream().filter(el -> !codesToExclude.contains(el.getCode())).toList())
+            .build();
+    }
+
+    private DynamicList buildRecipientList(List<String> codesToExclude, String valueCode) {
+        DynamicList recipientDynamicList = buildRecipientList(codesToExclude);
+        return recipientDynamicList.toBuilder()
+            .value(recipientDynamicList.getListItems().stream()
+                .filter(el -> el.hasCode(valueCode))
+                .findFirst().orElse(null))
             .build();
     }
 }
