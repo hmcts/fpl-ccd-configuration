@@ -19,6 +19,15 @@ public abstract class MessageJudgeControllerAbstractTest extends AbstractCallbac
             null, null);
     }
 
+    protected DynamicList buildRecipientDynamicListCTSCLocalCourtOther() {
+        return buildRecipientDynamicList(
+            List.of(JudicialMessageRoleType.CTSC.toString(),
+                JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString(),
+                JudicialMessageRoleType.OTHER.toString()),
+            null, null);
+    }
+
+
     protected DynamicList buildRecipientDynamicList(List<String> codesToInclude,
                                           String allocatedLabel,
                                           String hearingLabel) {
