@@ -460,7 +460,6 @@
           "[LASHARED]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]",
-          "caseworker-publiclaw-solicitor",
           "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "CR"
@@ -1241,8 +1240,7 @@
           "[LAMANAGING]",
           "[LASHARED]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]",
-          "caseworker-publiclaw-solicitor"
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },

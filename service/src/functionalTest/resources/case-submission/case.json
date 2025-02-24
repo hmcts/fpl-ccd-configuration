@@ -12,7 +12,8 @@
     "thresholdDetails": "Details"
   },
   "hearing": {
-    "timeFrame": "Same day"
+    "hearingUrgencyType": "STANDARD",
+    "respondentsAware": "Yes"
   },
   "caseName": "Api test",
   "representativeType": "LOCAL_AUTHORITY",
