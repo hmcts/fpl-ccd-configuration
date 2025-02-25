@@ -675,24 +675,20 @@ public class CaseSubmissionGenerationService
 
     private DocmosisOtherParty buildOtherParty(final Other other,
                                                Language applicationLanguage) {
-        final boolean isConfidential = equalsIgnoreCase(other.getDetailsHidden(), YES.getValue());
         return DocmosisOtherParty.builder()
             .name(other.getFullName())
-            .gender(formatGenderDisplay(Gender.fromLabel(other.getGender()).getLabel(applicationLanguage),
-                other.getGenderIdentification()))
             .dateOfBirth(StringUtils.isNotBlank(other.getDateOfBirth())
                          ? formatLocalDateToString(parse(other.getDateOfBirth()), DATE, applicationLanguage)
                          : DEFAULT_STRING
             )
-            .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
-            .address(isConfidential ? getConfidential(applicationLanguage) : formatAddress(other.getAddress()))
-            .telephoneNumber(isConfidential ? getConfidential(applicationLanguage) :
-                             getDefaultIfNullOrEmpty(other.getTelephone()))
-            .detailsHidden(getValidAnswerOrDefaultValue(other.getDetailsHidden(), applicationLanguage))
-            .detailsHiddenReason(
-                concatenateYesOrNoKeyAndValue(
-                    other.getDetailsHidden(),
-                    other.getDetailsHiddenReason(), applicationLanguage))
+            .address(
+                YES.equalsString(other.getHideAddress())
+                    ? getConfidential(applicationLanguage)
+                    : formatAddress(other.getAddress()))
+            .telephoneNumber(
+                YES.equalsString(other.getHideTelephone())
+                    ? getConfidential(applicationLanguage)
+                    : getDefaultIfNullOrEmpty(other.getTelephone()))
             .litigationIssuesDetails(
                 concatenateYesOrNoKeyAndValue(
                     other.getLitigationIssues(),

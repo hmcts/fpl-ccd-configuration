@@ -1851,23 +1851,6 @@ class CaseSubmissionGenerationServiceTest {
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("2 February 1999");
         }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        void shouldReturnOtherPartyGenderAsMaleWhenNoGenderIdentificationIsNullOrEmpty(String genderIdentification) {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .othersV2(wrapElements(
-                    Other.builder()
-                        .gender("Male")
-                        .genderIdentification(genderIdentification)
-                        .build()))
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getOthers()).hasSize(1);
-            assertThat(caseSubmission.getOthers().get(0).getGender()).isEqualTo("Male");
-        }
     }
 
     @Nested

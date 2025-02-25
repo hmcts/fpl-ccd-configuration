@@ -106,17 +106,6 @@ class CaseDataTest {
     }
 
     @Test
-    void shouldGetAllOthersWhenFirstOtherIsEmpty() {
-        Other other1 = Other.builder().build();
-        Other other2 = otherWithName("Sam");
-
-        CaseData caseData = CaseData.builder().othersV2(wrapElements(other1, other2)).build();
-
-        assertThat(caseData.getOthersV2()).hasSize(1);
-        assertThat(caseData.getOthersV2().get(0).getValue()).isEqualTo(other2);
-    }
-
-    @Test
     void shouldGetEmptyListOfOthersWhenOthersIsNull() {
         CaseData caseData = CaseData.builder().build();
 
