@@ -115,7 +115,7 @@
       "reducedNoticeReason": "Baby needs to be discharged from the hospital",
       "withoutNoticeReason": "Notice without hearing needed",
       "respondentsAwareReason": "They seek to care for baby in mother and baby unit",
-      "hearingUrgencyType": "URGENT",
+      "hearingUrgencyType": "SAME_DAY",
       "hearingUrgencyDetails": "Baby will be discharged from hospital on 21 June 2018"
     },
     "caseName": "${caseName:-test}",
