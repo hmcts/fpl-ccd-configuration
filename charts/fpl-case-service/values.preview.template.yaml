@@ -15,6 +15,7 @@ java:
     CASE_ASSIGNMENT_API_URL: http://${SERVICE_NAME}-aac
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
+    AM_ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-service-${SERVICE_FQDN}
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     CCD_UI_BASE_URL: https://case-management-web-${SERVICE_FQDN}
     MANAGE_CASE_UI_BASE_URL: https://xui-${SERVICE_FQDN}
@@ -284,13 +285,24 @@ ccd:
         minReplicas: 1
         maxReplicas: 1
       environment:
+        APPLICATION_LOGGING_LEVEL: TRACE
         ROLE_ASSIGNMENT_DB_USERNAME: hmcts
         ROLE_ASSIGNMENT_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+        CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+        RUN_LD_ON_STARTUP: false
       keyVaults:
         am:
           secrets:
-          - name: role-assignment-service-LD-SDK-KEY
-            alias: LD_SDK_KEY
+            - name: am-role-assignment-service-s2s-secret
+              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+            - name: role-assignment-service-IDAM-CLIENT-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
+            - name: role-assignment-service-IDAM-ADMIN-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
+            - name: role-assignment-service-LD-SDK-KEY
+              alias: LD_SDK_KEY
       secrets:
         ROLE_ASSIGNMENT_DB_PASSWORD:
           secretRef: postgres
