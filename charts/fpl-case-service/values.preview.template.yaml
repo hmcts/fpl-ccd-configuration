@@ -285,6 +285,7 @@ ccd:
         minReplicas: 1
         maxReplicas: 1
       environment:
+        APPLICATION_LOGGING_LEVEL: TRACE
         ROLE_ASSIGNMENT_DB_USERNAME: hmcts
         ROLE_ASSIGNMENT_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
