@@ -11,6 +11,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -33,6 +36,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-2360", this::run2360,
         "DFPL-2572", this::run2572,
         "DFPL-2635", this::run2635,
         "DFPL-2642", this::run2642,
@@ -106,5 +110,17 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.migrateOthersToOthersV2(getCaseData(caseDetails),
             caseDetails.getData(), migrationId));
+    }
+
+    private void run2360(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2360";
+        CaseData caseData = getCaseData(caseDetails);
+        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())) {
+            caseDetails.getData().put("hasRespondentLA", YesNo.NO);
+        } else {
+            log.info("Migration {id = {}, case reference = {}}, "
+                + "skipping case as has representativeType=LOCAL_AUTHORITY",
+                migrationId, caseData.getId());
+        }
     }
 }

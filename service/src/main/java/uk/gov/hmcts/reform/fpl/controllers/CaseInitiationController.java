@@ -129,6 +129,9 @@ public class CaseInitiationController extends CallbackController {
             // if we're a 3rd party app, prepopulate the respondentLocalAuthority field
             caseDetails.putIfNotEmpty("respondentLocalAuthority",
                 caseInitiationService.getRespondentLocalAuthorityDetails(caseData));
+            caseDetails.putIfNotEmpty("hasRespondentLA", YesNo.YES);
+        } else {
+            caseDetails.putIfNotEmpty("hasRespondentLA", YesNo.NO);
         }
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs", "sharingWithUsers", "isOutsourcedCase");
