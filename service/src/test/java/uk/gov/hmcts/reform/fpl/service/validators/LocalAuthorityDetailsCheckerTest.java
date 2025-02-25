@@ -27,7 +27,8 @@ class LocalAuthorityDetailsCheckerTest {
             .localAuthorities(localAuthorities)
             .build();
 
-        assertThat(underTest.validate(caseData)).containsExactly("Add applicant's details");
+        assertThat(underTest.validate(caseData))
+            .containsExactly("Add applicant's details|Ychwanegu manylion yr ymgeisydd");
     }
 
     @Test

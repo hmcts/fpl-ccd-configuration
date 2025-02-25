@@ -37,7 +37,7 @@ class ChildrenCheckerTest {
         final List<String> errors = childrenChecker.validate(caseData);
         final boolean isCompleted = childrenChecker.isCompleted(caseData);
 
-        assertThat(errors).contains("Add the child's details");
+        assertThat(errors).contains("Add the child's details|Ychwanegu manylion y plentyn");
         assertThat(isCompleted).isFalse();
     }
 

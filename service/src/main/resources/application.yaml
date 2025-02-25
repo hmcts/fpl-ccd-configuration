@@ -19,6 +19,9 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
       - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
+      - org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+  freemarker:
+    suffix: .ftlh
   config:
     import:
       - optional:configtree:/mnt/secrets/fpl/

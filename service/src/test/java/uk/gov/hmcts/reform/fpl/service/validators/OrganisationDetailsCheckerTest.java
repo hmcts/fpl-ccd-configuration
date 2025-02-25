@@ -40,7 +40,7 @@ class OrganisationDetailsCheckerTest {
         final boolean isCompleted = organisationDetailsChecker.isCompleted(caseData);
 
         assertThat(errors).containsExactlyInAnyOrder(
-                "Add applicant's details",
+                "Add applicant's details|Ychwanegu manylion yr ymgeisydd",
                 "Add the applicant's solicitor's details"
         );
         assertThat(isCompleted).isFalse();

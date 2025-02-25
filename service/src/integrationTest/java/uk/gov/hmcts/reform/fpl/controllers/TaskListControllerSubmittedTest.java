@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 
 import java.util.Map;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -33,6 +36,9 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private FeatureToggleService featureToggleService;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     final CaseData caseData = CaseData.builder()
         .id(10L)
@@ -64,7 +70,9 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(concurrencyHelper).submitEvent(any(),
             eq(caseData.getId()),
-            eq(Map.of("taskList", expectedTaskList)));
+            dataCaptor.capture());
+
+        assertThat(dataCaptor.getValue()).extracting("taskList").isEqualTo(expectedTaskList);
     }
 
     @Test
@@ -79,7 +87,9 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
         verify(concurrencyHelper).submitEvent(
             any(),
             eq(caseData.getId()),
-            eq(Map.of("taskList", expectedTaskList)));
+            dataCaptor.capture());
+        assertThat(dataCaptor.getValue()).extracting("taskList").isEqualTo(expectedTaskList);
+
     }
 
     @Test
@@ -92,6 +102,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(concurrencyHelper).submitEvent(any(),
             eq(caseData.getId()),
-            eq(Map.of("taskList", expectedTaskList)));
+            dataCaptor.capture());
+        assertThat(dataCaptor.getValue()).extracting("taskList").isEqualTo(expectedTaskList);
     }
 }
