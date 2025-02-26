@@ -721,15 +721,16 @@ public class CaseSubmissionGenerationService
             .placementCourt(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
             .mothersName(getDefaultIfNullOrEmpty(child.getMothersName()))
             .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
-            .fathersResponsibility(getValidAnswerOrDefaultValue(child.getFathersResponsibility(), applicationLanguage))
             .socialWorkerName(getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
             .socialWorkerTelephoneNumber(getTelephoneNumber(child.getSocialWorkerTelephoneNumber()))
+            .socialWorkerEmailAddress(getDefaultIfNullOrEmpty(child.getSocialWorkerEmail()))
+            .socialWorkerDetailsHiddenReason(
+                concatenateYesOrNoKeyAndValue(child.getSocialWorkerDetailsHidden(),
+                    child.getSocialWorkerDetailsHiddenReason(),
+                    applicationLanguage))
             .additionalNeeds(
                 concatenateYesOrNoKeyAndValue(child.getAdditionalNeeds(),
                     child.getAdditionalNeedsDetails(),
-                    applicationLanguage))
-            .litigationIssues(
-                concatenateYesOrNoKeyAndValue(child.getLitigationIssues(), child.getLitigationIssuesDetails(),
                     applicationLanguage))
             .detailsHiddenReason(
                 concatenateKeyAndValue(child.getDetailsHidden(), child.getDetailsHiddenReason()))

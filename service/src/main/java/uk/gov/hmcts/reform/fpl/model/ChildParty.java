@@ -29,6 +29,8 @@ public final class ChildParty extends Party {
     private final String genderIdentification;
     private final String livingSituation;
     private final String livingSituationDetails;
+    private final String isAddressConfidential;
+    private final String livingWithDetails;
     private final LocalDate addressChangeDate;
     private final LocalDate datePowersEnd;
     private final LocalDate careStartDate;
@@ -40,14 +42,20 @@ public final class ChildParty extends Party {
     private final String placementCourt;
     private final String mothersName;
     private final String fathersName;
+    @Deprecated
     private final String fathersResponsibility;
     private final String socialWorkerName;
     private final Telephone socialWorkerTelephoneNumber;
+    private final String socialWorkerEmail;
+    private final String socialWorkerDetailsHidden;
+    private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
     private final String additionalNeedsDetails;
     private final String detailsHidden;
     private final String detailsHiddenReason;
+    @Deprecated
     private final String litigationIssues;
+    @Deprecated
     private final String litigationIssuesDetails;
     private final String showAddressInConfidentialTab;
     private final LocalDate completionDate;
@@ -88,6 +96,8 @@ public final class ChildParty extends Party {
                       String genderIdentification,
                       String livingSituation,
                       String livingSituationDetails,
+                      String isAddressConfidential,
+                      String livingWithDetails,
                       LocalDate addressChangeDate,
                       LocalDate datePowersEnd,
                       LocalDate careStartDate,
@@ -102,6 +112,9 @@ public final class ChildParty extends Party {
                       String fathersResponsibility,
                       String socialWorkerName,
                       Telephone socialWorkerTelephoneNumber,
+                      String socialWorkerEmail,
+                      String socialWorkerDetailsHidden,
+                      String socialWorkerDetailsHiddenReason,
                       String additionalNeeds,
                       String additionalNeedsDetails,
                       String detailsHidden,
@@ -117,6 +130,8 @@ public final class ChildParty extends Party {
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;
         this.livingSituationDetails = livingSituationDetails;
+        this.isAddressConfidential = isAddressConfidential;
+        this.livingWithDetails = livingWithDetails;
         this.addressChangeDate = addressChangeDate;
         this.datePowersEnd = datePowersEnd;
         this.careStartDate = careStartDate;
@@ -131,6 +146,9 @@ public final class ChildParty extends Party {
         this.fathersResponsibility = fathersResponsibility;
         this.socialWorkerName = socialWorkerName;
         this.socialWorkerTelephoneNumber = socialWorkerTelephoneNumber;
+        this.socialWorkerEmail = socialWorkerEmail;
+        this.socialWorkerDetailsHidden = socialWorkerDetailsHidden;
+        this.socialWorkerDetailsHiddenReason = socialWorkerDetailsHiddenReason;
         this.additionalNeeds = additionalNeeds;
         this.additionalNeedsDetails = additionalNeedsDetails;
         this.detailsHidden = detailsHidden;
