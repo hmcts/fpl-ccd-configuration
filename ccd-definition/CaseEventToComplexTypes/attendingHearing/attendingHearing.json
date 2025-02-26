@@ -1,0 +1,62 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "CaseEventID": "attendingHearing",
+    "CaseFieldID": "hearingPreferences",
+    "ListElementCode": "whichCourtServices",
+    "EventElementLabel": "Choose which court services you need to be considered before first hearing",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "CaseEventID": "attendingHearing",
+    "CaseFieldID": "hearingPreferences",
+    "ListElementCode": "interpreterDetails",
+    "EventElementLabel": "Interpreter details",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "CaseEventID": "attendingHearing",
+    "CaseFieldID": "hearingPreferences",
+    "ListElementCode": "intermediaryDetails",
+    "EventElementLabel": "Intermediary details",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "CaseEventID": "attendingHearing",
+    "CaseFieldID": "hearingPreferences",
+    "ListElementCode": "disabilityAssistanceDetails",
+    "EventElementLabel": "Disability facilities and assistance details",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "CaseEventID": "attendingHearing",
+    "CaseFieldID": "hearingPreferences",
+    "ListElementCode": "extraSecurityMeasuresDetails",
+    "EventElementLabel": "Separate waiting rooms details",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "CaseEventID": "attendingHearing",
+    "CaseFieldID": "hearingPreferences",
+    "ListElementCode": "somethingElseDetails",
+    "EventElementLabel": "What else is needed?",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY"
+  }
+]
