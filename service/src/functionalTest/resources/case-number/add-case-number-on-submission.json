@@ -16,10 +16,11 @@
           },
           "grounds": {
             "thresholdReason": [
-              "beyondControl",
-              "noCare"
+              "noCare",
+              "beyondControl"
             ],
-            "thresholdDetails": "test details"
+            "hasThresholdDocument": "NO",
+            "thresholdDetails": "Details"
           },
           "hearing": {
             "type": "Standard case management hearing",
@@ -135,10 +136,11 @@
           },
           "grounds": {
             "thresholdReason": [
-              "beyondControl",
-              "noCare"
+              "noCare",
+              "beyondControl"
             ],
-            "thresholdDetails": "test details"
+            "hasThresholdDocument": "NO",
+            "thresholdDetails": "Details"
           },
           "hearing": {
             "type": "Standard case management hearing",
