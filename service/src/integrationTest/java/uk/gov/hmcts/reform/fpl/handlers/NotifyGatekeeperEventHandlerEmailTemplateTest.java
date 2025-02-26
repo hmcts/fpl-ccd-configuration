@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -47,7 +48,7 @@ public class NotifyGatekeeperEventHandlerEmailTemplateTest extends EmailTemplate
             .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
             .build()))
         .orders(Orders.builder().orderType(List.of(CARE_ORDER, SUPERVISION_ORDER)).build())
-        .hearing(Hearing.builder().timeFrame("Same day").build())
+        .hearing(Hearing.builder().hearingUrgencyType(HearingUrgencyType.SAME_DAY).build())
         .gatekeeperEmails(wrapElements(GATEKEEPING_EMAIL))
         .build();
 

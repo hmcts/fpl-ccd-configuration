@@ -34,12 +34,6 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a>
-
-<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
-
-<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
-
 <br/>
 
 ## Add application documents
@@ -100,7 +94,7 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
