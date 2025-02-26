@@ -36,6 +36,10 @@ class HearingUrgencyCheckerTest {
         void shouldReturnEmptyErrorsAndCompletedState() {
             final CaseData caseData = CaseData.builder()
                 .hearing(Hearing.builder()
+                    .hearingUrgencyType(HearingUrgencyType.SAME_DAY)
+                    .hearingUrgencyDetails("hearingUrgencyDetails")
+                    .withoutNotice("No")
+                    .respondentsAware("Yes")
                     .build()).build();
 
             final List<String> errors = hearingUrgencyChecker.validate(caseData);
@@ -50,6 +54,15 @@ class HearingUrgencyCheckerTest {
             final List<String> errors = hearingUrgencyChecker.validate(caseData);
 
             assertThat(errors).containsExactly("Add the hearing urgency details");
+        }
+
+        @Test
+        void shouldReturnErrorWhenLegacyHearingProvided() {
+            final CaseData caseData = CaseData.builder().hearing(Hearing.builder().build()).build();
+
+            final List<String> errors = hearingUrgencyChecker.validate(caseData);
+
+            assertThat(errors).containsExactly("Complete the hearing urgency details");
         }
     }
 

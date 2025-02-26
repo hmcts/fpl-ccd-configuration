@@ -28,26 +28,18 @@
       ],
       "caseLocalAuthority": "${localAuthority:-test1}",
       "risks": {
-        "neglect": "Yes",
-        "sexualAbuse": "Yes",
-        "physicalHarm": "Yes",
-        "emotionalHarm": "Yes",
-        "neglectOccurrences": [
-          "Past harm",
-          "Future risk of harm"
+        "whatKindOfRiskAndHarmToChildren": [
+          "PHYSICAL_HARM",
+          "EMOTIONAL_HARM",
+          "SEXUAL_ABUSE",
+          "NEGLECT"
         ],
-        "sexualAbuseOccurrences": [
-          "Past harm",
-          "Future risk of harm"
+        "factorsAffectingParenting": [
+          "ALCOHOL_DRUG_ABUSE",
+          "DOMESTIC_ABUSE",
+          "ANYTHING_ELSE"
         ],
-        "physicalHarmOccurrences": [
-          "Past harm",
-          "Future risk of harm"
-        ],
-        "emotionalHarmOccurrences": [
-          "Past harm",
-          "Future risk of harm"
-        ]
+        "anythingElseAffectingParenting": "Something else"
       },
       "orders": {
         "orderType": [
@@ -131,7 +123,8 @@
           "noCare",
           "beyondControl"
         ],
-        "thresholdDetails": "grounds for application criteria"
+        "hasThresholdDocument": "NO",
+        "thresholdDetails": "Details"
       },
       "hearing": {
         "type": "Contested interim care order",
@@ -423,40 +416,28 @@
           }
         }
       ],
-      "factorsParenting": {
-        "anythingElse": "No",
-        "alcoholDrugAbuse": "Yes",
-        "domesticViolence": "Yes",
-        "alcoholDrugAbuseReason": "history of drug abuse",
-        "domesticViolenceReason": "history of domestic violence"
-      },
       "allocationProposal": {
         "proposal": "Section 9 circuit judge",
         "proposalReason": "allocation proposal reason"
       },
       "hearingPreferences": {
-        "welsh": "Yes",
-        "litigation": "Yes",
-        "interpreter": "Yes",
-        "intermediary": "Yes",
-        "welshDetails": "welsh proceedings",
-        "litigationDetails": "litigation",
-        "interpreterDetails": "interpreter required",
-        "learningDisability": "Yes",
-        "intermediaryDetails": "intermediary hearing required",
-        "extraSecurityMeasures": "Yes",
-        "learningDisabilityDetails": "learning disability",
-        "extraSecurityMeasuresDetails": "security needed"
+        "whichCourtServices": [
+          "INTERPRETER",
+          "INTERMEDIARY",
+          "FACILITIES_FOR_DISABILITY",
+          "SEPARATE_WAITING_ROOMS",
+          "SOMETHING_ELSE"
+        ],
+        "interpreterDetails": "Interpreter required",
+        "intermediaryDetails": "Intermediary hearing required",
+        "disabilityAssistanceDetails": "Learning disability",
+        "extraSecurityMeasuresDetails": "Separate waiting room required",
+        "somethingElseDetails": "I need this from someone"
       },
       "internationalElement": {
-        "issues": "Yes",
-        "proceedings": "Yes",
-        "issuesReason": "Brussels 2 regulation",
-        "possibleCarer": "Yes",
-        "proceedingsReason": "Outside of the UK",
-        "significantEvents": "Yes",
-        "possibleCarerReason": "Aunt outside UK",
-        "significantEventsReason": "Something happened in France"
+        "whichCountriesInvolved": "Italy, Spain, France",
+        "outsideHagueConvention": "Yes",
+        "importantDetails": "Something happened in France"
       },
       "documents_socialWorkOther": [
         {
