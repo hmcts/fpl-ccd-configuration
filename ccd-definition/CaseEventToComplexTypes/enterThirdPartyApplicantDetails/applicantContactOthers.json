@@ -4,7 +4,7 @@
     "ID": "enterThirdPartyApplicant",
     "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "applicantContactOthers",
-    "ListElementCode": "fullName",
+    "ListElementCode": "firstName",
     "DisplayContext": "MANDATORY",
     "FieldDisplayOrder": 1
   },
@@ -13,7 +13,7 @@
     "ID": "enterThirdPartyApplicant",
     "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "applicantContactOthers",
-    "ListElementCode": "email",
+    "ListElementCode": "lastName",
     "DisplayContext": "MANDATORY",
     "FieldDisplayOrder": 2
   },
@@ -22,7 +22,7 @@
     "ID": "enterThirdPartyApplicant",
     "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "applicantContactOthers",
-    "ListElementCode": "role",
+    "ListElementCode": "email",
     "DisplayContext": "MANDATORY",
     "FieldDisplayOrder": 3
   },
@@ -31,8 +31,17 @@
     "ID": "enterThirdPartyApplicant",
     "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "applicantContactOthers",
+    "ListElementCode": "role",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "enterThirdPartyApplicant",
+    "CaseEventID": "enterThirdPartyApplicantDetails",
+    "CaseFieldID": "applicantContactOthers",
     "ListElementCode": "roleOther",
     "DisplayContext": "Optional",
-    "FieldDisplayOrder": 4
+    "FieldDisplayOrder": 5
   }
 ]
