@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ThresholdDocumentList",
+    "ListElementCode": "YES",
+    "ListElement": "Yes, and I will add it to the upload documents section",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ThresholdDocumentList",
+    "ListElementCode": "NO",
+    "ListElement": "No, I will provide a summary of the grounds for application",
+    "DisplayOrder": 2
+  }
+]
