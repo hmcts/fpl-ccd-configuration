@@ -14,6 +14,8 @@ public class DocmosisChild {
     private final String dateOfBirth;
     private final String address;
     private final String livingSituation;
+    private final String isAddressConfidential;
+    private final String livingWithDetails;
     private final String keyDates;
     private final String careAndContactPlan;
     private final String adoption;
@@ -21,11 +23,16 @@ public class DocmosisChild {
     private final String placementCourt;
     private final String mothersName;
     private final String fathersName;
+    @Deprecated
     private final String fathersResponsibility;
     private final String socialWorkerName;
     private final String socialWorkerTelephoneNumber;
+    private final String socialWorkerEmailAddress;
+    private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
+    @Deprecated
     private final String litigationIssues;
+    @Deprecated
     private final String detailsHiddenReason;
     private final DocmosisBirthCertificate birthCertificate;
     private final String placementOrderOtherDetails;

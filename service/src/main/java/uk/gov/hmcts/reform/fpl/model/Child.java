@@ -7,8 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
+import uk.gov.hmcts.reform.fpl.model.ChildParty.ChildPartyBuilder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
@@ -36,9 +38,10 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
     private List<Element<LegalCounsellor>> legalCounsellors;
 
     public boolean containsConfidentialDetails() {
-        String hiddenValue = defaultIfNull(party.getDetailsHidden(), "");
+        String hiddenValue = defaultIfNull(party.getIsAddressConfidential(), "");
+        String hiddenSocialWorker = defaultIfNull(party.getSocialWorkerDetailsHidden(), "");
 
-        return hiddenValue.equals("Yes");
+        return YesNo.YES.getValue().equals(hiddenValue) || YesNo.YES.getValue().equals(hiddenSocialWorker);
     }
 
     @Override
@@ -48,53 +51,83 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
     @Override
     public Child extractConfidentialDetails() {
+        ChildPartyBuilder childPartyBuilder = ChildParty.builder()
+            .livingSituation(this.party.getLivingSituation())
+            .livingSituationDetails(this.party.getLivingSituationDetails())
+            .firstName(this.party.getFirstName())
+            .lastName(this.party.getLastName())
+            .address(this.party.getAddress())
+            .telephoneNumber(this.party.getTelephoneNumber())
+            .email(this.party.getEmail()) // legacy behaviour, always hide email if present (no longer entered)
+            .showAddressInConfidentialTab("Yes")
+            .isAddressConfidential(this.party.getIsAddressConfidential())
+            .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden());
+
+        if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
+            childPartyBuilder = childPartyBuilder.address(this.party.getAddress());
+        }
+
+        if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
+            childPartyBuilder = childPartyBuilder.socialWorkerName(this.party.getSocialWorkerName())
+                .socialWorkerEmail(this.party.getSocialWorkerEmail())
+                .socialWorkerTelephoneNumber(this.party.getSocialWorkerTelephoneNumber());
+        }
+
         return this.toBuilder()
-            .party(ChildParty.builder()
-                .livingSituation(this.party.getLivingSituation())
-                .livingSituationDetails(this.party.getLivingSituationDetails())
-                .firstName(this.party.getFirstName())
-                .lastName(this.party.getLastName())
-                .address(this.party.getAddress())
-                .telephoneNumber(this.party.getTelephoneNumber())
-                .email(this.party.getEmail())
-                .showAddressInConfidentialTab("Yes")
-                .build())
+            .party(childPartyBuilder.build())
             .build();
     }
 
     @Override
     public Child addConfidentialDetails(Party party) {
-        ChildParty.ChildPartyBuilder partyBuilder = this.getParty().toBuilder()
+        ChildPartyBuilder childPartyBuilder = this.getParty().toBuilder()
             .firstName(party.getFirstName())
             .lastName(party.getLastName())
             .address(party.getAddress())
             .telephoneNumber(party.getTelephoneNumber())
-            .email(party.getEmail());
+            .email(party.getEmail()); // legacy behaviour, always hide email if present (no longer entered)
 
         // Do not nullify old data that may not have been moved over prior to DFPL-2639
         if (!isEmpty(((ChildParty) party).getLivingSituation())) {
-            partyBuilder.livingSituation(((ChildParty) party).getLivingSituation());
+            childPartyBuilder.livingSituation(((ChildParty) party).getLivingSituation());
         }
 
         if (!isEmpty(((ChildParty) party).getLivingSituationDetails())) {
-            partyBuilder.livingSituationDetails(((ChildParty) party).getLivingSituationDetails());
+            childPartyBuilder.livingSituationDetails(((ChildParty) party).getLivingSituationDetails());
+        }
+
+        if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
+            childPartyBuilder = childPartyBuilder.address(party.getAddress());
+        }
+
+        if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
+            childPartyBuilder = childPartyBuilder.socialWorkerName(this.party.getSocialWorkerName())
+                .socialWorkerEmail(this.party.getSocialWorkerEmail())
+                .socialWorkerTelephoneNumber(this.party.getSocialWorkerTelephoneNumber());
         }
 
         return this.toBuilder()
-            .party(partyBuilder.build())
+            .party(childPartyBuilder.build())
             .build();
     }
 
     @Override
     public Child removeConfidentialDetails() {
+        ChildPartyBuilder childPartyBuilder = this.party.toBuilder();
+        childPartyBuilder.email(null); // legacy behaviour, always hide email if present (no longer entered)
+
+        if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
+            childPartyBuilder = childPartyBuilder.address(null);
+        }
+
+        if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
+            childPartyBuilder = childPartyBuilder.socialWorkerName(null)
+                .socialWorkerEmail(null)
+                .socialWorkerTelephoneNumber(null);
+        }
+
         return this.toBuilder()
-            .party(this.party.toBuilder()
-                .livingSituation(null)
-                .livingSituationDetails(null)
-                .address(null)
-                .telephoneNumber(null)
-                .email(null)
-                .build())
+            .party(childPartyBuilder.build())
             .build();
     }
 
