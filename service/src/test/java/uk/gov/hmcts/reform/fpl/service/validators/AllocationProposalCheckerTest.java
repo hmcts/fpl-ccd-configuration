@@ -49,7 +49,7 @@ class AllocationProposalCheckerTest {
         @Test
         void shouldReturnErrorWhenAllocationProposalIsBlank() {
             final Allocation allocation = Allocation.builder()
-                .proposal("")
+                .proposalV2("")
                 .build();
             final CaseData caseData = CaseData.builder()
                 .allocationProposal(allocation)
@@ -63,7 +63,7 @@ class AllocationProposalCheckerTest {
         @Test
         void shouldReturnEmptyErrorsWhenAllocationProposalandProposalDetailsIsPresent() {
             final Allocation allocation = Allocation.builder()
-                .proposal("Circuit Judge")
+                .proposalV2("Circuit Judge")
                 .proposalReason("test reason")
                 .build();
             final CaseData caseData = CaseData.builder()
@@ -103,7 +103,7 @@ class AllocationProposalCheckerTest {
         @Test
         void shouldNotBeCompletedWhenAllocationProposalIsBlank() {
             final Allocation allocation = Allocation.builder()
-                .proposal("")
+                .proposalV2("")
                 .proposalReason("Proposal Reason")
                 .build();
             final CaseData caseData = CaseData.builder()
@@ -118,7 +118,7 @@ class AllocationProposalCheckerTest {
         @Test
         void shouldNotBeCompletedWhenAllocationProposalIsPresent() {
             final Allocation allocation = Allocation.builder()
-                .proposal("Circuit Judge")
+                .proposalV2("Circuit Judge")
                 .build();
             final CaseData caseData = CaseData.builder()
                 .allocationProposal(allocation)
@@ -132,7 +132,7 @@ class AllocationProposalCheckerTest {
         @Test
         void shouldBeCompletedWhenAllocationProposalAndReasonIsPresent() {
             final Allocation allocation = Allocation.builder()
-                .proposal("Circuit Judge")
+                .proposalV2("Circuit Judge")
                 .proposalReason("Proposal Reason")
                 .build();
             final CaseData caseData = CaseData.builder()

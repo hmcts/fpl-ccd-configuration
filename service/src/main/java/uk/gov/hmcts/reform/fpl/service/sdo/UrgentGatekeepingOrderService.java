@@ -55,7 +55,7 @@ public class UrgentGatekeepingOrderService {
                 caseData, eventData.getUrgentHearingAllocation()
             );
 
-            allocation = allocationDecision.getProposal();
+            allocation = allocationDecision.getProposalV2();
 
             returnedData.put("allocationDecision", allocationDecision);
         }
@@ -85,7 +85,7 @@ public class UrgentGatekeepingOrderService {
                 caseData, eventData.getUrgentHearingAllocation()
             );
 
-            allocation = allocationDecision.getProposal();
+            allocation = allocationDecision.getProposalV2();
 
             returnedData.put("allocationDecision", allocationDecision);
         }

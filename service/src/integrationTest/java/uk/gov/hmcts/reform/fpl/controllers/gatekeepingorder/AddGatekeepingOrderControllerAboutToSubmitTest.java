@@ -311,7 +311,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
 
     private Allocation createAllocation(String proposal, String judgeLevelRadio) {
         Allocation allocationDecision = Allocation.builder()
-            .proposal(proposal)
+            .proposalV2(proposal)
             .judgeLevelRadio(judgeLevelRadio)
             .build();
         return allocationDecision;
