@@ -107,6 +107,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
+    "ListElementCode": "closureNote",
+    "FieldType": "TextArea",
+    "ElementLabel": "Closure note",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
     "ListElementCode": "relatedDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "Document",

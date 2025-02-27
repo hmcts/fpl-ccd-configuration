@@ -214,8 +214,7 @@ public class DraftOrdersApprovedEventHandler {
 
             approvedOrders.forEach(hearingOrder ->
                     cafcassNotificationService.sendEmail(caseData,
-                            Set.of(hearingOrder.isConfidentialOrder() ? hearingOrder.getOrderConfidential()
-                                : hearingOrder.getOrder()),
+                            Set.of(hearingOrder.getOrderOrOrderConfidential()),
                             ORDER,
                             OrderCafcassData.builder()
                                     .documentName(hearingOrder.getTitle())
@@ -367,7 +366,7 @@ public class DraftOrdersApprovedEventHandler {
         approvedOrders.forEach(
             order -> translationRequestService.sendRequest(event.getCaseData(),
                 Optional.ofNullable(order.getTranslationRequirements()),
-                (order.isConfidentialOrder()) ? order.getOrderConfidential() : order.getOrder(),
+                order.getOrderOrOrderConfidential(),
                 String.format("%s - %s", defaultIfEmpty(order.getTitle(), "Blank order (C21)"),
                     formatLocalDateTimeBaseUsingFormat(order.getDateIssued().atStartOfDay(), DATE)
                 )

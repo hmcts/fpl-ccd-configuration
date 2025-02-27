@@ -1,13 +1,19 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.LDValue;
 import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiFeatureFlag;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -153,6 +159,95 @@ class FeatureToggleServiceTest {
             eq("wa-test-court-notification"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(true));
+    }
+
+    @Nested
+    class CafcassAPIFeatureFlag {
+        private static final LDValue CAFCASS_API_ENABLED =
+            LDValue.parse("{\"enableApi\":true}");
+        private static final LDValue CAFCASS_API_DISABLED =
+            LDValue.parse("{\"enableApi\":false}");
+        private static final LDValue CAFCASS_API_WHITELISTED =
+            LDValue.parse("{\"enableApi\": true, \"whitelist\": [\"151\", \"111\"]}");
+
+        @Test
+        void shouldReturnCafcassApiFeatureFlagIfEnabled() {
+            when(ldClient.jsonValueVariation(any(), any(), any()))
+                .thenReturn(CAFCASS_API_ENABLED);
+
+            assertThat(service.getCafcassAPIFlag())
+                .isEqualTo(CafcassApiFeatureFlag.builder().enableApi(true).build());
+
+            verify(ldClient).jsonValueVariation(
+                eq("cafcass-api-court"),
+                argThat(ldUser(ENVIRONMENT).build()),
+                eq(LDValue.ofNull()));
+        }
+
+        @Test
+        void shouldReturnCafcassApiFeatureFlagIfDisabled() {
+            when(ldClient.jsonValueVariation(eq("cafcass-api-court"), any(), any()))
+                .thenReturn(CAFCASS_API_DISABLED);
+
+            assertThat(service.getCafcassAPIFlag())
+                .isEqualTo(CafcassApiFeatureFlag.builder().enableApi(false).build());
+
+            verify(ldClient).jsonValueVariation(
+                eq("cafcass-api-court"),
+                argThat(ldUser(ENVIRONMENT).build()),
+                eq(LDValue.ofNull()));
+        }
+
+        @Test
+        void shouldReturnCafcassApiFeatureFlagIfWhiteListed() {
+            when(ldClient.jsonValueVariation(eq("cafcass-api-court"), any(), any()))
+                .thenReturn(CAFCASS_API_WHITELISTED);
+
+            assertThat(service.getCafcassAPIFlag())
+                .isEqualTo(CafcassApiFeatureFlag.builder().enableApi(true)
+                    .whitelist(List.of("151", "111")).build());
+
+            verify(ldClient).jsonValueVariation(
+                eq("cafcass-api-court"),
+                argThat(ldUser(ENVIRONMENT).build()),
+                eq(LDValue.ofNull()));
+        }
+
+        @Test
+        void shouldReturnTrueIfCourtInTheWhitelist() {
+            when(ldClient.jsonValueVariation(eq("cafcass-api-court"), any(), any()))
+                .thenReturn(CAFCASS_API_WHITELISTED);
+
+            assertThat(service.isCafcassAPIEnabledForCourt(Court.builder().code("151").build()))
+                .isEqualTo(true);
+        }
+
+        @Test
+        void shouldReturnTrueIfEnabledToAllCourt() {
+            when(ldClient.jsonValueVariation(eq("cafcass-api-court"), any(), any()))
+                .thenReturn(CAFCASS_API_ENABLED);
+
+            assertThat(service.isCafcassAPIEnabledForCourt(Court.builder().code("151").build()))
+                .isEqualTo(true);
+        }
+
+        @Test
+        void shouldReturnFalseIfCourtNotInTheWhitelist() {
+            when(ldClient.jsonValueVariation(eq("cafcass-api-court"), any(), any()))
+                .thenReturn(CAFCASS_API_WHITELISTED);
+
+            assertThat(service.isCafcassAPIEnabledForCourt(Court.builder().code("987").build()))
+                .isEqualTo(false);
+        }
+
+        @Test
+        void shouldReturnFalseIfAPIDisabled() {
+            when(ldClient.jsonValueVariation(eq("cafcass-api-court"), any(), any()))
+                .thenReturn(CAFCASS_API_DISABLED);
+
+            assertThat(service.isCafcassAPIEnabledForCourt(Court.builder().code("151").build()))
+                .isEqualTo(false);
+        }
     }
 
     private void givenToggle(boolean state) {
