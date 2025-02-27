@@ -2448,5 +2448,12 @@
     "CaseFieldID": "draftOrderUrgency",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentsConfirmPR",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRUD"
   }
 ]
