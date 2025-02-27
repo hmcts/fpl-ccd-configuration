@@ -75,7 +75,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
         return errors;
     }
 
-    public List<String> validateAdditionalContacts(List<Colleague> colleagues) {
+    protected List<String> validateAdditionalContacts(List<Colleague> colleagues) {
         final List<String> errors = new ArrayList<>();
 
         final Optional<Colleague> mainContact = colleagues.stream()
