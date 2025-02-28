@@ -812,6 +812,7 @@ public class CaseSubmissionGenerationService
             .solicitorEmail(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getEmail)))
             .solicitorDx(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getDx)))
             .solicitorReference(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getReference)))
+            .representingName(getDefaultIfNullOrEmpty(localAuthority.getRepresentingDetails().getFullName()))
             .build();
     }
 
