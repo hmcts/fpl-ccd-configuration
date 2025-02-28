@@ -290,7 +290,11 @@
             ],
             "designated": "Yes",
             "legalTeamManager": "LegalTeamManageLastName",
-            "customerReference": "PBA1234567"
+            "customerReference": "PBA1234567",
+            "representingDetails" : {
+              "firstName": "Jim",
+              "lastName": "Bob"
+            }
           }
         }
       ],

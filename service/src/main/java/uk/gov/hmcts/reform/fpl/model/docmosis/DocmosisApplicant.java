@@ -21,4 +21,5 @@ public class DocmosisApplicant {
     private final String solicitorEmail;
     private final String solicitorDx;
     private final String solicitorReference;
+    private final String representingName;
 }

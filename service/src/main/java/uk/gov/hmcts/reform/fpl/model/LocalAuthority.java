@@ -31,6 +31,7 @@ public class LocalAuthority {
     private String pbaNumber;
     private String clientCode;
     private String customerReference;
+    private RepresentingDetails representingDetails;
     @Builder.Default
     private List<Element<Colleague>> colleagues = new ArrayList<>();
     private String designated;
