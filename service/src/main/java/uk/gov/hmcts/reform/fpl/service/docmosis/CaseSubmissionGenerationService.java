@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
@@ -797,6 +798,7 @@ public class CaseSubmissionGenerationService
     private DocmosisApplicant buildApplicant(final LocalAuthority localAuthority) {
         final Optional<Colleague> solicitor = localAuthority.getFirstSolicitor();
         final Optional<Colleague> mainContact = localAuthority.getMainContact();
+        final RepresentingDetails representingDetails = localAuthority.getRepresentingDetails();
 
         return DocmosisApplicant.builder()
             .organisationName(getDefaultIfNullOrEmpty(localAuthority.getName()))
@@ -812,7 +814,9 @@ public class CaseSubmissionGenerationService
             .solicitorEmail(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getEmail)))
             .solicitorDx(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getDx)))
             .solicitorReference(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getReference)))
-            .representingName(getDefaultIfNullOrEmpty(localAuthority.getRepresentingDetails().getFullName()))
+            .representingName(getDefaultIfNullOrEmpty(nonNull(representingDetails)
+                ? representingDetails.getFullName()
+                : ""))
             .build();
     }
 

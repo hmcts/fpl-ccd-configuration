@@ -45,6 +45,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
@@ -1583,6 +1584,10 @@ class CaseSubmissionGenerationServiceTest {
                     .postcode("AB 100")
                     .build())
                 .colleagues(wrapElements(solicitor, mainContact))
+                .representingDetails(RepresentingDetails.builder()
+                    .lastName("Last")
+                    .firstName("First")
+                    .build())
                 .build();
 
             final CaseData updatedCaseData = givenCaseData.toBuilder()
@@ -1616,6 +1621,7 @@ class CaseSubmissionGenerationServiceTest {
                 .solicitorMobile(solicitor.getPhone())
                 .solicitorName(solicitor.buildFullName())
                 .solicitorReference(solicitor.getReference())
+                .representingName(localAuthority.getRepresentingDetails().getFullName())
                 .solicitorTelephone(solicitor.getPhone())
                 .address("L1\nAB 100")
                 .build();
@@ -1672,6 +1678,7 @@ class CaseSubmissionGenerationServiceTest {
                 .solicitorMobile("-")
                 .solicitorName("-")
                 .solicitorReference("-")
+                .representingName("-")
                 .solicitorTelephone("-")
                 .address("-")
                 .build();
@@ -1717,6 +1724,7 @@ class CaseSubmissionGenerationServiceTest {
                 .solicitorMobile("-")
                 .solicitorName("-")
                 .solicitorReference("-")
+                .representingName("-")
                 .solicitorTelephone("-")
                 .address("-")
                 .build();
@@ -1796,6 +1804,10 @@ class CaseSubmissionGenerationServiceTest {
                     .postcode("AB 100")
                     .build())
                 .colleagues(wrapElements(solicitor, mainContact))
+                .representingDetails(RepresentingDetails.builder()
+                    .lastName("Last")
+                    .firstName("First")
+                    .build())
                 .build();
 
             final CaseData updatedCaseData = givenCaseData.toBuilder()
@@ -1829,6 +1841,7 @@ class CaseSubmissionGenerationServiceTest {
                 .solicitorMobile(solicitor.getPhone())
                 .solicitorName(solicitor.buildFullName())
                 .solicitorReference(solicitor.getReference())
+                .representingName(localAuthority.getRepresentingDetails().getFullName())
                 .solicitorTelephone(solicitor.getPhone())
                 .address("L1\nAB 100")
                 .build();
