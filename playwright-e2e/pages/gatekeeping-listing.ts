@@ -36,7 +36,7 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
     await this.clickContinue();
     await this.page.getByLabel('Upload a prepared gatekeeping order').check();
     await this.clickContinue();
-    await this.page.getByRole('textbox', { name: 'Attach prepared order' }).setInputFiles(config.testWordFile);
+    await this.page.locator('form:has-text("Attach prepared order") input[type="file"]').setInputFiles(config.testWordFile);
     await this.waitForAllUploadsToBeCompleted();
     await this.clickContinue();
     await this.page.getByRole('radio', { name: 'Yes' }).check();

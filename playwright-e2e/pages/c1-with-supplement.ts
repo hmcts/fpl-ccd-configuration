@@ -18,7 +18,7 @@ export class C1WithSupplement extends BasePage {
         super(page);
         this.c1WithSupplementHeading = page.getByRole('heading', { name: 'C1 with supplement' });
         this.yesRadio = page.getByRole('checkbox', { name: 'Yes' });
-        this.uploadApplicationTextbox = page.getByRole('textbox', { name: 'Upload application' });
+        this.uploadApplicationTextbox = page.locator('form:has-text("Upload application") input[type="file"]');
         this.onTheSameDay = page.getByLabel('On the same day');
         this.addNewSupplementBundle = page.locator('#submittedC1WithSupplement_supplementsBundle').getByRole('button', { name: 'Add new' });
         this.documentName = page.getByLabel('Document name');

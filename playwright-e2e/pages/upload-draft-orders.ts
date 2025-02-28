@@ -12,10 +12,10 @@ export class UploadDraftOrders extends BasePage {
     constructor(page: Page) {
         super(page);
         this.addNewLocator = page.getByRole('button', { name: 'Add new' });
-        this.uploadOrderLocator = page.getByRole('textbox', { name: 'Upload the order' });
+        this.uploadOrderLocator = page.locator('form:has-text("Upload the order") input[type="file"]');
         this.cmoOptionLocator = page.getByLabel('Case Management (CMO)');
         this.otherOptionalLocator = page.getByLabel('Additional order (PDO ETC)');
-        this.attachCmoLocator = page.getByRole('textbox', { name: 'Attach CMO' });
+        this.attachCmoLocator = page.locator('form:has-text("Attach CMO") input[type="file"]');
     }
 
     //upload CMO

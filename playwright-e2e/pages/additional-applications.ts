@@ -25,8 +25,8 @@ export class AdditionalApplications extends BasePage {
     this.nonConfidentialC2Order = page.locator('[for="isC2Confidential_No"]');
     this.applicant = page.getByLabel('Select applicant');
     this.c1ApplicationType = page.getByLabel('Select application');
-    this.applicationForm = page.getByRole('textbox', { name: 'Upload application' });
-    this.c2ApplicationForm = page.getByRole('textbox', { name: 'Upload C2 application' });
+    this.applicationForm = page.locator('form:has-text("Upload application") input[type="file"]');
+    this.c2ApplicationForm = page.locator('form:has-text("Upload C2 application") input[type="file"]');
     this.acknowledgeOtherApplicationForm = page.locator('[name="temporaryOtherApplicationsBundle_documentAcknowledge"]');
     this.acknowledgeC2ApplicationForm = page.locator('[name="temporaryC2Document_documentAcknowledge"]');
     this.sameDay = page.getByText('On the same day');
@@ -66,8 +66,8 @@ export class AdditionalApplications extends BasePage {
 
   public async fillOtherApplicationDetails() {
     await this.c1ApplicationType.selectOption('C1 - Change surname or remove from jurisdiction');
-
     // upload application form
+      await this.applicationForm.click();
     await this.applicationForm.setInputFiles(config.testPdfFile3);
     await this.expectAllUploadsCompleted();
     await this.page.waitForTimeout(6000);
