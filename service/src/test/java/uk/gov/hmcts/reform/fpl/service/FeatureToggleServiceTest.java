@@ -126,18 +126,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsApplicantAdditionalContactsEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isApplicantAdditionalContactsEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("applicant-additional-contacts"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForisCafcassSubjectCategorised(Boolean toggleState) {
         givenToggle(toggleState);
 
