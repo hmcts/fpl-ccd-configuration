@@ -95,7 +95,6 @@ Applicant
 
 Name                                                                Test
 Contact name                                                        testFirst testLast
-Job title                                                           Solicitor
 Address                                                             Line 1
                                                                     CR0 2GE
 Mobile number                                                       077766655544
@@ -111,7 +110,7 @@ Solicitor’s reference                                               -
 
 Grounds for the application
 
-The reason(s) behind the child suffering 
+The reason(s) behind the child suffering
 or being likely to suffer significant harm
 
 Child is beyond parental control.

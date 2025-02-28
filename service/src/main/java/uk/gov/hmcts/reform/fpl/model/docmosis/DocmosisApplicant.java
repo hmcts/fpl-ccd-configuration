@@ -10,8 +10,6 @@ import lombok.Data;
 public class DocmosisApplicant {
     private final String organisationName;
     private final String contactName;
-    private final boolean hideJobTitleFeatureFlag;
-    private final String jobTitle;
     private final String address;
     private final String email;
     private final String mobileNumber;

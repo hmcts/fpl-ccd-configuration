@@ -133,10 +133,6 @@ public class FeatureToggleService {
             .build();
     }
 
-    public boolean isHideJobTitleInCaseSubmissionFormEnabled() {
-        return ldClient.boolVariation("hide-job-title-in-case-submission-form", createLDContext(), false);
-    }
-
     private LDContext createLDContext() {
         return createLDContext(Map.of());
     }
