@@ -75,6 +75,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
 
         JudicialMessage judicialMessageReply = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
+            .relatedDocuments(selectedJudicialMessage.getRelatedDocuments())
             .recipientType(selectedJudicialMessage.getSenderType())
             .recipient(selectedJudicialMessage.getSender())
             .subject(selectedJudicialMessage.getSubject())

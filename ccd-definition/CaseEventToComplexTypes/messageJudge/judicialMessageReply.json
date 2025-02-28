@@ -8,7 +8,18 @@
     "FieldDisplayOrder": 1,
     "EventElementLabel": "Related documents",
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "judicialMessageReply.relatedDocumentFileNames=\"*\""
+    "FieldShowCondition": "judicialMessageReply.relatedDocumentFileNames=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "relatedDocuments",
+    "FieldDisplayOrder": 1,
+    "EventElementLabel": "Related documents",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "judicialMessageReply.relatedDocuments=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -30,6 +31,9 @@ class ReplyToMessageJudgeControllerMidEventTest extends AbstractCallbackTest {
     private static final UUID DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
     private static final String SENDER = "sender@gmail.com";
     private static final String RELATED_FILE_NAME = "file1.doc";
+    private static final DocumentReference RELATED_FILE = DocumentReference.builder()
+            .filename(RELATED_FILE_NAME)
+            .build();
     private static final String MESSAGE_HISTORY = "message history";
     private static final String LATEST_MESSAGE = "Some note";
     private static final String DATE_SENT = "16 December 2020";
@@ -89,6 +93,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends AbstractCallbackTest {
 
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
+            .relatedDocuments(selectedJudicialMessage.getRelatedDocuments())
             .recipient(selectedJudicialMessage.getSender())
             .replyFrom(EMPTY)
             .replyTo(SENDER)
@@ -119,6 +124,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends AbstractCallbackTest {
         return JudicialMessage.builder()
             .sender(SENDER)
             .relatedDocumentFileNames(RELATED_FILE_NAME)
+            .relatedDocuments(List.of(element(RELATED_FILE)))
             .messageHistory(MESSAGE_HISTORY)
             .latestMessage(LATEST_MESSAGE)
             .dateSent(DATE_SENT)

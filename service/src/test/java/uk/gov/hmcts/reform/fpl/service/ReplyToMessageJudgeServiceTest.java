@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
@@ -145,6 +146,13 @@ class ReplyToMessageJudgeServiceTest {
             .sender(MESSAGE_SENDER)
             .senderType(JudicialMessageRoleType.OTHER)
             .relatedDocumentFileNames("file1.doc")
+            .relatedDocuments(List.of(
+                element(
+                    DocumentReference.builder()
+                        .filename("file1.doc")
+                        .build()
+                )
+            ))
             .messageHistory("message history")
             .latestMessage("Some note")
             .subject("Test subject")
@@ -173,6 +181,7 @@ class ReplyToMessageJudgeServiceTest {
 
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
+            .relatedDocuments(selectedJudicialMessage.getRelatedDocuments())
             .recipientType(JudicialMessageRoleType.OTHER)
             .recipient(MESSAGE_SENDER)
             .subject(selectedJudicialMessage.getSubject())
@@ -200,6 +209,13 @@ class ReplyToMessageJudgeServiceTest {
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
             .relatedDocumentFileNames("file1.doc")
+            .relatedDocuments(List.of(
+                element(
+                    DocumentReference.builder()
+                        .filename("file1.doc")
+                        .build()
+                )
+            ))
             .messageHistory("message history")
             .latestMessage("Some note")
             .subject("Test subject")
@@ -231,6 +247,7 @@ class ReplyToMessageJudgeServiceTest {
 
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
+            .relatedDocuments(selectedJudicialMessage.getRelatedDocuments())
             .recipient(MESSAGE_SENDER)
             .subject(selectedJudicialMessage.getSubject())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
@@ -253,6 +270,13 @@ class ReplyToMessageJudgeServiceTest {
         JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
             .relatedDocumentFileNames("file1.doc")
+            .relatedDocuments(List.of(
+                element(
+                    DocumentReference.builder()
+                        .filename("file1.doc")
+                        .build()
+                )
+            ))
             .messageHistory("message history")
             .latestMessage("Some note")
             .build();
