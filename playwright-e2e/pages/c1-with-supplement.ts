@@ -23,7 +23,7 @@ export class C1WithSupplement extends BasePage {
         this.addNewSupplementBundle = page.locator('#submittedC1WithSupplement_supplementsBundle').getByRole('button', { name: 'Add new' });
         this.documentName = page.getByLabel('Document name');
         this.notes = page.getByLabel('Notes (Optional)');
-        this.uploadDocument = page.getByRole('textbox', { name: 'Upload document' });
+        this.uploadDocument = page.locator('#submittedC1WithSupplement_supplementsBundle_0_document');
         this.ackRelatedToCase = page.locator('#submittedC1WithSupplement_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE');
     }
     async c1WithSupplementSmokeTest() {

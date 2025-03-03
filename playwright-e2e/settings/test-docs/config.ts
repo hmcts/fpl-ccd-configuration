@@ -35,6 +35,13 @@ const config: Config = {
     __dirname,
     "../test-docs/testTextFile.txt",
   ),
+  testdraftOrder1: join(
+        __dirname,"../test-docs/draftOrder1.docx"
+    ),
+ testdraftOrder2: join(
+        __dirname,"../test-docs/draftOrder2.docx"
+    ),
+
 };
 
 export default config as {
@@ -44,4 +51,7 @@ export default config as {
   testPdfFile4: string;
   testWordFile: string;
   testTextFile: string;
+  testdraftOrder1:string;
+  testdraftOrder2:string;
+
 };
