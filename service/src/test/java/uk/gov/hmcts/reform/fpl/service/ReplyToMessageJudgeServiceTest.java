@@ -412,10 +412,14 @@ class ReplyToMessageJudgeServiceTest {
         List<Element<JudicialMessage>> updatedClosedMessages =
             (List<Element<JudicialMessage>>) updatedJudicialMessages.get("closedJudicialMessages");
         assertThat(updatedClosedMessages)
-            .extracting(Element::getId, judicialMessageElement -> judicialMessageElement.getValue().getStatus())
+            .extracting(
+                Element::getId,
+                judicialMessageElement -> judicialMessageElement.getValue().getStatus(),
+                judicialMessageElement -> judicialMessageElement.getValue().getClosureNote()
+            )
             .containsExactly(
-                tuple(selectedJudicialMessage.getId(), CLOSED),
-                tuple(closedJudicialMessage.getId(), CLOSED));
+                tuple(selectedJudicialMessage.getId(), CLOSED, "Closure note"),
+                tuple(closedJudicialMessage.getId(), CLOSED, null));
     }
 
     @Test
@@ -456,6 +460,7 @@ class ReplyToMessageJudgeServiceTest {
                 .recipientDynamicList(buildRecipientDynamicList(JudicialMessageRoleType.LOCAL_COURT_ADMIN))
                 .replyFrom(sender)
                 .replyTo(recipient)
+                .closureNote(isReplying ? null : "Closure note")
                 .recipientType(JudicialMessageRoleType.LOCAL_COURT_ADMIN)
                 .senderType(JudicialMessageRoleType.OTHER)
                 .build())
