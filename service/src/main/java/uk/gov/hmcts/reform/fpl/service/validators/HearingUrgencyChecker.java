@@ -21,7 +21,13 @@ public class HearingUrgencyChecker extends PropertiesChecker {
 
     @Override
     public List<String> validate(CaseData caseData) {
-        return super.validate(caseData, List.of("hearing"));
+        List<String> errMsg = super.validate(caseData, List.of("hearing"));
+        if (isEmpty(errMsg)) {
+            // for historical data where legacy hearing urgency exist but not the latest one
+            return isCompleted(caseData) ? List.of() : List.of("Complete the hearing urgency details");
+        } else {
+            return errMsg;
+        }
     }
 
     @Override
