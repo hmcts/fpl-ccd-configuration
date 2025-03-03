@@ -15,7 +15,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_THIRD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
@@ -58,6 +58,9 @@ public class EventsChecker {
 
     @Autowired
     private LocalAuthorityDetailsChecker localAuthorityDetailsChecker;
+
+    @Autowired
+    private ThirdPartyApplicantDetailsChecker thirdPartyApplicantDetailsChecker;
 
     @Autowired
     private AllocationProposalChecker allocationProposalChecker;
@@ -107,7 +110,7 @@ public class EventsChecker {
         eventCheckers.put(ORDERS_SOUGHT, ordersSoughtChecker);
         eventCheckers.put(GROUNDS, groundsChecker);
         eventCheckers.put(APPLICANT_DETAILS_LA, localAuthorityDetailsChecker);
-        eventCheckers.put(APPLICANT_DETAILS_SOLICITOR, localAuthorityDetailsChecker);
+        eventCheckers.put(APPLICANT_DETAILS_THIRD_PARTY, thirdPartyApplicantDetailsChecker);
         eventCheckers.put(ALLOCATION_PROPOSAL, allocationProposalChecker);
         eventCheckers.put(RISK_AND_HARM, riskAndHarmChecker);
         eventCheckers.put(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker);

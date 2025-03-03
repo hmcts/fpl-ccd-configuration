@@ -11,7 +11,7 @@ import java.util.List;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_THIRD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
@@ -67,7 +67,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
         if (caseData.checkIfCaseIsSubmittedByLA()) {
             events.add(APPLICANT_DETAILS_LA);
         } else {
-            events.add(APPLICANT_DETAILS_SOLICITOR);
+            events.add(APPLICANT_DETAILS_THIRD_PARTY);
         }
 
         events.add(CHILDREN);

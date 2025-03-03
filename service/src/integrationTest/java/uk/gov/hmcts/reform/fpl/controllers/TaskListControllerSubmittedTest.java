@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -81,6 +82,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
     void shouldUpdateTaskListWithIfNotLocalAuthority() {
         final CaseData caseDataSolicitor = caseData.toBuilder()
             .isLocalAuthority(NO)
+            .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
             .build();
 
         when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(false);

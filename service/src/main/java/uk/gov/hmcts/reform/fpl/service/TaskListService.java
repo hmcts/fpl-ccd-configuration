@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_THIRD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
@@ -76,7 +76,7 @@ public class TaskListService {
         // Core Events for all combinations of C110a + C1 apps
         final List<Event> events = new ArrayList<>(List.of(
             ORDERS_SOUGHT,
-            caseData.checkIfCaseIsSubmittedByLA() ? APPLICANT_DETAILS_LA : APPLICANT_DETAILS_SOLICITOR,
+            caseData.checkIfCaseIsSubmittedByLA() ? APPLICANT_DETAILS_LA : APPLICANT_DETAILS_THIRD_PARTY,
             CHILDREN,
             RESPONDENTS,
             OTHER_PROCEEDINGS,

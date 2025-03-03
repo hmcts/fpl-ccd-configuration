@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_THIRD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
@@ -64,8 +64,10 @@ class EventsCheckerTest {
     private OrdersSoughtChecker ordersSoughtChecker;
     @MockBean
     private GroundsChecker groundsChecker;
-    @MockBean
+    @MockBean(name = "localAuthorityDetailsChecker")
     private LocalAuthorityDetailsChecker localAuthorityDetailsChecker;
+    @MockBean(name = "localAuthorityDetailsChecker")
+    private ThirdPartyApplicantDetailsChecker thirdPartyApplicantDetailsChecker;
     @MockBean
     private AllocationProposalChecker allocationProposalChecker;
     @MockBean
@@ -154,6 +156,7 @@ class EventsCheckerTest {
             ordersSoughtChecker,
             groundsChecker,
             localAuthorityDetailsChecker,
+            thirdPartyApplicantDetailsChecker,
             allocationProposalChecker,
             applicationDocumentChecker,
             caseSubmissionChecker,
@@ -177,7 +180,7 @@ class EventsCheckerTest {
             Arguments.of(ORDERS_SOUGHT, ordersSoughtChecker),
             Arguments.of(GROUNDS, groundsChecker),
             Arguments.of(APPLICANT_DETAILS_LA, localAuthorityDetailsChecker),
-            Arguments.of(APPLICANT_DETAILS_SOLICITOR, localAuthorityDetailsChecker),
+            Arguments.of(APPLICANT_DETAILS_THIRD_PARTY, thirdPartyApplicantDetailsChecker),
             Arguments.of(ALLOCATION_PROPOSAL, allocationProposalChecker),
             Arguments.of(APPLICATION_DOCUMENTS, applicationDocumentChecker),
             Arguments.of(SUBMIT_APPLICATION, caseSubmissionChecker),
