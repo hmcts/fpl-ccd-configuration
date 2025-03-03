@@ -212,4 +212,10 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     public boolean isConfidentialOrder() {
         return isNotEmpty(orderConfidential);
     }
+
+    @JsonIgnore
+    public DocumentReference getOrderOrOrderConfidential() {
+        return (isConfidentialOrder()) ? orderConfidential : order;
+    }
+
 }
