@@ -304,6 +304,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORA]"
         ],
         "CRUD": "R"
@@ -329,6 +330,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORB]"
         ],
         "CRUD": "R"
@@ -354,6 +356,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORC]"
         ],
         "CRUD": "R"
@@ -379,6 +382,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORD]"
         ],
         "CRUD": "R"
@@ -404,6 +408,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORE]"
         ],
         "CRUD": "R"
@@ -429,6 +434,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORF]"
         ],
         "CRUD": "R"
@@ -454,6 +460,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORG]"
         ],
         "CRUD": "R"
@@ -479,6 +486,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORH]"
         ],
         "CRUD": "R"
@@ -504,6 +512,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORI]"
         ],
         "CRUD": "R"
@@ -529,6 +538,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORJ]"
         ],
         "CRUD": "R"
@@ -554,6 +564,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORK]"
         ],
         "CRUD": "R"
@@ -579,6 +590,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORL]"
         ],
         "CRUD": "R"
@@ -604,6 +616,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORM]"
         ],
         "CRUD": "R"
@@ -629,6 +642,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORN]"
         ],
         "CRUD": "R"
@@ -654,6 +668,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[CHILDSOLICITORO]"
         ],
         "CRUD": "R"
