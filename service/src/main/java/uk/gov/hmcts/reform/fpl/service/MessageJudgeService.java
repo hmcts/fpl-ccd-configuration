@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
-import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -19,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -143,18 +139,6 @@ public abstract class MessageJudgeService {
     public DynamicList buildRecipientDynamicList(CaseData caseData,
                                                  JudicialMessageRoleType senderRole,
                                                  Optional<String> chosen) {
-        List<RoleAssignment> currentRoles = roleAssignmentService
-            .getJudicialCaseRolesAtTime(caseData.getId(), ZonedDateTime.now());
-
-        final boolean hasAllocatedJudgeRole = currentRoles.stream()
-            .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.ALLOCATED_JUDGE.getRoleName())
-                || role.getRoleName().equals(LegalAdviserRole.ALLOCATED_LEGAL_ADVISER.getRoleName()));
-
-        final boolean hasHearingJudgeRole = currentRoles.stream()
-            .anyMatch(role -> role.getRoleName().equals(JudgeCaseRole.HEARING_JUDGE.getRoleName())
-                || role.getRoleName().equals(LegalAdviserRole.HEARING_LEGAL_ADVISER.getRoleName()));
-
-
         List<DynamicListElement> elements = new ArrayList<>();
 
         elements.add(DynamicListElement.builder()
@@ -171,14 +155,13 @@ public abstract class MessageJudgeService {
         Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
         allocatedJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
             .code(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())
-            .label(getJudgeLabel(JudicialMessageRoleType.ALLOCATED_JUDGE, judge.toJudgeAndLegalAdvisor(),
-                hasAllocatedJudgeRole))
+            .label(getJudgeLabel(JudicialMessageRoleType.ALLOCATED_JUDGE, judge.toJudgeAndLegalAdvisor()))
             .build()));
 
         Optional<JudgeAndLegalAdvisor> hearingJudge = judicialService.getCurrentHearingJudge(caseData);
         hearingJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
             .code(JudicialMessageRoleType.HEARING_JUDGE.toString())
-            .label(getJudgeLabel(JudicialMessageRoleType.HEARING_JUDGE, judge, hasHearingJudgeRole))
+            .label(getJudgeLabel(JudicialMessageRoleType.HEARING_JUDGE, judge))
             .build()));
 
         elements.add(DynamicListElement.builder()
@@ -194,13 +177,12 @@ public abstract class MessageJudgeService {
             .build();
     }
 
-    protected String getJudgeLabel(JudicialMessageRoleType type, JudgeAndLegalAdvisor judge, boolean hasRole) {
-        return "%s %s - %s (%s)%s".formatted(
+    protected String getJudgeLabel(JudicialMessageRoleType type, JudgeAndLegalAdvisor judge) {
+        return "%s %s - %s (%s)".formatted(
             JudicialMessageRoleType.ALLOCATED_JUDGE.equals(type) ? "Allocated" : "Hearing",
             JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(judge.getJudgeTitle()) ? "Legal Adviser" : "Judge",
             formatJudgeTitleAndName(judge),
-            judge.getJudgeEmailAddress(),
-            (hasRole ? "" : " *")
+            judge.getJudgeEmailAddress()
         );
     }
 }
