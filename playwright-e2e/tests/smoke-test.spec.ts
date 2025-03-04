@@ -57,13 +57,6 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
-
-  //Add application documents
-  await startApplication.addApplicationDetailsHeading.isVisible();
-  await startApplication.addApplicationDocuments();
-  await addApplicationDocuments.uploadDocumentSmokeTest();
-  await startApplication.addApplicationDocumentsInProgress();
-
 // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
