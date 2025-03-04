@@ -57,11 +57,16 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
-  // Applicant Details
+
+  //Add application documents
+  await startApplication.addApplicationDetailsHeading.isVisible();
+  await startApplication.addApplicationDocuments();
+  await addApplicationDocuments.uploadDocumentSmokeTest();
+  await startApplication.addApplicationDocumentsInProgress();
+
+// Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
-  await startApplication.applicantDetails();
-  await applicantDetails.colleagueDetailsNeeded();
   await startApplication.applicantDetailsHasBeenUpdated();
 
   // Child details
@@ -69,7 +74,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await childDetails.childDetailsNeeded();
   await startApplication.childDetailsHasBeenUpdated();
 
-  // Add respondents' details
+  // // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
 
