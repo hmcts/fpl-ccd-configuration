@@ -107,7 +107,7 @@ class GroundsCheckerIsStartedTest {
 
     private static Stream<Arguments> nonEmptyGrounds() {
         return Stream.of(
-                Grounds.builder().thresholdReason(List.of(("Test"))).build(),
+            Grounds.builder().thresholdReason(List.of(("Test"))).build(),
                 Grounds.builder().thresholdDetails("Test").build())
                 .map(Arguments::of);
     }

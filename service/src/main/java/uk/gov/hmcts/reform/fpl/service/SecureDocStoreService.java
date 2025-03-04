@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import static com.launchdarkly.shaded.com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.getDocumentIdFromUrl;
 
 @Service
 @Slf4j
@@ -79,12 +80,5 @@ public class SecureDocStoreService {
             authTokenGenerator.generate(),
             documentId
         );
-    }
-
-    private UUID getDocumentIdFromUrl(final String documentUrlString) {
-        String selfHref = documentUrlString.replace("/binary", "");
-        UUID documentId = UUID.fromString(selfHref.substring(selfHref.length() - 36));
-
-        return documentId;
     }
 }

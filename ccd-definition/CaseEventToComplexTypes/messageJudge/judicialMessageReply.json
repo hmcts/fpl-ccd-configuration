@@ -153,9 +153,20 @@
     "ID": "JudicialMessageReply",
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "closureNote",
+    "EventElementLabel": "Add closure note",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "closeMessageLabel",
     "EventElementLabel": "This message will now be marked as closed",
-    "FieldDisplayOrder": 14,
+    "FieldDisplayOrder": 13,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"No\""
   }
