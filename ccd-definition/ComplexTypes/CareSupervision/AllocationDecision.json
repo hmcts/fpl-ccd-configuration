@@ -47,6 +47,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
+    "ListElementCode": "proposalV2",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "AllocationProposalListV2",
+    "ElementLabel": "Which level of judge is needed for this case?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
     "ListElementCode": "proposalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
