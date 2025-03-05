@@ -10,7 +10,6 @@ import lombok.Data;
 public class DocmosisApplicant {
     private final String organisationName;
     private final String contactName;
-    private final String jobTitle;
     private final String address;
     private final String email;
     private final String mobileNumber;
@@ -22,4 +21,5 @@ public class DocmosisApplicant {
     private final String solicitorEmail;
     private final String solicitorDx;
     private final String solicitorReference;
+    private final String representingName;
 }

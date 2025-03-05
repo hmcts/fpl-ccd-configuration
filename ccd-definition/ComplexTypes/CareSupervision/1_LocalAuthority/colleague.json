@@ -46,6 +46,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Colleague",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
     "ListElementCode": "email",
     "FieldType": "Text",
     "ElementLabel": "Email address",
@@ -57,6 +73,14 @@
     "ListElementCode": "phone",
     "FieldType": "Text",
     "ElementLabel": "Phone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "alternativePhone",
+    "FieldType": "Text",
+    "ElementLabel": "Alternative phone number",
     "SecurityClassification": "Public"
   },
   {
