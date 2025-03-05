@@ -42,6 +42,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.ObjectUtils.anyNotNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.deleteWhitespace;
@@ -69,8 +70,8 @@ public class RoboticsDataService {
             .harmAlleged(hasRisks(caseData.getRisks()))
             .internationalElement(hasInternationalElement(caseData.getInternationalElement()))
             .allocation(isNotEmpty(caseData.getAllocationProposal())
-                && isNotBlank(caseData.getAllocationProposal().getProposal())
-                ? caseData.getAllocationProposal().getProposal() : null)
+                && isNotBlank(caseData.getAllocationProposal().getProposalV2())
+                ? caseData.getAllocationProposal().getProposalV2() : null)
             .issueDate(formatDate(caseData.getDateSubmitted(), "dd-MM-yyyy"))
             .applicant(populateApplicant(caseData))
             .owningCourt(toInt(courtService.getCourtCode(caseData)))
@@ -290,9 +291,8 @@ public class RoboticsDataService {
             return false;
         }
 
-        return isAnyConfirmed(internationalElement.getPossibleCarer(), internationalElement.getSignificantEvents(),
-            internationalElement.getIssues(), internationalElement.getProceedings(),
-            internationalElement.getInternationalAuthorityInvolvement());
+        return isAnyConfirmed(internationalElement.getWhichCountriesInvolved(),
+            internationalElement.getOutsideHagueConvention(), internationalElement.getImportantDetails());
     }
 
     private boolean hasRisks(final Risks risks) {
@@ -300,8 +300,8 @@ public class RoboticsDataService {
             return false;
         }
 
-        return isAnyConfirmed(risks.getPhysicalHarm(), risks.getEmotionalHarm(), risks.getSexualAbuse(),
-            risks.getNeglect());
+        return anyNotNull(risks.getWhatKindOfRiskAndHarmToChildren(), 
+            risks.getFactorsAffectingParenting(), risks.getAnythingElseAffectingParenting());
     }
 
     private boolean isAnyConfirmed(final String... values) {
