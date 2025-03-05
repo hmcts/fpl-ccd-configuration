@@ -27,7 +27,7 @@ public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDat
     }
 
     private List<CafcassApiProceeding> getCafcassApiProceeding(CaseData caseData) {
-        return caseData.getAllProceedings().stream()
+        return caseData.getProceedings().stream()
             .map(Element::getValue)
             .map(proceeding -> CafcassApiProceeding.builder()
                 .proceedingStatus(proceeding.getProceedingStatus())
