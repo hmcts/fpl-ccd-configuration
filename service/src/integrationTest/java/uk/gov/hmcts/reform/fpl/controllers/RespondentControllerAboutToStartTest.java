@@ -54,6 +54,8 @@ class RespondentControllerAboutToStartTest extends AbstractCallbackTest {
 
     @Test
     void shouldPopulateRespondentLA() {
+        when(representativeService.shouldUserHaveAccessToRespondentsChildrenEvent(any())).thenReturn(true);
+
         CaseData caseData = CaseData.builder()
             .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
             .respondentLocalAuthority(RespondentLocalAuthority.builder().build())
