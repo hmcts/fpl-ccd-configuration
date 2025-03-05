@@ -56,12 +56,11 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
             .livingSituationDetails(this.party.getLivingSituationDetails())
             .firstName(this.party.getFirstName())
             .lastName(this.party.getLastName())
-            .address(this.party.getAddress())
             .telephoneNumber(this.party.getTelephoneNumber())
             .email(this.party.getEmail()) // legacy behaviour, always hide email if present (no longer entered)
-            .showAddressInConfidentialTab("Yes")
             .isAddressConfidential(this.party.getIsAddressConfidential())
-            .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden());
+            .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden())
+            .socialWorkerDetailsHiddenReason(this.party.getSocialWorkerDetailsHiddenReason());
 
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
             childPartyBuilder = childPartyBuilder.address(this.party.getAddress());
@@ -83,7 +82,6 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
         ChildPartyBuilder childPartyBuilder = this.getParty().toBuilder()
             .firstName(party.getFirstName())
             .lastName(party.getLastName())
-            .address(party.getAddress())
             .telephoneNumber(party.getTelephoneNumber())
             .email(party.getEmail()); // legacy behaviour, always hide email if present (no longer entered)
 

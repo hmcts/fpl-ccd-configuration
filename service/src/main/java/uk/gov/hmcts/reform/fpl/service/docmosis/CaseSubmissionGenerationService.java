@@ -705,7 +705,9 @@ public class CaseSubmissionGenerationService
 
     private DocmosisChild buildChild(final ChildParty child,
                                      Language applicationLanguage) {
-        final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
+        final boolean isAddressConfidential = equalsIgnoreCase(child.getIsAddressConfidential(), YES.getValue());
+        final boolean isSocialWorkerDetailsHidden = equalsIgnoreCase(child.getSocialWorkerDetailsHidden(),
+            YES.getValue());
         return DocmosisChild.builder()
             .name(child.getFullName())
             .age(formatAge(child.getDateOfBirth(), applicationLanguage))
@@ -714,7 +716,7 @@ public class CaseSubmissionGenerationService
                     .map(gender -> gender.getLabel(applicationLanguage)).orElse(null),
                 child.getGenderIdentification()))
             .dateOfBirth(formatDateDisplay(child.getDateOfBirth(), applicationLanguage))
-            .livingSituation(getChildLivingSituation(child, isConfidential, applicationLanguage))
+            .livingSituation(getChildLivingSituation(child, isAddressConfidential, applicationLanguage))
             .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
             .careAndContactPlan(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
             .adoption(getValidAnswerOrDefaultValue(child.getAdoption(), applicationLanguage))
@@ -723,9 +725,12 @@ public class CaseSubmissionGenerationService
             .placementCourt(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
             .mothersName(getDefaultIfNullOrEmpty(child.getMothersName()))
             .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
-            .socialWorkerName(getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
-            .socialWorkerTelephoneNumber(getTelephoneNumber(child.getSocialWorkerTelephoneNumber()))
-            .socialWorkerEmailAddress(getDefaultIfNullOrEmpty(child.getSocialWorkerEmail()))
+            .socialWorkerName(isSocialWorkerDetailsHidden
+                ? DEFAULT_STRING : getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
+            .socialWorkerTelephoneNumber(isSocialWorkerDetailsHidden
+                ? DEFAULT_STRING : getTelephoneNumber(child.getSocialWorkerTelephoneNumber()))
+            .socialWorkerEmailAddress(isSocialWorkerDetailsHidden ?
+                DEFAULT_STRING : getDefaultIfNullOrEmpty(child.getSocialWorkerEmail()))
             .socialWorkerDetailsHiddenReason(
                 concatenateYesOrNoKeyAndValue(child.getSocialWorkerDetailsHidden(),
                     child.getSocialWorkerDetailsHiddenReason(),
@@ -736,6 +741,10 @@ public class CaseSubmissionGenerationService
                     applicationLanguage))
             .detailsHiddenReason(
                 concatenateKeyAndValue(child.getDetailsHidden(), child.getDetailsHiddenReason()))
+            .fathersResponsibility(getValidAnswerOrDefaultValue(child.getFathersResponsibility(), applicationLanguage))
+            .litigationIssues(
+            concatenateYesOrNoKeyAndValue(child.getLitigationIssues(), child.getLitigationIssuesDetails(),
+                applicationLanguage))
             .build();
     }
 

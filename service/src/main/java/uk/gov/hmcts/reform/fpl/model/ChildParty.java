@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -18,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasGender;
 
 import java.time.LocalDate;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 
 @Data
@@ -51,12 +54,15 @@ public final class ChildParty extends Party {
     private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
     private final String additionalNeedsDetails;
+    @Deprecated
     private final String detailsHidden;
+    @Deprecated
     private final String detailsHiddenReason;
     @Deprecated
     private final String litigationIssues;
     @Deprecated
     private final String litigationIssuesDetails;
+    @Deprecated
     private final String showAddressInConfidentialTab;
     private final LocalDate completionDate;
     private final CaseExtensionReasonList extensionReason;
@@ -79,6 +85,20 @@ public final class ChildParty extends Party {
     @PastOrPresent(message = "Date of birth is in the future. You cannot send this application until that date")
     public LocalDate getDateOfBirth() {
         return super.getDateOfBirth();
+    }
+
+    public String getIsAddressConfidential() {
+        if (isNotEmpty(isAddressConfidential)) {
+            return isAddressConfidential;
+        }
+        return YesNo.from(YesNo.YES.equalsString(getDetailsHidden())).getValue();
+    }
+
+    public String getSocialWorkerDetailsHidden() {
+        if (isNotEmpty(socialWorkerDetailsHidden)) {
+            return socialWorkerDetailsHidden;
+        }
+        return YesNo.from(YesNo.YES.equalsString(getDetailsHidden())).getValue();
     }
 
     @Builder(toBuilder = true)
@@ -130,7 +150,8 @@ public final class ChildParty extends Party {
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;
         this.livingSituationDetails = livingSituationDetails;
-        this.isAddressConfidential = isAddressConfidential;
+        this.isAddressConfidential = isNotEmpty(isAddressConfidential) ? isAddressConfidential :
+            YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue();;
         this.livingWithDetails = livingWithDetails;
         this.addressChangeDate = addressChangeDate;
         this.datePowersEnd = datePowersEnd;
@@ -147,7 +168,8 @@ public final class ChildParty extends Party {
         this.socialWorkerName = socialWorkerName;
         this.socialWorkerTelephoneNumber = socialWorkerTelephoneNumber;
         this.socialWorkerEmail = socialWorkerEmail;
-        this.socialWorkerDetailsHidden = socialWorkerDetailsHidden;
+        this.socialWorkerDetailsHidden = isNotEmpty(socialWorkerDetailsHidden) ? socialWorkerDetailsHidden :
+            YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue();
         this.socialWorkerDetailsHiddenReason = socialWorkerDetailsHiddenReason;
         this.additionalNeeds = additionalNeeds;
         this.additionalNeedsDetails = additionalNeedsDetails;
