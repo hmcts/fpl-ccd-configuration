@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -48,6 +49,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAllocation;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
@@ -322,7 +324,7 @@ public class CaseSubmissionGenerationService
             .submittedDate(formatDateDisplay(time.now().toLocalDate(), applicationLanguage))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders(), applicationLanguage))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders(), applicationLanguage))
-            .allocation(caseData.getAllocationProposal())
+            .allocation(buildDocmosisAllocation(caseData.getAllocationProposal()))
             .hearing(buildDocmosisHearing(caseData.getHearing(), applicationLanguage))
             .welshLanguageRequirement(getWelshLanguageRequirement(caseData, applicationLanguage))
             .hearingPreferences(buildDocmosisHearingPreferences(caseData.getHearingPreferences()))
@@ -1072,6 +1074,13 @@ public class CaseSubmissionGenerationService
             .importantDetails(internationalElementPresent
                 ? internationalElement.getImportantDetails() : DEFAULT_STRING)
             .build();
+    }
+
+    private DocmosisAllocation buildDocmosisAllocation(Allocation allocation) {
+        return isNotEmpty(allocation) ? DocmosisAllocation.builder()
+            .proposal(allocation.getProposalV2())
+            .proposalReason(allocation.getProposalReason())
+            .build() : null;
     }
 
     private String concatenateKeyAndValue(final String key, final String value) {
