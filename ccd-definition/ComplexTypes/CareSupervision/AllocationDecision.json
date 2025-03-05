@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
     "ListElementCode": "allocationDecision_Label",
-    "ElementLabel": "The proposed allocation is ${allocationProposal.proposal}.",
+    "ElementLabel": "The proposed allocation is ${allocationProposal.proposalV2}.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "FieldShowCondition": "allocationProposalPresent=\"DO_NOT_SHOW\""
