@@ -15,6 +15,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 public class Proceeding {
+    @Deprecated
     private final String onGoingProceeding;
     private final String proceedingStatus;
     private final String caseNumber;
@@ -26,5 +27,6 @@ public class Proceeding {
     private final String guardian;
     private final String sameGuardianNeeded;
     private final String sameGuardianDetails;
+    @Deprecated
     private final List<Element<Proceeding>> additionalProceedings;
 }

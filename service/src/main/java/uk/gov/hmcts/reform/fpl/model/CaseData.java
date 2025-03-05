@@ -227,7 +227,9 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
+    @Deprecated
     private final Proceeding proceeding;
+    private final List<Element<Proceeding>> proceedings;
 
     @Deprecated
     @NotNull(message = "Add the applicant's solicitor's details")
@@ -588,17 +590,6 @@ public class CaseData extends CaseDataParent {
     private final String epoWhoIsExcluded;
     private final LocalDate epoExclusionStartDate;
     private final EPOExclusionRequirementType epoExclusionRequirementType;
-
-    @JsonIgnore
-    public List<Element<Proceeding>> getAllProceedings() {
-        List<Element<Proceeding>> proceedings = new ArrayList<>();
-
-        ofNullable(this.getProceeding()).map(ElementUtils::element).ifPresent(proceedings::add);
-        ofNullable(this.getProceeding())
-            .map(Proceeding::getAdditionalProceedings).ifPresent(proceedings::addAll);
-
-        return Collections.unmodifiableList(proceedings);
-    }
 
     @JsonIgnore
     public String getRelevantProceedings() {

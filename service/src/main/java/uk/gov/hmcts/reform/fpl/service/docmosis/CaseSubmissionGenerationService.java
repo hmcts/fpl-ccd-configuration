@@ -332,7 +332,7 @@ public class CaseSubmissionGenerationService
             .applicants(buildDocmosisApplicants(caseData))
             .children(buildDocmosisChildren(caseData.getAllChildren(), applicationLanguage))
             .others(buildDocmosisOthers(caseData.getAllOthers(), applicationLanguage))
-            .proceeding(buildDocmosisProceedings(caseData.getAllProceedings(), applicationLanguage))
+            .proceeding(buildDocmosisProceedings(caseData.getProceedings(), applicationLanguage))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings(), applicationLanguage))
             .dischargeOfOrder(caseData.isDischargeOfCareApplication())
             .groundsForEPOReason(isNotEmpty(caseData.getOrders())
