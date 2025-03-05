@@ -18,6 +18,7 @@ public enum Event {
     LOCAL_AUTHORITY_DETAILS("enterLocalAuthority", "Applicant's details"),
     CHILDREN("enterChildren", "Child's details"),
     RESPONDENTS("enterRespondents", "Respondents' details"),
+    RESPONDENTS_3RD_PARTY("enterRespondents3rdParty", "Respondents' details"),
     ALLOCATION_PROPOSAL("otherProposal", "Allocation proposal"),
     OTHER_PROCEEDINGS("otherProceedings", "Other proceedings"),
     INTERNATIONAL_ELEMENT("enterInternationalElement", "International element"),

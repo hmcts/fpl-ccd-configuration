@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -10,6 +12,8 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
+import uk.gov.hmcts.reform.fpl.json.serializer.YesNoSerializer;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty.RespondentPartyBuilder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -46,6 +50,15 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
 
     private RespondentSolicitor solicitor;
     private List<Element<LegalCounsellor>> legalCounsellors;
+
+    // Utilised for Respondent Local Authorities ONLY
+    @JsonSerialize(using = YesNoSerializer.class)
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    private YesNo usingOtherOrg;
+
+    @Builder.Default
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    private YesNo isLocalAuthority = YesNo.NO;
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {
