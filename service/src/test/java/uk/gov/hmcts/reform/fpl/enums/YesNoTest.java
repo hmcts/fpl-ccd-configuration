@@ -17,8 +17,8 @@ class YesNoTest {
 
     @Test
     void shouldCheckIfValueIsYesNo() {
-        assertThat(YesNo.isYesOrNo("Yes")).isEqualTo(true);
-        assertThat(YesNo.isYesOrNo("Nop")).isEqualTo(false);
+        assertThat(YesNo.isYesOrNo("Yes")).isTrue();
+        assertThat(YesNo.isYesOrNo("Nop")).isFalse();
     }
 
     @Test

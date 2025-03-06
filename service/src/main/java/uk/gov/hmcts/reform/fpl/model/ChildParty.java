@@ -49,7 +49,7 @@ public final class ChildParty extends Party {
      * This historical field is deprecated since DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25")
+    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
     private final String fathersResponsibility;
     private final String socialWorkerName;
     private final Telephone socialWorkerTelephoneNumber;
@@ -62,31 +62,31 @@ public final class ChildParty extends Party {
      * This historical field is deprecated since DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25")
+    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
     private final String detailsHidden;
     /**
      * This historical field is deprecated since DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25")
+    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
     private final String detailsHiddenReason;
     /**
      * This historical field is deprecated since DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25")
+    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
     private final String litigationIssues;
     /**
      * This historical field is deprecated since DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25")
+    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
     private final String litigationIssuesDetails;
     /**
      * This historical field is deprecated since DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25")
+    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
     private final String showAddressInConfidentialTab;
     private final LocalDate completionDate;
     private final CaseExtensionReasonList extensionReason;
