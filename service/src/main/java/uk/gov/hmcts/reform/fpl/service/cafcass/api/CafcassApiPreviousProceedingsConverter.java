@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiProceeding;
 
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -29,7 +31,8 @@ public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDat
     private List<CafcassApiProceeding> getCafcassApiProceeding(CaseData caseData) {
         return unwrapElements(caseData.getProceedings()).stream()
             .map(proceeding -> CafcassApiProceeding.builder()
-                .proceedingStatus(proceeding.getProceedingStatus().getValue())
+                .proceedingStatus(ofNullable(proceeding.getProceedingStatus())
+                    .map(ProceedingStatus::getValue).orElse(null))
                 .caseNumber(proceeding.getCaseNumber())
                 .started(proceeding.getStarted())
                 .ended(proceeding.getEnded())
@@ -37,7 +40,7 @@ public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDat
                 .judge(proceeding.getJudge())
                 .children(proceeding.getChildren())
                 .guardian(proceeding.getGuardian())
-                .sameGuardianNeeded(YES.equals(proceeding.getSameGuardianNeeded()))
+                .sameGuardianNeeded(ofNullable(proceeding.getSameGuardianNeeded()).map(YES::equals).orElse(null))
                 .sameGuardianDetails(proceeding.getSameGuardianDetails())
                 .build())
             .filter(proceeding -> !EMPTY.equals(proceeding))
