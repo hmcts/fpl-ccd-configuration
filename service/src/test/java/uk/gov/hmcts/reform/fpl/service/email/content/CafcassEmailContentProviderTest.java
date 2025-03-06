@@ -175,6 +175,12 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
     @Test
     @SuppressWarnings("unchecked")
     void shouldReturnCompletedNotifyDataEvenWhenCaseLocalAuthorityDoesntExist() {
+        Map<String, Object> documentLink = new HashMap<>();
+        documentLink.put("retention_period", null);
+        documentLink.put("filename", null);
+        documentLink.put("confirm_email_before_download", null);
+        documentLink.put("file", ENCODED_BINARY);
+
         SubmitCaseCafcassTemplate cafcassSubmissionTemplate = SubmitCaseCafcassTemplate.builder()
             .cafcass(CAFCASS_NAME)
             .localAuthority(LOCAL_AUTHORITY_NAME)
@@ -188,13 +194,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .firstRespondentName("Smith")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE))
-            .documentLink(new HashMap<>() {{
-                    put("retention_period", null);
-                    put("filename", null);
-                    put("confirm_email_before_download", null);
-                    put("file", ENCODED_BINARY);
-                }}
-            )
+            .documentLink(documentLink)
             .childLastName(CHILD_LAST_NAME)
             .build();
 
