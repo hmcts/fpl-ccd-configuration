@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiProceeding;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 public class CafcassApiPreviousProceedingsConverterTest extends CafcassApiConverterTestBase {
