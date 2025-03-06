@@ -729,8 +729,8 @@ public class CaseSubmissionGenerationService
                 ? DEFAULT_STRING : getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
             .socialWorkerTelephoneNumber(isSocialWorkerDetailsHidden
                 ? DEFAULT_STRING : getTelephoneNumber(child.getSocialWorkerTelephoneNumber()))
-            .socialWorkerEmailAddress(isSocialWorkerDetailsHidden ?
-                DEFAULT_STRING : getDefaultIfNullOrEmpty(child.getSocialWorkerEmail()))
+            .socialWorkerEmailAddress(isSocialWorkerDetailsHidden
+                ? DEFAULT_STRING : getDefaultIfNullOrEmpty(child.getSocialWorkerEmail()))
             .socialWorkerDetailsHiddenReason(
                 concatenateYesOrNoKeyAndValue(child.getSocialWorkerDetailsHidden(),
                     child.getSocialWorkerDetailsHiddenReason(),
