@@ -63,7 +63,7 @@ public abstract class MessageJudgeService {
 
     public List<Element<JudicialMessage>> sortJudicialMessages(List<Element<JudicialMessage>> judicialMessages) {
         judicialMessages.sort(Comparator.comparing(judicialMessageElement
-            -> judicialMessageElement.getValue().getUpdatedTime(), Comparator.reverseOrder()));
+            -> judicialMessageElement.getValue().getUpdatedTime(), Comparator.nullsLast(Comparator.reverseOrder())));
 
         return judicialMessages;
     }
