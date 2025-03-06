@@ -58,8 +58,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ApplicationDocumentType",
+    "ListElementCode": "STATEMENT",
+    "ListElement": "Statement",
+    "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
     "ListElementCode": "OTHER",
     "ListElement": "Other",
-    "DisplayOrder": 9
+    "DisplayOrder": 10
   }
 ]

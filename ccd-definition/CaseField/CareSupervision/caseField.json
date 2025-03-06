@@ -2086,15 +2086,6 @@
     "Searchable": "N"
   },
   {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadApplicationDocumentsLabel",
-    "Label": "Select the supporting or annex documents you're sending with this application. <br> These can be part of the social work evidence template (SWET) or separate.",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingsTabHeading",
