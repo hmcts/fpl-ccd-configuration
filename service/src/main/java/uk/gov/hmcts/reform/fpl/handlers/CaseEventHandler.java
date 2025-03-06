@@ -36,15 +36,14 @@ public class CaseEventHandler {
         CaseData caseData = caseConverter.convert(caseDetails);
         final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
         final List<EventValidationErrors> eventErrors = caseSubmissionChecker.validateAsGroups(caseData);
-        final Map<Event, String> taskHintsMap = taskListService.getTaskHints(caseData);
         final String taskList = taskListRenderer.renderTasks(tasks, eventErrors,
             getApplicationType(caseData),
-            Optional.of(taskHintsMap),
+            Optional.of(taskListService.getTaskHints(caseData, false)),
             caseDetails.getId(), false);
 
         final String taskListWelsh = taskListRenderer.renderTasks(tasks, eventErrors,
             getApplicationType(caseData),
-            Optional.of(taskHintsMap),
+            Optional.of(taskListService.getTaskHints(caseData, true)),
             caseDetails.getId(), true);
 
         return Map.of("taskList", taskList,

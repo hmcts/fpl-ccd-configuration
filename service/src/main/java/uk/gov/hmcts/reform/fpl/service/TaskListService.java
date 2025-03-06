@@ -121,10 +121,10 @@ public class TaskListService {
         return events;
     }
 
-    public Map<Event, String> getTaskHints(CaseData caseData) {
+    public Map<Event, String> getTaskHints(CaseData caseData, boolean welsh) {
         Map<Event, String> taskHintsMap = new HashMap<>();
         if (caseData.isC1Application() && !caseData.isRefuseContactWithChildApplication()) {
-            taskHintsMap.put(HEARING_URGENCY, "Optional for C1 applications");
+            taskHintsMap.put(HEARING_URGENCY, welsh ? "Dewisol ar gyfer ceisiadau C1" : "Optional for C1 applications");
         }
         return taskHintsMap;
     }

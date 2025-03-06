@@ -498,7 +498,7 @@ class TaskListServiceTest {
             when(caseData.isC1Application())
                 .thenReturn(false);
 
-            final Map<Event, String> actualTaskHints = taskListService.getTaskHints(caseData);
+            final Map<Event, String> actualTaskHints = taskListService.getTaskHints(caseData, false);
             assertThat(actualTaskHints).isNullOrEmpty();
         }
 
@@ -511,7 +511,7 @@ class TaskListServiceTest {
             when(caseData.isRefuseContactWithChildApplication())
                 .thenReturn(isAuthorityRefuseContactWithChildApplication);
 
-            final Map<Event, String> actualTaskHints = taskListService.getTaskHints(caseData);
+            final Map<Event, String> actualTaskHints = taskListService.getTaskHints(caseData, false);
             final Map<Event, String> expectedTaskHints = new HashMap<>();
             if (!isAuthorityRefuseContactWithChildApplication) {
                 expectedTaskHints.put(HEARING_URGENCY, "Optional for C1 applications");
@@ -519,6 +519,25 @@ class TaskListServiceTest {
 
             assertThat(actualTaskHints).containsAllEntriesOf(expectedTaskHints);
         }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnTaskHintsIfC1ButNotAuthorityRefuseContactWithChildApplicationWelsh(
+            boolean isAuthorityRefuseContactWithChildApplication) {
+            when(caseData.isC1Application())
+                .thenReturn(true);
+            when(caseData.isRefuseContactWithChildApplication())
+                .thenReturn(isAuthorityRefuseContactWithChildApplication);
+
+            final Map<Event, String> actualTaskHints = taskListService.getTaskHints(caseData, true);
+            final Map<Event, String> expectedTaskHints = new HashMap<>();
+            if (!isAuthorityRefuseContactWithChildApplication) {
+                expectedTaskHints.put(HEARING_URGENCY, "Dewisol ar gyfer ceisiadau C1");
+            }
+
+            assertThat(actualTaskHints).containsAllEntriesOf(expectedTaskHints);
+        }
+
     }
 
     private List<Task> getTasks(TaskState state, boolean additionalContacts, boolean multipleCourts,
