@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.GENOGRAM;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_CHRONOLOGY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -77,7 +78,7 @@ public class ApplicationDocumentsService {
     public Map<String, Object> synchroniseToNewFields(List<Element<ApplicationDocument>> applicationDocuments) {
         Map<String, Object> ret = new HashMap<>();
         ret.putAll(synchroniseToNewFields(applicationDocuments, List.of(SWET, SOCIAL_WORK_CHRONOLOGY,
-                SOCIAL_WORK_STATEMENT, GENOGRAM, CHECKLIST_DOCUMENT, BIRTH_CERTIFICATE, OTHER),
+                SOCIAL_WORK_STATEMENT, GENOGRAM, CHECKLIST_DOCUMENT, BIRTH_CERTIFICATE, STATEMENT, OTHER),
             "documentsFiledOnIssueList"));
         ret.putAll(synchroniseToNewFields(applicationDocuments, List.of(CARE_PLAN), "carePlanList"));
         ret.putAll(synchroniseToNewFields(applicationDocuments, List.of(THRESHOLD), "thresholdList"));
