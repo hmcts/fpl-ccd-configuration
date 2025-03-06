@@ -21,16 +21,16 @@ public class DocmosisChild {
     private final String placementCourt;
     private final String mothersName;
     private final String fathersName;
-    @Deprecated
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String fathersResponsibility;
     private final String socialWorkerName;
     private final String socialWorkerTelephoneNumber;
     private final String socialWorkerEmailAddress;
     private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
-    @Deprecated
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
-    @Deprecated
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHiddenReason;
     private final DocmosisBirthCertificate birthCertificate;
     private final String placementOrderOtherDetails;

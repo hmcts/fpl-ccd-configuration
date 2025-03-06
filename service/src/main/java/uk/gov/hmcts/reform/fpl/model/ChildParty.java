@@ -45,7 +45,7 @@ public final class ChildParty extends Party {
     private final String placementCourt;
     private final String mothersName;
     private final String fathersName;
-    @Deprecated
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String fathersResponsibility;
     private final String socialWorkerName;
     private final Telephone socialWorkerTelephoneNumber;
@@ -54,15 +54,15 @@ public final class ChildParty extends Party {
     private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
     private final String additionalNeedsDetails;
-    @Deprecated
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHidden;
-    @Deprecated
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHiddenReason;
-    @Deprecated
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
-    @Deprecated
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssuesDetails;
-    @Deprecated
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String showAddressInConfidentialTab;
     private final LocalDate completionDate;
     private final CaseExtensionReasonList extensionReason;
@@ -151,7 +151,7 @@ public final class ChildParty extends Party {
         this.livingSituation = livingSituation;
         this.livingSituationDetails = livingSituationDetails;
         this.isAddressConfidential = isNotEmpty(isAddressConfidential) ? isAddressConfidential :
-            YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue();;
+            YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue();
         this.livingWithDetails = livingWithDetails;
         this.addressChangeDate = addressChangeDate;
         this.datePowersEnd = datePowersEnd;
