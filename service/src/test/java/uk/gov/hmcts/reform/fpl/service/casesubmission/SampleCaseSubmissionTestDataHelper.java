@@ -147,14 +147,11 @@ public class SampleCaseSubmissionTestDataHelper {
                 .placementCourt("Central London County Court")
                 .mothersName("Isbella Reeves")
                 .fathersName("Rob Reeves")
-                .fathersResponsibility("Yes")
                 .socialWorkerDetailsHiddenReason("No")
                 .socialWorkerName("Helen Green")
                 .socialWorkerTelephoneNumber("0123456789")
                 .socialWorkerEmailAddress("test1@test.com")
                 .additionalNeeds("Yes\nAutism")
-                .litigationIssues("-")
-                .detailsHiddenReason("-")
                 .build(),
             DocmosisChild.builder()
                 .name("Sarah Reeves")
@@ -179,14 +176,11 @@ public class SampleCaseSubmissionTestDataHelper {
                 .placementCourt("test child two court")
                 .mothersName("Sarah Simpson")
                 .fathersName("Scott Simpson")
-                .fathersResponsibility("Yes")
                 .socialWorkerDetailsHiddenReason("No")
                 .socialWorkerName("Paul Wilsdon")
                 .socialWorkerTelephoneNumber("07749972242")
                 .socialWorkerEmailAddress("test2@test.com")
                 .additionalNeeds("Yes\nlearning disabilities")
-                .litigationIssues("Yes\ntest child two ability to take part in proceedings")
-                .detailsHiddenReason("-")
                 .build());
     }
 

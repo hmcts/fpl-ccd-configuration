@@ -144,11 +144,9 @@
             "socialWorkerTelephoneNumber": {
               "telephoneNumber": "0123456789"
             },
-            "litigationIssues": "DONT_KNOW",
             "socialWorkerDetailsHidden": "No",
             "socialWorkerName": "Helen Green",
             "socialWorkerEmail": "test1@test.com",
-            "fathersResponsibility": "Yes",
             "additionalNeedsDetails": "Autism",
             "childGenderIdentification": "Boy",
             "placementOrderApplication": "Yes"
@@ -186,13 +184,10 @@
             "socialWorkerTelephoneNumber": {
               "telephoneNumber": "07749972242"
             },
-            "litigationIssues": "YES",
             "socialWorkerDetailsHidden": "No",
             "socialWorkerName": "Paul Wilsdon",
             "socialWorkerEmail": "test2@test.com",
-            "fathersResponsibility": "Yes",
             "additionalNeedsDetails": "learning disabilities",
-            "litigationIssuesDetails": "test child two ability to take part in proceedings",
             "placementOrderApplication": "Yes"
           }
         }

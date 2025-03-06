@@ -53,8 +53,6 @@ public class ChildrenChecker extends PropertiesChecker {
                 childParty.getAdoption(),
                 childParty.getMothersName(),
                 childParty.getFathersName(),
-                childParty.getFathersResponsibility(),
-                childParty.getLitigationIssues(),
                 childParty.getSocialWorkerName(),
                 childParty.getSocialWorkerEmail(),
                 childParty.getAdditionalNeeds(),

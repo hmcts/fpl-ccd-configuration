@@ -739,12 +739,6 @@ public class CaseSubmissionGenerationService
                 concatenateYesOrNoKeyAndValue(child.getAdditionalNeeds(),
                     child.getAdditionalNeedsDetails(),
                     applicationLanguage))
-            .detailsHiddenReason(
-                concatenateKeyAndValue(child.getDetailsHidden(), child.getDetailsHiddenReason()))
-            .fathersResponsibility(getValidAnswerOrDefaultValue(child.getFathersResponsibility(), applicationLanguage))
-            .litigationIssues(
-            concatenateYesOrNoKeyAndValue(child.getLitigationIssues(), child.getLitigationIssuesDetails(),
-                applicationLanguage))
             .build();
     }
 
