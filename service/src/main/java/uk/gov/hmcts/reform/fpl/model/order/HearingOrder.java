@@ -6,9 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
+import uk.gov.hmcts.reform.fpl.model.interfaces.UploaderInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +30,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -42,11 +46,12 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @Builder(toBuilder = true)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @EqualsAndHashCode
-public class HearingOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
+public class HearingOrder implements RemovableOrder, AmendableOrder, TranslatableItem, UploaderInfo {
     private List<String> documentAcknowledge;
     private String title;
     private HearingOrderType type;
     private DocumentReference order;
+    private DocumentReference orderConfidential;
     private DocumentReference translatedOrder;
     private DocumentReference lastUploadedOrder;
     private String hearing;
@@ -66,6 +71,9 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private String removalReason;
     private final List<Element<Other>> others;
     private String othersNotified;
+    private String uploaderEmail;
+    private DocumentUploaderType uploaderType;
+    private List<CaseRole> uploaderCaseRoles;
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return from(order, hearing, date, AGREED_CMO, null, null, null);
@@ -107,6 +115,8 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
             .judgeTitleAndName("")
             .supportingDocs(null)
             .translationRequirements(NO)
+            .uploaderType(draftOrder.getUploaderType())
+            .uploaderCaseRoles(draftOrder.getUploaderCaseRoles())
             .build();
     }
 
@@ -197,4 +207,15 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
         }
         return this.documentAcknowledge;
     }
+
+    @JsonIgnore
+    public boolean isConfidentialOrder() {
+        return isNotEmpty(orderConfidential);
+    }
+
+    @JsonIgnore
+    public DocumentReference getOrderOrOrderConfidential() {
+        return (isConfidentialOrder()) ? orderConfidential : order;
+    }
+
 }

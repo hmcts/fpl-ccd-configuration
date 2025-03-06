@@ -8,6 +8,7 @@ Applicant Test
 Respondents John Wall
 Application from Test submitted on ${issueDate}
 
+
 Orders
 
 Orders needed                                                       Interim care order
@@ -15,11 +16,9 @@ Direction needed                                                    -
 
 Hearing needed
 
-Hearing date requested                                              Same day
-Hearing type                                                        -
+Hearing date requested                                              Standard (between days 12-18)
 Without notice                                                      -
-Reduced notice                                                      -
-Respondents aware of proceedings                                    -
+Respondents aware of proceedings                                    Yes
 Respondents’ view on proceedings                                    -
 
 Allocation proposal
@@ -27,14 +26,13 @@ Allocation proposal
 Proposal by applicant                                               District judge
 Reason                                                              Example reason
 
-Attending the hearing
+Court services
 
 Interpreter                                                         -
 Welsh language requirement                                          No
-Spoken or written Welsh                                             -
 Intermediary                                                        -
 Facilities or assistance for a disability                           -
-Separate waiting room or other security measures                    -
+Separate waiting rooms                                              -
 Something else                                                      -
 
 Child 1
@@ -114,13 +112,12 @@ Solicitor’s reference                                               -
 
 Grounds for the application
 
-Threshold is met as the child is suffering
-or is likely to suffer significant harm
-because they are
+The reason(s) behind the child suffering 
+or being likely to suffer significant harm
 
-Beyond parental control.
-Not receiving care that would be reasonably
-expected from a parent.
+Child is beyond parental control.
+The care given to the child not being what it would be
+reasonable to expect a parent to give.
 
 Threshold evidence
 
@@ -136,21 +133,21 @@ Neglect                                                             -
 Factors affecting parenting
 
 Alcohol or drug abuse                                               -
-Domestic violence                                                   -
+Domestic abuse                                                      -
 Anything else                                                       -
 
 International element
 
-Suitable carers outside of the UK                                   -
-Significant events outside the UK                                   -
-Issues with jurisdiction                                            -
-Proceedings outside the UK                                          -
-Government or central authority in another country been involved    -
+Other countries which are involved                                  -
+Are any of these countries outside the Hague Convention             -
+Important details                                                   -
 
 Other proceedings
 
 Other relevant proceedings                                          -
 
 Annex documents
+
+The applicant understands that proceedings for contempt of court may be brought against anyone who makes, or causes to be made, a false statement in a document verified by a statement of truth without an honest belief in its truth.
 
 I, james@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.

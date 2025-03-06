@@ -5,11 +5,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.stubbing.Answer;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -17,16 +21,17 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.fpl.exceptions.RetryFailureException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
@@ -61,6 +66,13 @@ class CoreCaseDataServiceTest {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
     }
 
+    @Test
+    void shouldThrowExceptionInRecoverMethod() {
+        assertThatThrownBy(() ->
+            service.recover(new Exception(), 1L, "test-event", caseDetails -> Map.of(), false))
+            .isInstanceOf(RetryFailureException.class);
+    }
+
     @Nested
     class StartAndSubmitEvent {
         String eventId = "sample-event";
@@ -75,29 +87,8 @@ class CoreCaseDataServiceTest {
             when(coreCaseDataApi.startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
                 CASE_TYPE, Long.toString(CASE_ID), eventId))
                 .thenReturn(buildStartEventResponse(eventId, eventToken));
-        }
 
-        @Test
-        void shouldStartAndSubmitEventWithoutEventData() {
-            service.triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, eventId);
-
-            verify(coreCaseDataApi).startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId,
-                JURISDICTION, CASE_TYPE, Long.toString(CASE_ID), eventId);
-            verify(coreCaseDataApi).submitEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
-                CASE_TYPE, Long.toString(CASE_ID), true,
-                buildCaseDataContent(eventId, eventToken, emptyMap()));
-        }
-
-        @Test
-        void shouldStartAndSubmitEventWithEventData() {
-            Map<String, Object> eventData = Map.of("A", "B");
-            service.triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, eventId, eventData);
-
-            verify(coreCaseDataApi).startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId,
-                JURISDICTION, CASE_TYPE, Long.toString(CASE_ID), eventId);
-            verify(coreCaseDataApi).submitEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
-                CASE_TYPE, Long.toString(CASE_ID), true,
-                buildCaseDataContent(eventId, eventToken, eventData));
+            ReflectionTestUtils.setField(service, "self", service);
         }
 
         @Test
@@ -107,17 +98,62 @@ class CoreCaseDataServiceTest {
             service.performPostSubmitCallbackWithoutChange(CASE_ID, eventId);
             verify(concurrencyHelper).submitEvent(startEventResponse, CASE_ID, Map.of());
         }
-    }
 
-    @Test
-    void shouldTriggerUpdateCaseEventWhenCaseIsRequestedToBeUpdated() {
-        final Map<String, Object> caseUpdate = Map.of("a", "b");
+        @Test
+        void shouldSynchroniseSameCase() throws InterruptedException {
+            final StartEventResponse firstStartEventRsp =
+                buildStartEventResponse(eventId, "firstStartEventRsp");
+            final StartEventResponse secondStartEventRsp =
+                buildStartEventResponse(eventId, "secondStartEventRsp");
 
-        doNothing().when(service).triggerEvent(any(), any(), any(), any(), any());
+            when(concurrencyHelper.startEvent(1L, "event1")).thenAnswer(new Answer<StartEventResponse>() {
+                @Override
+                public StartEventResponse answer(InvocationOnMock invocationOnMock) throws Throwable {
+                    Thread.sleep(1000);
+                    return firstStartEventRsp;
+                }
+            });
+            when(concurrencyHelper.startEvent(1L, "event2")).thenReturn(secondStartEventRsp);
 
-        service.updateCase(CASE_ID, caseUpdate);
 
-        verify(service).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, "internal-change-UPDATE_CASE", caseUpdate);
+            Thread t1 = new Thread(() -> service.performPostSubmitCallbackWithoutChange(1L, "event1"));
+            t1.start();
+            Thread.sleep(100);
+
+            service.performPostSubmitCallbackWithoutChange(1L, "event2");
+
+            InOrder inOrder = inOrder(concurrencyHelper);
+
+            inOrder.verify(concurrencyHelper).submitEvent(firstStartEventRsp, 1L, Map.of());
+            inOrder.verify(concurrencyHelper, timeout(2000)).submitEvent(secondStartEventRsp, 1L, Map.of());
+        }
+
+        @Test
+        void shouldNotSynchroniseDifferentCase() throws InterruptedException {
+            final StartEventResponse firstStartEventRsp =
+                buildStartEventResponse(eventId, "firstStartEventRsp");
+            final StartEventResponse secondStartEventRsp =
+                buildStartEventResponse(eventId, "secondStartEventRsp");
+
+
+            when(concurrencyHelper.startEvent(1L, eventId))
+                .thenAnswer((Answer<StartEventResponse>) invocationOnMock -> {
+                    Thread.sleep(1000);
+                    return firstStartEventRsp;
+                });
+            when(concurrencyHelper.startEvent(2L, eventId)).thenReturn(secondStartEventRsp);
+
+
+            Thread t1 = new Thread(() -> service.performPostSubmitCallbackWithoutChange(1L, eventId));
+
+            t1.start();
+            Thread.sleep(100);
+            service.performPostSubmitCallbackWithoutChange(2L, eventId);
+
+            InOrder inOrder = inOrder(concurrencyHelper);
+            inOrder.verify(concurrencyHelper).submitEvent(secondStartEventRsp, 2L, Map.of());
+            inOrder.verify(concurrencyHelper, timeout(2000)).submitEvent(firstStartEventRsp, 1L, Map.of());
+        }
     }
 
     @Test

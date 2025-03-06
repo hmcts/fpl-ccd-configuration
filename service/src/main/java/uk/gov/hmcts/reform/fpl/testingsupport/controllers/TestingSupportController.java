@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.testingsupport.controllers;
 
 import feign.FeignException;
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +52,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.resolve;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
-@Api
 @Slf4j
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -63,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @SuppressWarnings("unchecked")
 public class TestingSupportController {
     private static final String POPULATE_EVENT_ID_TEMPLATE = "populateCase-%s";
+    private static final String EMAIL = "email";
 
     private final IdamClient idamClient;
     private final RoleAssignmentService roleAssignmentService;
@@ -113,11 +111,9 @@ public class TestingSupportController {
         Map<String, Object> caseData = (Map<String, Object>) requestBody.get("caseData");
 
         try {
-            coreCaseDataService.triggerEvent(JURISDICTION,
-                CASE_TYPE,
-                caseId,
+            coreCaseDataService.performPostSubmitCallback(caseId,
                 String.format(POPULATE_EVENT_ID_TEMPLATE, state.getValue()),
-                caseData);
+                (caseDetails -> caseData));
         } catch (FeignException e) {
             log.error(String.format("Populate case event failed: %s", e.contentUTF8()));
             throw e;
@@ -143,7 +139,7 @@ public class TestingSupportController {
 
     @PostMapping("/testing-support/user")
     public UserDetails getUser(@RequestBody Map<String, String> requestBody) {
-        final String token = idamClient.getAccessToken(requestBody.get("email"), requestBody.get("password"));
+        final String token = idamClient.getAccessToken(requestBody.get(EMAIL), requestBody.get("password"));
         return idamClient.getUserDetails(token);
     }
 
@@ -164,7 +160,7 @@ public class TestingSupportController {
     @GetMapping("/testing-support/case/{caseId}/emails")
     public NotificationList getEmails(@PathVariable("caseId") String caseId) {
         try {
-            return notifications.getNotifications(null, "email", environment + "/" + caseId, null);
+            return notifications.getNotifications(null, EMAIL, environment + "/" + caseId, null);
         } catch (NotificationClientException e) {
             return null;
         }
@@ -174,7 +170,7 @@ public class TestingSupportController {
     public void grantCaseAccess(@PathVariable("caseId") Long caseId, @RequestBody Map<String, String> requestBody) {
         String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
 
-        final String email = requestBody.get("email");
+        final String email = requestBody.get(EMAIL);
         final String password = requestBody.get("password");
         final String role = requestBody.get("role");
 
@@ -212,5 +208,4 @@ public class TestingSupportController {
     public void assignSystemUserRole() {
         roleAssignmentService.assignSystemUserRole();
     }
-
 }

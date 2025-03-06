@@ -1,0 +1,1779 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "orders",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
+          "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]",
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersCTSC",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersLA",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASOLICITOR]",
+          "[LASHARED]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp0",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORA]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp1",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORB]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp2",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORC]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp3",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORD]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp4",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORE]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp5",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORF]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp6",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORG]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp7",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORH]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp8",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORI]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersResp9",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[SOLICITORJ]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild0",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORA]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild1",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORB]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild2",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORC]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild3",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORD]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild4",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORE]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild5",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORF]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild6",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORG]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild7",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORH]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild8",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORI]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild9",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORJ]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild10",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORK]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild11",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORL]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild12",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORM]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild13",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORN]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORO]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "ListElementCode": "ordersChild14",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
+          "[CHILDSOLICITORO]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LASOLICITOR]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "C"
+      }
+    ]
+  }
+]

@@ -94,6 +94,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                     .build())))
             .build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
             .eventId(i.getArgument(1))

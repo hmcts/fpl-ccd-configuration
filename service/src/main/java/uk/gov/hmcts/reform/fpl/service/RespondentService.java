@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -38,6 +39,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType.LIVE_IN_REFUGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -80,7 +82,7 @@ public class RespondentService {
     }
 
     //If user entered details that were subsequently hidden after change of mind, remove them
-    public List<Element<Respondent>> removeHiddenFields(List<Element<Respondent>> respondents) {
+    public List<Element<Respondent>> consolidateAndRemoveHiddenFields(List<Element<Respondent>> respondents) {
         return respondents.stream().map(respondentElement -> {
             Respondent respondent = respondentElement.getValue();
 
@@ -95,19 +97,28 @@ public class RespondentService {
                 }
             }
 
-            // Clear address not know reason if address is known
             RespondentParty party = respondent.getParty();
-            if (party != null && YES.getValue().equals(party.getAddressKnow())
-                && isNotEmpty(party.getAddressNotKnowReason())) {
-                return element(respondentElement.getId(),
-                    respondent.toBuilder().party(party.toBuilder().addressNotKnowReason(null).build()).build());
-            } else if (party != null && NO.getValue().equals(party.getAddressKnow())
-                && party.getAddress() != null && isNotEmpty(party.getAddress().getAddressLine1())) {
-                return element(respondentElement.getId(),
-                    respondent.toBuilder().party(party.toBuilder().address(Address.builder().build()).build()).build());
-            } else {
-                return respondentElement;
+            if (party != null) {
+                RespondentParty.RespondentPartyBuilder partyBuilder = party.toBuilder();
+
+                // Make as confidential if living in a refuge
+                if (LIVE_IN_REFUGE.equals(party.getAddressKnow())) {
+                    partyBuilder = partyBuilder.contactDetailsHidden(YES.getValue());
+                }
+
+                // Clear address not know reason if address is known
+                if (!IsAddressKnowType.NO.equals(party.getAddressKnow())
+                    && isNotEmpty(party.getAddressNotKnowReason())) {
+
+                    partyBuilder = partyBuilder.addressNotKnowReason(null);
+                } else if (IsAddressKnowType.NO.equals(party.getAddressKnow())
+                           && party.getAddress() != null && isNotEmpty(party.getAddress().getAddressLine1())) {
+                    partyBuilder = partyBuilder.address(Address.builder().build());
+                }
+
+                return element(respondentElement.getId(), respondent.toBuilder().party(partyBuilder.build()).build());
             }
+            return respondentElement;
         }).toList();
     }
 
@@ -259,7 +270,7 @@ public class RespondentService {
     public Respondent transformOtherToRespondent(Other other) {
         RespondentParty respondentParty = RespondentParty.builder()
             .address(other.getAddress())
-            .addressKnow(other.getAddressKnow())
+            .addressKnow(other.getAddressKnowV2())
             .addressNotKnowReason(other.getAddressNotKnowReason())
             .contactDetailsHidden(other.getDetailsHidden())
             .contactDetailsHiddenReason(other.getDetailsHiddenReason())

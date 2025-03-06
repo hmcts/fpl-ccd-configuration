@@ -21,6 +21,7 @@ spring:
       - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
   config:
     import:
+      - optional:configtree:/mnt/secrets/fpl/
       - application-local.yaml
       - optional:application-user-mappings.yaml # won't be present in prod code
       - optional:application-feature-toggle.yaml # won't be present in prod code
@@ -30,6 +31,10 @@ spring:
         - local
         - user-mappings
         - feature-toggle
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
 
 feign:
   client:
@@ -275,12 +280,12 @@ scheduler:
       description: 'Find undelivered emails'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UndeliveredEmailsFinder'
       cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 8 ? * * *}
-    - name: 'Create chasing work allocation tasks'
+    - name: 'Send chasing CMO email'
       enabled: true
       cronGroup: "NIGHTLY_CRON"
-      description: 'Create work allocation tasks if a CMO has not been uploaded within 5 days'
-      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.CreateWAOrderChasingTasks'
-      cron: ${CHASE_CMO_TASK_CRON:0 0 2 ? * * *}
+      description: 'Send chasing email if a CMO has not been uploaded within 5 days'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.OrderChasingEmailJob'
+      cron: ${CHASE_CMO_EMAIL_CRON:0 0 2 ? * * *}
 
 testing:
   support:
@@ -335,6 +340,30 @@ cafcass:
       expertReports: EXPERT
       drugAndAlcoholReports: EXPERT
       letterOfInstruction: EXPERT
+      adultPsychiatricReportOnParents: EXPERT
+      familyCentreAssessmentsNonResidential: EXPERT
+      familyCentreAssessmentsResidential: EXPERT
+      haematologist: EXPERT
+      independentSocialWorker: EXPERT
+      multiDisciplinaryAssessment: EXPERT
+      neurosurgeon: EXPERT
+      ophthalmologist: EXPERT
+      otherExpertReport: EXPERT
+      otherMedicalReport: EXPERT
+      pediatric: EXPERT
+      pediatricRadiologist: EXPERT
+      professionalDnaTesting: EXPERT
+      professionalDrugAlcohol: EXPERT
+      professionalHairStrand: EXPERT
+      professionalOther: EXPERT
+      psychiatricChildOnly: EXPERT
+      psychiatricChildAndParent: EXPERT
+      psychologicalReportChildOnlyClinical: EXPERT
+      psychologicalReportChildOnlyEducational: EXPERT
+      psychologicalReportParentAndChild: EXPERT
+      psychologicalReportParentFullCognitive: EXPERT
+      psychologicalReportParentFullFunctioning: EXPERT
+      toxicologyReport: EXPERT
       medicalRecords: EXPERT
       childsGuardianReports: REPORTING TO COURT
       guardianEvidence: REPORTING TO COURT

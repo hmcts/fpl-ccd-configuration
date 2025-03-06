@@ -46,6 +46,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -156,11 +157,11 @@ class CafcassNotificationServiceTest {
                 entry("newApplication", "APPLICATION")
 
             ));
+        when(featureToggleService.isCafcassAPIEnabledForCourt(any())).thenReturn(false);
     }
 
     @ParameterizedTest
-    @CsvSource({"true, William|FM1234|12345|ORDER|18/05/2022",
-            "false, Court Ref. FM1234.- new order"})
+    @CsvSource({"true, William|FM1234|12345|ORDER|18/05/2022", "false, Court Ref. FM1234.- new order"})
     void shouldNotifyOrderRequest(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForOrder()).thenReturn(RECIPIENT_EMAIL);
@@ -193,8 +194,7 @@ class CafcassNotificationServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"true, William|FM1234|12345|ORDER|16/05/2022 10:30|18/05/2022",
-            "false, Court Ref. FM1234.- new order"})
+    @CsvSource({"true, William|FM1234|12345|ORDER|16/05/2022 10:30|18/05/2022", "false, Court Ref. FM1234.- new order"})
     void shouldNotifyOrderRequestWithHearingSelected(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForOrder()).thenReturn(RECIPIENT_EMAIL);
@@ -233,7 +233,7 @@ class CafcassNotificationServiceTest {
 
     @ParameterizedTest
     @CsvSource({"true, William|FM1234|12345|APPLICATION",
-            "false, 'Urgent application – same day hearing, Oliver Wright'"})
+        "false, 'Urgent application – same day hearing, Oliver Wright'"})
     void shouldNotifyUrgentNewApplicationRequest(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
@@ -280,8 +280,7 @@ class CafcassNotificationServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"true, William|FM1234|12345|APPLICATION",
-            "false, 'Application received, Oliver Wright'"})
+    @CsvSource({"true, William|FM1234|12345|APPLICATION","false, 'Application received, Oliver Wright'"})
     void shouldNotifyNewApplicationRequestWhenNoTimeFramePresent(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
@@ -326,7 +325,7 @@ class CafcassNotificationServiceTest {
 
     @ParameterizedTest
     @CsvSource({"true, William|FM1234|12345|APPLICATION",
-            "false, 'Application received – hearing within 7 days, Oliver Wright'"})
+        "false, 'Application received – hearing within 7 days, Oliver Wright'"})
     void shouldNotifyNonUrgentNewApplicationRequest(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
@@ -370,8 +369,7 @@ class CafcassNotificationServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"true, William|FM1234|12345|BUNDLE",
-            "false, 'Court Ref. FM1234.- new court bundle'"})
+    @CsvSource({"true, William|FM1234|12345|BUNDLE", "false, 'Court Ref. FM1234.- new court bundle'"})
     void shouldNotifyCourtBundle(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForCourtBundle()).thenReturn(RECIPIENT_EMAIL);
@@ -404,7 +402,7 @@ class CafcassNotificationServiceTest {
 
     @ParameterizedTest
     @CsvSource({"true, William|FM1234|12345|REPORTING TO COURT",
-            "false, 'Court Ref. FM1234.- Further documents for main application'"})
+        "false, 'Court Ref. FM1234.- Further documents for main application'"})
     void shouldNotifyNewDocument(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
@@ -441,7 +439,7 @@ class CafcassNotificationServiceTest {
 
     @ParameterizedTest
     @CsvSource({"true, William|FM1234|12345|COURT PAPER",
-            "false, 'Court Ref. FM1234.- Further documents for main application'"})
+        "false, 'Court Ref. FM1234.- Further documents for main application'"})
     void shouldNotifyDuplicateNewDocumentsAreUploaded(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
@@ -485,8 +483,7 @@ class CafcassNotificationServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"true, William|FM1234|12345|EXPERT",
-            "false, 'Court Ref. FM1234.- additional documents'"})
+    @CsvSource({"true, William|FM1234|12345|EXPERT","false, 'Court Ref. FM1234.- additional documents'"})
     void shouldNotifyAdditionalDocument(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForAdditionlDocument()).thenReturn(RECIPIENT_EMAIL);
@@ -519,8 +516,7 @@ class CafcassNotificationServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"true, 'Court Ref. FM1234.- '",
-            "false, 'Court Ref. FM1234.- '"})
+    @CsvSource({"true, 'Court Ref. FM1234.- '", "false, 'Court Ref. FM1234.- '"})
     void shouldNotifyAdditionalDocumentWithBlankSujbectWhenNoDocumentsPresent(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForAdditionlDocument()).thenReturn(RECIPIENT_EMAIL);
@@ -545,7 +541,7 @@ class CafcassNotificationServiceTest {
 
     @ParameterizedTest
     @CsvSource({"true, William|FM1234|12345|ORDER|20/04/2050 11:30",
-            "false, 'Court Ref. FM1234.- New case management hearing Oliver Wright - notice of hearing'"})
+        "false, 'Court Ref. FM1234.- New case management hearing Oliver Wright - notice of hearing'"})
     void shouldNotifyNoficeOfHearing(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNoticeOfHearing()).thenReturn(RECIPIENT_EMAIL);
@@ -695,8 +691,7 @@ class CafcassNotificationServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"true, William|FM1234|12345|EXPERT",
-            "false, 'Court Ref. FM1234.- additional documents'"})
+    @CsvSource({"true, William|FM1234|12345|EXPERT", "false, 'Court Ref. FM1234.- additional documents'"})
     void shouldNotifyWithAttachmentAndLinkWhenThereIsSmallAndLargeDocs(boolean flag, String subject) {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         String caseLink = "http://localhost:8080/cases/case-details/200";
@@ -760,6 +755,26 @@ class CafcassNotificationServiceTest {
                         tuple(RECIPIENT_EMAIL,
                                 "Court Ref. FM1234.- new large document added - Expert reports",
                                 largeDocMessage));
+    }
+
+    @Test
+    void shouldNotNotifyIfAPIEnabled() {
+        when(featureToggleService.isCafcassAPIEnabledForCourt(any())).thenReturn(true);
+
+        underTest.sendEmail(caseData,
+            of(getDocumentReference()),
+            COURT_BUNDLE,
+            CourtBundleData.builder()
+                .hearingDetails(TITLE)
+                .build()
+        );
+
+        underTest.sendEmail(caseData,
+            CHANGE_OF_ADDRESS,
+            ChangeOfAddressData.builder().children(true).build()
+        );
+
+        verifyNoInteractions(emailService);
     }
 
     private DocumentReference getDocumentReference() {

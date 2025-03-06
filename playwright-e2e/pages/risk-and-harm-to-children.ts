@@ -1,42 +1,33 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import {BasePage} from "./base-page";
 
-export class RiskAndHarmToChildren { 
+export class RiskAndHarmToChildren extends BasePage {
     readonly page: Page;
-    readonly physicalHarmRadio: Locator;
-    readonly emotionalHarmRadio: Locator;
-    readonly sexualAbuseRadio: Locator;
-    readonly neglectRadio: Locator;
-    readonly futureRiskOfHarmCheckbox: Locator;
-    readonly pastHarmCheckbox: Locator;
-    readonly continueButton: Locator;
-    readonly checkYourAnswersHeader: Locator;
-    readonly saveAndContinueButton: Locator;
     readonly riskAndHarmToChildrenHeader: Locator;
+    readonly harmToChildren: Locator;
+    readonly factorAffectingRespondentAbilityToParenting: Locator;
+    readonly whatElseAbility: Locator;
 
     public constructor(page: Page) {
+        super(page);
         this.page = page;
-        this.physicalHarmRadio = page.getByRole('group', { name: 'Physical harm including non-' });
-        this.emotionalHarmRadio = page.getByRole('group', { name: 'Emotional harm (Optional)' });
-        this.sexualAbuseRadio = page.getByRole('group', { name: 'Sexual abuse (Optional)' });
-        this.neglectRadio = page.getByRole('group', { name: 'Neglect (Optional)' });
-        this.futureRiskOfHarmCheckbox = page.getByRole('checkbox', { name: 'Future risk of harm' });
-        this.pastHarmCheckbox = page.locator('[id="risks_neglectOccurrences-Past\\ harm"]');
-        this.continueButton = page.getByRole('button', { name: 'Continue' });
-        this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-        this.saveAndContinueButton = page.getByRole('button', { name: 'Save and continue' });
-        this.riskAndHarmToChildrenHeader = page.getByRole('heading', { name: 'Risk and harm to children' });
+        this.factorAffectingRespondentAbilityToParenting = page.getByRole('group', { name: 'Is there anything affecting any respondent\'s ability to parent?' });
+        this.harmToChildren = page.getByRole('group', { name: 'What kind of harm is the child at risk of?' });
+        this.whatElseAbility = page.getByLabel('Tell us what else is affecting their ability to parent');
+        this.riskAndHarmToChildrenHeader = page.getByRole('heading', { name: 'Risk and harm to children', exact: true,level:1 });
     }
 
     async riskAndHarmToChildrenSmokeTest() {
         await expect (this.riskAndHarmToChildrenHeader).toBeVisible();
-        await this.physicalHarmRadio.getByLabel('Yes').check();
-        await this.futureRiskOfHarmCheckbox.check();
-        await this.emotionalHarmRadio.getByLabel('No').check();
-        await this.sexualAbuseRadio.getByLabel('No').check();
-        await this.neglectRadio.getByLabel('Yes').check();
-        await this.pastHarmCheckbox.check();
-        await this.continueButton.click();
-        await this.checkYourAnswersHeader.isVisible();
-        await this.saveAndContinueButton.click();
+        await this.harmToChildren.getByLabel('Physical harm including non-').check();
+        await this.harmToChildren.getByLabel('Emotional harm').check();
+        await this.harmToChildren.getByLabel('Sexual abuse').check();
+        await this.harmToChildren.getByLabel('Neglect').check();
+        await this.factorAffectingRespondentAbilityToParenting.getByLabel('Alcohol or drug abuse').check();
+        await this.factorAffectingRespondentAbilityToParenting.getByLabel('Domestic abuse').check();
+        await this.factorAffectingRespondentAbilityToParenting.getByLabel('Anything else').check();
+        await this.whatElseAbility.fill('parent is drug addiction cant have mental stability to rise child');
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
     }
 }

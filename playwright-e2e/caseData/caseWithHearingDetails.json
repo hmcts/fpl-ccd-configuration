@@ -14,8 +14,9 @@
       "thresholdDetails": "mock threshold details"
     },
     "hearing": {
-      "reason": "test reason",
-      "timeFrame": "Same day"
+      "hearingUrgencyDetails": "test reason",
+      "hearingUrgencyType": "SAME_DAY",
+      "respondentsAware": "Yes"
     },
     "hearingDetails": [
       {
@@ -37,7 +38,7 @@
           "attendance": [
             "IN_PERSON"
           ],
-          "type": "OTHER",
+          "type": "FURTHER_CASE_MANAGEMENT",
           "typeDetails": "test type details",
           "venue": "96",
           "venueCustomAddress": {}

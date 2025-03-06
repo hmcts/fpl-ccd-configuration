@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -17,12 +20,12 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -52,7 +55,7 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public HashSet<String> getRepresentativeEmailsFilteredByRole(CaseData caseData,
+    public Set<String> getRepresentativeEmailsFilteredByRole(CaseData caseData,
                                                                  RepresentativeServingPreferences preference,
                                                                  List<RepresentativeRole.Type> roles) {
         return caseData.getRepresentativesByServedPreference(preference)
@@ -63,23 +66,54 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public HashSet<String> getRespondentSolicitorEmails(CaseData caseData,
-                                                              RepresentativeServingPreferences preference) {
-        return caseData.getAllRespondents().stream()
+    public Set<String> getRespondentSolicitorEmails(CaseData caseData,
+                                                    RepresentativeServingPreferences preference) {
+        return getRespondentSolicitorEmailsFromList(caseData.getAllRespondents(), preference);
+    }
+
+    public Set<String> getRespondentSolicitorEmailsFromList(List<Element<Respondent>> respondents,
+                                                                RepresentativeServingPreferences preference) {
+        return respondents.stream()
             .filter(respondent -> shouldSend(preference, respondent))
             .map(this::extractEmailsForSolicitorAndColleagues)
-            .flatMap(Collection::stream).collect(Collectors.toList())
+            .flatMap(Collection::stream).toList()
             .stream()
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public HashSet<String> getChildrenSolicitorEmails(CaseData caseData,
-                                                            RepresentativeServingPreferences preference) {
-        return caseData.getAllChildren().stream()
+    public Set<String> getRepresentedSolicitorEmails(CaseData caseData, CaseRole caseRole,
+                                                  RepresentativeServingPreferences preference) {
+        List<Element<WithSolicitor>> locatedChild = Stream.of(caseRole)
+            .map(CaseRole::formattedName)
+            .map(SolicitorRole::from)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(s -> s.getRepresentedPerson(caseData))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .toList();
+
+        return locatedChild.stream()
             .filter(child -> shouldSend(preference, child))
             .map(this::extractEmailsForSolicitorAndColleagues)
-            .flatMap(Collection::stream).collect(Collectors.toList())
+            .flatMap(Collection::stream).toList()
+            .stream()
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public Set<String> getChildrenSolicitorEmails(CaseData caseData,
+                                                  RepresentativeServingPreferences preference) {
+        return getChildrenSolicitorEmailsFromList(caseData.getAllChildren(), preference);
+    }
+
+    public Set<String> getChildrenSolicitorEmailsFromList(List<Element<Child>> children,
+                                                              RepresentativeServingPreferences preference) {
+        return children.stream()
+            .filter(child -> shouldSend(preference, child))
+            .map(this::extractEmailsForSolicitorAndColleagues)
+            .flatMap(Collection::stream).toList()
             .stream()
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));

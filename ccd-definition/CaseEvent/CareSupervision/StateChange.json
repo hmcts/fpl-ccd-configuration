@@ -5,6 +5,7 @@
     "ID": "submitApplication",
     "Name": "Submit application",
     "Description": "Check and send application",
+    "TTLIncrement": 6575,
     "DisplayOrder": 18,
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "Submitted",
@@ -120,6 +121,15 @@
     "Name": "Populate - Case management",
     "PreConditionState(s)": "*",
     "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "populateCase-RETURNED",
+    "Name": "Populate - Returned",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "RETURNED",
     "SecurityClassification": "Public"
   }
 ]

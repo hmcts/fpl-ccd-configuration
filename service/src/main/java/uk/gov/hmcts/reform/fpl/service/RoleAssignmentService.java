@@ -39,6 +39,9 @@ public class RoleAssignmentService {
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
 
+    private static final String FPL_ROLE_ASSIGNMENT = "fpl-case-role-assignment";
+    private static final String CASE_ID = "caseId";
+
     /**
      * Create a role assignment in AM. This will REPLACE the existing role assignment.
      *
@@ -58,7 +61,7 @@ public class RoleAssignmentService {
             .requestedRoles(buildRoleAssignments(caseId, userIds, role, roleCategory, startTime, endTime))
             .roleRequest(RoleRequest.builder()
                 .assignerId(systemUserService.getUserId(systemUserToken))
-                .reference("fpl-case-role-assignment")
+                .reference(FPL_ROLE_ASSIGNMENT)
                 .replaceExisting(false)
                 .build())
             .build());
@@ -83,13 +86,13 @@ public class RoleAssignmentService {
                 .requestedRoles(roleAssignments)
                 .roleRequest(RoleRequest.builder()
                     .assignerId(systemUserService.getUserId(systemUserToken))
-                    .reference("fpl-case-role-assignment")
+                    .reference(FPL_ROLE_ASSIGNMENT)
                     .replaceExisting(false)
                     .build())
                 .build());
         } catch (Exception e) {
             log.error("Failed to bulk grant {} roles on case {}, falling back to granting each individually",
-                roleAssignments.size(), roleAssignments.get(0).getAttributes().get("caseId"), e);
+                roleAssignments.size(), roleAssignments.get(0).getAttributes().get(CASE_ID), e);
 
             // if we fail in bulk, we will retry each one individually - a strange workaround, but it was necessary for
             // some cases...
@@ -100,20 +103,20 @@ public class RoleAssignmentService {
     private void grantIndividualRole(RoleAssignment role, String systemUserToken, String serviceToken) {
         try {
             log.info("Granting individual case role to {} on case {}", role.getActorId(),
-                role.getAttributes().getOrDefault("caseId", "no-case-id"));
+                role.getAttributes().getOrDefault(CASE_ID, "no-case-id"));
 
             amApi.createRoleAssignment(systemUserToken, serviceToken, AssignmentRequest.builder()
                 .requestedRoles(List.of(role))
                 .roleRequest(RoleRequest.builder()
                     .assignerId(systemUserService.getUserId(systemUserToken))
-                    .reference("fpl-case-role-assignment")
+                    .reference(FPL_ROLE_ASSIGNMENT)
                     .replaceExisting(false)
                     .build())
                 .build());
         } catch (Exception e) {
             log.error("Error when granting individual case role {} to {} on case {}",
                 role.getRoleName(), role.getActorId(),
-                role.getAttributes().getOrDefault("caseId", "no-case-id"), e);
+                role.getAttributes().getOrDefault(CASE_ID, "no-case-id"), e);
         }
     }
 
@@ -186,7 +189,7 @@ public class RoleAssignmentService {
         String systemUserToken = systemUserService.getSysUserToken();
         QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
             QueryRequest.builder()
-                .attributes(Map.of("caseId", List.of(caseId.toString())))
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(roleNames)
                 .validAt(time)
                 .build()
@@ -208,7 +211,7 @@ public class RoleAssignmentService {
 
         QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
             QueryRequest.builder()
-                .attributes(Map.of("caseId", List.of(caseId.toString())))
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .actorId(List.of(userId))
                 .roleName(roleNames)
                 .validAt(time)
@@ -228,7 +231,7 @@ public class RoleAssignmentService {
 
         QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
             QueryRequest.builder()
-                .attributes(Map.of("caseId", List.of(caseId.toString())))
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
                     HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
                 .build()

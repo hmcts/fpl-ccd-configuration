@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Api
 @Slf4j
 @RestController
 @RequestMapping("/callback/allocated-judge")
@@ -37,6 +35,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 public class AllocatedJudgeController extends CallbackController {
     private final ValidateEmailService validateEmailService;
     private final JudicialService judicialService;
+
+    private static final String ALLOCATED_JUDGE = "allocatedJudge";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -74,7 +74,7 @@ public class AllocatedJudgeController extends CallbackController {
 
             Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
             if (jup.isPresent()) {
-                caseDetails.getData().put("allocatedJudge", Judge.fromJudicialUserProfile(jup.get()));
+                caseDetails.getData().put(ALLOCATED_JUDGE, Judge.fromJudicialUserProfile(jup.get()));
             } else {
                 return respond(caseDetails,
                     List.of("Could not fetch Judge details from JRD, please try again in a few minutes."));
@@ -85,7 +85,7 @@ public class AllocatedJudgeController extends CallbackController {
                 .getJudgeUserIdFromEmail(caseData.getAllocatedJudge().getJudgeEmailAddress());
 
             // if they are in our maps - add their UUID extra info to the case
-            possibleId.ifPresentOrElse(s -> caseDetails.getData().put("allocatedJudge",
+            possibleId.ifPresentOrElse(s -> caseDetails.getData().put(ALLOCATED_JUDGE,
                 caseData.getAllocatedJudge().toBuilder()
                     .judgeJudicialUser(JudicialUser.builder()
                         .idamId(s)
@@ -99,7 +99,7 @@ public class AllocatedJudgeController extends CallbackController {
                         allocatedJudge = allocatedJudge.toBuilder().judgeFullName(null).build();
                     }
 
-                    caseDetails.getData().put("allocatedJudge", allocatedJudge);
+                    caseDetails.getData().put(ALLOCATED_JUDGE, allocatedJudge);
                 });
         }
 

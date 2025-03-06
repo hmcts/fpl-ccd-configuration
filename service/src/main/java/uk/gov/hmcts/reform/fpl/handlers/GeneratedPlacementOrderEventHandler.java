@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedPlacementOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -58,6 +61,7 @@ public class GeneratedPlacementOrderEventHandler {
     private final CafcassNotificationService cafcassNotificationService;
     private final UserService userService;
     private final WorkAllocationTaskService workAllocationTaskService;
+    private final JudicialService judicialService;
 
     @EventListener
     public void sendPlacementOrderEmail(final GeneratedPlacementOrderEvent orderEvent) {
@@ -127,11 +131,21 @@ public class GeneratedPlacementOrderEventHandler {
         sendEmail(notifyData, emailRecipients, caseData.getId());
     }
 
+    @Async
     @EventListener
     public void createWorkAllocationTask(GeneratedPlacementOrderEvent event) {
         if (userService.isJudiciaryUser()) {
             CaseData caseData = event.getCaseData();
             workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.ORDER_UPLOADED);
+        }
+    }
+
+    @Async
+    @EventListener
+    public void cleanupRoles(GeneratedPlacementOrderEvent event) {
+        // If the case is now closed, we should cleanup any AM roles
+        if (State.CLOSED.equals(event.getCaseData().getState())) {
+            judicialService.deleteAllRolesOnCase(event.getCaseData().getId());
         }
     }
 

@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -43,8 +45,7 @@ class ChangeCaseStateServiceTest {
             .build();
 
         assertThat(changeCaseStateService.initialiseEventFields(caseData))
-            .extracting("nextStateLabelContent")
-            .isNull();
+            .doesNotContainKey("nextStateLabelContent");
     }
 
     @Test
@@ -70,9 +71,9 @@ class ChangeCaseStateServiceTest {
 
         Map<String, Object> updatedCaseData = changeCaseStateService.updateCaseState(caseData);
 
-        assertThat(updatedCaseData)
-            .extracting("state", "deprivationOfLiberty", "closeCaseTabField")
-            .containsExactly(FINAL_HEARING, null, null);
+        assertThat(updatedCaseData).doesNotContainKeys("deprivationOfLiberty");
+        assertThat(updatedCaseData).extracting("state", "closeCaseTabField")
+            .containsExactly(FINAL_HEARING, null);
     }
 
     @ParameterizedTest
@@ -95,9 +96,7 @@ class ChangeCaseStateServiceTest {
             .confirmChangeState(NO.getValue())
             .build();
 
-        assertThat(changeCaseStateService.updateCaseState(caseData))
-            .extracting("state")
-            .isNull();
+        assertThat(changeCaseStateService.updateCaseState(caseData)).doesNotContainKey("state");
     }
 
     @Test
@@ -116,7 +115,9 @@ class ChangeCaseStateServiceTest {
     private static Stream<Arguments> stateChangeSource() {
         return Stream.of(
             Arguments.of(FINAL_HEARING, CASE_MANAGEMENT),
-            Arguments.of(CASE_MANAGEMENT, FINAL_HEARING)
+            Arguments.of(CASE_MANAGEMENT, FINAL_HEARING),
+            Arguments.of(GATEKEEPING, CASE_MANAGEMENT),
+            Arguments.of(GATEKEEPING_LISTING, CASE_MANAGEMENT)
         );
     }
 }

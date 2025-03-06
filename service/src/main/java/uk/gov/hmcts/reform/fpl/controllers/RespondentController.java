@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -51,7 +52,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Slf4j
-@Api
 @RestController
 @RequestMapping("/callback/enter-respondents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -72,10 +72,16 @@ public class RespondentController extends CallbackController {
     private final NoticeOfChangeService noticeOfChangeService;
     private final RepresentableLegalCounselUpdater representableCounselUpdater;
 
+    public static final String NO_ACCESS_ERROR = "Contact the applicant or CTSC to modify respondent details.";
+
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+
+        if (!representativeService.shouldUserHaveAccessToRespondentsChildrenEvent(caseData)) {
+            return respond(caseDetails, List.of(NO_ACCESS_ERROR));
+        }
 
         caseDetails.getData().put(RESPONDENTS_KEY, confidentialDetailsService.prepareCollection(
             caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection()));
@@ -89,7 +95,8 @@ public class RespondentController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(caseData.getRespondents1()));
+        caseDetails.getData().put(RESPONDENTS_KEY,
+            respondentService.consolidateAndRemoveHiddenFields(caseData.getRespondents1()));
 
         List<String> errors = respondentValidator.validate(caseData, caseDataBefore);
         return respond(caseDetails, errors);
@@ -107,7 +114,7 @@ public class RespondentController extends CallbackController {
             caseData.getAllRespondents(), oldRespondents
         );
 
-        newRespondents = respondentService.removeHiddenFields(newRespondents);
+        newRespondents = respondentService.consolidateAndRemoveHiddenFields(newRespondents);
 
         newRespondents = representableCounselUpdater.updateLegalCounsel(
             oldRespondents, newRespondents, caseData.getAllChildren()
@@ -238,6 +245,15 @@ public class RespondentController extends CallbackController {
                                                        UUID newRespondentId) {
         OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
         Respondent transformedRespondent = eventData.getTransformedRespondent();
+        if (IsAddressKnowType.LIVE_IN_REFUGE.equals(transformedRespondent.getParty().getAddressKnow())) {
+            transformedRespondent = transformedRespondent.toBuilder()
+                .party(transformedRespondent.getParty().toBuilder()
+                    .contactDetailsHidden(YesNo.YES.getValue())
+                    .contactDetailsHiddenReason(null)
+                    .build())
+                .build();
+        }
+
         List<Element<Respondent>> newRespondents = confidentialDetailsService.prepareCollection(
             caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
         newRespondents.add(element(newRespondentId, transformedRespondent));

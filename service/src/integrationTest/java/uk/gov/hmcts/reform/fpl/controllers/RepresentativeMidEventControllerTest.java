@@ -63,7 +63,7 @@ class RepresentativeMidEventControllerTest extends AbstractCallbackTest {
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representativeEmail))
             .willThrow(new FeignException.NotFound("User not found",
                 Request.create(GET, "", Map.of(), new byte[]{}, UTF_8),
-                new byte[]{}));
+                new byte[]{}, Map.of()));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 

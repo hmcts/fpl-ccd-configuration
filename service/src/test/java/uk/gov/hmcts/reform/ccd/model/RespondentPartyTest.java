@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.ccd.model;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 
@@ -21,6 +21,6 @@ class RespondentPartyTest {
             .build();
 
         assertThat(actualRespondent.getAddressKnow()).isNotNull();
-        assertThat(actualRespondent.getAddressKnow()).isEqualTo(YesNo.YES.getValue());
+        assertThat(actualRespondent.getAddressKnow()).isEqualTo(IsAddressKnowType.YES);
     }
 }

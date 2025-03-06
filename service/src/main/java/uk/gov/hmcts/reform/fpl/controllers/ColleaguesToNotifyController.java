@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
-@Api
 @RestController
 @RequestMapping("/callback/add-colleagues-to-notify")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

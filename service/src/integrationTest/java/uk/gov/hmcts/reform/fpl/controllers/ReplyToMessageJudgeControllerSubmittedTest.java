@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -54,8 +55,6 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyJudicialMessageRecipientWhenJudicialMessageReplyAdded() throws NotificationClientException {
-        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
-
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
             .updatedTime(now().minusDays(1))
@@ -92,6 +91,8 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                     .urgency("High")
                     .build())))
             .build();
+
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
 
         postSubmittedEvent(asCaseDetails(caseData));
 

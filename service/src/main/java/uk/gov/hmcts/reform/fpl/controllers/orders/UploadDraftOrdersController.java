@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -39,15 +37,23 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Api
 @RestController
 @RequestMapping("/callback/upload-draft-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UploadDraftOrdersController extends CallbackController {
+    private static final String DRAFT_ORDER_URGENCY = "draftOrderUrgency";
 
     private static final int MAX_ORDERS = 10;
     private final DraftOrderService service;
     private final CaseConverter caseConverter;
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        caseDetails.getData().remove(DRAFT_ORDER_URGENCY);
+        return respond(caseDetails);
+    }
 
     @PostMapping("/populate-initial-data/mid-event")
     public CallbackResponse handlePopulateInitialData(@RequestBody CallbackRequest request) {
@@ -56,6 +62,7 @@ public class UploadDraftOrdersController extends CallbackController {
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
+        caseDetailsMap.remove("draftOrderNeedsReviewUploaded"); // cleanup transient field
 
         return respond(caseDetailsMap);
     }
@@ -85,7 +92,6 @@ public class UploadDraftOrdersController extends CallbackController {
 
         List<Element<HearingOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
         List<Element<HearingBooking>> hearings = defaultIfNull(caseData.getHearingDetails(), new ArrayList<>());
-        List<Element<HearingFurtherEvidenceBundle>> evidenceDocuments = caseData.getHearingFurtherEvidenceDocuments();
         HearingOrdersBundles hearingOrdersBundles = service.migrateCmoDraftToOrdersBundles(caseData);
 
         Map<HearingOrderType, List<Element<HearingOrdersBundle>>> bundles = Map.of(
@@ -94,15 +100,18 @@ public class UploadDraftOrdersController extends CallbackController {
             C21, hearingOrdersBundles.getAgreedCmos()
         );
 
-        UUID hearingId = service.updateCase(eventData, hearings, unsealedCMOs, bundles);
+        UUID hearingId = service.updateCase(caseData, hearings, unsealedCMOs, bundles);
 
         // update case data
         caseDetails.getData().put("draftUploadedCMOs", unsealedCMOs);
         caseDetails.getData().put("hearingDetails", hearings);
-        caseDetails.getData().put("hearingFurtherEvidenceDocuments", evidenceDocuments);
         caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles.get(AGREED_CMO));
         caseDetails.getData().put("hearingOrdersBundlesDraftReview", bundles.get(DRAFT_CMO));
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
+
+        // if a AGREED CMO or C21 was uploaded, the judge needs to approve it (WA purposes)
+        caseDetails.getData().put("draftOrderNeedsReviewUploaded",
+            eventData.hasDraftOrderBeenUploadedThatNeedsApproval());
 
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
 

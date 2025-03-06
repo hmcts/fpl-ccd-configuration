@@ -3,6 +3,13 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,8 +40,10 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
+import uk.gov.hmcts.reform.fpl.model.caselink.CaseLink;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.CaseLinksElement;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -88,14 +97,12 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.MigrateStateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.IsStateMigratable;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasFutureEndDate;
@@ -118,13 +125,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.validation.Valid;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
@@ -154,7 +154,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Jacksonized
 @EqualsAndHashCode(callSuper = true)
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
-@IsStateMigratable(groups = MigrateStateGroup.class)
 @IsValidHearingEdit(groups = HearingBookingGroup.class)
 @HasHearingEndDateAfterStartDate(message = "The end date and time must be after the start date and time",
     groups = HearingEndDateGroup.class)
@@ -181,6 +180,9 @@ public class CaseData extends CaseDataParent {
     @JsonIgnore
     private String courtField;
     private String dfjArea;
+
+    @JsonProperty("caseLinks")
+    private List<CaseLinksElement<CaseLink>> caseLinks;
 
     private final JudicialUser judicialUser;
     private final JudicialUser judicialUserHearingJudge;
@@ -306,6 +308,7 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
+    private final List<Element<Guardian>> guardians;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
@@ -442,7 +445,8 @@ public class CaseData extends CaseDataParent {
             bundle -> {
                 ofNullable(bundle.getC2DocumentBundle()).ifPresent(
                     c2 -> applicationBundles.add(element(c2.getId(), c2)));
-
+                ofNullable(bundle.getC2DocumentBundleConfidential()).ifPresent(
+                    c2 -> applicationBundles.add(element(c2.getId(), c2)));
                 ofNullable(bundle.getOtherApplicationsBundle()).ifPresent(
                     otherBundle -> applicationBundles.add(element(otherBundle.getId(), otherBundle)));
             }
@@ -462,6 +466,7 @@ public class CaseData extends CaseDataParent {
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final C2ApplicationType c2Type;
+    private final YesNo isC2Confidential;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final List<AdditionalApplicationType> additionalApplicationType;
 
@@ -502,9 +507,19 @@ public class CaseData extends CaseDataParent {
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
     private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ConfidentialGeneratedOrders confidentialOrders = ConfidentialGeneratedOrders.builder().build();
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
         return orderCollection != null ? orderCollection : new ArrayList<>();
+    }
+
+    @JsonIgnore
+    public List<Element<GeneratedOrder>> getAllOrderCollections() {
+        return Stream.of(getOrderCollection(), confidentialOrders.getAllConfidentialOrders())
+            .flatMap(List::stream)
+            .toList();
     }
 
     @JsonUnwrapped
@@ -527,7 +542,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public SealType getSealType() {
-        return isWelshLanguageRequested() ? SealType.BILINGUAL : SealType.ENGLISH;
+        return isWelshLanguageRequested() ? SealType.WELSH : SealType.ENGLISH;
     }
 
     @JsonIgnore
@@ -700,7 +715,6 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     @Builder.Default
     private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
-    private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
 
@@ -715,10 +729,6 @@ public class CaseData extends CaseDataParent {
 
     public DynamicList buildDynamicChildrenList(List<Element<Child>> children, UUID selected) {
         return asDynamicList(children, selected, child -> child.getParty().getFullName());
-    }
-
-    public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
-        return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
     }
 
     @JsonIgnore
@@ -761,6 +771,13 @@ public class CaseData extends CaseDataParent {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
             .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
+    public Optional<HearingBooking> getLastHearingBefore(LocalDateTime time) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.getStartDate().isBefore(time))
+            .max(comparing(HearingBooking::getStartDate));
     }
 
     @JsonIgnore
@@ -813,14 +830,20 @@ public class CaseData extends CaseDataParent {
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
+    @JsonUnwrapped
+    @Builder.Default
+    private ConfidentialRefusedOrders confidentialRefusedOrders = ConfidentialRefusedOrders.builder().build();
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonIgnore
     public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
         return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
-            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE))
+                                       || isNotEmpty(bundle.getValue().getAllConfidentialOrdersByStatus(SEND_TO_JUDGE)))
             .collect(toList());
     }
+
+    private final YesNo draftOrderNeedsReviewUploaded;
 
     @JsonUnwrapped
     @Builder.Default
@@ -903,11 +926,13 @@ public class CaseData extends CaseDataParent {
             .collect(toList());
     }
 
+    private DraftOrderUrgencyOption draftOrderUrgency;
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
     private final List<Element<HearingOrder>> sealedCMOs;
     private final List<Element<HearingOrder>> ordersToBeSent;
+    private ApproveOrderUrgencyOption orderReviewUrgency;
 
     @JsonUnwrapped
     @Builder.Default
@@ -964,9 +989,15 @@ public class CaseData extends CaseDataParent {
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
+    private final UUID cancelledHearingId;
     private final List<HearingAttendance> hearingAttendance;
     private final String hearingAttendanceDetails;
     private final String preHearingAttendanceDetails;
+
+    @Builder.Default
+    @JsonUnwrapped
+    private final ManageHearingHousekeepEventData manageHearingHousekeepEventData =
+        ManageHearingHousekeepEventData.builder().build();
 
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
@@ -1253,9 +1284,5 @@ public class CaseData extends CaseDataParent {
         } else {
             return Optional.empty();
         }
-    }
-
-    public void setPlacementNoticeResponses(List<Element<PlacementNoticeDocument>> placementNoticeResponses) {
-        this.placementNoticeResponses = placementNoticeResponses;
     }
 }

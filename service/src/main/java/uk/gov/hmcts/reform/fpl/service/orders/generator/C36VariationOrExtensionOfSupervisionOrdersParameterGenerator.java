@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C36VariationOrExtensionOfSupervisionOrdersParameterGenerator implements DocmosisParameterGenerator {
 
+    private static final String FULLSTOP_NEW_LINE = ".\n\n";
     private final OrderMessageGenerator orderMessageGenerator;
 
     @Override
@@ -58,21 +59,21 @@ public class C36VariationOrExtensionOfSupervisionOrdersParameterGenerator implem
         stringBuilder
             .append("made by this Court, ${courtName} on ")
             .append(dateBuilder(eventData.getManageOrdersSupervisionOrderApprovalDate()))
-            .append(".\n\n");
+            .append(FULLSTOP_NEW_LINE);
 
         stringBuilder
             .append("The Court orders ${localAuthorityName} to supervise the ${childOrChildren}")
-            .append(".\n\n");
+            .append(FULLSTOP_NEW_LINE);
 
         stringBuilder
             .append("The Court directs ")
             .append(eventData.getManageOrdersSupervisionOrderCourtDirection())
-            .append(".\n\n");
+            .append(FULLSTOP_NEW_LINE);
 
         stringBuilder
             .append("This order ends on ")
             .append(dateBuilder(eventData.getManageOrdersSupervisionOrderEndDate()))
-            .append(".\n\n");
+            .append(FULLSTOP_NEW_LINE);
 
         return orderMessageGenerator.formatOrderMessage(caseData, stringBuilder.toString());
     }

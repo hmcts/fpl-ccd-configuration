@@ -47,13 +47,14 @@ public class AmendOrderToDownloadPrePopulator implements QuestionBlockOrderPrePo
             return caseData.getUrgentHearingOrder().getOrder();
         }
 
-        Optional<Element<GeneratedOrder>> foundOrder = caseData.getOrderCollection()
+        Optional<Element<GeneratedOrder>> foundOrder = caseData.getAllOrderCollections()
             .stream()
             .filter(order -> order.getId().equals(selectedOrderId))
             .findFirst();
 
         if (foundOrder.isPresent()) {
-            return foundOrder.get().getValue().getDocument();
+            GeneratedOrder order = foundOrder.get().getValue();
+            return order.getDocumentOrDocumentConfidential();
         }
 
         Optional<Element<HearingOrder>> foundCMO = caseData.getSealedCMOs()

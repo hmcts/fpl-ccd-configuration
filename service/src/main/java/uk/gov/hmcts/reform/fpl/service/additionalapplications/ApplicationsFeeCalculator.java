@@ -66,7 +66,8 @@ public class ApplicationsFeeCalculator {
 
     public FeesData getFeeDataForAdditionalApplications(AdditionalApplicationsBundle applicationsBundle) {
         final List<FeeType> feeTypes = getFeeTypes(
-            applicationsBundle.getC2DocumentBundle(),
+            isNotEmpty(applicationsBundle.getC2DocumentBundle())
+                ? applicationsBundle.getC2DocumentBundle() : applicationsBundle.getC2DocumentBundleConfidential(),
             applicationsBundle.getOtherApplicationsBundle());
 
         return feeService.getFeesDataForAdditionalApplications(feeTypes);

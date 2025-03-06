@@ -113,6 +113,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "draftOrderUrgency",
+    "ElementLabel": "Do one or more orders need priority approval from the judge?",
+    "FieldType": "DraftOrderUrgencyOption",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
@@ -127,26 +135,6 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "C2SupportingEvidenceBundle",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceLA",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "C2SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceNC",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "C2SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",

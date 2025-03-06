@@ -57,7 +57,7 @@
       "caseworker-publiclaw-superuser",
       "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "R"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -84,8 +84,7 @@
       "caseworker-publiclaw-judiciary",
       "caseworker-publiclaw-magistrate",
       "caseworker-publiclaw-solicitor",
-      "caseworker-publiclaw-superuser",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-publiclaw-superuser"
     ],
     "CRUD": "R"
   },
