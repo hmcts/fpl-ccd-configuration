@@ -9,7 +9,6 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-other-proceedings/mid-event",
     "ShowSummaryChangeOption": "Y"
   }
 ]

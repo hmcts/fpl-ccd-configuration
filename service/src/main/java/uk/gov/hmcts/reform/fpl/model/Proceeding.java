@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import uk.gov.hmcts.reform.fpl.enums.ProceedingStatus;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.List;
 public class Proceeding {
     @Deprecated
     private final String onGoingProceeding;
-    private final String proceedingStatus;
+    private final ProceedingStatus proceedingStatus;
     private final String caseNumber;
     private final String started;
     private final String ended;
@@ -25,7 +27,7 @@ public class Proceeding {
     private final String judge;
     private final String children;
     private final String guardian;
-    private final String sameGuardianNeeded;
+    private final YesNo sameGuardianNeeded;
     private final String sameGuardianDetails;
     @Deprecated
     private final List<Element<Proceeding>> additionalProceedings;

@@ -649,18 +649,16 @@ public class CaseSubmissionGenerationService
 
     private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<Proceeding>> proceedings,
                                                               Language applicationLanguage) {
-        return proceedings.stream()
-            .map(Element::getValue)
+        return unwrapElements(proceedings).stream()
             .filter(Objects::nonNull)
             .map(proceeding -> buildProceeding(proceeding, applicationLanguage))
-            .collect(toList());
+            .toList();
     }
 
     private DocmosisProceeding buildProceeding(final Proceeding proceeding,
                                                Language applicationLanguage) {
         return DocmosisProceeding.builder()
-            .onGoingProceeding(getValidAnswerOrDefaultValue(proceeding.getOnGoingProceeding(), applicationLanguage))
-            .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus()))
+            .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus().getValue()))
             .caseNumber(getDefaultIfNullOrEmpty(proceeding.getCaseNumber()))
             .started(getDefaultIfNullOrEmpty(proceeding.getStarted()))
             .ended(getDefaultIfNullOrEmpty(proceeding.getEnded()))
@@ -670,7 +668,7 @@ public class CaseSubmissionGenerationService
             .guardian(getDefaultIfNullOrEmpty(proceeding.getGuardian()))
             .sameGuardianDetails(
                 concatenateKeyAndValue(
-                    proceeding.getSameGuardianNeeded(),
+                    proceeding.getSameGuardianNeeded().getValue(),
                     proceeding.getSameGuardianDetails()))
             .build();
     }

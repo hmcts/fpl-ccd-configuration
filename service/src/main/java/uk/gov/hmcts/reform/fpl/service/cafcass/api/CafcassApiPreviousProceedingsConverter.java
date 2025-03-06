@@ -8,7 +8,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDataConverter {
@@ -27,10 +29,9 @@ public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDat
     }
 
     private List<CafcassApiProceeding> getCafcassApiProceeding(CaseData caseData) {
-        return caseData.getProceedings().stream()
-            .map(Element::getValue)
+        return unwrapElements(caseData.getProceedings()).stream()
             .map(proceeding -> CafcassApiProceeding.builder()
-                .proceedingStatus(proceeding.getProceedingStatus())
+                .proceedingStatus(proceeding.getProceedingStatus().getValue())
                 .caseNumber(proceeding.getCaseNumber())
                 .started(proceeding.getStarted())
                 .ended(proceeding.getEnded())
@@ -38,7 +39,7 @@ public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDat
                 .judge(proceeding.getJudge())
                 .children(proceeding.getChildren())
                 .guardian(proceeding.getGuardian())
-                .sameGuardianNeeded(isYes(proceeding.getSameGuardianNeeded()))
+                .sameGuardianNeeded(YES.equals(proceeding.getSameGuardianNeeded()))
                 .sameGuardianDetails(proceeding.getSameGuardianDetails())
                 .build())
             .filter(proceeding -> !EMPTY.equals(proceeding))

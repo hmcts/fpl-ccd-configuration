@@ -2,36 +2,35 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherProceedings",
-    "CaseEventID": "otherProceedings",
+    "CaseEventID": "amendOtherProceedings",
     "CaseFieldID": "proceedings",
     "ListElementCode": "proceedingStatus",
+    "EventElementLabel": "Select status of proceeding",
     "FieldDisplayOrder": "1",
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherProceedings",
-    "CaseEventID": "otherProceedings",
+    "CaseEventID": "amendOtherProceedings",
     "CaseFieldID": "proceedings",
     "ListElementCode": "started",
     "FieldDisplayOrder": "2",
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "proceedingStatus=\"*\""
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherProceedings",
-    "CaseEventID": "otherProceedings",
+    "CaseEventID": "amendOtherProceedings",
     "CaseFieldID": "proceedings",
     "ListElementCode": "ended",
     "FieldDisplayOrder": "3",
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "proceedingStatus=\"Previous\""
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherProceedings",
-    "CaseEventID": "otherProceedings",
+    "CaseEventID": "amendOtherProceedings",
     "CaseFieldID": "proceedings",
     "ListElementCode": "caseNumber",
     "FieldDisplayOrder": "4",
@@ -40,7 +39,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherProceedings",
-    "CaseEventID": "otherProceedings",
+    "CaseEventID": "amendOtherProceedings",
     "CaseFieldID": "proceedings",
     "ListElementCode": "ordersMade",
     "FieldDisplayOrder": "5",
@@ -49,7 +48,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherProceedings",
-    "CaseEventID": "otherProceedings",
+    "CaseEventID": "amendOtherProceedings",
     "CaseFieldID": "proceedings",
     "ListElementCode": "judge",
     "FieldDisplayOrder": "6",
@@ -58,7 +57,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherProceedings",
-    "CaseEventID": "otherProceedings",
+    "CaseEventID": "amendOtherProceedings",
     "CaseFieldID": "proceedings",
     "ListElementCode": "children",
     "FieldDisplayOrder": "7",
@@ -67,7 +66,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherProceedings",
-    "CaseEventID": "otherProceedings",
+    "CaseEventID": "amendOtherProceedings",
     "CaseFieldID": "proceedings",
     "ListElementCode": "guardian",
     "FieldDisplayOrder": "8",
@@ -76,10 +75,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherProceedings",
-    "CaseEventID": "otherProceedings",
+    "CaseEventID": "amendOtherProceedings",
+    "CaseFieldID": "proceedings",
+    "ListElementCode": "sameGuardianNeeded",
+    "FieldDisplayOrder": "9",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherProceedings",
+    "CaseEventID": "amendOtherProceedings",
     "CaseFieldID": "proceedings",
     "ListElementCode": "sameGuardianDetails",
-    "FieldDisplayOrder": "9",
+    "FieldDisplayOrder": "10",
     "DisplayContext": "MANDATORY"
   }
 ]

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ProceedingStatus.PREVIOUS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
@@ -25,32 +27,37 @@ public class ProceedingsChecker implements EventChecker {
 
     @Override
     public boolean isStarted(CaseData caseData) {
-        Proceeding proceedings = caseData.getProceeding();
-        return isNotEmpty(proceedings) && isNotEmpty(proceedings.getOnGoingProceeding());
+        return isNotEmpty(caseData.getProceedings());
     }
 
     @Override
     public boolean isCompleted(CaseData caseData) {
-        final Proceeding proceeding = caseData.getProceeding();
-
-        if (proceeding == null || isEmpty(proceeding.getOnGoingProceeding())) {
+        final List<Element<Proceeding>> proceedings = caseData.getProceedings();
+        if (isEmpty(proceedings)) {
             return false;
         }
 
-        if (YES.getValue().equals(proceeding.getOnGoingProceeding())) {
-            if (NO.getValue().equals(proceeding.getSameGuardianNeeded())
-                && isEmpty(proceeding.getSameGuardianDetails())) {
-                return false;
-            }
-            return !anyEmpty(
+        for (Element<Proceeding> proceedingElement: caseData.getProceedings()) {
+            final Proceeding proceeding = proceedingElement.getValue();
+
+            if (anyEmpty(
                 proceeding.getProceedingStatus(),
                 proceeding.getCaseNumber(),
                 proceeding.getStarted(),
-                proceeding.getEnded(),
                 proceeding.getOrdersMade(),
                 proceeding.getChildren(),
-                proceeding.getGuardian()
-            );
+                proceeding.getGuardian(),
+                proceeding.getSameGuardianNeeded())) {
+                return false;
+            }
+
+            if (PREVIOUS.equals(proceeding.getProceedingStatus()) && isEmpty(proceeding.getEnded())) {
+                return false;
+            }
+
+            if (NO.equals(proceeding.getSameGuardianNeeded()) && isEmpty(proceeding.getSameGuardianDetails())) {
+                return false;
+            }
         }
 
         return true;

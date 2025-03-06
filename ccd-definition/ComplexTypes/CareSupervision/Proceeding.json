@@ -16,7 +16,7 @@
     "ListElementCode": "proceedingStatus",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ProceedingStatus",
-    "ElementLabel": "Are these previous or ongoing proceedings?",
+    "ElementLabel": "Status of proceeding",
     "SecurityClassification": "Public"
   },
   {
@@ -31,8 +31,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "started",
-    "FieldType": "Text",
-    "ElementLabel": "Date started",
+    "FieldType": "Date",
+    "ElementLabel": "Application submission date",
+    "HintText": "For example, 31 3 2016",
     "FieldShowCondition": "proceedingStatus=\"*\"",
     "SecurityClassification": "Public"
   },
@@ -40,8 +41,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "ended",
-    "FieldType": "Text",
-    "ElementLabel": "Date ended",
+    "FieldType": "Date",
+    "ElementLabel": "Final order date",
+    "HintText": "For example, 31 3 2016",
     "FieldShowCondition": "proceedingStatus=\"Previous\"",
     "SecurityClassification": "Public"
   },

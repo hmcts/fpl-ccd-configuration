@@ -9,14 +9,19 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingStatus;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class ProceedingsCheckerTest {
@@ -42,9 +47,9 @@ class ProceedingsCheckerTest {
         @ParameterizedTest
         @NullSource
         @MethodSource("uk.gov.hmcts.reform.fpl.service.validators.ProceedingsCheckerTest#incompleteProceedings")
-        void shouldReturnEmptyErrorsAndNonCompletedState(Proceeding proceeding) {
+        void shouldReturnEmptyErrorsAndNonCompletedState(List<Element<Proceeding>> proceedings) {
             final CaseData caseData = CaseData.builder()
-                .proceeding(proceeding)
+                .proceedings(proceedings)
                 .build();
 
             final boolean isCompleted = proceedingsChecker.isCompleted(caseData);
@@ -54,9 +59,9 @@ class ProceedingsCheckerTest {
 
         @ParameterizedTest
         @MethodSource("uk.gov.hmcts.reform.fpl.service.validators.ProceedingsCheckerTest#completeProceedings")
-        void shouldReturnEmptyErrorsAndCompletedState(Proceeding proceeding) {
+        void shouldReturnEmptyErrorsAndCompletedState(List<Element<Proceeding>> proceedings) {
             final CaseData caseData = CaseData.builder()
-                .proceeding(proceeding)
+                .proceedings(proceedings)
                 .build();
 
             final boolean isCompleted = proceedingsChecker.isCompleted(caseData);
@@ -67,99 +72,97 @@ class ProceedingsCheckerTest {
 
     private static Stream<Arguments> incompleteProceedings() {
         return Stream.of(
-            Proceeding.builder()
-                .build(),
-
-            completedProceeding()
-                .onGoingProceeding(null)
-                .build(),
-            completedProceeding()
-                .onGoingProceeding("")
-                .build(),
-
-            completedProceeding()
+            wrapElements(Proceeding.builder()
+                .build()),
+            wrapElements(completedProceeding()
                 .proceedingStatus(null)
-                .build(),
-            completedProceeding()
-                .proceedingStatus("")
-                .build(),
-
-            completedProceeding()
-                .caseNumber(null)
-                .build(),
-            completedProceeding()
+                .build()),
+            wrapElements(completedProceeding()
                 .caseNumber("")
-                .build(),
-
-            completedProceeding()
+                .build()),
+            wrapElements(completedProceeding()
+                .caseNumber(null)
+                .build()),
+            wrapElements(completedProceeding()
                 .started(null)
-                .build(),
-            completedProceeding()
+                .build()),
+            wrapElements(completedProceeding()
                 .started("")
-                .build(),
-
-            completedProceeding()
+                .build()),
+            wrapElements(completedProceeding()
                 .ended(null)
-                .build(),
-            completedProceeding()
+                .build()),
+            wrapElements(completedProceeding()
                 .ended("")
-                .build(),
-
-            completedProceeding()
-                .ordersMade(null)
-                .build(),
-            completedProceeding()
+                .build()),
+            wrapElements(completedProceeding()
                 .ordersMade("")
-                .build(),
-
-            completedProceeding()
-                .children(null)
-                .build(),
-            completedProceeding()
+                .build()),
+            wrapElements(completedProceeding()
+                .ordersMade(null)
+                .build()),
+            wrapElements(completedProceeding()
+                .judge("")
+                .build()),
+            wrapElements(completedProceeding()
+                .judge(null)
+                .build()),
+            wrapElements(completedProceeding()
                 .children("")
-                .build(),
-
-            completedProceeding()
-                .guardian(null)
-                .build(),
-            completedProceeding()
+                .build()),
+            wrapElements(completedProceeding()
+                .children(null)
+                .build()),
+            wrapElements(completedProceeding()
                 .guardian("")
-                .build(),
-
-            completedProceeding()
-                .sameGuardianNeeded("No")
-                .sameGuardianDetails(null)
-                .build(),
-
-            completedProceeding()
-                .sameGuardianNeeded("No")
+                .build()),
+            wrapElements(completedProceeding()
+                .guardian(null)
+                .build()),
+            wrapElements(completedProceeding()
+                .sameGuardianNeeded(null)
+                .build()),
+            wrapElements(completedProceeding()
                 .sameGuardianDetails("")
-                .build()
+                .build()),
+            wrapElements(completedProceeding()
+                .sameGuardianDetails(null)
+                .build())
         ).map(Arguments::of);
     }
 
     private static Stream<Arguments> completeProceedings() {
         return Stream.of(
-            Proceeding.builder()
-                .onGoingProceeding("No")
-                .build(),
-            Proceeding.builder()
-                .onGoingProceeding("DontKnow")
-                .build(),
-            completedProceeding()
-                .build()
+            wrapElements(completedProceeding().build()),
+            wrapElements(completedProceeding()
+                .proceedingStatus(ProceedingStatus.ONGOING)
+                .ended("")
+                .build()),
+            wrapElements(completedProceeding()
+                .proceedingStatus(ProceedingStatus.ONGOING)
+                .ended(null)
+                .build()),
+            wrapElements(completedProceeding()
+                .sameGuardianNeeded(YesNo.NO)
+                .sameGuardianDetails(null)
+                .build()),
+            wrapElements(completedProceeding()
+                .sameGuardianNeeded(YesNo.NO)
+                .sameGuardianDetails("")
+                .build())
         ).map(Arguments::of);
     }
 
     private static Proceeding.ProceedingBuilder completedProceeding() {
         return Proceeding.builder()
-            .onGoingProceeding("Yes")
-            .proceedingStatus("Test")
+            .proceedingStatus(ProceedingStatus.PREVIOUS)
             .caseNumber("Test")
             .started("Test")
             .ended("Test")
             .ordersMade("Test")
             .children("Test")
-            .guardian("Test");
+            .guardian("Test")
+            .sameGuardianNeeded(YesNo.YES)
+            .sameGuardianDetails("Test");
     }
 }
