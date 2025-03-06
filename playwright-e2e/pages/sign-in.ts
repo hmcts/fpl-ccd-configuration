@@ -36,7 +36,10 @@ export class SignInPage extends BasePage {
     }
 
     async navigateTOCaseDetails(caseNumber: string) {
-        await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+        await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`,{waitUntil:'commit'});
+        await this.tabNavigation('Case File View');
+
+
     }
 
     async login(email: string, password: string) {

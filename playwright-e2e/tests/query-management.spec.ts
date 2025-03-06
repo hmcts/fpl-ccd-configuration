@@ -9,8 +9,8 @@ import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
 import {urlConfig} from "../settings/urls";
-import caseWithChildrenCafcassSolicitorDemo from "../caseData/caseWithMultipleChildCafcassSolicitorDemo.json";
-import caseWithChildrenCafcassSolicitor from "../caseData/caseWithMultipleChildCafcassSolicitor.json";
+import caseWithChildrenCafcassSolicitorDemo from '../caseData/caseWithMultipleChildCafcassSolicitorDemo.json' assert { type: "json" };
+import caseWithChildrenCafcassSolicitor from '../caseData/caseWithMultipleChildCafcassSolicitor.json' assert { type: "json" };
 
 test.describe('Query management', () => {
     const dateTime = new Date().toISOString();
@@ -49,24 +49,26 @@ test.describe('Query management', () => {
             await queryManagement.clickSubmit();
             await expect(page.getByRole('heading', { name: 'Query submitted' })).toBeVisible();
             await expect(page.getByText('Your query has been sent to')).toBeVisible();
+            await queryManagement.page.pause();
             await queryManagement.page.getByRole('link', { name: 'Go back to the case' }).click();
-            await caseFileView.openFolder('Uncategorised');
-            await expect(caseFileView.page.getByText('testPdf2.pdf')).toBeVisible();
+
             await queryManagement.tabNavigation('Queries');
              await expect(page.getByRole('table', { name: 'Local Authority' }).locator('div')).toBeVisible();
              await expect(page.getByRole('cell', { name: 'Birth certificate format' })).toBeVisible();
              await expect(page.getByRole('cell', { name: 'Awaiting Response' })).toBeVisible();
              await expect(page.getByRole('cell', { name: `${queryManagement.getCurrentDate()}` })).toBeVisible();
              await expect(page.getByRole('cell', { name: 'Local Authority' })).toBeVisible();
+            await queryManagement.tabNavigation('Case File View');
+            await caseFileView.openFolder('Uncategorised');
+            await expect(caseFileView.page.getByText('testPdf2.pdf')).toBeVisible();
 
 
              // login in as respondent solicitor and assert the query is not visible
-
-            await signInPage.signOut();
-            await signInPage.
-
-
-           await signInPage.page.pause();
+            //await signInPage.signOut();
+            // await signInPage.
+           //
+           //
+           // await signInPage.page.pause();
 
 
 
