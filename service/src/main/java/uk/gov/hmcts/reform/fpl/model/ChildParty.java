@@ -47,9 +47,10 @@ public final class ChildParty extends Party {
     private final String fathersName;
     /**
      * This historical field is deprecated since DFPL-2362.
+     * No longer used as part of C110a flow and template
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String fathersResponsibility;
     private final String socialWorkerName;
     private final Telephone socialWorkerTelephoneNumber;
@@ -60,33 +61,38 @@ public final class ChildParty extends Party {
     private final String additionalNeedsDetails;
     /**
      * This historical field is deprecated since DFPL-2362.
+     * Replaced by isAddressConfidential and socialWorkerDetailHidden
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHidden;
     /**
      * This historical field is deprecated since DFPL-2362.
+     * No longer used, replaced by socialWorkerDetailsHiddenReason
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHiddenReason;
     /**
      * This historical field is deprecated since DFPL-2362.
+     * No longer used as part of C110a flow and template
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
     /**
      * This historical field is deprecated since DFPL-2362.
+     * No longer used as part of C110a flow and template
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssuesDetails;
     /**
      * This historical field is deprecated since DFPL-2362.
+     * Replaced by isAddressConfidential but kept backwards compatability
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String showAddressInConfidentialTab;
     private final LocalDate completionDate;
     private final CaseExtensionReasonList extensionReason;

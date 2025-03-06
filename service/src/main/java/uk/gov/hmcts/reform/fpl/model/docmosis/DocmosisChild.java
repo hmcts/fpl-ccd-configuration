@@ -23,9 +23,10 @@ public class DocmosisChild {
     private final String fathersName;
     /**
      * This historical field is deprecated since DFPL-2362.
+     * No longer part of C110a template and flow
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String fathersResponsibility;
     private final String socialWorkerName;
     private final String socialWorkerTelephoneNumber;
@@ -34,15 +35,17 @@ public class DocmosisChild {
     private final String additionalNeeds;
     /**
      * This historical field is deprecated since DFPL-2362.
+     * No longer required as part of C110a changes
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
     /**
      * This historical field is deprecated since DFPL-2362.
+     * Replaced by isAddressConfidential and socialWorkerDetailHidden
      * @deprecated (DFPL-2362, historical field)
      */
-    @Deprecated(since = "DFPL-2362 06/03/25", forRemoval = true)
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHiddenReason;
     private final DocmosisBirthCertificate birthCertificate;
     private final String placementOrderOtherDetails;
