@@ -48,7 +48,7 @@ export class ApplicantDetails extends BasePage {
   }
 
   async applicantDetailsNeeded() {
-    await expect(this.applicantDetailsHeading).toBeVisible();
+    await expect.soft(this.applicantDetailsHeading).toBeVisible();
     await this.pbaNumber.fill('PBA0082848');
     await this.customerReference.fill('1234567');
     await this.nameOfApplicantToSign.fill('Tom Jones');
