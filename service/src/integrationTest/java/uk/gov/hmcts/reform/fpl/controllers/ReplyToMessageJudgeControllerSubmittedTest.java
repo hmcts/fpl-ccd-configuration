@@ -112,7 +112,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotNotifyJudicialMessageRecipientIfToggledOff() throws NotificationClientException {
-        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
 
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)

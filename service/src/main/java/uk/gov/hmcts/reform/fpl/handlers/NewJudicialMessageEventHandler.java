@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageContentProvider;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 
 @Component
@@ -30,7 +31,7 @@ public class NewJudicialMessageEventHandler {
         JudicialMessage newJudicialMessage = event.getJudicialMessage();
         if (shouldSkipNotification(event)) {
             log.info("JudicialMessage - notification toggled off (court = {}, isCtsc = {})",
-                event.getCaseData().getCourt().getName(),
+                isNotEmpty(event.getCaseData().getCourt()) ? event.getCaseData().getCourt().getName() : "null",
                 ctscEmailLookupConfiguration.getEmail().equals(newJudicialMessage.getRecipient()));
             return;
         }
