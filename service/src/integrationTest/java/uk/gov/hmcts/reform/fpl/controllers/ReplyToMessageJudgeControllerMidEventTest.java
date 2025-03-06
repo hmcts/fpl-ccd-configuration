@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
@@ -41,6 +42,9 @@ class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAb
     private static final String CURRENT_USER = "current@gmail.com";
     private static final JudicialMessageRoleType CURRENT_USER_TYPE = JudicialMessageRoleType.LOCAL_COURT_ADMIN;
     private static final String RELATED_FILE_NAME = "file1.doc";
+    private static final DocumentReference RELATED_FILE = DocumentReference.builder()
+            .filename(RELATED_FILE_NAME)
+            .build();
     private static final String MESSAGE_HISTORY = "message history";
     private static final String LATEST_MESSAGE = "Some note";
     private static final String DATE_SENT = "16 December 2020";
@@ -115,6 +119,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAb
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .senderType(JudicialMessageRoleType.LOCAL_COURT_ADMIN)
             .recipientLabel(JudicialMessageRoleType.CTSC.getLabel())
+            .relatedDocuments(selectedJudicialMessage.getRelatedDocuments())
             .recipientDynamicList(buildRecipientDynamicList(List.of(
                 JudicialMessageRoleType.CTSC.toString(),
                 JudicialMessageRoleType.OTHER.toString()
@@ -154,6 +159,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAb
             .sender(SENDER)
             .senderType(SENDER_TYPE)
             .relatedDocumentFileNames(RELATED_FILE_NAME)
+            .relatedDocuments(List.of(element(RELATED_FILE)))
             .messageHistory(MESSAGE_HISTORY)
             .latestMessage(LATEST_MESSAGE)
             .dateSent(DATE_SENT)

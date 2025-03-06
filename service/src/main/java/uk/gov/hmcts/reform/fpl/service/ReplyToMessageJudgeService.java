@@ -72,6 +72,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipientLabel(formatLabel(selectedJudicialMessage.getSenderType(), selectedJudicialMessage.getSender()))
             .senderType(senderRole)
+            .relatedDocuments(selectedJudicialMessage.getRelatedDocuments())
             .subject(selectedJudicialMessage.getSubject())
             .recipientDynamicList(buildRecipientDynamicList(
                 caseData, senderRole, Optional.of(selectedJudicialMessage.getSenderType().toString())))
