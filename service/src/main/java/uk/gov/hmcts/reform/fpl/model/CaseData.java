@@ -173,6 +173,14 @@ public class CaseData extends CaseDataParent {
     private OutsourcingType outsourcingType;
     private RepresentativeType representativeType;
     private YesNo isLocalAuthority;
+
+    @JsonIgnore
+    public boolean checkIfCaseIsSubmittedByLA() {
+        // isLocalAuthority is set to No if submitted by solicitor user and act as respondent / child solicitor
+        // otherwise, it could be null or Yes
+        return RepresentativeType.LOCAL_AUTHORITY.equals(representativeType);
+    }
+
     private Object outsourcingLAs;
     private String relatingLA;
     private Court court;

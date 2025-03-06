@@ -403,7 +403,7 @@ public class ManageLocalAuthoritiesService {
             final Optional<Colleague> oldSolicitor = old.getFirstSolicitor();
 
             if (oldSolicitor.isPresent()) {
-                oldSolicitor.get().setFullName(newDesignatedLocalAuthoritySolicitor.getFullName());
+                oldSolicitor.get().setFullName(newDesignatedLocalAuthoritySolicitor.buildFullName());
                 oldSolicitor.get().setEmail(newDesignatedLocalAuthoritySolicitor.getEmail());
             } else {
                 final List<Element<Colleague>> colleagues = defaultIfNull(old.getColleagues(), new ArrayList<>());
