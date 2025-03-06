@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,6 +45,11 @@ class NewJudicialMessageEventHandlerTest {
     @InjectMocks
     private NewJudicialMessageEventHandler newJudicialMessageEventHandler;
 
+    @BeforeEach
+    void setup() {
+        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_EMAIL);
+    }
+
     @Test
     void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageCreated() {
         String recipient = "David@fpla.com";
@@ -86,7 +92,6 @@ class NewJudicialMessageEventHandlerTest {
             .build();
 
         when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
-        when(ctscEmailLookupConfiguration.getEmail()).thenReturn(CTSC_EMAIL);
 
         newJudicialMessageEventHandler.notifyJudicialMessageRecipient(
             new NewJudicialMessageEvent(caseData, judicialMessage)
@@ -96,7 +101,7 @@ class NewJudicialMessageEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCTSCWhenToggledOff() {
+    void shouldNotifyCTSCWhenToggledOn() {
         String recipient = CTSC_EMAIL;
 
         JudicialMessage judicialMessage = JudicialMessage.builder()
@@ -110,8 +115,7 @@ class NewJudicialMessageEventHandlerTest {
 
         final NewJudicialMessageTemplate expectedParameters = NewJudicialMessageTemplate.builder().build();
 
-        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
-        when(ctscEmailLookupConfiguration.getEmail()).thenReturn(CTSC_EMAIL);
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
         given(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
             .willReturn(expectedParameters);
         given(featureToggleService.isWATaskEmailsEnabled()).willReturn(true);
@@ -138,7 +142,6 @@ class NewJudicialMessageEventHandlerTest {
 
         CaseData caseData = caseData();
 
-        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(false);
         given(featureToggleService.isCourtNotificationEnabledForWa(any())).willReturn(false);
 
         newJudicialMessageEventHandler.notifyJudicialMessageRecipient(
