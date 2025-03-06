@@ -16,13 +16,13 @@ class YesNoTest {
     }
 
     @Test
-    void shouldCheckIfValueIsYesNo(){
+    void shouldCheckIfValueIsYesNo() {
         assertThat(YesNo.isYesOrNo("Yes")).isEqualTo(true);
         assertThat(YesNo.isYesOrNo("Nop")).isEqualTo(false);
     }
 
     @Test
-    void shouldReturnLanguageValueIfValid(){
+    void shouldReturnLanguageValueIfValid() {
         assertThat(NO.getValue(Language.ENGLISH)).isEqualTo("No");
         assertThat(NO.getValue(Language.WELSH)).isEqualTo("Na");
     }
