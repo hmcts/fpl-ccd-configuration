@@ -45,6 +45,10 @@ public final class ChildParty extends Party {
     private final String placementCourt;
     private final String mothersName;
     private final String fathersName;
+    /**
+     * This historical field is deprecated since DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String fathersResponsibility;
     private final String socialWorkerName;
@@ -54,14 +58,34 @@ public final class ChildParty extends Party {
     private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
     private final String additionalNeedsDetails;
+    /**
+     * This historical field is deprecated since DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHidden;
+    /**
+     * This historical field is deprecated since DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHiddenReason;
+    /**
+     * This historical field is deprecated since DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
+    /**
+     * This historical field is deprecated since DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssuesDetails;
+    /**
+     * This historical field is deprecated since DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String showAddressInConfidentialTab;
     private final LocalDate completionDate;

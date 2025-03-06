@@ -21,6 +21,10 @@ public class DocmosisChild {
     private final String placementCourt;
     private final String mothersName;
     private final String fathersName;
+    /**
+     * This historical field is deprecated since DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String fathersResponsibility;
     private final String socialWorkerName;
@@ -28,8 +32,16 @@ public class DocmosisChild {
     private final String socialWorkerEmailAddress;
     private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
+    /**
+     * This historical field is deprecated since DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
+    /**
+     * This historical field is deprecated since DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHiddenReason;
     private final DocmosisBirthCertificate birthCertificate;
