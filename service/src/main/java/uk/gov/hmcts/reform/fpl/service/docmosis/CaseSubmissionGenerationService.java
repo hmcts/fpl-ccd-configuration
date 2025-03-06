@@ -872,6 +872,10 @@ public class CaseSubmissionGenerationService
         if (StringUtils.isNotEmpty(child.getLivingSituation())) {
             stringBuilder.append(child.getLivingSituation());
 
+            if (StringUtils.isNotEmpty(child.getLivingWithDetails())) {
+                stringBuilder.append(NEW_LINE).append(child.getLivingWithDetails());
+            }
+
             if (isConfidential) {
                 stringBuilder.append(NEW_LINE).append(getConfidential(applicationLanguage));
             } else if (isNotEmpty(child.getAddress())) {

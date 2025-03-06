@@ -94,6 +94,10 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
             childPartyBuilder.livingSituationDetails(((ChildParty) party).getLivingSituationDetails());
         }
 
+        if (!isEmpty(((ChildParty) party).getLivingWithDetails())) {
+            childPartyBuilder.livingWithDetails(((ChildParty) party).getLivingWithDetails());
+        }
+
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
             childPartyBuilder = childPartyBuilder.address(party.getAddress());
         }
@@ -112,6 +116,9 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
     @Override
     public Child removeConfidentialDetails() {
         ChildPartyBuilder childPartyBuilder = this.party.toBuilder();
+        childPartyBuilder.livingSituation(null);
+        childPartyBuilder.livingSituationDetails(null);
+        childPartyBuilder.telephoneNumber(null);
         childPartyBuilder.email(null); // legacy behaviour, always hide email if present (no longer entered)
 
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {

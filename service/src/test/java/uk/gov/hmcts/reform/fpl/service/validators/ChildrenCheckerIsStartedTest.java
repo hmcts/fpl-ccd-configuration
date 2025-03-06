@@ -67,8 +67,8 @@ class ChildrenCheckerIsStartedTest {
                         .fathersName("")
                         .fathersResponsibility("")
                         .socialWorkerName("")
+                        .socialWorkerEmail("")
                         .additionalNeeds("")
-                        .showAddressInConfidentialTab("")
                         .litigationIssues("")
                         .address(Address.builder()
                                 .addressLine1("")
@@ -145,8 +145,8 @@ class ChildrenCheckerIsStartedTest {
                 ChildParty.builder().fathersName("Test").build(),
                 ChildParty.builder().fathersResponsibility("Test").build(),
                 ChildParty.builder().socialWorkerName("Test").build(),
+                ChildParty.builder().socialWorkerEmail("Test").build(),
                 ChildParty.builder().additionalNeeds("Test").build(),
-                ChildParty.builder().showAddressInConfidentialTab("No").build(),
                 ChildParty.builder().litigationIssues("Test").build(),
                 ChildParty.builder().address(
                         Address.builder().addressLine1("Test").build()).build(),

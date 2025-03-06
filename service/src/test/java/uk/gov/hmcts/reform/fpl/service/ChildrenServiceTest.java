@@ -320,7 +320,7 @@ class ChildrenServiceTest {
         return element(id, Child.builder()
             .party(ChildParty.builder()
                 .firstName("James")
-                .detailsHidden("Yes")
+                .isAddressConfidential("Yes")
                 .email(EmailAddress.builder().email("email@email.com").build())
                 .address(Address.builder().addressLine1("Address Line 1").build())
                 .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())

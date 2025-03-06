@@ -233,7 +233,7 @@ class ChildRepresentationServiceTest {
                     .party(ChildParty.builder()
                         .livingSituation(ChildLivingSituation.LIVE_IN_REFUGE.getValue())
                         .address(Address.builder().addressLine1("Refugee address").build())
-                        .detailsHidden(YES.getValue())
+                        .isAddressConfidential(YES.getValue())
                         .build())
                     .build()))
             ));

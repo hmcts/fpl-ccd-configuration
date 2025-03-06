@@ -139,7 +139,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .age(formatAgeDisplay(parse("2018-06-15"), LANGUAGE))
                 .gender("Male")
                 .dateOfBirth("15 June 2018")
-                .livingSituation("Living with respondents\nConfidential\nDate this began: 8 November 2018")
+                .livingSituation("Living with respondents\nUncle Fred\nConfidential\nDate this began: 8 November 2018")
                 .keyDates("child starting primary school or taking GCSEs")
                 .careAndContactPlan("Place baby in local authority foster care")
                 .adoption("Yes")
@@ -148,18 +148,20 @@ public class SampleCaseSubmissionTestDataHelper {
                 .mothersName("Isbella Reeves")
                 .fathersName("Rob Reeves")
                 .fathersResponsibility("Yes")
+                .socialWorkerDetailsHiddenReason("No")
                 .socialWorkerName("Helen Green")
                 .socialWorkerTelephoneNumber("0123456789")
+                .socialWorkerEmailAddress("test1@test.com")
                 .additionalNeeds("Yes\nAutism")
                 .litigationIssues("-")
-                .detailsHiddenReason("Yes\nHistory of domestic violence with relatives")
+                .detailsHiddenReason("-")
                 .build(),
             DocmosisChild.builder()
                 .name("Sarah Reeves")
                 .age(formatAgeDisplay(parse("2002-02-02"), LANGUAGE))
                 .gender("Female")
                 .dateOfBirth("2 February 2002")
-                .livingSituation("Living with respondents\nCarnegie House\nCentral Milton Keynes\nMilton Keynes"
+                .livingSituation("Living with respondents\nAuntie Margaret\nCarnegie House\nCentral Milton Keynes\nMilton Keynes"
                     + "\nMK\nLondon\nMK10 1SA\nBT66 7RR\nDate this began: 2 February 2002")
                 .keyDates("test child two key date")
                 .careAndContactPlan("test child two care and contact plan")
@@ -169,11 +171,13 @@ public class SampleCaseSubmissionTestDataHelper {
                 .mothersName("Sarah Simpson")
                 .fathersName("Scott Simpson")
                 .fathersResponsibility("Yes")
+                .socialWorkerDetailsHiddenReason("No")
                 .socialWorkerName("Paul Wilsdon")
                 .socialWorkerTelephoneNumber("07749972242")
+                .socialWorkerEmailAddress("test2@test.com")
                 .additionalNeeds("Yes\nlearning disabilities")
                 .litigationIssues("Yes\ntest child two ability to take part in proceedings")
-                .detailsHiddenReason("No\ntest child two contact details hidden reason")
+                .detailsHiddenReason("-")
                 .build());
     }
 

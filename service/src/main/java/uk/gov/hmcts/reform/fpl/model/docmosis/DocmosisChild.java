@@ -14,8 +14,6 @@ public class DocmosisChild {
     private final String dateOfBirth;
     private final String address;
     private final String livingSituation;
-    private final String isAddressConfidential;
-    private final String livingWithDetails;
     private final String keyDates;
     private final String careAndContactPlan;
     private final String adoption;

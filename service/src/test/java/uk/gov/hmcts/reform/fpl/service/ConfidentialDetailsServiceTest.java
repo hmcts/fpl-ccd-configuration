@@ -208,11 +208,11 @@ class ConfidentialDetailsServiceTest {
                 .containsExactly("Living with parents", "Details here");
         }
 
-        private ChildParty.ChildPartyBuilder baseChildBuilder(String detailsHidden) {
+        private ChildParty.ChildPartyBuilder baseChildBuilder(String isAddressConfidential) {
             return ChildParty.builder()
                 .firstName("John")
                 .lastName("Smith")
-                .detailsHidden(detailsHidden);
+                .isAddressConfidential(isAddressConfidential);
         }
 
         private Element<Child> childWithRemovedConfidentialFields(UUID id) {
@@ -237,14 +237,14 @@ class ConfidentialDetailsServiceTest {
                     .email(EmailAddress.builder().email("email@email.com").build())
                     .address(Address.builder().addressLine1("Address Line 1").build())
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .showAddressInConfidentialTab("Yes")
+                    .isAddressConfidential("Yes")
                     .build())
                 .build());
         }
 
-        private Element<Child> childWithConfidentialFields(UUID id, String detailsHidden) {
+        private Element<Child> childWithConfidentialFields(UUID id, String isAddressConfidential) {
             return element(id, Child.builder()
-                .party(baseChildBuilder(detailsHidden)
+                .party(baseChildBuilder(isAddressConfidential)
                     .email(EmailAddress.builder().email("email@email.com").build())
                     .address(Address.builder().addressLine1("Address Line 1").build())
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
@@ -259,7 +259,7 @@ class ConfidentialDetailsServiceTest {
                     .email(EmailAddress.builder().email("email@email.com").build())
                     .address(Address.builder().addressLine1("Address Line 1").build())
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .showAddressInConfidentialTab("Yes")
+                    .isAddressConfidential("Yes")
                     .livingSituation("Living in a refuge")
                     .build())
                 .build());
