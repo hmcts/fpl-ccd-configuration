@@ -161,8 +161,9 @@ public class SampleCaseSubmissionTestDataHelper {
                 .age(formatAgeDisplay(parse("2002-02-02"), LANGUAGE))
                 .gender("Female")
                 .dateOfBirth("2 February 2002")
-                .livingSituation("Living with respondents\nAuntie Margaret\nCarnegie House\nCentral Milton Keynes\nMilton Keynes"
-                    + "\nMK\nLondon\nMK10 1SA\nBT66 7RR\nDate this began: 2 February 2002")
+                .livingSituation("Living with respondents\nAuntie Margaret\nCarnegie House" +
+                    "\nCentral Milton Keynes\nMilton Keynes\nMK\nLondon\nMK10 1SA\nBT66 7RR" +
+                    "\nDate this began: 2 February 2002")
                 .keyDates("test child two key date")
                 .careAndContactPlan("test child two care and contact plan")
                 .adoption("Yes")

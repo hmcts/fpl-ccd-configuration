@@ -502,7 +502,9 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
         assertThat(caseData.getChildren1()).extracting(child -> child.getValue().getParty()).containsExactly(
-            confidentialParty.toBuilder().address(null).build(),
+            confidentialParty.toBuilder()
+                .address(null)
+                .telephoneNumber(null).build(),
             nonConfidentialParty
         );
     }
