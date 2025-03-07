@@ -5,7 +5,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.firstName",
-    "EventElementLabel": "*First name",
+    "EventElementLabel": "First name",
     "FieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL"
   },
@@ -15,7 +15,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.lastName",
-    "EventElementLabel": "*Last name",
+    "EventElementLabel": "Last name",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
   },
@@ -25,7 +25,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.dateOfBirth",
-    "EventElementLabel": "*Date of birth",
+    "EventElementLabel": "Date of birth",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
@@ -35,7 +35,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.gender",
-    "EventElementLabel": "*Gender",
+    "EventElementLabel": "What was the child's sex at birth?",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
@@ -45,7 +45,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.genderIdentification",
-    "EventElementLabel": "*What gender do they identify with?",
+    "EventElementLabel": "What gender do they identify with?",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL"
   },
@@ -63,7 +63,7 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.livingSituationDetails",
+    "ListElementCode": "party.addressAutoConfidentialLabel",
     "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
@@ -72,55 +72,9 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.addressChangeDate",
-    "EventElementLabel": " ",
-    "FieldDisplayOrder": 8,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.datePowersEnd",
-    "FieldDisplayOrder": 9,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.careStartDate",
-    "FieldDisplayOrder": 10,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.dischargeDate",
-    "FieldDisplayOrder": 11,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.addressAutoConfidentialLabel",
-    "FieldDisplayOrder": 12,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
     "ListElementCode": "party.address",
-    "EventElementLabel": "*Current address",
-    "FieldDisplayOrder": 13,
+    "EventElementLabel": "Current address",
+    "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -177,7 +131,53 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.detailsHidden",
+    "ListElementCode": "party.isAddressConfidential",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.livingSituationDetails",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.livingWithDetails",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.addressChangeDate",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.datePowersEnd",
+    "FieldDisplayOrder": 13,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.careStartDate",
     "FieldDisplayOrder": 14,
     "DisplayContext": "OPTIONAL"
   },
@@ -186,7 +186,7 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.detailsHiddenReason",
+    "ListElementCode": "party.dischargeDate",
     "FieldDisplayOrder": 15,
     "DisplayContext": "OPTIONAL"
   },
@@ -195,9 +195,22 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.keyDates",
+    "ListElementCode": "party.detailsHidden",
     "FieldDisplayOrder": 16,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "Comment": "Deprecated",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.detailsHiddenReason",
+    "FieldDisplayOrder": 17,
+    "DisplayContext": "OPTIONAL",
+    "Comment": "Deprecated",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -205,15 +218,6 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.careAndContactPlan",
-    "FieldDisplayOrder": 17,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.adoption",
     "FieldDisplayOrder": 18,
     "DisplayContext": "OPTIONAL"
   },
@@ -222,7 +226,7 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.placementOrderApplication",
+    "ListElementCode": "party.keyDates",
     "FieldDisplayOrder": 19,
     "DisplayContext": "OPTIONAL"
   },
@@ -231,77 +235,8 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.placementCourt",
-    "EventElementLabel": " ",
-    "FieldDisplayOrder": 20,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.mothersName",
-    "FieldDisplayOrder": 21,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.fathersName",
-    "FieldDisplayOrder": 22,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.fathersResponsibility",
-    "FieldDisplayOrder": 23,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.socialWorkerName",
-    "FieldDisplayOrder": 24,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.socialWorkerTelephoneNumber",
-    "FieldDisplayOrder": 25,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.socialWorkerTelephoneNumber.telephoneNumber",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "party.socialWorkerTelephoneNumber.contactDirection",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
     "ListElementCode": "party.additionalNeeds",
-    "FieldDisplayOrder": 26,
+    "FieldDisplayOrder": 20,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -311,6 +246,61 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.additionalNeedsDetails",
     "SecurityClassification": "Public",
+    "FieldDisplayOrder": 21,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.mothersName",
+    "FieldDisplayOrder": 22,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.fathersName",
+    "FieldDisplayOrder": 23,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.adoption",
+    "FieldDisplayOrder": 24,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.placementOrderApplication",
+    "FieldDisplayOrder": 25,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.placementCourt",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 26,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.socialWorkerName",
     "FieldDisplayOrder": 27,
     "DisplayContext": "OPTIONAL"
   },
@@ -319,26 +309,34 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.proceedingsLabel",
+    "ListElementCode": "party.socialWorkerTelephoneNumber",
     "FieldDisplayOrder": 28,
-    "DisplayContext": "READONLY",
-    "FieldShowCondition": "party!=\"SHOW_LABEL\""
+    "DisplayContext": "OPTIONAL"
   },
   {
-    "LiveFrom": "01/01/2017",
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.litigationIssues",
+    "ListElementCode": "party.socialWorkerTelephoneNumber.telephoneNumber",
+    "EventElementLabel": "Social worker's phone number",
     "FieldDisplayOrder": 29,
     "DisplayContext": "OPTIONAL"
   },
   {
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.socialWorkerTelephoneNumber.contactDirection",
+    "Comment": "Deprecated",
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
     "LiveFrom": "01/01/2017",
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "party.litigationIssuesDetails",
+    "ListElementCode": "party.socialWorkerEmail",
     "FieldDisplayOrder": 30,
     "DisplayContext": "OPTIONAL"
   },
@@ -347,8 +345,59 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
-    "ListElementCode": "representative",
+    "ListElementCode": "party.socialWorkerDetailsHidden",
     "FieldDisplayOrder": 31,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.socialWorkerDetailsHiddenReason",
+    "FieldDisplayOrder": 32,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.proceedingsLabel",
+    "FieldDisplayOrder": 33,
+    "DisplayContext": "READONLY",
+    "Comment": "Deprecated",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.litigationIssues",
+    "FieldDisplayOrder": 34,
+    "DisplayContext": "READONLY",
+    "Comment": "Deprecated",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.litigationIssuesDetails",
+    "FieldDisplayOrder": 35,
+    "DisplayContext": "READONLY",
+    "Comment": "Deprecated",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "representative",
+    "FieldDisplayOrder": 36,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
@@ -358,7 +407,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "solicitor",
-    "FieldDisplayOrder": 32,
+    "FieldDisplayOrder": 37,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
