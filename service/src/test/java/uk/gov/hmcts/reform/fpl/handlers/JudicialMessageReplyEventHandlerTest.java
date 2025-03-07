@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +17,9 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageReplyContentProvider;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -41,6 +44,11 @@ class JudicialMessageReplyEventHandlerTest {
 
     @InjectMocks
     private JudicialMessageReplyEventHandler judicialMessageReplyEventHandler;
+
+    @BeforeEach
+    void setup() {
+        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_EMAIL);
+    }
 
     @Test
     void shouldNotifyJudicialMessageRecipientWhenJudicialMessageReplyCreated() {
@@ -86,7 +94,6 @@ class JudicialMessageReplyEventHandlerTest {
         final JudicialMessageReplyTemplate expectedParameters = JudicialMessageReplyTemplate.builder().build();
 
         when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
-        when(ctscEmailLookupConfiguration.getEmail()).thenReturn(CTSC_EMAIL);
 
         judicialMessageReplyEventHandler.notifyRecipientOfReply(
             new JudicialMessageReplyEvent(caseData, judicialMessage)
@@ -96,7 +103,7 @@ class JudicialMessageReplyEventHandlerTest {
     }
 
     @Test
-    void shouldStillNotifyCTSCWhenToggledOff() {
+    void shouldNotifyCTSCWhenToggledOn() {
         String recipient = CTSC_EMAIL;
 
         JudicialMessage judicialMessage = JudicialMessage.builder()
@@ -110,10 +117,10 @@ class JudicialMessageReplyEventHandlerTest {
 
         final JudicialMessageReplyTemplate expectedParameters = JudicialMessageReplyTemplate.builder().build();
 
-        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
         when(ctscEmailLookupConfiguration.getEmail()).thenReturn(CTSC_EMAIL);
         given(judicialMessageReplyContentProvider.buildJudicialMessageReplyTemplate(caseData, judicialMessage))
             .willReturn(expectedParameters);
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(true);
 
         judicialMessageReplyEventHandler.notifyRecipientOfReply(
             new JudicialMessageReplyEvent(caseData, judicialMessage)
@@ -124,5 +131,29 @@ class JudicialMessageReplyEventHandlerTest {
             recipient,
             expectedParameters,
             caseData.getId());
+    }
+
+    @Test
+    void shouldNotSendEmailIfWAEmailsAreDisabled() {
+        String recipient = "David@fpla.com";
+
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .sender("Paul@fpla.com")
+            .recipient(recipient)
+            .build();
+
+        CaseData caseData = caseData();
+
+        given(featureToggleService.isCourtNotificationEnabledForWa(any())).willReturn(false);
+
+        judicialMessageReplyEventHandler.notifyRecipientOfReply(
+            new JudicialMessageReplyEvent(caseData, judicialMessage)
+        );
+
+        verify(notificationService, never()).sendEmail(
+            eq(JUDICIAL_MESSAGE_REPLY_TEMPLATE),
+            eq(recipient),
+            any(),
+            eq(caseData.getId()));
     }
 }
