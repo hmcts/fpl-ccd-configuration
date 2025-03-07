@@ -668,7 +668,7 @@ public class CaseSubmissionGenerationService
             .guardian(getDefaultIfNullOrEmpty(proceeding.getGuardian()))
             .sameGuardianDetails(
                 concatenateKeyAndValue(
-                    proceeding.getSameGuardianNeeded().getValue(),
+                    ofNullable(proceeding.getSameGuardianNeeded()).map(YesNo::getValue).orElse(null),
                     proceeding.getSameGuardianDetails()))
             .build();
     }

@@ -143,11 +143,11 @@ class ProceedingsCheckerTest {
                 .ended(null)
                 .build()),
             wrapElements(completedProceeding()
-                .sameGuardianNeeded(YesNo.NO)
+                .sameGuardianNeeded(YesNo.YES)
                 .sameGuardianDetails(null)
                 .build()),
             wrapElements(completedProceeding()
-                .sameGuardianNeeded(YesNo.NO)
+                .sameGuardianNeeded(YesNo.YES)
                 .sameGuardianDetails("")
                 .build())
         ).map(Arguments::of);
@@ -160,9 +160,10 @@ class ProceedingsCheckerTest {
             .started("Test")
             .ended("Test")
             .ordersMade("Test")
+            .judge("Test")
             .children("Test")
             .guardian("Test")
-            .sameGuardianNeeded(YesNo.YES)
+            .sameGuardianNeeded(YesNo.NO)
             .sameGuardianDetails("Test");
     }
 }

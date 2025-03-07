@@ -44,6 +44,7 @@ public class ProceedingsChecker implements EventChecker {
                 proceeding.getCaseNumber(),
                 proceeding.getStarted(),
                 proceeding.getOrdersMade(),
+                proceeding.getJudge(),
                 proceeding.getChildren(),
                 proceeding.getGuardian(),
                 proceeding.getSameGuardianNeeded())) {
