@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@SuppressWarnings({"java:S1133","java:S1874"})
+@SuppressWarnings({"java:S1133"})
 public class DocmosisChild {
     private final String name;
     private final String age;
@@ -23,8 +23,7 @@ public class DocmosisChild {
     private final String mothersName;
     private final String fathersName;
     /**
-     * This historical field is deprecated since DFPL-2362.
-     * No longer part of C110a template and flow
+     * No longer part of C110a template and flow DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
@@ -35,15 +34,13 @@ public class DocmosisChild {
     private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
     /**
-     * This historical field is deprecated since DFPL-2362.
-     * No longer required as part of C110a changes
+     * No longer required as part of C110a changes DFPL-2362
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
     /**
-     * This historical field is deprecated since DFPL-2362.
-     * Replaced by isAddressConfidential and socialWorkerDetailHidden
+     * Replaced by isAddressConfidential and socialWorkerDetailHidden DFPL-2362
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
