@@ -27,6 +27,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @HasGender(groups = {Default.class, SealedSDOGroup.class})
+@SuppressWarnings("java:S1133")
 public final class ChildParty extends Party {
     private final ChildGender gender;
     private final String genderIdentification;

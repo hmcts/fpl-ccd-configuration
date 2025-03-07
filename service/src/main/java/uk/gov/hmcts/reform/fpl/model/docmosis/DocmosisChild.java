@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@SuppressWarnings("java:S1133")
 public class DocmosisChild {
     private final String name;
     private final String age;
