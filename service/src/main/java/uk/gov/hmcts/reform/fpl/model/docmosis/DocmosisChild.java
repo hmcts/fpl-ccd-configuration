@@ -23,8 +23,8 @@ public class DocmosisChild {
     private final String mothersName;
     private final String fathersName;
     /**
-     * No longer needed of C110a flow for child section DFPL-2362.
-     * @deprecated (DFPL-2362, historical field)
+     * Deprecated from C110a flow for child section DFPL-2362.
+     * @deprecated (DFPL-2362, deprecated field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String fathersResponsibility;
@@ -41,7 +41,7 @@ public class DocmosisChild {
     private final String litigationIssues;
     /**
      * Replaced by isAddressConfidential and socialWorkerDetailHidden DFPL-2362.
-     * @deprecated (DFPL-2362, historical field)
+     * @deprecated (DFPL-2362, replaced field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHiddenReason;
