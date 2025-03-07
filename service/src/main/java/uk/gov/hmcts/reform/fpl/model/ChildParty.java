@@ -47,7 +47,7 @@ public final class ChildParty extends Party {
     private final String mothersName;
     private final String fathersName;
     /**
-     * No longer used as part of C110a flow and template DFPL-2362
+     * No longer used as part of C110a flow and template DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
@@ -60,31 +60,31 @@ public final class ChildParty extends Party {
     private final String additionalNeeds;
     private final String additionalNeedsDetails;
     /**
-     * Replaced by isAddressConfidential and socialWorkerDetailHidden DFPL-2362
+     * Replaced by isAddressConfidential and socialWorkerDetailHidden DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHidden;
     /**
-     * No longer used, replaced by socialWorkerDetailsHiddenReason DFPL-2362
+     * No longer used, replaced by socialWorkerDetailsHiddenReason DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHiddenReason;
     /**
-     * No longer used as part of C110a flow and template DFPL-2362
+     * No longer used as part of C110a flow and template DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
     /**
-     * No longer required as part of C110a flow and template DFPL-2362
+     * No longer required as part of C110a flow and template DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssuesDetails;
     /**
-     * Replaced by isAddressConfidential but kept backwards compatability DFPL-2362
+     * Replaced by isAddressConfidential but kept backwards compatability DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")

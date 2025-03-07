@@ -34,13 +34,13 @@ public class DocmosisChild {
     private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
     /**
-     * No longer required as part of C110a changes DFPL-2362
+     * No longer required as part of C110a changes DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
     /**
-     * Replaced by isAddressConfidential and socialWorkerDetailHidden DFPL-2362
+     * Replaced by isAddressConfidential and socialWorkerDetailHidden DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
