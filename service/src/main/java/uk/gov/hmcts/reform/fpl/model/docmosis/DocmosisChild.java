@@ -23,7 +23,7 @@ public class DocmosisChild {
     private final String mothersName;
     private final String fathersName;
     /**
-     * No longer part of C110a template and flow DFPL-2362.
+     * No longer needed of C110a flow for child section DFPL-2362.
      * @deprecated (DFPL-2362, historical field)
      */
     @Deprecated(since = "DFPL-2362 06/03/25")
