@@ -276,7 +276,7 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "proceeding",
+    "CaseFieldID": "proceedings",
     "TabFieldDisplayOrder": 22
   },
   {

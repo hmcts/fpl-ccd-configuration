@@ -264,19 +264,24 @@
         "reference": "12345",
         "telephone": "020 2772 5772"
       },
-      "proceeding": {
-        "ended": "02-02-2006",
-        "judge": "William Peters",
-        "started": "02-02-2002",
-        "children": "children subject to proceedings",
-        "guardian": "Mark Watson",
-        "caseNumber": "12345",
-        "ordersMade": "Supervision order",
-        "proceedingStatus": "Ongoing",
-        "onGoingProceeding": "Yes",
-        "sameGuardianNeeded": "No",
-        "sameGuardianDetails": "Some guardian not needed"
-      },
+      "proceedings": [
+        {
+          "id": "4fc12677-e96f-4cce-9ae1-42047ee18d9a",
+          "value": {
+            "ended": "02-02-2006",
+            "judge": "William Peters",
+            "started": "02-02-2002",
+            "children": "children subject to proceedings",
+            "guardian": "Mark Watson",
+            "caseNumber": "12345",
+            "ordersMade": "Supervision order",
+            "proceedingStatus": "Ongoing",
+            "onGoingProceeding": "Yes",
+            "sameGuardianNeeded": "No",
+            "sameGuardianDetails": "Some guardian not needed"
+          }
+        }
+      ],
       "respondents1": [
         {
           "id": "f683a361-f1a4-4f44-b49f-154a54a27900",
