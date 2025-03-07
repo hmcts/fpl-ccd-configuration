@@ -717,12 +717,12 @@ public class CaseSubmissionGenerationService
                 child.getGenderIdentification()))
             .dateOfBirth(formatDateDisplay(child.getDateOfBirth(), applicationLanguage))
             .livingSituation(getChildLivingSituation(child, isAddressConfidential, applicationLanguage))
-            .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
-            .careAndContactPlan(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
-            .adoption(getValidAnswerOrDefaultValue(child.getAdoption(), applicationLanguage))
-            .placementOrderApplication(getValidAnswerOrDefaultValue(child.getPlacementOrderApplication(),
+            .keyDatesTemplate(getDefaultIfNullOrEmpty(child.getKeyDates()))
+            .careAndContactPlanTemplate(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
+            .adoptionTemplate(getValidAnswerOrDefaultValue(child.getAdoption(), applicationLanguage))
+            .placementOrderApplicationTemplate(getValidAnswerOrDefaultValue(child.getPlacementOrderApplication(),
                 applicationLanguage))
-            .placementCourt(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
+            .placementCourtTemplate(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
             .mothersName(getDefaultIfNullOrEmpty(child.getMothersName()))
             .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
             .socialWorkerName(isSocialWorkerDetailsHidden
