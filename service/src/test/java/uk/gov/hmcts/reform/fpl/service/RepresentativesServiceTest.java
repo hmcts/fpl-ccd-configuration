@@ -4,17 +4,22 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -98,6 +103,9 @@ class RepresentativesServiceTest {
 
     @Mock
     private ValidateEmailService validateEmailService;
+
+    @Mock
+    private CaseRoleLookupService caseRoleLookupService;
 
     @InjectMocks
     private RepresentativeService representativesService;
@@ -729,4 +737,80 @@ class RepresentativesServiceTest {
             .stream().map(Representative::getRole).collect(Collectors.toSet()))
             .isEqualTo(Set.of(expected));
     }
+
+    @Nested
+    class BlockOutsourcedUsers {
+
+        @ParameterizedTest
+        @EnumSource(value = SolicitorRole.class, names = {"SOLICITORA", "CHILDSOLICITORA"})
+        void shouldBlockNonOutsourcedSolicitorFromAccessingEvent(SolicitorRole role) {
+            when(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(any()))
+                .thenReturn(List.of(role));
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                    .organisationIdentifier("ORG2")
+                    .build()));
+
+            CaseData caseData = CaseData.builder()
+                .outsourcingPolicy(OrganisationPolicy.builder()
+                    .organisation(Organisation.builder().organisationID("ORG1").build())
+                    .build())
+                .build();
+
+            assertThat(representativesService.shouldUserHaveAccessToRespondentsChildrenEvent(caseData)).isFalse();
+
+            verify(caseRoleLookupService).getCaseSolicitorRolesForCurrentUser(any());
+            verify(organisationService).findOrganisation();
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = SolicitorRole.class, names = {"SOLICITORA", "CHILDSOLICITORA"})
+        void shouldNotBlockOutsourcedSolicitorFromAccessingEvent(SolicitorRole role) {
+            when(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(any()))
+                .thenReturn(List.of(role));
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                    .organisationIdentifier("ORG1")
+                    .build()));
+
+            CaseData caseData = CaseData.builder()
+                .outsourcingPolicy(OrganisationPolicy.builder()
+                    .organisation(Organisation.builder().organisationID("ORG1").build())
+                    .build())
+                .build();
+
+            assertThat(representativesService.shouldUserHaveAccessToRespondentsChildrenEvent(caseData)).isTrue();
+
+            verify(caseRoleLookupService).getCaseSolicitorRolesForCurrentUser(any());
+            verify(organisationService).findOrganisation();
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = SolicitorRole.class, names = {"SOLICITORA", "CHILDSOLICITORA"})
+        void shouldBlockNonOutsourcedSolicitorWhenNoOutsourcingPolicy(SolicitorRole role) {
+            when(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(any()))
+                .thenReturn(List.of(role));
+
+            CaseData caseData = CaseData.builder()
+                .outsourcingPolicy(null)
+                .build();
+
+            assertThat(representativesService.shouldUserHaveAccessToRespondentsChildrenEvent(caseData)).isFalse();
+
+            verify(caseRoleLookupService).getCaseSolicitorRolesForCurrentUser(any());
+        }
+
+        @Test
+        void shouldNotBlockCtscFromAccessingEvent() {
+            when(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(any()))
+                .thenReturn(List.of());
+
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(representativesService.shouldUserHaveAccessToRespondentsChildrenEvent(caseData)).isTrue();
+
+            verify(caseRoleLookupService).getCaseSolicitorRolesForCurrentUser(any());
+        }
+    }
+
 }
