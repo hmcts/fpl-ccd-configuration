@@ -36,7 +36,7 @@
     "FieldType": "Document",
     "SecurityClassification": "Public",
     "Searchable": "N",
-    "RegularExpression": ".doc,.docx"
+    "RegularExpression": ".doc,.docx,.pdf"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -46,7 +46,7 @@
     "Label": "Or upload an updated order",
     "SecurityClassification": "Public",
     "Searchable": "N",
-    "RegularExpression": ".doc,.docx"
+    "RegularExpression": ".doc,.docx,.pdf"
   },
   {
     "LiveFrom": "01/01/2017",
