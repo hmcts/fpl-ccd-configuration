@@ -1306,6 +1306,26 @@ public class MigrateCaseService {
         return Map.of("hearing", hearing);
     }
 
+    public void migrateOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
+        Proceeding oldProceeding = caseData.getProceeding();
+
+        if (oldProceeding != null) {
+            List<Element<Proceeding>> migratedProceedings = new ArrayList<>();
+            migratedProceedings.add(element(oldProceeding.toBuilder().additionalProceedings(null).build()));
+
+            List<Element<Proceeding>> oldAdditionalProceedings = oldProceeding.getAdditionalProceedings();
+            if (oldAdditionalProceedings != null) {
+                migratedProceedings.addAll(oldAdditionalProceedings);
+            }
+
+            caseDetails.getData().remove("proceeding");
+            caseDetails.getData().put("proceedings", migratedProceedings);
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, case {%d} no proceeding found", migrationId,
+                caseData.getId()));
+        }
+    }
+
     public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {
         if (!caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
             throw new AssertionError(format("Migration {id = %s}, this is not an EPO", migrationId));

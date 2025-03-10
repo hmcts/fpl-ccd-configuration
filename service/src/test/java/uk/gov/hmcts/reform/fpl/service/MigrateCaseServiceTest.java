@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -3503,6 +3504,81 @@ class MigrateCaseServiceTest {
             assertThatThrownBy(() -> underTest.removeAddressFromEPO(caseData, MIGRATION_ID))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s}, this is not an EPO", MIGRATION_ID));
+        }
+    }
+
+    @Nested
+    class OtherProceeding {
+        Proceeding FIRST_PROCEEDING = Proceeding.builder()
+            .onGoingProceeding("Yes")
+            .proceedingStatus(ProceedingStatus.ONGOING)
+            .started("first")
+            .build();
+        List<Element<Proceeding>> OTHER_PROCEEDINGS = wrapElementsWithUUIDs(
+            Proceeding.builder().proceedingStatus(ProceedingStatus.ONGOING).started("additional 1").build(),
+            Proceeding.builder().proceedingStatus(ProceedingStatus.PREVIOUS).started("additional 2").build()
+        );
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldMigrateOtherProceeding() {
+            Proceeding oldProceeding = FIRST_PROCEEDING.toBuilder().additionalProceedings(OTHER_PROCEEDINGS).build();
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .proceeding(oldProceeding)
+                .build();
+
+            Map<String,Object> caseDetailMap = new HashMap<>();
+            caseDetailMap.put("proceeding", oldProceeding);
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
+            underTest.migrateOtherProceedings(caseDetails, caseData, MIGRATION_ID);
+
+            assertThat(caseDetailMap).doesNotContainKey("proceeding");
+
+            assertThat(caseDetailMap).containsKey("proceedings");
+            List<Element<Proceeding>> migratedProceeding =
+                (List<Element<Proceeding>>) caseDetailMap.get("proceedings");
+
+            assertThat(migratedProceeding).hasSize(3);
+            assertThat(migratedProceeding.get(0).getValue()).isEqualTo(FIRST_PROCEEDING);
+            assertThat(List.of(migratedProceeding.get(1), migratedProceeding.get(2))).isEqualTo(OTHER_PROCEEDINGS);
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldMigrateOtherProceedingWithoutAdditionalProceeding() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .proceeding(FIRST_PROCEEDING)
+                .build();
+
+            Map<String,Object> caseDetailMap = new HashMap<>();
+            caseDetailMap.put("proceeding", FIRST_PROCEEDING);
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
+            underTest.migrateOtherProceedings(caseDetails, caseData, MIGRATION_ID);
+
+            assertThat(caseDetailMap).doesNotContainKey("proceeding");
+
+            assertThat(caseDetailMap).containsKey("proceedings");
+            List<Element<Proceeding>> migratedProceeding =
+                (List<Element<Proceeding>>) caseDetailMap.get("proceedings");
+
+            assertThat(migratedProceeding).hasSize(1);
+            assertThat(migratedProceeding.get(0).getValue()).isEqualTo(FIRST_PROCEEDING);
+        }
+
+        @Test
+        void shouldDoNothingIfNoProceeding() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+            Map<String,Object> caseDetailMap = Map.of("id", 1L);
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
+            ;
+
+            assertThatThrownBy(() -> underTest.migrateOtherProceedings(caseDetails, caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s}, case {%d} no proceeding found", MIGRATION_ID, 1L));
         }
     }
 
