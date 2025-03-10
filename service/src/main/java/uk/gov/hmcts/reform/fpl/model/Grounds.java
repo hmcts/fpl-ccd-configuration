@@ -18,6 +18,7 @@ public class Grounds {
     @Size(min = 1, message = "Select at least one option for how this case meets the threshold criteria")
     private final List<@NotBlank(message = "Select at least one option for how this case meets the threshold criteria")
         String> thresholdReason;
+    private final String hasThresholdDocument;
     @NotBlank(message = "Enter details of how the case meets the threshold criteria")
     private final String thresholdDetails;
 }

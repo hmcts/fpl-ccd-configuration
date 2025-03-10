@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
@@ -95,14 +94,12 @@ public class TaskListRenderer {
         ofNullable(tasks.get(RISK_AND_HARM))
             .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
             .ifPresent(applicationGrounds::withTask);
-        ofNullable(tasks.get(FACTORS_AFFECTING_PARENTING))
-            .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
-            .ifPresent(applicationGrounds::withTask);
 
-        final TaskSection documents = newSection("Add application documents")
-            .withTask(tasks.get(APPLICATION_DOCUMENTS))
-            .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
-                + "you can send your application without this information ");
+        final TaskSection documents = newSection("Application documents");
+
+        ofNullable(tasks.get(APPLICATION_DOCUMENTS))
+            .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
+            .ifPresent(documents::withTask);
 
         final TaskSection parties = newSection("Add information about the parties")
             .withTask(tasks.containsKey(ORGANISATION_DETAILS)

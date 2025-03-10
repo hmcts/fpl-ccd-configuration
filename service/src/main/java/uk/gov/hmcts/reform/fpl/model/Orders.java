@@ -70,12 +70,12 @@ public class Orders {
 
     @JsonIgnore
     public boolean isC1Order() {
-        return isNotEmpty(orderType) && (this.getOrderType().contains(CHILD_ASSESSMENT_ORDER)
+        return isChildAssessmentOrder()
                 || isSecureAccommodationOrder()
                 || isRefuseContactWithChildApplication()
                 || isChildRecoveryOrder()
                 || isContactWithChildInCareOrder()
-                || isEducationSupervisionOrder());
+                || isEducationSupervisionOrder();
     }
 
     @JsonIgnore
@@ -96,6 +96,11 @@ public class Orders {
     @JsonIgnore
     public boolean isChildRecoveryOrder() {
         return isNotEmpty(orderType) && this.getOrderType().contains(CHILD_RECOVERY_ORDER);
+    }
+
+    @JsonIgnore
+    public boolean isChildAssessmentOrder() {
+        return isNotEmpty(orderType) && this.getOrderType().contains(CHILD_ASSESSMENT_ORDER);
     }
 
     @JsonIgnore
