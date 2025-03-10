@@ -16,9 +16,11 @@ import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
+import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 
 @Component
 public class GroundsChecker extends PropertiesChecker {
@@ -27,8 +29,7 @@ public class GroundsChecker extends PropertiesChecker {
     public List<String> validate(CaseData caseData) {
         if (hasEmergencyProtectionOrder(caseData)) {
             return super.validate(caseData, List.of("grounds", "groundsForEPO"), Default.class, EPOGroup.class);
-        } else if (isNotEmpty(caseData.getOrders()) && caseData.getOrders().getOrderType() != null
-            && caseData.getOrders().getOrderType().contains(OrderType.CHILD_ASSESSMENT_ORDER)) {
+        } else if (caseData.isChildAssessmentOrder()) {
             return super.validate(caseData, List.of("groundsForChildAssessmentOrder"));
         } else if (hasSecureAccommodationOrder(caseData)) {
             return super.validate(caseData, List.of("groundsForSecureAccommodationOrder"),
@@ -64,8 +65,13 @@ public class GroundsChecker extends PropertiesChecker {
             return isRefuseContactWithChildGroundsCompleted(caseData.getGroundsForRefuseContactWithChild());
         } else if (caseData.isContactWithChildInCareApplication()) {
             return isContactWithChildGroundsCompleted(caseData.getGroundsForContactWithChild());
+        } else if (caseData.isChildAssessmentOrder()) {
+            return super.isCompleted(caseData);
+        } else if (caseData.isEducationSupervisionApplication()) {
+            return super.isCompleted(caseData);
         }
-        return super.isCompleted(caseData);
+
+        return isGroundsCompleted(caseData.getGrounds());
     }
 
     private boolean hasEmergencyProtectionOrder(CaseData caseData) {
@@ -84,7 +90,26 @@ public class GroundsChecker extends PropertiesChecker {
     }
 
     private static boolean isGroundsStarted(Grounds grounds) {
-        return isNotEmpty(grounds) && anyNonEmpty(grounds.getThresholdReason(), grounds.getThresholdDetails());
+        return isNotEmpty(grounds) && anyNonEmpty(
+            grounds.getThresholdReason(),
+            grounds.getHasThresholdDocument(),
+            grounds.getThresholdDetails());
+    }
+
+    private static boolean isGroundsCompleted(Grounds grounds) {
+        if (isEmpty(grounds)) {
+            return false;
+        }
+
+        if (!anyEmpty(grounds.getThresholdReason(), grounds.getHasThresholdDocument())) {
+            if (grounds.getHasThresholdDocument().equals("NO")) {
+                return isNotEmpty(grounds.getThresholdDetails());
+            } else {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static boolean isEPOGroundsStarted(GroundsForEPO grounds) {
