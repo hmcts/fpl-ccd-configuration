@@ -81,21 +81,12 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildParty ",
-    "ListElementCode": "addressAutoConfidentialLabel",
-    "FieldType": "Label",
-    "ElementLabel": "## This address is automatically made confidential",
-    "FieldShowCondition": "livingSituation=\"Living in a refuge\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
     "ElementLabel": "Current address",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with family or friends\""
+    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -104,7 +95,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need to keep the address confidential?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with family or friends\""
+    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -114,7 +105,7 @@
     "ElementLabel": "Who are they living with?",
     "HintText": "Provide their names and relationship to the child",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "livingSituation=\"Living with family or friends\""
+    "FieldShowCondition": "livingSituation=\"Living with other family or friends\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -282,24 +273,6 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "FieldShowCondition": "socialWorkerDetailsHidden=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ChildParty",
-    "ListElementCode": "detailsHidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need contact details hidden from other parties?",
-    "FieldShowCondition": "livingSituation!=\"Living in a refuge\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ChildParty",
-    "ListElementCode": "detailsHiddenReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "detailsHidden=\"Yes\" AND livingSituation!=\"Living in a refuge\"",
     "SecurityClassification": "Public"
   },
   {
