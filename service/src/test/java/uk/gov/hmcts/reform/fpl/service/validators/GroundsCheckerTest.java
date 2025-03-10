@@ -66,6 +66,7 @@ class GroundsCheckerTest {
     void shouldReturnEmptyErrorsWhenGroundsForApplicationAreProvided() {
         final Grounds grounds = Grounds.builder()
                 .thresholdReason(List.of("Beyond parental control"))
+                .hasThresholdDocument("NO")
                 .thresholdDetails("Custom details")
                 .build();
         final CaseData caseData = CaseData.builder()
@@ -103,6 +104,7 @@ class GroundsCheckerTest {
     void shouldReturnEmptyErrorsWhenGroundsProvidedForRequestedEpoOrder() {
         final Grounds grounds = Grounds.builder()
                 .thresholdReason(List.of("Beyond parental control"))
+                .hasThresholdDocument("NO")
                 .thresholdDetails("Custom details")
                 .build();
         final GroundsForEPO groundsForEPO = GroundsForEPO.builder()
