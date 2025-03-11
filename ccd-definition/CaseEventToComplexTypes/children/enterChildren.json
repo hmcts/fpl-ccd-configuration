@@ -7,7 +7,7 @@
     "ListElementCode": "party.firstName",
     "EventElementLabel": "First name",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -17,7 +17,7 @@
     "ListElementCode": "party.lastName",
     "EventElementLabel": "Last name",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -27,7 +27,7 @@
     "ListElementCode": "party.dateOfBirth",
     "EventElementLabel": "Date of birth",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -37,7 +37,7 @@
     "ListElementCode": "party.gender",
     "EventElementLabel": "What was the child's sex at birth?",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -56,7 +56,7 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.livingSituation",
     "FieldDisplayOrder": 6,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -65,7 +65,7 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.addressAutoConfidentialLabel",
     "FieldDisplayOrder": 7,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "party=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -302,7 +302,7 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.socialWorkerName",
     "FieldDisplayOrder": 27,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -311,7 +311,7 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.socialWorkerTelephoneNumber",
     "FieldDisplayOrder": 28,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "EnterChildren",
@@ -320,7 +320,7 @@
     "ListElementCode": "party.socialWorkerTelephoneNumber.telephoneNumber",
     "EventElementLabel": "Social worker's phone number",
     "FieldDisplayOrder": 29,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "EnterChildren",
@@ -338,7 +338,7 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.socialWorkerEmail",
     "FieldDisplayOrder": 30,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -347,7 +347,7 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.socialWorkerDetailsHidden",
     "FieldDisplayOrder": 31,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
