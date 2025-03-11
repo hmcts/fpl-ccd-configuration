@@ -3509,12 +3509,12 @@ class MigrateCaseServiceTest {
 
     @Nested
     class OtherProceeding {
-        Proceeding FIRST_PROCEEDING = Proceeding.builder()
+        private static final Proceeding FIRST_PROCEEDING = Proceeding.builder()
             .onGoingProceeding("Yes")
             .proceedingStatus(ProceedingStatus.ONGOING)
             .started("first")
             .build();
-        List<Element<Proceeding>> OTHER_PROCEEDINGS = wrapElementsWithUUIDs(
+        private static final List<Element<Proceeding>> OTHER_PROCEEDINGS = wrapElementsWithUUIDs(
             Proceeding.builder().proceedingStatus(ProceedingStatus.ONGOING).started("additional 1").build(),
             Proceeding.builder().proceedingStatus(ProceedingStatus.PREVIOUS).started("additional 2").build()
         );
