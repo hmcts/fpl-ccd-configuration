@@ -14,7 +14,7 @@ module.exports = {
       groupName: '#orderAction_type',
       options: {
         sendToAllParties: 'Yes, send this to all parties',
-        judgeRequestedChanges: 'No, the local authority needs to make changes',
+        judgeRequestedChanges: 'No, the applicant needs to make changes',
         selfReview: 'No, I need to make changes',
       },
     },
