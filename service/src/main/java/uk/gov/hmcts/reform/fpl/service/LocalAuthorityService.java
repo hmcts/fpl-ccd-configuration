@@ -76,7 +76,8 @@ public class LocalAuthorityService {
             .collect(Collectors.toList());
     }
 
-    public Map<String, Object> updateLocalAuthorityFromNoC(CaseData oldCaseData, ChangeOrganisationRequest nocRequest, String userEmail) {
+    public Map<String, Object> updateLocalAuthorityFromNoC(CaseData oldCaseData, ChangeOrganisationRequest nocRequest,
+                                                           String userEmail) {
         LocalAuthority oldLocalAuthority = oldCaseData.getLocalAuthorities().get(0).getValue();
 
         String newOrganisationId = nocRequest.getOrganisationToAdd().getOrganisationID();

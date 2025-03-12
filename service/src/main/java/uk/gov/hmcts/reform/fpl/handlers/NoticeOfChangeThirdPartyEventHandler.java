@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeThirdPartyEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
 
@@ -24,8 +23,8 @@ public class NoticeOfChangeThirdPartyEventHandler {
     @Async
     @EventListener
     public void notifyThirdPartySolicitorAccessGranted(final NoticeOfChangeThirdPartyEvent event) {
-        NotifyData notifyData = noticeOfChangeContentProvider.buildNoticeOfChangeThirdPartySolicitorTemplate(event.getCaseData()
-        );
+        NotifyData notifyData = noticeOfChangeContentProvider.buildNoticeOfChangeThirdPartySolicitorTemplate(
+            event.getCaseData());
 
         notificationService.sendEmail(NOTICE_OF_CHANGE_NEW_REPRESENTATIVE, event.getNewThirdPartyOrg().getEmail(),
             notifyData, event.getCaseData().getId());
@@ -34,8 +33,8 @@ public class NoticeOfChangeThirdPartyEventHandler {
     @Async
     @EventListener
     public void notifyThirdPartySolicitorAccessRemoved(final NoticeOfChangeThirdPartyEvent event) {
-        NotifyData notifyData = noticeOfChangeContentProvider.buildNoticeOfChangeThirdPartySolicitorTemplate(event.getCaseData()
-        );
+        NotifyData notifyData = noticeOfChangeContentProvider.buildNoticeOfChangeThirdPartySolicitorTemplate(
+            event.getCaseData());
 
         notificationService.sendEmail(
             NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,

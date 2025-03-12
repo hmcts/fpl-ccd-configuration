@@ -217,6 +217,7 @@ class NoticeOfChangeFieldPopulatorTest {
     void generateApplicantAnswer() {
         Map<String, Object> nocAnswers = underTest.generateApplicantAnswer(caseData);
 
-        assertThat(nocAnswers.get("noticeOfChangeAnswersThirdPartyRespondent")).isEqualTo(THIRD_PARTY_APPLICANT_ANSWERS);
+        assertThat(nocAnswers.get("noticeOfChangeAnswersThirdPartyRespondent")).isEqualTo(
+            THIRD_PARTY_APPLICANT_ANSWERS);
     }
 }

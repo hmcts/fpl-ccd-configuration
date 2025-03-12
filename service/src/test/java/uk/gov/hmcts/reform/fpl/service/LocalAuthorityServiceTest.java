@@ -287,7 +287,8 @@ class LocalAuthorityServiceTest {
         Map<String, Object> updatedLADetails = underTest.updateLocalAuthorityFromNoC(caseData, changeOrgRequest,
             "test2@testmail.com");
 
-        List<Element<LocalAuthority>> localAuthorities = (List<Element<LocalAuthority>>) updatedLADetails.get("localAuthorities");
+        List<Element<LocalAuthority>> localAuthorities = (List<Element<LocalAuthority>>) updatedLADetails
+            .get("localAuthorities");
 
         assertThat(localAuthorities.get(0).getValue()).isEqualTo(expectedUpdatedLocalAuthority);
     }

@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
-import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod;
 import uk.gov.hmcts.reform.fpl.model.representative.ChangeOfRepresentationRequest;
 import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -23,7 +22,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;

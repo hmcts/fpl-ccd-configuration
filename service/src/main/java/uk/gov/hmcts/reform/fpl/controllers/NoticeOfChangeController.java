@@ -63,7 +63,8 @@ public class NoticeOfChangeController extends CallbackController {
 
         ChangeOrganisationRequest nocRequest = caseData.getChangeOrganisationRequestField();
 
-        Map<String, Object> changeOrgRequestField = (Map<String, Object>) caseDetails.getData().get("changeOrganisationRequestField");
+        Map<String, Object> changeOrgRequestField = (Map<String, Object>) caseDetails.getData().get(
+            "changeOrganisationRequestField");
 
         if (noticeOfChangeService.isThirdPartyOutsourcing(caseData.getChangeOrganisationRequestField())) {
             caseDetails.getData().putAll(localAuthorityService.updateLocalAuthorityFromNoC(caseData, nocRequest,

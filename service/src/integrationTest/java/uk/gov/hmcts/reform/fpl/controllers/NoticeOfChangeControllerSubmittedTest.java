@@ -319,7 +319,8 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             .build();
     }
 
-    private NoticeOfChangeRespondentSolicitorTemplate getExpectedNoticeOfChangeParametersThirdPartyApplication(String expectedSalutation) {
+    private NoticeOfChangeRespondentSolicitorTemplate getExpectedNoticeOfChangeParametersThirdPartyApplication(
+        String expectedSalutation) {
         return NoticeOfChangeRespondentSolicitorTemplate.builder()
             .salutation(expectedSalutation)
             .caseName(CASE_NAME)
