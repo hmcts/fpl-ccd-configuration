@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeThirdPartyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
 
 import static org.mockito.BDDMockito.given;
@@ -24,6 +25,9 @@ public class NoticeOfChangeThirdPartyEventHandlerTest {
 
     private final LocalAuthority oldThirdPartyOrg = LocalAuthority.builder().build();
     private final LocalAuthority newThirdPartyOrg = LocalAuthority.builder().build();
+
+    @Mock
+    private NotificationService notificationService;
 
     @Mock
     private NoticeOfChangeContentProvider noticeOfChangeContentProvider;

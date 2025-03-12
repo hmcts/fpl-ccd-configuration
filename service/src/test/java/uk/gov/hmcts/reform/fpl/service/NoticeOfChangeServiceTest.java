@@ -34,7 +34,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
@@ -85,6 +87,10 @@ class NoticeOfChangeServiceTest {
             final CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
                 .respondents1(List.of(respondent))
+                .changeOrganisationRequestField(ChangeOrganisationRequest.builder()
+                    .approvalStatus(APPROVED)
+                    .caseRoleId(caseRoleDynamicList(SOLICITORB))
+                    .build())
                 .build();
 
             final AuditEvent auditEvent = AuditEvent.builder()
