@@ -5,7 +5,6 @@ import { BasePage } from "./base-page";
 export class JudicialMessage extends BasePage
 {
     readonly whichApplication: Locator;
-    readonly sender:Locator;
     readonly recipient:Locator;
     readonly subject:Locator;
     readonly urgency:Locator;
@@ -20,7 +19,6 @@ export class JudicialMessage extends BasePage
     constructor(page:Page){
         super(page);
         this.whichApplication =page.getByLabel('Which application?');
-        this.sender = page.getByLabel('Sender', { exact: true });
         this.recipient = page.getByLabel('Recipient', { exact: true }).locator('visible=true');
         this.subject = page.getByLabel('Message subject');
         this.urgency = page.getByLabel('Urgency (Optional)');
