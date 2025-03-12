@@ -31,6 +31,22 @@ public class NoticeOfChangeFieldPopulator {
         return generate(caseData, representing, POPULATE);
     }
 
+    public Map<String, Object> generateApplicantAnswer(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+
+        // TODO: Get applicant name from case data
+
+        // create a NoC answer object with the first and last name present
+        NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder()
+            .respondentFirstName("Bilbo")
+            .respondentLastName("Baggins")
+            .build();
+
+        data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);
+
+        return data;
+    }
+
     public Map<String, Object> generate(CaseData caseData, Representing representing,
                                         NoticeOfChangeAnswersPopulationStrategy strategy) {
         Map<String, Object> data = new HashMap<>();

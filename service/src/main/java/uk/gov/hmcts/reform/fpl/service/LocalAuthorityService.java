@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.fpl.config.EpsLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.MlaLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -17,10 +20,12 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @Slf4j
@@ -69,6 +74,23 @@ public class LocalAuthorityService {
                 .name(getLocalAuthorityName(localAuthorityCode))
                 .build())
             .collect(Collectors.toList());
+    }
+
+    public Map<String, Object> updateLocalAuthorityFromNoC(CaseData oldCaseData, ChangeOrganisationRequest nocRequest, String userEmail) {
+        LocalAuthority oldLocalAuthority = oldCaseData.getLocalAuthorities().get(0).getValue();
+
+        String newOrganisationId = nocRequest.getOrganisationToAdd().getOrganisationID();
+        Organisation newOrganisation = organisationService.getOrganisation(newOrganisationId);
+
+        LocalAuthority updatedLocalAuthority = LocalAuthority.builder()
+            .id(newOrganisationId)
+            .name(oldLocalAuthority.getName())
+            .email(userEmail)
+            .phone(newOrganisation.getCompanyNumber())
+            .address(newOrganisation.getContactInformation().get(0).toAddress())
+            .build();
+
+        return Map.of("localAuthorities", List.of(element(updatedLocalAuthority)));
     }
 
     private Optional<String> getLocalAuthorityFromOrganisation() {

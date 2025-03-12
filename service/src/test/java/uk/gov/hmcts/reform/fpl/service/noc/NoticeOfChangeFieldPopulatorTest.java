@@ -90,6 +90,10 @@ class NoticeOfChangeFieldPopulatorTest {
     private static final NoticeOfChangeAnswers ANSWERS_1 = mock(NoticeOfChangeAnswers.class);
     private static final NoticeOfChangeAnswers ANSWERS_2 = mock(NoticeOfChangeAnswers.class);
     private static final NoticeOfChangeAnswers BLANK_ANSWERS = NoticeOfChangeAnswers.builder().build();
+    private static final NoticeOfChangeAnswers THIRD_PARTY_APPLICANT_ANSWERS = NoticeOfChangeAnswers.builder()
+        .respondentFirstName("Bilbo")
+        .respondentLastName("Baggins")
+        .build();
 
     private static final Applicant APPLICANT = mock(Applicant.class);
     private static final String APPLICANT_NAME = "applicant";
@@ -207,5 +211,12 @@ class NoticeOfChangeFieldPopulatorTest {
             entry("childPolicy13", ORG_POLICY_N),
             entry("childPolicy14", ORG_POLICY_O)
         ));
+    }
+
+    @Test
+    void generateApplicantAnswer() {
+        Map<String, Object> nocAnswers = underTest.generateApplicantAnswer(caseData);
+
+        assertThat(nocAnswers.get("noticeOfChangeAnswersThirdPartyRespondent")).isEqualTo(THIRD_PARTY_APPLICANT_ANSWERS);
     }
 }

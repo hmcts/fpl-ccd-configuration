@@ -10,18 +10,25 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.fpl.config.EpsLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.MlaLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -34,6 +41,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = LENIENT)
@@ -231,6 +239,57 @@ class LocalAuthorityServiceTest {
         String localAuthorityId = underTest.getLocalAuthorityId(LOCAL_AUTHORITY_CODE);
 
         assertThat(localAuthorityId).isEqualTo(ORG_ID);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldUpdateLocalAuthorityFromChangeOrgRequest() {
+        when(organisationService.getOrganisation("ORG456")).thenReturn(Organisation.builder()
+                .companyNumber("444555666")
+                .contactInformation(List.of(ContactInformation.builder()
+                        .addressLine1("New Test Road")
+                        .build()))
+                .build());
+
+        CaseData caseData = CaseData.builder()
+            .localAuthorities(List.of(element(
+                LocalAuthority.builder()
+                    .id("ORG123")
+                    .name("Joe Bloggs")
+                    .email("test1@testmail.com")
+                    .phone("111222333")
+                    .address(Address.builder()
+                        .addressLine1("Old Test Road")
+                        .build())
+                    .build()
+            )))
+            .build();
+
+        ChangeOrganisationRequest changeOrgRequest = ChangeOrganisationRequest.builder()
+            .organisationToAdd(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                .organisationID("ORG456")
+                .build())
+            .organisationToRemove(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                .organisationID("ORG123")
+                .build())
+            .build();
+
+        LocalAuthority expectedUpdatedLocalAuthority = LocalAuthority.builder()
+            .id("ORG456")
+            .name("Joe Bloggs")
+            .email("test2@testmail.com")
+            .phone("444555666")
+            .address(Address.builder()
+                .addressLine1("New Test Road")
+                .build())
+            .build();
+
+        Map<String, Object> updatedLADetails = underTest.updateLocalAuthorityFromNoC(caseData, changeOrgRequest,
+            "test2@testmail.com");
+
+        List<Element<LocalAuthority>> localAuthorities = (List<Element<LocalAuthority>>) updatedLADetails.get("localAuthorities");
+
+        assertThat(localAuthorities.get(0).getValue()).isEqualTo(expectedUpdatedLocalAuthority);
     }
 
 }

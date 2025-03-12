@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeThirdPartyRespondentAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -242,12 +243,21 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .respondentLastName("Bloggs")
             .build();
 
+        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersApplicant = NoticeOfChangeAnswers.builder()
+            .respondentFirstName("Bilbo")
+            .respondentLastName("Baggins")
+            .build();
+
         RespondentPolicyData respondentPolicyData = updatedCaseData.getRespondentPolicyData();
         NoticeOfChangeAnswersData noticeOfChangeAnswersData = updatedCaseData.getNoticeOfChangeAnswersData();
+        NoticeOfChangeThirdPartyRespondentAnswersData noticeOfChangeThirdPartyRespondentAnswersData =
+            updatedCaseData.getNoticeOfChangeThirdPartyRespondentAnswersData();
 
         assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
         assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers0()).isEqualTo(expectedNoticeOfChangeAnswers);
         assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isEqualTo(expectedNoticeOfChangeAnswers);
+        assertThat(noticeOfChangeThirdPartyRespondentAnswersData.getNoticeOfChangeAnswersThirdPartyRespondent())
+            .isEqualTo(expectedNoticeOfChangeAnswersApplicant);
 
         assertThat(respondentPolicyData).isEqualTo(RespondentPolicyData.builder()
             .respondentPolicy0(expectedRespondentPolicyOne)

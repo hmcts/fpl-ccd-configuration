@@ -14,10 +14,13 @@ import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.AuditEventsResponse;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -26,14 +29,18 @@ import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangedRepresentative;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.rd.model.ContactInformation;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
@@ -90,6 +97,9 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private CaseAssignmentApi caseAssignmentApi;
+
+    @MockBean
+    private OrganisationService organisationService;
 
     NoticeOfChangeAboutToStartControllerTest() {
         super("noc-decision");
@@ -242,6 +252,70 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldUpdateSolicitorForThirdPartyApplication() {
+       when(organisationService.getOrganisation("NEW_ORG")).thenReturn(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+           .organisationIdentifier("NEW_ORG")
+               .contactInformation(List.of(ContactInformation.builder()
+                       .addressLine1("New Test Road")
+                   .build()))
+           .build());
+
+        final ChangeOrganisationRequest changeRequest = ChangeOrganisationRequest.builder()
+            .organisationToAdd(NEW_ORGANISATION)
+            .caseRoleId(caseRoleDynamicList("[EPSMANAGING]"))
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .changeOrganisationRequestField(changeRequest)
+            .outsourcingPolicy(OrganisationPolicy.builder()
+                .organisation(OLD_ORGANISATION)
+                .orgPolicyCaseAssignedRole("[EPSMANAGING]")
+                .build())
+            .localAuthorities(List.of(element(LocalAuthority.builder()
+                .id("ORG123")
+                .name("Joe Bloggs")
+                .email("test1@testmail.com")
+                .phone("111222333")
+                .address(Address.builder()
+                    .addressLine1("Old Test Road")
+                    .build())
+                .build())))
+            .build();
+
+        final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToStartEvent(caseData);
+
+        final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue().getCaseDetails());
+
+        final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+            .id(NEW_ORGANISATION.getOrganisationID())
+            .name("Joe Bloggs")
+            .address(Address.builder()
+                .addressLine1("New Test Road")
+                .build())
+            .build();
+
+        assertThat(updatedCaseData.getLocalAuthorities().get(0).getValue()).isEqualTo(expectedLocalAuthority);
+        assertThat(updatedCaseData.getChangeOfRepresentatives()).isEqualTo(List.of(element(NEW_CHANGE_UUID,
+            ChangeOfRepresentation.builder()
+                .via(ChangeOfRepresentationMethod.NOC.getLabel())
+                .by(SOLICITOR_USER_EMAIL)
+                .date(TODAY)
+                .removed(ChangedRepresentative.builder()
+                    .organisation(OLD_ORGANISATION)
+                    .build())
+                .added(ChangedRepresentative.builder()
+                    .email(SOLICITOR_USER_EMAIL)
+                    .firstName(SOLICITOR_FIRST_NAME)
+                    .lastName(SOLICITOR_LAST_NAME)
+                    .organisation(NEW_ORGANISATION)
+                    .build())
+                .build())
+        ));
+        assertThat(actualResponse).isEqualTo(ASSIGNMENT_RESPONSE);
+    }
+
+    @Test
     void shouldTransferLegalCounselWhenSolicitorChanged() {
         List<Element<LegalCounsellor>> legalCounsellors = wrapElements(
             LegalCounsellor.builder().firstName("original").build()
@@ -293,7 +367,6 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
         assertThat(updatedCaseData.getChildren1().get(0).getValue().getLegalCounsellors())
             .isEqualTo(differentLegalCounsellors);
     }
-
 
     private Element<Respondent> update(Element<Respondent> respondent, UserDetails solicitor, Organisation org) {
         return element(respondent.getId(), respondent.getValue().toBuilder()

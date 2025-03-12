@@ -17,8 +17,11 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "outsourcingPolicy",
-    "UserRole": "caseworker-caa",
-    "CRUD": "CRU"
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -566,6 +569,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeAnswersThirdPartyRespondent",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "changeOrganisationRequestField",
     "UserRoles": [
       "caseworker-caa",
@@ -577,6 +590,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondents1",
+    "UserRole": "caseworker-approver",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthorities",
     "UserRole": "caseworker-approver",
     "CRUD": "CRUD"
   },
