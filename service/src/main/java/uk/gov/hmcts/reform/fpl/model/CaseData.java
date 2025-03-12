@@ -308,6 +308,7 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
+    private final List<Element<Guardian>> guardians;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
@@ -1203,6 +1204,13 @@ public class CaseData extends CaseDataParent {
     public boolean isChildRecoveryOrder() {
         return ofNullable(getOrders())
             .map(Orders::isChildRecoveryOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isChildAssessmentOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildAssessmentOrder)
             .orElse(false);
     }
 

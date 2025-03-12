@@ -8,9 +8,12 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ListingActionType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonSubTypes({
@@ -21,6 +24,10 @@ import java.util.List;
 @Data
 public class CaseDataParent {
 
+    protected final List<Element<ManagedDocument>> guardianReportsList;
+    protected final List<Element<ManagedDocument>> guardianReportsListLA;
+    protected final List<Element<ManagedDocument>> guardianReportsListCTSC;
+    protected final List<Element<ManagedDocument>> guardianReportsListRemoved;
     protected final List<Element<RespondentStatementV2>> respStmtList;
     protected final List<Element<RespondentStatementV2>> respStmtListLA;
     protected final List<Element<RespondentStatementV2>> respStmtListCTSC;
@@ -260,4 +267,14 @@ public class CaseDataParent {
     protected final YesNo shouldSendOrderReminder;
 
     protected final CaseLocation caseManagementLocation;
+    protected final List<Element<ListingActionRequest>> listingRequests;
+    protected final ListingActionRequest listingRequestToReview;
+    protected final List<Element<ListingActionRequest>> reviewedListingRequests;
+    protected final List<ListingActionType> selectListingActions;
+    protected final String listingDetails;
+    protected final DynamicList listingRequestsList;
+
+    public List<Element<ManagedDocument>> getGuardianReportsList() {
+        return guardianReportsList != null ? guardianReportsList : new ArrayList<>();
+    }
 }

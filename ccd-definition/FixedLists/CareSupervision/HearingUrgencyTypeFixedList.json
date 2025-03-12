@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingUrgencyTypeFixedList",
+    "ListElementCode": "STANDARD",
+    "ListElement": "Standard (between days 12-18)",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingUrgencyTypeFixedList",
+    "ListElementCode": "SAME_DAY",
+    "ListElement": "Same day",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingUrgencyTypeFixedList",
+    "ListElementCode": "URGENT",
+    "ListElement": "Urgent (not same day)",
+    "DisplayOrder": 3
+  }
+]
