@@ -28,7 +28,8 @@ public class NoticeOfChangeThirdPartyEventHandler {
         NotifyData notifyData = noticeOfChangeContentProvider.buildNoticeOfChangeThirdPartySolicitorTemplate(
             event.getCaseData());
 
-        log.info("Sending email to new third party solicitor {} with access granted.", event.getNewThirdPartyOrg().getEmail());
+        log.info("Sending email to new third party solicitor {} with access granted.", event.getNewThirdPartyOrg()
+            .getEmail());
         notificationService.sendEmail(NOTICE_OF_CHANGE_NEW_REPRESENTATIVE, event.getNewThirdPartyOrg().getEmail(),
             notifyData, event.getCaseData().getId());
     }
@@ -39,7 +40,8 @@ public class NoticeOfChangeThirdPartyEventHandler {
         NotifyData notifyData = noticeOfChangeContentProvider.buildNoticeOfChangeThirdPartySolicitorTemplate(
             event.getCaseData());
 
-        log.info("Sending email to old third party solicitor {} with access removed.", event.getOldThirdPartyOrg().getEmail());
+        log.info("Sending email to old third party solicitor {} with access removed.", event.getOldThirdPartyOrg()
+            .getEmail());
         notificationService.sendEmail(
             NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
             event.getOldThirdPartyOrg().getEmail(),
