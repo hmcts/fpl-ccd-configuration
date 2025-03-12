@@ -1209,6 +1209,13 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
+    @JsonIgnore
+    public boolean isChildAssessmentOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildAssessmentOrder)
+            .orElse(false);
+    }
+
     @JsonUnwrapped
     @Builder.Default
     private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
