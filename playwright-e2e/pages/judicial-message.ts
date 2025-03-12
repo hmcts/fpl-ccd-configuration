@@ -38,11 +38,7 @@ export class JudicialMessage extends BasePage
         await this.clickContinue();
         await this.whichApplication.selectOption('C2, 25 March 2021, 3:16pm');
         await this.clickContinue();
-       // await this.page.pause();
-      //  await this.sender.selectOption('CTSC');
         await this.recipient.selectOption('Allocated Judge - Her Honour Judge Moley (moley@example.com)');
-       // await this.page.getByLabel('Recipient\'s email address').click();
-      //  await this.recipientEmail.fill('Judge@email.com');
         await this.subject.fill('Message To the allocated Judge');
         await this.urgency.fill('Urgent');
         await this.message.fill('message send to allocated Judge');
@@ -55,10 +51,7 @@ export class JudicialMessage extends BasePage
         await this.clickContinue();
         await this.whichDocument.selectOption('Test.txt');
         await this.clickContinue();
-       // await this.sender.selectOption('CTSC');
         await this.recipient.selectOption('Allocated Judge - Her Honour Judge Moley (moley@example.com)');
-       // await this.page.getByLabel('Recipient\'s email address').click();
-        //await this.recipientEmail.fill('Judge@email.com');
         await this.subject.fill('Message To the allocated Judge');
         await this.urgency.fill('Urgent');
         await this.message.fill('message send to allocated Judge');
@@ -68,7 +61,6 @@ export class JudicialMessage extends BasePage
     async judgeReplyMessage(){
         await this.messageToReply.selectOption('Subject 1, 16 November 2023 at 4:51pm, High');
         await this.clickContinue();
-        await this.page.pause();
         await this.haveToReply.getByLabel('Yes').check();
         await this.reply.fill('Reply CTSC admin about the hearing.');
         await this.clickContinue();
