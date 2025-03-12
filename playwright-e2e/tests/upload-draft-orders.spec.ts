@@ -24,7 +24,7 @@ test.describe('Upload draft orders', () => {
 
             await uploadDraftOrders.tabNavigation('Draft orders');
             await expect(page.locator('#case-viewer-field-read--hearingOrdersBundlesDrafts')).toContainText('Case management hearing, 3 November 2012');
-            await expect(page.getByLabel('Draft orders').getByRole('link')).toContainText('draftOrder.docx');
+            await expect(page.getByLabel('Draft orders').getByRole('link')).toContainText('draftOrder1.docx');
         });
 
     test('LA upload Additional Draft Order',
@@ -41,6 +41,6 @@ test.describe('Upload draft orders', () => {
             await uploadDraftOrders.tabNavigation('Draft orders');
             //await expect(page.locator('#case-viewer-field-read--hearingOrdersBundlesDrafts')).toContainText('Case management hearing, 3 November 2012');
             await expect(page.getByRole('link', { name: 'draftOrder2.docx' })).toBeVisible();
-            await expect(page.getByRole('link', { name: 'draftOrder.docx' })).toBeVisible();
+            await expect(page.getByRole('link', { name: 'draftOrder1.docx' })).toBeVisible();
         });
 });
