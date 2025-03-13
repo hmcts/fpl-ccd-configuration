@@ -40,7 +40,7 @@
     "ID": "enterThirdPartyApplicant",
     "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "applicantContactOthers",
-    "ListElementCode": "roleOther",
+    "ListElementCode": "title",
     "DisplayContext": "Optional",
     "FieldDisplayOrder": 5
   }
