@@ -58,7 +58,7 @@
     "ListElementCode": "genderIdentification",
     "FieldType": "Text",
     "ElementLabel": "What gender do they identify with?",
-    "FieldShowCondition": "gender=\"They identify in another way\"",
+    "FieldShowCondition": "gender=\"Indeterminate\"",
     "SecurityClassification": "Public"
   },
   {
