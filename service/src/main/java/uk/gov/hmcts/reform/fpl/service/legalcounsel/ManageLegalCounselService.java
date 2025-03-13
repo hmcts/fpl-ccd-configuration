@@ -142,15 +142,15 @@ public class ManageLegalCounselService {
             retrieveLegalCounselForLoggedInSolicitor(previousCaseData)
         );
 
-        //Grant case access to all new legal counsellors
-        currentLegalCounsellors.stream()
-            .filter(not(previousLegalCounsellors::contains))
-            .forEach(counsellor -> events.add(new LegalCounsellorAdded(currentCaseData, counsellor)));
-
         //Revoke case access from all removed legal counsellors
         previousLegalCounsellors.stream()
             .filter(not(currentLegalCounsellors::contains))
             .forEach(counsellor -> events.add(new LegalCounsellorRemoved(currentCaseData, orgName, counsellor)));
+
+        //Grant case access to all new legal counsellors
+        currentLegalCounsellors.stream()
+            .filter(not(previousLegalCounsellors::contains))
+            .forEach(counsellor -> events.add(new LegalCounsellorAdded(currentCaseData, counsellor)));
 
         return events;
     }
