@@ -54,7 +54,7 @@ export class BasePage {
   }
 
   async clickContinue() {
-    await this.continueButton.click({clickCount:2, delay:300});
+    await this.continueButton.click({});
   }
 
   async waitForAllUploadsToBeCompleted() {
