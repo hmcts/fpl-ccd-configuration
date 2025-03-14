@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
@@ -30,6 +31,7 @@ public class LocalAuthority {
     private String pbaNumber;
     private String clientCode;
     private String customerReference;
+    private RepresentingDetails representingDetails;
     @Builder.Default
     private List<Element<Colleague>> colleagues = new ArrayList<>();
     private String designated;
@@ -42,10 +44,22 @@ public class LocalAuthority {
     }
 
     @JsonIgnore
-    public Optional<Colleague> getMainContact() {
-        return unwrapElements(colleagues).stream()
-            .filter(colleague -> YES.getValue().equals(colleague.getMainContact()))
+    public Optional<Element<Colleague>> getMainContactElement() {
+        return nullSafeCollection(colleagues).stream()
+            .filter(colleague -> colleague.getValue().checkIfMainContact())
             .findFirst();
+    }
+
+    @JsonIgnore
+    public Optional<Colleague> getMainContact() {
+        return getMainContactElement().map(Element::getValue);
+    }
+
+    @JsonIgnore
+    public List<Element<Colleague>> getOtherContact() {
+        return nullSafeCollection(colleagues).stream()
+            .filter(colleague -> !colleague.getValue().checkIfMainContact())
+            .toList();
     }
 
     @JsonIgnore

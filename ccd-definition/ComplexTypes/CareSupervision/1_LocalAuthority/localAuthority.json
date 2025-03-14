@@ -100,5 +100,29 @@
     "FieldTypeParameter": "Colleague",
     "ElementLabel": "Colleague",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "applicationDetailsLabel",
+    "ElementLabel": " ",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "representingDetails",
+    "ElementLabel": "Details of person you are representing",
+    "FieldType": "RepresentingDetails",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "solicitorDetailsLabel",
+    "ElementLabel": " ",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
   }
 ]
