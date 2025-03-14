@@ -43,8 +43,8 @@ public class NoticeOfChangeFieldPopulator {
             SolicitorRole solicitorRole = solicitorRoles.get(i);
 
             Optional<Element<WithSolicitor>> solicitorContainer = i < numElements
-                                                                  ? Optional.of(elements.get(i))
-                                                                  : Optional.empty();
+                ? Optional.of(elements.get(i))
+                : Optional.empty();
 
             OrganisationPolicy organisationPolicy = policyConverter.generate(
                 solicitorRole, solicitorContainer
@@ -60,6 +60,22 @@ public class NoticeOfChangeFieldPopulator {
                 data.put(String.format(representing.getNocAnswersTemplate(), i), possibleAnswer.get());
             }
         }
+
+        return data;
+    }
+
+    public Map<String, Object> generateApplicantAnswer(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+
+        // TODO: Get applicant name from case data
+
+        // create a NoC answer object with the first and last name present
+        NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder()
+            .respondentFirstName("Bilbo")
+            .respondentLastName("Baggins")
+            .build();
+
+        data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);
 
         return data;
     }
