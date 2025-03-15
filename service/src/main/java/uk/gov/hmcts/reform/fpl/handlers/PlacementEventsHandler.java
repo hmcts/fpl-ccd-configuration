@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -80,6 +81,7 @@ public class PlacementEventsHandler {
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final CafcassNotificationService cafcassNotificationService;
     private final RepresentativesInbox representativesInbox;
+    private final FeatureToggleService featureToggleService;
 
 
     @EventListener
@@ -243,26 +245,29 @@ public class PlacementEventsHandler {
 
     @Async
     @EventListener
-    public void notifyCourt(PlacementApplicationSubmitted event) {
+    public void notifyCourtOfNewApplication(PlacementApplicationSubmitted event) {
         notifyAdmin(event.getCaseData(), event.getPlacement());
     }
 
     @Async
     @EventListener
-    public void notifyCourt(PlacementApplicationChanged event) {
+    public void notifyCourtOfChangedApplication(PlacementApplicationChanged event) {
         notifyAdmin(event.getCaseData(), event.getPlacement());
     }
 
     private void notifyAdmin(CaseData caseData, Placement placement) {
+        if (featureToggleService.isWATaskEmailsEnabled()) {
+            log.info("Send email to admin about {} child placement", placement.getChildName());
 
-        log.info("Send email to admin about {} child placement", placement.getChildName());
+            final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
 
-        final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
+            final String recipient = courtService.getCourtEmail(caseData);
 
-        final String recipient = courtService.getCourtEmail(caseData);
-
-        notificationService
-            .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipient, notifyData, caseData.getId());
+            notificationService
+                .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipient, notifyData, caseData.getId());
+        } else {
+            log.info("WA EMAIL SKIPPED - placement application uploaded/changed - {}", caseData.getId());
+        }
     }
 
     private void notifyRespondent(CaseData caseData, Placement placement, Respondent respondent) {
