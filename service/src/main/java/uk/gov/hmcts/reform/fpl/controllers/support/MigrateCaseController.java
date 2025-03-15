@@ -36,6 +36,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2572", this::run2572,
         "DFPL-2635", this::run2635,
         "DFPL-2642", this::run2642,
+        "DFPL-2423", this::run2423,
         "DFPL-2640", this::run2640
     );
     private final CaseConverter caseConverter;
@@ -87,6 +88,12 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
             orgId, null));
+    }
+
+    private void run2423(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2423";
+
+        migrateCaseService.migrateOtherProceedings(caseDetails, getCaseData(caseDetails), migrationId);
     }
 
     private void run2640(CaseDetails caseDetails) {

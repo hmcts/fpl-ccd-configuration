@@ -145,7 +145,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 8,
-    "CaseFieldID": "proceeding",
+    "CaseFieldID": "proceedings",
     "TabFieldDisplayOrder": 7
   },
   {
