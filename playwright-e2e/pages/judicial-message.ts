@@ -5,7 +5,6 @@ import { BasePage } from "./base-page";
 export class JudicialMessage extends BasePage
 {
     readonly whichApplication: Locator;
-    readonly sender:Locator;
     readonly recipient:Locator;
     readonly subject:Locator;
     readonly urgency:Locator;
@@ -20,8 +19,7 @@ export class JudicialMessage extends BasePage
     constructor(page:Page){
         super(page);
         this.whichApplication =page.getByLabel('Which application?');
-        this.sender = page.getByLabel('Sender', { exact: true });
-        this.recipient = page.getByLabel('Recipient', { exact: true });
+        this.recipient = page.getByLabel('Recipient', { exact: true }).locator('visible=true');
         this.subject = page.getByLabel('Message subject');
         this.urgency = page.getByLabel('Urgency (Optional)');
         this.recipientEmail =page.getByLabel('Recipient\'s email address');
@@ -38,10 +36,7 @@ export class JudicialMessage extends BasePage
         await this.clickContinue();
         await this.whichApplication.selectOption('C2, 25 March 2021, 3:16pm');
         await this.clickContinue();
-        await this.sender.selectOption('CTSC');
-        await this.recipient.selectOption('Allocated Judge');
-        await this.page.getByLabel('Recipient\'s email address').click();
-        await this.recipientEmail.fill('Judge@email.com');
+        await this.recipient.selectOption('Allocated Judge - Her Honour Judge Moley (moley@example.com)');
         await this.subject.fill('Message To the allocated Judge');
         await this.urgency.fill('Urgent');
         await this.message.fill('message send to allocated Judge');
@@ -54,10 +49,7 @@ export class JudicialMessage extends BasePage
         await this.clickContinue();
         await this.whichDocument.selectOption('Test.txt');
         await this.clickContinue();
-        await this.sender.selectOption('CTSC');
-        await this.recipient.selectOption('Allocated Judge');
-        await this.page.getByLabel('Recipient\'s email address').click();
-        await this.recipientEmail.fill('Judge@email.com');
+        await this.recipient.selectOption('Allocated Judge - Her Honour Judge Moley (moley@example.com)');
         await this.subject.fill('Message To the allocated Judge');
         await this.urgency.fill('Urgent');
         await this.message.fill('message send to allocated Judge');
