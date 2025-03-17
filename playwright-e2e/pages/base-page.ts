@@ -50,11 +50,11 @@ export class BasePage {
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByRole('tab', { name: tabName,exact: true }).click();
+    await this.page.getByRole('tab', { name: tabName }).click();
   }
 
   async clickContinue() {
-    await this.continueButton.click({clickCount:2, delay:300});
+    await this.continueButton.click({});
   }
 
   async waitForAllUploadsToBeCompleted() {
