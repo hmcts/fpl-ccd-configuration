@@ -435,6 +435,10 @@ public class JudicialService {
         roleAssignmentService.deleteAllRolesOnCase(caseId);
     }
 
+    public void cleanupHearingRoles(Long caseId) {
+        roleAssignmentService.deleteAllHearingRolesOnCase(caseId);
+    }
+
     public List<String> validateHearingJudgeEmail(CaseDetails caseDetails, CaseData caseData) {
         JudgeAndLegalAdvisor hearingJudge;
 
