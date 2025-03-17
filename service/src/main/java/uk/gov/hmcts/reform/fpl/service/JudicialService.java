@@ -54,6 +54,7 @@ public class JudicialService {
     private static final int HEARING_EXPIRY_OFFSET_MINS = 5;
 
     public static final int JUDICIAL_PAGE_SIZE = 3000;
+    private static final ZoneId ZONE_ID = ZoneId.of("Europe/London");
 
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
@@ -76,7 +77,7 @@ public class JudicialService {
         List<RoleAssignment> currentAllocatedJudges = roleAssignmentService
             .getCaseRolesAtTime(caseId,
                 allocatedRoles,
-                ZonedDateTime.now());
+                currentTimeUK());
 
         currentAllocatedJudges
             .stream()
@@ -130,9 +131,9 @@ public class JudicialService {
         // add new allocated judge
         if (isLegalAdviser) {
             roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), ALLOCATED_LEGAL_ADVISER,
-                ZonedDateTime.now(), null);
+                currentTimeUK(), null);
         } else {
-            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, ZonedDateTime.now(),
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, currentTimeUK(),
                 null);
         }
     }
@@ -160,12 +161,12 @@ public class JudicialService {
                                    boolean startNow) {
         Optional<String> judgeId = getJudgeIdFromHearing(hearing);
         ZonedDateTime possibleEndDate = nextHearing.map(HearingBooking::getStartDate)
-            .map(ld -> ld.atZone(ZoneId.systemDefault()))
+            .map(ld -> ld.atZone(ZONE_ID))
             .orElse(null);
 
         judgeId.ifPresentOrElse(s -> assignHearingJudgeRole(caseId,
                 s,
-                startNow ? ZonedDateTime.now() : hearing.getStartDate().atZone(ZoneId.systemDefault()),
+                startNow ? currentTimeUK() : hearing.getStartDate().atZone(ZONE_ID),
                 possibleEndDate,
                 JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearing.getJudgeAndLegalAdvisor().getJudgeTitle())),
             () -> log.error("No judge details on hearing starting at {} on case {} to assign roles to",
@@ -389,7 +390,7 @@ public class JudicialService {
         }
 
         return judgeTimes.stream()
-            .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(ZonedDateTime.now()))
+            .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(currentTimeUK()))
             .map(time -> {
                 Optional<RoleCategory> userRoleCategory = this.getUserRoleCategory(time.getEmailAddress());
 
@@ -479,5 +480,9 @@ public class JudicialService {
         }
         caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
         return List.of();
+    }
+
+    private ZonedDateTime currentTimeUK() {
+        return ZonedDateTime.now(ZONE_ID);
     }
 }

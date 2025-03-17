@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,8 @@ class RoleAssignmentServiceTest {
 
     @Captor
     private ArgumentCaptor<AssignmentRequest> assignmentRequestCaptor;
+
+    private static ZoneId ZONE = ZoneId.of("Europe/London");
 
     @Nested
     class SystemUser {
@@ -93,7 +96,7 @@ class RoleAssignmentServiceTest {
         @ParameterizedTest
         @EnumSource(LegalAdviserRole.class)
         void shouldCreateValidLegalAdviserRoleAssignment(LegalAdviserRole role) {
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(ZONE);
             ZonedDateTime soon = now.plusDays(2);
             when(systemUserService.getSysUserToken()).thenReturn("token");
             when(systemUserService.getUserId("token")).thenReturn("systemUserId");
@@ -129,7 +132,7 @@ class RoleAssignmentServiceTest {
         @ParameterizedTest
         @EnumSource(JudgeCaseRole.class)
         void shouldCreateValidJudiciaryRoleAssignment(JudgeCaseRole role) {
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(ZONE);
             ZonedDateTime soon = now.plusDays(2);
             when(systemUserService.getSysUserToken()).thenReturn("token");
             when(systemUserService.getUserId("token")).thenReturn("systemUserId");
@@ -232,7 +235,7 @@ class RoleAssignmentServiceTest {
 
         @Test
         void shouldCreateSingleRole() {
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(ZONE);
             when(systemUserService.getUserId(any())).thenReturn("1234");
             underTest.assignCaseRole(12345L, List.of("1234"), "ROLE", RoleCategory.JUDICIAL, now, null);
 
@@ -265,7 +268,7 @@ class RoleAssignmentServiceTest {
     void shouldGetRolesAtTime() {
         when(amApi.queryRoleAssignments(any(), any(), any())).thenReturn(QueryResponse.builder().build());
 
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZONE);
         underTest.getCaseRolesAtTime(12345L, List.of("test", "test2"), now);
 
         verify(amApi).queryRoleAssignments(any(), any(), eq(QueryRequest.builder()
@@ -289,7 +292,7 @@ class RoleAssignmentServiceTest {
                 .roleAssignmentResponse(List.of(RoleAssignment.builder().id("role-1").roleName("role-A").build()))
                 .build());
 
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(ZONE);
             underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId", List.of("role-A"));
 
             verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
@@ -312,7 +315,7 @@ class RoleAssignmentServiceTest {
                 ))
                 .build());
 
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(ZONE);
             underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId", List.of("role-A"));
 
             verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
