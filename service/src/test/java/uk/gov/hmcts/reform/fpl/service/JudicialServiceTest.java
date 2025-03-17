@@ -59,6 +59,8 @@ class JudicialServiceTest {
 
     private static final String EMAIL = "test@test.com";
 
+    private static final ZoneId ZONE = ZoneId.of("Europe/London");
+
     @Mock
     private SystemUserService systemUserService;
     @Mock
@@ -172,15 +174,15 @@ class JudicialServiceTest {
             assertThat(roles).hasSize(3);
             assertThat(roles.get(0)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
-                    HEARING_1.getStartDate().atZone(ZoneId.systemDefault()),
-                    HEARING_2.getStartDate().atZone(ZoneId.systemDefault()));
+                    HEARING_1.getStartDate().atZone(ZONE),
+                    HEARING_2.getStartDate().atZone(ZONE));
             assertThat(roles.get(1)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-judge", RoleCategory.JUDICIAL,
-                    HEARING_2.getStartDate().atZone(ZoneId.systemDefault()),
-                    HEARING_3.getStartDate().atZone(ZoneId.systemDefault()));
+                    HEARING_2.getStartDate().atZone(ZONE),
+                    HEARING_3.getStartDate().atZone(ZONE));
             assertThat(roles.get(2)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
-                    HEARING_3.getStartDate().atZone(ZoneId.systemDefault()),
+                    HEARING_3.getStartDate().atZone(ZONE),
                     null);
         }
 
@@ -266,7 +268,7 @@ class JudicialServiceTest {
                 .thenReturn(existing);
 
             underTest.setExistingHearingJudgesAndLegalAdvisersToExpire(12345L,
-                ZonedDateTime.now(ZoneId.of("Europe/London")));
+                ZonedDateTime.now(ZONE));
 
             verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
             verify(roleAssignmentService, times(2)).deleteRoleAssignment(roleAssignmentCaptor.capture());
@@ -381,14 +383,14 @@ class JudicialServiceTest {
             12345L,
             List.of("idam"),
             JudgeCaseRole.HEARING_JUDGE,
-            startDate.atZone(ZoneId.of("Europe/London")),
+            startDate.atZone(ZONE),
             null);
     }
 
     @Test
     void shouldCreateRoleStartingNowNotStartDateIfOnlyHearing() {
         LocalDateTime now = LocalDateTime.now();
-        final ZonedDateTime nowZoned = now.atZone(ZoneId.of("Europe/London"));
+        final ZonedDateTime nowZoned = now.atZone(ZONE);
 
         HearingBooking hearing = HearingBooking.builder()
             .startDate(now.plusDays(2))
@@ -402,7 +404,7 @@ class JudicialServiceTest {
             .build();
 
         try (MockedStatic<ZonedDateTime> zonedStatic = mockStatic(ZonedDateTime.class)) {
-            zonedStatic.when(() -> ZonedDateTime.now(ZoneId.of("Europe/London"))).thenReturn(nowZoned);
+            zonedStatic.when(() -> ZonedDateTime.now(ZONE)).thenReturn(nowZoned);
 
             underTest.assignHearingJudge(12345L, hearing, Optional.empty(), true);
 
@@ -440,8 +442,8 @@ class JudicialServiceTest {
             12345L,
             List.of("idam"),
             JudgeCaseRole.HEARING_JUDGE,
-            now.atZone(ZoneId.systemDefault()),
-            now.plusDays(2).atZone(ZoneId.systemDefault()));
+            now.atZone(ZONE),
+            now.plusDays(2).atZone(ZONE));
     }
 
     @Nested
