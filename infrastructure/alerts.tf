@@ -113,9 +113,9 @@ module "fpl-executor-alert" {
   location                   = var.appinsights_location
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-executor-pool-size"
-  alert_desc                 = "All 10 executors are active. No free executor left. If this situation continues, executors could be blocked."
+  alert_desc                 = "All 10 core executors are active. If this situation continues, executors could be blocked."
   app_insights_query         = "customMetrics | where name == \"executor_active\""
-  custom_email_subject       = "Alert: No free executor left"
+  custom_email_subject       = "Alert: All executors are busy"
   frequency_in_minutes       = "5"
   time_window_in_minutes     = "5"
   severity_level             = "3"
