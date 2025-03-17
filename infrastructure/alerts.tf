@@ -112,7 +112,7 @@ module "fpl-executor-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = var.appinsights_location
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
-  alert_name                 = "${var.product}-executor-pool-size"
+  alert_name                 = "${var.product}-executor-alert"
   alert_desc                 = "All 10 core executors are active. If this situation continues, executors could be blocked."
   app_insights_query         = "customMetrics | where name == \"executor_active\""
   custom_email_subject       = "Alert: All executors are busy"
