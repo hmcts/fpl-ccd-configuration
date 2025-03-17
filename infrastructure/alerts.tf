@@ -108,20 +108,20 @@ module "fpl-summary-tab-job-alert" {
   common_tags                = var.common_tags
 }
 
-module "fpl-executor-pool-size-alert" {
+module "fpl-executor-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = var.appinsights_location
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-executor-pool-size"
-  alert_desc                 = "Executor pool size reach zero. No free executor in the pool."
-  app_insights_query         = "customMetrics | where name == \"executor_pool_size\""
-  custom_email_subject       = "Alert: Executor pool size reach zero"
+  alert_desc                 = "All 10 executors are active. No free executor left. If this situation continues, executors could be blocked."
+  app_insights_query         = "customMetrics | where name == \"executor_active\""
+  custom_email_subject       = "Alert: No free executor left"
   frequency_in_minutes       = "5"
   time_window_in_minutes     = "5"
   severity_level             = "3"
   action_group_name          = "${var.product}-support"
-  trigger_threshold_operator = "Equal"
-  trigger_threshold          = "0"
+  trigger_threshold_operator = "GreaterThanOrEqual"
+  trigger_threshold          = "10"
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
   common_tags                = var.common_tags
