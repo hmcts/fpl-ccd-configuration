@@ -1,6 +1,7 @@
 import {expect, type Locator, Page} from "@playwright/test";
+import {BasePage} from "../base-page";
 
-export function HearingDetailsMixin(BasePage) {
+export function HearingDetailsMixin() {
   return class extends BasePage {
     readonly hearingTypesLabelLocator: Locator;
 

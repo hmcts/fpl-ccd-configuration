@@ -473,7 +473,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingPreferences",
-    "Label": "Attending the hearing",
+    "Label": "Court services",
     "FieldType": "HearingPreferences",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -527,15 +527,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "allocationProposal_label",
-    "Label": "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "allocationProposal",
     "Label": "Allocation proposal",
     "FieldType": "AllocationProposal",
@@ -575,7 +566,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orders",
-    "Label": "Orders and directions needed",
+    "Label": "Orders and directions sought",
     "FieldType": "Orders",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -584,7 +575,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "ordersSolicitor",
-    "Label": "Orders and directions needed",
+    "Label": "Orders and directions sought",
     "FieldType": "OrdersSolicitor",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -2044,7 +2035,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "facilitiesOrServiceNeededSubHeadingLabel",
     "FieldType": "Label",
-    "Label": "#### Court services needed",
+    "Label": "#### Court services",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -2089,15 +2080,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orderTabHeading",
     "Label": "## Orders",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadApplicationDocumentsLabel",
-    "Label": "Select the supporting or annex documents you're sending with this application. <br> These can be part of the social work evidence template (SWET) or separate.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -2717,6 +2699,16 @@
     "ID": "extendTimelineHearingDate",
     "Label": "When was the order requesting this extension approved?",
     "FieldType": "Date",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "guardians",
+    "Label": "Guardian",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Guardian",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

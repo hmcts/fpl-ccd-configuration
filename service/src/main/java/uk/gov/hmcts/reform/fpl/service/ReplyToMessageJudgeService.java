@@ -75,6 +75,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
 
         JudicialMessage judicialMessageReply = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
+            .relatedDocuments(selectedJudicialMessage.getRelatedDocuments())
             .recipientType(selectedJudicialMessage.getSenderType())
             .recipient(selectedJudicialMessage.getSender())
             .subject(selectedJudicialMessage.getSubject())
@@ -108,7 +109,8 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
 
         if (NO.getValue().equals(judicialMessageReply.getIsReplying())) {
             return closeJudicialMessage(
-                selectedJudicialMessageId, caseData.getJudicialMessages(), caseData.getClosedJudicialMessages());
+                selectedJudicialMessageId, caseData.getJudicialMessages(), caseData.getClosedJudicialMessages(),
+                judicialMessageReply.getClosureNote());
         } else {
             List<Element<JudicialMessage>> updatedMessages = replyToJudicialMessage(
                 selectedJudicialMessageId, judicialMessageReply, caseData.getJudicialMessages());
@@ -119,7 +121,8 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
 
     private Map<String, Object> closeJudicialMessage(UUID selectedJudicialMessageId,
                                                      List<Element<JudicialMessage>> openJudicialMessages,
-                                                     List<Element<JudicialMessage>> closedJudicialMessages) {
+                                                     List<Element<JudicialMessage>> closedJudicialMessages,
+                                                     String closureNote) {
 
         Element<JudicialMessage> judicialMessageElement = openJudicialMessages.stream()
             .filter(message -> selectedJudicialMessageId.equals(message.getId()))
@@ -133,7 +136,11 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             Optional.ofNullable(closedJudicialMessages).orElse(newArrayList()));
 
         updatedClosedJudicialMessages.add(element(judicialMessageElement.getId(),
-            judicialMessageElement.getValue().toBuilder().status(CLOSED).updatedTime(time.now()).build()));
+            judicialMessageElement.getValue().toBuilder()
+                .status(CLOSED)
+                .closureNote(closureNote)
+                .updatedTime(time.now())
+                .build()));
 
         return Map.of("judicialMessages", updatedJudicialMessages,
             "closedJudicialMessages", sortJudicialMessages(updatedClosedJudicialMessages));
@@ -160,6 +167,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
                         .recipient(resolveRecipientEmailAddress(judicialMessageReply.getRecipientType(),
                             judicialMessageReply.getReplyTo()))
                         .messageHistory(buildMessageHistory(judicialMessageReply, judicialMessage, sender))
+                        .closureNote(judicialMessageReply.getClosureNote())
                         .latestMessage(judicialMessageReply.getLatestMessage())
                         .build();
 

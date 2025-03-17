@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.105.0"
+      version = "4.21.1"
     }
     azuread = {
       source  = "hashicorp/azuread"
@@ -17,7 +17,7 @@ provider "azurerm" {
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
+  resource_provider_registrations = "none"
   alias                      = "postgres_network"
   subscription_id            = var.aks_subscription_id
 }
@@ -30,7 +30,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 module "application_insights" {
-  source = "git@github.com:hmcts/terraform-module-application-insights?ref=main"
+  source = "git@github.com:hmcts/terraform-module-application-insights?ref=4.x"
 
   env     = var.env
   product = var.product

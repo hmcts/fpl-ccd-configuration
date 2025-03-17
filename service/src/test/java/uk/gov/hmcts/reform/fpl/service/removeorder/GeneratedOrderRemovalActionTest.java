@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
 import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -480,6 +481,124 @@ class GeneratedOrderRemovalActionTest {
                     orderType,
                     "15 June 2020",
                     generatedOrder.getRemovalReason());
+        }
+
+        @Test
+        void shouldPopulateGeneratedOrderCaseFieldsFromConfidentialOrder() {
+            String orderType = "Appointment of a children's guardian (C47A)";
+
+            GeneratedOrder generatedOrder = GeneratedOrder.builder()
+                .type(orderType)
+                .title(null)
+                .dateOfIssue("15 June 2020")
+                .build();
+
+            DocumentReference document = DocumentReference.builder().build();
+            generatedOrder = generatedOrder.toBuilder().document(document).build();
+
+            CaseData caseData = CaseData.builder()
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
+                .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                    .orderCollectionCTSC(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
+                    .build())
+                .build();
+
+            CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+                .data(Map.of())
+                .build());
+
+            underTest.populateCaseFields(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, generatedOrder);
+
+            assertThat(caseDetailsMap)
+                .extracting("orderToBeRemoved",
+                    "orderTitleToBeRemoved",
+                    "orderIssuedDateToBeRemoved",
+                    "orderDateToBeRemoved")
+                .containsExactly(document,
+                    orderType,
+                    generatedOrder.getDateOfIssue(),
+                    generatedOrder.getRemovalReason());
+        }
+
+        @Test
+        void shouldRemoveConfidentialOrder() {
+            GeneratedOrder generatedOrder = buildOrder(
+                NON_FINAL_ORDER_NEW,
+                "order 1",
+                DATE_OF_ISSUE,
+                newArrayList(
+                    element(CHILD_ONE_ID, Child.builder()
+                        .finalOrderIssued("Yes")
+                        .finalOrderIssuedType("Some type")
+                        .build()),
+                    element(CHILD_TWO_ID, Child.builder()
+                        .finalOrderIssued("Yes")
+                        .finalOrderIssuedType("Some type")
+                        .build())
+                ), YesNo.NO.getValue()
+            );
+
+            JudgeAndLegalAdvisor emptyJudge = JudgeAndLegalAdvisor.builder().build();
+            GeneratedOrder order = generatedOrder.toBuilder().judgeAndLegalAdvisor(emptyJudge).build();
+
+            CaseData caseData = CaseData.builder()
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
+                .children1(List.of(
+                    element(CHILD_ONE_ID, Child.builder()
+                        .finalOrderIssued("Yes")
+                        .finalOrderIssuedType("Some type")
+                        .build()),
+                    element(CHILD_TWO_ID, Child.builder()
+                        .finalOrderIssued("Yes")
+                        .finalOrderIssuedType("Some type")
+                        .build())
+                ))
+                .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                    .orderCollectionCTSC(newArrayList(element(TO_REMOVE_ORDER_ID, order)))
+                    .orderCollectionChild0(newArrayList(element(TO_REMOVE_ORDER_ID, order)))
+                    .build())
+                .build();
+
+            CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+                .data(Map.of())
+                .build());
+
+            underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, order);
+
+            assertThat(caseDetailsMap).isEqualTo(Map.of(
+                "children1", List.of(
+                    element(CHILD_ONE_ID, Child.builder()
+                        .finalOrderIssued("Yes")
+                        .finalOrderIssuedType("Some type")
+                        .build()),
+                    element(CHILD_TWO_ID, Child.builder()
+                        .finalOrderIssued("Yes")
+                        .finalOrderIssuedType("Some type")
+                        .build())
+                ),
+                "hiddenOrders", List.of(
+                    element(TO_REMOVE_ORDER_ID, buildOrder(
+                        NON_FINAL_ORDER_NEW,
+                        "order 1",
+                        DATE_OF_ISSUE,
+                        newArrayList(
+                            element(CHILD_ONE_ID, Child.builder()
+                                .finalOrderIssued("Yes")
+                                .finalOrderIssuedType("Some type")
+                                .build()),
+                            element(CHILD_TWO_ID, Child.builder()
+                                .finalOrderIssued("Yes")
+                                .finalOrderIssuedType("Some type")
+                                .build())
+                        ),
+                        REASON, YesNo.NO.getValue()
+                    )))
+            ));
+
         }
 
         private GeneratedOrder buildOrder(Order type, String title, LocalDateTime dateOfIssue, String markedFinal) {
