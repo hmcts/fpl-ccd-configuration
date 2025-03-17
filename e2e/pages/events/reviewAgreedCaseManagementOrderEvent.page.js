@@ -27,7 +27,7 @@ module.exports = {
   },
 
   selectReturnCmoForChanges() {
-    I.click('No, the local authority needs to make changes');
+    I.click('No, the applicant needs to make changes');
   },
 
   selectReturnC21ForChanges(index) {
