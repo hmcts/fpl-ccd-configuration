@@ -265,7 +265,8 @@ class JudicialServiceTest {
             when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
                 .thenReturn(existing);
 
-            underTest.setExistingHearingJudgesAndLegalAdvisersToExpire(12345L, ZonedDateTime.now());
+            underTest.setExistingHearingJudgesAndLegalAdvisersToExpire(12345L,
+                ZonedDateTime.now(ZoneId.of("Europe/London")));
 
             verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
             verify(roleAssignmentService, times(2)).deleteRoleAssignment(roleAssignmentCaptor.capture());
@@ -380,14 +381,14 @@ class JudicialServiceTest {
             12345L,
             List.of("idam"),
             JudgeCaseRole.HEARING_JUDGE,
-            startDate.atZone(ZoneId.systemDefault()),
+            startDate.atZone(ZoneId.of("Europe/London")),
             null);
     }
 
     @Test
     void shouldCreateRoleStartingNowNotStartDateIfOnlyHearing() {
         LocalDateTime now = LocalDateTime.now();
-        final ZonedDateTime nowZoned = now.atZone(ZoneId.systemDefault());
+        final ZonedDateTime nowZoned = now.atZone(ZoneId.of("Europe/London"));
 
         HearingBooking hearing = HearingBooking.builder()
             .startDate(now.plusDays(2))
@@ -401,7 +402,7 @@ class JudicialServiceTest {
             .build();
 
         try (MockedStatic<ZonedDateTime> zonedStatic = mockStatic(ZonedDateTime.class)) {
-            zonedStatic.when(ZonedDateTime::now).thenReturn(nowZoned);
+            zonedStatic.when(() -> ZonedDateTime.now(ZoneId.of("Europe/London"))).thenReturn(nowZoned);
 
             underTest.assignHearingJudge(12345L, hearing, Optional.empty(), true);
 
