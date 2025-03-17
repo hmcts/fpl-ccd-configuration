@@ -160,6 +160,6 @@ public class ManageLegalCounselService {
             LegalCounsellor counsellor = counsellorElement.getValue();
             String userId = organisationService.findUserByEmail(counsellor.getEmail()).orElseThrow();
             return element(counsellorElement.getId(), counsellor.toBuilder().userId(userId).build());
-        }).collect(Collectors.toList());
+        }).toList();
     }
 }
