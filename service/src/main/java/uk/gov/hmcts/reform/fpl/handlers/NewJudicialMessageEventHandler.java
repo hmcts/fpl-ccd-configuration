@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageContentProvider;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 
 @Component
@@ -35,6 +36,11 @@ public class NewJudicialMessageEventHandler {
             return;
         }
         CaseData caseData = event.getCaseData();
+
+        if (isEmpty(newJudicialMessage.getRecipient())) {
+            log.info("Could not send message on case {}, no recipient", caseData.getId());
+            return;
+        }
 
         NewJudicialMessageTemplate notifyData =
             newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, newJudicialMessage);

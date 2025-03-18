@@ -20,6 +20,7 @@ public class MessageJudgeEventData {
     String relatedDocumentsLabel;
     JudicialMessage judicialMessageReply;
     YesNo isJudiciary;
+    YesNo isSendingEmailsInCourt;
     DynamicList documentTypesDynamicList;
     DynamicList documentDynamicList;
     MessageRegardingDocuments isMessageRegardingDocuments;
@@ -29,7 +30,7 @@ public class MessageJudgeEventData {
             "hasAdditionalApplications", "isMessageRegardingDocuments", "additionalApplicationsDynamicList",
             "documentTypesDynamicList", "documentDynamicList", "relatedDocumentsLabel","attachDocumentLabel",
             "nextHearingLabel", "judicialMessageMetaData", "judicialMessageNote", "judicialMessageDynamicList",
-            "judicialMessageReply", "replyToMessageJudgeNextHearingLabel", "isJudiciary"
+            "judicialMessageReply", "replyToMessageJudgeNextHearingLabel", "isJudiciary", "isSendingEmailsInCourt"
         };
     }
 }
