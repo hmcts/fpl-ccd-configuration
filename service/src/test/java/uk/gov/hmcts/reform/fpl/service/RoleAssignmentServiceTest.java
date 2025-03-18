@@ -348,6 +348,27 @@ class RoleAssignmentServiceTest {
             verify(amApi, times(2)).deleteRoleAssignment(eq("token"), eq("auth"), captor.capture());
             assertThat(captor.getAllValues()).containsExactlyInAnyOrder("role-1", "role-2");
         }
+
+        @Test
+        void shouldDeleteAllHearingRolesOnCase() {
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(eq("token"), eq("auth"), any())).thenReturn(QueryResponse.builder()
+                .roleAssignmentResponse(List.of(RoleAssignment.builder().id("role-1").build(),
+                    RoleAssignment.builder().id("role-2").build()))
+                .build());
+
+            underTest.deleteAllHearingRolesOnCase(12345L);
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .attributes(Map.of("caseId", List.of("12345")))
+                .roleName(List.of("hearing-judge", "hearing-legal-adviser"))
+                .build()));
+
+            verify(amApi, times(2)).deleteRoleAssignment(eq("token"), eq("auth"), captor.capture());
+            assertThat(captor.getAllValues()).containsExactlyInAnyOrder("role-1", "role-2");
+        }
+
     }
 
 }
