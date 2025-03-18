@@ -21,6 +21,9 @@ export class ApplicantDetails extends BasePage {
   readonly enterRole: Locator;
   readonly continue: Locator;
   readonly saveAndContinue: Locator;
+  readonly representingPersonDetails: Locator;
+  readonly mainContactDetails: Locator;
+  readonly otherContactPerson: Locator;
 
 
 
@@ -44,6 +47,9 @@ export class ApplicantDetails extends BasePage {
     this.enterRole = page.getByLabel('Enter their role (Optional)');
     this.continue = page.getByRole('button', { name: 'Continue' })
     this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
+    this.representingPersonDetails = page.getByRole('group', { name: 'Details of person you are representing' });
+    this.mainContactDetails = page.getByRole('group').locator('#applicantContact_applicantContact');
+    this.otherContactPerson = page.locator('#applicantContactOthers_0_0');
 
   }
 
@@ -67,5 +73,35 @@ export class ApplicantDetails extends BasePage {
     await this.enterRole.fill('QA');
     await this.continue.click();
     await this.saveAndContinue.click();
+  }
+
+  async solicitorC110AApplicationApplicantDetails(){
+
+      await expect.soft(this.representingPersonDetails).toBeVisible();
+      await this.representingPersonDetails.getByLabel('First name').fill('John');
+      await this.representingPersonDetails.getByLabel('Last name').fill('Somuy');
+      await this.page.getByLabel('Group email address (Optional)').fill('privatesol@gmail.com');
+      await this.pbaNumber.fill('PBA1234567');
+      await this.customerReference.fill('Customer reference 1000');
+      await this.clickContinue();
+
+      await expect.soft(this.page.getByText('People within your organization who need notifications')).toBeVisible();
+      await expect.soft(this.page.getByText('HMCTS will contact this person if they have any questions')).toBeVisible();
+
+      await this.mainContactDetails.getByLabel('First name').fill('Maie');
+      await this.mainContactDetails.getByLabel('Last name').fill('Nouth');
+      await this.mainContactDetails.getByLabel('Phone number', { exact: true }).fill('35346878679876');
+      await this.mainContactDetails.getByLabel('Direct email address (').fill('email@email.com');
+
+      await expect.soft(this.page.getByRole('heading', { name: 'Others within your' })).toBeVisible();
+      await expect.soft(this.page.getByText('Only people with myHMCTS')).toBeVisible();
+      await this.addNew.click();
+      await this.otherContactPerson.getByLabel('First name').fill('Johnson');
+      await this.otherContactPerson.getByLabel('Last name').fill('Johnson');
+      await this.otherContactPerson.getByLabel('Email address').fill('Johnson@hmcts.com');
+      await this.otherContactPerson.getByRole('radio', { name: 'Other' }).check();
+      await this.otherContactPerson.getByLabel('Enter their role (Optional)').fill('assistant');
+      await this.clickContinue();
+      await this.checkYourAnsAndSubmit();
   }
 }
