@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -24,10 +25,12 @@ import uk.gov.hmcts.reform.am.model.RoleType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
+import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -367,6 +370,117 @@ class RoleAssignmentServiceTest {
 
             verify(amApi, times(2)).deleteRoleAssignment(eq("token"), eq("auth"), captor.capture());
             assertThat(captor.getAllValues()).containsExactlyInAnyOrder("role-1", "role-2");
+        }
+
+    }
+
+    @Nested
+    class QueryRoles {
+
+        @ParameterizedTest
+        @EnumSource(OrganisationalRole.class)
+        void shouldGetOrgRolesForUser(OrganisationalRole orgRole) {
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(any(), any(), any())).thenReturn(QueryResponse.builder()
+                    .roleAssignmentResponse(List.of(
+                        RoleAssignment.builder().roleName(orgRole.getValue()).build()
+                    ))
+                .build());
+
+            Set<OrganisationalRole> orgRoles = underTest.getOrganisationalRolesForUser("1234");
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .actorId(List.of("1234"))
+                .roleType(List.of(RoleType.ORGANISATION.toString()))
+                .build()));
+
+            assertThat(orgRoles).containsExactly(orgRole);
+        }
+
+        @Test
+        void shouldReturnEmptySetIfNoOrgRoles() {
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(any(), any(), any())).thenReturn(QueryResponse.builder().build());
+
+            Set<OrganisationalRole> orgRoles = underTest.getOrganisationalRolesForUser("1234");
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .actorId(List.of("1234"))
+                .roleType(List.of(RoleType.ORGANISATION.toString()))
+                .build()));
+
+            assertThat(orgRoles).isEmpty();
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"hearing-judge", "allocated-judge", "hearing-legal-adviser", "allocated-legal-adviser"})
+        void shouldGetJudicialCaseRolesForUser(String role) {
+            ZonedDateTime now = ZonedDateTime.now();
+
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(any(), any(), any())).thenReturn(QueryResponse.builder()
+                    .roleAssignmentResponse(List.of(RoleAssignment.builder().roleName(role).build()))
+                .build());
+
+            Set<String> caseRoles = underTest.getJudicialCaseRolesForUserAtTime("1234", 1L, now);
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .actorId(List.of("1234"))
+                .attributes(Map.of("caseId", List.of("1")))
+                .roleName(List.of("hearing-judge", "allocated-judge", "hearing-legal-adviser",
+                    "allocated-legal-adviser"))
+                .validAt(now)
+                .build()));
+
+            assertThat(caseRoles).containsExactly(role);
+        }
+
+        @Test
+        void shouldReturnEmptyJudicialCaseRolesIfNone() {
+            ZonedDateTime now = ZonedDateTime.now();
+
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(any(), any(), any())).thenReturn(QueryResponse.builder()
+                .roleAssignmentResponse(List.of())
+                .build());
+
+            Set<String> caseRoles = underTest.getJudicialCaseRolesForUserAtTime("1234", 1L, now);
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .actorId(List.of("1234"))
+                .attributes(Map.of("caseId", List.of("1")))
+                .roleName(List.of("hearing-judge", "allocated-judge", "hearing-legal-adviser",
+                    "allocated-legal-adviser"))
+                .validAt(now)
+                .build()));
+
+            assertThat(caseRoles).isEmpty();
+        }
+
+        @Test
+        void shouldGetJudicialCaseRolesAtTime() {
+            ZonedDateTime now = ZonedDateTime.now();
+            List<RoleAssignment> expectedRoles = List.of();
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(any(), any(), any())).thenReturn(QueryResponse.builder()
+                .roleAssignmentResponse(expectedRoles)
+                .build());
+
+            List<RoleAssignment> roles = underTest.getJudicialCaseRolesAtTime(1L, now);
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .attributes(Map.of("caseId", List.of("1")))
+                .roleName(List.of("hearing-judge", "allocated-judge", "hearing-legal-adviser",
+                    "allocated-legal-adviser"))
+                .validAt(now)
+                .build()));
+
+            assertThat(roles).isEqualTo(expectedRoles);
         }
 
     }

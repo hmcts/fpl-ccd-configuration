@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -39,15 +39,13 @@ import java.util.function.Function;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Comparator.comparing;
-import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.DOCUMENT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -64,11 +62,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @Service
 public class SendNewMessageJudgeService extends MessageJudgeService {
     @Autowired
-    private ValidateEmailService validateEmailService;
+    protected IdentityService identityService;
     @Autowired
-    private IdentityService identityService;
+    protected ObjectMapper mapper;
     @Autowired
-    private ObjectMapper mapper;
+    protected FeatureToggleService featureToggleService;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -77,8 +75,16 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             data.put("hasAdditionalApplications", YES.getValue());
         }
 
-        data.putAll(prePopulateSenderAndRecipient());
+        data.put("isSendingEmailsInCourt",
+            YesNo.from(featureToggleService.isCourtNotificationEnabledForWa(caseData.getCourt())));
+
+        data.putAll(prePopulateSenderAndRecipient(caseData));
         data.put("documentTypesDynamicList", manageDocumentService.buildExistingDocumentTypeDynamicList(caseData));
+
+        String nextHearingLabel = getNextHearingLabel(caseData);
+        if (isNotEmpty(nextHearingLabel)) {
+            data.put("nextHearingLabel", nextHearingLabel);
+        }
 
         return data;
     }
@@ -115,18 +121,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             data.put("relatedDocumentsLabel", selectedDocumentLabel);
         }
 
-        data.put("nextHearingLabel", getNextHearingLabel(caseData));
-
         return data;
-    }
-
-    public Optional<String> validateRecipientEmail(CaseData caseData) {
-        JudicialMessageMetaData judgeMetaData = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
-        if (nonNull(judgeMetaData)) {
-            String email = resolveRecipientEmailAddress(judgeMetaData.getRecipientType(), judgeMetaData.getRecipient());
-            return validateEmailService.validate(email);
-        }
-        return Optional.empty();
     }
 
     public List<String> validateDynamicLists(CaseData caseData) {
@@ -150,18 +145,26 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         JudicialMessageMetaData judicialMessageMetaData = messageJudgeEventData.getJudicialMessageMetaData();
         String latestMessage = messageJudgeEventData.getJudicialMessageNote();
 
-        String sender = resolveSenderEmailAddress(judicialMessageMetaData.getSenderType(),
-            judicialMessageMetaData.getSender());
+        // identify roleType and email based off logged-in user org/case roles
+        JudicialMessageRoleType senderRoleType = getSenderRole(caseData);
+        String senderEmail = getSenderEmailAddressByRoleType(senderRoleType);
+
+        JudicialMessageRoleType recipientRoleType = JudicialMessageRoleType.valueOf(
+            judicialMessageMetaData.getRecipientDynamicList().getValueCode());
+
+        String recipientEmail = resolveRecipientEmailAddress(recipientRoleType,
+            judicialMessageMetaData.getRecipient(), caseData);
 
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
-            .sender(sender)
-            .senderType(resolveSenderRoleType(judicialMessageMetaData.getSenderType()))
-            .recipient(resolveRecipientEmailAddress(judicialMessageMetaData.getRecipientType(),
-                judicialMessageMetaData.getRecipient()))
-            .recipientType(judicialMessageMetaData.getRecipientType())
+            .sender(senderEmail)
+            .senderType(senderRoleType)
+            .recipient(recipientEmail)
+            .recipientType(recipientRoleType)
+            .fromLabel(formatLabel(senderRoleType, senderEmail))
+            .toLabel(formatLabel(recipientRoleType, recipientEmail))
             .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
-            .messageHistory(buildMessageHistory(latestMessage, sender))
+            .messageHistory(buildMessageHistory(latestMessage, formatLabel(senderRoleType, senderEmail)))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(judicialMessageMetaData.getUrgency())
@@ -237,11 +240,11 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
     }
 
     private boolean hasAdditionalApplications(CaseData caseData) {
-        return ObjectUtils.isNotEmpty(getApplications(caseData));
+        return isNotEmpty(getApplications(caseData));
     }
 
     private boolean hasPlacementApplications(CaseData caseData) {
-        return ObjectUtils.isNotEmpty(caseData.getPlacementEventData().getPlacements());
+        return isNotEmpty(caseData.getPlacementEventData().getPlacements());
     }
 
     private boolean hasSelectedAdditionalApplication(CaseData caseData) {
@@ -262,22 +265,14 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return caseData.getMessageJudgeEventData().getIsMessageRegardingDocuments();
     }
 
-    private Map<String, Object> prePopulateSenderAndRecipient() {
+    private Map<String, Object> prePopulateSenderAndRecipient(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        if (isJudiciary()) {
-            data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(getEmailAddressByRoleType(JudicialMessageRoleType.JUDICIARY))
-                .recipient(EMPTY)
-                .build());
-            data.put("isJudiciary", YES);
-        } else {
-            data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(EMPTY)
-                .recipient(EMPTY)
-                .build());
-            data.put("isJudiciary", NO);
-        }
+        JudicialMessageRoleType senderRole = getSenderRole(caseData);
+
+        data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
+            .recipientDynamicList(buildRecipientDynamicList(caseData, senderRole, Optional.empty()))
+            .build());
 
         return data;
     }
@@ -381,11 +376,11 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
 
         fileNamesBuilder.append("Application: " + placement.application.getFilename());
 
-        if (ObjectUtils.isNotEmpty(supportingDocuments)) {
+        if (isNotEmpty(supportingDocuments)) {
             fileNamesBuilder.append("\nSupporting documents: " + join(", ", supportingDocuments));
         }
 
-        if (ObjectUtils.isNotEmpty(confidentialDocuments)) {
+        if (isNotEmpty(confidentialDocuments)) {
             fileNamesBuilder.append("\nConfidential documents: " + join(", ", confidentialDocuments));
         }
 
@@ -393,7 +388,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             fileNamesBuilder.append("\nNotice: " + placement.getPlacementNotice().getFilename());
         }
 
-        if (ObjectUtils.isNotEmpty(noticesResponses)) {
+        if (isNotEmpty(noticesResponses)) {
             fileNamesBuilder.append("\nNotice responses: " + join(", ", noticesResponses));
         }
 

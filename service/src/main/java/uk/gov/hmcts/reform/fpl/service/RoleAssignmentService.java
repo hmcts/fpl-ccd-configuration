@@ -18,11 +18,16 @@ import uk.gov.hmcts.reform.am.model.RoleType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
+import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
@@ -243,6 +248,7 @@ public class RoleAssignmentService {
         log.info("Deleted {} roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
     }
 
+
     @Retryable(value = {FeignException.class}, label = "Delete all hearing judicial/legal adviser roles on a case")
     public void deleteAllHearingRolesOnCase(Long caseId) {
         String systemUserToken = systemUserService.getSysUserToken();
@@ -259,5 +265,62 @@ public class RoleAssignmentService {
             amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
 
         log.info("Deleted {} hearing roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
+    }
+
+    @Retryable(retryFor = {FeignException.class}, label = "Query organisation roles for user")
+    public Set<OrganisationalRole> getOrganisationalRolesForUser(String userId) {
+        QueryResponse response = amApi.queryRoleAssignments(
+            systemUserService.getSysUserToken(),
+            authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .actorId(List.of(userId))
+                .roleType(List.of(RoleType.ORGANISATION.toString()))
+                .build()
+        );
+        if (isNotEmpty(response.getRoleAssignmentResponse())) {
+            return response.getRoleAssignmentResponse().stream()
+                .map(role -> OrganisationalRole.from(role.getRoleName()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
+        } else {
+            return Set.of();
+        }
+    }
+
+    @Retryable(retryFor = {FeignException.class}, label = "Fetch case role assignments for user")
+    public Set<String> getJudicialCaseRolesForUserAtTime(String userId, Long caseId, ZonedDateTime time) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .actorId(List.of(userId))
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
+                .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
+                    HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
+                .validAt(time)
+                .build()
+        );
+
+        if (isNotEmpty(resp.getRoleAssignmentResponse())) {
+            return resp.getRoleAssignmentResponse().stream()
+                .map(RoleAssignment::getRoleName)
+                .collect(Collectors.toSet());
+        } else {
+            return Set.of();
+        }
+    }
+
+    @Retryable(value = {FeignException.class}, label = "Fetch judicial case role assignments at time")
+    public List<RoleAssignment> getJudicialCaseRolesAtTime(Long caseId, ZonedDateTime time) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
+                .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
+                    HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
+                .validAt(time)
+                .build()
+        );
+        return resp.getRoleAssignmentResponse();
     }
 }
