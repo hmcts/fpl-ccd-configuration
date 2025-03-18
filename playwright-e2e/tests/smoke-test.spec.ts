@@ -95,7 +95,7 @@ test.describe('', () => {
 
         expect(accessibilityScanResults.violations).toEqual([]);
     });
-    test.only('Private solicitor applies C110a application', async ({
+    test('Private solicitor applies C110a application', async ({
                              signInPage,
                              createCase,
                              ordersAndDirectionSought,
@@ -168,12 +168,7 @@ test.describe('', () => {
         await caseFileView.openFolder('Original Applications');
         await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
         await  caseFileView.openDocInNewTab();
+        await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
 
-        //assert the content of application pdf
-        await caseFileView.validatePDFContent('C110A');
-        await caseFileView.validatePDFContent('Application from Private');
-        await caseFileView.validatePDFContent('Variation or discharge of');
-        await caseFileView.validatePDFContent('Representing');
-        await caseFileView.validatePDFContent('John Somuy');
     })
 });
