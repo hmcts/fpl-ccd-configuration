@@ -11,9 +11,11 @@ import java.time.ZonedDateTime;
 @Configuration
 public class TimeConfiguration {
 
+    public static final ZoneId LONDON_TIMEZONE = ZoneId.of("Europe/London");
+
     @Bean
     @Lazy
     public Time currentTime() {
-        return () -> ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime();
+        return () -> ZonedDateTime.now(LONDON_TIMEZONE).toLocalDateTime();
     }
 }

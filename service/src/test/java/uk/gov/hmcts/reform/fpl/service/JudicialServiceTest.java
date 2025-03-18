@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +46,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
+import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,7 +59,6 @@ class JudicialServiceTest {
 
     private static final String EMAIL = "test@test.com";
 
-    private static final ZoneId ZONE = ZoneId.of("Europe/London");
 
     @Mock
     private SystemUserService systemUserService;
@@ -174,15 +173,15 @@ class JudicialServiceTest {
             assertThat(roles).hasSize(3);
             assertThat(roles.get(0)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
-                    HEARING_1.getStartDate().atZone(ZONE),
-                    HEARING_2.getStartDate().atZone(ZONE));
+                    HEARING_1.getStartDate().atZone(LONDON_TIMEZONE),
+                    HEARING_2.getStartDate().atZone(LONDON_TIMEZONE));
             assertThat(roles.get(1)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-judge", RoleCategory.JUDICIAL,
-                    HEARING_2.getStartDate().atZone(ZONE),
-                    HEARING_3.getStartDate().atZone(ZONE));
+                    HEARING_2.getStartDate().atZone(LONDON_TIMEZONE),
+                    HEARING_3.getStartDate().atZone(LONDON_TIMEZONE));
             assertThat(roles.get(2)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
-                    HEARING_3.getStartDate().atZone(ZONE),
+                    HEARING_3.getStartDate().atZone(LONDON_TIMEZONE),
                     null);
         }
 
@@ -268,7 +267,7 @@ class JudicialServiceTest {
                 .thenReturn(existing);
 
             underTest.setExistingHearingJudgesAndLegalAdvisersToExpire(12345L,
-                ZonedDateTime.now(ZONE));
+                ZonedDateTime.now(LONDON_TIMEZONE));
 
             verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
             verify(roleAssignmentService, times(2)).deleteRoleAssignment(roleAssignmentCaptor.capture());
@@ -383,14 +382,14 @@ class JudicialServiceTest {
             12345L,
             List.of("idam"),
             JudgeCaseRole.HEARING_JUDGE,
-            startDate.atZone(ZONE),
+            startDate.atZone(LONDON_TIMEZONE),
             null);
     }
 
     @Test
     void shouldCreateRoleStartingNowNotStartDateIfOnlyHearing() {
         LocalDateTime now = LocalDateTime.now();
-        final ZonedDateTime nowZoned = now.atZone(ZONE);
+        final ZonedDateTime nowZoned = now.atZone(LONDON_TIMEZONE);
 
         HearingBooking hearing = HearingBooking.builder()
             .startDate(now.plusDays(2))
@@ -404,7 +403,7 @@ class JudicialServiceTest {
             .build();
 
         try (MockedStatic<ZonedDateTime> zonedStatic = mockStatic(ZonedDateTime.class)) {
-            zonedStatic.when(() -> ZonedDateTime.now(ZONE)).thenReturn(nowZoned);
+            zonedStatic.when(() -> ZonedDateTime.now(LONDON_TIMEZONE)).thenReturn(nowZoned);
 
             underTest.assignHearingJudge(12345L, hearing, Optional.empty(), true);
 
@@ -442,8 +441,8 @@ class JudicialServiceTest {
             12345L,
             List.of("idam"),
             JudgeCaseRole.HEARING_JUDGE,
-            now.atZone(ZONE),
-            now.plusDays(2).atZone(ZONE));
+            now.atZone(LONDON_TIMEZONE),
+            now.plusDays(2).atZone(LONDON_TIMEZONE));
     }
 
     @Nested

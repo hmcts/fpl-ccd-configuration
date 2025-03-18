@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
@@ -54,7 +54,6 @@ public class JudicialService {
     private static final int HEARING_EXPIRY_OFFSET_MINS = 5;
 
     public static final int JUDICIAL_PAGE_SIZE = 3000;
-    private static final ZoneId ZONE_ID = ZoneId.of("Europe/London");
 
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
@@ -161,12 +160,12 @@ public class JudicialService {
                                    boolean startNow) {
         Optional<String> judgeId = getJudgeIdFromHearing(hearing);
         ZonedDateTime possibleEndDate = nextHearing.map(HearingBooking::getStartDate)
-            .map(ld -> ld.atZone(ZONE_ID))
+            .map(ld -> ld.atZone(LONDON_TIMEZONE))
             .orElse(null);
 
         judgeId.ifPresentOrElse(s -> assignHearingJudgeRole(caseId,
                 s,
-                startNow ? currentTimeUK() : hearing.getStartDate().atZone(ZONE_ID),
+                startNow ? currentTimeUK() : hearing.getStartDate().atZone(LONDON_TIMEZONE),
                 possibleEndDate,
                 JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearing.getJudgeAndLegalAdvisor().getJudgeTitle())),
             () -> log.error("No judge details on hearing starting at {} on case {} to assign roles to",
@@ -379,11 +378,11 @@ public class JudicialService {
             HearingJudgeTime.HearingJudgeTimeBuilder judgeTime = HearingJudgeTime.builder()
                 .emailAddress(booking.getJudgeAndLegalAdvisor().getJudgeEmailAddress())
                 .judgeId(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())
-                .startTime(booking.getStartDate().atZone(ZoneId.systemDefault()))
+                .startTime(booking.getStartDate().atZone(LONDON_TIMEZONE))
                 .judgeType(booking.getJudgeAndLegalAdvisor().getJudgeTitle());
 
             if (!isEmpty(after) && !isEmpty(after.getStartDate())) {
-                judgeTime.endTime(after.getStartDate().atZone(ZoneId.systemDefault()));
+                judgeTime.endTime(after.getStartDate().atZone(LONDON_TIMEZONE));
             }
 
             judgeTimes.add(judgeTime.build());
@@ -425,7 +424,7 @@ public class JudicialService {
             && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
 
             roleAssignmentService.deleteRoleAssignmentOnCaseAtTime(caseId,
-                hearing.getStartDate().atZone(ZoneId.systemDefault()),
+                hearing.getStartDate().atZone(LONDON_TIMEZONE),
                 hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId(),
                 List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()));
         }
@@ -487,6 +486,6 @@ public class JudicialService {
     }
 
     private ZonedDateTime currentTimeUK() {
-        return ZonedDateTime.now(ZONE_ID);
+        return ZonedDateTime.now(LONDON_TIMEZONE);
     }
 }
