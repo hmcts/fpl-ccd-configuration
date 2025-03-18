@@ -110,9 +110,7 @@ public class MigrateCaseController extends CallbackController {
 
         judicialService.cleanupHearingRoles(caseData.getId());
 
-        // get hearing judge roles to add (if any)
-        List<RoleAssignment> rolesToAssign = new ArrayList<>(
-            judicialService.getHearingJudgeRolesForMigration(caseData));
+        List<RoleAssignment> rolesToAssign = judicialService.getHearingJudgeRolesForMigration(caseData);
 
         log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
         judicialService.migrateJudgeRoles(rolesToAssign);
