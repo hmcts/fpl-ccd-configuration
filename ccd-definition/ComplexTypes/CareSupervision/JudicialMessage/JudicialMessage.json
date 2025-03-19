@@ -7,13 +7,22 @@
     "FieldTypeParameter": "JudicialMessageRoleTypes",
     "ElementLabel": "From",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "recipientType=\"DO NOT SHOW\""
+    "FieldShowCondition": "fromLabel != \"*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
     "ListElementCode": "sender",
     "FieldType": "Email",
+    "ElementLabel": "From email",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "fromLabel != \"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "fromLabel",
+    "FieldType": "Text",
     "ElementLabel": "From",
     "SecurityClassification": "Public"
   },
@@ -23,16 +32,50 @@
     "ListElementCode": "recipientType",
     "FieldType": "FixedList",
     "FieldTypeParameter": "JudicialMessageRoleTypes",
-    "ElementLabel": "Sent To",
+    "ElementLabel": "To",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "senderType=\"DO NOT SHOW\""
+    "FieldShowCondition": "toLabel != \"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "recipientDynamicList",
+    "FieldType": "DynamicList",
+    "ElementLabel": "Recipient",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "otherJudgeWarningLabel",
+    "FieldType": "Label",
+    "ElementLabel": "<div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Using this option will not auto-assign a task as they are not the hearing/allocated judge. After the task has been created, you must assign it manually on the Tasks tab to ensure it isn't missed.</strong></div>",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "otherJudgeWarningLabel=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
     "ListElementCode": "recipient",
     "FieldType": "Email",
-    "ElementLabel": "Sent to",
+    "ElementLabel": "To email",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "toLabel != \"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "toLabel",
+    "FieldType": "Text",
+    "ElementLabel": "To",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "recipientLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Message from",
     "SecurityClassification": "Public"
   },
   {
