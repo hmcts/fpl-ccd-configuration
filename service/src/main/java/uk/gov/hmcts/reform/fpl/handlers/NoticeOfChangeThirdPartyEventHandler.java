@@ -55,7 +55,7 @@ public class NoticeOfChangeThirdPartyEventHandler {
     }
 
     private String getEmail(LocalAuthority thirdPartyOrg) {
-        if(isEmpty(thirdPartyOrg.getEmail())) {
+        if (isEmpty(thirdPartyOrg.getEmail())) {
             Organisation organisation = organisationService.findOrganisation(thirdPartyOrg.getId()).orElseThrow();
             return organisation.getSuperUser().getEmail();
         }
