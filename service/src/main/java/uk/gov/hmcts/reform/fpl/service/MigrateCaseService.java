@@ -1306,6 +1306,7 @@ public class MigrateCaseService {
         return Map.of("hearing", hearing);
     }
 
+    @SuppressWarnings("deprecation")
     public void migrateOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
         Proceeding oldProceeding = caseData.getProceeding();
 

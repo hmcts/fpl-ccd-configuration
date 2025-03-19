@@ -3302,6 +3302,7 @@ class MigrateCaseServiceTest {
         }
 
         @Test
+        @SuppressWarnings("deprecation")
         void shouldRemoveNamesFromProceedings() {
             final UUID otherProceeding1 = UUID.randomUUID();
             final UUID otherProceeding2 = UUID.randomUUID();
@@ -3509,6 +3510,8 @@ class MigrateCaseServiceTest {
 
     @Nested
     class OtherProceeding {
+
+        @SuppressWarnings("deprecation")
         private static final Proceeding FIRST_PROCEEDING = Proceeding.builder()
             .onGoingProceeding("Yes")
             .proceedingStatus(ProceedingStatus.ONGOING)
@@ -3520,7 +3523,7 @@ class MigrateCaseServiceTest {
         );
 
         @Test
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "deprecation"})
         void shouldMigrateOtherProceeding() {
             Proceeding oldProceeding = FIRST_PROCEEDING.toBuilder().additionalProceedings(OTHER_PROCEEDINGS).build();
             CaseData caseData = CaseData.builder()
@@ -3534,9 +3537,8 @@ class MigrateCaseServiceTest {
             CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
             underTest.migrateOtherProceedings(caseDetails, caseData, MIGRATION_ID);
 
-            assertThat(caseDetailMap).doesNotContainKey("proceeding");
+            assertThat(caseDetailMap).doesNotContainKey("proceeding").containsKey("proceedings");
 
-            assertThat(caseDetailMap).containsKey("proceedings");
             List<Element<Proceeding>> migratedProceeding =
                 (List<Element<Proceeding>>) caseDetailMap.get("proceedings");
 
@@ -3546,7 +3548,7 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "deprecation"})
         void shouldMigrateOtherProceedingWithoutAdditionalProceeding() {
             CaseData caseData = CaseData.builder()
                 .id(1L)
@@ -3559,9 +3561,7 @@ class MigrateCaseServiceTest {
             CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
             underTest.migrateOtherProceedings(caseDetails, caseData, MIGRATION_ID);
 
-            assertThat(caseDetailMap).doesNotContainKey("proceeding");
-
-            assertThat(caseDetailMap).containsKey("proceedings");
+            assertThat(caseDetailMap).doesNotContainKey("proceeding").containsKey("proceedings");
             List<Element<Proceeding>> migratedProceeding =
                 (List<Element<Proceeding>>) caseDetailMap.get("proceedings");
 
@@ -3574,7 +3574,6 @@ class MigrateCaseServiceTest {
             CaseData caseData = CaseData.builder().id(1L).build();
             Map<String,Object> caseDetailMap = Map.of("id", 1L);
             CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
-            ;
 
             assertThatThrownBy(() -> underTest.migrateOtherProceedings(caseDetails, caseData, MIGRATION_ID))
                 .isInstanceOf(AssertionError.class)

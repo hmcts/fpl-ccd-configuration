@@ -334,7 +334,7 @@ public class CaseSubmissionGenerationService
             .applicants(buildDocmosisApplicants(caseData))
             .children(buildDocmosisChildren(caseData.getAllChildren(), applicationLanguage))
             .others(buildDocmosisOthers(caseData.getAllOthers(), applicationLanguage))
-            .proceeding(buildDocmosisProceedings(caseData.getProceedings(), applicationLanguage))
+            .proceeding(buildDocmosisProceedings(caseData.getProceedings()))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings(), applicationLanguage))
             .dischargeOfOrder(caseData.isDischargeOfCareApplication())
             .groundsForEPOReason(isNotEmpty(caseData.getOrders())
@@ -647,16 +647,14 @@ public class CaseSubmissionGenerationService
             .collect(toList());
     }
 
-    private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<Proceeding>> proceedings,
-                                                              Language applicationLanguage) {
+    private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<Proceeding>> proceedings) {
         return unwrapElements(proceedings).stream()
             .filter(Objects::nonNull)
-            .map(proceeding -> buildProceeding(proceeding, applicationLanguage))
+            .map(this::buildProceeding)
             .toList();
     }
 
-    private DocmosisProceeding buildProceeding(final Proceeding proceeding,
-                                               Language applicationLanguage) {
+    private DocmosisProceeding buildProceeding(final Proceeding proceeding) {
         return DocmosisProceeding.builder()
             .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus().getValue()))
             .caseNumber(getDefaultIfNullOrEmpty(proceeding.getCaseNumber()))

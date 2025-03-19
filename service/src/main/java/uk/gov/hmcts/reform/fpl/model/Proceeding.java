@@ -17,7 +17,11 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 public class Proceeding {
-    @Deprecated
+    /**
+     * This historical field is deprecated since DFPL-2423.
+     * @deprecated (DFPL-2423, historical field)
+     */
+    @Deprecated(since = "DFPL-2423")
     private final String onGoingProceeding;
     private final ProceedingStatus proceedingStatus;
     private final String caseNumber;
@@ -29,6 +33,10 @@ public class Proceeding {
     private final String guardian;
     private final YesNo sameGuardianNeeded;
     private final String sameGuardianDetails;
-    @Deprecated
+    /**
+     * This historical field is deprecated since DFPL-2423.
+     * @deprecated (DFPL-2423, historical field)
+     */
+    @Deprecated(since = "DFPL-2423")
     private final List<Element<Proceeding>> additionalProceedings;
 }

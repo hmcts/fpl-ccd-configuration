@@ -228,7 +228,11 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
-    @Deprecated
+    /**
+     * This historical field is deprecated since DFPL-2423.
+     * @deprecated (DFPL-2423, historical field)
+     */
+    @Deprecated(since = "DFPL-2423")
     private final Proceeding proceeding;
     private final List<Element<Proceeding>> proceedings;
 
