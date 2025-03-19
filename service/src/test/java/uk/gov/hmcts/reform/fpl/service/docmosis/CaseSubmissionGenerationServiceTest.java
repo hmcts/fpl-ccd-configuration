@@ -45,6 +45,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
@@ -1583,6 +1584,10 @@ class CaseSubmissionGenerationServiceTest {
                     .postcode("AB 100")
                     .build())
                 .colleagues(wrapElements(solicitor, mainContact))
+                .representingDetails(RepresentingDetails.builder()
+                    .lastName("Last")
+                    .firstName("First")
+                    .build())
                 .build();
 
             final CaseData updatedCaseData = givenCaseData.toBuilder()
@@ -1606,17 +1611,17 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName(localAuthority.getName())
-                .jobTitle(mainContact.getTitle())
                 .mobileNumber(mainContact.getPhone())
                 .telephoneNumber(localAuthority.getPhone())
                 .pbaNumber(localAuthority.getPbaNumber())
                 .email(localAuthority.getEmail())
-                .contactName(mainContact.getFullName())
+                .contactName(mainContact.buildFullName())
                 .solicitorDx(solicitor.getDx())
                 .solicitorEmail(solicitor.getEmail())
                 .solicitorMobile(solicitor.getPhone())
-                .solicitorName(solicitor.getFullName())
+                .solicitorName(solicitor.buildFullName())
                 .solicitorReference(solicitor.getReference())
+                .representingName(localAuthority.getRepresentingDetails().getFullName())
                 .solicitorTelephone(solicitor.getPhone())
                 .address("L1\nAB 100")
                 .build();
@@ -1663,7 +1668,6 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("-")
-                .jobTitle("-")
                 .mobileNumber("-")
                 .telephoneNumber("-")
                 .pbaNumber("-")
@@ -1674,6 +1678,7 @@ class CaseSubmissionGenerationServiceTest {
                 .solicitorMobile("-")
                 .solicitorName("-")
                 .solicitorReference("-")
+                .representingName("-")
                 .solicitorTelephone("-")
                 .address("-")
                 .build();
@@ -1709,7 +1714,6 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("-")
-                .jobTitle("-")
                 .mobileNumber("-")
                 .telephoneNumber("-")
                 .pbaNumber("-")
@@ -1720,6 +1724,7 @@ class CaseSubmissionGenerationServiceTest {
                 .solicitorMobile("-")
                 .solicitorName("-")
                 .solicitorReference("-")
+                .representingName("-")
                 .solicitorTelephone("-")
                 .address("-")
                 .build();
@@ -1751,7 +1756,6 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("Applicant organisation")
-                .jobTitle("-")
                 .mobileNumber("-")
                 .pbaNumber("-")
                 .address("-")
@@ -1800,6 +1804,10 @@ class CaseSubmissionGenerationServiceTest {
                     .postcode("AB 100")
                     .build())
                 .colleagues(wrapElements(solicitor, mainContact))
+                .representingDetails(RepresentingDetails.builder()
+                    .lastName("Last")
+                    .firstName("First")
+                    .build())
                 .build();
 
             final CaseData updatedCaseData = givenCaseData.toBuilder()
@@ -1823,17 +1831,17 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName(localAuthority.getName())
-                .jobTitle(mainContact.getTitle())
                 .mobileNumber(mainContact.getPhone())
                 .telephoneNumber(localAuthority.getPhone())
                 .pbaNumber(localAuthority.getPbaNumber())
                 .email(localAuthority.getEmail())
-                .contactName(mainContact.getFullName())
+                .contactName(mainContact.buildFullName())
                 .solicitorDx(solicitor.getDx())
                 .solicitorEmail(solicitor.getEmail())
                 .solicitorMobile(solicitor.getPhone())
-                .solicitorName(solicitor.getFullName())
+                .solicitorName(solicitor.buildFullName())
                 .solicitorReference(solicitor.getReference())
+                .representingName(localAuthority.getRepresentingDetails().getFullName())
                 .solicitorTelephone(solicitor.getPhone())
                 .address("L1\nAB 100")
                 .build();

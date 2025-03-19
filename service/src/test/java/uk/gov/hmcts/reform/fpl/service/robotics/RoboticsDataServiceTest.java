@@ -156,7 +156,7 @@ class RoboticsDataServiceTest {
             final uk.gov.hmcts.reform.fpl.model.robotics.Applicant expectedApplicant =
                 uk.gov.hmcts.reform.fpl.model.robotics.Applicant.builder()
                     .name(localAuthority.getName())
-                    .contactName(mainContact.getFullName())
+                    .contactName(mainContact.buildFullName())
                     .jobTitle(mainContact.getTitle())
                     .address(uk.gov.hmcts.reform.fpl.model.robotics.Address.builder()
                         .addressLine1(localAuthority.getAddress().getAddressLine1())
