@@ -256,6 +256,48 @@
           }
         }
       ],
+      "localAuthorities" : [
+        {
+          "id": "95e08ed9-6dd7-4435-b441-d7a4dc51108c",
+          "value": {
+            "id": "Y3CSW9I",
+            "name": "London Borough Hillingdon",
+            "email": "FamilyPublicLaw+hn@gmail.com",
+            "phone": "123456",
+            "address": {
+              "County": "County",
+              "Country": "Country",
+              "PostCode": "CR0 2GE",
+              "PostTown": "London",
+              "AddressLine1": "Flat 1, Hillingdon Apartments",
+              "AddressLine2": "Hillingdon Central Square 1",
+              "AddressLine3": "Address Line 3"
+            },
+            "pbaNumber": "PBA1234567",
+            "clientCode": "ClientCode",
+            "colleagues": [
+              {
+                "id": "583d294e-22f7-41de-bfe5-c4b42d2e42d3",
+                "value": {
+                  "role": "SOLICITOR",
+                  "phone": "111111111",
+                  "email": "Solicitor@test.com",
+                  "firstName": "Main",
+                  "lastName": "Contact",
+                  "mainContact": "Yes"
+                }
+              }
+            ],
+            "designated": "Yes",
+            "legalTeamManager": "LegalTeamManageLastName",
+            "customerReference": "PBA1234567",
+            "representingDetails" : {
+              "firstName": "Jim",
+              "lastName": "Bob"
+            }
+          }
+        }
+      ],
       "solicitor": {
         "dx": "106 Southwark &",
         "name": "Brian Banks",
