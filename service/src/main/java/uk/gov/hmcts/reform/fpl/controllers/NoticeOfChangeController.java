@@ -91,10 +91,14 @@ public class NoticeOfChangeController extends CallbackController {
     }
 
     private void publishEventsForThirdPartyOutsourcingNoC(CaseData oldData, CaseData newData) {
-        //TODO think about whether we need to update legal counsel for third party outsourcing
+        String newOrgId = newData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
+        String previousOrgId = oldData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
 
-        LocalAuthority oldThirdPartyOrg = oldData.getLocalAuthorities().get(0).getValue();
-        LocalAuthority newThirdPartyOrg = newData.getLocalAuthorities().get(0).getValue();
+        LocalAuthority oldThirdPartyOrg = oldData.getLocalAuthorities().stream().filter(la ->
+            la.getValue().getId().equals(previousOrgId)).findFirst().orElseThrow().getValue();
+        LocalAuthority newThirdPartyOrg = newData.getLocalAuthorities().stream().filter(la ->
+            la.getValue().getId().equals(newOrgId)).findFirst().orElseThrow().getValue();
+
         publishEvent(new NoticeOfChangeThirdPartyEvent(oldThirdPartyOrg, newThirdPartyOrg, newData));
     }
 
