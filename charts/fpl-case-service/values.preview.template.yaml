@@ -128,7 +128,6 @@ ccd:
 
   ccd-api-gateway-web:
     nodejs:
-      image: hmctspublic.azurecr.io/ccd/api-gateway-web:prod-66a4048-20250203150702
       disableKeyVaults: true
       releaseNameOverride: ${SERVICE_NAME}-ccd-api-gw
       imagePullPolicy: Always
