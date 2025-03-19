@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -275,6 +276,9 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                     .addressLine1("Old Test Road")
                     .build())
                 .build())))
+            .outsourcingPolicy(OrganisationPolicy.builder()
+                .organisation(Organisation.builder().organisationID(OLD_ORG_ID).build())
+                .build())
             .changeOrganisationRequestField(getChangeOrganisationRequest("[EPSMANAGING]"))
             .build();
 
@@ -288,6 +292,11 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                     .addressLine1("New Test Road")
                     .build())
                 .build())))
+            .outsourcingPolicy(OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(NEW_ORG_ID)
+                    .build())
+                .build())
             .build();
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
