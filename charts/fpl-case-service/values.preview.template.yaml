@@ -16,7 +16,6 @@ java:
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     AM_ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-service-${SERVICE_FQDN}
     SPRING_SECURITY_ENABLED: true
-    AM_ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-service-${SERVICE_FQDN}
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     CCD_UI_BASE_URL: https://case-management-web-${SERVICE_FQDN}
     MANAGE_CASE_UI_BASE_URL: https://xui-${SERVICE_FQDN}
