@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,6 +39,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
@@ -77,7 +77,7 @@ public class JudicialService {
         List<RoleAssignment> currentAllocatedJudges = roleAssignmentService
             .getCaseRolesAtTime(caseId,
                 allocatedRoles,
-                ZonedDateTime.now());
+                currentTimeUK());
 
         currentAllocatedJudges
             .stream()
@@ -131,9 +131,9 @@ public class JudicialService {
         // add new allocated judge
         if (isLegalAdviser) {
             roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), ALLOCATED_LEGAL_ADVISER,
-                ZonedDateTime.now(), null);
+                currentTimeUK(), null);
         } else {
-            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, ZonedDateTime.now(),
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, currentTimeUK(),
                 null);
         }
     }
@@ -163,12 +163,12 @@ public class JudicialService {
 
         // end this new role at the start of the next hearing (if present) MINUS 5 minutes to avoid overlapping roles
         ZonedDateTime possibleEndDate = nextHearing.map(HearingBooking::getStartDate)
-            .map(ld -> ld.minusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(ZoneId.systemDefault()))
+            .map(ld -> ld.minusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(LONDON_TIMEZONE))
             .orElse(null);
 
         judgeId.ifPresentOrElse(s -> assignHearingJudgeRole(caseId,
                 s,
-                startNow ? ZonedDateTime.now() : hearing.getStartDate().atZone(ZoneId.systemDefault()),
+                startNow ? currentTimeUK() : hearing.getStartDate().atZone(LONDON_TIMEZONE),
                 possibleEndDate,
                 JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearing.getJudgeAndLegalAdvisor().getJudgeTitle())),
             () -> log.error("No judge details on hearing starting at {} on case {} to assign roles to",
@@ -386,18 +386,18 @@ public class JudicialService {
             HearingJudgeTime.HearingJudgeTimeBuilder judgeTime = HearingJudgeTime.builder()
                 .emailAddress(booking.getJudgeAndLegalAdvisor().getJudgeEmailAddress())
                 .judgeId(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())
-                .startTime(booking.getStartDate().atZone(ZoneId.systemDefault()))
+                .startTime(booking.getStartDate().atZone(LONDON_TIMEZONE))
                 .judgeType(booking.getJudgeAndLegalAdvisor().getJudgeTitle());
 
             if (!isEmpty(after) && !isEmpty(after.getStartDate())) {
-                judgeTime.endTime(after.getStartDate().atZone(ZoneId.systemDefault()));
+                judgeTime.endTime(after.getStartDate().atZone(LONDON_TIMEZONE));
             }
 
             judgeTimes.add(judgeTime.build());
         }
 
         return judgeTimes.stream()
-            .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(ZonedDateTime.now()))
+            .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(currentTimeUK()))
             .map(time -> {
                 Optional<RoleCategory> userRoleCategory = this.getUserRoleCategory(time.getEmailAddress());
 
@@ -434,7 +434,7 @@ public class JudicialService {
             // delete the role for this hearing + offset by 5 minutes into the future, so we don't hit the old (bugged)
             // hearing role assignments that may have ended at exactly this hearing time
             roleAssignmentService.deleteRoleAssignmentOnCaseAtTime(caseId,
-                hearing.getStartDate().plusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(ZoneId.systemDefault()),
+                hearing.getStartDate().plusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(LONDON_TIMEZONE),
                 hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId(),
                 List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()));
         }
@@ -442,6 +442,10 @@ public class JudicialService {
 
     public void deleteAllRolesOnCase(Long caseId) {
         roleAssignmentService.deleteAllRolesOnCase(caseId);
+    }
+
+    public void cleanupHearingRoles(Long caseId) {
+        roleAssignmentService.deleteAllHearingRolesOnCase(caseId);
     }
 
     public List<String> validateHearingJudgeEmail(CaseDetails caseDetails, CaseData caseData) {
@@ -489,5 +493,9 @@ public class JudicialService {
         }
         caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
         return List.of();
+    }
+
+    private ZonedDateTime currentTimeUK() {
+        return ZonedDateTime.now(LONDON_TIMEZONE);
     }
 }
