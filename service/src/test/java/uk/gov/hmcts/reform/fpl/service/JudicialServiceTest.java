@@ -361,7 +361,7 @@ class JudicialServiceTest {
         // delete the role starting at the time of the hearing (offset 5 mins into the role being active)
         verify(roleAssignmentService).deleteRoleAssignmentOnCaseAtTime(
             eq(12345L),
-            eq(start.plusMinutes(5).atZone(ZoneId.systemDefault())),
+            eq(start.plusMinutes(5).atZone(LONDON_TIMEZONE)),
             eq("idam"),
             eq(List.of("hearing-judge", "hearing-legal-adviser")));
     }
