@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageContentProvider;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 
@@ -29,10 +30,10 @@ public class NewJudicialMessageEventHandler {
     @EventListener
     public void notifyJudicialMessageRecipient(NewJudicialMessageEvent event) {
         JudicialMessage newJudicialMessage = event.getJudicialMessage();
-        if (!featureToggleService.isCourtNotificationEnabledForWa(event.getCaseData().getCourt())
-            && !ctscEmailLookupConfiguration.getEmail().equals(newJudicialMessage.getRecipient())) {
-            log.info("JudicialMessage - notification toggled off for court {}",
-                event.getCaseData().getCourt().getName());
+        if (shouldSkipNotification(event)) {
+            log.info("JudicialMessage - notification toggled off (court = {}, isCtsc = {})",
+                isNotEmpty(event.getCaseData().getCourt()) ? event.getCaseData().getCourt().getName() : "null",
+                ctscEmailLookupConfiguration.getEmail().equals(newJudicialMessage.getRecipient()));
             return;
         }
         CaseData caseData = event.getCaseData();
@@ -47,5 +48,14 @@ public class NewJudicialMessageEventHandler {
 
         notificationService.sendEmail(JUDICIAL_MESSAGE_ADDED_TEMPLATE, newJudicialMessage.getRecipient(),
             notifyData, caseData.getId());
+    }
+
+    private boolean shouldSkipNotification(NewJudicialMessageEvent event) {
+        if (ctscEmailLookupConfiguration.getEmail().equals(event.getJudicialMessage().getRecipient())) {
+            // CTSC
+            return !featureToggleService.isWATaskEmailsEnabled();
+        } else {
+            return !featureToggleService.isCourtNotificationEnabledForWa(event.getCaseData().getCourt());
+        }
     }
 }
