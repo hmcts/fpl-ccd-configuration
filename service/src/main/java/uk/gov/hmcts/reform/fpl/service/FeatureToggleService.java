@@ -120,6 +120,10 @@ public class FeatureToggleService {
         return false;
     }
 
+    public boolean isWATaskEmailsEnabled() {
+        return ldClient.boolVariation("enable-wa-task-emails", createLDContext(), true);
+    }
+
     public CafcassApiFeatureFlag getCafcassAPIFlag() {
         LDValue flag = ldClient.jsonValueVariation("cafcass-api-court", createLDContext(), LDValue.ofNull());
 

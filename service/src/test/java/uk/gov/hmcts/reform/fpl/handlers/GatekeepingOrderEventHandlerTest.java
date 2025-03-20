@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
@@ -27,8 +28,10 @@ import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_LA;
@@ -72,6 +75,9 @@ class GatekeepingOrderEventHandlerTest {
     private SDOIssuedCafcassContentProvider cafcassContentProvider;
     @Mock
     private TranslationRequestService translationRequestService;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private GatekeepingOrderEventHandler underTest;
@@ -149,6 +155,8 @@ class GatekeepingOrderEventHandlerTest {
 
     @Test
     void shouldNotifyCTSCOfIssuedSDO() {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
+
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
         final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, caseData);
@@ -166,6 +174,25 @@ class GatekeepingOrderEventHandlerTest {
             CASE_ID
         );
     }
+
+    @Test
+    void shouldNotNotifyCTSCOfIssuedSDOIfToggleOff() {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
+
+        final CaseData caseData = CaseData.builder().id(CASE_ID).build();
+
+        final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, caseData);
+
+        underTest.notifyCTSC(event);
+
+        verify(notificationService, never()).sendEmail(
+            SDO_OR_UDO_AND_NOP_ISSUED_CTSC,
+            CTSC_INBOX,
+            NOTIFY_DATA,
+            CASE_ID
+        );
+    }
+
 
     @Test
     void shouldNotifyTranslationTeam() {

@@ -30,6 +30,7 @@ export class StartApplication {
   readonly submitApplicationLink: Locator;
   readonly otherPeopleInCaseLink: Locator;
   readonly returnApplicationLink: Locator;
+  readonly  ordersAndDirectionsSoughtFinishedStatus: Locator;
 
   // readonly logExpertReportLink: Locator;
   public constructor(page: Page) {
@@ -64,6 +65,7 @@ export class StartApplication {
     this.courtServices = page.getByRole('link', { name: 'Court services'});
     this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
     this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
+    this.ordersAndDirectionsSoughtFinishedStatus = page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img');
 
   }
   async groundsForTheApplication() {
