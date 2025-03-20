@@ -93,7 +93,7 @@
     "ID": "Proceeding",
     "ListElementCode": "sameGuardianDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
+    "ElementLabel": "Give reasons",
     "FieldShowCondition": "sameGuardianNeeded=\"No\"",
     "SecurityClassification": "Public"
   },
