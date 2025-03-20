@@ -160,8 +160,10 @@ public class JudicialService {
     public void assignHearingJudge(Long caseId, HearingBooking hearing, Optional<HearingBooking> nextHearing,
                                    boolean startNow) {
         Optional<String> judgeId = getJudgeIdFromHearing(hearing);
+
+        // end this new role at the start of the next hearing (if present) MINUS 5 minutes to avoid overlapping roles
         ZonedDateTime possibleEndDate = nextHearing.map(HearingBooking::getStartDate)
-            .map(ld -> ld.atZone(LONDON_TIMEZONE))
+            .map(ld -> ld.minusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(LONDON_TIMEZONE))
             .orElse(null);
 
         judgeId.ifPresentOrElse(s -> assignHearingJudgeRole(caseId,
@@ -429,8 +431,10 @@ public class JudicialService {
             && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser())
             && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
 
+            // delete the role for this hearing + offset by 5 minutes into the future, so we don't hit the old (bugged)
+            // hearing role assignments that may have ended at exactly this hearing time
             roleAssignmentService.deleteRoleAssignmentOnCaseAtTime(caseId,
-                hearing.getStartDate().atZone(LONDON_TIMEZONE),
+                hearing.getStartDate().plusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(LONDON_TIMEZONE),
                 hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId(),
                 List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()));
         }

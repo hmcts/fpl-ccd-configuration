@@ -345,8 +345,9 @@ class JudicialServiceTest {
 
     @Test
     void shouldDeleteSpecificHearingRole() {
+        LocalDateTime start = LocalDateTime.now();
         HearingBooking hearing = HearingBooking.builder()
-            .startDate(LocalDateTime.now())
+            .startDate(start)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEnterManually(YesNo.NO)
                 .judgeJudicialUser(JudicialUser.builder()
@@ -357,7 +358,11 @@ class JudicialServiceTest {
 
         underTest.deleteSpecificHearingRole(12345L, hearing);
 
-        verify(roleAssignmentService).deleteRoleAssignmentOnCaseAtTime(eq(12345L), any(), eq("idam"),
+        // delete the role starting at the time of the hearing (offset 5 mins into the role being active)
+        verify(roleAssignmentService).deleteRoleAssignmentOnCaseAtTime(
+            eq(12345L),
+            eq(start.plusMinutes(5).atZone(ZoneId.systemDefault())),
+            eq("idam"),
             eq(List.of("hearing-judge", "hearing-legal-adviser")));
     }
 
@@ -442,7 +447,7 @@ class JudicialServiceTest {
             List.of("idam"),
             JudgeCaseRole.HEARING_JUDGE,
             now.atZone(LONDON_TIMEZONE),
-            now.plusDays(2).atZone(LONDON_TIMEZONE));
+            now.plusDays(2).minusMinutes(5).atZone(LONDON_TIMEZONE));
     }
 
     @Nested
