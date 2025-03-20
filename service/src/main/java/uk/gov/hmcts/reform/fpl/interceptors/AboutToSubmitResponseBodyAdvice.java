@@ -21,8 +21,6 @@ public class AboutToSubmitResponseBodyAdvice implements ResponseBodyAdvice<About
         "/callback/migrate-case/about-to-submit"
     );
 
-    private static final String LAST_UPDATE_TIME_FIELD = "lastGenuineUpdateTimed";
-
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         return true;
@@ -39,7 +37,7 @@ public class AboutToSubmitResponseBodyAdvice implements ResponseBodyAdvice<About
         final String path = request.getURI().getPath();
 
         if (WHITE_LIST.stream().anyMatch(path::matches) && EXCLUDED_LIST.stream().noneMatch(path::matches)) {
-            body.getData().put(LAST_UPDATE_TIME_FIELD, LocalDateTime.now());
+            body.getData().put("lastGenuineUpdateTimed", LocalDateTime.now());
         }
 
         return body;
