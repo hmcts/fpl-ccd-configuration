@@ -78,7 +78,7 @@ public class CaseSummaryPeopleInCaseGenerator implements CaseSummaryFieldsGenera
         if (isNotEmpty(caseData.getLocalAuthorities())) {
             if (nonNull(caseData.getDesignatedLocalAuthority())) {
                 return caseData.getDesignatedLocalAuthority().getMainContact()
-                    .map(Colleague::getFullName)
+                    .map(Colleague::buildFullName)
                     .orElse(null);
             } else {
                 LocalAuthority applicant = caseData.getLocalAuthorities().stream()
@@ -87,7 +87,7 @@ public class CaseSummaryPeopleInCaseGenerator implements CaseSummaryFieldsGenera
                     .orElse(null);
 
                 return nonNull(applicant) ? applicant.getMainContact()
-                    .map(Colleague::getFullName)
+                    .map(Colleague::buildFullName)
                     .orElse(null) : null;
             }
         }
