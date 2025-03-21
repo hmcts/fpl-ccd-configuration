@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -196,7 +198,7 @@ public class RoleAssignmentService {
             QueryRequest.builder()
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(roleNames)
-                .validAt(time)
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
         return resp.getRoleAssignmentResponse();
@@ -219,9 +221,12 @@ public class RoleAssignmentService {
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .actorId(List.of(userId))
                 .roleName(roleNames)
-                .validAt(time)
+                .validAt(time.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
                 .build()
         );
+
+        // 1pm -> ZonedDateTime 1pm (LONDON (+1)) PERSISTED 12PM UTC  -> .toLocalDateTime() = 1pm ->
+        //
 
         resp.getRoleAssignmentResponse().forEach(role ->
             amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
@@ -297,7 +302,7 @@ public class RoleAssignmentService {
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
                     HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
-                .validAt(time)
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
 
@@ -318,9 +323,13 @@ public class RoleAssignmentService {
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
                     HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
-                .validAt(time)
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
         return resp.getRoleAssignmentResponse();
+    }
+
+    static LocalDateTime getDateTimeInUtc(ZonedDateTime time) {
+        return time.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 }

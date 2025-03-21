@@ -42,6 +42,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
+import static uk.gov.hmcts.reform.fpl.service.RoleAssignmentService.getDateTimeInUtc;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = LENIENT)
@@ -273,7 +274,7 @@ class RoleAssignmentServiceTest {
         underTest.getCaseRolesAtTime(12345L, List.of("test", "test2"), now);
 
         verify(amApi).queryRoleAssignments(any(), any(), eq(QueryRequest.builder()
-            .validAt(now)
+            .validAt(getDateTimeInUtc(now))
             .attributes(Map.of("caseId", List.of("12345")))
             .roleName(List.of("test", "test2"))
             .build()));
@@ -297,7 +298,7 @@ class RoleAssignmentServiceTest {
             underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId", List.of("role-A"));
 
             verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
-                .validAt(now)
+                .validAt(getDateTimeInUtc(now))
                 .attributes(Map.of("caseId", List.of("12345")))
                 .actorId(List.of("idamId"))
                 .roleName(List.of("role-A"))
@@ -320,7 +321,7 @@ class RoleAssignmentServiceTest {
             underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId", List.of("role-A"));
 
             verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
-                .validAt(now)
+                .validAt(getDateTimeInUtc(now))
                 .attributes(Map.of("caseId", List.of("12345")))
                 .actorId(List.of("idamId"))
                 .roleName(List.of("role-A"))
@@ -432,7 +433,7 @@ class RoleAssignmentServiceTest {
                 .attributes(Map.of("caseId", List.of("1")))
                 .roleName(List.of("hearing-judge", "allocated-judge", "hearing-legal-adviser",
                     "allocated-legal-adviser"))
-                .validAt(now)
+                .validAt(getDateTimeInUtc(now))
                 .build()));
 
             assertThat(caseRoles).containsExactly(role);
@@ -455,7 +456,7 @@ class RoleAssignmentServiceTest {
                 .attributes(Map.of("caseId", List.of("1")))
                 .roleName(List.of("hearing-judge", "allocated-judge", "hearing-legal-adviser",
                     "allocated-legal-adviser"))
-                .validAt(now)
+                .validAt(getDateTimeInUtc(now))
                 .build()));
 
             assertThat(caseRoles).isEmpty();
@@ -477,12 +478,14 @@ class RoleAssignmentServiceTest {
                 .attributes(Map.of("caseId", List.of("1")))
                 .roleName(List.of("hearing-judge", "allocated-judge", "hearing-legal-adviser",
                     "allocated-legal-adviser"))
-                .validAt(now)
+                .validAt(getDateTimeInUtc(now))
                 .build()));
 
             assertThat(roles).isEqualTo(expectedRoles);
         }
 
     }
+
+
 
 }
