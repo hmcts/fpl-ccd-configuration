@@ -36,11 +36,7 @@ public class UpdateRepresentationService {
     private final List<NoticeOfChangeUpdateAction> updateActions;
 
     public Map<String, Object> updateRepresentation(CaseData caseData, UserDetails solicitor) {
-        final ChangeOrganisationRequest change = caseData.getChangeOrganisationRequestField();
-
-        if (isEmpty(change) || isEmpty(change.getCaseRoleId()) || isEmpty(change.getOrganisationToAdd())) {
-            throw new IllegalStateException("Invalid or missing ChangeOrganisationRequest: " + change);
-        }
+        final ChangeOrganisationRequest change = getChangeOrganisationRequest(caseData);
 
         final SolicitorRole role = SolicitorRole.from(change.getCaseRoleId().getValueCode()).orElseThrow();
 
@@ -54,12 +50,7 @@ public class UpdateRepresentationService {
 
         RespondentSolicitor removedSolicitor = container.getSolicitor();
 
-        RespondentSolicitor addedSolicitor = RespondentSolicitor.builder()
-            .email(solicitor.getEmail())
-            .firstName(solicitor.getForename())
-            .lastName(solicitor.getSurname().orElse(EMPTY))
-            .organisation(change.getOrganisationToAdd())
-            .build();
+        RespondentSolicitor addedSolicitor = generateRespondentSolicitor(solicitor, change);
 
         HashMap<String, Object> data = updateActions.stream()
             .filter(action -> action.accepts(representing))
@@ -82,5 +73,49 @@ public class UpdateRepresentationService {
         data.put("changeOfRepresentatives", auditList);
 
         return data;
+    }
+
+    public Map<String, Object> updateRepresentationThirdPartyOutsourcing(CaseData caseData, UserDetails solicitor) {
+        HashMap<String, Object> data = new HashMap<>();
+        final ChangeOrganisationRequest change = getChangeOrganisationRequest(caseData);
+
+        RespondentSolicitor removedSolicitor = RespondentSolicitor.builder()
+            .organisation(caseData.getOutsourcingPolicy().getOrganisation())
+            .build();
+
+        RespondentSolicitor addedSolicitor = generateRespondentSolicitor(solicitor, change);
+
+        List<Element<ChangeOfRepresentation>> auditList = changeOfRepresentationService.changeRepresentative(
+            ChangeOfRepresentationRequest.builder()
+                .method(ChangeOfRepresentationMethod.NOC)
+                .by(solicitor.getEmail())
+                .current(caseData.getChangeOfRepresentatives())
+                .addedRepresentative(addedSolicitor)
+                .removedRepresentative(removedSolicitor)
+                .build()
+        );
+
+        data.put("changeOfRepresentatives", auditList);
+        return data;
+    }
+
+    private ChangeOrganisationRequest getChangeOrganisationRequest(CaseData caseData) {
+        final ChangeOrganisationRequest change = caseData.getChangeOrganisationRequestField();
+        HashMap<String, Object> data = new HashMap<>();
+
+        if (isEmpty(change) || isEmpty(change.getCaseRoleId()) || isEmpty(change.getOrganisationToAdd())) {
+            throw new IllegalStateException("Invalid or missing ChangeOrganisationRequest: " + change);
+        }
+
+        return change;
+    }
+
+    private RespondentSolicitor generateRespondentSolicitor(UserDetails solicitor, ChangeOrganisationRequest change) {
+        return RespondentSolicitor.builder()
+            .email(solicitor.getEmail() == null ? EMPTY : solicitor.getEmail())
+            .firstName(solicitor.getForename())
+            .lastName(solicitor.getSurname().orElse(EMPTY))
+            .organisation(change.getOrganisationToAdd())
+            .build();
     }
 }
