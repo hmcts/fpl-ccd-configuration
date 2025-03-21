@@ -221,7 +221,7 @@ public class RoleAssignmentService {
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .actorId(List.of(userId))
                 .roleName(roleNames)
-                .validAt(time.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
 
