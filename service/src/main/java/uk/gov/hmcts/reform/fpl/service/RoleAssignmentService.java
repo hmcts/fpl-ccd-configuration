@@ -225,9 +225,6 @@ public class RoleAssignmentService {
                 .build()
         );
 
-        // 1pm -> ZonedDateTime 1pm (LONDON (+1)) PERSISTED 12PM UTC  -> .toLocalDateTime() = 1pm ->
-        //
-
         resp.getRoleAssignmentResponse().forEach(role ->
             amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
 
