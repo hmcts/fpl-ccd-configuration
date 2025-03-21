@@ -41,6 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
+import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = LENIENT)
@@ -96,7 +97,7 @@ class RoleAssignmentServiceTest {
         @ParameterizedTest
         @EnumSource(LegalAdviserRole.class)
         void shouldCreateValidLegalAdviserRoleAssignment(LegalAdviserRole role) {
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(LONDON_TIMEZONE);
             ZonedDateTime soon = now.plusDays(2);
             when(systemUserService.getSysUserToken()).thenReturn("token");
             when(systemUserService.getUserId("token")).thenReturn("systemUserId");
@@ -132,7 +133,7 @@ class RoleAssignmentServiceTest {
         @ParameterizedTest
         @EnumSource(JudgeCaseRole.class)
         void shouldCreateValidJudiciaryRoleAssignment(JudgeCaseRole role) {
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(LONDON_TIMEZONE);
             ZonedDateTime soon = now.plusDays(2);
             when(systemUserService.getSysUserToken()).thenReturn("token");
             when(systemUserService.getUserId("token")).thenReturn("systemUserId");
@@ -235,7 +236,7 @@ class RoleAssignmentServiceTest {
 
         @Test
         void shouldCreateSingleRole() {
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(LONDON_TIMEZONE);
             when(systemUserService.getUserId(any())).thenReturn("1234");
             underTest.assignCaseRole(12345L, List.of("1234"), "ROLE", RoleCategory.JUDICIAL, now, null);
 
@@ -268,7 +269,7 @@ class RoleAssignmentServiceTest {
     void shouldGetRolesAtTime() {
         when(amApi.queryRoleAssignments(any(), any(), any())).thenReturn(QueryResponse.builder().build());
 
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(LONDON_TIMEZONE);
         underTest.getCaseRolesAtTime(12345L, List.of("test", "test2"), now);
 
         verify(amApi).queryRoleAssignments(any(), any(), eq(QueryRequest.builder()
@@ -292,7 +293,7 @@ class RoleAssignmentServiceTest {
                 .roleAssignmentResponse(List.of(RoleAssignment.builder().id("role-1").roleName("role-A").build()))
                 .build());
 
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(LONDON_TIMEZONE);
             underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId", List.of("role-A"));
 
             verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
@@ -315,7 +316,7 @@ class RoleAssignmentServiceTest {
                 ))
                 .build());
 
-            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime now = ZonedDateTime.now(LONDON_TIMEZONE);
             underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId", List.of("role-A"));
 
             verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
@@ -350,6 +351,27 @@ class RoleAssignmentServiceTest {
             verify(amApi, times(2)).deleteRoleAssignment(eq("token"), eq("auth"), captor.capture());
             assertThat(captor.getAllValues()).containsExactlyInAnyOrder("role-1", "role-2");
         }
+
+        @Test
+        void shouldDeleteAllHearingRolesOnCase() {
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(eq("token"), eq("auth"), any())).thenReturn(QueryResponse.builder()
+                .roleAssignmentResponse(List.of(RoleAssignment.builder().id("role-1").build(),
+                    RoleAssignment.builder().id("role-2").build()))
+                .build());
+
+            underTest.deleteAllHearingRolesOnCase(12345L);
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .attributes(Map.of("caseId", List.of("12345")))
+                .roleName(List.of("hearing-judge", "hearing-legal-adviser"))
+                .build()));
+
+            verify(amApi, times(2)).deleteRoleAssignment(eq("token"), eq("auth"), captor.capture());
+            assertThat(captor.getAllValues()).containsExactlyInAnyOrder("role-1", "role-2");
+        }
+
     }
 
     @Nested
