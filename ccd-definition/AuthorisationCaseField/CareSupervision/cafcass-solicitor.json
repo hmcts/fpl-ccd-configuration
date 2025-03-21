@@ -877,6 +877,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "lastGenuineUpdateTimed",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardians",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "R"
