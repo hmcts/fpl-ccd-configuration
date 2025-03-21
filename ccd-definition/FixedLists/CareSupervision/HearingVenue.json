@@ -268,20 +268,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
-    "ListElementCode": "125",
-    "ListElement": "Blackpool Family Court",
-    "DisplayOrder": 38
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingVenue",
-    "ListElementCode": "126",
-    "ListElement": "Blackpool M&C Court",
-    "DisplayOrder": 39
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingVenue",
     "ListElementCode": "127",
     "ListElement": "Blackwood Civil and Family Court",
     "DisplayOrder": 40
