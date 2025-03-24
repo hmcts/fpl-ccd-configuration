@@ -18,7 +18,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
-import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 
 import java.io.IOException;
@@ -29,13 +28,16 @@ import java.util.List;
 @Slf4j
 @ControllerAdvice
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class AboutToSubmitControllerAdvice implements RequestBodyAdvice,
-                                                      ResponseBodyAdvice<AboutToStartOrSubmitCallbackResponse> {
+public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
+                                                          ResponseBodyAdvice<AboutToStartOrSubmitCallbackResponse> {
     private static final List<String> WHITE_LIST = List.of(
         "/callback/.+/about-to-submit"
     );
     private static final List<String> EXCLUDED_LIST = List.of(
-        "/callback/migrate-case/about-to-submit"
+        "/callback/migrate-case/about-to-submit",
+        "/callback/message-judge/about-to-submit",
+        "/callback/reply-message-judge/about-to-submit",
+        "/callback/add-note/about-to-submit"
     );
 
     private final RequestScopeStorage requestScopeStorage;
@@ -64,6 +66,19 @@ public class AboutToSubmitControllerAdvice implements RequestBodyAdvice,
         final String path = request.getURI().getPath();
 
         if (WHITE_LIST.stream().anyMatch(path::matches) && EXCLUDED_LIST.stream().noneMatch(path::matches)) {
+            if (shouldUpdateLastGenuineUpdateTimed()) {
+                body.getData().put("lastGenuineUpdateTimed", LocalDateTime.now());
+            }
+        }
+
+        return body;
+    }
+
+    private boolean shouldUpdateLastGenuineUpdateTimed() {
+        if (requestScopeStorage != null && requestScopeStorage.getCallbackRequest() != null
+            && requestScopeStorage.getCallbackRequest().getCaseDetailsBefore() != null
+            && requestScopeStorage.getCallbackRequest().getCaseDetails() != null) {
+
             CafcassApiCase cafcassApiCaseBefore = cafcassApiSearchCaseService
                 .convertToCafcassApiCase(requestScopeStorage.getCallbackRequest().getCaseDetailsBefore())
                 .toBuilder()
@@ -78,12 +93,10 @@ public class AboutToSubmitControllerAdvice implements RequestBodyAdvice,
 
             if (cafcassApiCaseBefore.equals(cafcassApiCaseAfter)) {
                 log.info("No changes for cafcass API response. Skip updating lastGenuineUpdateTimed");
-            } else {
-                body.getData().put("lastGenuineUpdateTimed", LocalDateTime.now());
+                return false;
             }
         }
-
-        return body;
+        return true;
     }
 
     @Override
@@ -111,9 +124,8 @@ public class AboutToSubmitControllerAdvice implements RequestBodyAdvice,
     }
 
     /**
-     * This bean is only used by AboutToSubmitControllerAdvice.java for storing the incoming request.
-     * It is managed by Spring under request scope, which mean new instance is instantiated independently for each
-     * incoming HTTP.
+     * A bean for storing the incoming request. It is managed by Spring under request scope,
+     * which mean new instance is instantiated independently for each incoming HTTP request.
      */
     @Component
     @RequestScope
