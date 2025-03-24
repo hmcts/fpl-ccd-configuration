@@ -148,7 +148,7 @@
     "ID": "EnterOthers",
     "CaseEventID": "enterOthers",
     "CaseFieldID": "othersV2",
-    "ListElementCode": "LitigationCapacityIssues",
+    "ListElementCode": "litigationIssues",
     "FieldDisplayOrder": 11,
     "DisplayContext": "MANDATORY"
   },
