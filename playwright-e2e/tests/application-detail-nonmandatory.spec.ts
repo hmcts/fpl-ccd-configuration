@@ -181,23 +181,21 @@ test.describe('Non mandatory application details before application submit', () 
             expect(accessibilityScanResults.violations).toEqual([]);
 
         });
-test.only('',async({signInPage,startApplication,otherProceedings})=>{
+test('LA add Other Proceedings details',async({signInPage,startApplication,otherProceedings})=>{
 
-    casename = 'other Proceedings  ' + dateTime.slice(0, 10);
+    casename = 'Other Proceedings  ' + dateTime.slice(0, 10);
     caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
-    // 1. Sign in as local-authority user
+
     await signInPage.visit();
     await signInPage.login(
         newSwanseaLocalAuthorityUserOne.email,
         newSwanseaLocalAuthorityUserOne.password,
     );
-    //sign in page
-    await signInPage.isSignedIn();
-    await signInPage.navigateTOCaseDetails(caseNumber)
 
-    // International element
+    await signInPage.isSignedIn();
+    await signInPage.navigateTOCaseDetails(caseNumber);
     await startApplication.otherProceedingsNeeded();
-    await otherProceedings.otherProceedingsSmokeTest();
+    await otherProceedings.otherProceedings();
     await otherProceedings.tabNavigation('View application');
 
     //assert the details
