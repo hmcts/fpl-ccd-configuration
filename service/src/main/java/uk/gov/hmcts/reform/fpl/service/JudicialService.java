@@ -166,9 +166,15 @@ public class JudicialService {
             .map(ld -> ld.minusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(LONDON_TIMEZONE))
             .orElse(null);
 
+        final ZonedDateTime hearingStart = hearing.getStartDate().atZone(LONDON_TIMEZONE);
+
+        // if the hearing is in the future, and we should start the role immediately, then use the current time
+        final ZonedDateTime roleStartDate = (startNow && hearingStart.isAfter(currentTimeUK()))
+            ? currentTimeUK() : hearingStart;
+
         judgeId.ifPresentOrElse(s -> assignHearingJudgeRole(caseId,
                 s,
-                startNow ? currentTimeUK() : hearing.getStartDate().atZone(LONDON_TIMEZONE),
+                roleStartDate,
                 possibleEndDate,
                 JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearing.getJudgeAndLegalAdvisor().getJudgeTitle())),
             () -> log.error("No judge details on hearing starting at {} on case {} to assign roles to",

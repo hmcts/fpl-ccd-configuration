@@ -422,6 +422,40 @@ class JudicialServiceTest {
     }
 
     @Test
+    void shouldNotCreateRoleStartingNowIfStartDateInPastAndOnlyHearing() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime hearingStart = now.minusDays(2);
+        final ZonedDateTime nowZoned = now.atZone(LONDON_TIMEZONE);
+        final ZonedDateTime hearingStartZoned = hearingStart.atZone(LONDON_TIMEZONE);
+
+        HearingBooking hearing = HearingBooking.builder()
+            .startDate(hearingStart)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeEnterManually(YesNo.NO)
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idam")
+                    .build())
+                .build())
+            .build();
+
+        try (MockedStatic<ZonedDateTime> zonedStatic = mockStatic(ZonedDateTime.class)) {
+            zonedStatic.when(() -> ZonedDateTime.now(LONDON_TIMEZONE)).thenReturn(nowZoned);
+            zonedStatic.when(() -> ZonedDateTime.of(now, LONDON_TIMEZONE)).thenReturn(nowZoned);
+            zonedStatic.when(() -> ZonedDateTime.of(hearingStart, LONDON_TIMEZONE)).thenReturn(hearingStartZoned);
+
+            underTest.assignHearingJudge(12345L, hearing, Optional.empty(), true);
+
+            verify(roleAssignmentService).assignJudgesRole(
+                12345L,
+                List.of("idam"),
+                JudgeCaseRole.HEARING_JUDGE,
+                hearingStartZoned,
+                null);
+        }
+    }
+
+    @Test
     void shouldCreateTimeBoundHearingJudgeRoleWithFutureHearing() {
         LocalDateTime now = LocalDateTime.now();
 
