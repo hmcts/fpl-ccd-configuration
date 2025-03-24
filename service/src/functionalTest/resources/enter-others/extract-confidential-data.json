@@ -20,22 +20,25 @@
           },
           "othersV2": [
             {
-              "name": "John Smith",
-              "DOB": "2000-07-12",
-              "address": {
-                "AddressLine1": "1st Avenue",
-                "AddressLine2": "5 Saffron Central Square",
-                "AddressLine3": "",
-                "PostTown": "Croydon",
-                "County": "",
-                "PostCode": "CR0 2FT",
-                "Country": "United Kingdom"
-              },
-              "telephone": null,
-              "childInformation": null,
-              "litigationIssues": "NO",
-              "hideAddress": "Yes",
-              "addressKnowV2": "Yes"
+              "id": "${IGNORE}",
+              "value": {
+                "name": "John Smith",
+                "DOB": "2000-07-12",
+                "address": {
+                  "AddressLine1": "1st Avenue",
+                  "AddressLine2": "5 Saffron Central Square",
+                  "AddressLine3": "",
+                  "PostTown": "Croydon",
+                  "County": "",
+                  "PostCode": "CR0 2FT",
+                  "Country": "United Kingdom"
+                },
+                "telephone": null,
+                "childInformation": null,
+                "litigationIssues": "NO",
+                "hideAddress": "Yes",
+                "addressKnowV2": "Yes"
+              }
             }
           ]
         },
@@ -78,23 +81,26 @@
         },
         "othersV2": [
           {
-            "name": "John Smith",
-            "gender": "Male",
-            "address": null,
-            "telephone": null,
-            "birthPlace": null,
-            "childInformation": null,
-            "genderIdentification": null,
-            "litigationIssues": "NO",
-            "litigationIssuesDetails": null,
-            "hideAddress": "Yes",
-            "hideTelephone": null,
-            "detailsHidden": null,
-            "addressKnowV2": null,
-            "detailsHiddenReason": null,
-            "representedBy": [],
-            "DOB": "2000-07-12",
-            "addressNotKnowReason": null
+            "id": "${IGNORE}",
+            "value": {
+              "name": "John Smith",
+              "gender": "Male",
+              "address": null,
+              "telephone": null,
+              "birthPlace": null,
+              "childInformation": null,
+              "genderIdentification": null,
+              "litigationIssues": "NO",
+              "litigationIssuesDetails": null,
+              "hideAddress": "Yes",
+              "hideTelephone": null,
+              "detailsHidden": null,
+              "addressKnowV2": null,
+              "detailsHiddenReason": null,
+              "representedBy": [],
+              "DOB": "2000-07-12",
+              "addressNotKnowReason": null
+            }
           }
         ],
         "confidentialOthers": [
