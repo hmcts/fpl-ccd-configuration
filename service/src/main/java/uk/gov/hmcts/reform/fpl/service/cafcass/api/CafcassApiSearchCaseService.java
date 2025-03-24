@@ -83,15 +83,17 @@ public class CafcassApiSearchCaseService {
             List<CaseDetails> caseDetails = searchService.search(searchCaseQuery.build(), 10000, 0, sources);
 
             return caseDetails.stream()
-                .map(this::convertToCafcassApiCase)
+                .map(caseDetail -> {
+                    log.info("Converting [{}]", caseDetail.getId());
+                    return convertToCafcassApiCase(caseDetail);
+                })
                 .toList();
         } else {
             return List.of();
         }
     }
 
-    private CafcassApiCase convertToCafcassApiCase(CaseDetails caseDetails) {
-        log.info("Converting [{}]", caseDetails.getId());
+    public CafcassApiCase convertToCafcassApiCase(CaseDetails caseDetails) {
         return CafcassApiCase.builder()
             .id(caseDetails.getId())
             .jurisdiction(caseDetails.getJurisdiction())
