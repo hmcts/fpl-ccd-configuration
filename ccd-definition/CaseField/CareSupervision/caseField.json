@@ -2037,7 +2037,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "othersSubHeadingLabel",
     "FieldType": "Label",
-    "Label": "#### Other people in the case",
+    "Label": "#### Other people to be given notice",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
