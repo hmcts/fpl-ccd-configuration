@@ -18,12 +18,10 @@
             },
             "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
           },
-          "others": {
-            "firstOther": {
+          "othersV2": [
+            {
               "name": "John Smith",
               "DOB": "2000-07-12",
-              "gender": "Male",
-              "birthPlace": "London",
               "address": {
                 "AddressLine1": "1st Avenue",
                 "AddressLine2": "5 Saffron Central Square",
@@ -36,11 +34,10 @@
               "telephone": null,
               "childInformation": null,
               "litigationIssues": "NO",
-              "detailsHidden": "Yes",
+              "hideAddress": "Yes",
               "addressKnowV2": "Yes"
-            },
-            "additionalOthers": []
-          }
+            }
+          ]
         },
         "security_classification": "PUBLIC",
         "callback_response_status": null
@@ -79,26 +76,27 @@
           },
           "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
         },
-        "others": {
-          "firstOther": {
+        "othersV2": [
+          {
             "name": "John Smith",
             "gender": "Male",
             "address": null,
             "telephone": null,
-            "birthPlace": "London",
+            "birthPlace": null,
             "childInformation": null,
             "genderIdentification": null,
             "litigationIssues": "NO",
             "litigationIssuesDetails": null,
-            "detailsHidden": "Yes",
+            "hideAddress": "Yes",
+            "hideTelephone": null,
+            "detailsHidden": null,
             "addressKnowV2": null,
             "detailsHiddenReason": null,
             "representedBy": [],
             "DOB": "2000-07-12",
             "addressNotKnowReason": null
-          },
-          "additionalOthers": []
-        },
+          }
+        ],
         "confidentialOthers": [
           {
             "id": "${IGNORE}",
@@ -120,6 +118,8 @@
               "genderIdentification": null,
               "litigationIssues": null,
               "litigationIssuesDetails": null,
+              "hideAddress": "Yes",
+              "hideTelephone": null,
               "detailsHidden": null,
               "detailsHiddenReason": null,
               "representedBy": [],
