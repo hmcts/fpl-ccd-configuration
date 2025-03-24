@@ -394,10 +394,12 @@ class JudicialServiceTest {
     @Test
     void shouldCreateRoleStartingNowNotStartDateIfOnlyHearing() {
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime hearingStart = now.plusDays(2);
         final ZonedDateTime nowZoned = now.atZone(LONDON_TIMEZONE);
+        final ZonedDateTime hearingStartZoned = hearingStart.atZone(LONDON_TIMEZONE);
 
         HearingBooking hearing = HearingBooking.builder()
-            .startDate(now.plusDays(2))
+            .startDate(hearingStart)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEnterManually(YesNo.NO)
                 .judgeTitle(JudgeOrMagistrateTitle.OTHER)
@@ -409,6 +411,7 @@ class JudicialServiceTest {
 
         try (MockedStatic<ZonedDateTime> zonedStatic = mockStatic(ZonedDateTime.class)) {
             zonedStatic.when(() -> ZonedDateTime.now(LONDON_TIMEZONE)).thenReturn(nowZoned);
+            zonedStatic.when(() -> ZonedDateTime.of(hearingStart, LONDON_TIMEZONE)).thenReturn(hearingStartZoned);
 
             underTest.assignHearingJudge(12345L, hearing, Optional.empty(), true);
 
