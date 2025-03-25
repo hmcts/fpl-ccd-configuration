@@ -20,9 +20,10 @@
           },
           "othersV2": [
             {
-              "id": "${IGNORE}",
+              "id": "e1bd82a6-dd09-4b0d-83d4-88beb97add2e",
               "value": {
-                "name": "John Smith",
+                "firstName": "John",
+                "lastName": "Smith",
                 "DOB": "2000-07-12",
                 "address": {
                   "AddressLine1": "1st Avenue",
@@ -81,10 +82,12 @@
         },
         "othersV2": [
           {
-            "id": "${IGNORE}",
+            "id": "e1bd82a6-dd09-4b0d-83d4-88beb97add2e",
             "value": {
-              "name": "John Smith",
-              "gender": "Male",
+              "firstName": "John",
+              "lastName": "Smith",
+              "name": null,
+              "gender": null,
               "address": null,
               "telephone": null,
               "birthPlace": null,
@@ -105,9 +108,11 @@
         ],
         "confidentialOthers": [
           {
-            "id": "${IGNORE}",
+            "id": "e1bd82a6-dd09-4b0d-83d4-88beb97add2e",
             "value": {
-              "name": "John Smith",
+              "firstName": "John",
+              "lastName": "Smith",
+              "name": null,
               "gender": null,
               "address": {
                 "AddressLine1": "1st Avenue",
