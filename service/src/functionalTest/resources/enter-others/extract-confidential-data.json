@@ -102,7 +102,8 @@
               "detailsHiddenReason": null,
               "representedBy": [],
               "DOB": "2000-07-12",
-              "addressNotKnowReason": null
+              "addressNotKnowReason": null,
+              "whereaboutsUnknownDetails": null
             }
           }
         ],
@@ -136,7 +137,8 @@
               "representedBy": [],
               "DOB": null,
               "addressKnowV2": "Yes",
-              "addressNotKnowReason": null
+              "addressNotKnowReason": null,
+              "whereaboutsUnknownDetails": null
             }
           }
         ]
