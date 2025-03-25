@@ -190,7 +190,7 @@
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LitigationCapacityIssues",
-    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
+    "ElementLabel": "Do you believe this person will have difficulty understanding what's happening with the case?",
     "SecurityClassification": "Public"
   },
   {
