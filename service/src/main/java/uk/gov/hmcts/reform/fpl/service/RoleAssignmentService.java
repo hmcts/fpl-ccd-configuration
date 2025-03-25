@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -196,7 +198,7 @@ public class RoleAssignmentService {
             QueryRequest.builder()
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(roleNames)
-                .validAt(time)
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
         return resp.getRoleAssignmentResponse();
@@ -219,7 +221,7 @@ public class RoleAssignmentService {
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .actorId(List.of(userId))
                 .roleName(roleNames)
-                .validAt(time)
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
 
@@ -246,6 +248,25 @@ public class RoleAssignmentService {
             amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
 
         log.info("Deleted {} roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
+    }
+
+
+    @Retryable(value = {FeignException.class}, label = "Delete all hearing judicial/legal adviser roles on a case")
+    public void deleteAllHearingRolesOnCase(Long caseId) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        String authToken = authTokenGenerator.generate();
+
+        QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
+                .roleName(List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()))
+                .build()
+        );
+
+        resp.getRoleAssignmentResponse().forEach(role ->
+            amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
+
+        log.info("Deleted {} hearing roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
     }
 
     @Retryable(retryFor = {FeignException.class}, label = "Query organisation roles for user")
@@ -278,7 +299,7 @@ public class RoleAssignmentService {
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
                     HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
-                .validAt(time)
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
 
@@ -299,10 +320,13 @@ public class RoleAssignmentService {
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
                     HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
-                .validAt(time)
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
         return resp.getRoleAssignmentResponse();
     }
 
+    static LocalDateTime getDateTimeInUtc(ZonedDateTime time) {
+        return time.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+    }
 }
