@@ -7,7 +7,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
-import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
@@ -39,8 +38,8 @@ public class AdditionalApplicationsPbaPaymentNotTakenEventHandler {
                 additionalApplicationsUploadedEmailContentProvider.getPbaPaymentNotTakenNotifyData(
                     caseData);
 
-            notificationService
-                .sendEmail(INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE, recipient, notifyData, caseData.getId());
+            notificationService.sendEmail(
+                INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE, recipient, notifyData, caseData.getId());
         } else {
             log.info("WA EMAIL SKIPPED - failed payment - {}", event.getCaseData().getId());
         }
