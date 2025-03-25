@@ -46,13 +46,13 @@ public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;
+        return returnType.getGenericParameterType().equals(AboutToStartOrSubmitCallbackResponse.class);
     }
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType,
                             Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;
+        return methodParameter.getGenericParameterType().equals(CallbackRequest.class);
     }
 
     @Override
