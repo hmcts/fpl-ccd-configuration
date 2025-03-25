@@ -17,6 +17,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 
@@ -24,6 +26,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Slf4j
 @ControllerAdvice
@@ -39,6 +43,12 @@ public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
         "/callback/reply-message-judge/about-to-submit",
         "/callback/add-note/about-to-submit"
     );
+    private static final List<String> EXCLUDED_CASE_STATE = List.of(
+        State.OPEN.getValue(),
+        State.DELETED.getValue(),
+        State.RETURNED.getValue()
+    );
+
 
     private final RequestScopeStorage requestScopeStorage;
     private final CafcassApiSearchCaseService cafcassApiSearchCaseService;
@@ -79,20 +89,27 @@ public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
             && requestScopeStorage.getCallbackRequest().getCaseDetailsBefore() != null
             && requestScopeStorage.getCallbackRequest().getCaseDetails() != null) {
 
+            final CaseDetails caseDetailsBefore = requestScopeStorage.getCallbackRequest().getCaseDetailsBefore();
+            final CaseDetails caseDetailsAfter = requestScopeStorage.getCallbackRequest().getCaseDetails();
+
+            if (isNotEmpty(caseDetailsAfter.getState())
+                && EXCLUDED_CASE_STATE.stream().anyMatch(caseDetailsAfter.getState()::equalsIgnoreCase)) {
+                return false;
+            }
+
             CafcassApiCase cafcassApiCaseBefore = cafcassApiSearchCaseService
-                .convertToCafcassApiCase(requestScopeStorage.getCallbackRequest().getCaseDetailsBefore())
+                .convertToCafcassApiCase(caseDetailsBefore)
                 .toBuilder()
                 .lastModified(null)
                 .build();
 
             CafcassApiCase cafcassApiCaseAfter = cafcassApiSearchCaseService
-                .convertToCafcassApiCase(requestScopeStorage.getCallbackRequest().getCaseDetails())
+                .convertToCafcassApiCase(caseDetailsAfter)
                 .toBuilder()
                 .lastModified(null)
                 .build();
 
             if (cafcassApiCaseBefore.equals(cafcassApiCaseAfter)) {
-                log.info("No changes for cafcass API response. Skip updating lastGenuineUpdateTimed");
                 return false;
             }
         }

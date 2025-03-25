@@ -134,7 +134,6 @@ public class LastGenuineUpdateTimedInterceptorTest {
                 REQUEST_WHITELISTED, RESPONSE);
 
             assertNotNull(interceptedResponse);
-            assertNotNull(interceptedResponse.getData());
             assertEquals(CASE_MAP_AFTER, interceptedResponse.getData());
         }
 
@@ -149,7 +148,26 @@ public class LastGenuineUpdateTimedInterceptorTest {
                 REQUEST_EXCLUDED, RESPONSE);
 
             assertNotNull(interceptedResponse);
-            assertNotNull(interceptedResponse.getData());
+            assertEquals(CASE_MAP_AFTER, interceptedResponse.getData());
+        }
+
+        @Test
+        void shouldNotUpdateTimestampIfCaseStateExcluded() {
+            when(requestScopeStorage.getCallbackRequest())
+                .thenReturn(CallbackRequest.builder()
+                    .caseDetailsBefore(CASE_DETAILS_BEFORE)
+                    .caseDetails(CASE_DETAILS_AFTER.toBuilder().state(State.DELETED.getValue()).build())
+                    .build());
+
+            AboutToStartOrSubmitCallbackResponse controllerResponse = AboutToStartOrSubmitCallbackResponse.builder()
+                .data(new HashMap<>(CASE_MAP_AFTER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse interceptedResponse = underTest.beforeBodyWrite(controllerResponse,
+                HANDLE_ABOUT_TO_SUBMIT_RETURN_TYPE, MediaType.APPLICATION_JSON, null,
+                REQUEST_WHITELISTED, RESPONSE);
+
+            assertNotNull(interceptedResponse);
             assertEquals(CASE_MAP_AFTER, interceptedResponse.getData());
         }
     }
