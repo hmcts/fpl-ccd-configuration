@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 
 import java.io.IOException;
@@ -52,7 +53,7 @@ public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
 
     private final RequestScopeStorage requestScopeStorage;
     private final CafcassApiSearchCaseService cafcassApiSearchCaseService;
-
+    private final FeatureToggleService featureToggleService;
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -75,42 +76,40 @@ public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
                                                                 ServerHttpResponse response) {
         final String path = request.getURI().getPath();
 
-        if (WHITE_LIST.stream().anyMatch(path::matches) && EXCLUDED_LIST.stream().noneMatch(path::matches)) {
-            if (shouldUpdateLastGenuineUpdateTimed()) {
-                body.getData().put("lastGenuineUpdateTimed", LocalDateTime.now());
-            }
-        }
+        if (WHITE_LIST.stream().anyMatch(path::matches) && EXCLUDED_LIST.stream().noneMatch(path::matches)
+            && featureToggleService.isCafcassApiToggledOn() && shouldUpdateLastGenuineUpdateTimed()) {
 
+            body.getData().put("lastGenuineUpdateTimed", LocalDateTime.now());
+        }
         return body;
     }
 
     private boolean shouldUpdateLastGenuineUpdateTimed() {
-        if (requestScopeStorage != null && requestScopeStorage.getCallbackRequest() != null
-            && requestScopeStorage.getCallbackRequest().getCaseDetailsBefore() != null
-            && requestScopeStorage.getCallbackRequest().getCaseDetails() != null) {
-
-            final CaseDetails caseDetailsBefore = requestScopeStorage.getCallbackRequest().getCaseDetailsBefore();
+        if (requestScopeStorage != null && requestScopeStorage.getCallbackRequest() != null) {
             final CaseDetails caseDetailsAfter = requestScopeStorage.getCallbackRequest().getCaseDetails();
 
-            if (isNotEmpty(caseDetailsAfter.getState())
-                && EXCLUDED_CASE_STATE.stream().anyMatch(caseDetailsAfter.getState()::equalsIgnoreCase)) {
-                return false;
-            }
+            if (caseDetailsAfter != null) {
+                if (isNotEmpty(caseDetailsAfter.getState())
+                    && EXCLUDED_CASE_STATE.stream().anyMatch(caseDetailsAfter.getState()::equalsIgnoreCase)) {
+                    return false;
+                }
 
-            CafcassApiCase cafcassApiCaseBefore = cafcassApiSearchCaseService
-                .convertToCafcassApiCase(caseDetailsBefore)
-                .toBuilder()
-                .lastModified(null)
-                .build();
+                final CaseDetails caseDetailsBefore = requestScopeStorage.getCallbackRequest().getCaseDetailsBefore();
+                if (caseDetailsBefore != null) {
+                    CafcassApiCase cafcassApiCaseBefore = cafcassApiSearchCaseService
+                        .convertToCafcassApiCase(caseDetailsBefore)
+                        .toBuilder()
+                        .lastModified(null)
+                        .build();
 
-            CafcassApiCase cafcassApiCaseAfter = cafcassApiSearchCaseService
-                .convertToCafcassApiCase(caseDetailsAfter)
-                .toBuilder()
-                .lastModified(null)
-                .build();
+                    CafcassApiCase cafcassApiCaseAfter = cafcassApiSearchCaseService
+                        .convertToCafcassApiCase(caseDetailsAfter)
+                        .toBuilder()
+                        .lastModified(null)
+                        .build();
 
-            if (cafcassApiCaseBefore.equals(cafcassApiCaseAfter)) {
-                return false;
+                    return !cafcassApiCaseBefore.equals(cafcassApiCaseAfter);
+                }
             }
         }
         return true;

@@ -29,7 +29,7 @@ public class CafcassApiInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
-        if (!isCafcassApiToggledOn()) {
+        if (!featureToggleService.isCafcassApiToggledOn()) {
             log.info("Cafcass API is disabled.");
             throw new ServiceUnavailableException();
         }
@@ -42,10 +42,5 @@ public class CafcassApiInterceptor implements HandlerInterceptor {
             }
         }
         throw new AuthorizationException();
-    }
-
-    private boolean isCafcassApiToggledOn() {
-        CafcassApiFeatureFlag featureFlag = featureToggleService.getCafcassAPIFlag();
-        return isNotEmpty(featureFlag) && featureFlag.isEnableApi();
     }
 }

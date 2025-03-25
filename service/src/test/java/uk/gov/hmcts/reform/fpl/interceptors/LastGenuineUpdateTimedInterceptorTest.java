@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 
 import java.io.IOException;
@@ -46,6 +47,8 @@ public class LastGenuineUpdateTimedInterceptorTest {
     private LastGenuineUpdateTimedInterceptor.RequestScopeStorage requestScopeStorage;
     @Mock
     private CafcassApiSearchCaseService cafcassApiSearchCaseService;
+    @Mock
+    private FeatureToggleService featureToggleService;
     @InjectMocks
     private LastGenuineUpdateTimedInterceptor underTest;
 
@@ -64,7 +67,7 @@ public class LastGenuineUpdateTimedInterceptorTest {
     }
 
     @Nested
-    class ResponseBodyAdviceTest{
+    class ResponseBodyAdviceTest {
         private static final Map<String, Object> CASE_MAP_BEFORE = Map.of("id", 1L);
         private static final CaseDetails CASE_DETAILS_BEFORE = CaseDetails.builder()
             .state(State.GATEKEEPING.getValue()).data(CASE_MAP_BEFORE).build();
@@ -88,6 +91,7 @@ public class LastGenuineUpdateTimedInterceptorTest {
 
         @Test
         void shouldUpdateTimestampIfApiResponseChanged() {
+            when(featureToggleService.isCafcassApiToggledOn()).thenReturn(true);
             when(requestScopeStorage.getCallbackRequest())
                 .thenReturn(CallbackRequest.builder()
                     .caseDetailsBefore(CASE_DETAILS_BEFORE)
@@ -115,6 +119,7 @@ public class LastGenuineUpdateTimedInterceptorTest {
 
         @Test
         void shouldNotUpdateTimestampIfApiResponseUnchanged() {
+            when(featureToggleService.isCafcassApiToggledOn()).thenReturn(true);
             when(requestScopeStorage.getCallbackRequest())
                 .thenReturn(CallbackRequest.builder()
                     .caseDetailsBefore(CASE_DETAILS_BEFORE)
@@ -153,11 +158,28 @@ public class LastGenuineUpdateTimedInterceptorTest {
 
         @Test
         void shouldNotUpdateTimestampIfCaseStateExcluded() {
+            when(featureToggleService.isCafcassApiToggledOn()).thenReturn(true);
             when(requestScopeStorage.getCallbackRequest())
                 .thenReturn(CallbackRequest.builder()
                     .caseDetailsBefore(CASE_DETAILS_BEFORE)
                     .caseDetails(CASE_DETAILS_AFTER.toBuilder().state(State.DELETED.getValue()).build())
                     .build());
+
+            AboutToStartOrSubmitCallbackResponse controllerResponse = AboutToStartOrSubmitCallbackResponse.builder()
+                .data(new HashMap<>(CASE_MAP_AFTER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse interceptedResponse = underTest.beforeBodyWrite(controllerResponse,
+                HANDLE_ABOUT_TO_SUBMIT_RETURN_TYPE, MediaType.APPLICATION_JSON, null,
+                REQUEST_WHITELISTED, RESPONSE);
+
+            assertNotNull(interceptedResponse);
+            assertEquals(CASE_MAP_AFTER, interceptedResponse.getData());
+        }
+
+        @Test
+        void shouldNotUpdateTimestampIfCafcassApiToggeledOff() {
+            when(featureToggleService.isCafcassApiToggledOn()).thenReturn(false);
 
             AboutToStartOrSubmitCallbackResponse controllerResponse = AboutToStartOrSubmitCallbackResponse.builder()
                 .data(new HashMap<>(CASE_MAP_AFTER))
