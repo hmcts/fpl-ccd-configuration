@@ -57,6 +57,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldRedactStrings() {
             CaseData caseData = CaseData.builder()
+                .id(1734095429043780L)
                 .changeOfRepresentatives(List.of(
                     element(UUID.randomUUID(), ChangeOfRepresentation.builder()
                         .child("unchanged name")
