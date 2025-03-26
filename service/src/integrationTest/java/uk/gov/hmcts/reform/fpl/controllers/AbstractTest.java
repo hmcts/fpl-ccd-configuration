@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.interceptors.LastGenuineUpdateTimedInterceptor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -40,7 +39,6 @@ import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.List.of;
 import static java.util.stream.Collectors.toList;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 
@@ -88,9 +86,6 @@ public abstract class AbstractTest {
 
     @MockBean
     protected CaseDocumentClientApi caseDocumentClientApi;
-
-    @MockBean
-    private LastGenuineUpdateTimedInterceptor lastGenuineUpdateTimedInterceptor;
 
     @Autowired
     protected DynamicListHelper dynamicLists;
@@ -142,8 +137,6 @@ public abstract class AbstractTest {
 
     protected void givenFplService() {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(lastGenuineUpdateTimedInterceptor.supports(any(), any(), any())).willReturn(false);
-        given(lastGenuineUpdateTimedInterceptor.supports(any(), any())).willReturn(false);
     }
 
     protected <T> CaseData getCase(ArgumentCaptor<T> captor) {
