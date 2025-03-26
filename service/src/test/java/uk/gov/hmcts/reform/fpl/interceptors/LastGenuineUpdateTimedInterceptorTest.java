@@ -19,9 +19,11 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +44,7 @@ public class LastGenuineUpdateTimedInterceptorTest {
     private static final ServerHttpRequest REQUEST_WHITELISTED = mock(ServerHttpRequest.class);
     private static final ServerHttpRequest REQUEST_EXCLUDED = mock(ServerHttpRequest.class);
     private static final ServerHttpResponse RESPONSE = mock(ServerHttpResponse.class);
+    private static final LocalDateTime TEST_TIME = LocalDateTime.now();
 
     @Mock
     private LastGenuineUpdateTimedInterceptor.RequestScopeStorage requestScopeStorage;
@@ -49,17 +52,22 @@ public class LastGenuineUpdateTimedInterceptorTest {
     private CafcassApiSearchCaseService cafcassApiSearchCaseService;
     @Mock
     private FeatureToggleService featureToggleService;
+    @Mock
+    private Time time;
     @InjectMocks
     private LastGenuineUpdateTimedInterceptor underTest;
 
+    @SuppressWarnings("unchecked")
     @BeforeAll
     static void init() {
         when(HANDLE_ABOUT_TO_SUBMIT_PARAMETER_TYPE.getGenericParameterType())
             .thenReturn(CallbackRequest.class);
-        when(HANDLE_ABOUT_TO_SUBMIT_RETURN_TYPE.getGenericParameterType())
-            .thenReturn(AboutToStartOrSubmitCallbackResponse.class);
+        when(HANDLE_ABOUT_TO_SUBMIT_RETURN_TYPE.getParameterType())
+            .thenReturn((Class) AboutToStartOrSubmitCallbackResponse.class);
         when(DUMMY_METHOD_RETURN_TYPE.getGenericParameterType())
             .thenReturn(String.class);
+        when(DUMMY_METHOD_RETURN_TYPE.getParameterType())
+            .thenReturn((Class) String.class);
         when(REQUEST_WHITELISTED.getURI())
             .thenReturn(URI.create("http://localhost/callback/generic-update/about-to-submit"));
         when(REQUEST_EXCLUDED.getURI())
@@ -78,6 +86,9 @@ public class LastGenuineUpdateTimedInterceptorTest {
             .id(1L).state(State.GATEKEEPING.getValue()).build();
         private static final CafcassApiCase CAFCASS_API_CASE_AFTER = CafcassApiCase.builder()
             .id(1L).state(State.CASE_MANAGEMENT.getValue()).build();
+
+        private static final Map<String, Object> CASE_MAP_INTERCEPTED =
+            Map.of("id", 1L, "caseName", "Test", "lastGenuineUpdateTimed", TEST_TIME);
 
         @Test
         void shouldReturnTrueWhenMethodParameterMatch() throws NoSuchMethodException {
@@ -101,6 +112,7 @@ public class LastGenuineUpdateTimedInterceptorTest {
                 .thenReturn(CAFCASS_API_CASE_BEFORE);
             when(cafcassApiSearchCaseService.convertToCafcassApiCase(CASE_DETAILS_AFTER))
                 .thenReturn(CAFCASS_API_CASE_AFTER);
+            when(time.now()).thenReturn(TEST_TIME);
 
             AboutToStartOrSubmitCallbackResponse controllerResponse = AboutToStartOrSubmitCallbackResponse.builder()
                 .data(new HashMap<>(CASE_MAP_AFTER))
@@ -111,10 +123,7 @@ public class LastGenuineUpdateTimedInterceptorTest {
                 REQUEST_WHITELISTED, RESPONSE);
 
             assertNotNull(interceptedResponse);
-            assertNotNull(interceptedResponse.getData());
-            assertNotNull(interceptedResponse.getData().get("lastGenuineUpdateTimed"));
-            assertEquals(1L, interceptedResponse.getData().get("id"));
-            assertEquals("Test", interceptedResponse.getData().get("caseName"));
+            assertEquals(CASE_MAP_INTERCEPTED, interceptedResponse.getData());
         }
 
         @Test

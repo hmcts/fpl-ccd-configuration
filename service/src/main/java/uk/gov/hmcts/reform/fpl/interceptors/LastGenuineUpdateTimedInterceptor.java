@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -50,14 +51,14 @@ public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
         State.RETURNED.getValue()
     );
 
-
+    private final Time time;
     private final RequestScopeStorage requestScopeStorage;
     private final CafcassApiSearchCaseService cafcassApiSearchCaseService;
     private final FeatureToggleService featureToggleService;
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return returnType.getGenericParameterType().equals(AboutToStartOrSubmitCallbackResponse.class);
+        return returnType.getParameterType().equals(AboutToStartOrSubmitCallbackResponse.class);
     }
 
     @Override
@@ -79,7 +80,7 @@ public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
         if (WHITE_LIST.stream().anyMatch(path::matches) && EXCLUDED_LIST.stream().noneMatch(path::matches)
             && featureToggleService.isCafcassApiToggledOn() && shouldUpdateLastGenuineUpdateTimed()) {
 
-            body.getData().put("lastGenuineUpdateTimed", LocalDateTime.now());
+            body.getData().put("lastGenuineUpdateTimed", time.now());
         }
         return body;
     }
