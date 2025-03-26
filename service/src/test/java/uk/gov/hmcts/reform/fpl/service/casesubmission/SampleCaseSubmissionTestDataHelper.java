@@ -118,7 +118,6 @@ public class SampleCaseSubmissionTestDataHelper {
         return of(DocmosisApplicant.builder()
             .organisationName("London Borough of Southwark")
             .contactName("Jane Smith")
-            .jobTitle("Legal adviser")
             .address("160 Tooley St\nTooley road\nTooley\nLimerick\nGalway\nSE1 2QH\nIreland")
             .email("jane@smith.com")
             .mobileNumber("2020202020")
