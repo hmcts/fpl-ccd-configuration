@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
