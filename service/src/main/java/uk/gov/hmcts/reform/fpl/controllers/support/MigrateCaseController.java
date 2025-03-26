@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCal
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -40,7 +43,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2635", this::run2635,
         "DFPL-2642", this::run2642,
         "DFPL-2640", this::run2640,
-        "DFPL-2487", this::run2487
+        "DFPL-2487", this::run2487,
+        "DFPL-2713", this::run2713
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -113,6 +117,29 @@ public class MigrateCaseController extends CallbackController {
 
         log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
         judicialService.migrateJudgeRoles(rolesToAssign);
+    }
+
+    private void run2713(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1734095429043780L, "DFPL-2713");
+
+        List<Element<ChangeOfRepresentation>> changes = caseData.getChangeOfRepresentatives();
+        List<Element<ChangeOfRepresentation>> after = changes.stream().map(element -> {
+            ChangeOfRepresentation value = element.getValue();
+            if (element.getId().equals(UUID.fromString("673396a8-dcba-451e-a4df-5a2162ac2828"))) {
+                element.setValue(value.toBuilder()
+                        .child(value.getChild().substring(0, 7))
+                    .build());
+            } else if (element.getId().equals(UUID.fromString("64e99c83-6eb3-48f7-8ba6-2de983af1a8d"))) {
+                element.setValue(value.toBuilder()
+                    .child(value.getChild().substring(0, 9))
+                    .build());
+            }
+            return element;
+        }).toList();
+
+        caseDetails.getData().put("changeOfRepresentatives", after);
     }
 
 }
