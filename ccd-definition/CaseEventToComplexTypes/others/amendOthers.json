@@ -1,6 +1,6 @@
 [
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "firstName",
@@ -8,7 +8,7 @@
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "lastName",
@@ -16,7 +16,7 @@
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "DOB",
@@ -24,7 +24,7 @@
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "addressKnowV2",
@@ -32,7 +32,7 @@
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "addressAutoConfidentialLabel",
@@ -40,7 +40,7 @@
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "address",
@@ -48,56 +48,56 @@
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "address.AddressLine1",
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "address.AddressLine2",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "address.AddressLine3",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "address.PostTown",
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "address.County",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "address.PostCode",
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "address.Country",
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "addressNotKnowReason",
@@ -105,7 +105,7 @@
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "whereaboutsUnknownDetails",
@@ -113,7 +113,7 @@
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "hideAddress",
@@ -121,7 +121,7 @@
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "telephone",
@@ -129,7 +129,7 @@
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "hideTelephone",
@@ -137,7 +137,7 @@
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "childInformation",
@@ -145,16 +145,16 @@
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
-    "ListElementCode": "LitigationCapacityIssues",
+    "ListElementCode": "litigationIssues",
     "FieldDisplayOrder": 11,
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EnterOthers",
+    "ID": "AmendOthers",
     "CaseEventID": "amendOthers",
     "CaseFieldID": "othersV2",
     "ListElementCode": "litigationIssuesDetails",
