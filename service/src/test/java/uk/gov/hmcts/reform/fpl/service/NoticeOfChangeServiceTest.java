@@ -132,11 +132,11 @@ class NoticeOfChangeServiceTest {
                 .id(CASE_ID)
                 .outsourcingPolicy(OrganisationPolicy.builder()
                     .organisation(newOrg)
-                    .orgPolicyCaseAssignedRole("[EPSMANAGING]")
+                    .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
                     .build())
                 .changeOrganisationRequestField(ChangeOrganisationRequest.builder()
                     .organisationToAdd(newOrg)
-                    .caseRoleId(caseRoleDynamicList("[EPSMANAGING]"))
+                    .caseRoleId(caseRoleDynamicList("[APPSOLICITOR]"))
                     .build())
                 .build();
 

@@ -43,6 +43,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.EPSMANAGING;
@@ -264,7 +265,7 @@ class CaseInitiationServiceTest {
             CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
 
             assertThat(updatedCaseData.getOutsourcingPolicy())
-                .isEqualTo(organisationPolicy(RS1.orgId, RS1.name, EPSMANAGING));
+                .isEqualTo(organisationPolicy(RS1.orgId, RS1.name, APPSOLICITOR));
             assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo("SA");
             assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo("Swansea");
         }
@@ -283,7 +284,7 @@ class CaseInitiationServiceTest {
             CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
 
             assertThat(updatedCaseData.getOutsourcingPolicy())
-                .isEqualTo(organisationPolicy(CS1.orgId, CS1.name, EPSMANAGING));
+                .isEqualTo(organisationPolicy(CS1.orgId, CS1.name, APPSOLICITOR));
             assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo("SA");
             assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo("Swansea");
         }
