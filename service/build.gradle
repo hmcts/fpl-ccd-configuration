@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1600'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1618'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -279,7 +279,7 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   log4j           : '2.23.1',
   logbackVersion  : '1.5.14',
-  jackson         : '2.18.2',
+  jackson         : '2.18.3',
   pdfbox          : '2.0.33',
   mockito         : '5.2.0',
   serenity        : '4.1.6',
@@ -373,7 +373,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
 
   // Fortify client for Fortify scans
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.7', classifier: 'all'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.8', classifier: 'all'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
@@ -408,7 +408,7 @@ dependencies {
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
-  contractTestImplementation (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.0') {
+  contractTestImplementation (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.1') {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
