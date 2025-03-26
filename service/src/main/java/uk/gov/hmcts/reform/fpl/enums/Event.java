@@ -22,7 +22,7 @@ public enum Event {
     ALLOCATION_PROPOSAL("otherProposal", "Allocation proposal"),
     OTHER_PROCEEDINGS("otherProceedings", "Other proceedings"),
     INTERNATIONAL_ELEMENT("enterInternationalElement", "International element"),
-    OTHERS("enterOthers", "Other people in the case"),
+    OTHERS("enterOthers", "Other people to be given notice"),
     COURT_SERVICES("attendingHearing", "Court services needed"),
     LANGUAGE_REQUIREMENTS("languageSelection", "Welsh language requirements"),
     SUBMIT_APPLICATION("submitApplication", "Submit application"),

@@ -44,53 +44,49 @@
         "CONTACT_WITH_NAMED_PERSON"
       ]
     },
-    "others": {
-      "firstOther": {
-        "DOB": "1999-02-02",
-        "name": "Jason Lavery",
-        "gender": "They identify in another way",
-        "address": {
-          "County": "Armagh",
-          "Country": "N.Ire",
-          "PostCode": "BT43 343",
-          "PostTown": "Portadown",
-          "AddressLine1": "Flat 13",
-          "AddressLine2": "Portadown street",
-          "AddressLine3": "Portadown road"
-        },
-        "telephone": "07749972245",
-        "birthPlace": "Armagh",
-        "childInformation": "Cousin",
-        "litigationIssues": "NO",
-        "genderIdentification": "Unknown"
-      },
-      "additionalOthers": [
-        {
-          "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
-          "value": {
-            "DOB": "2000-02-02",
-            "name": "Peter Lavery",
-            "gender": "Male",
-            "address": {
-              "County": "Cork",
-              "Country": "Northern Ireland",
-              "PostCode": "BTTT TTT",
-              "PostTown": "Newcastle",
-              "AddressLine1": "Flat 29",
-              "AddressLine2": "Newcastle road",
-              "AddressLine3": "Newcastle street"
-            },
-            "telephone": "07749972241",
-            "birthPlace": "Lisburn",
-            "detailsHidden": "Yes",
-            "childInformation": "Friend of family",
-            "litigationIssues": "YES",
-            "detailsHiddenReason": "Other two hide from parties",
-            "litigationIssuesDetails": "Other two inability to take part in proceedings"
-          }
+    "othersV2": [
+      {
+        "id": "9031df7f-0f1c-47c6-a799-30a3f3b3fa0c",
+        "value": {
+          "DOB": "1999-02-02",
+          "name": "Jason Lavery",
+          "address": {
+            "County": "Armagh",
+            "Country": "N.Ire",
+            "PostCode": "BT43 343",
+            "PostTown": "Portadown",
+            "AddressLine1": "Flat 13",
+            "AddressLine2": "Portadown street",
+            "AddressLine3": "Portadown road"
+          },
+          "telephone": "07749972245",
+          "childInformation": "Cousin",
+          "litigationIssues": "NO"
         }
-      ]
-    },
+      },
+      {
+        "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
+        "value": {
+          "DOB": "2000-02-02",
+          "name": "Peter Lavery",
+          "address": {
+            "County": "Cork",
+            "Country": "Northern Ireland",
+            "PostCode": "BTTT TTT",
+            "PostTown": "Newcastle",
+            "AddressLine1": "Flat 29",
+            "AddressLine2": "Newcastle road",
+            "AddressLine3": "Newcastle street"
+          },
+          "telephone": "07749972241",
+          "hideTelephone": "Yes",
+          "hideAddress": "Yes",
+          "litigationIssues": "YES",
+          "litigationIssuesDetails": "Other two inability to take part in proceedings",
+          "childInformation": "Friend of family"
+        }
+      }
+    ],
     "grounds": {
       "thresholdReason": [
         "noCare",
