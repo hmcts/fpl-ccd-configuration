@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(GenericCaseUpdateController.class)
 @OverrideAutoConfiguration(enabled = true)
-class GenericCaseUpdateControllerTest extends AbstractTest{
+class GenericCaseUpdateControllerTest extends AbstractTest {
     private static final LocalDateTime TEST_TIME = LocalDateTime.of(2025,3,26,8,0,0,0);
     private static final String EVENT_NAME = "generic-update";
     private static final String USER_AUTH_TOKEN = "Bearer token";
@@ -83,7 +83,7 @@ class GenericCaseUpdateControllerTest extends AbstractTest{
         AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(request);
 
         assertThat(actualResponse.getData()).containsOnlyKeys("id", "respondents1", "lastGenuineUpdateTimed");
-        assertThat(actualResponse.getData()).extracting( "lastGenuineUpdateTimed").isEqualTo("2025-03-26T08:00:00");
+        assertThat(actualResponse.getData()).extracting("lastGenuineUpdateTimed").isEqualTo("2025-03-26T08:00:00");
 
         CaseData caseData = extractCaseData(actualResponse);
 
