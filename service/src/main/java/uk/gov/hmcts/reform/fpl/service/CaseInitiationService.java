@@ -30,8 +30,8 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.EPSMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
@@ -239,7 +239,7 @@ public class CaseInitiationService {
                     .outsourcingPolicy(organisationPolicy(
                         currentUserOrganisationId,
                         currentUserOrganisationName,
-                        EPSMANAGING))
+                        APPSOLICITOR))
                     .caseLocalAuthority(caseData.getRelatingLA())
                     .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(caseData.getRelatingLA()))
                     .representativeType(caseData.getRepresentativeType())

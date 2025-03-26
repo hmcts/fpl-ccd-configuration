@@ -74,7 +74,7 @@ public class NoticeOfChangeService {
     }
 
     public boolean isThirdPartyOutsourcing(ChangeOrganisationRequest changeOrganisationRequest) {
-        return changeOrganisationRequest.getCaseRoleId().getValueCode().equals("[EPSMANAGING]");
+        return changeOrganisationRequest.getCaseRoleId().getValueCode().equals("[APPSOLICITOR]");
     }
 
 }

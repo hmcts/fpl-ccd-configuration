@@ -54,7 +54,8 @@
           "[LAMANAGING]",
           "[LASHARED]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -208,7 +209,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -232,7 +234,8 @@
           "[LAMANAGING]",
           "[LASHARED]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -291,7 +294,8 @@
           "[LAMANAGING]",
           "[LASHARED]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -319,7 +323,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "R"
       },
@@ -342,7 +347,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -365,7 +371,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -388,7 +395,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -411,7 +419,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -434,7 +443,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -460,6 +470,7 @@
           "[LASHARED]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]",
           "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "CR"
@@ -484,7 +495,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "R"
       },
@@ -507,7 +519,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -530,7 +543,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -639,7 +653,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
@@ -728,6 +743,7 @@
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-superuser",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LABARRISTER]",
           "[LAMANAGING]",
           "[LASHARED]",
@@ -777,6 +793,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[LASHARED]"
         ],
@@ -881,6 +898,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
@@ -904,6 +922,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
@@ -927,6 +946,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
@@ -973,6 +993,7 @@
           "caseworker-publiclaw-courtadmin",
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "caseworker-publiclaw-solicitor",
           "caseworker-publiclaw-magistrate"
@@ -1012,6 +1033,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
@@ -1066,6 +1088,7 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[LABARRISTER]",
           "[BARRISTER]",
@@ -1095,6 +1118,7 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[LABARRISTER]",
           "[SOLICITORA]",
@@ -1121,6 +1145,7 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
@@ -1150,6 +1175,7 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]",
@@ -1196,6 +1222,7 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
@@ -1244,6 +1271,7 @@
           "caseworker-publiclaw-courtadmin",
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[LASHARED]",
           "[SOLICITORA]",
@@ -1339,6 +1367,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
@@ -1423,6 +1452,7 @@
           "[LASHARED]",
           "[LAMANAGING]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
@@ -1441,6 +1471,7 @@
           "[LASHARED]",
           "[LAMANAGING]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
@@ -1479,6 +1510,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
@@ -1502,6 +1534,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
@@ -1654,6 +1687,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LASHARED]",
           "[LAMANAGING]"
         ],
@@ -1676,6 +1710,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[LASHARED]",
           "[LABARRISTER]",
@@ -1710,6 +1745,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "[LABARRISTER]",
           "caseworker-publiclaw-judiciary",
@@ -1777,7 +1813,8 @@
       {
         "UserRoles": [
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       }
