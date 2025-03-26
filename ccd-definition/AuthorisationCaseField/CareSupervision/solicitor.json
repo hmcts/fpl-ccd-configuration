@@ -22,6 +22,19 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "draftOrderNeedsReviewUploaded",
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
+      "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
+      "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
+      "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
+      "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherCourtAdminDocuments",
     "UserRole": "caseworker-publiclaw-solicitor",
     "Comment": "This should have [SOLICITOR] role but not implemented properly in ccd yet",
@@ -2747,6 +2760,41 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicantContactLabel",
+    "UserRoles": ["[SOLICITORA]", "[CHILDSOLICITORA]"],
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicantContact",
+    "UserRoles": ["[SOLICITORA]", "[CHILDSOLICITORA]"],
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicantContactOthers",
+    "UserRoles": ["[SOLICITORA]", "[CHILDSOLICITORA]"],
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicantOtherContactLabel",
+    "UserRoles": ["[SOLICITORA]", "[CHILDSOLICITORA]"],
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthority",
+    "UserRoles": ["[SOLICITORA]", "[CHILDSOLICITORA]"],
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardianReportsList",
     "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
       "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
@@ -2800,7 +2848,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardians",
-        "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
       "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
       "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
       "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",

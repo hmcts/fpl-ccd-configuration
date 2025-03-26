@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +13,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
@@ -47,9 +46,11 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -602,6 +603,8 @@ class ApplicantLocalAuthorityServiceTest {
 
     @Nested
     class ValidateColleagues {
+        private static final String MAIN_CONTACT_KEY = "Main contact";
+        private static final String OTHER_CONTACT_KEY = "Other contact";
 
         final Colleague colleague1 = Colleague.builder()
             .email("email1@test.com")
@@ -614,182 +617,39 @@ class ApplicantLocalAuthorityServiceTest {
         final List<Element<Colleague>> colleagues = wrapElements(colleague1, colleague2);
 
         @Test
-        void shouldReturnValidationErrors() {
-            when(validateEmailService.validate(List.of("email1@test.com", "email2@test.com"), "Colleague"))
+        void shouldReturnValidationErrorsIfMainContactInvalid() {
+            when(validateEmailService.validate(List.of("email1@test.com"), MAIN_CONTACT_KEY))
                 .thenReturn(List.of("Error 1", "Error 2"));
 
-            final List<String> errors = underTest.validateColleagues(colleagues);
+            final List<String> errors = underTest.validateMainContact(colleague1);
 
             assertThat(errors).containsExactlyInAnyOrder("Error 1", "Error 2");
 
-            verify(validateEmailService).validate(List.of("email1@test.com", "email2@test.com"), "Colleague");
+            verify(validateEmailService).validate(List.of("email1@test.com"), MAIN_CONTACT_KEY);
+        }
+
+        @Test
+        void shouldReturnValidationErrors() {
+            when(validateEmailService.validate(List.of("email1@test.com", "email2@test.com"), OTHER_CONTACT_KEY))
+                .thenReturn(List.of("Error 1", "Error 2"));
+
+            final List<String> errors = underTest.validateOtherContacts(colleagues);
+
+            assertThat(errors).containsExactlyInAnyOrder("Error 1", "Error 2");
+
+            verify(validateEmailService).validate(List.of("email1@test.com", "email2@test.com"), OTHER_CONTACT_KEY);
         }
 
         @Test
         void shouldReturnEmptyValidationErrorsForLocalAuthority() {
-            when(validateEmailService.validate(List.of("email1@test.com", "email2@test.com"), "Colleague"))
+            when(validateEmailService.validate(List.of("email1@test.com", "email2@test.com"), OTHER_CONTACT_KEY))
                 .thenReturn(emptyList());
 
-            final List<String> actualErrors = underTest.validateColleagues(colleagues);
+            final List<String> actualErrors = underTest.validateOtherContacts(colleagues);
 
             assertThat(actualErrors).isEmpty();
 
-            verify(validateEmailService).validate(List.of("email1@test.com", "email2@test.com"), "Colleague");
-        }
-    }
-
-    @Nested
-    class MainContact {
-
-        @Test
-        void shouldSetMainContactFromUserSelectionWhenMultipleContacts() {
-            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
-                .fullName("1")
-                .mainContact("Yes")
-                .build());
-            final Element<Colleague> colleague2 = element(randomUUID(), Colleague.builder()
-                .fullName("2")
-                .mainContact("No")
-                .build());
-            final Element<Colleague> colleague3 = element(randomUUID(), Colleague.builder()
-                .fullName("3")
-                .mainContact("No")
-                .build());
-
-            final DynamicList expectedDynamicList = buildDynamicList(1,
-                Pair.of(colleague1.getId(), "1"),
-                Pair.of(colleague2.getId(), "2"),
-                Pair.of(colleague3.getId(), "3"));
-
-            final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-                .localAuthorityColleagues(List.of(colleague1, colleague2, colleague3))
-                .localAuthorityColleaguesList(expectedDynamicList)
-                .build();
-
-            final List<Element<Colleague>> colleagues = underTest.updateMainContact(eventData);
-
-            assertThat(colleagues).containsExactly(
-                element(colleague1.getId(), Colleague.builder().fullName("1").mainContact("No").build()),
-                element(colleague2.getId(), Colleague.builder().fullName("2").mainContact("Yes").build()),
-                element(colleague3.getId(), Colleague.builder().fullName("3").mainContact("No").build()));
-        }
-
-        @Test
-        void shouldNotSetMainContactWhenMultipleColleaguesAndUsedDidNotSelectAny() {
-            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
-                .fullName("1")
-                .build());
-            final Element<Colleague> colleague2 = element(randomUUID(), Colleague.builder()
-                .fullName("2")
-                .build());
-            final Element<Colleague> colleague3 = element(randomUUID(), Colleague.builder()
-                .fullName("3")
-                .build());
-
-            final DynamicList expectedDynamicList = buildDynamicList(
-                Pair.of(colleague1.getId(), "1"),
-                Pair.of(colleague2.getId(), "2"),
-                Pair.of(colleague3.getId(), "3"));
-
-            final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-                .localAuthorityColleagues(List.of(colleague1, colleague2, colleague3))
-                .localAuthorityColleaguesList(expectedDynamicList)
-                .build();
-
-            final List<Element<Colleague>> colleagues = underTest.updateMainContact(eventData);
-
-            assertThat(colleagues).containsExactly(
-                element(colleague1.getId(), Colleague.builder().fullName("1").mainContact("No").build()),
-                element(colleague2.getId(), Colleague.builder().fullName("2").mainContact("No").build()),
-                element(colleague3.getId(), Colleague.builder().fullName("3").mainContact("No").build()));
-        }
-
-        @Test
-        void shouldSetSingleColleagueAsMainContact() {
-            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
-                .fullName("1")
-                .build());
-
-            final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-                .localAuthorityColleagues(List.of(colleague1))
-                .build();
-
-            final List<Element<Colleague>> colleagues = underTest.updateMainContact(eventData);
-
-            assertThat(colleagues).containsExactly(
-                element(colleague1.getId(), Colleague.builder().fullName("1").mainContact("Yes").build()));
-        }
-
-        @Test
-        void shouldDoNothingWhenNoContactsAvailable() {
-
-            final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-                .localAuthorityColleagues(emptyList())
-                .build();
-
-            final List<Element<Colleague>> colleagues = underTest.updateMainContact(eventData);
-
-            assertThat(colleagues).isEmpty();
-        }
-    }
-
-    @Nested
-    class ContactList {
-
-        @Test
-        void shouldBuildListOfContactsFromMultipleColleagues() {
-            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
-                .fullName("1")
-                .build());
-            final Element<Colleague> colleague2 = element(randomUUID(), Colleague.builder()
-                .fullName("2")
-                .build());
-            final Element<Colleague> colleague3 = element(randomUUID(), Colleague.builder()
-                .fullName("3")
-                .build());
-
-            final DynamicList expectedDynamicList = buildDynamicList(
-                Pair.of(colleague1.getId(), "1"),
-                Pair.of(colleague2.getId(), "2"),
-                Pair.of(colleague3.getId(), "3"));
-
-            DynamicList actualContactList = underTest.buildContactsList(List.of(colleague1, colleague2, colleague3));
-
-            assertThat(actualContactList).isEqualTo(expectedDynamicList);
-        }
-
-        @Test
-        void shouldBuildListOfContactsFromMultipleColleaguesWithMainContact() {
-            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
-                .fullName("1")
-                .build());
-            final Element<Colleague> colleague2 = element(randomUUID(), Colleague.builder()
-                .fullName("2")
-                .mainContact("Yes")
-                .build());
-            final Element<Colleague> colleague3 = element(randomUUID(), Colleague.builder()
-                .fullName("3")
-                .build());
-
-            final DynamicList expectedDynamicList = buildDynamicList(1,
-                Pair.of(colleague1.getId(), "1"),
-                Pair.of(colleague2.getId(), "2"),
-                Pair.of(colleague3.getId(), "3"));
-
-            DynamicList actualContactList = underTest.buildContactsList(List.of(colleague1, colleague2, colleague3));
-
-            assertThat(actualContactList).isEqualTo(expectedDynamicList);
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        void shouldBuildEmptyListOfContact(List<Element<Colleague>> colleagues) {
-
-            final DynamicList expectedDynamicList = buildDynamicList();
-
-            DynamicList actualContactList = underTest.buildContactsList(colleagues);
-
-            assertThat(actualContactList).isEqualTo(expectedDynamicList);
+            verify(validateEmailService).validate(List.of("email1@test.com", "email2@test.com"), OTHER_CONTACT_KEY);
         }
     }
 
@@ -910,14 +770,13 @@ class ApplicantLocalAuthorityServiceTest {
                 .email("la@test.com")
                 .build();
 
-            final List<Element<Colleague>> colleagues = wrapElements(
-                Colleague.builder()
-                    .fullName("John Smith")
-                    .build());
+            final Colleague colleague = Colleague.builder()
+                .fullName("John Smith")
+                .build();
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
                 .localAuthority(localAuthority)
-                .localAuthorityColleagues(colleagues)
+                .applicantContactOthers(wrapElements(colleague))
                 .build();
 
             final OrganisationPolicy organisationPolicy = organisationPolicy(localAuthority.getId(), "LA", LASOLICITOR);
@@ -930,7 +789,10 @@ class ApplicantLocalAuthorityServiceTest {
 
             final LocalAuthority expectedLocalAuthority = localAuthority.toBuilder()
                 .designated("Yes")
-                .colleagues(colleagues)
+                .colleagues(wrapElements(colleague.toBuilder()
+                    .mainContact(NO.getValue())
+                    .notificationRecipient(YES.getValue())
+                    .build()))
                 .build();
 
             assertThat(localAuthorities)
@@ -1008,7 +870,7 @@ class ApplicantLocalAuthorityServiceTest {
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
                 .localAuthority(updatedLocalAuthority)
-                .localAuthorityColleagues(updatedColleagues)
+                .applicantContactOthers(updatedColleagues)
                 .build();
 
             final CaseData caseData = CaseData.builder()
@@ -1021,6 +883,42 @@ class ApplicantLocalAuthorityServiceTest {
                 existingLocalAuthority1,
                 element(existingLocalAuthority2.getId(), updatedLocalAuthority));
 
+        }
+
+        @Test
+        void shouldSetMainContactOfApplicant() {
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .id("ORG1")
+                .name("LA")
+                .email("la@test.com")
+                .build();
+
+            final Colleague mainContact = Colleague.builder().fullName("Main Contact").build();
+            final Colleague otherContact = Colleague.builder().fullName("Other Contact")
+                .role(SOLICITOR).build();
+
+            final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
+                .localAuthority(localAuthority)
+                .applicantContact(mainContact)
+                .applicantContactOthers(wrapElements(otherContact))
+                .build();
+
+            final OrganisationPolicy organisationPolicy = organisationPolicy(localAuthority.getId(), "LA", LASOLICITOR);
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy)
+                .build();
+
+            final List<Element<LocalAuthority>> localAuthorities = underTest.save(caseData, eventData);
+
+            final List<Colleague> expectedColleague = List.of(
+                mainContact.toBuilder().mainContact(YES.getValue()).notificationRecipient(YES.getValue()).build(),
+                otherContact.toBuilder().mainContact(NO.getValue()).notificationRecipient(YES.getValue()).build()
+            );
+
+            LocalAuthority actualLocalAuthority = localAuthorities.get(0).getValue();
+            assertThat(unwrapElements(actualLocalAuthority.getColleagues()))
+                .containsExactlyInAnyOrderElementsOf(expectedColleague);
         }
     }
 
@@ -1324,6 +1222,85 @@ class ApplicantLocalAuthorityServiceTest {
                 .build();
 
             assertThat(underTest.isApplicantOrOnBehalfOfOrgId(orgId, caseData)).isFalse();
+        }
+    }
+
+    @Nested
+    class GetContact {
+        private static final Element<Colleague> MAIN_CONTACT =
+            element(Colleague.builder().firstName("Main").lastName("contact").mainContact(YES.getValue()).build());
+        private static final Element<Colleague> OTHER_CONTACT =
+            element(Colleague.builder().firstName("Main").lastName("contact").mainContact(NO.getValue()).build());
+        private static final LocalAuthority LOCAL_AUTHORITY = LocalAuthority.builder()
+            .colleagues(List.of(MAIN_CONTACT, OTHER_CONTACT)).build();
+
+        @Test
+        void shouldReturnMainContactOfLocalAuthority() {
+            Colleague actualMainContact = underTest.getMainContact(LOCAL_AUTHORITY);
+            assertThat(actualMainContact).isEqualTo(MAIN_CONTACT.getValue());
+        }
+
+        @Test
+        void shouldReturnOtherContactsOfLocalAuthority() {
+            List<Element<Colleague>> actualOtherContacts = underTest.getOtherContact(LOCAL_AUTHORITY);
+            assertThat(actualOtherContacts).containsExactly(OTHER_CONTACT);
+        }
+
+        @Test
+        void shouldMigrateMainContactFromLegacyColleague() {
+            Colleague legacyColleague = Colleague.builder()
+                .role(ColleagueRole.SOCIAL_WORKER)
+                .fullName("Legacy")
+                .email("test@test.com")
+                .phone("123456789")
+                .alternativePhone("000000000")
+                .dx("dx no.")
+                .reference("reference no.")
+                .notificationRecipient(YES.getValue())
+                .mainContact(YES.getValue())
+                .build();
+
+            Colleague actualMainContact = underTest.getMainContact(
+                LocalAuthority.builder().colleagues(List.of(element(legacyColleague), OTHER_CONTACT)).build());
+
+            assertThat(actualMainContact).isEqualTo(legacyColleague.toBuilder()
+                .role(ColleagueRole.OTHER)
+                .title(ColleagueRole.SOCIAL_WORKER.getLabel())
+                .dx(null)
+                .fullName(null)
+                .firstName(legacyColleague.getFullName())
+                .reference(null)
+                .notificationRecipient(null)
+                .build());
+        }
+
+        @Test
+        void shouldMigrateOtherContactFromLegacyColleague() {
+            Colleague legacyColleague = Colleague.builder()
+                .role(ColleagueRole.OTHER)
+                .title("Other title")
+                .fullName("Legacy")
+                .email("test@test.com")
+                .phone("123456789")
+                .alternativePhone("000000000")
+                .dx("dx no.")
+                .reference("reference no.")
+                .notificationRecipient(YES.getValue())
+                .mainContact(NO.getValue())
+                .build();
+
+            List<Element<Colleague>> actualOtherContacts = underTest.getOtherContact(
+                LocalAuthority.builder().colleagues(List.of(MAIN_CONTACT, element(legacyColleague))).build());
+
+            assertThat(actualOtherContacts.get(0).getValue()).isEqualTo(legacyColleague.toBuilder()
+                .firstName(legacyColleague.getFullName())
+                .fullName(null)
+                .dx(null)
+                .reference(null)
+                .notificationRecipient(null)
+                .phone(null)
+                .alternativePhone(null)
+                .build());
         }
     }
 }

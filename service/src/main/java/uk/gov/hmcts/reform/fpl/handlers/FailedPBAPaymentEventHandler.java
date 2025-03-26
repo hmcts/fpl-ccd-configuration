@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
@@ -34,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FailedPBAPaymentEventHandler {
@@ -42,6 +45,7 @@ public class FailedPBAPaymentEventHandler {
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final FailedPBAPaymentContentProvider notificationContent;
     private final WorkAllocationTaskService workAllocationTaskService;
+    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void notifyApplicant(FailedPBAPaymentEvent event) {
@@ -142,19 +146,23 @@ public class FailedPBAPaymentEventHandler {
 
     @EventListener
     public void notifyCTSC(FailedPBAPaymentEvent event) {
-        CaseData caseData = event.getCaseData();
+        if (featureToggleService.isWATaskEmailsEnabled()) {
+            CaseData caseData = event.getCaseData();
 
-        FailedPBANotificationData parameters = notificationContent.getCtscNotifyData(caseData,
-            event.getApplicationTypes(), event.getApplicant().getName());
+            FailedPBANotificationData parameters = notificationContent.getCtscNotifyData(caseData,
+                event.getApplicationTypes(), event.getApplicant().getName());
 
-        String email = ctscEmailLookupConfiguration.getEmail();
+            String email = ctscEmailLookupConfiguration.getEmail();
 
-        if (event.getApplicationTypes().contains(ApplicationType.C110A_APPLICATION)) {
-            notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
-                caseData.getId());
+            if (event.getApplicationTypes().contains(ApplicationType.C110A_APPLICATION)) {
+                notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
+                    caseData.getId());
+            } else {
+                notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
+                    caseData.getId());
+            }
         } else {
-            notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
-                caseData.getId());
+            log.info("WA EMAIL SKIPPED - failed payment - {}", event.getCaseData().getId());
         }
     }
 

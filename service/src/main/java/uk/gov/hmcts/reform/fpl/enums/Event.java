@@ -14,8 +14,8 @@ public enum Event {
     FACTORS_AFFECTING_PARENTING("enterParentingFactors", "Factors affecting parenting"),
     ////TO DO remove when toggling on FPLA-768
     DOCUMENTS("uploadDocuments", "Upload documents"),
-    ORGANISATION_DETAILS("enterApplicant", "Applicant's details"),
-    LOCAL_AUTHORITY_DETAILS("enterLocalAuthority", "Applicant's details"),
+    APPLICANT_DETAILS_LA("enterApplicantDetailsLA", "Applicant's details"),
+    APPLICANT_DETAILS_THIRD_PARTY("enterThirdPartyApplicantDetails", "Applicant's details"),
     CHILDREN("enterChildren", "Child's details"),
     RESPONDENTS("enterRespondents", "Respondents' details"),
     ALLOCATION_PROPOSAL("otherProposal", "Allocation proposal"),
