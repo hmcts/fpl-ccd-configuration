@@ -5,8 +5,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "orderType",
-    "EventElementLabel": "*Which orders do you need?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Which orders are you asking for?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -22,8 +22,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "epoType",
-    "EventElementLabel": "*What type of EPO are you requesting?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "What type of EPO are you requesting?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -31,15 +31,15 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "address",
-    "EventElementLabel": "*Address",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Address",
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "address.AddressLine1",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "Orders",
@@ -60,28 +60,28 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "address.PostTown",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "address.County",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "address.PostCode",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "address.Country",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -90,6 +90,7 @@
     "CaseFieldID": "orders",
     "ListElementCode": "emergencyProtectionOrders",
     "FieldTypeParameter": "EmergencyProtectionOrderType",
+    "EventHintText": "Select all that apply",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -98,8 +99,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "emergencyProtectionOrderDetails",
-    "EventElementLabel": "*Give details",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Give details",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -108,6 +109,7 @@
     "CaseFieldID": "orders",
     "ListElementCode": "emergencyProtectionOrderDirections",
     "FieldTypeParameter": "EmergencyProtectionOrderDirectionType",
+    "EventHintText": "Select all that apply",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -116,8 +118,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "excluded",
-    "EventElementLabel": "*Who's excluded?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Who is excluded?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -125,8 +127,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "emergencyProtectionOrderDirectionDetails",
-    "EventElementLabel": "*Give details",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Give details",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -134,7 +136,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "otherOrderLabel",
-    "EventElementLabel": "## Variation or discharge of care or supervision order",
+    "EventElementLabel": "## Variation of supervision order or discharge of care order",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -143,8 +145,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "otherOrder",
-    "EventElementLabel": "*Which order do you need?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Which order do you need?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -161,7 +163,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "childAssessmentOrderAssessmentDirections",
-    "EventElementLabel": "The direction(s) sought in respect of the assessment",
+    "EventElementLabel": "The directions sought in respect of the assessment",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -170,15 +172,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "childAssessmentOrderContactDirections",
-    "EventElementLabel": "The direction(s) sought in respect of contact",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Orders",
-    "CaseEventID": "ordersNeeded",
-    "CaseFieldID": "orders",
-    "ListElementCode": "directionLabel",
+    "EventElementLabel": "The directions sought in respect of contact",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -187,8 +181,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "directions",
-    "EventElementLabel": "*Do you need any other directions?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Do you need any other directions?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -196,8 +190,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "directionDetails",
-    "EventElementLabel": "*Give details",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Please provide more details",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -213,8 +207,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "secureAccommodationOrderSection",
-    "EventElementLabel": "*Under which section are you applying?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Under which section are you applying?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -222,8 +216,8 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "court",
-    "EventElementLabel": "*Which court are you issuing for?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Which court are you issuing for?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -240,7 +234,7 @@
     "CaseFieldID": "orders",
     "ListElementCode": "childRecoveryOrderDirectionsAppliedFor",
     "EventElementLabel": "The orders and directions applied for",
-    "EventHintText": "State whether the child(ren) (is) (are) to be produced to an authorised person specified by the court (Section 50(7) Children Act 1989) AND whether you require the court to authorise a constable to enter specified premises (Section50(3)(d) Children Act 1989).",
+    "EventHintText": "State whether each child to be produced to an authorised person specified by the court (Section 50(7) Children Act 1989) AND whether you require the court to authorise a constable to enter specified premises (Section 50(3)(d) Children Act 1989).",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -248,16 +242,9 @@
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
-    "ListElementCode": "particularsOfChildrenHeader",
-    "DisplayContext": "READONLY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Orders",
-    "CaseEventID": "ordersNeeded",
-    "CaseFieldID": "orders",
     "ListElementCode": "particularsOfChildren",
-    "EventElementLabel": "State whether the child[ren] [is] [are]",
+    "EventElementLabel": "State whether the child or children are",
+    "EventHintText": "Select all that apply",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -266,7 +253,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "particularsOfChildrenDetails",
-    "EventElementLabel": "If a child’s identity is not known, state details that will identify the child. You may enclose a recent photograph of the child in upload documents section, which should be dated.",
+    "EventElementLabel": "If a child's identity is not known, state details that will identify the child. You may enclose a recent photograph of the child in upload documents section, which should be dated",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -283,7 +270,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "educationSupervisionOrderDirectionsAppliedFor",
-    "EventElementLabel": "The order and direction(s) applied for",
+    "EventElementLabel": "The orders and directions applied for",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -292,7 +279,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "educationSupervisionOrderPriorConsultationOtherLA",
-    "EventElementLabel": "State the name of any other local authority which has been consulted:",
+    "EventElementLabel": "State the name of any other local authority which has been consulted",
     "DisplayContext": "OPTIONAL"
   },
   {

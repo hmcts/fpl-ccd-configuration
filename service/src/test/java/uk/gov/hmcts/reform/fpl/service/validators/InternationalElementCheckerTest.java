@@ -72,78 +72,24 @@ class InternationalElementCheckerTest {
             InternationalElement.builder().build(),
 
             completedInternationalElement()
-                .possibleCarer(null)
+                .whichCountriesInvolved(null)
                 .build(),
             completedInternationalElement()
-                .possibleCarer("")
-                .build(),
-            completedInternationalElement()
-                .possibleCarer("Yes")
-                .possibleCarerReason(null)
-                .build(),
-            completedInternationalElement()
-                .possibleCarer("Yes")
-                .possibleCarerReason("")
+                .whichCountriesInvolved("")
                 .build(),
 
             completedInternationalElement()
-                .significantEvents(null)
+                .outsideHagueConvention(null)
                 .build(),
             completedInternationalElement()
-                .significantEvents("")
-                .build(),
-            completedInternationalElement()
-                .significantEvents("Yes")
-                .significantEventsReason(null)
-                .build(),
-            completedInternationalElement()
-                .significantEvents("Yes")
-                .significantEventsReason("")
+                .outsideHagueConvention("")
                 .build(),
 
             completedInternationalElement()
-                .issues(null)
+                .importantDetails(null)
                 .build(),
             completedInternationalElement()
-                .issues("")
-                .build(),
-            completedInternationalElement()
-                .issues("Yes")
-                .issuesReason(null)
-                .build(),
-            completedInternationalElement()
-                .issues("Yes")
-                .issuesReason("")
-                .build(),
-
-            completedInternationalElement()
-                .proceedings(null)
-                .build(),
-            completedInternationalElement()
-                .proceedings("")
-                .build(),
-            completedInternationalElement()
-                .proceedings("Yes")
-                .proceedingsReason(null)
-                .build(),
-            completedInternationalElement()
-                .proceedings("Yes")
-                .proceedingsReason("")
-                .build(),
-
-            completedInternationalElement()
-                .internationalAuthorityInvolvement(null)
-                .build(),
-            completedInternationalElement()
-                .internationalAuthorityInvolvement("")
-                .build(),
-            completedInternationalElement()
-                .internationalAuthorityInvolvement("Yes")
-                .internationalAuthorityInvolvementDetails(null)
-                .build(),
-            completedInternationalElement()
-                .internationalAuthorityInvolvement("Yes")
-                .internationalAuthorityInvolvementDetails("")
+                .importantDetails("")
                 .build()
 
         ).map(Arguments::of);
@@ -152,11 +98,9 @@ class InternationalElementCheckerTest {
     private static Stream<Arguments> completeInternationalElement() {
         return Stream.of(
             InternationalElement.builder()
-                .issues("No")
-                .proceedings("No")
-                .possibleCarer("No")
-                .significantEvents("No")
-                .internationalAuthorityInvolvement("No")
+                .whichCountriesInvolved("Test")
+                .outsideHagueConvention("No")
+                .importantDetails("Test")
                 .build(),
             completedInternationalElement()
                 .build()
@@ -165,15 +109,8 @@ class InternationalElementCheckerTest {
 
     private static InternationalElement.InternationalElementBuilder completedInternationalElement() {
         return InternationalElement.builder()
-            .issues("Yes")
-            .issuesReason("Test")
-            .proceedings("Yes")
-            .proceedingsReason("Test")
-            .possibleCarer("Yes")
-            .possibleCarerReason("Test")
-            .significantEvents("Yes")
-            .significantEventsReason("Test")
-            .internationalAuthorityInvolvement("Yes")
-            .internationalAuthorityInvolvementDetails("Test");
+            .whichCountriesInvolved("Test")
+            .outsideHagueConvention("Yes")
+            .importantDetails("Test");
     }
 }

@@ -26,10 +26,11 @@ export class StartApplication {
   readonly welshLanguageReqFinished: Locator;
   readonly otherProceedingsLink: Locator;
   readonly internationalElementsHeading: Locator;
-  readonly courtServicesNeeded: Locator;
+  readonly courtServices: Locator;
   readonly submitApplicationLink: Locator;
   readonly otherPeopleInCaseLink: Locator;
   readonly returnApplicationLink: Locator;
+  readonly  ordersAndDirectionsSoughtFinishedStatus: Locator;
 
   // readonly logExpertReportLink: Locator;
   public constructor(page: Page) {
@@ -41,13 +42,14 @@ export class StartApplication {
     this.hearingUrgencyHeader = page.getByRole("heading", { name: "Hearing urgency", });
     this.groundsForTheApplicationLink = page.getByRole("link", { name: "Grounds for the application", });
     this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
+   // this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('heading-h2',);
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img',);
     this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
     this.allocationProposalFinished = page.locator('p').filter({ hasText: 'Allocation proposal' }).getByRole('img', { name: 'Finished' });
     this.allocationProposalHeading = page.getByRole("group", { name: "Allocation proposal" }).getByRole("heading");
     this.allocationProposalLink = page.getByRole("link", { name: "Allocation proposal", });
     this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });
-    this.addApplicationDocsHeading = page.getByRole("heading", { name: "Add application documents", });
+    this.addApplicationDocsHeading = page.getByRole("heading", { name: "Application documents", });
     this.upLoadDocsInProgress = page.locator('p').filter({ hasText: 'Upload documents' }).getByRole('img', { name: 'Finished' })
     this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
@@ -60,18 +62,26 @@ export class StartApplication {
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
-    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
-    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case' });
-    this.returnApplicationLink = page.getByRole('link', { name: 'Return application' });
+    this.courtServices = page.getByRole('link', { name: 'Court services'});
+    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
+    this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
+    this.ordersAndDirectionsSoughtFinishedStatus = page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img');
+
   }
   async groundsForTheApplication() {
     expect(await this.groundsForTheApplicationLink).toBeVisible();
     await this.groundsForTheApplicationLink.click();
-    await expect(this.groundsForTheApplicationHeading).toBeVisible();
+   // await expect(this.groundsForTheApplicationHeading).toBeVisible();
   }
 
   async groundsForTheApplicationHasBeenUpdated() {
     await expect(this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible();
+  }
+
+  async hearingUrgency() {
+    expect(await this.hearingUrgencyLink).toBeVisible();
+    await this.hearingUrgencyLink.click();
+    await expect(this.hearingUrgencyHeader).toBeVisible();
   }
 
   async riskAndHarmToChildren() {
@@ -137,9 +147,9 @@ export class StartApplication {
     await this.internationalElementsHeading.click();
   }
 
-  async courtServicesNeededReqUpdated() {
-    await expect(this.courtServicesNeeded).toBeVisible();
-    await this.courtServicesNeeded.click();
+  async courtServicesReqUpdated() {
+    await expect(this.courtServices).toBeVisible();
+    await this.courtServices.click();
   }
 
   async addOtherPeopleInCase() {

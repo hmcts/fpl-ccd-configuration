@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.ReturnedCaseContentProvider;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -39,6 +41,9 @@ class AmendedReturnedCaseEventHandlerTest {
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private AmendedReturnedCaseEventHandler amendedReturnedCaseEventHandler;
 
@@ -49,6 +54,8 @@ class AmendedReturnedCaseEventHandlerTest {
 
     @Test
     void shouldSendEmailToCourtAdmin() {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
+
         final String expectedEmail = "test@test.com";
         final CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
@@ -73,6 +80,28 @@ class AmendedReturnedCaseEventHandlerTest {
         verify(returnedCaseContentProvider).parametersWithCaseUrl(caseData);
         verify(courtService).getCourtEmail(caseData);
     }
+
+    @Test
+    void shouldNotSendEmailToCourtAdminIfToggleOff() {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
+
+        final String expectedEmail = "test@test.com";
+        final CaseData caseData = CaseData.builder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .id(RandomUtils.nextLong())
+            .build();
+        final ReturnedCaseTemplate expectedTemplate = ReturnedCaseTemplate.builder().build();
+        final AmendedReturnedCaseEvent amendedReturnedCaseEvent = new AmendedReturnedCaseEvent(caseData);
+
+        amendedReturnedCaseEventHandler.notifyAdmin(amendedReturnedCaseEvent);
+
+        verify(notificationService, never()).sendEmail(
+            AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE,
+            expectedEmail,
+            expectedTemplate,
+            caseData.getId());
+    }
+
 
     @Test
     void shouldSendEmailToCafcass() {

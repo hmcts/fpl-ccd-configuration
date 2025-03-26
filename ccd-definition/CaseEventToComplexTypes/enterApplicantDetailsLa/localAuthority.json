@@ -1,0 +1,122 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "name",
+    "EventElementLabel": "Applicant's name",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "email",
+    "EventElementLabel": "Group email address",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "pbaNumber",
+    "EventElementLabel": "PBA number",
+    "EventHintText": "For example, PBA1234567",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "applicationDetailsLabel",
+    "EventElementLabel": "<h2>Application details</h2>",
+    "DisplayContext": "READONLY",
+    "FieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "customerReference",
+    "EventElementLabel": "Customer reference",
+    "EventHintText": "Add a meaningful reference to help with your reconciliation of accounts",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "legalTeamManager",
+    "EventElementLabel": "Name of the person who will sign the statement of truth on the C110A",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 8
+  },
+  {
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address",
+    "EventElementLabel": "Applicant address",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 9
+  },
+  {
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.AddressLine1",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.County",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.PostCode",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.Country",
+    "DisplayContext": "OPTIONAL"
+  }
+]

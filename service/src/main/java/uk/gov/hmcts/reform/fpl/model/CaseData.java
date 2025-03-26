@@ -173,6 +173,14 @@ public class CaseData extends CaseDataParent {
     private OutsourcingType outsourcingType;
     private RepresentativeType representativeType;
     private YesNo isLocalAuthority;
+
+    @JsonIgnore
+    public boolean checkIfCaseIsSubmittedByLA() {
+        // isLocalAuthority is set to No if submitted by solicitor user and act as respondent / child solicitor
+        // otherwise, it could be null or Yes
+        return RepresentativeType.LOCAL_AUTHORITY.equals(representativeType);
+    }
+
     private Object outsourcingLAs;
     private String relatingLA;
     private Court court;
@@ -308,6 +316,7 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
+    private final List<Element<Guardian>> guardians;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
@@ -1197,6 +1206,13 @@ public class CaseData extends CaseDataParent {
     public boolean isChildRecoveryOrder() {
         return ofNullable(getOrders())
             .map(Orders::isChildRecoveryOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isChildAssessmentOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildAssessmentOrder)
             .orElse(false);
     }
 
