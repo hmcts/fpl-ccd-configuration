@@ -120,26 +120,9 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run2713(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1734095429043780L, "DFPL-2713");
 
-        List<Element<ChangeOfRepresentation>> changes = caseData.getChangeOfRepresentatives();
-        List<Element<ChangeOfRepresentation>> after = changes.stream().map(element -> {
-            ChangeOfRepresentation value = element.getValue();
-            if (element.getId().equals(UUID.fromString("673396a8-dcba-451e-a4df-5a2162ac2828"))) {
-                element.setValue(value.toBuilder()
-                        .child(value.getChild().substring(0, 7))
-                    .build());
-            } else if (element.getId().equals(UUID.fromString("64e99c83-6eb3-48f7-8ba6-2de983af1a8d"))) {
-                element.setValue(value.toBuilder()
-                    .child(value.getChild().substring(0, 9))
-                    .build());
-            }
-            return element;
-        }).toList();
-
-        caseDetails.getData().put("changeOfRepresentatives", after);
+        caseDetails.getData().remove("noticeOfProceedingsBundle");
     }
 
 }
