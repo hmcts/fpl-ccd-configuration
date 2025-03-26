@@ -53,7 +53,7 @@ public class CafcassApiSearchCaseServiceTest {
                 TermQuery.of("data.court.regionId", "7")))
             .build())
         .filter(Filter.builder()
-            .clauses(List.of(RangeQuery.builder().field("last_modified")
+            .clauses(List.of(RangeQuery.builder().field("data.lastGenuineUpdateTimed")
                 .greaterThanOrEqual(SEARCH_START_DATE).lessThanOrEqual(SEARCH_END_DATE).build()))
             .build())
         .build();
@@ -201,7 +201,7 @@ public class CafcassApiSearchCaseServiceTest {
                     TermQuery.of("data.court.regionId", "7")))
                 .build())
             .filter(Filter.builder()
-                .clauses(List.of(RangeQuery.builder().field("last_modified")
+                .clauses(List.of(RangeQuery.builder().field("data.lastGenuineUpdateTimed")
                     .greaterThanOrEqual(SEARCH_START_DATE).lessThanOrEqual(SEARCH_END_DATE).build()))
                 .build())
             .must(Must.builder()
