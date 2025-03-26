@@ -279,7 +279,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             .outsourcingPolicy(OrganisationPolicy.builder()
                 .organisation(Organisation.builder().organisationID(OLD_ORG_ID).build())
                 .build())
-            .changeOrganisationRequestField(getChangeOrganisationRequest("[EPSMANAGING]"))
+            .changeOrganisationRequestField(getChangeOrganisationRequest("[APPSOLICITOR]"))
             .build();
 
         CaseData caseData = caseDataBefore.toBuilder()

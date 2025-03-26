@@ -261,7 +261,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
 
         final ChangeOrganisationRequest changeRequest = ChangeOrganisationRequest.builder()
             .organisationToAdd(NEW_ORGANISATION)
-            .caseRoleId(caseRoleDynamicList("[EPSMANAGING]"))
+            .caseRoleId(caseRoleDynamicList("[APPSOLICITOR]"))
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -269,7 +269,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
             .changeOrganisationRequestField(changeRequest)
             .outsourcingPolicy(OrganisationPolicy.builder()
                 .organisation(OLD_ORGANISATION)
-                .orgPolicyCaseAssignedRole("[EPSMANAGING]")
+                .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
                 .build())
             .localAuthorities(List.of(element(LocalAuthority.builder()
                 .id("ORG123")
