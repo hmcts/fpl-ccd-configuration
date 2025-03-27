@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
+import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C1;
@@ -91,5 +92,18 @@ public class CaseSubmissionService {
 
     public String getSigneeName(CaseData caseData) {
         return documentGenerationService.getSigneeName(caseData);
+    }
+
+    public String generateCaseName(CaseData caseData) {
+        String applicantNames = String.join(", ", caseData.getLocalAuthorities().stream()
+            .map(localAuthority -> localAuthority.getValue().getName())
+            .toList());
+
+        String respondentNames = String.join(", ", caseData.getRespondents1().stream()
+            .map(respondent -> respondent.getValue().getParty().getLastName())
+            .distinct()
+            .toList());
+
+        return String.format("%s & %s", applicantNames, respondentNames);
     }
 }

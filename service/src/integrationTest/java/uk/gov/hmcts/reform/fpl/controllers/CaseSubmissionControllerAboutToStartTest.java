@@ -65,6 +65,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
         given(caseSubmissionService.getSigneeName(any())).willReturn("Emma Taylor");
+        given(caseSubmissionService.generateCaseName(any())).willReturn("LA & Respondent 1, Etc, Etc");
     }
 
     @Test
@@ -155,6 +156,18 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
                                 "document_filename", "file.pdf",
                                 "document_binary_url",
                                 "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
+    }
+
+
+    @Test
+    void shouldAddGeneratedCaseNameToCaseData() {
+        given(feeService.getFeesDataForOrders(any())).willReturn(feesData(10));
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData().toBuilder()
+            .caseName("Draft title")
+            .build());
+
+        assertThat(callbackResponse.getData()).containsEntry("caseName", "LA & Respondent 1, Etc, Etc");
     }
 
     private static FeesData feesData(long amount) {
