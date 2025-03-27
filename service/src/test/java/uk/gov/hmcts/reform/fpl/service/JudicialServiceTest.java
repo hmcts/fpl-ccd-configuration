@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,7 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
@@ -16,20 +14,13 @@ import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
-import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,15 +29,11 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
-import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,111 +68,10 @@ class JudicialServiceTest {
     private ElinksService elinksService;
 
     @Captor
-    private ArgumentCaptor<List<RoleAssignment>> rolesCaptor;
-
-    @Captor
     private ArgumentCaptor<RoleAssignment> roleAssignmentCaptor;
 
     @InjectMocks
     private JudicialService underTest;
-
-    @Nested
-    class Migrations {
-        private static final String JUDGE_1_ID = "judge 1 id";
-        private static final String JUDGE_2_ID = "judge 2 id";
-        private static final String JUDGE_3_ID = "judge 3 id";
-
-        private static final JudgeAndLegalAdvisor JUDGE_1 = JudgeAndLegalAdvisor.builder()
-            .judgeEmailAddress("judge1@test.com")
-            .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
-            .judgeJudicialUser(JudicialUser.builder()
-                .idamId(JUDGE_1_ID)
-                .build())
-            .build();
-
-        private static final JudgeAndLegalAdvisor JUDGE_2 = JudgeAndLegalAdvisor.builder()
-            .judgeEmailAddress("judge2@test.com")
-            .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
-            .judgeJudicialUser(JudicialUser.builder()
-                .idamId(JUDGE_2_ID)
-                .build())
-            .build();
-
-        private static final JudgeAndLegalAdvisor JUDGE_3 = JudgeAndLegalAdvisor.builder()
-            .judgeEmailAddress("judge3@test.com")
-            .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-            .otherTitle("JLA")
-            .judgeJudicialUser(JudicialUser.builder()
-                .idamId(JUDGE_3_ID)
-                .build())
-            .build();
-
-        private static final HearingBooking HEARING_1 = HearingBooking.builder()
-            .startDate(LocalDateTime.now().plusDays(5))
-            .judgeAndLegalAdvisor(JUDGE_1)
-            .build();
-
-        private static final HearingBooking HEARING_2 = HearingBooking.builder()
-            .startDate(LocalDateTime.now().plusDays(10))
-            .judgeAndLegalAdvisor(JUDGE_2)
-            .build();
-
-        private static final HearingBooking HEARING_3 = HearingBooking.builder()
-            .startDate(LocalDateTime.now().plusDays(15))
-            .judgeAndLegalAdvisor(JUDGE_3)
-            .build();
-
-        @BeforeEach
-        void beforeEach() {
-            when(systemUserService.getSysUserToken()).thenReturn(USER_TOKEN);
-            when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-
-            when(judicialUsersConfiguration.getJudgeUUID(JUDGE_1.getJudgeEmailAddress()))
-                .thenReturn(Optional.empty());
-            when(judicialUsersConfiguration.getJudgeUUID(JUDGE_2.getJudgeEmailAddress()))
-                .thenReturn(Optional.of(JUDGE_2_ID));
-            when(judicialUsersConfiguration.getJudgeUUID(JUDGE_3.getJudgeEmailAddress()))
-                .thenReturn(Optional.empty());
-
-            when(legalAdviserUsersConfiguration.getLegalAdviserUUID(JUDGE_1.getJudgeEmailAddress()))
-                .thenReturn(Optional.of(JUDGE_1_ID));
-            when(legalAdviserUsersConfiguration.getLegalAdviserUUID(JUDGE_2.getJudgeEmailAddress()))
-                .thenReturn(Optional.empty());
-            when(legalAdviserUsersConfiguration.getLegalAdviserUUID(JUDGE_3.getJudgeEmailAddress()))
-                .thenReturn(Optional.of(JUDGE_3_ID));
-
-            when(elinksService.getElinksAcceptHeader()).thenReturn("application/json");
-        }
-
-        @Test
-        void shouldGenerateRoleAssignmentsBasedOnHearingDates() {
-            CaseData caseData = CaseData.builder()
-                .id(CASE_ID)
-                .hearingDetails(wrapElements(HEARING_1, HEARING_2, HEARING_3))
-                .build();
-
-            List<RoleAssignment> roles = underTest.getHearingJudgeRolesForMigration(caseData);
-
-            verifyHearingRoleAssignments(roles);
-        }
-
-        void verifyHearingRoleAssignments(List<RoleAssignment> roles) {
-            assertThat(roles).hasSize(3);
-            assertThat(roles.get(0)).extracting("roleName", "roleCategory", "beginTime", "endTime")
-                .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
-                    HEARING_1.getStartDate().atZone(LONDON_TIMEZONE),
-                    HEARING_2.getStartDate().atZone(LONDON_TIMEZONE));
-            assertThat(roles.get(1)).extracting("roleName", "roleCategory", "beginTime", "endTime")
-                .containsExactly("hearing-judge", RoleCategory.JUDICIAL,
-                    HEARING_2.getStartDate().atZone(LONDON_TIMEZONE),
-                    HEARING_3.getStartDate().atZone(LONDON_TIMEZONE));
-            assertThat(roles.get(2)).extracting("roleName", "roleCategory", "beginTime", "endTime")
-                .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
-                    HEARING_3.getStartDate().atZone(LONDON_TIMEZONE),
-                    null);
-        }
-
-    }
 
     @Nested
     class Mapping {
@@ -251,38 +137,6 @@ class JudicialServiceTest {
 
             verifyNoMoreInteractions(roleAssignmentService);
         }
-
-        @Test
-        void shouldRemoveAndRecreateExistingHearingJudges() {
-            List<RoleAssignment> existing = Stream.of("12345", "67890")
-                .map(id -> RoleAssignment.builder()
-                    .actorId(id)
-                    .id(id)
-                    .roleName("hearing-judge")
-                    .roleCategory(RoleCategory.JUDICIAL)
-                    .build())
-                .toList();
-
-            when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
-                .thenReturn(existing);
-
-            underTest.setExistingHearingJudgesAndLegalAdvisersToExpire(12345L,
-                ZonedDateTime.now(LONDON_TIMEZONE));
-
-            verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
-            verify(roleAssignmentService, times(2)).deleteRoleAssignment(roleAssignmentCaptor.capture());
-            verify(roleAssignmentService).createRoleAssignments(rolesCaptor.capture());
-
-            assertThat(roleAssignmentCaptor.getAllValues())
-                .extracting("id")
-                .containsExactlyInAnyOrder("12345", "67890");
-
-            assertThat(rolesCaptor.getValue()).hasSize(2);
-            assertThat(rolesCaptor.getValue()).extracting("actorId")
-                .containsExactlyInAnyOrder("12345", "67890");
-
-            verifyNoMoreInteractions(roleAssignmentService);
-        }
     }
 
     @Test
@@ -342,231 +196,4 @@ class JudicialServiceTest {
 
         assertThat(judges).hasSize(1);
     }
-
-    @Test
-    void shouldDeleteSpecificHearingRole() {
-        LocalDateTime start = LocalDateTime.now();
-        HearingBooking hearing = HearingBooking.builder()
-            .startDate(start)
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeEnterManually(YesNo.NO)
-                .judgeJudicialUser(JudicialUser.builder()
-                    .idamId("idam")
-                    .build())
-                .build())
-            .build();
-
-        underTest.deleteSpecificHearingRole(12345L, hearing);
-
-        // delete the role starting at the time of the hearing (offset 5 mins into the role being active)
-        verify(roleAssignmentService).deleteRoleAssignmentOnCaseAtTime(
-            eq(12345L),
-            eq(start.plusMinutes(5).atZone(LONDON_TIMEZONE)),
-            eq("idam"),
-            eq(List.of("hearing-judge", "hearing-legal-adviser")));
-    }
-
-    @Test
-    void shouldCreateTimeUnboundHearingJudgeRoleWhenNoFutureHearing() {
-        LocalDateTime startDate = LocalDateTime.now();
-
-        HearingBooking hearing = HearingBooking.builder()
-            .startDate(startDate)
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeEnterManually(YesNo.NO)
-                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-                .judgeJudicialUser(JudicialUser.builder()
-                    .idamId("idam")
-                    .build())
-                .build())
-            .build();
-
-        underTest.assignHearingJudge(12345L, hearing, Optional.empty(), false);
-
-        verify(roleAssignmentService).assignJudgesRole(
-            12345L,
-            List.of("idam"),
-            JudgeCaseRole.HEARING_JUDGE,
-            startDate.atZone(LONDON_TIMEZONE),
-            null);
-    }
-
-    @Test
-    void shouldCreateRoleStartingNowNotStartDateIfOnlyHearing() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime hearingStart = now.plusDays(2);
-        final ZonedDateTime nowZoned = now.atZone(LONDON_TIMEZONE);
-        final ZonedDateTime hearingStartZoned = hearingStart.atZone(LONDON_TIMEZONE);
-
-        HearingBooking hearing = HearingBooking.builder()
-            .startDate(hearingStart)
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeEnterManually(YesNo.NO)
-                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-                .judgeJudicialUser(JudicialUser.builder()
-                    .idamId("idam")
-                    .build())
-                .build())
-            .build();
-
-        try (MockedStatic<ZonedDateTime> zonedStatic = mockStatic(ZonedDateTime.class)) {
-            zonedStatic.when(() -> ZonedDateTime.now(LONDON_TIMEZONE)).thenReturn(nowZoned);
-            zonedStatic.when(() -> ZonedDateTime.of(hearingStart, LONDON_TIMEZONE)).thenReturn(hearingStartZoned);
-
-            underTest.assignHearingJudge(12345L, hearing, Optional.empty(), true);
-
-            verify(roleAssignmentService).assignJudgesRole(
-                12345L,
-                List.of("idam"),
-                JudgeCaseRole.HEARING_JUDGE,
-                nowZoned,
-                null);
-        }
-    }
-
-    @Test
-    void shouldNotCreateRoleStartingNowIfStartDateInPastAndOnlyHearing() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime hearingStart = now.minusDays(2);
-        final ZonedDateTime nowZoned = now.atZone(LONDON_TIMEZONE);
-        final ZonedDateTime hearingStartZoned = hearingStart.atZone(LONDON_TIMEZONE);
-
-        HearingBooking hearing = HearingBooking.builder()
-            .startDate(hearingStart)
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeEnterManually(YesNo.NO)
-                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-                .judgeJudicialUser(JudicialUser.builder()
-                    .idamId("idam")
-                    .build())
-                .build())
-            .build();
-
-        try (MockedStatic<ZonedDateTime> zonedStatic = mockStatic(ZonedDateTime.class)) {
-            zonedStatic.when(() -> ZonedDateTime.now(LONDON_TIMEZONE)).thenReturn(nowZoned);
-            zonedStatic.when(() -> ZonedDateTime.of(now, LONDON_TIMEZONE)).thenReturn(nowZoned);
-            zonedStatic.when(() -> ZonedDateTime.of(hearingStart, LONDON_TIMEZONE)).thenReturn(hearingStartZoned);
-
-            underTest.assignHearingJudge(12345L, hearing, Optional.empty(), true);
-
-            verify(roleAssignmentService).assignJudgesRole(
-                12345L,
-                List.of("idam"),
-                JudgeCaseRole.HEARING_JUDGE,
-                hearingStartZoned,
-                null);
-        }
-    }
-
-    @Test
-    void shouldCreateTimeBoundHearingJudgeRoleWithFutureHearing() {
-        LocalDateTime now = LocalDateTime.now();
-
-        HearingBooking hearing = HearingBooking.builder()
-            .startDate(now)
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeEnterManually(YesNo.NO)
-                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-                .judgeJudicialUser(JudicialUser.builder()
-                    .idamId("idam")
-                    .build())
-                .build())
-            .build();
-
-        HearingBooking futureHearing = hearing.toBuilder()
-            .startDate(now.plusDays(2))
-            .build();
-
-        underTest.assignHearingJudge(12345L, hearing, Optional.of(futureHearing), false);
-
-        verify(roleAssignmentService).assignJudgesRole(
-            12345L,
-            List.of("idam"),
-            JudgeCaseRole.HEARING_JUDGE,
-            now.atZone(LONDON_TIMEZONE),
-            now.plusDays(2).minusMinutes(5).atZone(LONDON_TIMEZONE));
-    }
-
-    @Nested
-    class GetJudgeId {
-        @Test
-        void shouldLookupJudgeIdWhenPersonalCodeOnly() {
-            HearingBooking booking = HearingBooking.builder()
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeEnterManually(YesNo.NO)
-                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-                    .judgeJudicialUser(JudicialUser.builder()
-                        .personalCode("code")
-                        .build())
-                    .build())
-                .build();
-
-            underTest.getJudgeIdFromHearing(booking);
-
-            verify(judicialApi).findUsers(any(), any(), anyInt(),
-                any(), eq(JudicialUserRequest.fromPersonalCode("code")));
-        }
-
-        @Test
-        void shouldReturnJudgeIdWhenIdamOnly() {
-            HearingBooking booking = HearingBooking.builder()
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeEnterManually(YesNo.NO)
-                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-                    .judgeJudicialUser(JudicialUser.builder()
-                        .idamId("idam")
-                        .build())
-                    .build())
-                .build();
-
-            Optional<String> idamId = underTest.getJudgeIdFromHearing(booking);
-
-            assertThat(idamId.get()).isEqualTo("idam");
-            verifyNoInteractions(judicialApi);
-        }
-
-        @Test
-        void shouldReturnEmptyOptionalWhenNoIdamOrPersonalCode() {
-            HearingBooking booking = HearingBooking.builder()
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeEnterManually(YesNo.NO)
-                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-                    .judgeJudicialUser(JudicialUser.builder()
-                        .build())
-                    .build())
-                .build();
-
-            Optional<String> idamId = underTest.getJudgeIdFromHearing(booking);
-
-            assertThat(idamId).isEqualTo(Optional.empty());
-            verifyNoInteractions(judicialApi);
-        }
-
-        @Test
-        void shouldReturnEmptyOptionalWhenNoJudicialUser() {
-            HearingBooking booking = HearingBooking.builder()
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeEnterManually(YesNo.NO)
-                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-                    .build())
-                .build();
-
-            Optional<String> idamId = underTest.getJudgeIdFromHearing(booking);
-
-            assertThat(idamId).isEqualTo(Optional.empty());
-            verifyNoInteractions(judicialApi);
-        }
-
-        @Test
-        void shouldReturnEmptyOptionalWhenNoHearingJudge() {
-            HearingBooking booking = HearingBooking.builder()
-                .build();
-
-            Optional<String> idamId = underTest.getJudgeIdFromHearing(booking);
-
-            assertThat(idamId).isEqualTo(Optional.empty());
-            verifyNoInteractions(judicialApi);
-        }
-    }
-
 }
