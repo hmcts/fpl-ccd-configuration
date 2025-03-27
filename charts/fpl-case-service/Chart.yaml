@@ -11,8 +11,8 @@ dependencies:
     version: 5.3.0
     repository: 'oci://hmctspublic.azurecr.io/helm'
   - name: ccd
-    version: 9.2.1
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: 9.2.2
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     tags:
       - fpl-ccd-stack
   - name: xui-webapp
