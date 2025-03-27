@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
@@ -67,12 +68,17 @@ public class NoticeOfChangeFieldPopulator {
     public Map<String, Object> generateApplicantAnswer(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        // TODO: Get applicant name from case data
+        String orgId = caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
 
-        // create a NoC answer object with the first and last name present
+        LocalAuthority localAuthority = caseData.getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .filter(la -> la.getId().equals(orgId))
+            .findFirst()
+            .orElseThrow();
+
         NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder()
-            .respondentFirstName("Bilbo")
-            .respondentLastName("Baggins")
+            .respondentFirstName(localAuthority.getRepresentingDetails().getFirstName())
+            .respondentLastName(localAuthority.getRepresentingDetails().getLastName())
             .build();
 
         data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.noc;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
@@ -215,6 +217,18 @@ class NoticeOfChangeFieldPopulatorTest {
 
     @Test
     void generateApplicantAnswer() {
+        when(caseData.getOutsourcingPolicy()).thenReturn(OrganisationPolicy.builder()
+            .organisation(Organisation.builder()
+                .organisationID("ABC123")
+                .build())
+            .build());
+        when(caseData.getLocalAuthorities()).thenReturn(List.of(element(LocalAuthority.builder()
+            .id("ABC123")
+            .representingDetails(RepresentingDetails.builder()
+                .firstName("Bilbo")
+                .lastName("Baggins")
+                .build())
+            .build())));
         Map<String, Object> nocAnswers = underTest.generateApplicantAnswer(caseData);
 
         assertThat(nocAnswers.get("noticeOfChangeAnswersThirdPartyRespondent")).isEqualTo(
