@@ -179,4 +179,10 @@ export class CreateCase extends BasePage{
     async selectRepresentLA(){
         await this._representingPartyRadio.check();
   }
+
+    // async respondentSolicitorCreatCase(){
+    //     await this.respondentSolicitorUser.check();
+    //     await this.applicationFor.selectOption('Barnet Borough Hillingdon');
+    //     await this.clickContinue();
+    // }
 }

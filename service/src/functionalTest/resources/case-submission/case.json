@@ -9,10 +9,12 @@
       "beyondControl",
       "noCare"
     ],
+    "hasThresholdDocument": "NO",
     "thresholdDetails": "Details"
   },
   "hearing": {
-    "timeFrame": "Same day"
+    "hearingUrgencyType": "STANDARD",
+    "respondentsAware": "Yes"
   },
   "caseName": "Api test",
   "representativeType": "LOCAL_AUTHORITY",
@@ -48,6 +50,7 @@
         "name": "Test",
         "email": "test@test.com",
         "phone": "077766655544",
+        "customerReference": "ABC123456",
         "address": {
           "PostCode": "CR0 2GE",
           "AddressLine1": "Line 1"
@@ -59,7 +62,8 @@
             "value": {
               "role": "SOLICITOR",
               "email": "test@test.com",
-              "fullName": "Sol 1",
+              "firstName": "Sol",
+              "lastName": "1",
               "notificationRecipient": "Yes"
             }
           },
@@ -68,7 +72,9 @@
             "value": {
               "role": "OTHER",
               "title": "Solicitor",
-              "fullName": "test",
+              "firstName": "testFirst",
+              "lastName": "testLast",
+              "phone": "077766655544",
               "email": "test2@test.com",
               "notificationRecipient": "Yes",
               "mainContact": "Yes"

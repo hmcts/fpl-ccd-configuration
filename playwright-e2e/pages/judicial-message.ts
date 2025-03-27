@@ -77,10 +77,7 @@ export class JudicialMessage extends BasePage
         await this.clickContinue();
         await this.whichDocument.selectOption('Test.txt');
         await this.clickContinue();
-        await this.sender.selectOption('CTSC');
-        await this.recipient.selectOption('Allocated Judge');
-        await this.page.getByLabel('Recipient\'s email address').click();
-        await this.recipientEmail.fill('Judge@email.com');
+        await this.recipient.selectOption('Allocated Judge - Her Honour Judge Moley (moley@example.com)');
         await this.subject.fill('Message To the allocated Judge');
         await this.urgency.fill('Urgent');
         await this.message.fill('message send to allocated Judge');

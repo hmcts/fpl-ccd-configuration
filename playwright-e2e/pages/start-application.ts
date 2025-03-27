@@ -134,6 +134,16 @@ export class StartApplication extends BasePage {
         await expect(this.riskAndHarmToChildrenLink).toBeVisible();
         await this.riskAndHarmToChildrenLink.click();
     }
+  async hearingUrgency() {
+    expect(await this.hearingUrgencyLink).toBeVisible();
+    await this.hearingUrgencyLink.click();
+    await expect(this.hearingUrgencyHeader).toBeVisible();
+  }
+
+  async riskAndHarmToChildren() {
+    await expect(this.riskAndHarmToChildrenLink).toBeVisible();
+    await this.riskAndHarmToChildrenLink.click();
+  }
 
     async addApplicationDocuments() {
         await expect(this.uploadDocumentsLink).toBeVisible();
@@ -193,6 +203,10 @@ export class StartApplication extends BasePage {
         await this.internationalElementsHeading.click();
     }
 
+  async courtServicesReqUpdated() {
+    await expect(this.courtServices).toBeVisible();
+    await this.courtServices.click();
+  }
     async courtServicesNeededReqUpdated() {
         await expect(this.courtServicesNeeded).toBeVisible();
         await this.courtServicesNeeded.click();

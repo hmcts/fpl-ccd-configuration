@@ -84,7 +84,7 @@ test.describe('Non mandatory application details before application submit @sess
 
 
     test('LA add c1 application',
-        async ({startApplication, localAuthorityUser, c1WithSupplement, makeAxeBuilder}, testInfo) => {
+        async ({startApplication, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
             casename = 'c1 application  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
 

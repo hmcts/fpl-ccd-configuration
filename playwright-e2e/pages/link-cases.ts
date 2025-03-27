@@ -44,6 +44,11 @@ export class CaseLink extends BasePage {
         }
         await this.proposeLink.click();
     }
+    hypenateCaseNumber(caseNumber: string) {
+        let hypenatedCaseNumber: string;
+        hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);
+        return hypenatedCaseNumber
+    }
     async submitCaseLink() {
         this.submit.click();
     }
@@ -58,5 +63,13 @@ export class CaseLink extends BasePage {
     }
     async selectCaseToUnlink(caseNumber: string) {
         await this.page.locator(`#case-reference-${caseNumber}`).check();
+    }
+    async gotoCaseLinkNextStep(eventName: string) {
+        await expect(async () => {
+            await this.page.reload();
+            await this.nextStep.selectOption(eventName);
+            await this.goButton.click({clickCount:2,delay:300});
+            await expect(this.page.getByRole('button', { name: 'Submit' })).toBeEnabled();
+        }).toPass();
     }
 }

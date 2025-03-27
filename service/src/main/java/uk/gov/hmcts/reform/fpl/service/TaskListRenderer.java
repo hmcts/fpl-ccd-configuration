@@ -23,19 +23,18 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_THIRD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.LANGUAGE_REQUIREMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
@@ -95,20 +94,18 @@ public class TaskListRenderer {
         ofNullable(tasks.get(RISK_AND_HARM))
             .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
             .ifPresent(applicationGrounds::withTask);
-        ofNullable(tasks.get(FACTORS_AFFECTING_PARENTING))
+
+        final TaskSection documents = newSection("Application documents");
+
+        ofNullable(tasks.get(APPLICATION_DOCUMENTS))
             .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
-            .ifPresent(applicationGrounds::withTask);
+            .ifPresent(documents::withTask);
 
-        final TaskSection documents = newSection("Add application documents")
-            .withTask(tasks.get(APPLICATION_DOCUMENTS))
-            .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
-                + "you can send your application without this information ");
-
-        final TaskSection parties = newSection("Add information about the parties")
-            .withTask(tasks.containsKey(ORGANISATION_DETAILS)
-                ? tasks.get(ORGANISATION_DETAILS) : tasks.get(LOCAL_AUTHORITY_DETAILS))
-            .withTask(tasks.get(CHILDREN))
-            .withTask(tasks.get(RESPONDENTS));
+        final TaskSection parties = newSection("Add information about the parties");
+        ofNullable(tasks.get(APPLICANT_DETAILS_LA)).ifPresent(parties::withTask);
+        ofNullable(tasks.get(APPLICANT_DETAILS_THIRD_PARTY)).ifPresent(parties::withTask);
+        ofNullable(tasks.get(CHILDREN)).ifPresent(parties::withTask);
+        ofNullable(tasks.get(RESPONDENTS)).ifPresent(parties::withTask);
 
         final TaskSection courtRequirements = newSection("Add court requirements")
             .withTask(tasks.get(ALLOCATION_PROPOSAL));
