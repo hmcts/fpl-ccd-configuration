@@ -8,9 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 @Data
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
-public class HandleHearingModificationRolesEvent {
+public class SyncHearingJudgeEvent {
 
     private final CaseData caseData;
-    private final CaseData caseDataBefore;
 
 }
