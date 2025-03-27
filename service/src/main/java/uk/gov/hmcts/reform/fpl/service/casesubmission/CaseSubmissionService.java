@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
-import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C1;

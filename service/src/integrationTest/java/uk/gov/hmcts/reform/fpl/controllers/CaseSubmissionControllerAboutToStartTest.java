@@ -77,7 +77,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
             .build());
 
         assertThat(callbackResponse.getData())
-            .containsEntry("caseName", "title")
+            .containsEntry("caseName", "LA & Respondent 1, Etc, Etc")
             .containsEntry("submissionConsentLabel",
                 "I, Emma Taylor, believe that the facts stated in this application are true.");
     }
