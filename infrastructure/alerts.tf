@@ -120,8 +120,8 @@ module "fpl-executor-alert" {
   time_window_in_minutes     = "5"
   severity_level             = "3"
   action_group_name          = "${var.product}-support"
-  trigger_threshold_operator = "GreaterThanOrEqual"
-  trigger_threshold          = "10"
+  trigger_threshold_operator = "GreaterThan"
+  trigger_threshold          = "9"
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
   common_tags                = var.common_tags
