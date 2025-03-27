@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,6 +21,8 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -43,6 +46,12 @@ class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemplateTes
 
     @Autowired
     private JudicialMessageReplyEventHandler underTest;
+
+    @BeforeEach
+    void setup() {
+        given(ctscEmailLookupConfiguration.getEmail()).willReturn("ctsc@test.com");
+        given(featureToggleService.isCourtNotificationEnabledForWa(any())).willReturn(true);
+    }
 
     @Test
     void shouldNotifyJudicialMessageRecipientWhenAJudicialMessageIsReplied() {

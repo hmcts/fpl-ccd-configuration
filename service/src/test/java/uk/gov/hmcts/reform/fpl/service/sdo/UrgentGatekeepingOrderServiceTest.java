@@ -130,7 +130,7 @@ class UrgentGatekeepingOrderServiceTest {
 
         when(allocationService.createAllocationDecisionIfNull(caseData, enteredAllocation))
             .thenReturn(updatedAllocation);
-        when(updatedAllocation.getProposal()).thenReturn("some allocation level");
+        when(updatedAllocation.getProposalV2()).thenReturn("some allocation level");
 
         UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
             .order(UPLOADED_ORDER)

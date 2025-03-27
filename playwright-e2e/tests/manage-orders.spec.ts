@@ -131,7 +131,8 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('link', { name: 'c32a_care_order.pdf' })).toBeVisible();
 
         //assert the state of the case
-        await orders.tabNavigation('History');
+       // await orders.tabNavigation('History'); EXUI issue with tab lables having the hint text . it has to rollback when the issue fixed
+        await orders.page.getByRole('tab', { name: 'History',exact:true }).click();
         await expect(page.getByText('Closed', { exact: true })).toBeVisible();
 
     })

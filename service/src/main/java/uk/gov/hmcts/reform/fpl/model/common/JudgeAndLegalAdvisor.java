@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -81,11 +82,14 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     }
 
     public static JudgeAndLegalAdvisor fromJudicialUserProfile(JudicialUserProfile jup) {
+        String postNominals = isNotEmpty(jup.getPostNominals())
+            ? (" " + jup.getPostNominals())
+            : "";
         return JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.OTHER)
             .otherTitle(jup.getTitle())
-            .judgeLastName(jup.getSurname())
-            .judgeFullName(jup.getFullName())
+            .judgeLastName(jup.getSurname() + postNominals)
+            .judgeFullName(jup.getFullName() + postNominals)
             .judgeEmailAddress(jup.getEmailId())
             .judgeEnterManually(NO)
             .judgeJudicialUser(JudicialUser.builder()

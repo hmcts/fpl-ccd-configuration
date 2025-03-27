@@ -72,10 +72,16 @@ public class RespondentController extends CallbackController {
     private final NoticeOfChangeService noticeOfChangeService;
     private final RepresentableLegalCounselUpdater representableCounselUpdater;
 
+    public static final String NO_ACCESS_ERROR = "Contact the applicant or CTSC to modify respondent details.";
+
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+
+        if (!representativeService.shouldUserHaveAccessToRespondentsChildrenEvent(caseData)) {
+            return respond(caseDetails, List.of(NO_ACCESS_ERROR));
+        }
 
         caseDetails.getData().put(RESPONDENTS_KEY, confidentialDetailsService.prepareCollection(
             caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection()));

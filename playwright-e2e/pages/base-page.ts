@@ -50,11 +50,11 @@ export class BasePage {
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByRole('tab', { name: tabName,exact: true }).click();
+    await this.page.getByRole('tab', { name: tabName }).click();
   }
 
   async clickContinue() {
-    await this.continueButton.click();
+    await this.continueButton.click({});
   }
 
   async waitForAllUploadsToBeCompleted() {
@@ -94,7 +94,9 @@ export class BasePage {
   async clickSubmit() {
     await this.submit.click();
   }
-
+  async clickSaveAndContinue() {
+      await this.saveAndContinue.click();
+  }
   async enterPostCode(postcode:string){
       await this.postCode.fill(postcode);
       await this.findAddress.click();

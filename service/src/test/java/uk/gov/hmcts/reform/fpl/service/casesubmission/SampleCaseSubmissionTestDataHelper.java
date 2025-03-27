@@ -5,8 +5,8 @@ import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
-import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAllocation;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
@@ -64,11 +63,10 @@ public class SampleCaseSubmissionTestDataHelper {
                 + " significant harm if they’re not moved to accommodation provided by you, or on your behalf\n\n"
                 + "There’s reasonable cause to believe the child is likely to suffer significant harm if they don’t "
                 + "stay in their current accommodation")
-            .groundsThresholdReason("Not receiving care that would be reasonably expected "
-                + "from a parent.\nBeyond parental control.")
-            .thresholdDetails("grounds for application criteria")
+            .groundsThresholdReason("The care given to the child not being what it would be "
+                + "reasonable to expect a parent to give.\nChild is beyond parental control.")
+            .thresholdDetails("Details")
             .risks(expectedDocmosisRisks())
-            .factorsParenting(expectedDocmosisFactorsParenting())
             .proceeding(expectedDocmosisProceeding())
             .relevantProceedings("Yes")
             .build();
@@ -120,7 +118,6 @@ public class SampleCaseSubmissionTestDataHelper {
         return of(DocmosisApplicant.builder()
             .organisationName("London Borough of Southwark")
             .contactName("Jane Smith")
-            .jobTitle("Legal adviser")
             .address("160 Tooley St\nTooley road\nTooley\nLimerick\nGalway\nSE1 2QH\nIreland")
             .email("jane@smith.com")
             .mobileNumber("2020202020")
@@ -208,57 +205,47 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static DocmosisHearing expectedDocmosisHearing() {
         return DocmosisHearing.builder()
-            .typeAndReason("Contested interim care order\nReason: Standard case management hearing")
             .timeFrame("Same day\nReason: Baby will be discharged from hospital on 21 June 2018")
             .withoutNoticeDetails("Yes\nReason: Notice without hearing needed")
-            .reducedNoticeDetails("Yes\nReason: Baby needs to be discharged from the hospital")
             .respondentsAware("Yes")
             .respondentsAwareReason("They seek to care for baby in mother and baby unit")
             .build();
     }
 
-    private static Allocation expectedAllocation() {
-        return Allocation.builder()
-            .proposal("Section 9 circuit judge")
+    private static DocmosisAllocation expectedAllocation() {
+        return DocmosisAllocation.builder()
+            .proposal("Circuit judge")
             .proposalReason("allocation proposal reason")
             .build();
     }
 
     private static DocmosisHearingPreferences expectedDocmosisHearingPreferences() {
         return DocmosisHearingPreferences.builder()
-            .interpreter("Yes\ninterpreter required")
-            .welshDetails("Yes\nwelsh proceedings")
-            .intermediary("Yes\nintermediary hearing required")
-            .disabilityAssistance("Yes\nlearning disability")
-            .extraSecurityMeasures("Yes\nsecurity needed")
-            .somethingElse("Yes\nI need this from someone")
+            .interpreter("Interpreter required")
+            .intermediary("Intermediary hearing required")
+            .disabilityAssistance("Learning disability")
+            .extraSecurityMeasures("Separate waiting room required")
+            .somethingElse("I need this from someone")
             .build();
     }
 
     private static DocmosisInternationalElement expectedDocmosisInternationalElement() {
         return DocmosisInternationalElement.builder()
-            .possibleCarer("Yes\nAunt outside UK")
-            .significantEvents("Yes\nSomething happened in France")
-            .proceedings("Yes\nOutside of the UK")
-            .internationalAuthorityInvolvement("Yes\nFrench authorities were involved")
-            .issues("Yes\nBrussels 2 regulation")
+            .whichCountriesInvolved("Italy, Spain, France")
+            .outsideHagueConvention("Yes")
+            .importantDetails("Something happened in France")
             .build();
     }
 
     private static DocmosisRisks expectedDocmosisRisks() {
         return DocmosisRisks.builder()
-            .neglectDetails("Yes\nPast harm\nFuture risk of harm")
-            .sexualAbuseDetails("Yes\nPast harm\nFuture risk of harm")
-            .physicalHarmDetails("Yes\nPast harm\nFuture risk of harm")
-            .emotionalHarmDetails("Yes\nPast harm\nFuture risk of harm")
-            .build();
-    }
-
-    private static DocmosisFactorsParenting expectedDocmosisFactorsParenting() {
-        return DocmosisFactorsParenting.builder()
-            .anythingElse("No")
-            .alcoholDrugAbuseDetails("Yes\nhistory of drug abuse")
-            .domesticViolenceDetails("Yes\nhistory of domestic violence")
+            .physicalHarm("Yes")
+            .emotionalHarm("Yes")
+            .sexualAbuse("Yes")
+            .neglect("Yes")
+            .alcoholDrugAbuse("Yes")
+            .domesticAbuse("Yes")
+            .anythingElse("Something else")
             .build();
     }
 

@@ -242,9 +242,9 @@ class ManageLegalCounselServiceTest {
 
         assertThat(eventsToPublish)
             .hasSize(2)
-            .containsExactlyInAnyOrder(
-                new LegalCounsellorAdded(currentCaseData, legalCounsellor2),
-                new LegalCounsellorRemoved(currentCaseData, "Solicitors Law Ltd", legalCounsellor3)
+            .containsExactly(
+                new LegalCounsellorRemoved(currentCaseData, "Solicitors Law Ltd", legalCounsellor3),
+                new LegalCounsellorAdded(currentCaseData, legalCounsellor2)
             );
     }
 

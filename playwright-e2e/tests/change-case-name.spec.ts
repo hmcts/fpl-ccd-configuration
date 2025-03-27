@@ -1,6 +1,6 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
-import caseData from '../caseData/mandatorySubmissionFields.json' with { type: "json" };
+import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: "json" };
 import { CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 

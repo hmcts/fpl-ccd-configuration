@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationProposalListV2",
+    "ListElementCode": "Circuit judge",
+    "ListElement": "Circuit Judge",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationProposalListV2",
+    "ListElementCode": "District judge",
+    "ListElement": "District Judge",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationProposalListV2",
+    "ListElementCode": "Lay justices",
+    "ListElement": "Magistrate",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationProposalListV2",
+    "ListElementCode": "High Court judge",
+    "ListElement": "High Court Judge",
+    "DisplayOrder": 4
+  }
+]

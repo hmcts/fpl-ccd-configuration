@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 import uk.gov.hmcts.reform.fpl.service.CaseService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
@@ -41,7 +42,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockBeans({
     @MockBean(CaseService.class), @MockBean(OrganisationService.class), @MockBean(RepresentativeCaseRoleService.class),
-    @MockBean(ValidateEmailService.class)
+    @MockBean(ValidateEmailService.class), @MockBean(CaseRoleLookupService.class)
 })
 class PartyAddedToCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "Perturabo";

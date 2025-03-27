@@ -7,12 +7,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +68,7 @@ public class RepresentativeService {
     private final OrganisationService organisationService;
     private final RepresentativeCaseRoleService representativeCaseRoleService;
     private final ValidateEmailService validateEmailService;
+    private final CaseRoleLookupService caseRoleLookupService;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -322,5 +325,27 @@ public class RepresentativeService {
                 .ifPresent(ele -> ele.setValue(ele.getValue().toBuilder()
                     .role(targetRole).build()));
         });
+    }
+
+    /**
+     * For [SOLICITORA] and [CHILDSOLICITORA] roles, the user needs access to the respondent/children events ONLY if
+     * they are the applicant. We cannot restrict it via permissions (yet)
+     * @param caseData the case data
+     * @return true if the user should have access to the respondent/children events
+     */
+    public boolean shouldUserHaveAccessToRespondentsChildrenEvent(CaseData caseData) {
+        List<SolicitorRole> roles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseData.getId());
+        if (roles.contains(SolicitorRole.SOLICITORA) || roles.contains(SolicitorRole.CHILDSOLICITORA)) {
+            if (ObjectUtils.isEmpty(caseData.getOutsourcingPolicy())
+                || ObjectUtils.isEmpty(caseData.getOutsourcingPolicy().getOrganisation())
+                || ObjectUtils.isEmpty(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID())) {
+                return false;
+            }
+            String outsourcingOrgId = caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
+            String userOrgId = organisationService.findOrganisation().orElse(Organisation.builder().build())
+                .getOrganisationIdentifier();
+            return outsourcingOrgId.equals(userOrgId);
+        }
+        return true;
     }
 }

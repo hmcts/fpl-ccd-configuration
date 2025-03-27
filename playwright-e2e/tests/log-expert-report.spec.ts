@@ -1,7 +1,7 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
-import caseData from '../caseData/mandatorySubmissionFields.json' with { type: "json" };
-import returnedCase from '../caseData/returnCase.json' with { type: "json" };
+import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
+import returnedCase from '../caseData/returnCase.json' assert { type: 'json' };
 import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 

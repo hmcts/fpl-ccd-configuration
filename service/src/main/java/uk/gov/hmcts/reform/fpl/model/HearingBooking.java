@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
@@ -132,7 +132,7 @@ public class HearingBooking implements TranslatableItem {
 
     public boolean startsAfterToday() {
         return ofNullable(startDate)
-            .map(date -> date.isAfter(ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime()))
+            .map(date -> date.isAfter(ZonedDateTime.now(LONDON_TIMEZONE).toLocalDateTime()))
             .orElse(false);
     }
 

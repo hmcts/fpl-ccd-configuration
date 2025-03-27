@@ -1,9 +1,13 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
 import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: "json" };
+import caseDataDemo from '../caseData/mandatorySubmissionFieldsDemo.json' assert {type: "json"};
 import caseDataWithTwoLA from '../caseData/mandatorySubmissionWithTwoLAFields.json' assert { type: "json" };
+import caseDataWithTwoLADemo from'../caseData/mandatorySubmissionWithTwoLAFieldsDemo.json' assert {type: "json"};
 import { CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser, CTSCUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
+import {testConfig} from "../settings/test-config";
+import {urlConfig} from "../settings/urls";
 
 test.describe('Manage LAs / Transfer to court', () => {
     const dateTime = new Date().toISOString();
@@ -32,7 +36,12 @@ test.describe('Manage LAs / Transfer to court', () => {
     test('CTSC gives access to another local authority',
         async ({ page, signInPage, manageLaTransferToCourts }) => {
             caseName = 'CTSC gives access to another Local authority' + dateTime.slice(0, 10);
+           if(urlConfig.env.toUpperCase() === 'DEMO'){
+               await updateCase(caseName, caseNumber, caseDataDemo);
+           }
+           else{
             await updateCase(caseName, caseNumber, caseData);
+           }
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
@@ -47,7 +56,14 @@ test.describe('Manage LAs / Transfer to court', () => {
     test('CTSC removes access',
         async ({ page, signInPage, manageLaTransferToCourts }) => {
             caseName = 'CTSC removed access' + dateTime.slice(0, 10);
+
+            if(urlConfig.env.toUpperCase() === 'DEMO'){
+                await updateCase(caseName, caseNumber, caseDataWithTwoLADemo);
+            }
+            else{
             await updateCase(caseName, caseNumber, caseDataWithTwoLA);
+            }
+
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
@@ -61,7 +77,12 @@ test.describe('Manage LAs / Transfer to court', () => {
     test('CTSC tranfers to another local authority',
         async ({ page, signInPage, manageLaTransferToCourts }) => {
             caseName = 'CTSC transfers to another local authority' + dateTime.slice(0, 10);
+            if(urlConfig.env.toUpperCase() === 'DEMO'){
+                await updateCase(caseName, caseNumber, caseDataDemo);
+            }
+            else{
             await updateCase(caseName, caseNumber, caseData);
+            }
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);

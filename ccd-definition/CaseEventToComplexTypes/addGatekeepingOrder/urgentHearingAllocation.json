@@ -44,7 +44,7 @@
     "ID": "AllocationDecision",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "urgentHearingAllocation",
-    "ListElementCode": "proposal",
+    "ListElementCode": "proposalV2",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "urgentHearingAllocation.allocationProposalPresent=\"No\" OR urgentHearingAllocation.judgeLevelRadio=\"No\""

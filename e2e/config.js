@@ -135,7 +135,7 @@ module.exports = {
     enterOtherProceedings: 'Other proceedings',
     enterAllocationProposal: 'Allocation proposal',
     enterAllocationDecision: 'Judicial Gatekeeping',
-    enterAttendingHearing: 'Court services needed',
+    enterAttendingHearing: 'Court services',
     uploadDocuments: 'Upload documents',
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',

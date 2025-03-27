@@ -11,16 +11,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
-import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.List;
+import java.util.UUID;
 
-import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -39,51 +39,60 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
 
     @Test
     void shouldAddNewLocalAuthority() {
-
-        final List<Element<Colleague>> newColleagues = wrapElements(Colleague.builder()
+        final Colleague newColleague = Colleague.builder()
             .role(ColleagueRole.SOCIAL_WORKER)
             .fullName("Emma Smith")
-            .build());
+            .build();
 
         final LocalAuthority newLocalAuthority = LocalAuthority.builder()
             .name("ORG")
             .email("org@test.com")
-            .colleagues(newColleagues)
             .build();
 
         final CaseData caseData = CaseData.builder()
             .localAuthorityEventData(LocalAuthorityEventData.builder()
                 .localAuthority(newLocalAuthority)
-                .localAuthorityColleagues(newColleagues)
+                .applicantContact(newColleague)
                 .build())
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
+        final Colleague expectedMainContact = Colleague.builder()
+            .role(ColleagueRole.SOCIAL_WORKER)
+            .fullName("Emma Smith")
+            .mainContact(YES.getValue())
+            .notificationRecipient(YES.getValue())
+            .build();
+
         final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
             .name("ORG")
             .email("org@test.com")
             .designated("Yes")
-            .colleagues(wrapElements(Colleague.builder()
-                .role(ColleagueRole.SOCIAL_WORKER)
-                .fullName("Emma Smith")
-                .mainContact("Yes")
-                .build()))
             .build();
 
-        assertThat(updatedCaseData.getLocalAuthorities())
-            .extracting(Element::getValue)
-            .containsExactly(expectedLocalAuthority);
+        assertThat(updatedCaseData.getLocalAuthorities().size()).isEqualTo(1);
+        final LocalAuthority actualLocalAuthority = updatedCaseData.getLocalAuthorities().get(0).getValue();
+        assertThat(actualLocalAuthority.getName()).isEqualTo(expectedLocalAuthority.getName());
+        assertThat(actualLocalAuthority.getEmail()).isEqualTo(expectedLocalAuthority.getEmail());
+        assertThat(actualLocalAuthority.getDesignated()).isEqualTo(expectedLocalAuthority.getDesignated());
+
+        assertThat(actualLocalAuthority.getColleagues().size()).isEqualTo(1);
+        final Element<Colleague> actualColleague = actualLocalAuthority.getColleagues().get(0);
+        assertThat(actualColleague.getId()).isNotNull();
+        assertThat(actualColleague.getValue()).isEqualTo(expectedMainContact);
     }
 
     @Test
     void shouldUpdateExistingLocalAuthority() {
+        final UUID existingMainContactUUID = UUID.randomUUID();
 
-        final List<Element<Colleague>> existingColleagues = wrapElements(Colleague.builder()
-            .role(ColleagueRole.SOCIAL_WORKER)
-            .fullName("Emma Smith")
-            .mainContact("Yes")
-            .build());
+        final List<Element<Colleague>> existingColleagues = List.of(
+            element(existingMainContactUUID, Colleague.builder()
+                .role(ColleagueRole.SOCIAL_WORKER)
+                .fullName("Emma Smith")
+                .mainContact(YES.getValue())
+                .build()));
 
         final LocalAuthority existingLocalAuthority = LocalAuthority.builder()
             .id("ORG")
@@ -92,46 +101,85 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
             .colleagues(existingColleagues)
             .build();
 
-        final Element<Colleague> colleague1 = element(Colleague.builder()
-            .role(ColleagueRole.SOCIAL_WORKER)
-            .fullName("Emma Smith")
-            .mainContact("No")
-            .build());
-
-        final Element<Colleague> colleague2 = element(Colleague.builder()
+        final Colleague updatedContact = Colleague.builder()
             .role(ColleagueRole.SOCIAL_WORKER)
             .fullName("Gregory White")
-            .mainContact("Yes")
-            .build());
-
-        final DynamicList listOfColleagues = TestDataHelper.buildDynamicList(1,
-            of(colleague1.getId(), colleague1.getValue().getFullName()),
-            of(colleague2.getId(), colleague2.getValue().getFullName()));
-
-        final List<Element<Colleague>> updatedColleagues = List.of(colleague1, colleague2);
-
-        final LocalAuthority updatedLocalAuthority = LocalAuthority.builder()
-            .id("ORG")
-            .name("ORG name")
-            .email("org@test.com")
-            .designated("Yes")
-            .colleagues(updatedColleagues)
+            .mainContact(YES.getValue())
+            .notificationRecipient(YES.getValue())
             .build();
 
         final CaseData caseData = CaseData.builder()
             .localAuthorityPolicy(organisationPolicy("ORG", "ORG name", LASOLICITOR))
             .localAuthorities(wrapElements(existingLocalAuthority))
             .localAuthorityEventData(LocalAuthorityEventData.builder()
-                .localAuthority(updatedLocalAuthority)
-                .localAuthorityColleagues(updatedColleagues)
-                .localAuthorityColleaguesList(listOfColleagues)
+                .localAuthority(existingLocalAuthority)
+                .applicantContact(updatedContact)
+                .applicantContactOthers(List.of())
                 .build())
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
+        final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+            .id("ORG")
+            .name("ORG name")
+            .email("org@test.com")
+            .designated(YES.getValue())
+            .colleagues(List.of(element(existingMainContactUUID, updatedContact)))
+            .build();
+
         assertThat(updatedCaseData.getLocalAuthorities())
             .extracting(Element::getValue)
-            .containsExactly(updatedLocalAuthority);
+            .containsExactly(expectedLocalAuthority);
+    }
+
+    @Test
+    void shouldAddNewOtherContactToLocalAuthority() {
+        final UUID existingMainContactUUID = UUID.randomUUID();
+        final Colleague existingMainContact = Colleague.builder()
+            .role(ColleagueRole.SOCIAL_WORKER)
+            .fullName("Emma Smith")
+            .mainContact(YES.getValue())
+            .notificationRecipient(YES.getValue())
+            .build();
+        final Element<Colleague> existingMainContactElement = element(existingMainContactUUID, existingMainContact);
+
+        final LocalAuthority existingLocalAuthority = LocalAuthority.builder()
+            .id("ORG")
+            .name("ORG name")
+            .email("org@test.com")
+            .colleagues(List.of(existingMainContactElement))
+            .build();
+
+        final Element<Colleague> newOtherContact = element(Colleague.builder()
+            .role(ColleagueRole.SOCIAL_WORKER)
+            .fullName("Gregory White")
+            .mainContact(NO.getValue())
+            .notificationRecipient(YES.getValue())
+            .build());
+
+        final CaseData caseData = CaseData.builder()
+            .localAuthorityPolicy(organisationPolicy("ORG", "ORG name", LASOLICITOR))
+            .localAuthorities(wrapElements(existingLocalAuthority))
+            .localAuthorityEventData(LocalAuthorityEventData.builder()
+                .localAuthority(existingLocalAuthority)
+                .applicantContact(existingMainContact)
+                .applicantContactOthers(List.of(newOtherContact))
+                .build())
+            .build();
+
+        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+            .id("ORG")
+            .name("ORG name")
+            .email("org@test.com")
+            .designated(YES.getValue())
+            .colleagues(List.of(existingMainContactElement, newOtherContact))
+            .build();
+
+        assertThat(updatedCaseData.getLocalAuthorities())
+            .extracting(Element::getValue)
+            .containsExactly(expectedLocalAuthority);
     }
 }
