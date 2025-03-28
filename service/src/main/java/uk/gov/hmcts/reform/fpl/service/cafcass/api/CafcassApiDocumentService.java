@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -28,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -54,7 +54,7 @@ public class CafcassApiDocumentService {
 
     public String generateFileName(String typeOfDocument) {
         return format("%s-%s%s",
-           typeOfDocument, ZonedDateTime.now(ZoneId.of("Europe/London")).format(DATE_TIME_FORMATTER), ".pdf");
+           typeOfDocument, ZonedDateTime.now(LONDON_TIMEZONE).format(DATE_TIME_FORMATTER), ".pdf");
     }
 
     public CaseDetails uploadDocument(DocumentReference documentReference,

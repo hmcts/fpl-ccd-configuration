@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,6 +55,8 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageAdded() throws NotificationClientException {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
+
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .updatedTime(now())
             .status(OPEN)
@@ -118,6 +121,75 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             eq(CASE_ID),
             eq(caseSummary()));
     }
+
+    @Test
+    void shouldNotNotifyJudicialMessageRecipientIfToggledOff() throws NotificationClientException {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
+
+        JudicialMessage latestJudicialMessage = JudicialMessage.builder()
+            .updatedTime(now())
+            .status(OPEN)
+            .recipient(JUDICIAL_MESSAGE_RECIPIENT)
+            .sender("sender@fpla.com")
+            .urgency("High")
+            .messageHistory(String.format("%s - %s", "sender@fpla.com", MESSAGE))
+            .latestMessage(MESSAGE)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .respondents1(List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .lastName("Davidson")
+                        .build())
+                    .build())))
+            .children1(List.of(
+                element(Child.builder()
+                    .party(ChildParty.builder()
+                        .lastName(LAST_NAME)
+                        .dateOfBirth(dateNow())
+                        .build())
+                    .build())))
+            .judicialMessages(List.of(
+                element(latestJudicialMessage),
+                element(JudicialMessage.builder()
+                    .updatedTime(now().minusDays(1))
+                    .status(OPEN)
+                    .recipient("do_not_send@fpla.com")
+                    .sender("someOthersender@fpla.com")
+                    .urgency("High")
+                    .build())))
+            .build();
+
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(asCaseDetails(caseData));
+
+        Map<String, Object> expectedData = Map.of(
+            "respondentLastName", "Davidson",
+            "caseUrl", caseUrl(CASE_ID, "Judicial messages"),
+            "callout", "^Davidson",
+            "sender", "sender@fpla.com",
+            "urgency", "High",
+            "hasUrgency", "Yes",
+            "hasApplication", "No",
+            "applicationType", "",
+            "latestMessage", MESSAGE
+        );
+
+        verify(notificationClient, never()).sendEmail(
+            JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
+        verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
+            eq(CASE_ID),
+            eq(caseSummary()));
+    }
+
 
     private Map<String, Object> caseSummary() {
         return caseConverter.toMap(
