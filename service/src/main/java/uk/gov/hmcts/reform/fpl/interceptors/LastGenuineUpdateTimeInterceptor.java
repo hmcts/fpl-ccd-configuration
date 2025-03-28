@@ -33,16 +33,13 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @Slf4j
 @ControllerAdvice
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
+public class LastGenuineUpdateTimeInterceptor implements RequestBodyAdvice,
                                                           ResponseBodyAdvice<AboutToStartOrSubmitCallbackResponse> {
     private static final List<String> WHITE_LIST = List.of(
         "/callback/.+/about-to-submit"
     );
-    private static final List<String> EXCLUDED_LIST = List.of(
-        "/callback/migrate-case/about-to-submit",
-        "/callback/message-judge/about-to-submit",
-        "/callback/reply-message-judge/about-to-submit",
-        "/callback/add-note/about-to-submit"
+    private static final List<String> EXCLUDED_EVENTS = List.of(
+        "migrateCase"
     );
     private static final List<String> EXCLUDED_CASE_STATE = List.of(
         State.OPEN.getValue(),
@@ -76,17 +73,22 @@ public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
                                                                 ServerHttpResponse response) {
         final String path = request.getURI().getPath();
 
-        if (WHITE_LIST.stream().anyMatch(path::matches) && EXCLUDED_LIST.stream().noneMatch(path::matches)
-            && featureToggleService.isCafcassApiToggledOn() && shouldUpdateLastGenuineUpdateTimed()) {
+        if (WHITE_LIST.stream().anyMatch(path::matches) && featureToggleService.isCafcassApiToggledOn()
+            && shouldUpdateLastGenuineUpdateTime()) {
 
-            body.getData().put("lastGenuineUpdateTimed", time.now());
+            body.getData().put("lastGenuineUpdateTime", time.now());
         }
         return body;
     }
 
-    private boolean shouldUpdateLastGenuineUpdateTimed() {
+    private boolean shouldUpdateLastGenuineUpdateTime() {
         if (requestScopeStorage != null && requestScopeStorage.getCallbackRequest() != null) {
-            final CaseDetails caseDetailsAfter = requestScopeStorage.getCallbackRequest().getCaseDetails();
+            final CallbackRequest callbackRequest = requestScopeStorage.getCallbackRequest();
+            if (EXCLUDED_EVENTS.stream().anyMatch(callbackRequest.getEventId()::equalsIgnoreCase)) {
+                return false;
+            }
+
+            final CaseDetails caseDetailsAfter = callbackRequest.getCaseDetails();
 
             if (caseDetailsAfter != null) {
                 if (isNotEmpty(caseDetailsAfter.getState())
@@ -94,7 +96,7 @@ public class LastGenuineUpdateTimedInterceptor implements RequestBodyAdvice,
                     return false;
                 }
 
-                final CaseDetails caseDetailsBefore = requestScopeStorage.getCallbackRequest().getCaseDetailsBefore();
+                final CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
                 if (caseDetailsBefore != null) {
                     CafcassApiCase cafcassApiCaseBefore = cafcassApiSearchCaseService
                         .convertToCafcassApiCase(caseDetailsBefore)

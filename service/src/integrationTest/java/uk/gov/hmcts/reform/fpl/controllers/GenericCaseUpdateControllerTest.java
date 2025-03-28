@@ -58,7 +58,7 @@ class GenericCaseUpdateControllerTest extends AbstractTest {
     }
 
     @Test
-    void shouldUpdateLastGenuineUpdateTimedWhenAffectCafcassApiResponse() {
+    void shouldUpdateLastGenuineUpdateTimeWhenAffectCafcassApiResponse() {
         Map<String, Object> caseBefore = Map.of("id", 1L,
             "respondents1", wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().firstName("firstName").lastName("lastName").build())
@@ -82,8 +82,8 @@ class GenericCaseUpdateControllerTest extends AbstractTest {
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(request);
 
-        assertThat(actualResponse.getData()).containsOnlyKeys("id", "respondents1", "lastGenuineUpdateTimed");
-        assertThat(actualResponse.getData()).extracting("lastGenuineUpdateTimed").isEqualTo("2025-03-26T08:00:00");
+        assertThat(actualResponse.getData()).containsOnlyKeys("id", "respondents1", "lastGenuineUpdateTime");
+        assertThat(actualResponse.getData()).extracting("lastGenuineUpdateTime").isEqualTo("2025-03-26T08:00:00");
 
         CaseData caseData = extractCaseData(actualResponse);
 
@@ -92,7 +92,7 @@ class GenericCaseUpdateControllerTest extends AbstractTest {
     }
 
     @Test
-    void shouldNotUpdateLastGenuineUpdateTimedIfNotAffectingCafcassApiResponse() {
+    void shouldNotUpdateLastGenuineUpdateTimeIfNotAffectingCafcassApiResponse() {
         Map<String, Object> caseBefore = Map.of("id", 1L,
             "judicialMessages", wrapElements(JudicialMessage.builder().latestMessage("Hi").build()));
 
@@ -123,7 +123,7 @@ class GenericCaseUpdateControllerTest extends AbstractTest {
     @EnumSource(value = State.class, names = {
         "OPEN", "DELETED", "RETURNED"
     })
-    void shouldNotUpdateLastGenuineUpdateTimedIfCaseStateExcluded(State caseState) {
+    void shouldNotUpdateLastGenuineUpdateTimeIfCaseStateExcluded(State caseState) {
         Map<String, Object> caseBefore = Map.of("id", 1L,
             "respondents1", wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().firstName("firstName").lastName("lastName").build())

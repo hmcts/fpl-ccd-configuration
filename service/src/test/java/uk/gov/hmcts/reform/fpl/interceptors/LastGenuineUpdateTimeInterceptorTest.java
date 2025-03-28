@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class LastGenuineUpdateTimedInterceptorTest {
+public class LastGenuineUpdateTimeInterceptorTest {
     private static final MethodParameter HANDLE_ABOUT_TO_SUBMIT_PARAMETER_TYPE = mock(MethodParameter.class);
     private static final MethodParameter HANDLE_ABOUT_TO_SUBMIT_RETURN_TYPE = mock(MethodParameter.class);
     private static final MethodParameter DUMMY_METHOD_RETURN_TYPE = mock(MethodParameter.class);
@@ -47,7 +47,7 @@ public class LastGenuineUpdateTimedInterceptorTest {
     private static final LocalDateTime TEST_TIME = LocalDateTime.now();
 
     @Mock
-    private LastGenuineUpdateTimedInterceptor.RequestScopeStorage requestScopeStorage;
+    private LastGenuineUpdateTimeInterceptor.RequestScopeStorage requestScopeStorage;
     @Mock
     private CafcassApiSearchCaseService cafcassApiSearchCaseService;
     @Mock
@@ -55,7 +55,7 @@ public class LastGenuineUpdateTimedInterceptorTest {
     @Mock
     private Time time;
     @InjectMocks
-    private LastGenuineUpdateTimedInterceptor underTest;
+    private LastGenuineUpdateTimeInterceptor underTest;
 
     @SuppressWarnings("unchecked")
     @BeforeAll
@@ -88,7 +88,7 @@ public class LastGenuineUpdateTimedInterceptorTest {
             .id(1L).state(State.CASE_MANAGEMENT.getValue()).build();
 
         private static final Map<String, Object> CASE_MAP_INTERCEPTED =
-            Map.of("id", 1L, "caseName", "Test", "lastGenuineUpdateTimed", TEST_TIME);
+            Map.of("id", 1L, "caseName", "Test", "lastGenuineUpdateTime", TEST_TIME);
 
         @Test
         void shouldReturnTrueWhenMethodParameterMatch() throws NoSuchMethodException {

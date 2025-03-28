@@ -2717,7 +2717,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "lastGenuineUpdateTimed",
+    "ID": "lastGenuineUpdateTime",
     "Label": " ",
     "FieldType": "DateTime",
     "SecurityClassification": "Public",

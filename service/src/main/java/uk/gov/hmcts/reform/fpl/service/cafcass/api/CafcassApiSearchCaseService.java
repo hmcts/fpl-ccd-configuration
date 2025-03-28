@@ -64,7 +64,7 @@ public class CafcassApiSearchCaseService {
 
         if (flag.isEnableApi()) {
             final RangeQuery searchRange = RangeQuery.builder()
-                .field("data.lastGenuineUpdateTimed")
+                .field("data.lastGenuineUpdateTime")
                 .greaterThanOrEqual(startDate)
                 .lessThanOrEqual(endDate).build();
 

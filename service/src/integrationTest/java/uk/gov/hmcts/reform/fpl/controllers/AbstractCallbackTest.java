@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.reform.fpl.interceptors.LastGenuineUpdateTimedInterceptor;
+import uk.gov.hmcts.reform.fpl.interceptors.LastGenuineUpdateTimeInterceptor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.Map;
@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 public abstract class AbstractCallbackTest extends AbstractTest {
 
     @MockBean
-    protected LastGenuineUpdateTimedInterceptor lastGenuineUpdateTimedInterceptor;
+    protected LastGenuineUpdateTimeInterceptor lastGenuineUpdateTimeInterceptor;
 
     @Autowired
     private MockMvc mockMvc;
@@ -321,7 +321,7 @@ public abstract class AbstractCallbackTest extends AbstractTest {
 
     protected void givenFplService() {
         super.givenFplService();
-        given(lastGenuineUpdateTimedInterceptor.supports(any(), any(), any())).willReturn(false);
-        given(lastGenuineUpdateTimedInterceptor.supports(any(), any())).willReturn(false);
+        given(lastGenuineUpdateTimeInterceptor.supports(any(), any(), any())).willReturn(false);
+        given(lastGenuineUpdateTimeInterceptor.supports(any(), any())).willReturn(false);
     }
 }

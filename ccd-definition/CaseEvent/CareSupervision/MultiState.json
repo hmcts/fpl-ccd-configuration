@@ -17,7 +17,8 @@
     "Name": "Update task list",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -27,7 +28,8 @@
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "Publish": "Y"
+    "Publish": "Y",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -325,6 +327,7 @@
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "Publish": "Y",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
   },
   {
@@ -391,6 +394,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted",
     "EventEnablingCondition": "otherOrderType!=\"YES\""
   },
@@ -407,6 +411,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted",
     "EventEnablingCondition": "otherOrderType!=\"YES\" AND secureAccommodationOrderType!=\"YES\" AND refuseContactWithChildOrderType!=\"YES\" AND contactWithChildInCareOrderType!=\"YES\""
   },
@@ -423,6 +428,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
   },
   {
@@ -456,6 +462,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
   },
   {
@@ -471,6 +478,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
   },
   {
@@ -486,6 +494,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
   },
   {
@@ -1141,7 +1150,8 @@
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1173,7 +1183,8 @@
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "Publish": "Y",
-    "EndButtonLabel": "Create Case Link"
+    "EndButtonLabel": "Create Case Link",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1204,6 +1215,7 @@
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "Publish": "Y",
-    "EndButtonLabel": "Remove Case Links"
+    "EndButtonLabel": "Remove Case Links",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit"
   }
 ]
