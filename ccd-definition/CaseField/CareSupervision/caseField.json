@@ -156,8 +156,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
-    "Label": "Case name",
-    "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "Label": "Enter draft case name",
+    "HintText": "It will be standardised when you submit the application",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "Y",
@@ -711,6 +711,15 @@
     "ID": "submissionConsentLabel",
     "Label": " ",
     "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseNameHintLabel",
+    "Label": "**Case name has been updated based on the answers you have given.** <br><span class=\"text-16\">The case will be submitted to the system with the name <strong>${caseName}</strong> <br>If there is an error in the case name such as misspelling, you can go back to the applicant and respondent section to change your answer. This will update the case name.</span>",
+    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

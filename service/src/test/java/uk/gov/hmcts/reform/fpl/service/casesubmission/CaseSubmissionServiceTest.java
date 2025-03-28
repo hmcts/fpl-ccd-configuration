@@ -13,6 +13,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
@@ -51,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissio
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC20Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
@@ -296,5 +300,43 @@ class CaseSubmissionServiceTest {
         assertThat(c20Supplement).isEqualTo(expectedC20Supplement);
 
         verify(uploadDocumentService).uploadPDF(eq(PDF), any());
+    }
+
+
+    @Test
+    void shouldReturnGeneratedCaseName() {
+        final LocalAuthority localAuthority = LocalAuthority.builder()
+            .name("Local authority 1")
+            .build();
+
+        final Respondent respondent1 = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("Jim")
+                .lastName("Test")
+                .build())
+            .build();
+
+        final Respondent respondent2 = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("Marina")
+                .lastName("Test")
+                .build())
+            .build();
+
+        final Respondent respondent3 = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("Fred")
+                .lastName("Smith")
+                .build())
+            .build();
+
+        CaseData caseData = givenCaseData.toBuilder()
+            .respondents1(wrapElements(respondent1, respondent2, respondent3))
+            .localAuthorities(wrapElements(localAuthority))
+            .caseName("Draft case name")
+            .build();
+
+        assertThat(caseSubmissionService.generateCaseName(caseData))
+            .isEqualTo("Local authority 1 & Test, Smith");
     }
 }
