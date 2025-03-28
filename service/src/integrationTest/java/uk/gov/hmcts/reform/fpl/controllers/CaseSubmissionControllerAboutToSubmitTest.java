@@ -18,9 +18,11 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeThirdPartyRespondentAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
@@ -226,7 +228,17 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         Map<String, Object> data = new HashMap<>(Map.of(
             "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
             "respondents1", respondents,
-            "applicants", List.of(element(buildApplicant()))
+            "applicants", List.of(element(buildApplicant())),
+            "outsourcingPolicy", OrganisationPolicy.builder()
+                .organisation(Organisation.builder().organisationID("ABC123").build())
+                .build(),
+            "localAuthorities", List.of(element(LocalAuthority.builder()
+                .id("ABC123")
+                .representingDetails(RepresentingDetails.builder()
+                    .firstName("Bilbo")
+                    .lastName("Baggins")
+                    .build())
+                .build()))
         ));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
