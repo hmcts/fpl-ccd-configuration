@@ -316,7 +316,7 @@ dependencies {
   implementation 'org.apache.commons:commons-lang3:3.12.0'
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.6.0'
-  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.1.8'
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.0'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.15.2'
   implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.15.2'
@@ -373,7 +373,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
 
   // Fortify client for Fortify scans
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.7', classifier: 'all'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.8', classifier: 'all'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
