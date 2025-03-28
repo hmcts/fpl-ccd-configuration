@@ -68,20 +68,22 @@ public class NoticeOfChangeFieldPopulator {
     public Map<String, Object> generateApplicantAnswer(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        String orgId = caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
+        if (caseData.isOutsourced()) {
+            String orgId = caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
 
-        LocalAuthority localAuthority = caseData.getLocalAuthorities().stream()
-            .map(Element::getValue)
-            .filter(la -> la.getId().equals(orgId))
-            .findFirst()
-            .orElseThrow();
+            LocalAuthority localAuthority = caseData.getLocalAuthorities().stream()
+                .map(Element::getValue)
+                .filter(la -> la.getId().equals(orgId))
+                .findFirst().orElse(null);
 
-        NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder()
-            .respondentFirstName(localAuthority.getRepresentingDetails().getFirstName())
-            .respondentLastName(localAuthority.getRepresentingDetails().getLastName())
-            .build();
-
-        data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);
+            NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder()
+                .respondentFirstName(localAuthority.getRepresentingDetails().getFirstName())
+                .respondentLastName(localAuthority.getRepresentingDetails().getLastName())
+                .build();
+            data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);
+        } else {
+            data.put("noticeOfChangeAnswersApplicant", NoticeOfChangeAnswers.builder().build());
+        }
 
         return data;
     }
