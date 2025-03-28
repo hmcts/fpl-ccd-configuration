@@ -67,22 +67,23 @@ public class NoticeOfChangeFieldPopulator {
 
     public Map<String, Object> generateApplicantAnswer(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
+        NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder().build();
 
         if (caseData.isOutsourced()) {
-            String orgId = caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
-
             LocalAuthority localAuthority = caseData.getLocalAuthorities().stream()
                 .map(Element::getValue)
-                .filter(la -> la.getId().equals(orgId))
+                .filter(la -> la.getId().equals(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID()))
                 .findFirst().orElse(null);
 
-            NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder()
-                .respondentFirstName(localAuthority.getRepresentingDetails().getFirstName())
-                .respondentLastName(localAuthority.getRepresentingDetails().getLastName())
-                .build();
+            if (localAuthority != null) {
+                nocAnswers = NoticeOfChangeAnswers.builder()
+                    .respondentFirstName(localAuthority.getRepresentingDetails().getFirstName())
+                    .respondentLastName(localAuthority.getRepresentingDetails().getLastName())
+                    .build();
+            }
             data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);
         } else {
-            data.put("noticeOfChangeAnswersApplicant", NoticeOfChangeAnswers.builder().build());
+            data.put("noticeOfChangeAnswersApplicant", nocAnswers);
         }
 
         return data;
