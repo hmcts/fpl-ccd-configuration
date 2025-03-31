@@ -84,7 +84,8 @@ public class LastGenuineUpdateTimeInterceptor implements RequestBodyAdvice,
     private boolean shouldUpdateLastGenuineUpdateTime() {
         if (requestScopeStorage != null && requestScopeStorage.getCallbackRequest() != null) {
             final CallbackRequest callbackRequest = requestScopeStorage.getCallbackRequest();
-            if (EXCLUDED_EVENTS.stream().anyMatch(callbackRequest.getEventId()::equalsIgnoreCase)) {
+            if (isNotEmpty(callbackRequest.getEventId())
+                && EXCLUDED_EVENTS.stream().anyMatch(callbackRequest.getEventId()::equalsIgnoreCase)) {
                 return false;
             }
 

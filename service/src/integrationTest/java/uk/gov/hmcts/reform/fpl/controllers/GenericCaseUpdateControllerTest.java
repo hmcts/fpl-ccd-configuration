@@ -37,9 +37,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class GenericCaseUpdateControllerTest extends AbstractTest {
     private static final LocalDateTime TEST_TIME = LocalDateTime.of(2025,3,26,8,0,0,0);
-    private static final String EVENT_NAME = "generic-update";
     private static final String USER_AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final String EVENT = "internal-change-UPDATE_CASE";
+
 
     @MockBean
     private Time time;
@@ -70,6 +71,7 @@ class GenericCaseUpdateControllerTest extends AbstractTest {
                 .build()));
 
         CallbackRequest request = CallbackRequest.builder()
+            .eventId(EVENT)
             .caseDetailsBefore(CaseDetails.builder()
                 .state(State.SUBMITTED.getValue())
                 .data(caseBefore)
@@ -101,6 +103,7 @@ class GenericCaseUpdateControllerTest extends AbstractTest {
                 JudicialMessage.builder().latestMessage("Hi again").build()));
 
         CallbackRequest request = CallbackRequest.builder()
+            .eventId(EVENT)
             .caseDetailsBefore(CaseDetails.builder()
                 .state(State.SUBMITTED.getValue())
                 .data(caseBefore)
@@ -135,6 +138,7 @@ class GenericCaseUpdateControllerTest extends AbstractTest {
                 .build()));
 
         CallbackRequest request = CallbackRequest.builder()
+            .eventId(EVENT)
             .caseDetailsBefore(CaseDetails.builder()
                 .state(State.CASE_MANAGEMENT.getValue())
                 .data(caseBefore)
@@ -154,7 +158,7 @@ class GenericCaseUpdateControllerTest extends AbstractTest {
     }
 
     private AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CallbackRequest request) {
-        return postEvent(String.format("/callback/%s/about-to-submit", EVENT_NAME), toBytes(request), SC_OK);
+        return postEvent("/callback/generic-update/about-to-submit", toBytes(request), SC_OK);
     }
 
     @SuppressWarnings("unchecked")

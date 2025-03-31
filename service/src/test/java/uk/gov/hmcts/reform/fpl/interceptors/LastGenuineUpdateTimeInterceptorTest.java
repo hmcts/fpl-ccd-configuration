@@ -42,9 +42,10 @@ public class LastGenuineUpdateTimeInterceptorTest {
     private static final MethodParameter HANDLE_ABOUT_TO_SUBMIT_RETURN_TYPE = mock(MethodParameter.class);
     private static final MethodParameter DUMMY_METHOD_RETURN_TYPE = mock(MethodParameter.class);
     private static final ServerHttpRequest REQUEST_WHITELISTED = mock(ServerHttpRequest.class);
-    private static final ServerHttpRequest REQUEST_EXCLUDED = mock(ServerHttpRequest.class);
     private static final ServerHttpResponse RESPONSE = mock(ServerHttpResponse.class);
     private static final LocalDateTime TEST_TIME = LocalDateTime.now();
+    private static final String EXCLUDED_EVENT_ID = "migrateCase";
+    private static final String EVENT_ID = "internal-change-UPDATE_CASE";
 
     @Mock
     private LastGenuineUpdateTimeInterceptor.RequestScopeStorage requestScopeStorage;
@@ -70,8 +71,6 @@ public class LastGenuineUpdateTimeInterceptorTest {
             .thenReturn((Class) String.class);
         when(REQUEST_WHITELISTED.getURI())
             .thenReturn(URI.create("http://localhost/callback/generic-update/about-to-submit"));
-        when(REQUEST_EXCLUDED.getURI())
-            .thenReturn(URI.create("http://localhost/callback/migrate-case/about-to-submit"));
     }
 
     @Nested
@@ -105,6 +104,7 @@ public class LastGenuineUpdateTimeInterceptorTest {
             when(featureToggleService.isCafcassApiToggledOn()).thenReturn(true);
             when(requestScopeStorage.getCallbackRequest())
                 .thenReturn(CallbackRequest.builder()
+                    .eventId(EVENT_ID)
                     .caseDetailsBefore(CASE_DETAILS_BEFORE)
                     .caseDetails(CASE_DETAILS_AFTER)
                     .build());
@@ -131,6 +131,7 @@ public class LastGenuineUpdateTimeInterceptorTest {
             when(featureToggleService.isCafcassApiToggledOn()).thenReturn(true);
             when(requestScopeStorage.getCallbackRequest())
                 .thenReturn(CallbackRequest.builder()
+                    .eventId(EVENT_ID)
                     .caseDetailsBefore(CASE_DETAILS_BEFORE)
                     .caseDetails(CASE_DETAILS_AFTER)
                     .build());
@@ -152,14 +153,22 @@ public class LastGenuineUpdateTimeInterceptorTest {
         }
 
         @Test
-        void shouldNotUpdateTimestampIfPathExcluded() {
+        void shouldNotUpdateTimestampIfEventExcluded() {
+            when(featureToggleService.isCafcassApiToggledOn()).thenReturn(true);
+            when(requestScopeStorage.getCallbackRequest())
+                .thenReturn(CallbackRequest.builder()
+                    .eventId(EXCLUDED_EVENT_ID)
+                    .caseDetailsBefore(CASE_DETAILS_BEFORE)
+                    .caseDetails(CASE_DETAILS_AFTER)
+                    .build());
+
             AboutToStartOrSubmitCallbackResponse controllerResponse = AboutToStartOrSubmitCallbackResponse.builder()
                 .data(new HashMap<>(CASE_MAP_AFTER))
                 .build();
 
             AboutToStartOrSubmitCallbackResponse interceptedResponse = underTest.beforeBodyWrite(controllerResponse,
                 HANDLE_ABOUT_TO_SUBMIT_RETURN_TYPE, MediaType.APPLICATION_JSON, null,
-                REQUEST_EXCLUDED, RESPONSE);
+                REQUEST_WHITELISTED, RESPONSE);
 
             assertNotNull(interceptedResponse);
             assertEquals(CASE_MAP_AFTER, interceptedResponse.getData());
