@@ -19,7 +19,9 @@ public class SyncHearingJudgeEventHandler {
     @Async
     @EventListener
     public void handleSyncHearingJudge(final SyncHearingJudgeEvent event) {
-        hearingJudgeService.syncHearingJudgeRoles(event.getCaseData().getId(), event.getCaseData().getAllHearings());
+        hearingJudgeService.syncHearingJudgeRoles(
+            event.getCaseData().getId(),
+            event.getCaseData().getAllNonCancelledHearings());
     }
 
 }
