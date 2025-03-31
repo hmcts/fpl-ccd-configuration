@@ -103,7 +103,7 @@ public class HearingJudgeService {
 
                 // 2.3. Else:
                 Optional<RoleAssignment> role = getRoleAssociatedWithHearing(roles, hearing);
-
+                log.info("Does role exist? {}", role.isPresent());
                 if (role.isPresent() && doesRoleMatch(role.get(), expectedRoleTimes, hearing)) {
                     // 2.3.1: If current roles has a role that matches this timeframe (& user), mark it as valid,
                     // continue to next hearing
@@ -174,6 +174,9 @@ public class HearingJudgeService {
     private boolean doesRoleMatch(RoleAssignment role,
                                   Pair<ZonedDateTime, ZonedDateTime> times,
                                   HearingBooking hearing) {
+        log.info("Begin role = {}, hearing = {}", role.getBeginTime(), times.getLeft());
+        log.info("End role = {}, hearing = {}", role.getEndTime(), times.getRight());
+        log.info("ActorId role = {}, hearing = {}", role.getActorId(), getJudgeIdFromHearing(hearing).orElse(null));
         return Objects.equals(role.getBeginTime(), times.getLeft())
             && Objects.equals(role.getEndTime(), times.getRight())
             && Objects.equals(role.getActorId(), getJudgeIdFromHearing(hearing).orElse(null));
