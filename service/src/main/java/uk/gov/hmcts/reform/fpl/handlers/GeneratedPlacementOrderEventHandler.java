@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -62,6 +63,7 @@ public class GeneratedPlacementOrderEventHandler {
     private final UserService userService;
     private final WorkAllocationTaskService workAllocationTaskService;
     private final JudicialService judicialService;
+    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void sendPlacementOrderEmail(final GeneratedPlacementOrderEvent orderEvent) {
@@ -160,7 +162,11 @@ public class GeneratedPlacementOrderEventHandler {
         );
 
         //Admin
-        recipients.add(courtService.getCourtEmail(caseData));
+        if (featureToggleService.isWATaskEmailsEnabled()) {
+            recipients.add(courtService.getCourtEmail(caseData));
+        } else {
+            log.info("WA EMAIL SKIPPED - placement order generated - {}", caseData.getId());
+        }
 
         //CAFCASS (WALES ONLY)
         if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
