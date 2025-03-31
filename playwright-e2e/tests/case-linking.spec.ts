@@ -5,7 +5,7 @@ import {expect} from '@playwright/test';
 import {createCase, updateCase} from "../utils/api-helper";
 
 
-test.describe('Manage case linking', () => {
+test.describe('Manage case linking @flaky', () => {
     test.setTimeout(600_000);
     const dateTime = new Date().toISOString();
     let caseNumber: string;

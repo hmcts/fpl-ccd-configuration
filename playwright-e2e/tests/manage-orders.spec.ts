@@ -13,17 +13,17 @@ test.describe('manage orders', () => {
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
-    [{user: CTSCUser, role: 'CTSC', EPOtype: 'Remove to accommodation'},
-     {user: judgeUser, role: 'Legal', EPOtype: 'Prevent removal from an address'}].
+    [{user: ctscUser, role: 'CTSC', EPOtype: 'Remove to accommodation'},
+     {user: le, role: 'Legal', EPOtype: 'Prevent removal from an address'}].
     forEach(({user, role, EPOtype}) => {
         test(` EPO order created by ${role}`,
-            async ({page, signInPage, orders}) => {
+            async ({page, signInPage,ctscUser,legalUser,, orders}) => {
                 caseName = 'EPO order by ' + role + ' ' + dateTime.slice(0, 10);
                 await updateCase(caseName, caseNumber, caseData);
-                await signInPage.visit();
-                await signInPage.login(user.email, user.password);
-                await signInPage.navigateTOCaseDetails(caseNumber);
-
+                // await signInPage.visit();
+                // await signInPage.login(user.email, user.password);
+                // await signInPage.navigateTOCaseDetails(caseNumber);
+                await orders
                 await orders.gotoNextStep('Manage orders');
                 await orders.selectOrderOperation('Create an order');
                 await orders.clickContinue();

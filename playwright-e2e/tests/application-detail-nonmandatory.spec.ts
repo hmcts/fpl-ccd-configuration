@@ -68,23 +68,23 @@ test.describe('Non mandatory application details before application submit @sess
         });
 
     test('LA add court service',
-        async ({startApplication, localAuthorityUser, courtServicesNeeded, makeAxeBuilder}, testInfo) => {
+        async ({startApplication, localAuthorityUser, courtServices, makeAxeBuilder}, testInfo) => {
             casename = 'Court service  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
 
-            await courtServicesNeeded.switchUser(localAuthorityUser.page);
+            await courtServices.switchUser(localAuthorityUser.page);
             await startApplication.switchUser(localAuthorityUser.page)
-            await courtServicesNeeded.navigateTOCaseDetails(caseNumber);
+            await courtServices.navigateTOCaseDetails(caseNumber);
 
             // Court Services Needed
-            await startApplication.courtServicesNeededReqUpdated();
-            await courtServicesNeeded.CourtServicesSmoketest();
+            await startApplication.courtServicesReqUpdated();
+            await courtServices.CourtServicesSmoketest();
 
         });
 
 
     test('LA add c1 application',
-        async ({startApplication, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
+        async ({startApplication,localAuthorityUser, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
             casename = 'c1 application  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
 
@@ -102,7 +102,6 @@ test.describe('Non mandatory application details before application submit @sess
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
 
             await otherPeopleInCase.switchUser(localAuthorityUser.page);
-            await startApplication.switchUser(localAuthorityUser.page);
             await otherPeopleInCase.navigateTOCaseDetails(caseNumber);
 //add other people in the case
             await startApplication.addOtherPeopleInCase()

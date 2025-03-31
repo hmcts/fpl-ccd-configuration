@@ -3,6 +3,24 @@ import { CreateCaseName } from "../utils/create-case-name";
 import {BasePage} from "./base-page";
 
 export class CreateCase extends BasePage{
+    get casenumber(): string {
+        return this._casenumber;
+    }
+    get generatedCaseName(): string {
+        return <string>this._generatedCaseName;
+    }
+    private _generatedCaseName: string | undefined;
+    constructor(page: Page, urlarry: string[], casenumber: string) {
+        super(page);
+        this.urlarry = urlarry;
+        this._casenumber = casenumber;
+    }
+    urlarry: string[];
+    private _casenumber: string;
+    set generatedCaseName(value: string) {
+        this._generatedCaseName = value;
+    }
+
     get caseJurisdictionFilterDropdown(): Locator {
         return this.page.getByLabel("Jurisdiction");
     }
@@ -30,80 +48,80 @@ export class CreateCase extends BasePage{
     }
 
     get startButton(): Locator {
-        return this._startButton;
+        return this.page.getByRole("button", { name: 'Start' });
     }
 
     get eventOption(): Locator {
-        return this._eventOption;
+        return this.page.getByLabel('Event');
     }
 
     get localAuthorityOption(): Locator {
-        return this._localAuthorityOption;
+        return this.page.getByLabel('Select the local authority you\'re representing');
     }
 
     get caseListLink(): Locator {
-        return this._caseListLink;
+        return this.page.getByRole('link', { name: ' Case list ' });
     }
 
     get caseNumberTextBox(): Locator {
-        return this._caseNumberTextBox;
+        return this.page.getByLabel('CCD Case Number');
     }
 
     get applyFilter(): Locator {
-        return this._applyFilter;
+        return this.page.getByLabel('Apply filter');
     }
 
     get caseNameTextBox(): Locator {
-        return this._caseNameTextBox;
+        return this.page.getByLabel('Case name');
     }
 
     get representingPartyRadio(): Locator {
-        return this._representingPartyRadio;
+        return this.page.getByLabel('Local Authority', { exact: true });
     }
-  private readonly _caseJurisdictionFilterDropdown: Locator;
-  private readonly _caseTypeFilterDropdown: Locator;
-  private readonly _createCaseLink: Locator;
-  private readonly _addApplicationTitle: Locator;
-  private readonly _viewHistory: Locator;
-  generatedCaseName: string;
-  private readonly _localAuthority: Locator;
-  private readonly _startButton: Locator;
-  private readonly _eventOption: Locator;
-  private readonly _localAuthorityOption: Locator;
-  urlarry: string[];
-  casenumber: string;
-  private readonly _caseListLink: Locator;
-  private readonly _caseNumberTextBox: Locator;
-  private readonly _applyFilter: Locator;
-  private _caseNameTextBox: Locator;
-  private _representingPartyRadio: Locator;
+  // private readonly _caseJurisdictionFilterDropdown: Locator;
+  // private readonly _caseTypeFilterDropdown: Locator;
+  // private readonly _createCaseLink: Locator;
+  // private readonly _addApplicationTitle: Locator;
+  // private readonly _viewHistory: Locator;
+  // generatedCaseName: string;
+  // private readonly _localAuthority: Locator;
+  // private readonly _startButton: Locator;
+  // private readonly _eventOption: Locator;
+  // private readonly _localAuthorityOption: Locator;
+  // urlarry: string[];
+  // casenumber: string;
+  // private readonly _caseListLink: Locator;
+  // private readonly _caseNumberTextBox: Locator;
+  // private readonly _applyFilter: Locator;
+  // private _caseNameTextBox: Locator;
+  // private _representingPartyRadio: Locator;
 
-  public constructor(page: Page) {
-      super(page);
-    this._createCaseLink =
-    this._caseJurisdictionFilterDropdown =
-    this._caseTypeFilterDropdown =
-    this._addApplicationTitle =
-    this._viewHistory =
-    this.generatedCaseName = "";
-    this._localAuthority =
-    this._caseNameTextBox = page.getByLabel('Case name');
-    this._startButton =page.getByRole("button", { name: 'Start' });
-    this._eventOption = page.getByLabel('Event');
-    this._localAuthorityOption = page.getByLabel('Select the local authority you\'re representing');
-    this.casenumber = '';
-    this.urlarry= [];
-    this._caseListLink = page.getByRole('link', { name: ' Case list ' });
-    this._caseNumberTextBox = page.getByLabel('CCD Case Number');
-    this._applyFilter = page.getByLabel('Apply filter');
-    this._representingPartyRadio = page.getByLabel('Local Authority', { exact: true });
-  }
+  // public constructor(page: Page) {
+  //     super(page);
+  //   // this._createCaseLink =
+  //   // this._caseJurisdictionFilterDropdown =
+  //   // this._caseTypeFilterDropdown =
+  //   // this._addApplicationTitle =
+  //   // this._viewHistory =
+  //   // this.generatedCaseName = "";
+  //   // this._localAuthority =
+  //   // this._caseNameTextBox =
+  //   // this._startButton =
+  //   // this._eventOption =
+  //   // this._localAuthorityOption =
+  //   // this.casenumber = '';
+  //   // this.urlarry= [];
+  //   // this._caseListLink =
+  //   // this._caseNumberTextBox =
+  //   // this._applyFilter =
+  //   // this._representingPartyRadio =
+  // }
 
   async createCase() {
     // This click timeout is here allow for ExUI loading spinner to finish
-    await this._createCaseLink.click();
+    await this.createCaseLink.click();
 
-    await this._caseJurisdictionFilterDropdown.selectOption("PUBLICLAW").catch(
+    await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW").catch(
       (error)=>{
            this.page.waitForTimeout(500);
            console.log(error);
@@ -111,8 +129,8 @@ export class CreateCase extends BasePage{
            this.page.reload({timeout:3000,waitUntil:'load'});
          }
        )
-    await this._caseJurisdictionFilterDropdown.selectOption("PUBLICLAW");
-    await this._caseTypeFilterDropdown.selectOption("CARE_SUPERVISION_EPO");
+    await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW");
+    await this.caseTypeFilterDropdown.selectOption("CARE_SUPERVISION_EPO");
     await this.page.getByLabel("Event").selectOption("openCase");
     await this.page.getByRole("button", { name: "Start" }).click();
   }
@@ -146,7 +164,7 @@ export class CreateCase extends BasePage{
   }
 
     async selectLA(localAuthority: string){
-        await this._localAuthorityOption.selectOption(localAuthority);
+        await this.localAuthorityOption.selectOption(localAuthority);
   }
 
     async shareWithOrganisationUser(share:string){
@@ -154,7 +172,7 @@ export class CreateCase extends BasePage{
   }
 
     async fillcaseName(caseName:string) {
-        await this._caseNameTextBox.fill(caseName);
+        await this.caseNameTextBox.fill(caseName);
   }
 
     async submitOutSourceCase(){
@@ -165,19 +183,19 @@ export class CreateCase extends BasePage{
         await this.page.waitForURL('**/case-details/**');
         let url:string= await this.page.url();
         this.urlarry = url.split('/');
-        this.casenumber =  this.urlarry[5].slice(0,16);
+        this._casenumber =  this.urlarry[5].slice(0,16);
   }
 
     async findCase(casenumber:string){
-        await this._caseListLink.click();
-        await this._caseJurisdictionFilterDropdown.selectOption('Public Law');
-        await this._caseTypeFilterDropdown.selectOption('Public Law Applications')
-        await this._caseNumberTextBox.fill(casenumber);
-        await this._applyFilter.click();
+        await this.caseListLink.click();
+        await this.caseJurisdictionFilterDropdown.selectOption('Public Law');
+        await this.caseTypeFilterDropdown.selectOption('Public Law Applications')
+        await this.caseNumberTextBox.fill(casenumber);
+        await this.applyFilter.click();
   }
 
     async selectRepresentLA(){
-        await this._representingPartyRadio.check();
+        await this.representingPartyRadio.check();
   }
 
     // async respondentSolicitorCreatCase(){

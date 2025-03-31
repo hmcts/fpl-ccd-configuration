@@ -15,17 +15,18 @@ test.describe('log expert report', () => {
     });
 
     test('log expert report',
-        async ({ page, signInPage, logExpertReport }) => {
+        async ({ ctscUser, logExpertReport }) => {
             caseName = 'CTSC log expert report ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
-            await signInPage.visit();
-            await signInPage.login(CTSCUser.email, CTSCUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            // await signInPage.visit();
+            // await signInPage.login(CTSCUser.email, CTSCUser.password)
+            await logExpertReport.switchUser(ctscUser.page);
+            await logExpertReport.navigateTOCaseDetails(caseNumber);
 
             await logExpertReport.gotoNextStep('Log expert report');
             await logExpertReport.logExpertReport();
             await logExpertReport.tabNavigation('Expert Reports')
-            await expect(page.getByText('Report 1')).toBeVisible();
-            await expect(page.getByText('Psychiatric - On child only')).toBeVisible();
+            await expect(logExpertReport.page.getByText('Report 1')).toBeVisible();
+            await expect(logExpertReport.page.getByText('Psychiatric - On child only')).toBeVisible();
         })
 });

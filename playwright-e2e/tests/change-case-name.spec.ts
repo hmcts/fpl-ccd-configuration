@@ -13,15 +13,16 @@ test.describe('Change case name', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
     test('Change case name',
-        async ({ page, signInPage, changeCaseName }) => {
+        async ({  changeCaseName,ctscUser }) => {
             caseName = 'CTSC Change case name ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
-            await signInPage.visit();
-            await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password,);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await changeCaseName.switchUser(ctscUser.page)
+            // await signInPage.visit();
+            // await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password,);
+            await changeCaseName.navigateTOCaseDetails(caseNumber);
 
             await changeCaseName.gotoNextStep('Change case name');
             await changeCaseName.updateCaseName();
-            await expect(page.getByText('Change case name')).toBeVisible();
+            await expect(changeCaseName.page.getByText('Change case name')).toBeVisible();
         })
 });

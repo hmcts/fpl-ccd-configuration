@@ -3,110 +3,308 @@ import {expect, Locator, Page} from "@playwright/test";
 import config from "../settings/test-docs/config";
 
 export class Orders extends BasePage {
-    orderPage: Page;
-    readonly orderToAmend: Locator;
-    readonly uploadAmendOrder: Locator;
-    readonly EPOEndDate: Locator;
-    readonly orderTypeRadio: Locator;
-    readonly orderApproved: Locator;
-    readonly orderApplication: Locator;
-    readonly approvedHearing: Locator;
-    readonly issuingJudge: Locator;
-    readonly childInvolved: Locator;
-    readonly EPOrderType: Locator;
-    readonly finalOrder: Locator;
-    readonly orderPreviewLink: Locator;
-    readonly isExclusion: Locator;
-    readonly excluded: Locator;
-    readonly powerOfExclusionStart: Locator;
-    readonly judgemagistrateTitle: Locator;
-    readonly judgeLastName: Locator;
-    readonly judgeEmail: Locator;
-    readonly legalAdvisorName: Locator;
-    readonly orderFurtherDirectionDetails: Locator;
-    readonly closeOrder: Locator;
-    readonly careOrderIssuedDate: Locator;
-    readonly careOrderIssuedCourt: Locator;
-    readonly juridiction: Locator;
-    readonly juridictionRegion: Locator;
-    readonly approvalDate: Locator;
-    readonly childAccomadation: Locator;
-    readonly orderConsent: Locator;
-    readonly orderReason: Locator;
-    readonly childLegalAid: Locator;
-    readonly juridictionRadio: Locator;
-    readonly orderEndsOn: Locator;
-    readonly orderLength: Locator;
-    readonly assessmentStartDate: Locator;
-    readonly assessmentDuration: Locator;
-    readonly assessmentPlace: Locator;
-    readonly psychiatricAssessment: Locator;
-    readonly assessingBody: Locator;
-    readonly awayFromHome: Locator;
-    readonly awayfromDate: Locator;
-    readonly awayToDate: Locator;
-    readonly childFirstContact: Locator;
-    readonly childSecondContact: Locator;
-    readonly childThirdContact: Locator;
-    readonly costOrderDetails: Locator;
-    readonly costOrder: Locator;
-    readonly orderTitle: Locator;
-    readonly orderDirectionDetails: Locator
+    private _orderPage: Page | undefined;
+    // private readonly _orderToAmend: Locator;
+    // private readonly _uploadAmendOrder: Locator;
+    // private readonly _EPOEndDate: Locator;
+    // private readonly _orderTypeRadio: Locator;
+    // private readonly _orderApproved: Locator;
+    // private readonly _orderApplication: Locator;
+    // private readonly _approvedHearing: Locator;
+    // private readonly _issuingJudge: Locator;
+    // private readonly _childInvolved: Locator;
+    // private readonly _EPOrderType: Locator;
+    // private readonly _finalOrder: Locator;
+    // private readonly _orderPreviewLink: Locator;
+    // private readonly _isExclusion: Locator;
+    // private readonly _excluded: Locator;
+    // private readonly _powerOfExclusionStart: Locator;
+    // private readonly _judgemagistrateTitle: Locator;
+    // private readonly _judgeLastName: Locator;
+    // private readonly _judgeEmail: Locator;
+    // private readonly _legalAdvisorName: Locator;
+    // private readonly _orderFurtherDirectionDetails: Locator;
+    // private readonly _closeOrder: Locator;
+    // private readonly _careOrderIssuedDate: Locator;
+    // private readonly _careOrderIssuedCourt: Locator;
+    // private readonly _juridiction: Locator;
+    // private readonly _juridictionRegion: Locator;
+    // private readonly _approvalDate: Locator;
+    // private readonly _childAccomadation: Locator;
+    // private readonly _orderConsent: Locator;
+    // private readonly _orderReason: Locator;
+    // private readonly _childLegalAid: Locator;
+    // private readonly _juridictionRadio: Locator;
+    // private readonly _orderEndsOn: Locator;
+    // private readonly _orderLength: Locator;
+    // private readonly _assessmentStartDate: Locator;
+    // private readonly _assessmentDuration: Locator;
+    // private readonly _assessmentPlace: Locator;
+    // private readonly _psychiatricAssessment: Locator;
+    // private readonly _assessingBody: Locator;
+    // private readonly _awayFromHome: Locator;
+    // private readonly _awayfromDate: Locator;
+    // private readonly _awayToDate: Locator;
+    // private readonly _childFirstContact: Locator;
+    // private readonly _childSecondContact: Locator;
 
-    constructor(page: Page) {
-        super(page);
-        this.orderTypeRadio = page.getByRole('group', {name: 'Select order'});
-        this.orderApproved = page.getByRole('group', {name: 'Was the order approved at a'});
-        this.orderApplication = page.getByRole('group', {name: 'Is there an application for'});
-        this.approvedHearing = page.getByLabel('Which hearing?');
-        this.issuingJudge = page.getByRole('group', {name: 'Is this judge issuing the'});
-        this.judgemagistrateTitle = page.getByRole('group', {name: 'Judge or magistrate\'s title'});
-        this.childInvolved = page.getByRole('group', {name: 'Is the order about all the children?'})
-        this.EPOrderType = page.getByRole('group', {name: 'Type of emergency protection'});
-        this.EPOEndDate = page.getByRole('group', {name: 'When does it end?'});
-        this.finalOrder = page.getByRole('group', {name: 'Is this a final order?'});
-        this.orderPreviewLink = page.getByRole('link', {name: 'Preview order.pdf'});
-        this.orderPage = page;
-        this.isExclusion = page.getByRole('group', {name: 'Is there an exclusion'});
-        this.excluded = page.getByLabel('Who\'s excluded');
-        this.powerOfExclusionStart = page.getByRole('group', {name: 'Date power of exclusion starts'});
-        this.orderToAmend = page.getByLabel('Select order to amend');
-        this.uploadAmendOrder = page.getByRole('textbox', {name: 'Upload the amended order. It will then be dated and stamped as amended.'});
-        this.judgeLastName = page.getByLabel('Last name');
-        this.judgeEmail= page.getByLabel('Email Address');
-        this.legalAdvisorName =page.getByLabel('Justices\' Legal Adviser\'s');
-        this.orderFurtherDirectionDetails =page.getByLabel('Add further directions, if');
-        this.closeOrder = page.getByRole('group', {name: 'Does this order close the case?'});
-        this.careOrderIssuedDate = page.getByRole('group', {name: 'When was the care order issued?'});
-        this.careOrderIssuedCourt =page.getByLabel('Which court issued the order?');
-        this.juridiction = page.getByRole('group', {name: 'Select jurisdiction'});
-        this.juridictionRegion = page.locator('#manageOrdersCafcassOfficesWales');
-        this.approvalDate = page.getByRole('group', { name: 'Approval Date' });
-        this.childAccomadation =page.getByLabel('Which child is the order for?');
-        this.orderConsent = page.getByRole('group', { name: 'Is order by consent?' });
-        this.orderReason = page.getByRole('group', { name: 'Order given because the child is likely to' });
-        this.childLegalAid = page.getByRole('group', { name: 'Does the child have a Legal' });
-        this.juridictionRadio = page.getByRole('group', {name: 'Jurisdiction'});
-        this.orderEndsOn = page.getByRole('group', {name: 'When does the order end?'});
-        this.orderLength =page.getByLabel('Order length, in months');
-        this.assessmentStartDate = page.getByRole('group', { name: 'Assessment Start Date' });
-        this.assessmentDuration = page.getByLabel('Duration of assessment (days)');
-        this.assessmentPlace = page.getByLabel('Place of Assessment (Optional)');
-        this.psychiatricAssessment = this.page.getByLabel('Psychiatric Assessment');
-        this.assessingBody = page.getByLabel('Assessing Body');
-        this.awayFromHome = page.getByRole('group', { name: 'Is child kept away from home?' });
-        this.awayfromDate = this.page.getByRole('group', { name: 'From date' });
-        this.awayToDate = page.getByRole('group', { name: 'To date' });
-        this.childFirstContact =  page.getByLabel('Child\'s first contact');
-        this.childSecondContact =  page.getByLabel('Child\'s second contact');
-        this.childThirdContact = page.getByLabel('Child\'s third contact');
-        this.costOrder =  page.getByRole('group', { name: 'Is there a costs order?' });
-        this.costOrderDetails = page.getByLabel('Cost order details');
-        this.orderTitle = page.getByLabel('Add order title (Optional)');
-        this.orderDirectionDetails = page.getByLabel('Add order directions');
-
-
+    get orderPage(): Page {
+        return <Page>this._orderPage;
     }
+
+    get orderToAmend(): Locator {
+        return this.page.getByLabel('Select order to amend');
+    }
+
+    get uploadAmendOrder(): Locator {
+        return this.page.getByRole('textbox', {name: 'Upload the amended order. It will then be dated and stamped as amended.'});
+    }
+
+    get EPOEndDate(): Locator {
+        return this.page.getByRole('group', {name: 'When does it end?'});
+    }
+
+    get orderTypeRadio(): Locator {
+        return this.page.getByRole('group', {name: 'Select order'});
+    }
+
+    get orderApproved(): Locator {
+        return this. page.getByRole('group', {name: 'Was the order approved at a'});
+    }
+
+    get orderApplication(): Locator {
+        return this.page.getByRole('group', {name: 'Is there an application for'});
+    }
+
+    get approvedHearing(): Locator {
+        return this.page.getByLabel('Which hearing?');
+    }
+
+    get issuingJudge(): Locator {
+        return this.page.getByRole('group', {name: 'Is this judge issuing the'});
+    }
+
+    get childInvolved(): Locator {
+        return this. page.getByRole('group', {name: 'Is the order about all the children?'});
+    }
+
+    get EPOrderType(): Locator {
+        return this. page.getByRole('group', {name: 'Type of emergency protection'});
+    }
+
+    get finalOrder(): Locator {
+        return this.page.getByRole('group', {name: 'Is this a final order?'});
+    }
+
+    get orderPreviewLink(): Locator {
+        return this.page.getByRole('link', {name: 'Preview order.pdf'});
+    }
+
+    get isExclusion(): Locator {
+        return this.page.getByRole('group', {name: 'Is there an exclusion'});
+    }
+
+    get excluded(): Locator {
+        return this.page.getByLabel('Who\'s excluded');
+    }
+
+    get powerOfExclusionStart(): Locator {
+        return this.page.getByRole('group', {name: 'Date power of exclusion starts'});
+    }
+
+    get judgemagistrateTitle(): Locator {
+        return this.page.getByRole('group', {name: 'Judge or magistrate\'s title'});
+    }
+
+    get judgeLastName(): Locator {
+        return this.page.getByLabel('Last name');
+    }
+
+    get judgeEmail(): Locator {
+        return this.page.getByLabel('Email Address');
+    }
+
+    get legalAdvisorName(): Locator {
+        return this.page.getByLabel('Justices\' Legal Adviser\'s');
+    }
+
+    get orderFurtherDirectionDetails(): Locator {
+        return this.page.getByLabel('Add further directions, if');
+    }
+
+    get closeOrder(): Locator {
+        return this.page.getByRole('group', {name: 'Does this order close the case?'});
+    }
+
+    get careOrderIssuedDate(): Locator {
+        return this.page.getByRole('group', {name: 'When was the care order issued?'});
+    }
+
+    get careOrderIssuedCourt(): Locator {
+        return this.page.getByLabel('Which court issued the order?');
+    }
+
+    get juridiction(): Locator {
+        return this.page.getByRole('group', {name: 'Select jurisdiction'});
+    }
+
+    get juridictionRegion(): Locator {
+        return this.page.locator('#manageOrdersCafcassOfficesWales');
+    }
+
+    get approvalDate(): Locator {
+        return this.page.getByRole('group', { name: 'Approval Date' });
+    }
+
+    get childAccomadation(): Locator {
+        return this.page.getByLabel('Which child is the order for?');
+    }
+
+    get orderConsent(): Locator {
+        return this. page.getByRole('group', { name: 'Is order by consent?' });
+    }
+
+    get orderReason(): Locator {
+        return this.page.getByRole('group', { name: 'Order given because the child is likely to' });
+    }
+
+    get childLegalAid(): Locator {
+        return this.page.getByRole('group', { name: 'Does the child have a Legal' });
+    }
+
+    get juridictionRadio(): Locator {
+        return this.page.getByRole('group', {name: 'Jurisdiction'});
+    }
+
+    get orderEndsOn(): Locator {
+        return this.page.getByRole('group', {name: 'When does the order end?'});
+    }
+
+    get orderLength(): Locator {
+        return this.page.getByLabel('Order length, in months');;
+    }
+
+    get assessmentStartDate(): Locator {
+        return this.page.getByRole('group', { name: 'Assessment Start Date' });
+    }
+
+    get assessmentDuration(): Locator {
+        return this. page.getByLabel('Duration of assessment (days)');
+    }
+
+    get assessmentPlace(): Locator {
+        return this.page.getByLabel('Place of Assessment (Optional)');
+    }
+
+    get psychiatricAssessment(): Locator {
+        return this.page.getByLabel('Psychiatric Assessment');
+    }
+
+    get assessingBody(): Locator {
+        return this.page.getByLabel('Assessing Body');
+    }
+
+    get awayFromHome(): Locator {
+        return this.page.getByRole('group', { name: 'Is child kept away from home?' });
+    }
+
+    get awayfromDate(): Locator {
+        return this.page.getByRole('group', { name: 'From date' });
+    }
+
+    get awayToDate(): Locator {
+        return this.page.getByRole('group', { name: 'To date' });
+    }
+
+    get childFirstContact(): Locator {
+        return this.page.getByLabel('Child\'s first contact');
+    }
+
+    get childSecondContact(): Locator {
+        return this.page.getByLabel('Child\'s second contact');
+    }
+
+    get childThirdContact(): Locator {
+        return this.page.getByLabel('Child\'s third contact');
+    }
+
+    get costOrderDetails(): Locator {
+        return this.page.getByLabel('Cost order details');;
+    }
+
+    get costOrder(): Locator {
+        return this. page.getByRole('group', { name: 'Is there a costs order?' });
+    }
+
+    get orderTitle(): Locator {
+        return this. page.getByLabel('Add order title (Optional)');
+    }
+
+    get orderDirectionDetails(): Locator {
+        return this. page.getByLabel('Add order directions');
+    }
+
+
+    // private readonly _childThirdContact: Locator;
+    // private readonly _costOrderDetails: Locator;
+    // private readonly _costOrder: Locator;
+    // private readonly _orderTitle: Locator;
+    // private readonly _orderDirectionDetails: Locator
+
+    // constructor(page: Page) {
+    //     super(page);
+    //     this._orderTypeRadio =
+    //     this._orderApproved =
+    //     this._orderApplication =
+    //     this._approvedHearing =
+    //     this._issuingJudge =
+    //     this._judgemagistrateTitle =
+    //     this._childInvolved =
+    //     this._EPOrderType =
+    //     this._EPOEndDate =
+    //     this._finalOrder =
+    //     this._orderPreviewLink =
+    //     this._orderPage = page;
+    //     this._isExclusion =
+    //     this._excluded =
+    //     this._powerOfExclusionStart =
+    //     this._orderToAmend = ;
+    //     this._uploadAmendOrder =
+    //     this._judgeLastName = ;
+    //     this._judgeEmail=
+    //     this._legalAdvisorName =;
+    //     this._orderFurtherDirectionDetails =
+    //     this._closeOrder =
+    //     this._careOrderIssuedDate =
+    //     this._careOrderIssuedCourt =
+    //     this._juridiction =
+    //     this._juridictionRegion =
+    //     this._approvalDate =
+    //     this._childAccomadation =
+    //     this._orderConsent =
+    //     this._orderReason =
+    //     this._childLegalAid =
+    //     this._juridictionRadio =
+    //     this._orderEndsOn =
+    //     this._orderLength =
+    //     this._assessmentStartDate =
+    //     this._assessmentDuration =
+    //     this._assessmentPlace =
+    //     this._psychiatricAssessment =
+    //     this._assessingBody =
+    //     this._awayFromHome =
+    //     this._awayfromDate =
+    //     this._awayToDate =
+    //     this._childFirstContact =
+    //     this._childSecondContact =
+    //     this._childThirdContact =
+    //     this._costOrder =
+    //     this._costOrderDetails =
+    //     this._orderTitle =
+    //     this._orderDirectionDetails =
+    //
+    //
+    // }
 
     async selectOrderOperation(toDo: string) {
         await this.page.getByRole('radio', {name: `${toDo}`}).click();
@@ -253,8 +451,8 @@ export class Orders extends BasePage {
     async openOrderDoc(docLink: string) {
         const newPagePromise = this.page.context().waitForEvent('page');
         await this.page.getByRole('link', {name: `${docLink}`}).click();
-        this.orderPage = await newPagePromise;
-        await this.orderPage.waitForLoadState();
+        this._orderPage = await newPagePromise;
+        await this._orderPage.waitForLoadState();
     }
 
     async uploadAmendedOrder() {

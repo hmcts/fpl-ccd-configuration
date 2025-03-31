@@ -3,8 +3,7 @@ import { expect, Page } from "@playwright/test";
 import { HearingDetailsMixin } from "./mixins/hearing-details-mixin";
 import config from "../settings/test-docs/config";
 
-export class GatekeepingListing extends HearingDetailsMixin()
-{
+export class GatekeepingListing extends HearingDetailsMixin({BasePage: BasePage}) {
   constructor(page: Page) {
     super(page);
   }
