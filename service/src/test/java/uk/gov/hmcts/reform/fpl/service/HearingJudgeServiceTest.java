@@ -185,6 +185,7 @@ public class HearingJudgeServiceTest {
         verify(roleAssignmentService).deleteRoleAssignment(currentRoles.get(0));
         verifyNoMoreInteractions(roleAssignmentService);
     }
+
     @Test
     void shouldEditHearingJudgeRoleWhenHearingJudgeChanged() {
         LocalDateTime startDate1 = LocalDateTime.now(LONDON_TIMEZONE).minusDays(1);

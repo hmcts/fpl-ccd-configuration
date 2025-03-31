@@ -37,7 +37,7 @@ public class HearingJudgeService {
         HEARING_LEGAL_ADVISER.getRoleName());
 
     /**
-     * Assign a hearing-judge on a case
+     * Assign a hearing-judge on a case.
      *
      * @param caseId   the case id to add a case role on
      * @param userId   the user to assign hearing-judge to
