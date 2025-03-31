@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -156,7 +157,7 @@ public class HearingJudgeService {
     private Optional<RoleAssignment> getRoleAssociatedWithHearing(List<RoleAssignment> roles, HearingBooking hearing) {
         ZonedDateTime roleStart = hearing.getStartDate().atZone(LONDON_TIMEZONE);
         return roles.stream()
-            .filter(role -> role.getBeginTime().equals(roleStart))
+            .filter(role -> timesEqualAtInstant(role.getBeginTime(), roleStart))
             .findFirst();
     }
 
@@ -177,9 +178,15 @@ public class HearingJudgeService {
         log.info("Begin role = {}, hearing = {}", role.getBeginTime(), times.getLeft());
         log.info("End role = {}, hearing = {}", role.getEndTime(), times.getRight());
         log.info("ActorId role = {}, hearing = {}", role.getActorId(), getJudgeIdFromHearing(hearing).orElse(null));
-        return Objects.equals(role.getBeginTime(), times.getLeft())
-            && Objects.equals(role.getEndTime(), times.getRight())
+        return timesEqualAtInstant(role.getBeginTime(), times.getLeft())
+            && timesEqualAtInstant(role.getEndTime(), times.getRight())
             && Objects.equals(role.getActorId(), getJudgeIdFromHearing(hearing).orElse(null));
+    }
+
+    private boolean timesEqualAtInstant(ZonedDateTime a, ZonedDateTime b) {
+        Instant left = Optional.ofNullable(a).map(ZonedDateTime::toInstant).orElse(null);
+        Instant right = Optional.ofNullable(b).map(ZonedDateTime::toInstant).orElse(null);
+        return Objects.equals(left, right);
     }
 
     Optional<String> getJudgeIdFromHearing(HearingBooking booking) {
