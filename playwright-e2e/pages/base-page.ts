@@ -35,8 +35,8 @@ this._page = page;
   }
 
   async checkYourAnsAndSubmit(){
-    await expect(this.checkYourAnswersHeader).toBeVisible();
-    await this.saveAndContinue.click();
+    await expect(this.page.getByRole('heading', { name: 'Check your answers' })).toBeVisible();
+    await this.page.getByRole('button', { name: 'Save and Continue'}).click();
   }
 
   async tabNavigation(tabName: string) {
