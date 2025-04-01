@@ -19,31 +19,28 @@ test.describe('Return application', () => {
   });
 
   test('CTSC return Application',
-    async ({ page, signInPage, returnApplication }) => {
+    async ({ ctscUser, returnApplication }) => {
       caseName = 'CTSC return Application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
-      await signInPage.visit();
-      await signInPage.login(CTSCUser.email, CTSCUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+await returnApplication.switchUser(ctscUser.page);
+      await returnApplication.navigateTOCaseDetails(caseNumber);
       await returnApplication.gotoNextStep('Return application');
       await returnApplication.ReturnApplication();
 
      // complete task
       //await returnApplication.tabNavigation('History');
        await returnApplication.page.getByRole('tab', { name: 'History',exact:true }).click();
-      await expect(page.getByText('Returned')).toBeVisible();
-      await signInPage.logout();
+      await expect(returnApplication.page.getByText('Returned')).toBeVisible();
 
     });
 
   test('LA submit application',
-    async ({ page, signInPage, returnApplication }) => {
+    async ({ localAuthorityUser, returnApplication }) => {
       caseName = 'LA submit application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, returnedCase);
-      await signInPage.visit();
-      await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
-      await page.getByRole('link', { name: 'Make changes to the respondents\' details' }).click();
+      await returnApplication.switchUser(localAuthorityUser.page);
+      await returnApplication.navigateTOCaseDetails(caseNumber);
+      await returnApplication.page.getByRole('link', { name: 'Make changes to the respondents\' details' }).click();
       await returnApplication.UpdateRespondent();
 
    });
