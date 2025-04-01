@@ -61,7 +61,7 @@ export class StartApplication {
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
-    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case' });
+    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people to be given' });
     this.returnApplicationLink = page.getByRole('link', { name: 'Return application' });
   }
   async groundsForTheApplication() {

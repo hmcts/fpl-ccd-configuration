@@ -2,68 +2,74 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class OthersToBeGivenNotice extends BasePage {
-    readonly othersToBeGivenNoticeHeading: Locator;
-    readonly fullName: Locator;
+    readonly otherPeopleToBeGivenNotice: Locator;
+    readonly firstName: Locator;
+    readonly lastName: Locator
     readonly dobDay: Locator;
     readonly dobMonth: Locator;
     readonly dobYear: Locator;
-    readonly gender: Locator;
-    readonly placeOfBirth: Locator;
     readonly currentAddress: Locator;
-    readonly reasonUnknownAddress: Locator;
+    readonly addressUnknown: Locator;
+    readonly giveMoreDetails: Locator;
     readonly telephoneNumber: Locator;
+    readonly numberConfidential: Locator;
     readonly relationshipToChild: Locator;
     readonly contactDetailsHidden: Locator;
     readonly addNew: Locator;
-    readonly hiddenDetails: Locator;
+    readonly difficultyCapacity: Locator;
+    readonly giveDetails: Locator;
+    readonly litigation: Locator;
 
     public constructor(page: Page) {
         super(page);
-        this.othersToBeGivenNoticeHeading = page.getByRole("heading", {name: "Other people in the case", exact: true});
-            this.fullName = page.getByLabel('Full name (Optional)');
-            this.dobDay = page.getByLabel('Day');
-            this.dobMonth = page.getByLabel('Month');
-            this.dobYear = page.getByLabel('Year');
-            this.gender = page.getByLabel('Gender (Optional)');
-            this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
-            this.currentAddress = page.getByRole('group', {name: '*Current address known? ('});
-            this.reasonUnknownAddress = page.getByLabel('*Reason the address is not');
-            this.telephoneNumber = page.getByLabel('Telephone number (Optional)');
-            this.relationshipToChild = page.getByText('What is this person\'s relationship to the child or children in this case? (Optional)');
-            this.contactDetailsHidden = page.getByRole('group', {name: 'Do you need contact details'});
-            this.addNew = page.getByRole('button', {name: 'Add new'});
-            this.hiddenDetails = page.locator('#others_additionalOthers_0_detailsHidden_No');
-        }
+        this.otherPeopleToBeGivenNotice = page.getByRole('link', { name: 'Other people to be given' });
+        this.firstName = page.getByLabel('First name');
+        this.lastName = page.getByLabel('Last name');
+        this.dobDay = page.getByLabel('Day');
+        this.dobMonth = page.getByLabel('Month');
+        this.dobYear = page.getByLabel('Year');
+        this.currentAddress = page.getByRole('group', { name: 'Current address known?' });
+        this.addressUnknown = page.getByLabel('Whereabouts unknown');
+        this.giveMoreDetails = page.getByLabel('Give more details');
+        this.telephoneNumber = page.getByLabel('Telephone number (Optional)');
+        this.numberConfidential = page.getByRole('group', { name: 'Do you need to keep the' });
+        this.relationshipToChild = page.getByText('What is this person\'s');
+        this.contactDetailsHidden = page.getByRole('group', { name: 'Do you need contact details' });
+        this.difficultyCapacity = page.getByRole('group', { name: 'Do you believe this person' });
+        this.litigation = page.getByRole('group', { name: 'Do you believe this person' }).getByLabel('No', { exact: true });
+        this.addNew = page.getByRole('button', { name: 'Add new' });
+        this.giveDetails = page.getByRole('textbox', { name: 'Give details, including' });
+    }
 
-
-        async othersToBeGivenNotice()
-        {
-            await expect(this.othersToBeGivenNoticeHeading).toBeVisible;
-            await this.fullName.fill("John Doe");
-            await this.dobDay.fill("1");
-            await this.dobMonth.fill("10");
-            await this.dobYear.fill("1990")
-            await this.gender.selectOption('1: Male');
-            await this.placeOfBirth.fill("London");
-            await this.currentAddress.getByLabel('No').check();
-            await this.reasonUnknownAddress.selectOption('1: No fixed abode');
-            await this.telephoneNumber.fill("0123456789")
-            await this.relationshipToChild.fill("uncle")
-            await this.contactDetailsHidden.getByLabel('No').check();
-            await this.page.getByLabel('Don\'t know').check();
-            await this.addNew.click();
-            await this.page.locator('#others_additionalOthers_0_name').fill('John Grey');
-            await this.page.locator('#others_additionalOthers #DOB-day').fill("12");
-            await this.page.locator('#others_additionalOthers #DOB-month').fill("11");
-            await this.page.locator('#others_additionalOthers #DOB-year').fill("1999");
-            await this.page.locator('#others_additionalOthers_0_gender').selectOption('2: Female');
-            await this.page.locator('#others_additionalOthers_0_birthPlace').fill("London");
-            await this.page.locator('#others_additionalOthers_0_addressKnowV2-No').check();
-            await this.page.locator('#others_additionalOthers_0_addressNotKnowReason').selectOption('1: No fixed abode');
-            await this.page.locator('#others_additionalOthers_0_telephone').fill("0000000000");
-            await this.page.locator('#others_additionalOthers_0_childInformation').fill('test');
-            await this.page.locator('#others_additionalOthers_0_litigationIssues-NO').check();
-            await this.submit.click();
-            await this.saveAndContinue.click();
-        }
+    async othersToBeGivenNotice() {
+        await this.otherPeopleToBeGivenNotice.click();
+        await this.addNew.click();
+        await this.firstName.fill('John');
+        await this.lastName.fill('Tom');
+        await this.dobDay.fill('11')
+        await this.dobMonth.fill('04');
+        await this.dobYear.fill('1980');
+        await this.currentAddress.getByLabel('No').click();
+        await this.currentAddress.getByLabel('No').click();
+        await this.addressUnknown.click();
+        await this.giveMoreDetails.fill('test');
+        await this.telephoneNumber.fill('0123456789');
+        await this.numberConfidential.getByLabel('No').check();
+        await this.relationshipToChild.fill('uncle')
+        await this.difficultyCapacity.getByLabel('No', { exact: true }).check();
+        await this.addNew.nth(1).click();
+        await this.page.locator('#othersV2_1_firstName').fill('Tim');
+        await this.page.locator('#othersV2_1_lastName').fill('kim');
+        await this.page.locator('#DOB-day').nth(1).fill('4');
+        await this.page.locator('#DOB-month').nth(1).fill('4');
+        await this.page.locator('#DOB-year').nth(1).fill('1980');
+        await this.page.getByRole('radio', { name: 'No', exact: true }).nth(3).click();
+        await this.page.getByRole('radio', { name: 'No', exact: true }).nth(3).click();
+        await this.page.locator('[id="othersV2_1_addressNotKnowReason-No\\ fixed\\ abode"]').check();
+        await this.page.locator('#othersV2_1_telephone').fill('00000000000');
+        await this.page.locator('#othersV2_1_childInformation').fill('Uncle');
+        await this.page.locator('#othersV2_1_litigationIssues-NO').dblclick();
+        await this.submit.click();
+        await this.saveAndContinue.click();
+    }
 };
