@@ -8,7 +8,7 @@ maintainers:
     email: fpl-developers@HMCTS.NET
 dependencies:
   - name: java
-    version: 5.3.0
+    version: 5.2.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
     version: 9.2.1
