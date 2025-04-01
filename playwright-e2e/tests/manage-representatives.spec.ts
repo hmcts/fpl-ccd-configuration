@@ -14,18 +14,17 @@ test.describe('Manage representatives', () => {
     });
 
     test('Manage representatives',
-        async ({ page, signInPage, manageRepresentatives }) => {
+        async ({ ctscUser, manageRepresentatives }) => {
             caseName = 'CTSC Manage representatives ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
-            await signInPage.visit();
-            await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password,);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await manageRepresentatives.switchUser(ctscUser.page);
+            await manageRepresentatives.navigateTOCaseDetails(caseNumber);
 
             await manageRepresentatives.gotoNextStep('Manage representatives');
             await manageRepresentatives.updateRepresentatives();
             await manageRepresentatives.tabNavigation('People in the case');
-            await expect(page.getByText('Representatives 1')).toBeVisible();
-            await expect(page.getByText('Charlie Chaplin')).toBeVisible();
+            await expect(manageRepresentatives.page.getByText('Representatives 1')).toBeVisible();
+            await expect(manageRepresentatives.page.getByText('Charlie Chaplin')).toBeVisible();
         })
     })
-    
+
