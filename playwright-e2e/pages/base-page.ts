@@ -38,6 +38,9 @@ this._page = page;
     await expect(this.page.getByRole('heading', { name: 'Check your answers' })).toBeVisible();
     await this.page.getByRole('button', { name: 'Save and Continue'}).click();
   }
+  async clickSaveAndContinue(){
+      await this.page.getByRole('button', { name: 'Save and Continue'}).click();
+  }
 
   async tabNavigation(tabName: string) {
     await this.page.getByRole('tab', { name: tabName }).click();
