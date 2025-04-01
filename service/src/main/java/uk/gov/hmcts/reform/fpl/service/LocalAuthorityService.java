@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -78,7 +79,12 @@ public class LocalAuthorityService {
 
     public Map<String, Object> updateLocalAuthorityFromNoC(CaseData oldCaseData, ChangeOrganisationRequest nocRequest,
                                                            String userEmail) {
-        LocalAuthority oldLocalAuthority = oldCaseData.getLocalAuthorities().get(0).getValue();
+        String oldOrgId = oldCaseData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
+        LocalAuthority oldLocalAuthority = oldCaseData.getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .filter(la -> la.getId().equals(oldOrgId))
+            .findFirst()
+            .orElseThrow();
 
         String newOrganisationId = nocRequest.getOrganisationToAdd().getOrganisationID();
         Organisation newOrganisation = organisationService.getOrganisation(newOrganisationId);
@@ -89,6 +95,7 @@ public class LocalAuthorityService {
             .email(userEmail)
             .phone(newOrganisation.getCompanyNumber())
             .address(newOrganisation.getContactInformation().get(0).toAddress())
+            .representingDetails(oldLocalAuthority.getRepresentingDetails())
             .build();
 
         return Map.of("localAuthorities", List.of(element(updatedLocalAuthority)));
