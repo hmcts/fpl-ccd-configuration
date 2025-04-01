@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -24,7 +25,7 @@ export default defineConfig({
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 5 : 2,
+ // workers: process.env.CI ? 50% : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [[process.env.CI ? 'html' : 'list'],
              ['html', { outputFolder: '../test-results/functionalTest' }]],
@@ -38,17 +39,9 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-      {
-          name: 'user-session-setup',
-          testMatch: '**/*user-auth-setup.ts',
-      },
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"],
-
-      },
-    //    dependencies: ['user-session-setup'],
-
+      use: { ...devices["Desktop Chrome"] },
     },
 
     {
