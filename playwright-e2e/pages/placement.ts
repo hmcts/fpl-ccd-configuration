@@ -1,5 +1,5 @@
 import { BasePage } from "./base-page";
-import { Page} from "@playwright/test";
+import {expect, Page} from "@playwright/test";
 import config from "../settings/test-docs/config";
 
 export class Placement extends BasePage
@@ -30,6 +30,7 @@ export class Placement extends BasePage
   }
 
   public async payForApplication() {
+    await expect(this.page.getByText('£556.00')).toBeVisible();
     await this.page.getByLabel('Payment by account (PBA) number').fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
