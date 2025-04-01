@@ -73,7 +73,6 @@ public class CaseSubmissionController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
-        //this is where the case name is generated
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
         // check if we want to use a C1 or C110a template
