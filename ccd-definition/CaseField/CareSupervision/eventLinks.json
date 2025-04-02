@@ -94,7 +94,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "othersLink",
     "FieldType": "Label",
-    "Label": "[Make changes to other people in the case](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterOthers)",
+    "Label": "[Make changes to other people to be given notice](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterOthers)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
