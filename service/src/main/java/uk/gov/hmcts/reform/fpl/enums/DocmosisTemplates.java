@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public enum DocmosisTemplates {
-    C110A("FL-PLW-APP-ENG-C110A-V4.doc", "FL-PLW-APP-WEL-00753-V6.doc", "c110a_application_%s"),
-    C1("FL-PLW-APP-ENG-01084-V6.doc", null, "c1_application_%s"),
+    C110A("FL-PLW-APP-ENG-C110A-V6.doc", "FL-PLW-APP-WEL-00753-V7.doc", "c110a_application_%s"),
+    C1("FL-PLW-APP-ENG-01084-V8.doc", null, "c1_application_%s"),
     C14_SUPPLEMENT("FL-PLW-APP-ENG-01086.doc", null, "c14_supplement_%s"),
     C15_SUPPLEMENT("FL-PLW-APP-ENG-01088.doc", null, "c15_supplement_%s"),
     C16_SUPPLEMENT("FL-PLW-APP-ENG-01083.doc", null, "c16_supplement_%s"),
