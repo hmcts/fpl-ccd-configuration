@@ -37,9 +37,18 @@ export class StartApplication extends BasePage {
         return this.page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img',);
     }
 
+    get ordersAndDirectionUpdated(): Locator {
+        return this.page.locator('p').filter({hasText: 'Orders and directions sought'}).getByRole('img', {name: 'Finished'});
+    }
+
     get allocationProposalFinished(): Locator {
         return this.page.locator('p').filter({hasText: 'Allocation proposal'}).getByRole('img', {name: 'Finished'});
     }
+    get caseNameFinished(): Locator {
+        return this.page.locator('p').filter({hasText: 'Case Name'}).getByRole('img', {name: 'Finished'});
+    }
+
+
 
     get allocationProposalLink(): Locator {
         return this.page.getByRole("link", {name: "Allocation proposal",});
@@ -106,10 +115,9 @@ export class StartApplication extends BasePage {
         return this.page.getByRole('link', {name: 'Return application'});
     }
 
-    get ordersAndDirectionsSoughtFinishedStatus():Locator{
-        return this.page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img');
+    get ordersAndDirectionsSoughtFinishedStatus(): Locator {
+        return this.page.locator('p').filter({hasText: 'Orders and directions sought'}).getByRole('img');
     }
-
 
 
     async groundsForTheApplication() {
@@ -122,15 +130,23 @@ export class StartApplication extends BasePage {
         await expect(this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible();
     }
 
+    async caseNameUpdated() {
+        await expect(this.caseNameFinished).toBeVisible();
+    }
+
     async riskAndHarmToChildren() {
         await expect(this.riskAndHarmToChildrenLink).toBeVisible();
         await this.riskAndHarmToChildrenLink.click();
     }
-  async hearingUrgency() {
-    expect(await this.hearingUrgencyLink).toBeVisible();
-    await this.hearingUrgencyLink.click();
-    await expect(this.hearingUrgencyHeader).toBeVisible();
-  }
+    async orderAndDirectionUpdated(){
+        await expect(this.ordersAndDirectionUpdated).toBeVisible();
+    }
+
+    async hearingUrgency() {
+        expect(await this.hearingUrgencyLink).toBeVisible();
+        await this.hearingUrgencyLink.click();
+        await expect(this.hearingUrgencyHeader).toBeVisible();
+    }
 
 
     async addApplicationDocuments() {
@@ -187,10 +203,10 @@ export class StartApplication extends BasePage {
         await this.internationalElementsHeading.click();
     }
 
-  async courtServicesReqUpdated() {
-    await expect(this.courtServices).toBeVisible();
-    await this.courtServices.click();
-  }
+    async courtServicesReqUpdated() {
+        await expect(this.courtServices).toBeVisible();
+        await this.courtServices.click();
+    }
 
 
     async addOtherPeopleInCase() {

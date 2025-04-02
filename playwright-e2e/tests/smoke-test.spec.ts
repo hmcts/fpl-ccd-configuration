@@ -5,7 +5,7 @@ import {CaseFileView} from "../pages/case-file-view";
 
 test.describe('', () => {
     test.slow();
-    test.only("Local Authority submit C110A application @smoke-test @accessibility", async ({
+    test("Local Authority submit C110A application @smoke-test @accessibility", async ({
                                                                                            signInPage,
                                                                                            createCase,
                                                                                            ordersAndDirectionSought,
@@ -37,12 +37,15 @@ test.describe('', () => {
         await createCase.caseName();
         await createCase.createCase();
         await createCase.submitCase(createCase.generatedCaseName);
+        await startApplication.caseNameUpdated();
         //this has to be refracted to new test as the test execution time exceed 8m
         //await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
         // Orders and directions sought
         await ordersAndDirectionSought.ordersAndDirectionsNeeded();
         await startApplication.addApplicationDetailsHeading.isVisible();
+       // await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
+        await startApplication.orderAndDirectionUpdated();
 
         // Hearing urgency
         await startApplication.hearingUrgency();
@@ -55,7 +58,7 @@ test.describe('', () => {
         await startApplication.groundsForTheApplicationHasBeenUpdated();
 
         //Add application documents
-        await startApplication.addApplicationDetailsHeading.isVisible();
+      //  await startApplication.addApplicationDetailsHeading.isVisible();
         await startApplication.addApplicationDocuments();
         await addApplicationDocuments.uploadDocumentSmokeTest();
         await startApplication.addApplicationDocumentsInProgress();
@@ -128,11 +131,11 @@ test.describe('', () => {
         await createCase.createCase();
         await createCase.respondentSolicitorCreatCase();
         await createCase.submitCase('Private Solicitor -C110 a Application ' + CreateCaseName.getFormattedDate());
-
+        await startApplication.caseNameUpdated();
 
         // Orders and directions sought
         await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
-        await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
+        await startApplication.orderAndDirectionUpdated();
 
 
         // Hearing urgency
@@ -154,6 +157,7 @@ test.describe('', () => {
         // // Add respondents' details
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsNeeded();
+
 
         // Allocation Proposal
         await startApplication.allocationProposal();
