@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
@@ -780,7 +781,6 @@ public class CaseSubmissionGenerationService
         return DocmosisApplicant.builder()
             .organisationName(getDefaultIfNullOrEmpty(applicant.getOrganisationName()))
             .contactName(getContactName(applicant.getTelephoneNumber()))
-            .jobTitle(getDefaultIfNullOrEmpty(applicant.getJobTitle()))
             .address(formatAddress(applicant.getAddress()))
             .email(getEmail(applicant.getEmail()))
             .mobileNumber(getTelephoneNumber(applicant.getMobileNumber()))
@@ -804,22 +804,25 @@ public class CaseSubmissionGenerationService
     private DocmosisApplicant buildApplicant(final LocalAuthority localAuthority) {
         final Optional<Colleague> solicitor = localAuthority.getFirstSolicitor();
         final Optional<Colleague> mainContact = localAuthority.getMainContact();
+        final RepresentingDetails representingDetails = localAuthority.getRepresentingDetails();
 
         return DocmosisApplicant.builder()
             .organisationName(getDefaultIfNullOrEmpty(localAuthority.getName()))
-            .contactName(getDefaultIfNullOrEmpty(mainContact.map(Colleague::getFullName)))
-            .jobTitle(getDefaultIfNullOrEmpty(mainContact.map(Colleague::getJobTitle)))
+            .contactName(getDefaultIfNullOrEmpty(mainContact.map(Colleague::buildFullName)))
             .address(formatAddress(localAuthority.getAddress()))
             .email(getDefaultIfNullOrEmpty(localAuthority.getEmail()))
             .mobileNumber(getDefaultIfNullOrEmpty(mainContact.map(Colleague::getPhone)))
             .telephoneNumber(getDefaultIfNullOrEmpty(localAuthority.getPhone()))
             .pbaNumber(getDefaultIfNullOrEmpty(localAuthority.getPbaNumber()))
-            .solicitorName(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getFullName)))
+            .solicitorName(getDefaultIfNullOrEmpty(solicitor.map(Colleague::buildFullName)))
             .solicitorMobile(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getPhone)))
             .solicitorTelephone(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getPhone)))
             .solicitorEmail(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getEmail)))
             .solicitorDx(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getDx)))
             .solicitorReference(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getReference)))
+            .representingName(getDefaultIfNullOrEmpty(nonNull(representingDetails)
+                ? representingDetails.getFullName()
+                : ""))
             .build();
     }
 
