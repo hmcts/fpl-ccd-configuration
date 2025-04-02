@@ -5,7 +5,7 @@ import {CaseFileView} from "../pages/case-file-view";
 
 test.describe('', () => {
     test.slow();
-    test("Local Authority submit C110A application @smoke-test @accessibility", async ({
+    test.only("Local Authority submit C110A application @smoke-test @accessibility", async ({
                                                                                            signInPage,
                                                                                            createCase,
                                                                                            ordersAndDirectionSought,

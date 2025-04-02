@@ -2,54 +2,81 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class ApplicantDetails extends BasePage {
-  //readonly page: Page;
-  readonly applicantDetailsHeading: Locator;
-  readonly groupEmailAddress: Locator;
-  readonly pbaNumber: Locator;
-  readonly customerReference: Locator;
-  readonly nameOfApplicantToSign: Locator;
-  readonly clientCode: Locator;
-  readonly phoneNumber: Locator;
-  readonly country: Locator;
-  readonly firstName: Locator;
-  readonly lastName: Locator;
-  readonly alternativeNumber: Locator;
-  readonly directEmailAddress: Locator;
-  readonly addNew: Locator;
-  readonly colleagueHeading: Locator;
-  readonly role: Locator;
-  readonly enterRole: Locator;
-  readonly continue: Locator;
-  readonly saveAndContinue: Locator;
-  readonly representingPersonDetails: Locator;
-  readonly mainContactDetails: Locator;
-  readonly otherContactPerson: Locator;
+    get mainContactDetails(): any {
+        return this.page.getByRole('group').locator('#applicantContact_applicantContact');
+    }
 
 
 
-  public constructor(page: Page) {
-    super(page);
-    this.applicantDetailsHeading = page.getByRole('heading', { name: 'Applicant details' });
-    this.groupEmailAddress = page.getByLabel('Legal team manager\'s name and');
-    this.pbaNumber = page.getByLabel('PBA number');
-    this.customerReference = page.getByLabel('Customer reference');
-    this.nameOfApplicantToSign = page.getByLabel('Name of the person who will');
-    this.clientCode = page.getByLabel('Client code (Optional)');
-    this.country = page.getByLabel('Country (Optional)');
-    this.firstName = page.getByLabel('First name');
-    this.lastName = page.getByLabel('Last name');
-    this.phoneNumber = page.getByLabel('Phone number', { exact: true });
-    this.alternativeNumber = page.getByLabel('Alternative phone number (');
-    this.directEmailAddress = page.getByText('Direct email address (');
-    this.addNew = page.getByRole('button', { name: 'Add new' });
-    this.colleagueHeading = page.locator('h2').filter({ hasText: 'Colleague' });
-    this.role = page.getByLabel('Other', { exact: true });
-    this.enterRole = page.getByLabel('Enter their role (Optional)');
-    this.continue = page.getByRole('button', { name: 'Continue' })
-    this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
-    this.representingPersonDetails = page.getByRole('group', { name: 'Details of person you are representing' });
-    this.mainContactDetails = page.getByRole('group').locator('#applicantContact_applicantContact');
-    this.otherContactPerson = page.locator('#applicantContactOthers_0_0');
+    get otherContactPerson(): any {
+        return this.page.locator('#applicantContactOthers_0_0');
+    }
+    get applicantDetailsHeading(): Locator {
+        return this.page.getByRole('heading', { name: 'Applicant details' });
+    }
+
+    get groupEmailAddress(): Locator {
+        return this.page.getByLabel('Legal team manager\'s name and');
+    }
+
+    get pbaNumber(): Locator {
+        return this.page.getByLabel('PBA number');
+    }
+
+    get customerReference(): Locator {
+        return this.page.getByLabel('Customer reference');
+    }
+
+    get nameOfApplicantToSign(): Locator {
+        return this.page.getByLabel('Name of the person who will');
+    }
+
+    get clientCode(): Locator {
+        return this.page.getByLabel('Client code (Optional)');
+    }
+
+    get phoneNumber(): Locator {
+        return this.page.getByLabel('Phone number', { exact: true });
+    }
+
+    get country(): Locator {
+        return this.page.getByLabel('Country (Optional)');
+    }
+
+    get firstName(): Locator {
+        return this.page.getByLabel('First name');
+    }
+
+    get lastName(): Locator {
+        return this.page.getByLabel('Last name');
+    }
+
+    get alternativeNumber(): Locator {
+        return this.page.getByLabel('Alternative phone number (');
+    }
+
+    get directEmailAddress(): Locator {
+        return this.page.getByText('Direct email address (');
+    }
+
+    get addNew(): Locator {
+        return this.page.getByRole('button', { name: 'Add new' });
+    }
+
+    get colleagueHeading(): Locator {
+        return this.page.locator('h2').filter({ hasText: 'Colleague' });
+    }
+
+    get role(): Locator {
+        return this.page.getByLabel('Other', { exact: true });
+    }
+
+    get enterRole(): Locator {
+        return this.page.getByLabel('Enter their role (Optional)');
+    }
+
+  get representingPersonDetails(): Locator{
+   return    this.page.getByRole('group', { name: 'Details of person you are representing' });
 
   }
 
@@ -71,8 +98,8 @@ export class ApplicantDetails extends BasePage {
     await this.page.getByLabel('Email address', { exact: true }).fill('zee@mail.com');
     await this.role.check();
     await this.enterRole.fill('QA');
-    await this.continue.click();
-    await this.saveAndContinue.click();
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
   }
 
   async solicitorC110AApplicationApplicantDetails(){

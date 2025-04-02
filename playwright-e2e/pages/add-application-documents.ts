@@ -1,23 +1,30 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import config from "../settings/test-docs/config";
+import {BasePage} from "./base-page.ts";
 
-export class AddApplicationDocuments {
+export class AddApplicationDocuments extends BasePage{
 
-    readonly page: Page;
-    readonly applicationDocumentsHeading: Locator;
-    readonly addNewButton: Locator;
-    readonly typeOfDocument: Locator;
-    readonly chooseFileButton: Locator;
-    readonly giveDetailsText: Locator;
 
-    public constructor(page: Page) {
-      this.page = page;
-      this.applicationDocumentsHeading = page.getByRole('heading', { name: 'Application documents' });
-      this.addNewButton = page.getByRole('button', { name: 'Add new' });
-      this.typeOfDocument = page.getByLabel('Document type');
-      this.chooseFileButton = page.locator('input#temporaryApplicationDocuments_0_document').first();
-      this.giveDetailsText = page.getByLabel('Give details of any documents you will upload at a later date.');
+    get applicationDocumentsHeading(): Locator {
+        return this.page.getByRole('heading', { name: 'Application documents' });
     }
+
+    get addNewButton(): Locator {
+        return this.page.getByRole('button', { name: 'Add new' });
+    }
+
+    get typeOfDocument(): Locator {
+        return this.page.getByLabel('Document type');
+    }
+
+    get giveDetailsText(): Locator {
+        return this.page.getByLabel('Give details of any documents you will upload at a later date.');
+    }
+
+
+
+
+
 
     async uploadDocumentSmokeTest() {
         await expect(this.applicationDocumentsHeading).toBeVisible();

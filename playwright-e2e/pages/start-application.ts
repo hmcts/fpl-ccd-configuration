@@ -11,14 +11,7 @@ export class StartApplication extends BasePage {
     get addApplicationDetailsHeading(): Locator {
         return this.page.getByRole("heading", {name: "Add application details",});
     }
-    //
-    // get ordersAndDirectionsSoughtLink(): Locator {
-    //     return this.page.getByRole("heading", {name: "Orders and directions sought",});
-    // }
-    //
-    // get factorsAffectingParentingLink(): Locator {
-    //     return this.page.getByRole("heading", {name: "Factors affecting parenting",});
-    // }
+
 
     get hearingUrgencyLink(): Locator {
         return this.page.getByRole("link", {name: "Hearing urgency",});
@@ -52,13 +45,6 @@ export class StartApplication extends BasePage {
         return this.page.getByRole("link", {name: "Allocation proposal",});
     }
 
-    get allocationProposalHeading(): Locator {
-        return this.page.getByRole("group", {name: "Allocation proposal"}).getByRole("heading");
-    }
-
-    get addApplicationDocsHeading(): Locator {
-        return this.page.getByRole("heading", {name: "Add application documents",});
-    }
 
     get uploadDocumentsLink(): Locator {
         return this.page.getByRole("link", {name: "Upload documents",});
@@ -120,6 +106,12 @@ export class StartApplication extends BasePage {
         return this.page.getByRole('link', {name: 'Return application'});
     }
 
+    get ordersAndDirectionsSoughtFinishedStatus():Locator{
+        return this.page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img');
+    }
+
+
+
     async groundsForTheApplication() {
         expect(await this.groundsForTheApplicationLink).toBeVisible();
         await this.groundsForTheApplicationLink.click();
@@ -140,10 +132,6 @@ export class StartApplication extends BasePage {
     await expect(this.hearingUrgencyHeader).toBeVisible();
   }
 
-  // async riskAndHarmToChildren() {
-  //   await expect(this.riskAndHarmToChildrenLink).toBeVisible();
-  //   await this.riskAndHarmToChildrenLink.click();
-  // }
 
     async addApplicationDocuments() {
         await expect(this.uploadDocumentsLink).toBeVisible();
@@ -186,10 +174,6 @@ export class StartApplication extends BasePage {
         await expect(this.allocationProposalFinished).toBeVisible();
     }
 
-    async otherProceedingsNeeded() {
-        await this.otherProceedingsLink.click();
-    }
-
     async welshLanguageReq() {
         await this.welshLanguageRequirements.click();
     }
@@ -207,20 +191,13 @@ export class StartApplication extends BasePage {
     await expect(this.courtServices).toBeVisible();
     await this.courtServices.click();
   }
-    // async courtServicesNeededReqUpdated() {
-    //     await expect(this.courtServicesNeeded).toBeVisible();
-    //     await this.courtServicesNeeded.click();
-    // }
+
 
     async addOtherPeopleInCase() {
         await expect(this.otherPeopleInCaseLink).toBeVisible();
         await this.otherPeopleInCaseLink.click();
     }
 
-    async returnApplication() {
-        await expect(this.returnApplicationLink).toBeVisible();
-        await this.returnApplicationLink.click();
-    }
 
     async submitCase() {
         await this.submitApplicationLink.click();
