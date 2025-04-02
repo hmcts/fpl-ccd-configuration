@@ -2,13 +2,13 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class OthersToBeGivenNotice extends BasePage {
-    readonly otherPeopleToBeGivenNotice: Locator;
-    readonly firstName: Locator;
-    readonly lastName: Locator
-    readonly dobDay: Locator;
-    readonly dobMonth: Locator;
-    readonly dobYear: Locator;
+    readonly inputFirstName: Locator;
+    readonly inputLastName: Locator
+    readonly inputDobDay: Locator;
+    readonly inputDobMonth: Locator;
+    readonly inputDobYear: Locator;
     readonly currentAddress: Locator;
+    readonly currentAddressNo: Locator;
     readonly addressUnknown: Locator;
     readonly giveMoreDetails: Locator;
     readonly telephoneNumber: Locator;
@@ -22,13 +22,13 @@ export class OthersToBeGivenNotice extends BasePage {
 
     public constructor(page: Page) {
         super(page);
-        this.otherPeopleToBeGivenNotice = page.getByRole('link', { name: 'Other people to be given' });
-        this.firstName = page.getByLabel('First name');
-        this.lastName = page.getByLabel('Last name');
-        this.dobDay = page.getByLabel('Day');
-        this.dobMonth = page.getByLabel('Month');
-        this.dobYear = page.getByLabel('Year');
+        this.inputFirstName = page.getByLabel('First name');
+        this.inputLastName = page.getByLabel('Last name');
+        this.inputDobDay = page.getByLabel('Day');
+        this.inputDobMonth = page.getByLabel('Month');
+        this.inputDobYear = page.getByLabel('Year');
         this.currentAddress = page.getByRole('group', { name: 'Current address known?' });
+        this.currentAddressNo = this.currentAddress.getByLabel('No');
         this.addressUnknown = page.getByLabel('Whereabouts unknown');
         this.giveMoreDetails = page.getByLabel('Give more details');
         this.telephoneNumber = page.getByLabel('Telephone number (Optional)');
@@ -42,30 +42,32 @@ export class OthersToBeGivenNotice extends BasePage {
     }
 
     async othersToBeGivenNotice() {
-        await this.otherPeopleToBeGivenNotice.click();
+        await this.page.pause();
         await this.addNew.click();
-        await this.firstName.fill('John');
-        await this.lastName.fill('Tom');
-        await this.dobDay.fill('11')
-        await this.dobMonth.fill('04');
-        await this.dobYear.fill('1980');
+        await this.inputFirstName.fill('James');
+        await this.inputLastName.fill('Trace');
+        await this.inputDobDay.fill('12')
+        await this.inputDobMonth.fill('05');
+        await this.inputDobYear.fill('1988');
         await this.currentAddress.getByLabel('No').click();
         await this.currentAddress.getByLabel('No').click();
+        await this.currentAddressNo.click();
+        await this.currentAddressNo.click();
         await this.addressUnknown.click();
-        await this.giveMoreDetails.fill('test');
-        await this.telephoneNumber.fill('0123456789');
+        await this.giveMoreDetails.fill('testing');
+        await this.telephoneNumber.fill('03456789000');
         await this.numberConfidential.getByLabel('No').check();
         await this.relationshipToChild.fill('uncle')
         await this.difficultyCapacity.getByLabel('No', { exact: true }).check();
-        await this.addNew.nth(1).click();
+       await this.addNew.nth(1).click();
         await this.page.locator('#othersV2_1_firstName').fill('Tim');
         await this.page.locator('#othersV2_1_lastName').fill('kim');
         await this.page.locator('#DOB-day').nth(1).fill('4');
         await this.page.locator('#DOB-month').nth(1).fill('4');
         await this.page.locator('#DOB-year').nth(1).fill('1980');
-        await this.page.getByRole('radio', { name: 'No', exact: true }).nth(3).click();
-        await this.page.getByRole('radio', { name: 'No', exact: true }).nth(3).click();
-        await this.page.locator('[id="othersV2_1_addressNotKnowReason-No\\ fixed\\ abode"]').check();
+        await this.page.locator ('#othersV2_1_addressKnowV2-No').click();
+        await this.page.locator ('#othersV2_1_addressKnowV2-No').click();
+        await this.page.locator('[id="othersV2_1_addressNotKnowReason-No\\ fixed\\ abode"]').click();
         await this.page.locator('#othersV2_1_telephone').fill('00000000000');
         await this.page.locator('#othersV2_1_childInformation').fill('Uncle');
         await this.page.locator('#othersV2_1_litigationIssues-NO').dblclick();
