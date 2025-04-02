@@ -74,7 +74,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
 
         CaseData updated = caseData.toBuilder()
             .allocationProposal(Allocation.builder()
-                .proposal("District judge")
+                .proposalV2("District judge")
                 .proposalReason("Example reason")
                 .build())
             .build();

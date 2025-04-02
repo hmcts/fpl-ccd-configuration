@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -126,6 +127,8 @@ class DraftOrdersApprovedEventHandlerTest {
     private CafcassNotificationService cafcassNotificationService;
     @Mock
     private WorkAllocationTaskService workAllocationTaskService;
+    @Mock
+    private FeatureToggleService featureToggleService;
     @Captor
     private ArgumentCaptor<OrderCafcassData> orderCafcassDataArgumentCaptor;
     @Captor
@@ -141,6 +144,8 @@ class DraftOrdersApprovedEventHandlerTest {
     @ParameterizedTest
     @MethodSource("provideBooleanValues")
     void shouldNotifyAdminOfApprovedOrders(Boolean urgency) {
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(true);
+
         CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .hearingDetails(List.of(HEARING))
@@ -170,6 +175,8 @@ class DraftOrdersApprovedEventHandlerTest {
     @ParameterizedTest
     @MethodSource("provideBooleanValues")
     void shouldNotifyAdminOfApprovedConfidentialOrders(Boolean urgency) {
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(true);
+
         CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .hearingDetails(List.of(HEARING))
@@ -195,6 +202,24 @@ class DraftOrdersApprovedEventHandlerTest {
             CTSC_INBOX,
             EXPECTED_TEMPLATE,
             caseData.getId());
+    }
+
+    @Test
+    void shouldNotNotifyAdminOfApprovedOrdersIfToggledOff() {
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .hearingDetails(List.of(HEARING))
+            .lastHearingOrderDraftsHearingId(HEARING_ID)
+            .orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.YES)).build())
+            .build();
+
+        List<HearingOrder> orders = List.of(HearingOrder.builder().build());
+
+        underTest.sendNotificationToAdmin(new DraftOrdersApproved(caseData, orders, List.of()));
+
+        verifyNoInteractions(notificationService);
     }
 
     @ParameterizedTest

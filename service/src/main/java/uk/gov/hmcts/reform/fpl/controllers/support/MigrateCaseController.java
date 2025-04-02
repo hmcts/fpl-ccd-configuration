@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -36,12 +36,13 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2360", this::run2360,
         "DFPL-2572", this::run2572,
         "DFPL-2635", this::run2635,
         "DFPL-2642", this::run2642,
-        "DFPL-2638", this::run2638,
-        "DFPL-2421", this::run2421
+        "DFPL-2640", this::run2640,
+        "DFPL-2421", this::run2421,
+        "DFPL-2487", this::run2487,
+        "DFPL-2713", this::run2713
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -94,10 +95,10 @@ public class MigrateCaseController extends CallbackController {
             orgId, null));
     }
 
-    private void run2638(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2638";
-        final long expectedCaseId = 1726575076142621L;
-        final String orgId = "CPYYWBZ";
+    private void run2640(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2640";
+        final long expectedCaseId = 1717064003872528L;
+        final String orgId = "1B8LGGK";
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
@@ -112,15 +113,21 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData(), migrationId));
     }
 
-    private void run2360(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2360";
+    private void run2487(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())) {
-            caseDetails.getData().put("hasRespondentLA", YesNo.NO);
-        } else {
-            log.info("Migration {id = {}, case reference = {}}, "
-                + "skipping case as has representativeType=LOCAL_AUTHORITY",
-                migrationId, caseData.getId());
-        }
+
+        judicialService.cleanupHearingRoles(caseData.getId());
+
+        List<RoleAssignment> rolesToAssign = judicialService.getHearingJudgeRolesForMigration(caseData);
+
+        log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
+        judicialService.migrateJudgeRoles(rolesToAssign);
     }
+
+    private void run2713(CaseDetails caseDetails) {
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1734095429043780L, "DFPL-2713");
+
+        caseDetails.getData().remove("noticeOfProceedingsBundle");
+    }
+
 }

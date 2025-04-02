@@ -486,7 +486,7 @@
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
-        "CRUD": "CR"
+        "CRUD": "R"
       },
       {
         "UserRoles": [
@@ -724,6 +724,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-change-approve-order",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "internal-update-guardians",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRU"
   },
@@ -1462,7 +1469,7 @@
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
-        "CRUD": "CR"
+        "CRUD": "R"
       }
     ]
   },
@@ -1480,7 +1487,7 @@
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
-        "CRUD": "CR"
+        "CRUD": "R"
       }
     ]
   },
@@ -1792,6 +1799,36 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[LASHARED]",
+          "[LAMANAGING]",
+          "[EPSMANAGING]"
+        ],
+        "CRUD": "CR"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterThirdPartyApplicantDetails",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
+        ],
+        "CRUD": "CR"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageCaseTTL",
     "AccessControl": [
       {
@@ -1799,6 +1836,13 @@
           "TTL_profile"
         ],
         "CRUD": "CRU"
+
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
       }
     ]
   },

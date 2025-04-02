@@ -3,7 +3,7 @@ import { expect, Page } from "@playwright/test";
 import { HearingDetailsMixin } from "./mixins/hearing-details-mixin";
 import config from "../settings/test-docs/config";
 
-export class GatekeepingListing extends HearingDetailsMixin(BasePage)
+export class GatekeepingListing extends HearingDetailsMixin()
 {
   constructor(page: Page) {
     super(page);
@@ -42,6 +42,7 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
     await this.page.getByRole('radio', { name: 'Yes' }).check();
     await this.clickContinue();
     await this.page.getByLabel('The local court admin completes the listing and serves the order').check();
+    await this.page.getByLabel('Local court admin will be notified by email that they need to list and serve this order. The order will be saved in the "Draft orders tab" until served. (Optional)').fill('CTSC to send Gatekeepind order');
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
     await expect(this.page.getByText('has been updated with event: Judicial Gatekeeping')).toBeVisible();

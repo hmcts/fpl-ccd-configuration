@@ -78,7 +78,7 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
     @Test
     void courtNotification() {
 
-        underTest.notifyCourt(new PlacementApplicationSubmitted(caseData, placement));
+        underTest.notifyCourtOfNewApplication(new PlacementApplicationSubmitted(caseData, placement));
 
         assertThat(response())
             .hasSubject("New placement application, Alex Green")

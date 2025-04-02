@@ -104,6 +104,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -299,11 +300,11 @@ class MigrateCaseServiceTest {
         @Test
         void removeApplicantEmailAndStopNotifyingTheirColleagues() {
             Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
-                    .notificationRecipient(YesNo.YES.getValue()).build());
+                    .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
 
             Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
                 .email("localAuthority1@email.com")
@@ -343,11 +344,11 @@ class MigrateCaseServiceTest {
         @Test
         void throwExceptionIfApplicantNotFound() {
             Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
 
             Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
                 .email("localAuthority1@email.com")
@@ -2494,7 +2495,7 @@ class MigrateCaseServiceTest {
                         .build()),
                     element(GeneratedOrder.builder()
                         .type("Interim testing order")
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .build())
                     )
                 ).build();
@@ -2534,7 +2535,7 @@ class MigrateCaseServiceTest {
                     element(GeneratedOrder.builder()
                         .type(orderType)
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build()))
                 ).build();
@@ -2549,7 +2550,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE)
                         .approvalDateTime(null)
                         .build()))
@@ -2565,7 +2566,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(null)
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build()))
@@ -2581,7 +2582,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE)
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
                         .build()))
@@ -2597,7 +2598,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE.minusDays(1))
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build()))
@@ -2625,7 +2626,7 @@ class MigrateCaseServiceTest {
                     // no approval date
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(null)
                         .approvalDateTime(null)
                         .build()),
@@ -2633,27 +2634,27 @@ class MigrateCaseServiceTest {
                     // approved final orders
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
                         .build()),
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE.minusDays(2))
                         .build()),
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(3))
                         .build()),
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE.minusDays(4))
                         .build()),
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .build()),
                     element(GeneratedOrder.builder()
                         .type("Final Care order")
@@ -2678,7 +2679,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(null)
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build()))
@@ -2721,7 +2722,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build())))
                 .build();
@@ -3517,7 +3518,7 @@ class MigrateCaseServiceTest {
                 .type("test")
                 .reason("reason")
                 .timeFrame("timeFrame")
-                .withoutNotice("withoutNotice")
+                .withoutNotice(YES.getValue())
                 .withoutNoticeReason("withoutNoticeReason")
                 .build();
 

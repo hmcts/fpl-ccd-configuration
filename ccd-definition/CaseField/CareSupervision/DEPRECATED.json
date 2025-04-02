@@ -854,5 +854,53 @@
     "FieldType": "Person",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityColleaguesList",
+    "Label": "Nominate a case contact",
+    "HintText": "HMCTS will contact this person if they have any questions",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityMainContactShown",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Control filed not displayed"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityColleagues",
+    "Label": "Colleague",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Colleague",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "mainContactLabel",
+    "FieldType": "Label",
+    "Label": "<h2>Main contact</h2>",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "factorsAffectingParentingLink",
+    "FieldType": "Label",
+    "Label": "[Make changes to factors affecting parenting](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterParentingFactors)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

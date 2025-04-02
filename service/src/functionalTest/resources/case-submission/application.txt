@@ -8,6 +8,7 @@ Applicant Test
 Respondents John Wall
 Application from Test submitted on ${issueDate}
 
+
 Orders
 
 Orders needed                                                       Interim care order
@@ -15,9 +16,9 @@ Direction needed                                                    -
 
 Hearing needed
 
-Hearing date requested                                              Same day
+Hearing date requested                                              Standard (between days 12-18)
 Without notice                                                      -
-Respondents aware of proceedings                                    -
+Respondents aware of proceedings                                    Yes
 Respondents’ view on proceedings                                    -
 
 Allocation proposal
@@ -83,6 +84,7 @@ Current address                                                     -
 Telephone number                                                    -
 Relationship to the child or children                               uncle
 Interpreter                                                         -
+Spoken or written Welsh                                             -
 Intermediary                                                        -
 Facilities or assistance for a disability                           -
 Separate waiting room or other security measures                    -
@@ -93,10 +95,10 @@ Confidential contact details                                        -
 Applicant
 
 Name                                                                Test
-Contact name                                                        test
+Contact name                                                        testFirst testLast
 Address                                                             Line 1
                                                                     CR0 2GE
-Mobile number                                                       -
+Mobile number                                                       077766655544
 Telephone number                                                    077766655544
 Email address                                                       test@test.com
 Payment by account (PBA) number                                     PBA0082848
@@ -106,16 +108,16 @@ Solicitor’s telephone number                                        -
 Solicitor’s email address                                           test@test.com
 Solicitor’s DX number                                               -
 Solicitor’s reference                                               -
-Representing
+Representing                                                        -
 
 Grounds for the application
 
-The reason(s) behind the child suffering or being
-likely to suffer significant harm
+The reason(s) behind the child suffering
+or being likely to suffer significant harm
 
-Beyond parental control.
-Not receiving care that would be reasonably
-expected from a parent.
+Child is beyond parental control.
+The care given to the child not being what it would be
+reasonable to expect a parent to give.
 
 Threshold evidence
 
@@ -123,23 +125,22 @@ Details
 
 Risk and harm to children
 
-Physical harm including non-accidental injury
-Emotional harm
-Sexual abuse
-Neglect
+Physical harm including non-accidental injury                       -
+Emotional harm                                                      -
+Sexual abuse                                                        -
+Neglect                                                             -
 
 Factors affecting parenting
 
-Alcohol or drug abuse
-Domestic abuse
-Anything else
+Alcohol or drug abuse                                               -
+Domestic abuse                                                      -
+Anything else                                                       -
 
 International element
 
-Other countries which are involved
-Are any of these countries outside the Hague
-Convention
-Important details
+Other countries which are involved                                  -
+Are any of these countries outside the Hague Convention             -
+Important details                                                   -
 
 Other proceedings
 
