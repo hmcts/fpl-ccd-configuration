@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.EpsLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
@@ -252,6 +253,11 @@ class LocalAuthorityServiceTest {
                 .build());
 
         CaseData caseData = CaseData.builder()
+            .outsourcingPolicy(OrganisationPolicy.builder()
+                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                    .organisationID("ORG123")
+                    .build())
+                .build())
             .localAuthorities(List.of(element(
                 LocalAuthority.builder()
                     .id("ORG123")
