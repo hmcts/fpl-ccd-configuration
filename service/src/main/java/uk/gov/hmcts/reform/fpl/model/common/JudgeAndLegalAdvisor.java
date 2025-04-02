@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
@@ -15,44 +15,15 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
+@Jacksonized
+@SuperBuilder(toBuilder = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JudgeAndLegalAdvisor extends AbstractJudge {
-    private final JudgeOrMagistrateTitle judgeTitle;
-    private final String otherTitle;
-    private final String judgeLastName;
-    private final String judgeFullName;
     private final String legalAdvisorName;
     private String allocatedJudgeLabel;
     private String useAllocatedJudge;
-    private String judgeEmailAddress;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private YesNo judgeEnterManually;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private JudicialUser judgeJudicialUser;
-
-    @Builder(toBuilder = true)
-    @SuppressWarnings("java:S107")
-    private JudgeAndLegalAdvisor(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
-                                 String judgeFullName, String legalAdvisorName, String allocatedJudgeLabel,
-                                 String useAllocatedJudge, String judgeEmailAddress, YesNo judgeEnterManually,
-                                 JudicialUser judgeJudicialUser) {
-        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress, judgeEnterManually,
-            judgeJudicialUser);
-        this.judgeTitle = judgeTitle;
-        this.otherTitle = otherTitle;
-        this.judgeLastName = judgeLastName;
-        this.judgeFullName = judgeFullName;
-        this.legalAdvisorName = legalAdvisorName;
-        this.allocatedJudgeLabel = allocatedJudgeLabel;
-        this.useAllocatedJudge = useAllocatedJudge;
-        this.judgeEmailAddress = judgeEmailAddress;
-        this.judgeEnterManually = judgeEnterManually;
-        this.judgeJudicialUser = judgeJudicialUser;
-    }
 
     @JsonIgnore
     public boolean isUsingAllocatedJudge() {
@@ -60,7 +31,7 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     }
 
     public static JudgeAndLegalAdvisor from(final Judge allocatedJudge) {
-        JudgeAndLegalAdvisorBuilder judgeAndLegalAdvisorBuilder = JudgeAndLegalAdvisor.builder();
+        JudgeAndLegalAdvisorBuilder<?, ?> judgeAndLegalAdvisorBuilder = JudgeAndLegalAdvisor.builder();
         if (allocatedJudge != null) {
             judgeAndLegalAdvisorBuilder
                 .judgeTitle(allocatedJudge.getJudgeTitle())

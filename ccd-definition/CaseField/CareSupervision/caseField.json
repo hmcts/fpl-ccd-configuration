@@ -11,6 +11,45 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judgeType",
+    "Label": "What type of judge do you want to allocate:",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "JudgeType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "feePaidJudgeTitle",
+    "Label": "Select judge title",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "FeePaidJudgeTitle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "legalAdvisorTitle",
+    "Label": "Select judge title",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LegalAdvisorTitle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manualJudgeDetails",
+    "Label": " ",
+    "FieldType": "ManualLegalAdvisorDetail",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judicialUser",
     "Label": "Search for Judge",
     "FieldType": "JudicialUser",
@@ -41,15 +80,6 @@
     "ID": "manualJudgeAllocationWarningHearingJudge",
     "Label": "You are entering legal adviser details manually - this will allocate the case roles but any generic inbox email address detailed will create tasks to Available Tasks and not My Tasks.",
     "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "enterManually",
-    "Label": "Add legal adviser details",
-    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

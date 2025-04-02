@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
@@ -168,18 +169,19 @@ public class ListGatekeepingHearingController extends CallbackController {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        Optional<String> error = judicialService.validateTempAllocatedJudge(caseData);
+        Optional<String> error = judicialService.validateAllocatedJudge(caseData);
 
         if (error.isPresent()) {
             return respond(caseDetails, List.of(error.get()));
         }
 
+        final AllocateJudgeEventData eventData = caseData.getAllocateJudgeEventData();
         Judge allocatedJudge;
-        if (caseData.getEnterManually().equals(YesNo.NO)
-            && !ObjectUtils.isEmpty(caseData.getJudicialUser())
-            && !ObjectUtils.isEmpty(caseData.getJudicialUser().getPersonalCode())) {
+        if (eventData.getEnterManually().equals(YesNo.NO)
+            && !ObjectUtils.isEmpty(eventData.getJudicialUser())
+            && !ObjectUtils.isEmpty(eventData.getJudicialUser().getPersonalCode())) {
 
-            Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
+            Optional<JudicialUserProfile> jup = judicialService.getJudge(eventData.getJudicialUser().getPersonalCode());
             if (jup.isPresent()) {
                 allocatedJudge = Judge.fromJudicialUserProfile(jup.get());
                 caseDetails.getData().put(ALLOCATED_JUDGE, allocatedJudge);

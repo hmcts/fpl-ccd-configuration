@@ -58,6 +58,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
@@ -192,9 +193,12 @@ public class CaseData extends CaseDataParent {
     @JsonProperty("caseLinks")
     private List<CaseLinksElement<CaseLink>> caseLinks;
 
-    private final JudicialUser judicialUser;
+    @Builder.Default
+    @JsonUnwrapped
+    private final AllocateJudgeEventData allocateJudgeEventData = AllocateJudgeEventData.builder().build();
+
+    // TODO
     private final JudicialUser judicialUserHearingJudge;
-    private final YesNo enterManually;
     private final YesNo enterManuallyHearingJudge;
 
     public List<Element<Court>> getPastCourtList() {

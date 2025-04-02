@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -15,35 +18,11 @@ import java.util.Objects;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
+@Jacksonized
 @Data
 @EqualsAndHashCode(callSuper = true)
+@SuperBuilder(toBuilder = true)
 public class Judge extends AbstractJudge {
-    private final JudgeOrMagistrateTitle judgeTitle;
-    private final String otherTitle;
-    private final String judgeLastName;
-    private final String judgeFullName;
-    private final String judgeEmailAddress;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private final YesNo judgeEnterManually;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private final JudicialUser judgeJudicialUser;
-
-    @Builder(toBuilder = true)
-    private Judge(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
-                  String judgeFullName, String judgeEmailAddress, YesNo judgeEnterManually,
-                  JudicialUser judgeJudicialUser) {
-        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress, judgeEnterManually,
-            judgeJudicialUser);
-        this.judgeTitle = judgeTitle;
-        this.otherTitle = otherTitle;
-        this.judgeLastName = judgeLastName;
-        this.judgeFullName = judgeFullName;
-        this.judgeEmailAddress = judgeEmailAddress;
-        this.judgeEnterManually = judgeEnterManually;
-        this.judgeJudicialUser = judgeJudicialUser;
-    }
 
     public boolean hasEqualJudgeFields(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return Objects.equals(getJudgeTitle(), judgeAndLegalAdvisor.getJudgeTitle())
@@ -54,26 +33,25 @@ public class Judge extends AbstractJudge {
 
     public JudgeAndLegalAdvisor toJudgeAndLegalAdvisor() {
         return JudgeAndLegalAdvisor.builder()
-            .judgeTitle(judgeTitle)
-            .otherTitle(otherTitle)
-            .judgeLastName(judgeLastName)
-            .judgeFullName(judgeFullName)
-            .judgeEmailAddress(judgeEmailAddress)
+            .judgeTitle(getJudgeTitle())
+            .otherTitle(getOtherTitle())
+            .judgeLastName(getJudgeLastName())
+            .judgeFullName(getJudgeFullName())
+            .judgeEmailAddress(getJudgeEmailAddress())
             .build();
     }
 
-    public static Judge fromJudicialUserProfile(JudicialUserProfile jup, YesNo judgeEnterManually) {
+    public static Judge fromJudicialUserProfile(JudicialUserProfile jup, JudgeOrMagistrateTitle title) {
         String postNominals = isNotEmpty(jup.getPostNominals())
             ? (" " + jup.getPostNominals())
             : "";
 
         return Judge.builder()
-            .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-            .otherTitle(jup.getTitle())
+            .judgeTitle((title == null) ? JudgeOrMagistrateTitle.OTHER : title)
+            .otherTitle((title == null) ? jup.getTitle() : null)
             .judgeLastName(jup.getSurname() + postNominals)
             .judgeFullName(jup.getFullName() + postNominals)
             .judgeEmailAddress(jup.getEmailId())
-            .judgeEnterManually(judgeEnterManually)
             .judgeJudicialUser(JudicialUser.builder()
                 .idamId(jup.getSidamId())
                 .personalCode(jup.getPersonalCode())
@@ -82,7 +60,6 @@ public class Judge extends AbstractJudge {
     }
 
     public static Judge fromJudicialUserProfile(JudicialUserProfile jup) {
-        return fromJudicialUserProfile(jup, YesNo.NO);
+        return fromJudicialUserProfile(jup, null);
     }
-
 }

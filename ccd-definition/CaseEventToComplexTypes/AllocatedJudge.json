@@ -1,21 +1,21 @@
 [
   {
+
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "allocatedJudge",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "manualJudgeDetails",
     "ListElementCode": "judgeTitle",
-    "EventElementLabel": "Judge or magistrate's title",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
+
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "allocatedJudge",
-    "CaseFieldID": "allocatedJudge",
-    "ListElementCode": "otherTitle",
-    "EventElementLabel": "Title",
+    "CaseFieldID": "manualJudgeDetails",
+    "ListElementCode": "judgeLastName",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
@@ -23,19 +23,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "allocatedJudge",
-    "CaseFieldID": "allocatedJudge",
-    "ListElementCode": "judgeLastName",
-    "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
-    "CaseEventID": "allocatedJudge",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "manualJudgeDetails",
     "ListElementCode": "judgeFullName",
-    "EventElementLabel": "Full name",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
@@ -43,9 +32,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "allocatedJudge",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "manualJudgeDetails",
     "ListElementCode": "judgeEmailAddress",
-    "EventElementLabel": "Email Address",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   }
