@@ -272,7 +272,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
                 .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
                 .build())
             .localAuthorities(List.of(element(LocalAuthority.builder()
-                .id("ORG123")
+                .id(OLD_ORGANISATION.getOrganisationID())
                 .name("Joe Bloggs")
                 .email("test1@testmail.com")
                 .phone("111222333")
