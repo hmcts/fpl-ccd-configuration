@@ -1,53 +1,49 @@
 name: fpl-case-service
 apiVersion: v2
 home: https://github.com/hmcts/fpl-ccd-configuration
-version: 1.12.81
+version: 1.12.82
 description: FPL Case Service
 maintainers:
   - name: HMCTS Family Public Law team
     email: fpl-developers@HMCTS.NET
 dependencies:
   - name: java
-    version: 5.2.0
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: 5.3.0
+    repository: 'oci://hmctspublic.azurecr.io/helm'
   - name: ccd
-    version: 9.2.1
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: 9.2.2
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     tags:
       - fpl-ccd-stack
   - name: xui-webapp
     version: ~1.0.12
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: xui-webapp.enabled
   - name: xui-mo-webapp
-    version: ~1.1.0
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: ~1.1.18
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: xui-mo-webapp.enabled
-  - name: idam-pr
-    version: 2.3.0
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: idam-pr.enabled
   - name: aac-manage-case-assignment
-    version: ~0.2.16
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: ~0.2.17
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: aac-manage-case-assignment.enabled
   - name: ccd-case-document-am-api
-    version: 1.7.14
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: 1.7.16
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ccd-case-document-am-api.enabled
   - name: postgresql
-    version: 1.0.2
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: 1.1.0
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: postgresql.enabled
   - name: servicebus
-    version: 1.0.7
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: 1.2.1
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: servicebus.enabled
   - name: wa
-    version: ~1.0.5
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: ~1.1.0
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: wa.enabled
   - name: ccd-message-publisher
-    version: ~0.1.11
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    version: ~0.1.22
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ccd-message-publisher.enabled
