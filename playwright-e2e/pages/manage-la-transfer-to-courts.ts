@@ -6,10 +6,6 @@ export class ManageLaTransferToCourts extends BasePage {
         return this.page.getByRole('heading', { name: 'Manage LAs / Transfer to court', exact: true });
     }
 
-    get caseType(): Locator {
-        return this.page.getByLabel('Case type');
-    }
-
     get transferAnotherCourt(): Locator {
         return this.page.getByLabel('Transfer to another Court');
     }
@@ -49,34 +45,7 @@ export class ManageLaTransferToCourts extends BasePage {
     get courtTransfer(): Locator {
         return this.page.getByRole('group', { name: 'Is the case transferring to a different court' });
     }
-    // private readonly _manageLaTransferToCourts: Locator;
-    // private readonly _caseType: Locator;
-    // private readonly _transferAnotherCourt: Locator;
-    // private readonly _selectNewCourt: Locator;
-    // private readonly _giveAccessToAnotherLa: Locator;
-    // private readonly _selectLocalAuthority: Locator;
-    // private readonly _localAuthorityToTransfer: Locator;
-    // private readonly _removeAccess: Locator;
-    // private readonly _transferToAnotherLa: Locator;
-    // private readonly _fullName: Locator;
-    // private readonly _email: Locator;
-    // private readonly _courtTransfer: Locator;
-
-    // constructor(page: Page) {
-    //     super(page);
-    //     this._manageLaTransferToCourts =
-    //     this._caseType =
-    //     this._transferAnotherCourt =
-    //     this._selectNewCourt =
-    //     this._giveAccessToAnotherLa =
-    //     this._selectLocalAuthority =
-    //     this._localAuthorityToTransfer =
-    //     this._removeAccess =
-    //     this._transferToAnotherLa =
-    //     this._fullName =
-    //     this._email =
-    //     this._courtTransfer =
-    // }
+    
     public async updateManageLaTransferToCourts() {
         await expect(this.manageLaTransferToCourts).toBeVisible();
         await this.transferAnotherCourt.click();

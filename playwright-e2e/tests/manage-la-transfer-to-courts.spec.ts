@@ -44,7 +44,6 @@ test.describe('Manage LAs / Transfer to court', () => {
 
             await manageLaTransferToCourts.switchUser(ctscUser.page);
             await manageLaTransferToCourts.navigateTOCaseDetails(caseNumber);
-
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateCourtAccess();
             await manageLaTransferToCourts.tabNavigation('People in the case');
@@ -63,11 +62,8 @@ test.describe('Manage LAs / Transfer to court', () => {
             await updateCase(caseName, caseNumber, caseDataWithTwoLA);
             }
 
-            // await signInPage.visit();
-            // await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await manageLaTransferToCourts.switchUser(ctscUser.page);
             await manageLaTransferToCourts.navigateTOCaseDetails(caseNumber);
-
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateRemoveAccess();
             await manageLaTransferToCourts.tabNavigation('People in the case');
@@ -83,11 +79,8 @@ test.describe('Manage LAs / Transfer to court', () => {
             else{
             await updateCase(caseName, caseNumber, caseData);
             }
-            // await signInPage.visit();
-            // await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await manageLaTransferToCourts.switchUser(ctscUser.page)
             await manageLaTransferToCourts.navigateTOCaseDetails(caseNumber);
-
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateTranferToLa();
             await manageLaTransferToCourts.tabNavigation('People in the case');
