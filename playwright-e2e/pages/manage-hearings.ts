@@ -4,51 +4,6 @@ import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
 export class ManageHearings extends HearingDetailsMixin()
 {
-    // get hearingDetails(): Locator {
-    //     return this.page.getByLabel('Add details (Optional)');
-    // }
-    //
-    // get hearingDay(): Locator {
-    //     return this.page.getByRole('textbox', { name: 'Day' });
-    // }
-    //
-    // get hearingMonth(): Locator {
-    //     return this.page.getByRole('textbox', { name: 'Month' });
-    // }
-    //
-    // get hearingYear(): Locator {
-    //     return this.page.getByRole('textbox', { name: 'Year' });
-    // }
-    //
-    // get hearingLengthInHours(): Locator {
-    //     return this.page.getByLabel('Hearing length, in hours');
-    // }
-    //
-    // get hearingLengthInMinutes(): Locator {
-    //     return this.page.getByLabel('Hearing length, in minutes');
-    // }
-    //
-    // get inpPersonCheckbox(): Locator {
-    //     return this.page.getByText('In person');
-    // }
-  // private readonly _hearingDetails: Locator;
-  // private readonly _hearingDay: Locator;
-  // private readonly _hearingMonth: Locator;
-  // private readonly _hearingYear: Locator;
-  // private readonly _hearingLengthInHours: Locator;
-  // private readonly _hearingLengthInMinutes: Locator;
-  // private readonly _inpPersonCheckbox: Locator;
-
-  // constructor(page: Page) {
-  //   super(page);
-  //   this._hearingDetails =
-  //   this._hearingDay =
-  //   this._hearingMonth =
-  //   this._hearingYear =
-  //   this._hearingLengthInHours =
-  //   this._hearingLengthInMinutes =
-  //   this._inpPersonCheckbox =
-  // }
 
   async createNewHearingOnCase(){
     await this.page.getByLabel('Add a new hearing').check();

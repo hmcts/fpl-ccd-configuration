@@ -17,22 +17,6 @@ export class HearingUrgency extends BasePage {
     get areRespondentsAwareOfProceedings(): Locator {
         return this.page.getByRole('radio', { name: 'Yes' });
     }
-
-  // private readonly _hearingUrgencyHeading: Locator;
-  // private readonly _hearingUrgency: Locator;
-  // private readonly _selectTypeOfHearing: Locator;
-  // private readonly _areRespondentsAwareOfProceedings: Locator;
-  // private readonly _continue: Locator;
-
-  // public constructor(page: Page) {
-  //   super(page);
-  //   this._hearingUrgencyHeading =
-  //   this._hearingUrgency =
-  //   this._selectTypeOfHearing =
-  //   this._areRespondentsAwareOfProceedings =
-  //   this._continue =
-  //
-  // }
   async hearingUrgencySmokeTest() {
     await expect(this.hearingUrgencyHeading).toBeVisible();
     await this.hearingUrgency.click();

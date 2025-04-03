@@ -21,8 +21,6 @@ test.describe('Manage LAs / Transfer to court', () => {
         async ({ page, signInPage, ctscUser,manageLaTransferToCourts }) => {
             caseName = 'CTSC transfers case' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
-            // await signInPage.visit();
-            // await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             manageLaTransferToCourts.switchUser(ctscUser.page);
             await manageLaTransferToCourts.navigateTOCaseDetails(caseNumber);
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
@@ -43,8 +41,7 @@ test.describe('Manage LAs / Transfer to court', () => {
            else{
             await updateCase(caseName, caseNumber, caseData);
            }
-            // await signInPage.visit();
-            // await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
+
             await manageLaTransferToCourts.switchUser(ctscUser.page);
             await manageLaTransferToCourts.navigateTOCaseDetails(caseNumber);
 

@@ -1,9 +1,9 @@
-import { Locator, Page, expect } from "@playwright/test";
-import { BasePage } from "./base-page";
+import {expect, Locator} from "@playwright/test";
+import {BasePage} from "./base-page";
 
 export class CaseProgressionReport extends BasePage {
     get caseProgressionReport(): Locator {
-        return this.page.getByRole('heading', { name: 'Case progression report', exact: true });
+        return this.page.getByRole('heading', {name: 'Case progression report', exact: true});
     }
 
     get region(): Locator {
@@ -21,6 +21,7 @@ export class CaseProgressionReport extends BasePage {
     get type(): Locator {
         return this.page.getByLabel('Select report type');
     }
+
     // private readonly _caseProgressionReport: Locator;
     // private readonly _region: Locator;
     // private readonly _selectDfjArea: Locator;
@@ -45,4 +46,4 @@ export class CaseProgressionReport extends BasePage {
         await this.clickContinue();
         await this.clickSubmit();
     }
-};
+}

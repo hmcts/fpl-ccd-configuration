@@ -21,10 +21,6 @@ export class GroundsForTheApplication  extends BasePage {
         return this.page.getByText('What is the reason behind the child suffering or being likely to suffer significant harm?');
     }
 
-    get notReceivingExpectedCareFromParentCheckBox(): Locator {
-        return this.page.getByLabel('Not receiving care that would be reasonably expected from a parent');
-    }
-
     get thresholdDocument(): Locator {
         return this.page.getByText('Do you have the threshold document?');
     }

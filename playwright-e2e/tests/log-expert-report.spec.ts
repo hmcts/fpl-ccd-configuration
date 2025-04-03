@@ -18,8 +18,6 @@ test.describe('log expert report', () => {
         async ({ ctscUser, logExpertReport }) => {
             caseName = 'CTSC log expert report ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
-            // await signInPage.visit();
-            // await signInPage.login(CTSCUser.email, CTSCUser.password)
             await logExpertReport.switchUser(ctscUser.page);
             await logExpertReport.navigateTOCaseDetails(caseNumber);
 

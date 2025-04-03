@@ -165,11 +165,11 @@ export class AdditionalApplications extends BasePage {
         await this.clickContinue();
     }
 
-  public async uploadBasicC2Application(uploadDraftOrder: boolean = true) {
-    await this.gotoNextStep('Upload additional applications');
-    await this.chooseC2ApplicationType();
-    await this.fillC2ApplicationDetails(uploadDraftOrder);
-    await this.payForApplication();
-    await this.checkYourAnsAndSubmit();
-  }
+    public async uploadBasicC2Application(uploadDraftOrder: boolean = true) {
+        await this.gotoNextStep('Upload additional applications');
+        await this.chooseC2ApplicationType();
+        await this.fillC2ApplicationDetails(uploadDraftOrder);
+        await this.payForApplication();
+        await this.checkYourAnsAndSubmit();
+    }
 }
