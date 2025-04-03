@@ -32,31 +32,11 @@ public class Judge extends AbstractJudge {
     }
 
     public JudgeAndLegalAdvisor toJudgeAndLegalAdvisor() {
-        return JudgeAndLegalAdvisor.builder()
-            .judgeTitle(getJudgeTitle())
-            .otherTitle(getOtherTitle())
-            .judgeLastName(getJudgeLastName())
-            .judgeFullName(getJudgeFullName())
-            .judgeEmailAddress(getJudgeEmailAddress())
-            .build();
+        return JudgeAndLegalAdvisor.from(this);
     }
 
     public static Judge fromJudicialUserProfile(JudicialUserProfile jup, JudgeOrMagistrateTitle title) {
-        String postNominals = isNotEmpty(jup.getPostNominals())
-            ? (" " + jup.getPostNominals())
-            : "";
-
-        return Judge.builder()
-            .judgeTitle((title == null) ? JudgeOrMagistrateTitle.OTHER : title)
-            .otherTitle((title == null) ? jup.getTitle() : null)
-            .judgeLastName(jup.getSurname() + postNominals)
-            .judgeFullName(jup.getFullName() + postNominals)
-            .judgeEmailAddress(jup.getEmailId())
-            .judgeJudicialUser(JudicialUser.builder()
-                .idamId(jup.getSidamId())
-                .personalCode(jup.getPersonalCode())
-                .build())
-            .build();
+        return AbstractJudge.fromJudicialUserProfile(Judge.builder(), jup, title);
     }
 
     public static Judge fromJudicialUserProfile(JudicialUserProfile jup) {

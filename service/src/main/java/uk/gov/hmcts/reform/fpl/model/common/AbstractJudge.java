@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -17,7 +18,10 @@ import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.Temp;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
@@ -32,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 @NoArgsConstructor(force = true)
 @SuperBuilder(toBuilder = true)
 public class AbstractJudge {
-
+    private final JudgeType judgeType;
     private JudgeOrMagistrateTitle judgeTitle;
     private String otherTitle;
     private final String judgeLastName;
@@ -63,7 +67,31 @@ public class AbstractJudge {
     }
 
     public YesNo getJudgeEnterManually() {
-        return !isEmpty(this.judgeEnterManually) ? this.judgeEnterManually : YesNo.YES;
+        if (!isEmpty(this.judgeEnterManually)) {
+            return this.judgeEnterManually;
+        }
+
+        return (JudgeType.LEGAL_ADVISOR.equals(judgeType)) ? YesNo.YES : YesNo.NO;
+    }
+
+    public static <T extends AbstractJudge> T fromJudicialUserProfile(AbstractJudgeBuilder<T,?> builder,
+                                                                      JudicialUserProfile jup,
+                                                                      JudgeOrMagistrateTitle title) {
+        String postNominals = isNotEmpty(jup.getPostNominals())
+            ? (" " + jup.getPostNominals())
+            : "";
+
+        return builder
+            .judgeTitle((title == null) ? JudgeOrMagistrateTitle.OTHER : title)
+            .otherTitle((title == null) ? jup.getTitle() : null)
+            .judgeLastName(jup.getSurname() + postNominals)
+            .judgeFullName(jup.getFullName() + postNominals)
+            .judgeEmailAddress(jup.getEmailId())
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId(jup.getSidamId())
+                .personalCode(jup.getPersonalCode())
+                .build())
+            .build();
     }
 }
 

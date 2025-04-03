@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonKey;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -64,6 +66,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.event.HearingJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
@@ -195,11 +198,11 @@ public class CaseData extends CaseDataParent {
 
     @Builder.Default
     @JsonUnwrapped
-    private final AllocateJudgeEventData allocateJudgeEventData = AllocateJudgeEventData.builder().build();
+    private final AllocateJudgeEventData allocateJudgeEventData = new AllocateJudgeEventData();
+    @Builder.Default
+    @JsonUnwrapped
+    private final HearingJudgeEventData hearingJudgeEventData = new HearingJudgeEventData();
 
-    // TODO
-    private final JudicialUser judicialUserHearingJudge;
-    private final YesNo enterManuallyHearingJudge;
 
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());

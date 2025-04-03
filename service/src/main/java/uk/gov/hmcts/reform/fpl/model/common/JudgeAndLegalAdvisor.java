@@ -34,6 +34,7 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
         JudgeAndLegalAdvisorBuilder<?, ?> judgeAndLegalAdvisorBuilder = JudgeAndLegalAdvisor.builder();
         if (allocatedJudge != null) {
             judgeAndLegalAdvisorBuilder
+                .judgeType(allocatedJudge.getJudgeType())
                 .judgeTitle(allocatedJudge.getJudgeTitle())
                 .otherTitle(allocatedJudge.getOtherTitle())
                 .judgeLastName(allocatedJudge.getJudgeLastName())
@@ -52,21 +53,8 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
             .build();
     }
 
-    public static JudgeAndLegalAdvisor fromJudicialUserProfile(JudicialUserProfile jup) {
-        String postNominals = isNotEmpty(jup.getPostNominals())
-            ? (" " + jup.getPostNominals())
-            : "";
-        return JudgeAndLegalAdvisor.builder()
-            .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-            .otherTitle(jup.getTitle())
-            .judgeLastName(jup.getSurname() + postNominals)
-            .judgeFullName(jup.getFullName() + postNominals)
-            .judgeEmailAddress(jup.getEmailId())
-            .judgeEnterManually(NO)
-            .judgeJudicialUser(JudicialUser.builder()
-                .idamId(jup.getSidamId())
-                .personalCode(jup.getPersonalCode())
-                .build())
-            .build();
+    public static JudgeAndLegalAdvisor fromJudicialUserProfile(JudicialUserProfile jup,
+                                                               JudgeOrMagistrateTitle title) {
+        return AbstractJudge.fromJudicialUserProfile(JudgeAndLegalAdvisor.builder(), jup, title);
     }
 }

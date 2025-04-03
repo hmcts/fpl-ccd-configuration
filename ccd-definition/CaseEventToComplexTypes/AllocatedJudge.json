@@ -1,6 +1,5 @@
 [
   {
-
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "allocatedJudge",
@@ -8,7 +7,6 @@
     "ListElementCode": "judgeTitle",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
-
   },
   {
     "LiveFrom": "01/01/2017",

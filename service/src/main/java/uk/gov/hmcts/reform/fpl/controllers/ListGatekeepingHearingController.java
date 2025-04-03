@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
@@ -23,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -40,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.service.sdo.ListGatekeepingHearingDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -82,7 +78,6 @@ public class ListGatekeepingHearingController extends CallbackController {
     private static final String HAS_PREVIOUS_VENUE_HEARING = "hasPreviousHearingVenue";
     private final ManageHearingsService hearingsService;
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
-    private final ValidateEmailService validateEmailService;
     private final ManageHearingsOthersGenerator othersGenerator;
     private final GatekeepingOrderService orderService;
     private final NoticeOfProceedingsService nopService;
@@ -111,8 +106,7 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
         caseDetails.getData().put("sendNoticeOfHearing", YES.getValue());
-        caseDetails.getData().put("enterManually", NO.getValue());
-        caseDetails.getData().put("enterManuallyHearingJudge", NO.getValue());
+        caseDetails.getData().putAll(judicialService.populateEventDataMapFromJudge(caseData.getAllocatedJudge()));
 
         setNewHearing(caseDetails);
 
@@ -153,7 +147,13 @@ public class ListGatekeepingHearingController extends CallbackController {
             "enterManuallyHearingJudge",
             "hearingJudge",
             "allocatedJudgeLabel",
-            "useAllocatedJudge"
+            "useAllocatedJudge",
+            "judgeType",
+            "feePaidJudgeTitle",
+            "manualJudgeDetails",
+            "hearingJudgeType",
+            "hearingFeePaidJudgeTitle",
+            "hearingManualJudgeDetails"
         );
 
         caseData.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
@@ -168,45 +168,16 @@ public class ListGatekeepingHearingController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse allocatedJudgeMidEvent(@RequestBody CallbackRequest callbackRequest) {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
+        final AllocateJudgeEventData eventData = caseData.getAllocateJudgeEventData();
 
-        Optional<String> error = judicialService.validateAllocatedJudge(caseData);
+        Optional<String> error = judicialService.validateAllocatedJudge(eventData);
 
         if (error.isPresent()) {
             return respond(caseDetails, List.of(error.get()));
         }
 
-        final AllocateJudgeEventData eventData = caseData.getAllocateJudgeEventData();
-        Judge allocatedJudge;
-        if (eventData.getEnterManually().equals(YesNo.NO)
-            && !ObjectUtils.isEmpty(eventData.getJudicialUser())
-            && !ObjectUtils.isEmpty(eventData.getJudicialUser().getPersonalCode())) {
-
-            Optional<JudicialUserProfile> jup = judicialService.getJudge(eventData.getJudicialUser().getPersonalCode());
-            if (jup.isPresent()) {
-                allocatedJudge = Judge.fromJudicialUserProfile(jup.get());
-                caseDetails.getData().put(ALLOCATED_JUDGE, allocatedJudge);
-            } else {
-                return respond(caseDetails,
-                    List.of("No Judge could be found, please retry your search or enter their details manually."));
-            }
-        } else {
-            // lookup the manual entry to see if we can do a mapping anyway
-            allocatedJudge = caseData.getTempAllocatedJudge();
-            Optional<String> possibleId = judicialService
-                .getJudgeUserIdFromEmail(allocatedJudge.getJudgeEmailAddress());
-            if (possibleId.isPresent()) {
-                // if they are in our maps - add their UUID extra info to the case
-                caseDetails.getData().put(ALLOCATED_JUDGE,
-                    allocatedJudge.toBuilder()
-                        .judgeJudicialUser(JudicialUser.builder()
-                            .idamId(possibleId.get())
-                            .build())
-                        .build());
-            } else {
-                // put the temporary manual entry into the proper field
-                caseDetails.getData().put(ALLOCATED_JUDGE, caseData.getTempAllocatedJudge());
-            }
-        }
+        Judge allocatedJudge = judicialService.buildAllocatedJudgeFromEventData(eventData);
+        caseDetails.getData().put(ALLOCATED_JUDGE, allocatedJudge);
 
         // todo - test removal of this, as we use the manual label field now on the hearing judge page
         caseDetails.getData().put(

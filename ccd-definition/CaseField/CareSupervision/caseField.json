@@ -11,45 +11,6 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "judgeType",
-    "Label": "What type of judge do you want to allocate:",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "JudgeType",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "feePaidJudgeTitle",
-    "Label": "Select judge title",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "FeePaidJudgeTitle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "legalAdvisorTitle",
-    "Label": "Select judge title",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "LegalAdvisorTitle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manualJudgeDetails",
-    "Label": " ",
-    "FieldType": "ManualLegalAdvisorDetail",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judicialUser",
     "Label": "Search for Judge",
     "FieldType": "JudicialUser",
@@ -59,7 +20,7 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "judicialUserHearingJudge",
+    "ID": "hearingJudicialUser",
     "Label": "Search for Judge",
     "FieldType": "JudicialUser",
     "SecurityClassification": "Public",
@@ -86,9 +47,58 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "enterManuallyHearingJudge",
-    "Label": "Add legal adviser details",
-    "FieldType": "YesOrNo",
+    "ID": "judgeType",
+    "Label": "What type of judge do you want to allocate:",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "JudgeType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingJudgeType",
+    "Label": "What type of judge do you want to allocate:",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "JudgeType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "feePaidJudgeTitle",
+    "Label": "Select judge title",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "FeePaidJudgeTitle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingFeePaidJudgeTitle",
+    "Label": "Select judge title",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "FeePaidJudgeTitle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manualJudgeDetails",
+    "Label": " ",
+    "FieldType": "ManualLegalAdvisorDetail",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingManualJudgeDetails",
+    "Label": " ",
+    "FieldType": "ManualLegalAdvisorDetail",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -882,16 +892,6 @@
     "FieldType": "JudgeAndLegalAdvisor",
     "SecurityClassification": "Public",
     "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "tempAllocatedJudge",
-    "Label": "Allocated Judge",
-    "FieldType": "JudgeAndLegalAdvisor",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Temporary field to workaround hidden fields being removed (for the case where we search for a judge)"
   },
   {
     "LiveFrom": "01/01/2017",

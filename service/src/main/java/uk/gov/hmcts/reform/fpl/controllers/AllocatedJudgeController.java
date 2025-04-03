@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewAllocatedJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Slf4j
@@ -36,6 +36,10 @@ public class AllocatedJudgeController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData()
+            .putAll(judicialService.populateEventDataMapFromJudge(caseData.getAllocatedJudge()));
         return respond(caseDetails);
     }
 
@@ -43,8 +47,9 @@ public class AllocatedJudgeController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        AllocateJudgeEventData eventData = caseData.getAllocateJudgeEventData();
 
-        Optional<String> error = judicialService.validateAllocatedJudge(caseData);
+        Optional<String> error = judicialService.validateAllocatedJudge(eventData);
 
         if (error.isPresent()) {
             return respond(caseDetails, List.of(error.get()));
@@ -57,14 +62,15 @@ public class AllocatedJudgeController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        AllocateJudgeEventData eventData = caseData.getAllocateJudgeEventData();
 
-        Optional<String> error = judicialService.validateAllocatedJudge(caseData);
+        Optional<String> error = judicialService.validateAllocatedJudge(eventData);
 
         if (error.isPresent()) {
             return respond(caseDetails, List.of(error.get()));
         }
 
-        caseDetails.getData().put(ALLOCATED_JUDGE, judicialService.buildAllocatedJudgeFromEventData(caseData));
+        caseDetails.getData().put(ALLOCATED_JUDGE, judicialService.buildAllocatedJudgeFromEventData(eventData));
 
         removeTemporaryFields(caseDetails, AllocateJudgeEventData.class);
         return respond(caseDetails);
