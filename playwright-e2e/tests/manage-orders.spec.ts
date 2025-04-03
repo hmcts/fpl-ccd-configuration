@@ -1,5 +1,5 @@
 import {test} from '../fixtures/create-fixture';
-import {CTSCUser, judgeUser, newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
+import {newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
 import caseData from '../caseData/caseWithHearingDetails.json' assert {type: 'json'};
 import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert {type: 'json'};
 import {expect} from "@playwright/test";
@@ -13,59 +13,61 @@ test.describe('manage orders', () => {
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
-    [{ role: 'CTSC', EPOtype: 'Remove to accommodation'},
-     { role: 'Legal', EPOtype: 'Prevent removal from an address'}].
-    forEach(({ role, EPOtype}) => {
-        test(` EPO order created by ${role}`,
-            async ({ ctscUser,legalUser, orders}) => {
-                caseName = 'EPO order by ' + role + ' ' + dateTime.slice(0, 10);
-                await updateCase(caseName, caseNumber, caseData);
+    [{role: 'CTSC', EPOtype: 'Remove to accommodation'}, {
+        role: 'Legal',
+        EPOtype: 'Prevent removal from an address'
+    }].forEach(({role, EPOtype}) => {
+        test(` EPO order created by ${role}`, async ({ctscUser, legalUser, orders}) => {
+            caseName = 'EPO order by ' + role + ' ' + dateTime.slice(0, 10);
+            await updateCase(caseName, caseNumber, caseData);
 
-                if(role == 'CTSC'){
-                    await orders.switchUser(ctscUser.page);
-                }else{
-                    await orders.switchUser(legalUser.page);
-                }
-                await orders.navigateTOCaseDetails(caseNumber);
-                await orders.gotoNextStep('Manage orders');
-                await orders.selectOrderOperation('Create an order');
-                await orders.clickContinue();
-                await orders.selectOrder('Emergency protection order (C23)');
-                await orders.clickContinue();
+            if (role == 'CTSC') {
+                await orders.switchUser(ctscUser.page);
+            } else {
+                await orders.switchUser(legalUser.page);
+            }
+            await orders.navigateTOCaseDetails(caseNumber);
+            await orders.gotoNextStep('Manage orders');
+            await orders.selectOrderOperation('Create an order');
+            await orders.clickContinue();
+            await orders.selectOrder('Emergency protection order (C23)');
+            await orders.clickContinue();
 
-                await expect(orders.page.getByText(' Add issuing details', {exact: true})).toBeVisible();
-                await orders.addIssuingDetailsOfApprovedOrder('No');
-                await orders.clickContinue();
+            await expect(orders.page.getByText(' Add issuing details', {exact: true})).toBeVisible();
+            await orders.addIssuingDetailsOfApprovedOrder('No');
+            await orders.clickContinue();
 
-                //add children involved
-                await expect(orders.page.getByRole('heading', {name: 'Add children\'s details', exact: true})).toBeVisible();
-                await orders.addChildDetails('No');
-                await orders.clickContinue();
+            //add children involved
+            await expect(orders.page.getByRole('heading', {
+                name: 'Add children\'s details',
+                exact: true
+            })).toBeVisible();
+            await orders.addChildDetails('No');
+            await orders.clickContinue();
 
-                //add order details
-                await orders.addEPOOrderDetails(EPOtype);
-                await orders.clickContinue();
+            //add order details
+            await orders.addEPOOrderDetails(EPOtype);
+            await orders.clickContinue();
 
-                // preview order generated
-                await expect(orders.page.getByRole('heading', {name: 'Check your order', exact: true})).toBeVisible();
-                await orders.openOrderDoc('Preview order.pdf');
-                await expect(orders.orderPage.getByText('Timothy Jones', {exact: true})).toBeVisible();
-                await expect(orders.orderPage.getByText('John Black', {exact: true})).toBeVisible();
-                await expect(orders.orderPage.getByText('Sarah Black', {exact: true})).toBeVisible();
-                await expect(orders.orderPage.getByText('This order ends on 2 October 2013 at 10:00am.', {exact: true})).toBeVisible();
-                await orders.clickContinue();
+            // preview order generated
+            await expect(orders.page.getByRole('heading', {name: 'Check your order', exact: true})).toBeVisible();
+            await orders.openOrderDoc('Preview order.pdf');
+            await expect(orders.orderPage.getByText('Timothy Jones', {exact: true})).toBeVisible();
+            await expect(orders.orderPage.getByText('John Black', {exact: true})).toBeVisible();
+            await expect(orders.orderPage.getByText('Sarah Black', {exact: true})).toBeVisible();
+            await expect(orders.orderPage.getByText('This order ends on 2 October 2013 at 10:00am.', {exact: true})).toBeVisible();
+            await orders.clickContinue();
 
-                //check your answer and submit
-                await orders.checkYourAnsAndSubmit();
+            //check your answer and submit
+            await orders.checkYourAnsAndSubmit();
 
-                await orders.tabNavigation('Orders')
-                await expect(orders.page.getByRole('cell', {
-                    name: 'Emergency protection order (C23)',
-                    exact: true
-                })).toBeVisible();
-                await expect(orders.page.getByText('Timothy Jones, John Black, Sarah Black', {exact: true})).toBeVisible();
+            await orders.tabNavigation('Orders')
+            await expect(orders.page.getByRole('cell', {
+                name: 'Emergency protection order (C23)', exact: true
+            })).toBeVisible();
+            await expect(orders.page.getByText('Timothy Jones, John Black, Sarah Black', {exact: true})).toBeVisible();
 
-            });
+        });
     })
 
     test('Amend order under slip rule', async ({ctscUser, orders}) => {
@@ -91,7 +93,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(orders.page.getByText('Amended', {exact: true})).toBeVisible();
         await expect(orders.page.locator('#case-viewer-field-read--orderCollection')).toContainText(orders.getCurrentDate());
-        await expect(orders.page.getByRole('link', { name: 'amended_C23 - Emergency' })).toBeVisible();
+        await expect(orders.page.getByRole('link', {name: 'amended_C23 - Emergency'})).toBeVisible();
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
     })
@@ -127,14 +129,15 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(orders.page.getByText('Order 1', { exact: true })).toBeVisible();
+        await expect(orders.page.getByText('Order 1', {exact: true})).toBeVisible();
         await expect(orders.page.getByText('Care order (C32A)')).toBeVisible();
-        await expect(orders.page.getByRole('link', { name: 'c32a_care_order.pdf' })).toBeVisible();
+        await expect(orders.page.getByRole('link', {name: 'c32a_care_order.pdf'})).toBeVisible();
 
         //assert the state of the case
-       // await orders.tabNavigation('History'); EXUI issue with tab lables having the hint text . it has to rollback when the issue fixed
-        await orders.page.getByRole('tab', { name: 'History',exact:true }).click();
-        await expect(orders.page.getByText('Closed', { exact: true })).toBeVisible();
+        // await orders.tabNavigation('History'); EXUI issue with tab lables having the hint text . it has to rollback
+        // when the issue fixed
+        await orders.page.getByRole('tab', {name: 'History', exact: true}).click();
+        await expect(orders.page.getByText('Closed', {exact: true})).toBeVisible();
 
     })
 
@@ -200,7 +203,10 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(orders.page.getByRole('cell', { name: 'Appointment of a children\'s guardian (C47A)', exact: true })).toBeVisible();
+        await expect(orders.page.getByRole('cell', {
+            name: 'Appointment of a children\'s guardian (C47A)',
+            exact: true
+        })).toBeVisible();
         await expect(orders.page.locator('ccd-read-document-field')).toContainText('c47a_appointment_of_a_childrens_guardian.pdf');
 
     })
@@ -220,11 +226,11 @@ test.describe('manage orders', () => {
         await orders.addIssuingDetailsOfApprovedOrder('Yes');
         await orders.clickContinue();
 
-        await expect.soft(orders.page.getByRole('heading', { name: 'Add child\'s details' })).toBeVisible();
+        await expect.soft(orders.page.getByRole('heading', {name: 'Add child\'s details'})).toBeVisible();
         await orders.selectChildInvolved();
         await orders.clickContinue();
 
-        await expect.soft(orders.page.getByText( 'Authority to keep a child in secure accommodation (C26)' )).toBeVisible();
+        await expect.soft(orders.page.getByText('Authority to keep a child in secure accommodation (C26)')).toBeVisible();
         await orders.addC26SecureAccomadation();
         await orders.clickContinue();
 
@@ -237,7 +243,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
         await orders.tabNavigation('Orders');
         await expect(orders.page.getByText('Authority to keep a child in')).toBeVisible();
-        await expect(orders.page.getByRole('link', { name: 'c26_secure_accommodation_order.pdf' })).toBeVisible();
+        await expect(orders.page.getByRole('link', {name: 'c26_secure_accommodation_order.pdf'})).toBeVisible();
 
     })
     test('C36 Child assessment order ', async ({ctscUser, orders}) => {
@@ -269,7 +275,7 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(orders.page.getByText('Child assessment order (C39)')).toBeVisible();
-        await expect(orders.page.getByRole('link', { name: 'c39_child_assessment_order.pdf' })).toBeVisible();
+        await expect(orders.page.getByRole('link', {name: 'c39_child_assessment_order.pdf'})).toBeVisible();
 
     })
     test('C21 blank order ', async ({ctscUser, orders}) => {
@@ -305,7 +311,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(orders.page.getByText('Blank order (C21)')).toBeVisible();
         await expect(orders.page.getByText('Prohibited Steps Order')).toBeVisible();
-        await expect(orders.page.getByRole('link', { name: 'c21_blank_order.pdf' })).toBeVisible();
+        await expect(orders.page.getByRole('link', {name: 'c21_blank_order.pdf'})).toBeVisible();
 
     })
 
