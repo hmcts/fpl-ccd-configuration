@@ -94,7 +94,9 @@ export class BasePage {
   async clickSubmit() {
     await this.submit.click();
   }
-
+  async clickSaveAndContinue() {
+      await this.saveAndContinue.click();
+  }
   async enterPostCode(postcode:string){
       await this.postCode.fill(postcode);
       await this.findAddress.click();
