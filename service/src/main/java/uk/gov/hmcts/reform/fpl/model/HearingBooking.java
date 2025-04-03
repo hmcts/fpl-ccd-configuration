@@ -8,6 +8,7 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
@@ -264,5 +265,11 @@ public class HearingBooking implements TranslatableItem {
     @JsonIgnore
     public List<Element<Other>> getSelectedOthers() {
         return defaultIfNull(this.getOthers(), new ArrayList<>());
+    }
+
+    @JsonIgnore
+    public boolean isLegalAdviserHearing() {
+        return isNotEmpty(this.getJudgeAndLegalAdvisor())
+            && JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(this.getJudgeAndLegalAdvisor().getJudgeTitle());
     }
 }

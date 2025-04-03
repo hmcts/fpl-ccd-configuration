@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -13,16 +12,12 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
-import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
@@ -30,10 +25,7 @@ import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,18 +33,13 @@ import java.util.stream.Collectors;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
-import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JudicialService {
-
-    private static final int HEARING_EXPIRY_OFFSET_MINS = 5;
 
     public static final int JUDICIAL_PAGE_SIZE = 3000;
 
@@ -86,39 +73,6 @@ public class JudicialService {
     }
 
     /**
-     * Get existing hearing-[users] who are valid at TIME = endTime, and update their
-     * role assignment to last from NOW until the endTime.
-     *
-     * @param caseId  the caseId to update roles on
-     * @param endTime the time which we don't want any existing hearing-users to have roles at
-     */
-    public void setExistingHearingJudgesAndLegalAdvisersToExpire(Long caseId, ZonedDateTime endTime) {
-        List<String> hearingRoles = List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName());
-        List<RoleAssignment> judgesAndLegalAdvisers = roleAssignmentService.getCaseRolesAtTime(caseId,
-            hearingRoles, endTime);
-
-        // delete these role assignments in AM
-        judgesAndLegalAdvisers
-            .stream()
-            .filter(role -> hearingRoles.contains(role.getRoleName()))
-            .forEach(roleAssignmentService::deleteRoleAssignment);
-
-        // loop through all role assignments, and recreate them in AM with the new endTime
-        List<RoleAssignment> newRoleAssignments = judgesAndLegalAdvisers.stream()
-            .filter(role -> hearingRoles.contains(role.getRoleName()))
-            .map(ra -> buildRoleAssignment(
-                caseId,
-                ra.getActorId(),
-                ra.getRoleName(),
-                ra.getRoleCategory(),
-                ra.getBeginTime(),
-                endTime)
-            ).collect(Collectors.toList());
-
-        roleAssignmentService.createRoleAssignments(newRoleAssignments);
-    }
-
-    /**
      * Assign an allocated-judge on a case, and REMOVE all existing allocated-[users].
      *
      * @param caseId the case id to add a case role on
@@ -136,61 +90,6 @@ public class JudicialService {
             roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, currentTimeUK(),
                 null);
         }
-    }
-
-    /**
-     * Assign a hearing-judge on a case, and SET all existing hearing-[users] at that time to expire.
-     *
-     * @param caseId   the case id to add a case role on
-     * @param userId   the user to assign hearing-judge to
-     * @param starting the time to start the new role at, and the old roles to END at (- HEARING_EXPIRY_OFFSET_MINS)
-     */
-    private void assignHearingJudgeRole(Long caseId, String userId, ZonedDateTime starting, ZonedDateTime ending,
-                                       boolean isLegalAdviser) {
-        setExistingHearingJudgesAndLegalAdvisersToExpire(caseId, starting.minusMinutes(HEARING_EXPIRY_OFFSET_MINS));
-
-        if (isLegalAdviser) {
-            roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), HEARING_LEGAL_ADVISER, starting,
-                ending);
-        } else {
-            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting, ending);
-        }
-    }
-
-    public void assignHearingJudge(Long caseId, HearingBooking hearing, Optional<HearingBooking> nextHearing,
-                                   boolean startNow) {
-        Optional<String> judgeId = getJudgeIdFromHearing(hearing);
-
-        // end this new role at the start of the next hearing (if present) MINUS 5 minutes to avoid overlapping roles
-        ZonedDateTime possibleEndDate = nextHearing.map(HearingBooking::getStartDate)
-            .map(ld -> ld.minusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(LONDON_TIMEZONE))
-            .orElse(null);
-
-        judgeId.ifPresentOrElse(s -> assignHearingJudgeRole(caseId,
-                s,
-                startNow ? currentTimeUK() : hearing.getStartDate().atZone(LONDON_TIMEZONE),
-                possibleEndDate,
-                JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearing.getJudgeAndLegalAdvisor().getJudgeTitle())),
-            () -> log.error("No judge details on hearing starting at {} on case {} to assign roles to",
-                hearing.getStartDate(), caseId));
-    }
-
-    public Optional<String> getJudgeIdFromHearing(HearingBooking booking) {
-        if (isEmpty(booking)
-            || isEmpty(booking.getJudgeAndLegalAdvisor())
-            || isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser())) {
-            return Optional.empty();
-        }
-
-        if (!isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
-            return Optional.of(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId());
-        }
-
-        if (!isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getPersonalCode())) {
-            return this.getJudge(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getPersonalCode())
-                .map(JudicialUserProfile::getSidamId);
-        }
-        return Optional.empty();
     }
 
     /**
@@ -367,85 +266,8 @@ public class JudicialService {
         return error;
     }
 
-    public List<RoleAssignment> getHearingJudgeRolesForMigration(CaseData caseData) {
-        List<HearingBooking> bookings = caseData.getAllNonCancelledHearings()
-            .stream()
-            .map(Element::getValue)
-            .sorted(Comparator.comparing(HearingBooking::getStartDate))
-            .toList();
-
-        List<HearingJudgeTime> judgeTimes = new ArrayList<>();
-        for (int i = 0; i < bookings.size(); i++) {
-            HearingBooking booking = bookings.get(i);
-            HearingBooking after = (i < bookings.size() - 1) ? bookings.get(i + 1) : null;
-
-            if (ObjectUtils.isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser())) {
-                continue; // no judge UUID to grant roles on
-            }
-
-            HearingJudgeTime.HearingJudgeTimeBuilder judgeTime = HearingJudgeTime.builder()
-                .emailAddress(booking.getJudgeAndLegalAdvisor().getJudgeEmailAddress())
-                .judgeId(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())
-                .startTime(booking.getStartDate().atZone(LONDON_TIMEZONE))
-                .judgeType(booking.getJudgeAndLegalAdvisor().getJudgeTitle());
-
-            if (!isEmpty(after) && !isEmpty(after.getStartDate())) {
-                judgeTime.endTime(after.getStartDate().atZone(LONDON_TIMEZONE));
-            }
-
-            judgeTimes.add(judgeTime.build());
-        }
-
-        return judgeTimes.stream()
-            .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(currentTimeUK()))
-            .map(time -> {
-                Optional<RoleCategory> userRoleCategory = this.getUserRoleCategory(time.getEmailAddress());
-
-                if (userRoleCategory.isEmpty()) {
-                    return null;
-                }
-
-                boolean isLegalAdviser = userRoleCategory.get().equals(RoleCategory.LEGAL_OPERATIONS);
-
-                return RoleAssignmentUtils.buildRoleAssignment(
-                    caseData.getId(),
-                    time.getJudgeId(),
-                    isLegalAdviser
-                        ? HEARING_LEGAL_ADVISER.getRoleName()
-                        : HEARING_JUDGE.getRoleName(),
-                    userRoleCategory.get(),
-                    time.getStartTime(),
-                    time.getEndTime() // no end date
-                );
-            })
-            .filter(Objects::nonNull)
-            .toList();
-    }
-
-    public void migrateJudgeRoles(List<RoleAssignment> roles) {
-        roleAssignmentService.createRoleAssignments(roles);
-    }
-
-    public void deleteSpecificHearingRole(Long caseId, HearingBooking hearing) {
-        if (!isEmpty(hearing.getJudgeAndLegalAdvisor())
-            && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser())
-            && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
-
-            // delete the role for this hearing + offset by 5 minutes into the future, so we don't hit the old (bugged)
-            // hearing role assignments that may have ended at exactly this hearing time
-            roleAssignmentService.deleteRoleAssignmentOnCaseAtTime(caseId,
-                hearing.getStartDate().plusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(LONDON_TIMEZONE),
-                hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId(),
-                List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()));
-        }
-    }
-
     public void deleteAllRolesOnCase(Long caseId) {
         roleAssignmentService.deleteAllRolesOnCase(caseId);
-    }
-
-    public void cleanupHearingRoles(Long caseId) {
-        roleAssignmentService.deleteAllHearingRolesOnCase(caseId);
     }
 
     public List<String> validateHearingJudgeEmail(CaseDetails caseDetails, CaseData caseData) {
