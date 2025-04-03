@@ -40,6 +40,9 @@ export class StartApplication extends BasePage {
     get ordersAndDirectionUpdated(): Locator {
         return this.page.locator('p').filter({hasText: 'Orders and directions sought'}).getByRole('img', {name: 'Finished'});
     }
+    get hearingUrgencyUpdated(): Locator {
+        return this.page.locator('p').filter({hasText: 'Hearing urgency'}).getByRole('img', {name: 'Finished'});
+    }
 
     get allocationProposalFinished(): Locator {
         return this.page.locator('p').filter({hasText: 'Allocation proposal'}).getByRole('img', {name: 'Finished'});
@@ -71,9 +74,9 @@ export class StartApplication extends BasePage {
         return this.page.getByRole("link", {name: 'Child\'s Details',});
     }
 
-    get childDetailsUpdated(): Locator {
-        return this.page.locator('p').filter({hasText: 'Child\'s Details'}).getByRole('img', {name: 'Information added'});
-    }
+    // get childDetailsUpdated(): Locator {
+    //     return this.page.locator('p').filter({hasText: 'Child\'s Details'}).getByRole('img', {name: 'Information added'});
+    // }
 
     get respondentsDetailsLink(): Locator {
         return this.page.getByRole('link', {name: 'Respondents\' details'});
@@ -81,6 +84,14 @@ export class StartApplication extends BasePage {
 
     get applicantDetailsUpdated(): Locator {
         return this.page.locator('p').filter({hasText: 'Applicant\'s details'}).getByRole('img', {name: 'Information added'});
+    }
+
+    get respondentDetailsUpdated(): Locator {
+        return this.page.locator('p').filter({hasText: 'Respondents\' details'}).getByRole('img', {name: 'Information added'});
+    }
+
+    get childDetailsUpdated(): Locator {
+        return this.page.locator('p').filter({hasText: 'Child\'s details'}).getByRole('img', {name: 'Information added'});
     }
 
     get welshLanguageRequirements(): Locator {
@@ -217,5 +228,11 @@ export class StartApplication extends BasePage {
 
     async submitCase() {
         await this.submitApplicationLink.click();
+    }
+    async respondentDetailsHasBeenUpdated(){
+        await expect(this.respondentDetailsUpdated).toBeVisible();
+    }
+    async heraringUrgencyHasBeenUpdated(){
+        await expect(this.hearingUrgencyUpdated).toBeVisible();
     }
 }

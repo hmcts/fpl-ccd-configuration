@@ -51,6 +51,7 @@ test.describe('', () => {
         await startApplication.hearingUrgency();
         await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
         await hearingUrgency.hearingUrgencySmokeTest();
+        await startApplication.respondentDetailsHasBeenUpdated();
 
         // Grounds for the application
         await startApplication.groundsForTheApplication();
@@ -76,6 +77,7 @@ test.describe('', () => {
         // // Add respondents' details
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsNeeded();
+        await startApplication.respondentDetailsHasBeenUpdated();
 
         // Allocation Proposal
         await startApplication.allocationProposal();
