@@ -22,7 +22,7 @@ test.describe('Return application', () => {
     async ({ ctscUser, returnApplication }) => {
       caseName = 'CTSC return Application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
-await returnApplication.switchUser(ctscUser.page);
+      await returnApplication.switchUser(ctscUser.page);
       await returnApplication.navigateTOCaseDetails(caseNumber);
       await returnApplication.gotoNextStep('Return application');
       await returnApplication.ReturnApplication();

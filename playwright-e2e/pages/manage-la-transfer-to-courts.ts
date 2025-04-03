@@ -45,7 +45,7 @@ export class ManageLaTransferToCourts extends BasePage {
     get courtTransfer(): Locator {
         return this.page.getByRole('group', { name: 'Is the case transferring to a different court' });
     }
-    
+
     public async updateManageLaTransferToCourts() {
         await expect(this.manageLaTransferToCourts).toBeVisible();
         await this.transferAnotherCourt.click();
