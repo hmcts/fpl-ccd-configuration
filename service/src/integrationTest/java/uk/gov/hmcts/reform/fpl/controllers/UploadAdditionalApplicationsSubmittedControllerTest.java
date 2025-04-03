@@ -217,6 +217,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         doNothing().when(sendDocumentService).sendDocuments(any());
         doNothing().when(cafcassNotificationService).sendEmail(any(), any(), any());
         when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
     }
 
 
