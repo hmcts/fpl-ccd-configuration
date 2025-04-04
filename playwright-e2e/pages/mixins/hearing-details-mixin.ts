@@ -3,11 +3,9 @@ import {BasePage} from "../base-page";
 
 export function HearingDetailsMixin() {
   return class extends BasePage {
-    readonly hearingTypesLabelLocator: Locator;
 
     constructor(page: Page) {
       super(page);
-      this.hearingTypesLabelLocator = this.page.locator('#hearingType .multiple-choice > label');
     }
 
     async completeHearingDetails() {
@@ -42,7 +40,8 @@ export function HearingDetailsMixin() {
         'Family drug & alcohol court',
         'Placement hearing'
       ];
-      const hearingTypes = await this.hearingTypesLabelLocator.allTextContents();
+      const hearingTypes = await this.page.locator('#hearingType .multiple-choice > label').allTextContents();
+
       expect(hearingTypes).toEqual(expectedHearingTypes);
     }
   };
