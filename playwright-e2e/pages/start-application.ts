@@ -14,19 +14,19 @@ export class StartApplication extends BasePage {
 
 
     get hearingUrgencyLink(): Locator {
-        return this.page.getByRole("link", {name: "Hearing urgency",});
+        return this.page.getByRole("link", {name: "Hearing urgency",exact:true});
     }
 
     get groundsForTheApplicationLink(): Locator {
-        return this.page.getByRole("link", {name: "Grounds for the application",});
+        return this.page.getByRole("link", {name: "Grounds for the application",exact:true});
     }
 
     get riskAndHarmToChildrenLink(): Locator {
-        return this.page.getByRole("link", {name: "Risk and harm to children",});
+        return this.page.getByRole("link", {name: "Risk and harm to children",exact:true});
     }
 
     get hearingUrgencyHeader(): Locator {
-        return this.page.getByRole("heading", {name: "Hearing urgency",});
+        return this.page.getByRole("heading", {name: "Hearing urgency"});
     }
 
     get groundsForTheApplicationHeading(): Locator {
@@ -54,12 +54,12 @@ export class StartApplication extends BasePage {
 
 
     get allocationProposalLink(): Locator {
-        return this.page.getByRole("link", {name: "Allocation proposal",});
+        return this.page.getByRole("link", {name: "Allocation proposal",exact:true});
     }
 
 
     get uploadDocumentsLink(): Locator {
-        return this.page.getByRole("link", {name: "Upload documents",});
+        return this.page.getByRole("link", {name: "Upload documents",exact:true});
     }
 
     get upLoadDocsInProgress(): Locator {
@@ -67,19 +67,17 @@ export class StartApplication extends BasePage {
     }
 
     get applicantDetailsLink(): Locator {
-        return this.page.getByRole('link', {name: 'Applicant\'s details'});
+        return this.page.getByRole('link', {name: 'Applicant\'s details',exact:true});
     }
 
     get childDetailsLink(): Locator {
-        return this.page.getByRole("link", {name: 'Child\'s Details',});
+        return this.page.getByRole("link", {name: 'Child\'s details',exact:true});
     }
 
-    // get childDetailsUpdated(): Locator {
-    //     return this.page.locator('p').filter({hasText: 'Child\'s Details'}).getByRole('img', {name: 'Information added'});
-    // }
+
 
     get respondentsDetailsLink(): Locator {
-        return this.page.getByRole('link', {name: 'Respondents\' details'});
+        return this.page.getByRole('link', {name: 'Respondents\' details',exact:true});
     }
 
     get applicantDetailsUpdated(): Locator {
@@ -95,7 +93,7 @@ export class StartApplication extends BasePage {
     }
 
     get welshLanguageRequirements(): Locator {
-        return this.page.getByRole('link', {name: 'Welsh language requirements'});
+        return this.page.getByRole('link', {name: 'Welsh language requirements',exact:true});
     }
 
     get welshLanguageReqFinished(): Locator {
@@ -103,38 +101,36 @@ export class StartApplication extends BasePage {
     }
 
     get otherProceedingsLink(): Locator {
-        return this.page.getByRole('link', {name: "Other Proceedings",});
+        return this.page.getByRole('link', {name: "Other Proceedings",exact:true});
     }
 
     get internationalElementsHeading(): Locator {
-        return this.page.getByRole('link', {name: 'International element'});
+        return this.page.getByRole('link', {name: 'International element',exact:true});
     }
 
     get courtServices(): Locator {
-        return this.page.getByRole('link', {name: 'Court services needed'});
+        return this.page.getByRole('link', {name: 'Court services needed',exact:true});
     }
 
     get submitApplicationLink(): Locator {
-        return this.page.getByRole('link', {name: 'Submit application'})
+        return this.page.getByRole('link', {name: 'Submit application',exact:true})
     }
 
     get otherPeopleInCaseLink(): Locator {
-        return this.page.getByRole('link', {name: 'Other people in the case'});
+        return this.page.getByRole('link', {name: 'Other people in the case',exact:true});
     }
 
     get returnApplicationLink(): Locator {
-        return this.page.getByRole('link', {name: 'Return application'});
+        return this.page.getByRole('link', {name: 'Return application',exact:true});
     }
-
-    get ordersAndDirectionsSoughtFinishedStatus(): Locator {
-        return this.page.locator('p').filter({hasText: 'Orders and directions sought'}).getByRole('img');
-    }
-
 
     async groundsForTheApplication() {
-        expect(await this.groundsForTheApplicationLink).toBeVisible();
-        await this.groundsForTheApplicationLink.click();
-        await expect(this.groundsForTheApplicationHeading).toBeVisible();
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.groundsForTheApplicationLink.first().click();
+            await expect(this.groundsForTheApplicationLink).toBeHidden();
+        }).toPass();
     }
 
     async groundsForTheApplicationHasBeenUpdated() {
@@ -154,15 +150,23 @@ export class StartApplication extends BasePage {
     }
 
     async hearingUrgency() {
-        expect(await this.hearingUrgencyLink).toBeVisible();
-        await this.hearingUrgencyLink.click();
-        await expect(this.hearingUrgencyHeader).toBeVisible();
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.hearingUrgencyLink.first().click();
+            await expect(this.hearingUrgencyLink).toBeHidden();
+        }).toPass();
+
     }
 
 
     async addApplicationDocuments() {
-        await expect(this.uploadDocumentsLink).toBeVisible();
-        await this.uploadDocumentsLink.click();
+        await expect(async () => {
+            await this.page.reload();
+            await this.uploadDocumentsLink.click();
+            await expect(this.uploadDocumentsLink).toBeHidden();
+        }).toPass();
+
     }
 
     async addApplicationDocumentsInProgress() {
@@ -170,8 +174,14 @@ export class StartApplication extends BasePage {
     }
 
     async applicantDetails() {
-        await expect(this.applicantDetailsLink).toBeVisible();
-        await this.applicantDetailsLink.click();
+
+        await expect(async () => {
+            await this.page.reload();
+            await this.applicantDetailsLink.first().click();
+            await expect(this.applicantDetailsLink).toBeHidden();
+        }).toPass();
+
+
     }
 
     async applicantDetailsHasBeenUpdated() {
@@ -179,8 +189,13 @@ export class StartApplication extends BasePage {
     }
 
     async childDetails() {
-        await expect(this.childDetailsLink).toBeVisible();
-        await this.childDetailsLink.click();
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.childDetailsLink.first().click();
+            await expect(this.childDetailsLink).toBeHidden();
+        }).toPass();
+
     }
 
     async childDetailsHasBeenUpdated() {
@@ -188,13 +203,25 @@ export class StartApplication extends BasePage {
     }
 
     async respondentDetails() {
-        await expect(this.respondentsDetailsLink).toBeVisible();
-        await this.respondentsDetailsLink.click();
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.respondentsDetailsLink.first().click();
+            await expect(this.respondentsDetailsLink).toBeHidden();
+        }).toPass();
+
+
+
     }
 
     async allocationProposal() {
-        await expect(this.allocationProposalLink).toBeVisible();
-        await this.allocationProposalLink.click();
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.allocationProposalLink.first().click();
+            await expect(this.allocationProposalLink).toBeHidden();
+        }).toPass();
+
     }
 
     async allocationProposalHasBeenUpdated() {
@@ -232,7 +259,12 @@ export class StartApplication extends BasePage {
     async respondentDetailsHasBeenUpdated(){
         await expect(this.respondentDetailsUpdated).toBeVisible();
     }
-    async heraringUrgencyHasBeenUpdated(){
+    async hearingurgencyHasBeenUpdate(){
         await expect(this.hearingUrgencyUpdated).toBeVisible();
+    }
+    async verifyCanBesubmitted()
+    {
+        await expect(this.page.getByText('Why can\'t I submit my application?', { exact: true })).toBeVisible();
+        await this.page.getByText('Why can\'t I submit my application?', { exact: true }).click();
     }
 }

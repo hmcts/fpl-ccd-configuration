@@ -37,8 +37,12 @@ export class OrdersAndDirectionSought extends BasePage {
 
 
     async ordersAndDirectionsNeeded() {
-        await expect(this.OrdersAndDirectionsSought).toBeVisible();
-        await this.OrdersAndDirectionsSought.click();
+        await expect(async () => {
+            await this.page.reload();
+            await this.OrdersAndDirectionsSought.click();
+            await expect(this.OrdersAndDirectionsSought).toBeHidden();
+        }).toPass();
+
         await expect(this.OrdersAndDirectionsHeading).toBeVisible();
         await this.WhichOrdersDoYouNeedCareOrder.click();
         await this.DoYouNeedAnyOtherDirections.getByRole('radio', {name: 'No'}).check();
@@ -49,10 +53,12 @@ export class OrdersAndDirectionSought extends BasePage {
 
     async SoliciotrC110AAppOrderAndDirectionNeeded() {
 
-        await expect(this.OrdersAndDirectionsSought).toBeVisible();
-        await this.OrdersAndDirectionsSought.click();
+        await expect(async () => {
+            await this.page.reload();
+            await this.OrdersAndDirectionsSought.click();
+            await expect(this.OrdersAndDirectionsSought).toBeHidden();
+        }).toPass();
         await expect(this.OrdersAndDirectionsHeading).toBeVisible();
-
         await this.variationOfSupervisionOrder.check();
         await this.contactWithChild.check();
         await this.orderDetails.fill('Order to contact the child at foster care');

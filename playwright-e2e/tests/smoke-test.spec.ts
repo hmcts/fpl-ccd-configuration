@@ -38,53 +38,80 @@ test.describe('', () => {
         await createCase.createCase();
         await createCase.submitCase(createCase.generatedCaseName);
         await startApplication.caseNameUpdated();
-        //this has to be refracted to new test as the test execution time exceed 8m
-        //await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+
+
 
         // Orders and directions sought
+        await startApplication.tabNavigation('Start application');
         await ordersAndDirectionSought.ordersAndDirectionsNeeded();
         await startApplication.addApplicationDetailsHeading.isVisible();
-       // await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
         await startApplication.orderAndDirectionUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByRole('link',{name:'Make changes to orders and directions sought',exact:true})).toBeVisible();
+
 
         // Hearing urgency
+        await startApplication.tabNavigation('Start application');
         await startApplication.hearingUrgency();
         await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
         await hearingUrgency.hearingUrgencySmokeTest();
-        await startApplication.respondentDetailsHasBeenUpdated();
+        await startApplication.hearingurgencyHasBeenUpdate();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByRole('link',{name:'Make changes to hearing urgency',exact:true})).toBeVisible();
+
 
         // Grounds for the application
+        await startApplication.tabNavigation('Start application');
         await startApplication.groundsForTheApplication();
         await groundsForTheApplication.groundsForTheApplicationSmokeTest();
         await startApplication.groundsForTheApplicationHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('How does this case meet the threshold criteria?',{exact:true})).toBeVisible();
 
         //Add application documents
-      //  await startApplication.addApplicationDetailsHeading.isVisible();
+        await startApplication.tabNavigation('Start application');
         await startApplication.addApplicationDocuments();
         await addApplicationDocuments.uploadDocumentSmokeTest();
         await startApplication.addApplicationDocumentsInProgress();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Documents 1',{exact:true})).toBeVisible();
 
 // Applicant Details
+        await startApplication.tabNavigation('Start application');
         await startApplication.applicantDetails();
         await applicantDetails.applicantDetailsNeeded();
         await startApplication.applicantDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Applicant 1',{exact:true})).toBeVisible();
 
         // Child details
+        await startApplication.tabNavigation('Start application');
         await startApplication.childDetails();
         await childDetails.childDetailsNeeded();
         await startApplication.childDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Child 1',{exact:true})).toBeVisible();
 
         // // Add respondents' details
+        await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsNeeded();
         await startApplication.respondentDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Respondents 1',{exact:true})).toBeVisible();
 
         // Allocation Proposal
+        await startApplication.tabNavigation('Start application');
         await startApplication.allocationProposal();
         await allocationProposal.allocationProposalSmokeTest();
         await startApplication.allocationProposalHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByRole('link',{name:'Make changes to allocation proposal',exact:true})).toBeVisible();
+
+
 
         // Submit the case
+        await startApplication.tabNavigation('Start application');
         await startApplication.submitCase();
         await submitCase.submitCaseSmokeTest('2,515.00');
 
@@ -136,37 +163,59 @@ test.describe('', () => {
         await startApplication.caseNameUpdated();
 
         // Orders and directions sought
+        await startApplication.tabNavigation('Start application');
         await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
         await startApplication.orderAndDirectionUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByRole('link',{name:'Make changes to orders and directions sought',exact:true})).toBeVisible();
+
 
 
         // Hearing urgency
+        await startApplication.tabNavigation('Start application');
         await startApplication.hearingUrgency();
         await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
         await hearingUrgency.hearingUrgencySmokeTest();
-
+        await startApplication.hearingurgencyHasBeenUpdate();
+        await startApplication.tabNavigation('View application');
 
         // Applicant Details
+        await startApplication.tabNavigation('Start application');
         await startApplication.applicantDetails();
         await applicantDetails.solicitorC110AApplicationApplicantDetails();
         await startApplication.applicantDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Applicant 1',{exact:true})).toBeVisible();
+
 
         // Child details
+        await startApplication.tabNavigation('Start application');
         await startApplication.childDetails();
         await childDetails.childDetailsNeeded();
         await startApplication.childDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Child 1',{exact:true})).toBeVisible();
+
 
         // // Add respondents' details
+        await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsNeeded();
+        await startApplication.respondentDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Respondents 1',{exact:true})).toBeVisible();
+
 
 
         // Allocation Proposal
+        await startApplication.tabNavigation('Start application');
         await startApplication.allocationProposal();
         await allocationProposal.allocationProposalSmokeTest();
         await startApplication.allocationProposalHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
 
         // Submit the case
+        await startApplication.tabNavigation('Start application');
         await startApplication.submitCase();
         await submitCase.submitCaseSmokeTest('£255.00');
         await caseFileView.goToCFVTab();
