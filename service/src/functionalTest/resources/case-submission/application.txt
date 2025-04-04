@@ -53,7 +53,7 @@ Social worker’s name                                                -
 Social worker’s telephone number                                    -
 Social worker’s email address                                       -
 Additional needs                                                    -
-Litigation capacity issues                                          -
+Litigation capacity issues
 Confidential contact details
 
 Child 2
@@ -74,7 +74,7 @@ Social worker’s name                                                -
 Social worker’s telephone number                                    -
 Social worker’s email address                                       -
 Additional needs                                                    -
-Litigation capacity issues                                          -
+Litigation capacity issues
 Confidential contact details
 
 Respondent
