@@ -46,14 +46,14 @@ Care and contact plan                                               -
 Considering adoption                                                -
 Mother’s name                                                       -
 Father’s name                                                       -
-Father has parental responsibility                                  -
+Father has parental responsibility
 Are social worker’s details confidential                            No
 Social worker’s name                                                -
 Social worker’s telephone number                                    -
 Social worker's email address                                       -
 Additional needs                                                    -
 Litigation capacity issues                                          -
-Confidential contact details                                        -
+Confidential contact details
 
 Child 2
 
@@ -67,12 +67,14 @@ Care and contact plan                                               -
 Considering adoption                                                -
 Mother’s name                                                       -
 Father’s name                                                       -
-Father has parental responsibility                                  -
+Father has parental responsibility
+Are social worker’s details confidential                            No
 Social worker’s name                                                -
 Social worker’s telephone number                                    -
+Social worker's email address                                       -
 Additional needs                                                    -
 Litigation capacity issues                                          -
-Confidential contact details                                        -
+Confidential contact details
 
 Respondent
 
