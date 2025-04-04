@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
