@@ -28,6 +28,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
+    "ListElementCode": "judgeType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "JudgeType",
+    "ElementLabel": "Judge or magistrate's title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "JudgeOrMagistrateTitle",

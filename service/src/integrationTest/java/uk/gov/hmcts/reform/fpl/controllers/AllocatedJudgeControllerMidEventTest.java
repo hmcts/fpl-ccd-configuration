@@ -10,10 +10,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.ElinksService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
@@ -63,10 +64,10 @@ class AllocatedJudgeControllerMidEventTest extends AbstractCallbackTest {
         given(jrdApi.findUsers(any(), any(), anyInt(), any(), any())).willReturn(List.of(JudicialUserProfile.builder()
             .build()));
         CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.NO)
-            .judicialUser(JudicialUser.builder()
-                .personalCode("1234")
-                .build())
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.SALARIED_JUDGE, null,
+                JudicialUser.builder().personalCode("1234").build(), null
+            ))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -78,11 +79,12 @@ class AllocatedJudgeControllerMidEventTest extends AbstractCallbackTest {
     @Test
     void shouldNotReturnAValidationErrorWhenJudgeEnteredManually() {
         CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.YES)
-            .allocatedJudge(Judge.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
-                .judgeEmailAddress("email@example.com")
-                .build())
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.LEGAL_ADVISOR, null, null,
+                Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+                    .judgeEmailAddress("email@example.com")
+                    .build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -94,9 +96,8 @@ class AllocatedJudgeControllerMidEventTest extends AbstractCallbackTest {
     @Test
     void shouldReturnAValidationErrorWhenNoPersonalCode() {
         CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.NO)
-            .judicialUser(JudicialUser.builder()
-                .build())
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.SALARIED_JUDGE, null, JudicialUser.builder().build(), null))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -109,11 +110,12 @@ class AllocatedJudgeControllerMidEventTest extends AbstractCallbackTest {
     @Test
     void shouldReturnAValidationErrorWhenEnterManuallyAndInvalidEmail() {
         CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.YES)
-            .allocatedJudge(Judge.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
-                .judgeEmailAddress("<not valid email address>")
-                .build())
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.LEGAL_ADVISOR, null, null,
+                Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+                    .judgeEmailAddress("<not valid email address>")
+                    .build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
