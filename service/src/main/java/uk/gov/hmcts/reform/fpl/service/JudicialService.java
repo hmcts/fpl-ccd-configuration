@@ -508,7 +508,7 @@ public class JudicialService {
             resultMap.put("judgeType", judge.getJudgeType());
             resultMap.put("judicialUser", judge.getJudgeJudicialUser());
 
-            if (LEGAL_ADVISOR.equals(judge.getJudgeType())) {
+            if (judge.isDetailsEnterManually()) {
                 Map<String, Object> manualJudgeDetails = new HashMap<>();
                 manualJudgeDetails.put("judgeFullName", judge.getJudgeFullName());
                 manualJudgeDetails.put("judgeLastName", judge.getJudgeLastName());

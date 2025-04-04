@@ -60,6 +60,13 @@ public class AbstractJudge {
         return judgeLastName;
     }
 
+    @JsonIgnore
+    public boolean isDetailsEnterManually() {
+        return YesNo.YES.equals(judgeEnterManually) // historical data
+               || (judgeType == null && judgeEnterManually == null) // historical data
+               || JudgeType.LEGAL_ADVISOR.equals(judgeType);
+    }
+
     public static <T extends AbstractJudge> T fromJudicialUserProfile(AbstractJudgeBuilder<T,?> builder,
                                                                       JudicialUserProfile jup,
                                                                       JudgeOrMagistrateTitle title) {
