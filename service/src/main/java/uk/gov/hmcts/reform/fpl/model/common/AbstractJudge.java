@@ -5,20 +5,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
-import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -44,6 +39,7 @@ public class AbstractJudge {
     private final String judgeEmailAddress;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Deprecated
     private final YesNo judgeEnterManually;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -64,14 +60,6 @@ public class AbstractJudge {
             return judgeFullName;
         }
         return judgeLastName;
-    }
-
-    public YesNo getJudgeEnterManually() {
-        if (!isEmpty(this.judgeEnterManually)) {
-            return this.judgeEnterManually;
-        }
-
-        return (JudgeType.LEGAL_ADVISOR.equals(judgeType)) ? YesNo.YES : YesNo.NO;
     }
 
     public static <T extends AbstractJudge> T fromJudicialUserProfile(AbstractJudgeBuilder<T,?> builder,

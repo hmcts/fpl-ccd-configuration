@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudgeType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -43,8 +42,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
@@ -58,7 +55,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
 
 @Slf4j
@@ -514,8 +510,8 @@ public class JudicialService {
 
             if (LEGAL_ADVISOR.equals(judge.getJudgeType())) {
                 Map<String, Object> manualJudgeDetails = new HashMap<>();
+                manualJudgeDetails.put("judgeFullName", judge.getJudgeFullName());
                 manualJudgeDetails.put("judgeLastName", judge.getJudgeLastName());
-                manualJudgeDetails.put("judgeFullName", judge.getJudgeLastName());
                 manualJudgeDetails.put("judgeEmailAddress", judge.getJudgeEmailAddress());
                 if (LEGAL_ADVISOR_TITLES.contains(judge.getJudgeTitle())) {
                     manualJudgeDetails.put("judgeTitle", judge.getJudgeTitle());

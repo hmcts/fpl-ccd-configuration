@@ -8,11 +8,8 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Jacksonized
@@ -39,7 +36,6 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
                 .otherTitle(allocatedJudge.getOtherTitle())
                 .judgeLastName(allocatedJudge.getJudgeLastName())
                 .judgeFullName(allocatedJudge.getJudgeFullName())
-                .judgeEnterManually(allocatedJudge.getJudgeEnterManually())
                 .judgeJudicialUser(allocatedJudge.getJudgeJudicialUser())
                 .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress());
         }

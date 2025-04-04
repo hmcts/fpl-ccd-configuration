@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonKey;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -272,12 +270,6 @@ public class CaseData extends CaseDataParent {
         groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
     private final Judge allocatedJudge;
 
-    @Temp
-    private final Judge tempAllocatedJudge;
-
-    // Temporary hearing judge field + legal advisor
-    @Temp
-    private final Judge hearingJudge;
     @Temp
     private final String legalAdvisorName;
     @Temp
