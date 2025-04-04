@@ -32,7 +32,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillOtherApplicationDetails();
 
       // Payment details
-      await expect(page.getByText('£255.00')).toBeVisible();
+      await expect(page.getByText('£263.00')).toBeVisible();
       await additionalApplications.payForApplication();
 
       await additionalApplications.checkYourAnsAndSubmit();
@@ -79,7 +79,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText('£255.00')).toBeVisible();
+      await expect(page.getByText('£263.00')).toBeVisible();
       await additionalApplications.payForApplication();
 
       await additionalApplications.checkYourAnsAndSubmit();
@@ -98,7 +98,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
       await additionalApplications.fillOtherApplicationDetails();
 
-      await expect(page.getByText('£255.00')).toBeVisible();
+      await expect(page.getByText('£263.00')).toBeVisible();
       await additionalApplications.payForApplication();
 
       await additionalApplications.checkYourAnsAndSubmit();
@@ -129,7 +129,7 @@ test.describe('Upload additional applications', () => {
             await additionalApplications.fillC2ApplicationDetails();
 
             // Payment details
-            await expect(page.getByText('£255.00')).toBeVisible();
+            await expect(page.getByText('£263.00')).toBeVisible();
             await additionalApplications.payForApplication();
 
             await additionalApplications.checkYourAnsAndSubmit();
@@ -174,7 +174,7 @@ test.describe('Upload additional applications', () => {
             await additionalApplications.fillC2ApplicationDetails();
 
             // Payment details
-            await expect(page.getByText('£255.00')).toBeVisible();
+            await expect(page.getByText('£263.00')).toBeVisible();
             await additionalApplications.payForApplication();
 
             await additionalApplications.checkYourAnsAndSubmit();

@@ -81,7 +81,7 @@ test.describe('', () => {
 
         // Submit the case
         await startApplication.submitCase();
-        await submitCase.submitCaseSmokeTest('2,437.00');
+        await submitCase.submitCaseSmokeTest('2,515.00');
 
         const accessibilityScanResults = await makeAxeBuilder()
             // Automatically uses the shared AxeBuilder configuration,
@@ -162,7 +162,7 @@ test.describe('', () => {
 
         // Submit the case
         await startApplication.submitCase();
-        await submitCase.submitCaseSmokeTest('255');
+        await submitCase.submitCaseSmokeTest('£255.00');
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Applications');
         await caseFileView.openFolder('Original Applications');

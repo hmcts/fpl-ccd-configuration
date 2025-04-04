@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -142,15 +141,15 @@ public class ManageLegalCounselService {
             retrieveLegalCounselForLoggedInSolicitor(previousCaseData)
         );
 
-        //Grant case access to all new legal counsellors
-        currentLegalCounsellors.stream()
-            .filter(not(previousLegalCounsellors::contains))
-            .forEach(counsellor -> events.add(new LegalCounsellorAdded(currentCaseData, counsellor)));
-
         //Revoke case access from all removed legal counsellors
         previousLegalCounsellors.stream()
             .filter(not(currentLegalCounsellors::contains))
             .forEach(counsellor -> events.add(new LegalCounsellorRemoved(currentCaseData, orgName, counsellor)));
+
+        //Grant case access to all new legal counsellors
+        currentLegalCounsellors.stream()
+            .filter(not(previousLegalCounsellors::contains))
+            .forEach(counsellor -> events.add(new LegalCounsellorAdded(currentCaseData, counsellor)));
 
         return events;
     }
@@ -160,6 +159,6 @@ public class ManageLegalCounselService {
             LegalCounsellor counsellor = counsellorElement.getValue();
             String userId = organisationService.findUserByEmail(counsellor.getEmail()).orElseThrow();
             return element(counsellorElement.getId(), counsellor.toBuilder().userId(userId).build());
-        }).collect(Collectors.toList());
+        }).toList();
     }
 }

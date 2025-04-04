@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.PlacementOrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -47,6 +50,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_SOLICITOR_USER_EMAIL;
@@ -63,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentedRespon
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class GeneratedPlacementOrderEventHandlerTest {
 
     private static final DocumentReference ORDER_DOCUMENT = testDocumentReference();
@@ -104,6 +109,9 @@ class GeneratedPlacementOrderEventHandlerTest {
     @Mock
     private JudicialService judicialService;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private GeneratedPlacementOrderEventHandler underTest;
 
@@ -133,8 +141,9 @@ class GeneratedPlacementOrderEventHandlerTest {
         verify(judicialService, never()).deleteAllRolesOnCase(TEST_CASE_ID);
     }
 
-    @Test
-    void shouldEmailPlacementOrderToRelevantParties() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldEmailPlacementOrderToRelevantParties(boolean isCtscEmailEnabled) {
         when(localAuthorityRecipients.getRecipients(RecipientsRequest.builder().caseData(basicCaseData).build()))
             .thenReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
         Child child = Child.builder().build();
@@ -147,15 +156,21 @@ class GeneratedPlacementOrderEventHandlerTest {
         when(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_1_CODE))
             .thenReturn(Optional.of(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE,
                 CAFCASS_EMAIL_ADDRESS)));
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(isCtscEmailEnabled);
 
         underTest.sendPlacementOrderEmail(
             new GeneratedPlacementOrderEvent(basicCaseData,
                 ORDER_DOCUMENT,
                 ORDER_NOTIFICATION_DOCUMENT));
 
+        Set<String> expectedRecipients = Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, CAFCASS_EMAIL_ADDRESS);
+        if (isCtscEmailEnabled) {
+            expectedRecipients =  Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, DEFAULT_ADMIN_EMAIL, CAFCASS_EMAIL_ADDRESS);
+        }
+
         verify(notificationService).sendEmail(
             PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE,
-            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, DEFAULT_ADMIN_EMAIL, CAFCASS_EMAIL_ADDRESS),
+            expectedRecipients,
             notifyData,
             TEST_CASE_ID
         );
