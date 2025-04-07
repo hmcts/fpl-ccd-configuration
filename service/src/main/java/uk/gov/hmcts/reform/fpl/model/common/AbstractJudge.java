@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
+import java.util.Arrays;
+
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
@@ -74,9 +76,16 @@ public class AbstractJudge {
             ? (" " + jup.getPostNominals())
             : "";
 
+        JudgeOrMagistrateTitle judgeTitle = (title != null)
+            ? title
+            : Arrays.stream(JudgeOrMagistrateTitle.values())
+                .filter(titleEnum -> titleEnum.getLabel().equalsIgnoreCase(jup.getTitle()))
+                .findFirst()
+                .orElse(null);
+
         return builder
-            .judgeTitle((title == null) ? JudgeOrMagistrateTitle.OTHER : title)
-            .otherTitle((title == null) ? jup.getTitle() : null)
+            .judgeTitle((judgeTitle == null) ? JudgeOrMagistrateTitle.OTHER : judgeTitle)
+            .otherTitle((judgeTitle == null) ? jup.getTitle() : null)
             .judgeLastName(jup.getSurname() + postNominals)
             .judgeFullName(jup.getFullName() + postNominals)
             .judgeEmailAddress(jup.getEmailId())
