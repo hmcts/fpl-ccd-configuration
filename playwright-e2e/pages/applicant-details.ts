@@ -73,6 +73,7 @@ export class ApplicantDetails extends BasePage {
     await this.enterRole.fill('QA');
     await this.continue.click();
     await this.saveAndContinue.click();
+    await expect(this.page.getByText('has been updated with event:')).toBeVisible();
   }
 
   async solicitorC110AApplicationApplicantDetails(){
