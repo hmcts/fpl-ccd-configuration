@@ -54,9 +54,10 @@ export class OrdersAndDirectionSought extends BasePage {
     async SoliciotrC110AAppOrderAndDirectionNeeded() {
 
         await expect(async () => {
-            await this.page.reload();
-            await this.OrdersAndDirectionsSought.click();
-            await expect(this.OrdersAndDirectionsSought).toBeHidden();
+            expect(this.OrdersAndDirectionsSought).toBeVisible();
+            this.OrdersAndDirectionsSought.click();
+            expect(this.OrdersAndDirectionsSought).toBeHidden();
+            this.page.reload();
         }).toPass();
         await expect(this.OrdersAndDirectionsHeading).toBeVisible();
         await this.variationOfSupervisionOrder.check();

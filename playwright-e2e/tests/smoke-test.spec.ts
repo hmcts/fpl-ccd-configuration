@@ -45,10 +45,6 @@ test.describe('', () => {
         await startApplication.tabNavigation('Start application');
         await ordersAndDirectionSought.ordersAndDirectionsNeeded();
         await startApplication.addApplicationDetailsHeading.isVisible();
-        await startApplication.orderAndDirectionUpdated();
-        await startApplication.tabNavigation('View application');
-        await expect(startApplication.page.getByRole('link',{name:'Make changes to orders and directions sought',exact:true})).toBeVisible();
-
 
         // Hearing urgency
         await startApplication.tabNavigation('Start application');

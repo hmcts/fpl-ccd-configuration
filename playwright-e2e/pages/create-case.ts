@@ -98,6 +98,8 @@ export class CreateCase extends BasePage {
             .getByRole("button", {name: "Submit"})
             // This click timeout is here allow for ExUI loading spinner to finish
             .click();
+        await expect(this.page.getByText('has been created.')).toBeVisible();
+
     }
 
     async checkCaseIsCreated(caseName: string) {

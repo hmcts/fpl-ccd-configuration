@@ -25,5 +25,7 @@ export class HearingUrgency extends BasePage {
     await this.areRespondentsAwareOfProceedings.click();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
+    await expect(this.page.getByText('has been updated with event:')).toBeVisible();
+
   }
 }

@@ -203,6 +203,7 @@ export class ChildDetails extends BasePage {
         await this.clickContinue();
         //await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.checkYourAnsAndSubmit();
+        await expect(this.page.getByText('has been updated with event:')).toBeVisible();
     }
 
     async addRegisteredSOlOrg() {
