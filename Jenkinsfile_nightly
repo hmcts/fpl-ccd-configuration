@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-    pipelineTriggers([cron('H 15 * * 1-5')]),
+    pipelineTriggers([cron('H 14 * * 1-5')]),
     parameters([
         string(name: 'FE_BASE_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
             description: 'The URL you want to run the full functional tests against'),
