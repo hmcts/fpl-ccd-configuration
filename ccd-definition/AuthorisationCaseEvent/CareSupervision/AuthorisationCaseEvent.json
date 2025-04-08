@@ -234,7 +234,7 @@
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
-        "CRUD": "CR"
+        "CRUD": "R"
       },
       {
         "UserRoles": [
@@ -249,7 +249,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "changeCaseName-superuser",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "CR"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
