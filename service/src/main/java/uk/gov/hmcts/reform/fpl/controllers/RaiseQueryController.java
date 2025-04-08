@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +15,18 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @RestController
@@ -32,21 +41,20 @@ public class RaiseQueryController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        String queryCollection;
 
         logAllQueryCollections(caseDetails);
 
         if (userService.isCafcassUser()) {
-            String cafcassCollection = "qmCaseQueriesCollectionCafcass";
-
+            queryCollection = "qmCaseQueriesCollectionCafcass";
             log.info("Current logged-in user's case role is {}", UserRole.CAFCASS);
-            log.info("Query collection for user role {} is {}.", UserRole.CAFCASS, cafcassCollection);
-            caseDetails.getData().putIfAbsent(cafcassCollection, null);
-            log.info("Setting {} to value {}", cafcassCollection, caseDetails.getData().get(cafcassCollection));
         } else {
-            Set<CaseRole> currentUserRoles = userService.getCaseRoles(caseData.getId());
-            log.info("Current logged-in user's case roles are: {}", currentUserRoles);
-            initialiseRelevantQueryCollectionsForUser(caseDetails, currentUserRoles);
+            queryCollection = getCurrentCollection(caseData);
         }
+
+        log.info("Query collection for this user is {}.", queryCollection);
+        caseDetails.getData().putIfAbsent(queryCollection, null);
+        log.info("Setting {} to value {}", queryCollection, caseDetails.getData().get(queryCollection));
 
         log.info("Final values of query collections: ");
         logAllQueryCollections(caseDetails);
@@ -54,18 +62,14 @@ public class RaiseQueryController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void initialiseRelevantQueryCollectionsForUser(CaseDetails caseDetails, Set<CaseRole> currentUserRoles) {
-        CaseRole userQueryCollectionRole = currentUserRoles.stream()
-            .filter(COLLECTION_MAPPING::containsKey)
-            .findFirst()
-            .orElse(null);
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        final CaseData caseData = getCaseData(callbackRequest);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        if (userQueryCollectionRole != null) {
-            String queryCollectionKey = COLLECTION_MAPPING.get(userQueryCollectionRole);
-            log.info("Query collection for user role {} is {}.", userQueryCollectionRole, queryCollectionKey);
-            caseDetails.getData().putIfAbsent(queryCollectionKey, null);
-            log.info("Setting {} to value {}", queryCollectionKey, caseDetails.getData().get(queryCollectionKey));
-        }
+        caseDetails.getData().put("latestQueryID", getLatestQueryID(caseDetails, getCurrentCollection(caseData)));
+
+        return respond(caseDetails);
     }
 
     private void logQueryCollection(CaseDetails caseDetails, String collectionKey) {
@@ -74,6 +78,40 @@ public class RaiseQueryController extends CallbackController {
         } else {
             log.info("{} is not present on case data.", collectionKey);
         }
+    }
+
+    private String getCurrentCollection(CaseData caseData) {
+        Set<CaseRole> currentUserRoles = userService.getCaseRoles(caseData.getId());
+        log.info("Current logged-in user's case roles are: {}", currentUserRoles);
+
+        CaseRole userQueryCollectionRole = currentUserRoles.stream()
+            .filter(COLLECTION_MAPPING::containsKey)
+            .findFirst()
+            .orElse(null);
+
+        return (userQueryCollectionRole != null) ? COLLECTION_MAPPING.get(userQueryCollectionRole) : null;
+    }
+
+    public String getLatestQueryID(CaseDetails caseDetails, String currentCollection) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+
+        Map<String,Object> collection = objectMapper.convertValue(
+            caseDetails.getData().getOrDefault(currentCollection, null),
+            new TypeReference<Map<String,Object>>() {}
+        );
+
+        List<Element<Map<String,Object>>> caseMessages = objectMapper.convertValue(
+            collection.getOrDefault("caseMessages", null),
+            new TypeReference<List<Element<Map<String,Object>>>>() {}
+        );
+
+        Map<String,Object> latestCaseMessage = unwrapElements(caseMessages).stream()
+            .max(Comparator.comparing(caseMessage -> LocalDateTime.parse(caseMessage.get("createdOn").toString(),
+                formatter)))
+            .orElse(null);
+
+        return latestCaseMessage != null ? latestCaseMessage.getOrDefault("id", null).toString() : null;
     }
 
     private void logAllQueryCollections(CaseDetails caseDetails) {
