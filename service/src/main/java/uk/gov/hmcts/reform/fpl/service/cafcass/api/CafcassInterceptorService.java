@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.fpl.config.CacheConfiguration.CAFCASS_API_IDAM
 import static uk.gov.hmcts.reform.fpl.config.CacheConfiguration.CAFCASS_API_IDAM_CACHE_MANAGER;
 
 @Service
-@EnableCaching
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassInterceptorService {
     private final FeatureToggleService featureToggleService;
