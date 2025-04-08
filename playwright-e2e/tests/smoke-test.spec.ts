@@ -194,7 +194,7 @@ test.describe('', () => {
         // Submit the case
         await startApplication.tabNavigation('Start application');
         await startApplication.submitCase();
-        await submitCase.submitCaseSmokeTest('£255.00');
+        await submitCase.submitCaseSmokeTest('£263.00');
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Applications');
         await caseFileView.openFolder('Original Applications');
