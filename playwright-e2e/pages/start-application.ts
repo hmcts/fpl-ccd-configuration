@@ -1,7 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import {BasePage} from "./base-page";
 
-export class StartApplication {
-  readonly page: Page;
+export class StartApplication extends BasePage {
   readonly addApplicationDetailsHeading: Locator;
   readonly ordersAndDirectionsSoughtLink: Locator;
   readonly factorsAffectingParentingLink: Locator;
@@ -34,7 +34,7 @@ export class StartApplication {
 
   // readonly logExpertReportLink: Locator;
   public constructor(page: Page) {
-    this.page = page;
+super(page);
     this.addApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details", });
     this.ordersAndDirectionsSoughtLink = page.getByRole("heading", { name: "Orders and directions sought", });
     this.factorsAffectingParentingLink = page.getByRole("heading", { name: "Factors affecting parenting", });
@@ -69,8 +69,15 @@ export class StartApplication {
 
   }
   async groundsForTheApplication() {
-    expect(await this.groundsForTheApplicationLink).toBeVisible();
-    await this.groundsForTheApplicationLink.click();
+
+    await  expect(()=>{
+       this.page.reload();
+        expect(this.groundsForTheApplicationLink).toBeVisible();
+        this.groundsForTheApplicationLink.click();
+        expect( this.groundsForTheApplicationLink).toBeHidden();
+      }).toPass();
+   // expect(await this.groundsForTheApplicationLink).toBeVisible();
+
    // await expect(this.groundsForTheApplicationHeading).toBeVisible();
   }
 
@@ -79,8 +86,14 @@ export class StartApplication {
   }
 
   async hearingUrgency() {
-    expect(await this.hearingUrgencyLink).toBeVisible();
-    await this.hearingUrgencyLink.click();
+      await expect(() => {
+       expect(this.hearingUrgencyLink).toBeVisible();
+          this.hearingUrgencyLink.click();
+          expect(this.hearingUrgencyLink).toBeHidden();
+          this.page.reload();
+
+      }).toPass();
+
     await expect(this.hearingUrgencyHeader).toBeVisible();
   }
 
@@ -90,8 +103,15 @@ export class StartApplication {
   }
 
   async addApplicationDocuments() {
-    await expect(this.uploadDocumentsLink).toBeVisible();
-    await this.uploadDocumentsLink.click();
+
+      await expect(()=>{
+         expect(this.uploadDocumentsLink).toBeVisible();
+          this.uploadDocumentsLink.click();
+          expect(this.uploadDocumentsLink).toBeHidden();
+          this.page.reload();
+      }).toPass();
+    // await expect(this.uploadDocumentsLink).toBeVisible();
+    // await this.uploadDocumentsLink.click();
   }
 
   async addApplicationDocumentsInProgress() {
@@ -99,8 +119,14 @@ export class StartApplication {
   }
 
   async applicantDetails() {
-    await expect(this.applicantDetailsLink).toBeVisible();
-    await this.applicantDetailsLink.click();
+      await expect(()=>{
+         expect(this.applicantDetailsLink).toBeVisible();
+          this.applicantDetailsLink.click();
+          expect(this.applicantDetailsLink).toBeHidden();
+          this.page.reload();
+      }).toPass();
+    // await expect(this.applicantDetailsLink).toBeVisible();
+    // await this.applicantDetailsLink.click();
   }
 
   async applicantDetailsHasBeenUpdated() {
@@ -108,8 +134,14 @@ export class StartApplication {
   }
 
   async childDetails() {
-    await expect(this.childDetailsLink).toBeVisible();
-    await this.childDetailsLink.click();
+      await expect(()=>{
+          expect(this.childDetailsLink).toBeVisible();
+           this.childDetailsLink.click();
+           expect(this.childDetailsLink).toBeHidden();
+          this.page.reload();
+      }).toPass();
+    // await expect(this.childDetailsLink).toBeVisible();
+    // await this.childDetailsLink.click();
   }
 
   async childDetailsHasBeenUpdated() {
@@ -117,13 +149,26 @@ export class StartApplication {
   }
 
   async respondentDetails() {
-    await expect(this.respondentsDetailsLink).toBeVisible();
-    await this.respondentsDetailsLink.click();
+      await expect(()=>{
+          expect(this.respondentsDetailsLink).toBeVisible();
+          this.respondentsDetailsLink.click();
+          expect(this.respondentsDetailsLink).toBeHidden();
+          this.page.reload();
+      }).toPass();
+    // await expect(this.respondentsDetailsLink).toBeVisible();
+    // await this.respondentsDetailsLink.click();
   }
 
   async allocationProposal() {
-    await expect(this.allocationProposalLink).toBeVisible();
-    await this.allocationProposalLink.click();
+
+      await expect(()=>{
+          expect(this.allocationProposalLink).toBeVisible();
+          this.allocationProposalLink.click();
+          expect(this.allocationProposalLink).toBeHidden();
+          this.page.reload();
+      }).toPass();
+    // await this.allocationProposalLink.click();
+      // await expect(this.allocationProposalLink).toBeVisible();
   }
 
   async allocationProposalHasBeenUpdated() {
