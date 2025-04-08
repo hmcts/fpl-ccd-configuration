@@ -254,6 +254,30 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "updateCaseName",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "changeState",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CR"

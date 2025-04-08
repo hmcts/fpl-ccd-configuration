@@ -1,0 +1,25 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "updateCaseName",
+    "CaseFieldID": "caseName",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "updatedCaseNameLabel=\"DO_NOT_SHOW\"",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "updateCaseName",
+    "CaseFieldID": "updatedCaseNameLabel",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  }
+]
