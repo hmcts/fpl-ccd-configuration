@@ -43,5 +43,6 @@ export class GroundsForTheApplication {
         await this.continueButton.click();
         await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.saveAndContinueButton.click();
+        await expect(this.page.getByText('has been updated with event:')).toBeVisible();
      }
 }
