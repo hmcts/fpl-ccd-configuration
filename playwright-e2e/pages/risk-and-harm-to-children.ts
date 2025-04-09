@@ -1,21 +1,21 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import {BasePage} from "./base-page";
+import {BasePage} from "./base-page.ts";
 
 export class RiskAndHarmToChildren extends BasePage {
-    readonly page: Page;
-    readonly riskAndHarmToChildrenHeader: Locator;
-    readonly harmToChildren: Locator;
-    readonly factorAffectingRespondentAbilityToParenting: Locator;
-    readonly whatElseAbility: Locator;
-
-    public constructor(page: Page) {
-        super(page);
-        this.page = page;
-        this.factorAffectingRespondentAbilityToParenting = page.getByRole('group', { name: 'Is there anything affecting any respondent\'s ability to parent?' });
-        this.harmToChildren = page.getByRole('group', { name: 'What kind of harm is the child at risk of?' });
-        this.whatElseAbility = page.getByLabel('Tell us what else is affecting their ability to parent');
-        this.riskAndHarmToChildrenHeader = page.getByRole('heading', { name: 'Risk and harm to children', exact: true,level:1 });
+    get whatElseAbility(): Locator {
+        return this.page.getByLabel('Tell us what else is affecting their ability to parent');
     }
+    get factorAffectingRespondentAbilityToParenting(): Locator {
+        return this.page.getByRole('group', { name: 'Is there anything affecting any respondent\'s ability to parent?' });
+    }
+    get harmToChildren(): Locator {
+        return this.page.getByRole('group', { name: 'What kind of harm is the child at risk of?' });
+    }
+
+    get riskAndHarmToChildrenHeader(): Locator {
+        return this.page.getByRole('heading', { name: 'Risk and harm to children', exact: true,level:1 });
+    }
+
 
     async riskAndHarmToChildrenSmokeTest() {
         await expect (this.riskAndHarmToChildrenHeader).toBeVisible();
