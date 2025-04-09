@@ -473,7 +473,7 @@
     "CaseEventID": "queryManagementRaiseQuery",
     "CaseFieldID": "latestQueryID",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "READONLY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "queryManagementRaiseQuery",
     "PageLabel": "Raise a new query",
     "PageDisplayOrder": 1,
