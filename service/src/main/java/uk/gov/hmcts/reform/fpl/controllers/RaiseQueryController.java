@@ -69,6 +69,8 @@ public class RaiseQueryController extends CallbackController {
 
         caseDetails.getData().put("latestQueryID", getLatestQueryID(caseDetails, getCurrentCollection(caseData)));
 
+        log.info("latestQueryID is set to: " + caseDetails.getData().get("latestQueryID"));
+
         return respond(caseDetails);
     }
 
