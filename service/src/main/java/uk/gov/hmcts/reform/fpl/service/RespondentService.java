@@ -303,7 +303,7 @@ public class RespondentService {
         List<Element<Respondent>> respondents = caseData.getAllRespondents();
 
         // get the current respondentLA stored in collection, if not use a new blank respondent as the base
-        Element<Respondent> oldFakeRespondentLA = isEmpty(caseData.getAllRespondents())
+        Element<Respondent> oldFakeRespondentLA = isEmpty(caseDataBefore.getAllRespondents())
             ? element(DUMMY_UUID, Respondent.builder().build())
             : caseDataBefore.getAllRespondents().get(0);
 
