@@ -14,6 +14,7 @@ java:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     CASE_ASSIGNMENT_API_URL: http://${SERVICE_NAME}-aac
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
+    AM_ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-service-${SERVICE_FQDN}
     SPRING_SECURITY_ENABLED: true
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     CCD_UI_BASE_URL: https://case-management-web-${SERVICE_FQDN}
@@ -34,6 +35,7 @@ java:
     DECLARATION_OF_PARENTAGE: Private
     RD_STAFF_API_ENABLED: true
     RD_JUDICIAL_API_ENABLED: true
+    CREATE_SYSTEM_USER_ROLE: true
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
@@ -284,13 +286,24 @@ ccd:
         minReplicas: 1
         maxReplicas: 1
       environment:
+        APPLICATION_LOGGING_LEVEL: TRACE
         ROLE_ASSIGNMENT_DB_USERNAME: hmcts
         ROLE_ASSIGNMENT_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+        CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+        RUN_LD_ON_STARTUP: false
       keyVaults:
         am:
           secrets:
-          - name: role-assignment-service-LD-SDK-KEY
-            alias: LD_SDK_KEY
+            - name: am-role-assignment-service-s2s-secret
+              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+            - name: role-assignment-service-IDAM-CLIENT-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
+            - name: role-assignment-service-IDAM-ADMIN-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
+            - name: role-assignment-service-LD-SDK-KEY
+              alias: LD_SDK_KEY
       secrets:
         ROLE_ASSIGNMENT_DB_PASSWORD:
           secretRef: postgres

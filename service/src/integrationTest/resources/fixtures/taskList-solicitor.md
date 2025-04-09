@@ -34,21 +34,15 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a>
-
-<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
-
-<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
-
 <br/>
 
-## Add application documents
-
-<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information </span>
+## Application documents
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
 <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a>
+
+<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -58,7 +52,7 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterThirdPartyApplicantDetails'>Applicant's details</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -100,7 +94,7 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -138,9 +132,7 @@ Add the hearing urgency details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION
 
 Add the grounds for the application in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>
 
-Add applicant's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
-
-Add the applicant's solicitor's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
+Add applicant's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterThirdPartyApplicantDetails'>Applicant's details</a>
 
 Add the child's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>
 

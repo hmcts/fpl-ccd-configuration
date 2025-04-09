@@ -382,7 +382,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "ctsc-team-leader",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-superuser,caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan,ctsc"
+    "AccessProfiles": "caseworker-publiclaw-superuser,caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan,TTL_profile"
+
   },
   {
     "LiveFrom": "01/01/2017",
@@ -467,6 +468,13 @@
     "RoleName": "idam:caseworker-publiclaw-judiciary",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-cafcasssystemupdate",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-cafcasssystemupdate"
   },
   {
     "LiveFrom": "01/01/2017",

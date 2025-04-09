@@ -18,7 +18,7 @@ class CourtLevelAllocationServiceTest {
             .build();
 
         Allocation expectedDecision = Allocation.builder()
-            .proposal("test")
+            .proposalV2("test")
             .proposalReason("decision reason")
             .judgeLevelRadio("No")
             .allocationProposalPresent("Yes")
@@ -62,7 +62,7 @@ class CourtLevelAllocationServiceTest {
 
         Allocation expectedDecision = Allocation.builder()
             .judgeLevelRadio("Yes")
-            .proposal("proposal")
+            .proposalV2("proposal")
             .proposalReason("reason")
             .allocationProposalPresent("Yes")
             .build();
@@ -79,7 +79,7 @@ class CourtLevelAllocationServiceTest {
 
         Allocation expectedDecision = Allocation.builder()
             .judgeLevelRadio("No")
-            .proposal("wrong proposal")
+            .proposalV2("wrong proposal")
             .proposalReason("reason")
             .allocationProposalPresent("Yes")
             .build();
@@ -96,7 +96,7 @@ class CourtLevelAllocationServiceTest {
 
         Allocation expectedDecision = Allocation.builder()
             .judgeLevelRadio(null)
-            .proposal("proposal")
+            .proposalV2("proposal")
             .proposalReason("reason")
             .allocationProposalPresent(null)
             .judgeLevelRadio(null)
@@ -109,7 +109,7 @@ class CourtLevelAllocationServiceTest {
 
     private Allocation createAllocation(String proposal, String reason) {
         return Allocation.builder()
-            .proposal(proposal)
+            .proposalV2(proposal)
             .proposalReason(reason)
             .build();
     }
