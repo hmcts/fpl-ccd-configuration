@@ -21,6 +21,8 @@ export class CreateCase extends BasePage{
   readonly applyFilter: Locator;
   private caseNameTextBox: Locator;
   private representingPartyRadio: Locator;
+  readonly respondentSolicitorUser: Locator;
+  readonly applicationFor: any;
 
   public constructor(page: Page) {
       super(page);
@@ -44,6 +46,8 @@ export class CreateCase extends BasePage{
     this.caseNumberTextBox = page.getByLabel('CCD Case Number');
     this.applyFilter = page.getByLabel('Apply filter');
     this.representingPartyRadio = page.getByLabel('Local Authority', { exact: true });
+    this.respondentSolicitorUser = page.getByLabel('Respondent Solicitor');
+    this.applicationFor =page.getByLabel('Select the local authority which relates to the case');
   }
 
   async createCase() {
@@ -76,6 +80,7 @@ export class CreateCase extends BasePage{
       .getByRole("button", { name: "Submit" })
       // This click timeout is here allow for ExUI loading spinner to finish
       .click();
+    await expect(this.page.getByText('has been created.')).toBeVisible();
   }
 
   async checkCaseIsCreated(caseName: string) {
@@ -126,4 +131,10 @@ export class CreateCase extends BasePage{
     async selectRepresentLA(){
         await this.representingPartyRadio.check();
   }
+
+    async respondentSolicitorCreatCase(){
+        await this.respondentSolicitorUser.check();
+        await this.applicationFor.selectOption('Barnet Borough Hillingdon');
+        await this.clickContinue();
+    }
 }

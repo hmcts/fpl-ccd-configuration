@@ -196,4 +196,9 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     public boolean isConfidential() {
         return isNotEmpty(documentConfidential);
     }
+
+    @JsonIgnore
+    public DocumentReference getDocumentOrDocumentConfidential() {
+        return (isConfidential()) ? documentConfidential : document;
+    }
 }

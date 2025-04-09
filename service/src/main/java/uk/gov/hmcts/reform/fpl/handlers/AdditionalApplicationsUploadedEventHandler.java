@@ -100,7 +100,7 @@ public class AdditionalApplicationsUploadedEventHandler {
             AdditionalApplicationsBundle uploadedBundle = getUploadedBundle(caseData);
 
             if (!isConfidentialC2UploadedOnly(uploadedBundle)
-                    || isConfidentialC2UploadedByChildSolicitor(uploadedBundle)) {
+                    || uploadedBundle.isConfidentialC2UploadedByChildSolicitor()) {
                 final CaseData caseDataBefore = event.getCaseDataBefore();
                 AdditionalApplicationsBundle oldBundle =
                     Optional.ofNullable(caseDataBefore.getAdditionalApplicationsBundle())
@@ -344,16 +344,5 @@ public class AdditionalApplicationsUploadedEventHandler {
 
     private boolean isConfidentialC2UploadedOnly(AdditionalApplicationsBundle bundle) {
         return bundle.getC2DocumentBundle() == null && bundle.getOtherApplicationsBundle() == null;
-    }
-
-    private boolean isConfidentialC2UploadedByChildSolicitor(AdditionalApplicationsBundle bundle) {
-        return isNotEmpty(bundle.getC2DocumentBundleChild0()) || isNotEmpty(bundle.getC2DocumentBundleChild1())
-               || isNotEmpty(bundle.getC2DocumentBundleChild2()) || isNotEmpty(bundle.getC2DocumentBundleChild3())
-               || isNotEmpty(bundle.getC2DocumentBundleChild4()) || isNotEmpty(bundle.getC2DocumentBundleChild5())
-               || isNotEmpty(bundle.getC2DocumentBundleChild6()) || isNotEmpty(bundle.getC2DocumentBundleChild7())
-               || isNotEmpty(bundle.getC2DocumentBundleChild8()) || isNotEmpty(bundle.getC2DocumentBundleChild9())
-               || isNotEmpty(bundle.getC2DocumentBundleChild10()) || isNotEmpty(bundle.getC2DocumentBundleChild11())
-               || isNotEmpty(bundle.getC2DocumentBundleChild12()) || isNotEmpty(bundle.getC2DocumentBundleChild13())
-               || isNotEmpty(bundle.getC2DocumentBundleChild14());
     }
 }
