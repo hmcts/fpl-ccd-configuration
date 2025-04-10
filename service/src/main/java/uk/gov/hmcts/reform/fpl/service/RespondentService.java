@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -42,6 +44,7 @@ import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APP
 import static uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType.LIVE_IN_REFUGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority.DUMMY_UUID;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -51,6 +54,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class RespondentService {
 
     private final Time time;
+
+    private final LocalAuthorityService localAuthorityService;
 
     public String buildRespondentLabel(List<Element<Respondent>> respondents) {
         StringBuilder sb = new StringBuilder();
@@ -101,9 +106,9 @@ public class RespondentService {
             if (party != null) {
                 RespondentParty.RespondentPartyBuilder partyBuilder = party.toBuilder();
 
-                // Make as confidential if living in a refuge
+                // Make address confidential if living in a refuge
                 if (LIVE_IN_REFUGE.equals(party.getAddressKnow())) {
-                    partyBuilder = partyBuilder.contactDetailsHidden(YES.getValue());
+                    partyBuilder = partyBuilder.hideAddress(YES.getValue());
                 }
 
                 // Clear address not know reason if address is known
@@ -292,6 +297,35 @@ public class RespondentService {
         return Respondent.builder()
             .representedBy(other.getRepresentedBy())
             .party(respondentParty).build();
+    }
+
+    public void transformRespondentLocalAuthority(CaseDetails caseDetails, CaseData caseData, CaseData caseDataBefore) {
+        List<Element<Respondent>> respondents = caseData.getAllRespondents();
+
+        // get the current respondentLA stored in collection, if not use a new blank respondent as the base
+        Element<Respondent> oldFakeRespondentLA = isEmpty(caseDataBefore.getAllRespondents())
+            ? element(DUMMY_UUID, Respondent.builder().build())
+            : caseDataBefore.getAllRespondents().get(0);
+
+        RespondentLocalAuthority respondentLA = caseData.getRespondentLocalAuthority();
+
+        if (NO.equals(respondentLA.getUsingOtherOrg())) {
+            // using the onboarding organisation
+            Organisation laOrg = Organisation.builder()
+                .organisationID(localAuthorityService.getLocalAuthorityId(caseData.getRelatingLA()))
+                .organisationName(localAuthorityService.getLocalAuthorityName(caseData.getRelatingLA()))
+                .build();
+            respondentLA.setOrganisation(laOrg);
+        }
+        // using the old "fake" respondentLA as a base, update data modified on UI
+        // so we persist data attached to the "Respondent" instance, i.e. colleaguesToNotify, and any new "respondent"
+        // specific functionality in the future
+        if (isNotEmpty(oldFakeRespondentLA) && DUMMY_UUID.equals(oldFakeRespondentLA.getId())) {
+            respondents.add(0, respondentLA.toRespondent(oldFakeRespondentLA.getValue()));
+        } else {
+            respondents.add(0, respondentLA.toRespondent(Respondent.builder().build()));
+        }
+        caseDetails.getData().put("respondents1", respondents);
     }
 
 }
