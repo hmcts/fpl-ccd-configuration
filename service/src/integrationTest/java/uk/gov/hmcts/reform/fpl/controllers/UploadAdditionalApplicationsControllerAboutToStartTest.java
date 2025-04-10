@@ -7,7 +7,6 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -38,15 +37,13 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
             element(Respondent.builder().party(respondent2Party).build()));
 
         List<Element<Other>> others = List.of(
-            element(Other.builder().name("Bob").build()),
-            element(Other.builder().name("Tom").build()));
+            element(Other.builder().firstName("Bob").build()),
+            element(Other.builder().firstName("Tom").build()));
 
         CaseData caseData = CaseData.builder()
             .caseLocalAuthorityName("Swansea local authority")
             .respondents1(respondents)
-            .others(Others.builder()
-                .additionalOthers(others)
-                .build())
+            .othersV2(others)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
@@ -62,9 +59,9 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
                     .label(respondent1Party.getFullName() + ", Respondent 1").build(),
                 DynamicListElement.builder().code(respondents.get(1).getId().toString())
                     .label(respondent2Party.getFullName() + ", Respondent 2").build(),
-                DynamicListElement.builder().code(caseData.getAllOthers().get(0).getId().toString())
+                DynamicListElement.builder().code(caseData.getOthersV2().get(0).getId().toString())
                     .label("Bob, Other to be given notice 1").build(),
-                DynamicListElement.builder().code(caseData.getAllOthers().get(1).getId().toString())
+                DynamicListElement.builder().code(caseData.getOthersV2().get(1).getId().toString())
                     .label("Tom, Other to be given notice 2").build(),
                 DynamicListElement.builder().code("SOMEONE_ELSE").label("Someone else").build()))
             .value(DynamicListElement.EMPTY).build();
