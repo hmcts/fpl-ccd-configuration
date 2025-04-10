@@ -10,10 +10,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.ElinksService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
@@ -63,11 +64,12 @@ class AllocatedJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
             .thenReturn(Optional.of("1234"));
 
         CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.YES)
-            .allocatedJudge(Judge.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
-                .judgeEmailAddress("test@test.com")
-                .build())
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.LEGAL_ADVISOR, null, null,
+                Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+                    .judgeEmailAddress("test@test.com")
+                    .build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
@@ -81,8 +83,8 @@ class AllocatedJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
     @Test
     void shouldErrorIfNoJudgeAndNotEnteringManually() {
         CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.NO)
-            .allocatedJudge(Judge.builder().build())
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.SALARIED_JUDGE, null, null, Judge.builder().build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
@@ -95,14 +97,14 @@ class AllocatedJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
     @Test
     void shouldErrorIfNoJudgeFoundInJrd() {
         CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.NO)
-            .judicialUser(JudicialUser.builder().personalCode("1234").build())
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.SALARIED_JUDGE, null, JudicialUser.builder().personalCode("1234").build(), null))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
 
         assertThat(callbackResponse.getErrors())
-            .containsExactly("Could not fetch Judge details from JRD, please try again in a few minutes.");
+            .containsExactly("Judge could not be found, please search again or enter their details manually");
     }
 
     @WithMockUser
@@ -115,8 +117,8 @@ class AllocatedJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
             .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
             .build();
         CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.YES)
-            .allocatedJudge(judge)
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.LEGAL_ADVISOR, null, null, judge))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
@@ -124,7 +126,7 @@ class AllocatedJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseDataResult = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseDataResult.getAllocatedJudge())
-            .isEqualTo(judge.toBuilder().judgeLastName(null).build());
+            .isEqualTo(judge.toBuilder().judgeType(JudgeType.LEGAL_ADVISOR).judgeLastName(null).build());
     }
 
     @WithMockUser
@@ -137,8 +139,8 @@ class AllocatedJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
             .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
             .build();
         CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.YES)
-            .allocatedJudge(judge)
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.LEGAL_ADVISOR, null, null, judge))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
@@ -146,6 +148,6 @@ class AllocatedJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseDataResult = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseDataResult.getAllocatedJudge())
-            .isEqualTo(judge.toBuilder().judgeFullName(null).build());
+            .isEqualTo(judge.toBuilder().judgeType(JudgeType.LEGAL_ADVISOR).judgeFullName(null).build());
     }
 }
