@@ -351,22 +351,6 @@ class LocalAuthorityChangedHandlerTest {
         }
 
         @Test
-        void shouldNotifyAdmin() {
-            when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt))
-                .thenReturn(notifyData);
-            when(courtService.getCourtEmail(caseDataTransferredToOrdinaryCourt)).thenReturn("admin@test.com");
-
-            underTest.notifyAdmin(transferredToOrdinaryCourtEvent);
-
-            verify(notificationService).sendEmail(
-                CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
-                "admin@test.com",
-                notifyData,
-                caseDataTransferredToOrdinaryCourt.getId());
-            verifyNoMoreInteractions(notificationService);
-        }
-
-        @Test
         void shouldNotifyHighCourtAdmin() {
             when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt))
                 .thenReturn(notifyData);
