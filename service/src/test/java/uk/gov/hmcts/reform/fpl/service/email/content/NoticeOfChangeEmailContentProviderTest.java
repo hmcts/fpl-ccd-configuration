@@ -120,6 +120,15 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
             .isEqualTo(expectedTemplate);
     }
 
+    @Test
+    void shouldBuildNoticeOfChangeTemplateForThirdPartySolicitor() {
+        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate
+            = buildExpectedTemplate("", EMPTY);
+
+        assertThat(underTest.buildNoticeOfChangeThirdPartySolicitorTemplate(CASE_DATA))
+            .isEqualTo(expectedTemplate);
+    }
+
     private static Stream<Arguments> solicitorNameSource() {
         final String salutation = "Dear ";
         final String expectedLastName = salutation + RESPONDENT_LAST_NAME;

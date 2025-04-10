@@ -1093,6 +1093,12 @@ public class CaseData extends CaseDataParent {
 
     @JsonUnwrapped
     @Builder.Default
+    private final NoticeOfChangeThirdPartyRespondentAnswersData noticeOfChangeThirdPartyRespondentAnswersData =
+        NoticeOfChangeThirdPartyRespondentAnswersData.builder()
+            .build();
+
+    @JsonUnwrapped
+    @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
     @JsonUnwrapped
     @Builder.Default
@@ -1103,7 +1109,7 @@ public class CaseData extends CaseDataParent {
     private final GatekeepingOrderEventData gatekeepingOrderEventData = GatekeepingOrderEventData.builder().build();
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
-    private final ChangeOrganisationRequest changeOrganisationRequestField;
+    public ChangeOrganisationRequest changeOrganisationRequestField;
 
     @JsonUnwrapped
     @Builder.Default
