@@ -203,6 +203,8 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .address(respondent.getValue().getParty().getAddress())
                 .telephoneNumber(respondent.getValue().getParty().getTelephoneNumber())
                 .email(respondent.getValue().getParty().getEmail())
+                .hideAddress("Yes")
+                .hideTelephone("Yes")
                 .build())
             .build());
     }
