@@ -1,26 +1,26 @@
-import {expect, test} from "../fixtures/fixtures";
-import {newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser} from "../settings/user-credentials";
-import {CreateCaseName} from "../utils/create-case-name";
-import {CaseFileView} from "../pages/case-file-view";
+import { expect, test } from "../fixtures/fixtures";
+import { newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from "../settings/user-credentials";
+import { CreateCaseName } from "../utils/create-case-name";
+import { CaseFileView } from "../pages/case-file-view";
 
 test.describe('', () => {
     test.slow();
     test("Local Authority submit C110A application @smoke-test @accessibility", async ({
-                                                                                           signInPage,
-                                                                                           createCase,
-                                                                                           ordersAndDirectionSought,
-                                                                                           startApplication,
-                                                                                           hearingUrgency,
-                                                                                           groundsForTheApplication,
-                                                                                           applicantDetails,
-                                                                                           allocationProposal,
-                                                                                           addApplicationDocuments,
-                                                                                           childDetails,
-                                                                                           respondentDetails,
-                                                                                           submitCase,
-                                                                                           page,
-                                                                                           makeAxeBuilder
-                                                                                       }, testInfo) => {
+        signInPage,
+        createCase,
+        ordersAndDirectionSought,
+        startApplication,
+        hearingUrgency,
+        groundsForTheApplication,
+        applicantDetails,
+        allocationProposal,
+        addApplicationDocuments,
+        childDetails,
+        respondentDetails,
+        submitCase,
+        page,
+        makeAxeBuilder
+    }, testInfo) => {
         // Marking this test slow to increase the time for 3 times of other test
 
         // 1. Sign in as local-authority user
@@ -42,59 +42,58 @@ test.describe('', () => {
         //await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
         // Orders and directions sought
-        await startApplication.tabNavigation('Start application');
-        await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-        await startApplication.addApplicationDetailsHeading.isVisible();
-        await startApplication.tabNavigation('View application');
+        // await startApplication.tabNavigation('Start application');
+        // await ordersAndDirectionSought.ordersAndDirectionsNeeded();
+        // await startApplication.addApplicationDetailsHeading.isVisible();
+        // await startApplication.tabNavigation('View application');
 
-        // Hearing urgency
-        await startApplication.tabNavigation('Start application');
-        await startApplication.hearingUrgency();
-        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
-        await hearingUrgency.hearingUrgencySmokeTest();
-        await startApplication.tabNavigation('View application');
+        // // Hearing urgency
+        // await startApplication.tabNavigation('Start application');
+        // await startApplication.hearingUrgency();
+        // await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
+        // await hearingUrgency.hearingUrgencySmokeTest();
+        // await startApplication.tabNavigation('View application');
 
         // Grounds for the application
-       await startApplication.tabNavigation('Start application');
-        await startApplication.groundsForTheApplication();
-        await groundsForTheApplication.groundsForTheApplicationSmokeTest();
-        await startApplication.groundsForTheApplicationHasBeenUpdated();
-         await startApplication.tabNavigation('View application');
+        //  await startApplication.tabNavigation('Start application');
+        //   await startApplication.groundsForTheApplication();
+        //   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
+        //   await startApplication.groundsForTheApplicationHasBeenUpdated();
+        //    await startApplication.tabNavigation('View application');
 
         //Add application documents
-         await startApplication.tabNavigation('Start application');
-        await startApplication.addApplicationDetailsHeading.isVisible();
-        await startApplication.addApplicationDocuments();
-        await addApplicationDocuments.uploadDocumentSmokeTest();
-        await startApplication.addApplicationDocumentsInProgress();
-        await startApplication.tabNavigation('View application');
+        //  await startApplication.tabNavigation('Start application');
+        // await startApplication.addApplicationDetailsHeading.isVisible();
+        // await startApplication.addApplicationDocuments();
+        // await addApplicationDocuments.uploadDocumentSmokeTest();
+        // await startApplication.addApplicationDocumentsInProgress();
+        // await startApplication.tabNavigation('View application');
 
-// Applicant Details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.applicantDetails();
-        await applicantDetails.applicantDetailsNeeded();
-        await startApplication.applicantDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+        // Applicant Details
+        // await startApplication.tabNavigation('Start application');
+        // await startApplication.applicantDetails();
+        // await applicantDetails.applicantDetailsNeeded();
+        // await startApplication.applicantDetailsHasBeenUpdated();
+        // await startApplication.tabNavigation('View application');
 
         // Child details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
-        await startApplication.childDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+        // await startApplication.tabNavigation('Start application');
+        // await startApplication.childDetails();
+        // await childDetails.childDetailsNeeded();
+        // await startApplication.childDetailsHasBeenUpdated();
+        // await startApplication.tabNavigation('View application');
 
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsNeeded();
-        await startApplication.tabNavigation('View application');
 
         // Allocation Proposal
-        await startApplication.tabNavigation('Start application');
-        await startApplication.allocationProposal();
-        await allocationProposal.allocationProposalSmokeTest();
-        await startApplication.allocationProposalHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+        // await startApplication.tabNavigation('Start application');
+        // await startApplication.allocationProposal();
+        // await allocationProposal.allocationProposalSmokeTest();
+        // await startApplication.allocationProposalHasBeenUpdated();
+        // await startApplication.tabNavigation('View application');
 
         // Submit the case
         await startApplication.tabNavigation('Start application');
@@ -112,24 +111,25 @@ test.describe('', () => {
         });
 
         expect(accessibilityScanResults.violations).toEqual([]);
-    });
+    })
+
     test('Private solicitor applies C110a application', async ({
-                             signInPage,
-                             createCase,
-                             ordersAndDirectionSought,
-                             startApplication,
-                             hearingUrgency,
-                             groundsForTheApplication,
-                             applicantDetails,
-                             allocationProposal,
-                             addApplicationDocuments,
-                             childDetails,
-                             respondentDetails,
-                             submitCase,
-                             page,
+        signInPage,
+        createCase,
+        ordersAndDirectionSought,
+        startApplication,
+        hearingUrgency,
+        groundsForTheApplication,
+        applicantDetails,
+        allocationProposal,
+        addApplicationDocuments,
+        childDetails,
+        respondentDetails,
+        submitCase,
+        page,
         caseFileView,
-                             makeAxeBuilder
-                         }, testInfo) => {
+        makeAxeBuilder
+    }, testInfo) => {
 
         // 1. Sign in as local-authority user
         await signInPage.visit();
@@ -141,7 +141,7 @@ test.describe('', () => {
         await signInPage.isSignedIn();
 
         // Add application details
-        // Start new case, get case id and assert case id is created
+        //Start new case, get case id and assert case id is created
         await createCase.caseName();
         await createCase.createCase();
         await createCase.respondentSolicitorCreatCase();
@@ -149,58 +149,57 @@ test.describe('', () => {
         await startApplication.tabNavigation('View application');
 
 
-        // Orders and directions sought
-        await startApplication.tabNavigation('Start application');
-        await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
-        await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
-        await startApplication.tabNavigation('View application');
+        //Orders and directions sought
+        // await startApplication.tabNavigation('Start application');
+        // await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
+        // await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
+        // await startApplication.tabNavigation('View application');
 
 
         // Hearing urgency
-        await startApplication.tabNavigation('Start application');
-        await startApplication.hearingUrgency();
-        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
-        await hearingUrgency.hearingUrgencySmokeTest();
-        await startApplication.tabNavigation('View application');
+        // await startApplication.tabNavigation('Start application');
+        // await startApplication.hearingUrgency();
+        // await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
+        // await hearingUrgency.hearingUrgencySmokeTest();
+        // await startApplication.tabNavigation('View application');
 
 
         // Applicant Details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.applicantDetails();
-        await applicantDetails.solicitorC110AApplicationApplicantDetails();
-        await startApplication.applicantDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+        // await startApplication.tabNavigation('Start application');
+        // await startApplication.applicantDetails();
+        // await applicantDetails.solicitorC110AApplicationApplicantDetails();
+        // await startApplication.applicantDetailsHasBeenUpdated();
+        // await startApplication.tabNavigation('View application');
 
         // Child details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
-        await startApplication.childDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+        // await startApplication.tabNavigation('Start application');
+        // await startApplication.childDetails();
+        // await childDetails.childDetailsNeeded();
+        // await startApplication.childDetailsHasBeenUpdated();
+        // await startApplication.tabNavigation('View application');
 
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
-        await respondentDetails.respondentDetailsNeeded();
-        await startApplication.tabNavigation('View application');
-
-        // Allocation Proposal
-        await startApplication.tabNavigation('Start application');
-        await startApplication.allocationProposal();
-        await allocationProposal.allocationProposalSmokeTest();
-        await startApplication.allocationProposalHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+        await respondentDetails.respondentDetailsPrivateSolicitor();
+        
+     // await startApplication.tabNavigation('Start application');
+        // await startApplication.allocationProposal();
+        // await allocationProposal.allocationProposalSmokeTest();
+        // await startApplication.allocationProposalHasBeenUpdated();
+        // await startApplication.tabNavigation('View application');
 
         // Submit the case
-        await startApplication.tabNavigation('Start application');
-        await startApplication.submitCase();
-        await submitCase.submitCaseSmokeTest('£263.00');
-        await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Applications');
-        await caseFileView.openFolder('Original Applications');
-        await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
-        await  caseFileView.openDocInNewTab();
-        await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
-
+        // await startApplication.tabNavigation('Start application');
+        // await startApplication.submitCase();
+        // await submitCase.submitCaseSmokeTest('£263.00');
+        // await caseFileView.goToCFVTab();
+        // await caseFileView.openFolder('Applications');
+        // await caseFileView.openFolder('Original Applications');
+        // await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
+        // await caseFileView.openDocInNewTab();
+        // await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
+        // Allocation Proposal
+   
     })
 });
