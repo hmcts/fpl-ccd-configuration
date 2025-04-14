@@ -42,39 +42,39 @@ test.describe('', () => {
         //await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
         // Orders and directions sought
-        // await startApplication.tabNavigation('Start application');
-        // await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-        // await startApplication.addApplicationDetailsHeading.isVisible();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await ordersAndDirectionSought.ordersAndDirectionsNeeded();
+        await startApplication.addApplicationDetailsHeading.isVisible();
+        await startApplication.tabNavigation('View application');
 
         // // Hearing urgency
-        // await startApplication.tabNavigation('Start application');
-        // await startApplication.hearingUrgency();
-        // await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
-        // await hearingUrgency.hearingUrgencySmokeTest();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await startApplication.hearingUrgency();
+        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
+        await hearingUrgency.hearingUrgencySmokeTest();
+        await startApplication.tabNavigation('View application');
 
         // Grounds for the application
-        //  await startApplication.tabNavigation('Start application');
-        //   await startApplication.groundsForTheApplication();
-        //   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
-        //   await startApplication.groundsForTheApplicationHasBeenUpdated();
-        //    await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await startApplication.groundsForTheApplication();
+        await groundsForTheApplication.groundsForTheApplicationSmokeTest();
+        await startApplication.groundsForTheApplicationHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
 
         //Add application documents
-        //  await startApplication.tabNavigation('Start application');
-        // await startApplication.addApplicationDetailsHeading.isVisible();
-        // await startApplication.addApplicationDocuments();
-        // await addApplicationDocuments.uploadDocumentSmokeTest();
-        // await startApplication.addApplicationDocumentsInProgress();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await startApplication.addApplicationDetailsHeading.isVisible();
+        await startApplication.addApplicationDocuments();
+        await addApplicationDocuments.uploadDocumentSmokeTest();
+        await startApplication.addApplicationDocumentsInProgress();
+        await startApplication.tabNavigation('View application');
 
         // Applicant Details
-        // await startApplication.tabNavigation('Start application');
-        // await startApplication.applicantDetails();
-        // await applicantDetails.applicantDetailsNeeded();
-        // await startApplication.applicantDetailsHasBeenUpdated();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await startApplication.applicantDetails();
+        await applicantDetails.applicantDetailsNeeded();
+        await startApplication.applicantDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
 
         // Child details
         await startApplication.tabNavigation('Start application');
@@ -89,11 +89,11 @@ test.describe('', () => {
         await respondentDetails.respondentDetailsNeeded();
 
         // Allocation Proposal
-        // await startApplication.tabNavigation('Start application');
-        // await startApplication.allocationProposal();
-        // await allocationProposal.allocationProposalSmokeTest();
-        // await startApplication.allocationProposalHasBeenUpdated();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await startApplication.allocationProposal();
+        await allocationProposal.allocationProposalSmokeTest();
+        await startApplication.allocationProposalHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
 
         // Submit the case
         await startApplication.tabNavigation('Start application');
@@ -150,56 +150,63 @@ test.describe('', () => {
 
 
         //Orders and directions sought
-        // await startApplication.tabNavigation('Start application');
-        // await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
-        // await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
+        await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
+        await startApplication.tabNavigation('View application');
 
 
         // Hearing urgency
-        // await startApplication.tabNavigation('Start application');
-        // await startApplication.hearingUrgency();
-        // await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
-        // await hearingUrgency.hearingUrgencySmokeTest();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await startApplication.hearingUrgency();
+        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
+        await hearingUrgency.hearingUrgencySmokeTest();
+        await startApplication.tabNavigation('View application');
 
 
         // Applicant Details
-        // await startApplication.tabNavigation('Start application');
-        // await startApplication.applicantDetails();
-        // await applicantDetails.solicitorC110AApplicationApplicantDetails();
-        // await startApplication.applicantDetailsHasBeenUpdated();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await startApplication.applicantDetails();
+        await applicantDetails.solicitorC110AApplicationApplicantDetails();
+        await startApplication.applicantDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
 
         // Child details
-        // await startApplication.tabNavigation('Start application');
-        // await startApplication.childDetails();
-        // await childDetails.childDetailsNeeded();
-        // await startApplication.childDetailsHasBeenUpdated();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await startApplication.childDetails();
+        await childDetails.childDetailsNeeded();
+        await startApplication.childDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
 
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsPrivateSolicitor();
-        
-     // await startApplication.tabNavigation('Start application');
-        // await startApplication.allocationProposal();
-        // await allocationProposal.allocationProposalSmokeTest();
-        // await startApplication.allocationProposalHasBeenUpdated();
-        // await startApplication.tabNavigation('View application');
+
+        // Allocation Proposal
+        await startApplication.tabNavigation('Start application');
+        await startApplication.allocationProposal();
+        await allocationProposal.allocationProposalSmokeTest();
+        await startApplication.allocationProposalHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
+
+
+        // await startApplication.tabNavigation('Start application');
+        await startApplication.allocationProposal();
+        await allocationProposal.allocationProposalSmokeTest();
+        await startApplication.allocationProposalHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
 
         // Submit the case
-        // await startApplication.tabNavigation('Start application');
-        // await startApplication.submitCase();
-        // await submitCase.submitCaseSmokeTest('£263.00');
-        // await caseFileView.goToCFVTab();
-        // await caseFileView.openFolder('Applications');
-        // await caseFileView.openFolder('Original Applications');
-        // await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
-        // await caseFileView.openDocInNewTab();
-        // await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
-        // Allocation Proposal
-   
+        await startApplication.tabNavigation('Start application');
+        await startApplication.submitCase();
+        await submitCase.submitCaseSmokeTest('£263.00');
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Applications');
+        await caseFileView.openFolder('Original Applications');
+        await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
+        await caseFileView.openDocInNewTab();
+        await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible
+
     })
-});
+})
