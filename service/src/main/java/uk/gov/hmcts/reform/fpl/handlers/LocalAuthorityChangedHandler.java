@@ -210,18 +210,6 @@ public class LocalAuthorityChangedHandler {
 
     @Async
     @EventListener
-    public void notifyAdmin(final CaseTransferredToAnotherCourt event) {
-        final CaseData caseData = event.getCaseData();
-        String recipient = courtService.getCourtEmail(caseData);
-        if (recipient != null) {
-            final NotifyData notifyData = contentProvider.getNotifyDataFoTransferredToAnotherCourt(caseData);
-            notificationService.sendEmail(CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE, recipient, notifyData,
-                caseData.getId());
-        }
-    }
-
-    @Async
-    @EventListener
     public void notifyHighCourtAdmin(final CaseTransferredToAnotherCourt event) {
         final CaseData caseData = event.getCaseData();
         final String recipient = highCourtAdminEmailLookupConfiguration.getEmail();
