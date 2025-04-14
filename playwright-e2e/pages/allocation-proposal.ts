@@ -26,5 +26,6 @@ export class AllocationProposal {
     await this.reasonsForRecommendation.fill('Test');
     await this.continue.click();
     await this.saveAndContinue.click();
+    await expect(this.page.getByText('has been updated with event:')).toBeVisible();
   }
 }
