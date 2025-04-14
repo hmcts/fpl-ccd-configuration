@@ -43,9 +43,10 @@ public class UserService {
     }
 
     /**
-     * @deprecated use {@link #isCtscUser()} instead - the IDAM roles for court-admins are used for multiple user types
-     * and are being phased out in favour of AM Organisational roles.
+     * Check if the user has the `caseworker-publiclaw-courtadmin` IDAM role.
+     *
      * @return true if the user has a `caseworker-publiclaw-courtadmin` IDAM role
+     * @deprecated use {@link #isCtscUser()} instead - IDAM roles for court-admind being phased out in favour of AM
      */
     @Deprecated(since = "DFPL-2731", forRemoval = false)
     public boolean isHmctsAdminUser() {
