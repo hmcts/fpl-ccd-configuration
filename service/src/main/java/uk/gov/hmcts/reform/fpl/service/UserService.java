@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 
@@ -42,11 +42,12 @@ public class UserService {
         return getIdamRoles().stream().anyMatch(UserRole::isHmctsUser);
     }
 
-    public boolean isCafcassUser() {
-        Set<String> roles = getIdamRoles();
-        return roles != null && roles.contains(CAFCASS.getRoleName());
-    }
-
+    /**
+     * @deprecated use {@link #isCtscUser()} instead - the IDAM roles for court-admins are used for multiple user types
+     * and are being phased out in favour of AM Organisational roles.
+     * @return true if the user has a `caseworker-publiclaw-courtadmin` IDAM role
+     */
+    @Deprecated(since = "DFPL-2731", forRemoval = false)
     public boolean isHmctsAdminUser() {
         Set<String> roles = getIdamRoles();
         return roles != null && roles.contains(HMCTS_ADMIN.getRoleName());
@@ -86,5 +87,19 @@ public class UserService {
         return roleAssignmentService
             .getJudicialCaseRolesForUserAtTime(requestData.userId(), caseId, ZonedDateTime.now());
     }
+
+    public boolean hasAnyOrgRoleFrom(List<OrganisationalRole> organisationalRoles) {
+        Set<OrganisationalRole> roles = getOrgRoles();
+        return isNotEmpty(roles) && roles.stream().anyMatch(organisationalRoles::contains);
+    }
+
+    public boolean isCtscUser() {
+        return this.hasAnyOrgRoleFrom(List.of(OrganisationalRole.CTSC));
+    }
+
+    public boolean isCtscOrLocalCourtUser() {
+        return this.hasAnyOrgRoleFrom(List.of(OrganisationalRole.CTSC, OrganisationalRole.LOCAL_COURT_ADMIN));
+    }
+
 
 }
