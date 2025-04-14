@@ -127,6 +127,7 @@ export class RespondentDetails extends BasePage {
     await this.page.waitForTimeout(1000);
     await this.continue.click();
     await this.saveAndContinue.click();
+    await expect(this.page.getByText('has been updated with event:')).toBeVisible();
   }
 
   async respondentDetailsPrivateSolicitor() {
@@ -151,24 +152,8 @@ export class RespondentDetails extends BasePage {
     await this.relationToChild.fill('uncle');
     await this.difficultyCapacity.getByLabel('No', { exact: true }).check();
     await this.legalRepresentation.getByLabel('No').check();
-    // await this.addNew.nth(1).check();
-    // await this.addNew.check();
+
     await this.addNew.click();
-    // await this.addNew.locator('input[type="radio"]').check()
-    // await this.firstName.locator('#respondents1_1_party_firstName').fill('Thierry');
-    // await this.lastName.locator('#respondents1_1_party_lastName').fill('Jones');
-    // await this.respondentdobDay.locator('#respondents1_1_party_party #dateOfBirth-day').fill('2');
-    // await this.respondentdobMonth.locator('#respondents1_1_party_party #dateOfBirth-month').fill('5');
-    // await this.respondentdobYear.locator('#respondents1_1_party_party #dateOfBirth-year').fill('1999');
-    // await this.respondent2Gender.locator('#respondents1_1_party_gender').selectOption('2: Female');
-    // await this.respondent2CurrentAddressKnown.locator('#respondents1_1_party_addressKnow-No').click();
-    // await this.respondent2AddressUnknown.locator('[id="respondents1_1_party_addressNotKnowReason-Whereabouts\\ unknown"]').click();
-    // await this.giveMoreDetails.getByRole('textbox', { name: 'Give more details' }).fill('Test');
-    // await this.telephoneNumber.locator('#respondents1_1_party_telephoneNumber_telephoneNumber').fill('00000000');
-    // await this.respondent2HiddenNumber.locator('#respondents1_1_party_hideTelephone_No').check();
-    // await this.respondet2RelationshipToChild.locator('#respondents1_1_party_relationshipToChild').fill('Uncle');
-    // await this.respondent2DifficultyUnderstandingCapacity.locator('#respondents1_1_party_litigationIssues-NO').check();
-    // await this.respondent2DificultyCapacityReason.locator('#respondents1_1_legalRepresentation_No').check();
     await this.respondentFirstName.fill('Moniks');
     await this.respondentLastName.fill('Yaks');
     await this.respondentdobDay.fill('31');
@@ -185,5 +170,6 @@ export class RespondentDetails extends BasePage {
     await this.page.waitForTimeout(1000);
     await this.continue.click();
     await this.saveAndContinue.click();
+    await expect(this.page.getByText('has been updated with event:')).toBeVisible();
   }
 }

@@ -77,11 +77,11 @@ test.describe('', () => {
         // await startApplication.tabNavigation('View application');
 
         // Child details
-        // await startApplication.tabNavigation('Start application');
-        // await startApplication.childDetails();
-        // await childDetails.childDetailsNeeded();
-        // await startApplication.childDetailsHasBeenUpdated();
-        // await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('Start application');
+        await startApplication.childDetails();
+        await childDetails.childDetailsNeeded();
+        await startApplication.childDetailsHasBeenUpdated();
+        await startApplication.tabNavigation('View application');
 
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
