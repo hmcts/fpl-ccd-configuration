@@ -66,7 +66,7 @@ export class RespondentDetails extends BasePage {
     this.relationToChild = page.getByLabel('Which children does the respondent have parental responsibility for and what is their relationship?');
     this.legalRepresentation = page.getByRole('group', { name: 'Do they have legal representation?' });
     this.addNew = page.getByRole('button', { name: 'Add new' });
-    this.addNew = page.getByRole('button', { name: 'Add new' }).nth(1)
+    //this.addNew = page.getByRole('button', { name: 'Add new' }).nth(1)
     this.continue = page.getByRole('button', { name: 'Continue' });
     this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
     this.confirmationCheckbox = page.getByLabel('I confirm that each person');
@@ -124,14 +124,14 @@ export class RespondentDetails extends BasePage {
     await this.respondet2RelationshipToChild.fill('uncle');
     await this.respondent2DifficultyUnderstandingCapacity.click();
     await this.respondent2DificultyCapacityReason.click();
-    await this.page.waitForTimeout(1000);
-    await this.continue.click();
-    await this.saveAndContinue.click();
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
     await expect(this.page.getByText('has been updated with event:')).toBeVisible();
   }
 
   async respondentDetailsPrivateSolicitor() {
     await expect.soft(this.respondentDetailsHeading).toBeVisible();
+    await this.confirmationCheckbox.check();
     await this.lawyerFirstName.fill('Tommy');
     await this.lawyerLastName.fill('Lee');
     await this.enterPostCode('sk3 8pp');
@@ -152,8 +152,7 @@ export class RespondentDetails extends BasePage {
     await this.relationToChild.fill('uncle');
     await this.difficultyCapacity.getByLabel('No', { exact: true }).check();
     await this.legalRepresentation.getByLabel('No').check();
-
-    await this.addNew.click();
+    await this.addNew.nth(1).click();
     await this.respondentFirstName.fill('Moniks');
     await this.respondentLastName.fill('Yaks');
     await this.respondentdobDay.fill('31');
@@ -167,9 +166,8 @@ export class RespondentDetails extends BasePage {
     await this.respondet2RelationshipToChild.fill('uncle');
     await this.respondent2DifficultyUnderstandingCapacity.click();
     await this.respondent2DificultyCapacityReason.click();
-    await this.page.waitForTimeout(1000);
-    await this.continue.click();
-    await this.saveAndContinue.click();
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
     await expect(this.page.getByText('has been updated with event:')).toBeVisible();
   }
 }
