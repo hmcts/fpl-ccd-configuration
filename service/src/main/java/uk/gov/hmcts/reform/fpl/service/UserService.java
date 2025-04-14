@@ -98,9 +98,4 @@ public class UserService {
         return this.hasAnyOrgRoleFrom(List.of(OrganisationalRole.CTSC));
     }
 
-    public boolean isCtscOrLocalCourtUser() {
-        return this.hasAnyOrgRoleFrom(List.of(OrganisationalRole.CTSC, OrganisationalRole.LOCAL_COURT_ADMIN));
-    }
-
-
 }
