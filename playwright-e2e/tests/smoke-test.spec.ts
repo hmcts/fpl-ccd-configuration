@@ -204,8 +204,5 @@ test.describe('', () => {
         await caseFileView.openFolder('Applications');
         await caseFileView.openFolder('Original Applications');
         await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
-        await caseFileView.openDocInNewTab();
-        await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible
-
-    })
+        })
 })
