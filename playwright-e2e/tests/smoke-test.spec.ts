@@ -171,6 +171,7 @@ test.describe('', () => {
         await startApplication.applicantDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
+
         // Child details
         await startApplication.tabNavigation('Start application');
         await startApplication.childDetails();
@@ -178,10 +179,12 @@ test.describe('', () => {
         await startApplication.childDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
-        // // Add respondents' details
+
+        // Add respondents' details
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsPrivateSolicitor();
+
 
         // Allocation Proposal
         await startApplication.tabNavigation('Start application');
@@ -190,11 +193,6 @@ test.describe('', () => {
         await startApplication.allocationProposalHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
-        await startApplication.tabNavigation('Start application');
-        await startApplication.allocationProposal();
-        await allocationProposal.allocationProposalSmokeTest();
-        await startApplication.allocationProposalHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
 
         // Submit the case
         await startApplication.tabNavigation('Start application');
@@ -203,7 +201,11 @@ test.describe('', () => {
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Applications');
         await caseFileView.openFolder('Original Applications');
+
         await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
-        await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible
+        await  caseFileView.openDocInNewTab();
+        await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
         })
-})
+    
+    })
+

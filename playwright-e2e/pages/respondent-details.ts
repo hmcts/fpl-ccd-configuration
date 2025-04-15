@@ -66,7 +66,6 @@ export class RespondentDetails extends BasePage {
     this.relationToChild = page.getByLabel('Which children does the respondent have parental responsibility for and what is their relationship?');
     this.legalRepresentation = page.getByRole('group', { name: 'Do they have legal representation?' });
     this.addNew = page.getByRole('button', { name: 'Add new' });
-    //this.addNew = page.getByRole('button', { name: 'Add new' }).nth(1)
     this.continue = page.getByRole('button', { name: 'Continue' });
     this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
     this.confirmationCheckbox = page.getByLabel('I confirm that each person');
