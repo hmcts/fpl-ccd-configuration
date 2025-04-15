@@ -350,7 +350,7 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted",
-    "EventEnablingCondition": "(representativeType != \"RESPONDENT_SOLICITOR\" AND representativeType != \"CHILD_SOLICITOR\") OR hasRespondentLA = \"NO\"",
+    "EventEnablingCondition": "hasRespondentLA = \"NO\"",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
@@ -676,7 +676,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
-    "EventEnablingCondition": "(representativeType != \"RESPONDENT_SOLICITOR\" AND representativeType != \"CHILD_SOLICITOR\") OR hasRespondentLA = \"NO\"",
+    "EventEnablingCondition": "hasRespondentLA = \"NO\"",
     "Comment": "Can be removed when respondent journey toggled on (replace with enterRespondents)"
   },
   {
