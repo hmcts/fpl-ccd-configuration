@@ -181,5 +181,4 @@ test.describe('Non mandatory application details before application submit', () 
             expect(accessibilityScanResults.violations).toEqual([]);
 
         });
-
 });
