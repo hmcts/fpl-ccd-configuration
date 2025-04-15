@@ -171,7 +171,6 @@ test.describe('', () => {
         await startApplication.applicantDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
-
         // Child details
         await startApplication.tabNavigation('Start application');
         await startApplication.childDetails();
@@ -179,12 +178,10 @@ test.describe('', () => {
         await startApplication.childDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
-
-        // Add respondents' details
+        // // Add respondents' details
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsPrivateSolicitor();
-
 
         // Allocation Proposal
         await startApplication.tabNavigation('Start application');

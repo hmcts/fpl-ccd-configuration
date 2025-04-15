@@ -123,6 +123,7 @@ export class RespondentDetails extends BasePage {
     await this.respondet2RelationshipToChild.fill('uncle');
     await this.respondent2DifficultyUnderstandingCapacity.click();
     await this.respondent2DificultyCapacityReason.click();
+    await this.page.waitForTimeout(300); // this needs to be removed once EXUI resolves issue
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
     await expect(this.page.getByText('has been updated with event:')).toBeVisible();
@@ -165,6 +166,7 @@ export class RespondentDetails extends BasePage {
     await this.respondet2RelationshipToChild.fill('uncle');
     await this.respondent2DifficultyUnderstandingCapacity.click();
     await this.respondent2DificultyCapacityReason.click();
+    await this.page.waitForTimeout(300); // this needs to be removed once EXUI resolves issue
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
     await expect(this.page.getByText('has been updated with event:')).toBeVisible();
