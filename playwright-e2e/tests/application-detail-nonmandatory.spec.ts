@@ -163,10 +163,9 @@ test.describe('Non mandatory application details before application submit', () 
             await signInPage.isSignedIn();
             await signInPage.navigateTOCaseDetails(caseNumber);
             //add other people in the case
-            await startApplication.addOtherPeopleInCase()
-            await otherPeopleInCase.personOneToBeGivenNotice();
-            await otherPeopleInCase.personTwoToBeGivenNotice();
-            await otherPeopleInCase.continueAndCheck();
+            await startApplication.addOtherPeopleInCase();
+            await otherPeopleInCase.addOtherPerson();
+            await expect( otherPeopleInCase.page.getByRole('paragraph').filter({ hasText: 'Other people in the case' }).getByRole('img', { name: 'In progress' })).toBeVisible();
 
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
