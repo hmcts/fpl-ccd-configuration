@@ -250,23 +250,30 @@ public class RoleAssignmentService {
         log.info("Deleted {} roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
     }
 
+    @Retryable(value = {FeignException.class}, label = "Get judicial/legal adviser roles on a case")
+    public List<RoleAssignment> getRolesOnCase(Long caseId, List<String> roleNames) {
+        String systemUserToken = systemUserService.getSysUserToken();
+
+        return amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
+                .roleName(roleNames)
+                .build()
+        ).getRoleAssignmentResponse();
+
+    }
 
     @Retryable(value = {FeignException.class}, label = "Delete all hearing judicial/legal adviser roles on a case")
     public void deleteAllHearingRolesOnCase(Long caseId) {
         String systemUserToken = systemUserService.getSysUserToken();
         String authToken = authTokenGenerator.generate();
 
-        QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
-            QueryRequest.builder()
-                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
-                .roleName(List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()))
-                .build()
-        );
+        final List<RoleAssignment> roles = getRolesOnCase(caseId,
+            List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()));
 
-        resp.getRoleAssignmentResponse().forEach(role ->
-            amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
+        roles.forEach(role -> amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
 
-        log.info("Deleted {} hearing roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
+        log.info("Deleted {} hearing roles on {} case", roles.size(), caseId);
     }
 
     @Retryable(retryFor = {FeignException.class}, label = "Query organisation roles for user")

@@ -14,8 +14,7 @@ import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
-import uk.gov.hmcts.reform.fpl.events.judicial.HandleHearingModificationRolesEvent;
-import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
+import uk.gov.hmcts.reform.fpl.events.judicial.SyncHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -36,7 +35,6 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
@@ -461,7 +459,7 @@ public class ManageHearingsController extends CallbackController {
         publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
             getCaseDataBefore(callbackRequest)));
 
-        publishEvent(new HandleHearingModificationRolesEvent(caseData, getCaseDataBefore(callbackRequest)));
+        publishEvent(new SyncHearingJudgeEvent(caseData));
 
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             if (isInGatekeepingState(callbackRequest.getCaseDetails())
@@ -469,13 +467,8 @@ public class ManageHearingsController extends CallbackController {
                 publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
             }
 
-            Optional<HearingBooking> oldHearing = hearingsService.findHearingBooking(caseData.getSelectedHearingId(),
-                getCaseDataBefore(callbackRequest).getAllNonCancelledHearings());
-
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
-                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, oldHearing));
-
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
                     }
