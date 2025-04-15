@@ -110,14 +110,8 @@ public class MigrateCaseController extends CallbackController {
 
     private void run2360(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2360";
-        CaseData caseData = getCaseData(caseDetails);
-        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())) {
-            caseDetails.getData().put("hasRespondentLA", YesNo.NO);
-        } else {
-            log.info("Migration {id = {}, case reference = {}}, "
-                + "skipping case as has representativeType=LOCAL_AUTHORITY",
-                migrationId, caseData.getId());
-        }
+        // all existing cases need this field now, new cases will be populated in case initiation
+        caseDetails.getData().put("hasRespondentLA", YesNo.NO);
     }
 
     private void run2487(CaseDetails caseDetails) {
