@@ -190,8 +190,7 @@ test.describe('', () => {
         await startApplication.allocationProposalHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
-
-        // await startApplication.tabNavigation('Start application');
+        await startApplication.tabNavigation('Start application');
         await startApplication.allocationProposal();
         await allocationProposal.allocationProposalSmokeTest();
         await startApplication.allocationProposalHasBeenUpdated();
