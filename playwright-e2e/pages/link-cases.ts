@@ -54,7 +54,8 @@ export class CaseLink extends BasePage {
             await this.page.reload();
             await this.nextStep.selectOption(eventName);
             await this.goButton.click({clickCount:2,delay:300});
-            await expect(this.page.getByRole('button', { name: 'Submit' })).toBeEnabled();
+            await this.page.locator('xuilib-loading-spinner').waitFor({ state: 'attached' });
+            await this.page.locator('xuilib-loading-spinner').waitFor({ state: 'detached' });
         }).toPass();
     }
 }
