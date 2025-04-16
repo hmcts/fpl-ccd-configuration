@@ -145,9 +145,9 @@ public class MigrateCaseController extends CallbackController {
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743174504422687L, "DFPL-2744");
 
-        if (caseData.getHearingOrdersBundlesDrafts().size() == 1 &&
-        caseData.getHearingOrdersBundlesDrafts().get(0).getId()
-            .equals(UUID.fromString("cff80b00-7300-4cd5-b0cb-f9f7a2ecd862"))) {
+        if (caseData.getHearingOrdersBundlesDrafts().size() == 1
+            && caseData.getHearingOrdersBundlesDrafts().get(0).getId()
+                .equals(UUID.fromString("cff80b00-7300-4cd5-b0cb-f9f7a2ecd862"))) {
             caseDetails.getData().remove("hearingOrdersBundlesDrafts");
         } else {
             throw new AssertionError("Different numbers of hearingOrdersBundlesDrafts or different UUID");
