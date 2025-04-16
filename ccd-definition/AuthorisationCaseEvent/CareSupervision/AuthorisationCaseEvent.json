@@ -1867,7 +1867,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "hearing-centre-admin"
+          "hearing-centre-admin",
+          "legal-adviser"
         ],
         "CRUD": "CR"
       },
