@@ -44,7 +44,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2642", this::run2642,
         "DFPL-2640", this::run2640,
         "DFPL-2487", this::run2487,
-        "DFPL-2740", this::run2740
+        "DFPL-2740", this::run2740,
+        "DFPL-2744", this::run2744
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -137,6 +138,20 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().put("changeOfRepresentatives", after);
         caseDetails.getData().remove("noticeOfProceedingsBundle");
+    }
+
+    private void run2744(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743174504422687L, "DFPL-2744");
+
+        if (caseData.getHearingOrdersBundlesDrafts().size() == 1
+            && caseData.getHearingOrdersBundlesDrafts().get(0).getId()
+                .equals(UUID.fromString("cff80b00-7300-4cd5-b0cb-f9f7a2ecd862"))) {
+            caseDetails.getData().remove("hearingOrdersBundlesDrafts");
+        } else {
+            throw new AssertionError("Different numbers of hearingOrdersBundlesDrafts or different UUID");
+        }
     }
 
 }
