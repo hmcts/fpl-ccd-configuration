@@ -51,11 +51,12 @@ export class CaseLink extends BasePage {
     }
     async gotoCaseLinkNextStep(eventName: string) {
         await expect(async () => {
-            await this.page.reload();
             await this.nextStep.selectOption(eventName);
             await this.goButton.click({clickCount:2,delay:300});
-            await this.page.locator('xuilib-loading-spinner').waitFor({ state: 'attached' });
-            await this.page.locator('xuilib-loading-spinner').waitFor({ state: 'detached' });
+            await this.page.waitForTimeout(300);
+            await expect(this.page.getByRole('button', { name: 'Submit' })).toBeAttached();
+            await expect.soft(this.page.getByRole('heading', {name: 'Before you start'})).toBeVisible();
+            await this.page.reload();
         }).toPass();
     }
 }
