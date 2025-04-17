@@ -302,8 +302,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.retry', name: 'spring-retry'
 
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '6.2.3'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '6.2.3'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '6.4.4'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '6.4.4'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
@@ -313,9 +313,9 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.13.1'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.11.0'
-  implementation 'org.apache.commons:commons-lang3:3.12.0'
+  implementation 'org.apache.commons:commons-lang3:3.17.0'
 
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.6.0'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.7.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.0'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.15.2'
@@ -328,7 +328,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
-  implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.0.6'
+  implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.1.0'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '4.0.4'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
@@ -345,8 +345,8 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackVersion
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.6.2'
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.6.2'
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.7.1'
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.7.1'
 
   implementation 'org.postgresql:postgresql:42.7.5'
 
