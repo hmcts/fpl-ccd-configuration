@@ -92,6 +92,7 @@ wa:
 
   wa-task-management-api:
     java:
+      image: hmctspublic.azurecr.io/wa/task-management-api:pr-1420-7ef0e3a-20250416154602
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
