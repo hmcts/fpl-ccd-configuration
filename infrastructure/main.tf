@@ -99,7 +99,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
   pgsql_server_configuration = [
     {
       name  = "azure.extensions"
-      value = "plpgsql,pg_stat_statements,pg_buffercache"
+      value = "pg_stat_statements,pg_buffercache"
     }
   ]
 
