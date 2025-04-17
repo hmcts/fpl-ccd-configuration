@@ -311,7 +311,7 @@ dependencies {
   implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.9.6'
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
-  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
+  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.13.1'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.11.0'
   implementation 'org.apache.commons:commons-lang3:3.12.0'
 
@@ -362,7 +362,7 @@ dependencies {
     exclude group: "com.vaadin.external.google", module: "android-json"
   }
 
-  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
+  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.13.1'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.2'
 
