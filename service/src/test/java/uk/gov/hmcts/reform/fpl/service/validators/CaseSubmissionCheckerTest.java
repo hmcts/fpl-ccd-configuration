@@ -74,7 +74,7 @@ class CaseSubmissionCheckerTest {
             final List<String> errors = caseSubmissionValidator.validate(caseData);
 
             assertThat(errors).containsExactly(
-                "In the change case name section:",
+                "In the change draft case name section:",
                 "• Case name error",
                 "In the orders and directions sought section:",
                 "• Orders needed error 1",
@@ -113,7 +113,7 @@ class CaseSubmissionCheckerTest {
             final List<String> errors = caseSubmissionValidator.validate(caseData);
 
             assertThat(errors).containsExactly(
-                "In the change case name section:",
+                "In the change draft case name section:",
                 "• Case name error",
                 "In the orders and directions sought section:",
                 "• Orders needed error 1",
@@ -154,7 +154,7 @@ class CaseSubmissionCheckerTest {
             final List<String> errors = caseSubmissionValidator.validate(caseData);
 
             assertThat(errors).containsExactly(
-                "In the change case name section:",
+                "In the change draft case name section:",
                 "• Case name error",
                 "In the orders and directions sought section:",
                 "• Orders needed error 1",
@@ -200,7 +200,7 @@ class CaseSubmissionCheckerTest {
             final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
 
             assertThat(errors).containsExactly(
-                "In the change case name section:",
+                "In the change draft case name section:",
                 "• Case name error",
                 "In the orders and directions sought section:",
                 "• Orders needed error 1",
@@ -244,7 +244,7 @@ class CaseSubmissionCheckerTest {
             final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
 
             assertThat(errors).containsExactly(
-                "In the change case name section:",
+                "In the change draft case name section:",
                 "• Case name error",
                 "In the orders and directions sought section:",
                 "• Orders needed error 1",
@@ -287,7 +287,7 @@ class CaseSubmissionCheckerTest {
             final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
 
             assertThat(errors).containsExactly(
-                "In the change case name section:",
+                "In the change draft case name section:",
                 "• Case name error",
                 "In the orders and directions sought section:",
                 "• Orders needed error 1",
@@ -330,7 +330,7 @@ class CaseSubmissionCheckerTest {
             final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
 
             assertThat(errors).containsExactly(
-                "In the change case name section:",
+                "In the change draft case name section:",
                 "• Case name error",
                 "In the orders and directions sought section:",
                 "• Orders needed error 1",
@@ -374,7 +374,7 @@ class CaseSubmissionCheckerTest {
             final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
 
             assertThat(errors).containsExactly(
-                "In the change case name section:",
+                "In the change draft case name section:",
                 "• Case name error",
                 "In the orders and directions sought section:",
                 "• Orders needed error 1",
