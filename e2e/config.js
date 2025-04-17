@@ -137,7 +137,7 @@ module.exports = {
     enterAllocationDecision: 'Judicial Gatekeeping',
     enterAttendingHearing: 'Court services',
     uploadDocuments: 'Upload documents',
-    changeCaseName: 'Change case name',
+    changeCaseName: 'Change draft case name',
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
     uploadCMO: 'Upload draft orders',
@@ -157,7 +157,7 @@ module.exports = {
   administrationActions: {
     addCaseFlag: 'Add case flag',
     addFamilyManCaseNumber: 'Add case number',
-    changeCaseName: 'Change case name',
+    changeCaseName: 'Change draft case name',
     sendToGatekeeper: 'Send to gatekeeper',
     notifyGatekeeper: 'Notify gatekeeper',
     amendChildren: 'Children',

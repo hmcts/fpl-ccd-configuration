@@ -234,13 +234,13 @@
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
-        "CRUD": "R"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
           "caseworker-publiclaw-solicitor"
         ],
-        "CRUD": "R"
+        "CRUD": "CR"
       }
     ]
   },
@@ -263,7 +263,8 @@
           "[LAMANAGING]",
           "[LASHARED]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "ctsc"
         ],
         "CRUD": "CR"
       },
@@ -271,7 +272,7 @@
         "UserRoles": [
           "caseworker-publiclaw-solicitor"
         ],
-        "CRUD": "R"
+        "CRUD": "CR"
       }
     ]
   },
@@ -280,7 +281,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "changeState",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "CR"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",

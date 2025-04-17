@@ -15,7 +15,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "changeCaseName",
     "CaseFieldID": "caseName",
-    "CaseEventFieldLabel": "Case name",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
