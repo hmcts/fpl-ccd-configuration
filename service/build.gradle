@@ -312,7 +312,7 @@ dependencies {
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.13.1'
-  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.11.0'
+  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.14.0'
   implementation 'org.apache.commons:commons-lang3:3.17.0'
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.7.0'
@@ -382,7 +382,7 @@ dependencies {
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
   functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured'
-  functionalTestImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '3.2.7'
+  functionalTestImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '3.5.0'
   functionalTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
