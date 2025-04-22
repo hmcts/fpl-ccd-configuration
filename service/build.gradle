@@ -364,7 +364,7 @@ dependencies {
 
   integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.13.1'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
-  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.2'
+  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.3.0'
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
