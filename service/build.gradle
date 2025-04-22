@@ -318,8 +318,8 @@ dependencies {
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.7.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.0'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.15.2'
-  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.15.2'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.22.0'
+  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.22.0'
 
   implementation group: 'com.github.hmcts', name: 'java-logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
