@@ -73,6 +73,7 @@ if [[ "${upload_http_code}" == '504' ]]; then
       echo "${filename} (${uploadFilename}) uploaded"
       exit 0
     fi
+    echo "Retrying version audit ${filename}"
   done
 else
   if [[ "${upload_response_content}" == 'Case Definition data successfully imported' ]]; then
