@@ -277,7 +277,7 @@ repositories {
 def versions = [
   reformLogging   : '5.1.9',
   springBoot      : springBoot.class.package.implementationVersion,
-  log4j           : '2.23.1',
+  log4j           : '2.24.3',
   logbackVersion  : '1.5.14',
   jackson         : '2.18.3',
   pdfbox          : '2.0.33',
@@ -318,8 +318,8 @@ dependencies {
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.7.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.0'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.15.2'
-  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.15.2'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.22.0'
+  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.22.0'
 
   implementation group: 'com.github.hmcts', name: 'java-logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
@@ -350,7 +350,7 @@ dependencies {
 
   implementation 'org.postgresql:postgresql:42.7.5'
 
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.16.1'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.19.1'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
   testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '1.2.2'
 
