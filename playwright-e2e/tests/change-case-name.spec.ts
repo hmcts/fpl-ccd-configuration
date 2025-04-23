@@ -1,8 +1,10 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
 import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: "json" };
+import caseDataDemo from '../caseData/mandatorySubmissionFieldsDemo.json' assert {type: "json"};
 import { CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
+import {urlConfig} from "../settings/urls";
 
 test.describe('Change case name', () => {
     const dateTime = new Date().toISOString();
@@ -13,15 +15,21 @@ test.describe('Change case name', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
     test('Change case name',
-        async ({ page, signInPage, changeCaseName }) => {
+        async ({ page, signInPage, changeCaseName,manageLaTransferToCourts }) => {
             caseName = 'CTSC Change case name ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseData);
+            if(urlConfig.env.toUpperCase() === 'DEMO'){
+                await updateCase(caseName, caseNumber, caseDataDemo);
+            }
+            else{
+                await updateCase(caseName, caseNumber, caseData);
+            }
             await signInPage.visit();
-            await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password,);
+            await signInPage.login(CTSCTeamLeadUser.email,CTSCTeamLeadUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
+            await expect(changeCaseName.page.getByRole('heading', { name: 'CTSC Change case name' })).toBeVisible();
 
-            await changeCaseName.gotoNextStep('Change case name');
+            await changeCaseName.gotoNextStep('Update case name');
             await changeCaseName.updateCaseName();
-            await expect(page.getByText('Change case name')).toBeVisible();
+            await expect(changeCaseName.page.getByRole('heading', { name: 'Swansea City Council & Bloggs' })).toBeVisible();
         })
 });
