@@ -282,7 +282,7 @@ def versions = [
   jackson         : '2.18.3',
   pdfbox          : '2.0.33',
   mockito         : '5.2.0',
-  serenity        : '4.1.6',
+  serenity        : '4.2.22',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.11.4',
   lombok          : '1.18.38',
