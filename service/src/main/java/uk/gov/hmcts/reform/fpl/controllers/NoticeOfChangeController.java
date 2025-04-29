@@ -47,7 +47,6 @@ public class NoticeOfChangeController extends CallbackController {
     private final LocalAuthorityService localAuthorityService;
     private final UserService userService;
 
-    @SuppressWarnings("unchecked")
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
@@ -63,12 +62,8 @@ public class NoticeOfChangeController extends CallbackController {
 
         ChangeOrganisationRequest nocRequest = caseData.getChangeOrganisationRequestField();
 
-        Map<String, Object> changeOrgRequestField = (Map<String, Object>) caseDetails.getData().get(
-            "changeOrganisationRequestField");
-
         if (noticeOfChangeService.isThirdPartyOutsourcing(caseData.getChangeOrganisationRequestField())) {
-            caseDetails.getData().putAll(localAuthorityService.updateLocalAuthorityFromNoC(caseData, nocRequest,
-                (String) changeOrgRequestField.get("CreatedBy")));
+            caseDetails.getData().putAll(localAuthorityService.updateLocalAuthorityFromNoC(caseData, nocRequest));
         } else {
             caseDetails.getData().putAll(legalCounselUpdater.updateLegalCounselFromNoC(caseData, originalCaseData));
         }

@@ -77,8 +77,7 @@ public class LocalAuthorityService {
             .collect(Collectors.toList());
     }
 
-    public Map<String, Object> updateLocalAuthorityFromNoC(CaseData oldCaseData, ChangeOrganisationRequest nocRequest,
-                                                           String userEmail) {
+    public Map<String, Object> updateLocalAuthorityFromNoC(CaseData oldCaseData, ChangeOrganisationRequest nocRequest) {
         String oldOrgId = oldCaseData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
         LocalAuthority oldLocalAuthority = oldCaseData.getLocalAuthorities().stream()
             .map(Element::getValue)
@@ -92,7 +91,7 @@ public class LocalAuthorityService {
         LocalAuthority updatedLocalAuthority = LocalAuthority.builder()
             .id(newOrganisationId)
             .name(oldLocalAuthority.getName())
-            .email(userEmail)
+            .email(nocRequest.getCreatedBy())
             .phone(newOrganisation.getCompanyNumber())
             .address(newOrganisation.getContactInformation().get(0).toAddress())
             .representingDetails(oldLocalAuthority.getRepresentingDetails())

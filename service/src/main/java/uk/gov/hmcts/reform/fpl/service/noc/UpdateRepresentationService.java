@@ -101,7 +101,6 @@ public class UpdateRepresentationService {
 
     private ChangeOrganisationRequest getChangeOrganisationRequest(CaseData caseData) {
         final ChangeOrganisationRequest change = caseData.getChangeOrganisationRequestField();
-        HashMap<String, Object> data = new HashMap<>();
 
         if (isEmpty(change) || isEmpty(change.getCaseRoleId()) || isEmpty(change.getOrganisationToAdd())) {
             throw new IllegalStateException("Invalid or missing ChangeOrganisationRequest: " + change);

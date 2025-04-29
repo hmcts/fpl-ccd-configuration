@@ -70,15 +70,15 @@ public class NoticeOfChangeFieldPopulator {
         NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder().build();
 
         if (caseData.isOutsourced()) {
-            LocalAuthority localAuthority = caseData.getLocalAuthorities().stream()
+            Optional<LocalAuthority> localAuthority = caseData.getLocalAuthorities().stream()
                 .map(Element::getValue)
                 .filter(la -> la.getId().equals(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID()))
-                .findFirst().orElse(null);
+                .findFirst();
 
-            if (localAuthority != null) {
+            if (localAuthority.isPresent()) {
                 nocAnswers = NoticeOfChangeAnswers.builder()
-                    .respondentFirstName(localAuthority.getRepresentingDetails().getFirstName())
-                    .respondentLastName(localAuthority.getRepresentingDetails().getLastName())
+                    .respondentFirstName(localAuthority.get().getRepresentingDetails().getFirstName())
+                    .respondentLastName(localAuthority.get().getRepresentingDetails().getLastName())
                     .build();
             }
             data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);

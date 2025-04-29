@@ -278,6 +278,7 @@ class LocalAuthorityServiceTest {
             .organisationToRemove(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
                 .organisationID("ORG123")
                 .build())
+            .createdBy("test2@testmail.com")
             .build();
 
         LocalAuthority expectedUpdatedLocalAuthority = LocalAuthority.builder()
@@ -290,8 +291,7 @@ class LocalAuthorityServiceTest {
                 .build())
             .build();
 
-        Map<String, Object> updatedLADetails = underTest.updateLocalAuthorityFromNoC(caseData, changeOrgRequest,
-            "test2@testmail.com");
+        Map<String, Object> updatedLADetails = underTest.updateLocalAuthorityFromNoC(caseData, changeOrgRequest);
 
         List<Element<LocalAuthority>> localAuthorities = (List<Element<LocalAuthority>>) updatedLADetails
             .get("localAuthorities");

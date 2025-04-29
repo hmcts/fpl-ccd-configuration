@@ -1109,7 +1109,7 @@ public class CaseData extends CaseDataParent {
     private final GatekeepingOrderEventData gatekeepingOrderEventData = GatekeepingOrderEventData.builder().build();
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
-    public ChangeOrganisationRequest changeOrganisationRequestField;
+    private final ChangeOrganisationRequest changeOrganisationRequestField;
 
     @JsonUnwrapped
     @Builder.Default

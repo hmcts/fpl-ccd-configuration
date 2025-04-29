@@ -317,7 +317,7 @@ class UpdateRepresentationServiceTest {
                 .build())
             .changeOrganisationRequestField(ChangeOrganisationRequest.builder()
                 .organisationToAdd(newOrg)
-                .caseRoleId(caseRoleDynamicList("[EPSMANAGING]"))
+                .caseRoleId(caseRoleDynamicList("[APPSOLICITOR]"))
                 .build())
             .changeOfRepresentatives(CHANGE_OF_REPRESENTATIVES)
             .build();
