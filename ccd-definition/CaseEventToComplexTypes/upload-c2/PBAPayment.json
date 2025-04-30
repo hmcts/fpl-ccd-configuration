@@ -8,7 +8,7 @@
     "ListElementCode": "usePbaPayment",
     "FieldDisplayOrder": "1",
     "FieldShowCondition": "displayAmountToPay=\"Yes\"",
-    "DefaultValue":  "Yes"
+    "DefaultValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -18,7 +18,7 @@
     "DisplayContext": "MANDATORY",
     "ListElementCode": "pbaNumber",
     "FieldDisplayOrder": "2",
-    "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment=\"Yes\""
+    "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -28,7 +28,7 @@
     "DisplayContext": "OPTIONAL",
     "ListElementCode": "clientCode",
     "FieldDisplayOrder": "3",
-    "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment=\"Yes\""
+    "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -38,6 +38,6 @@
     "DisplayContext": "MANDATORY",
     "ListElementCode": "fileReference",
     "FieldDisplayOrder": "4",
-    "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment=\"Yes\""
+    "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\""
   }
 ]
