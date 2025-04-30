@@ -106,8 +106,7 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.addressAutoConfidentialLabel",
     "FieldDisplayOrder": 12,
-    "DisplayContext": "READONLY",
-    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",

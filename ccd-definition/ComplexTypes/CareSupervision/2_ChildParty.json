@@ -81,12 +81,21 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "addressAutoConfidentialLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## This address is automatically made confidential",
+    "FieldShowCondition": "livingSituation=\"Living in a refuge\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
     "ElementLabel": "Current address",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\""
+    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\" OR livingSituation=\"Living in a refuge\""
   },
   {
     "LiveFrom": "01/01/2017",
