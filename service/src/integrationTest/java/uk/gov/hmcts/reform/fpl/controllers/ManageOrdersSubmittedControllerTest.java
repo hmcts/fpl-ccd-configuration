@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
@@ -187,6 +188,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @MockBean
     private DocmosisCoverDocumentsService documentService;
 
+    @MockBean
+    private UserService userService;
+
     @SpyBean
     private EventService eventPublisher;
 
@@ -232,6 +236,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         when(translationRequestFormCreationService.buildTranslationRequestDocuments(any()))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(docmosisHelper.extractPdfContent(any())).thenReturn("Some content");
+        when(userService.isCtscUser()).thenReturn(false);
 
         when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
     }
