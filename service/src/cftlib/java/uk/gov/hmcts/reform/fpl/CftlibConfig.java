@@ -34,7 +34,8 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-publiclaw-cafcasssystemupdate",
             "TTL_profile",
             "ctsc",
-            "hearing-centre-admin"
+            "hearing-centre-admin",
+            "legal-adviser"
         };
         lib.createRoles(roles);
 
