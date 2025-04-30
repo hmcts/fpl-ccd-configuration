@@ -33,10 +33,12 @@ import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -1312,5 +1314,34 @@ public class MigrateCaseService {
         }
 
         return Map.of(ORDERS, caseData.getOrders().toBuilder().address(null).build());
+    }
+
+    public Map<String, Object> removeDraftOrderFromAdditionalApplication(CaseData caseData, String migrationId,
+                                                                         UUID bundleId, UUID orderId) {
+        Element<AdditionalApplicationsBundle> bundle = caseData.getAdditionalApplicationsBundle()
+            .stream()
+            .filter(b -> b.getId().equals(bundleId))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, additional application bundle not found",
+                migrationId, caseData.getId())));
+
+        if (bundle.getValue().getC2DocumentBundle() == null
+            || bundle.getValue().getC2DocumentBundle().getDraftOrdersBundle() == null
+            || bundle.getValue().getC2DocumentBundle().getDraftOrdersBundle().stream()
+                .noneMatch(order -> order.getId().equals(orderId))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, draft order with id %s not found in c2DocumentsBundle",
+                migrationId, caseData.getId(), orderId));
+        }
+
+        List<Element<DraftOrder>> updatedDraftOrders = bundle.getValue().getC2DocumentBundle()
+            .getDraftOrdersBundle().stream()
+            .filter(order -> !order.getId().equals(orderId))
+            .toList();
+
+        bundle.getValue().getC2DocumentBundle().setDraftOrdersBundle(updatedDraftOrders);
+
+        return Map.of("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
     }
 }
