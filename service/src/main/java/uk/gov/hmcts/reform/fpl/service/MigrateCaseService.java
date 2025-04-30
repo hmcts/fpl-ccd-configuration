@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
@@ -1326,21 +1327,18 @@ public class MigrateCaseService {
                 "Migration {id = %s, case reference = %s}, additional application bundle not found",
                 migrationId, caseData.getId())));
 
-        if (bundle.getValue().getC2DocumentBundle() == null
-            || bundle.getValue().getC2DocumentBundle().getDraftOrdersBundle() == null
-            || bundle.getValue().getC2DocumentBundle().getDraftOrdersBundle().stream()
-                .noneMatch(order -> order.getId().equals(orderId))) {
+        C2DocumentBundle c2DocumentBundle = bundle.getValue().getC2DocumentBundle();
+        if (c2DocumentBundle == null || c2DocumentBundle.getDraftOrdersBundle() == null) {
             throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, draft order with id %s not found in c2DocumentsBundle",
-                migrationId, caseData.getId(), orderId));
+                "Migration {id = %s, case reference = %s}, C2DocumentBundle or DraftOrdersBundle is null",
+                migrationId, caseData.getId()));
         }
 
-        List<Element<DraftOrder>> updatedDraftOrders = bundle.getValue().getC2DocumentBundle()
-            .getDraftOrdersBundle().stream()
+        List<Element<DraftOrder>> updatedDraftOrders = c2DocumentBundle.getDraftOrdersBundle().stream()
             .filter(order -> !order.getId().equals(orderId))
             .toList();
 
-        bundle.getValue().getC2DocumentBundle().setDraftOrdersBundle(updatedDraftOrders);
+        c2DocumentBundle.setDraftOrdersBundle(updatedDraftOrders);
 
         return Map.of("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
     }

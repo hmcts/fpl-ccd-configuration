@@ -3558,7 +3558,6 @@ class MigrateCaseServiceTest {
         private final UUID orderToRemoveId = UUID.randomUUID();
         private final UUID orderToRetainId = UUID.randomUUID();
         private final UUID nonExistentBundleId = UUID.randomUUID();
-        private final UUID nonExistentOrderId = UUID.randomUUID();
 
         Element<DraftOrder> draftOrderToRemove = element(orderToRemoveId,
                 DraftOrder.builder()
@@ -3616,15 +3615,6 @@ class MigrateCaseServiceTest {
                 MIGRATION_ID, nonExistentBundleId, orderToRemoveId))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("additional application bundle not found");
-        }
-
-        @Test
-        void shouldThrowExceptionIfOrderNotFoundInBundle() {
-            assertThatThrownBy(() -> underTest.removeDraftOrderFromAdditionalApplication(caseDataWithBundle,
-                MIGRATION_ID, bundleId, nonExistentOrderId))
-                .isInstanceOf(AssertionError.class)
-                .hasMessageContaining(String.format("draft order with id %s not found in c2DocumentsBundle",
-                    nonExistentOrderId));
         }
     }
 }
