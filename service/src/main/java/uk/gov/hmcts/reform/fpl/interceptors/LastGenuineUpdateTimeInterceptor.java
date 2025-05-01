@@ -74,14 +74,14 @@ public class LastGenuineUpdateTimeInterceptor implements RequestBodyAdvice,
         final String path = request.getURI().getPath();
 
         if (WHITE_LIST.stream().anyMatch(path::matches) && featureToggleService.isCafcassApiToggledOn()
-            && shouldUpdateLastGenuineUpdateTime()) {
+            && shouldUpdateLastGenuineUpdateTime(body)) {
 
             body.getData().put("lastGenuineUpdateTime", time.now());
         }
         return body;
     }
 
-    private boolean shouldUpdateLastGenuineUpdateTime() {
+    private boolean shouldUpdateLastGenuineUpdateTime(AboutToStartOrSubmitCallbackResponse rsp) {
         if (requestScopeStorage != null && requestScopeStorage.getCallbackRequest() != null) {
             final CallbackRequest callbackRequest = requestScopeStorage.getCallbackRequest();
             if (isNotEmpty(callbackRequest.getEventId())
@@ -89,15 +89,22 @@ public class LastGenuineUpdateTimeInterceptor implements RequestBodyAdvice,
                 return false;
             }
 
-            final CaseDetails caseDetailsAfter = callbackRequest.getCaseDetails();
+            if (callbackRequest.getCaseDetails() != null) {
+                final String caseStateAfter = isNotEmpty(rsp.getState())
+                    ? rsp.getState() : callbackRequest.getCaseDetails().getState();
 
-            if (caseDetailsAfter != null) {
-                if (isNotEmpty(caseDetailsAfter.getState())
-                    && EXCLUDED_CASE_STATE.stream().anyMatch(caseDetailsAfter.getState()::equalsIgnoreCase)) {
+                if (isNotEmpty(caseStateAfter)
+                    && EXCLUDED_CASE_STATE.stream().anyMatch(caseStateAfter::equalsIgnoreCase)) {
                     return false;
                 }
 
                 final CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+                // The caseDetailsMap of callBackRsp could be a different instance from the one in the request.
+                final CaseDetails caseDetailsAfter = callbackRequest.getCaseDetails().toBuilder()
+                    .state(caseStateAfter)
+                    .data(rsp.getData())
+                    .build();
+
                 if (caseDetailsBefore != null) {
                     CafcassApiCase cafcassApiCaseBefore = cafcassApiSearchCaseService
                         .convertToCafcassApiCase(caseDetailsBefore)

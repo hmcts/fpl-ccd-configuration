@@ -79,8 +79,8 @@ public class LastGenuineUpdateTimeInterceptorTest {
         private static final CaseDetails CASE_DETAILS_BEFORE = CaseDetails.builder()
             .state(State.GATEKEEPING.getValue()).data(CASE_MAP_BEFORE).build();
         private static final Map<String, Object> CASE_MAP_AFTER = Map.of("id", 1L, "caseName", "Test");
-        private static final CaseDetails CASE_DETAILS_AFTER = CaseDetails.builder()
-            .state(State.CASE_MANAGEMENT.getValue()).data(CASE_MAP_AFTER).build();
+        private static final CaseDetails CASE_DETAILS_AFTER = CASE_DETAILS_BEFORE.toBuilder()
+            .data(CASE_MAP_AFTER).build();
         private static final CafcassApiCase CAFCASS_API_CASE_BEFORE = CafcassApiCase.builder()
             .id(1L).state(State.GATEKEEPING.getValue()).build();
         private static final CafcassApiCase CAFCASS_API_CASE_AFTER = CafcassApiCase.builder()
@@ -107,6 +107,33 @@ public class LastGenuineUpdateTimeInterceptorTest {
                     .eventId(EVENT_ID)
                     .caseDetailsBefore(CASE_DETAILS_BEFORE)
                     .caseDetails(CASE_DETAILS_AFTER)
+                    .build());
+            when(cafcassApiSearchCaseService.convertToCafcassApiCase(CASE_DETAILS_BEFORE))
+                .thenReturn(CAFCASS_API_CASE_BEFORE);
+            when(cafcassApiSearchCaseService.convertToCafcassApiCase(CASE_DETAILS_AFTER))
+                .thenReturn(CAFCASS_API_CASE_AFTER);
+            when(time.now()).thenReturn(TEST_TIME);
+
+            AboutToStartOrSubmitCallbackResponse controllerResponse = AboutToStartOrSubmitCallbackResponse.builder()
+                .data(new HashMap<>(CASE_MAP_AFTER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse interceptedResponse = underTest.beforeBodyWrite(controllerResponse,
+                HANDLE_ABOUT_TO_SUBMIT_RETURN_TYPE, MediaType.APPLICATION_JSON, null,
+                REQUEST_WHITELISTED, RESPONSE);
+
+            assertNotNull(interceptedResponse);
+            assertEquals(CASE_MAP_INTERCEPTED, interceptedResponse.getData());
+        }
+
+        @Test
+        void shouldUpdateTimestampIfApiResponseChangedAfterControllerUpdatedCaseData() {
+            when(featureToggleService.isCafcassApiToggledOn()).thenReturn(true);
+            when(requestScopeStorage.getCallbackRequest())
+                .thenReturn(CallbackRequest.builder()
+                    .eventId(EVENT_ID)
+                    .caseDetailsBefore(CASE_DETAILS_BEFORE)
+                    .caseDetails(CASE_DETAILS_BEFORE)
                     .build());
             when(cafcassApiSearchCaseService.convertToCafcassApiCase(CASE_DETAILS_BEFORE))
                 .thenReturn(CAFCASS_API_CASE_BEFORE);
@@ -184,6 +211,28 @@ public class LastGenuineUpdateTimeInterceptorTest {
                     .build());
 
             AboutToStartOrSubmitCallbackResponse controllerResponse = AboutToStartOrSubmitCallbackResponse.builder()
+                .data(new HashMap<>(CASE_MAP_AFTER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse interceptedResponse = underTest.beforeBodyWrite(controllerResponse,
+                HANDLE_ABOUT_TO_SUBMIT_RETURN_TYPE, MediaType.APPLICATION_JSON, null,
+                REQUEST_WHITELISTED, RESPONSE);
+
+            assertNotNull(interceptedResponse);
+            assertEquals(CASE_MAP_AFTER, interceptedResponse.getData());
+        }
+
+        @Test
+        void shouldNotUpdateTimestampIfUpdatedCaseStateExcluded() {
+            when(featureToggleService.isCafcassApiToggledOn()).thenReturn(true);
+            when(requestScopeStorage.getCallbackRequest())
+                .thenReturn(CallbackRequest.builder()
+                    .caseDetailsBefore(CASE_DETAILS_BEFORE)
+                    .caseDetails(CASE_DETAILS_BEFORE)
+                    .build());
+
+            AboutToStartOrSubmitCallbackResponse controllerResponse = AboutToStartOrSubmitCallbackResponse.builder()
+                .state(State.DELETED.getValue())
                 .data(new HashMap<>(CASE_MAP_AFTER))
                 .build();
 
