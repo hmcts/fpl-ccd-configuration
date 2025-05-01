@@ -334,13 +334,6 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
         }
 
         @Test
-        void notifyAdminAboutCaseTransferToOrdinaryCourt() {
-            underTest.notifyAdmin(
-                new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
-            verifyResponse();
-        }
-
-        @Test
         void notifyChildSolicitorsAboutCaseTransferToOrdinaryCourt() {
             underTest.notifyChildSolicitors(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
@@ -366,13 +359,6 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
         @Test
         void notifyRespondentSolicitorsAboutCaseTransferToRcjHighCourt() {
             underTest.notifyRespondentSolicitors(
-                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
-            verifyResponse();
-        }
-
-        @Test
-        void notifyAdminAboutCaseTransferToRcjHighCourt() {
-            underTest.notifyAdmin(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }

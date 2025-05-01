@@ -439,7 +439,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "tribunal-caseworker",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-judiciary"
+    "AccessProfiles": "caseworker-publiclaw-judiciary,legal-adviser"
   },
   {
     "LiveFrom": "01/01/2017",
