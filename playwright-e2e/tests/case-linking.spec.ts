@@ -32,10 +32,11 @@ test.describe('Manage case linking @flaky', () => {
             await updateCase(casename, caseNumber, caseData);
             await caseLink.switchUser(ctscUser.page);
             await caseLink.navigateTOCaseDetails(caseNumber);
-
-            await caseLink.gotoNextStep('Link cases');
-            await expect.soft(caseLink.page.getByRole('heading', {name: 'Before you start'})).toBeVisible();
-            await caseLink.clickNext();
+            await caseLink.gotoCaseLinkNextStep('Link cases');
+            await expect.soft(page.getByRole('heading', {name: 'Before you start'})).toBeVisible();
+            await expect(page.getByText('If the cases to be linked has no lead, you can start the linking journey from any of those cases.',{exact:true})).toBeVisible();
+            await expect(page.getByText('If a group of linked cases has a lead case, you must start from the lead case.',{exact:true})).toBeVisible();
+            await caseLink.clickSubmit();
             await caseLink.proposeCaseLink(linkedCase1, ['Related proceedings', 'Same Party', 'Same child/ren']);
             await expect(caseLink.page.getByText(caseLink.hypenateCaseNumber(linkedCase1))).toBeVisible();
             await caseLink.proposeCaseLink(linkedCase2, ['Same Party']);
