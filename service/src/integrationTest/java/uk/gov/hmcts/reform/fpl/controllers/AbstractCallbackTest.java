@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -9,16 +10,22 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.fpl.interceptors.LastGenuineUpdateTimeInterceptor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 public abstract class AbstractCallbackTest extends AbstractTest {
+
+    @MockBean
+    protected LastGenuineUpdateTimeInterceptor lastGenuineUpdateTimeInterceptor;
 
     @Autowired
     private MockMvc mockMvc;
@@ -312,4 +319,9 @@ public abstract class AbstractCallbackTest extends AbstractTest {
             .build();
     }
 
+    protected void givenFplService() {
+        super.givenFplService();
+        given(lastGenuineUpdateTimeInterceptor.supports(any(), any(), any())).willReturn(false);
+        given(lastGenuineUpdateTimeInterceptor.supports(any(), any())).willReturn(false);
+    }
 }
