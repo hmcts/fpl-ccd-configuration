@@ -1330,6 +1330,30 @@ public class MigrateCaseService {
         }
     }
 
+    @SuppressWarnings("deprecation")
+    public void rollbackOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
+        List<Element<Proceeding>> migratedProceedings = caseData.getProceedings();
+
+        if (migratedProceedings != null) {
+            int migratedProceedingsSize = migratedProceedings.size();
+
+            Proceeding rollBackProceeding = (migratedProceedingsSize > 0) 
+                ? migratedProceedings.get(0).getValue() : Proceeding.builder().build();
+            
+            if (migratedProceedingsSize > 1) {
+                rollBackProceeding = rollBackProceeding.toBuilder()
+                    .additionalProceedings(migratedProceedings.subList(1, migratedProceedingsSize))
+                    .build();
+            }
+
+            caseDetails.getData().remove("proceedings");
+            caseDetails.getData().put("proceeding", rollBackProceeding);
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, case {%d} no proceeding found", migrationId,
+                caseData.getId()));
+        }
+    }
+
     public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {
         if (!caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
             throw new AssertionError(format("Migration {id = %s}, this is not an EPO", migrationId));

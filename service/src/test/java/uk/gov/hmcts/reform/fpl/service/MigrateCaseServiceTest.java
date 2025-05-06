@@ -108,6 +108,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
@@ -3581,6 +3582,58 @@ class MigrateCaseServiceTest {
             assertThatThrownBy(() -> underTest.migrateOtherProceedings(caseDetails, caseData, MIGRATION_ID))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s}, case {%d} no proceeding found", MIGRATION_ID, 1L));
+        }
+
+        @Test
+        @SuppressWarnings({"unchecked", "deprecation"})
+        void shouldRollbackOtherProceeding() {
+            List<Element<Proceeding>> migratedProceedings = new ArrayList<>();
+            migratedProceedings.add(element(FIRST_PROCEEDING));
+            migratedProceedings.addAll(OTHER_PROCEEDINGS);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .proceedings(migratedProceedings)
+                .build();
+
+            Map<String,Object> caseDetailMap = new HashMap<>();
+            caseDetailMap.put("proceedings", migratedProceedings);
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
+            underTest.rollbackOtherProceedings(caseDetails, caseData, MIGRATION_ID);
+
+            assertThat(caseDetailMap).doesNotContainKey("proceedings").containsKey("proceeding");
+
+            Proceeding rollbackProceeding = (Proceeding) caseDetailMap.get("proceeding");
+
+            assertThat(rollbackProceeding)
+                .isEqualTo(FIRST_PROCEEDING.toBuilder().additionalProceedings(OTHER_PROCEEDINGS).build());
+        }
+
+
+
+        @Test
+        @SuppressWarnings({"unchecked", "deprecation"})
+        void shouldRollbackOtherProceedingIfOnlyOneProceedingExist() {
+            List<Element<Proceeding>> migratedProceedings = new ArrayList<>();
+            migratedProceedings.add(element(FIRST_PROCEEDING));
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .proceedings(migratedProceedings)
+                .build();
+
+            Map<String,Object> caseDetailMap = new HashMap<>();
+            caseDetailMap.put("proceedings", migratedProceedings);
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
+            underTest.rollbackOtherProceedings(caseDetails, caseData, MIGRATION_ID);
+
+            assertThat(caseDetailMap).doesNotContainKey("proceedings").containsKey("proceeding");
+
+            Proceeding rollbackProceeding = (Proceeding) caseDetailMap.get("proceeding");
+
+            assertThat(rollbackProceeding).isEqualTo(FIRST_PROCEEDING);
         }
     }
 
