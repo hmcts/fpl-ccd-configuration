@@ -31,7 +31,7 @@
     "ListElementCode": "judgeType",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "JudgeType",
-    "ElementLabel": "Judge or magistrate's title",
+    "ElementLabel": "Judge or magistrate's type",
     "SecurityClassification": "Public"
   },
   {
