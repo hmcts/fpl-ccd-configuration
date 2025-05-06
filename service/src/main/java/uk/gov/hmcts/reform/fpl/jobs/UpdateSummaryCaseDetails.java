@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JobHelper.paginate;
 @ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UpdateSummaryCaseDetails implements Job {
-    private static final String EVENT_NAME = "internal-update-case-summary";
+    private static final String EVENT_NAME = "internal-update-case-summary-overnight";
     private static final String RANGE_FIELD = "data.caseSummaryNextHearingDate";
 
     private final CaseConverter converter;

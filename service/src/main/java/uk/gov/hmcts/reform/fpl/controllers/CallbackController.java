@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,12 @@ public abstract class CallbackController {
 
     protected CaseData getCaseData(CaseDetails caseDetails) {
         return caseConverter.convert(caseDetails);
+    }
+
+    protected CaseData getCaseData(CaseDetails caseDetailsBefore, CaseDetailsMap caseDetailsMap) {
+        return caseConverter.convert(caseDetailsBefore.toBuilder()
+                .data(caseDetailsMap)
+            .build());
     }
 
     protected CaseData getCaseData(CallbackRequest callbackRequest) {
