@@ -337,12 +337,6 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
                 "child_solicitor@solicitor.com",
                 toMap(expectedNotifyData),
                 notificationReference(CASE_ID));
-            // notify ctsc admin
-            verify(notificationClient).sendEmail(
-                CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
-                "FamilyPublicLaw+ctsc@gmail.com",
-                toMap(expectedNotifyData),
-                notificationReference(CASE_ID));
             // notify high court admin
             verify(notificationClient, times(isTransferredToRcjHighCourt ? 1 : 0)).sendEmail(
                 CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,

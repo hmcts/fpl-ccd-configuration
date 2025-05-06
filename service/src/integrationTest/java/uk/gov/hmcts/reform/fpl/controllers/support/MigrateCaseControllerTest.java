@@ -52,34 +52,30 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     @Nested
-    class Dfpl2713 {
+    class Dfpl2740 {
 
         @Test
         void shouldRedactStrings() {
             CaseData caseData = CaseData.builder()
-                .id(1734095429043780L)
+                .id(1743167066103323L)
                 .changeOfRepresentatives(List.of(
                     element(UUID.randomUUID(), ChangeOfRepresentation.builder()
                         .child("unchanged name")
                         .build()),
-                    element(UUID.fromString("673396a8-dcba-451e-a4df-5a2162ac2828"),
+                    element(UUID.fromString("625f113c-5673-4b35-bbf1-6507fcf9ec43"),
                         ChangeOfRepresentation.builder()
-                            .child("aaaaaaa bbbbbb")
-                            .build()),
-                    element(UUID.fromString("64e99c83-6eb3-48f7-8ba6-2de983af1a8d"),
-                        ChangeOfRepresentation.builder()
-                            .child("ccccccccc ddd")
+                            .child("AAAAA BBBB")
                             .build())
                 ))
                 .build();
 
-            CaseData after = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2713")));
+            CaseData after = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2740")));
 
-            assertThat(after.getChangeOfRepresentatives()).hasSize(3);
+            assertThat(after.getChangeOfRepresentatives()).hasSize(2);
             assertThat(after.getChangeOfRepresentatives().stream()
                 .map(Element::getValue)
                 .map(ChangeOfRepresentation::getChild))
-                .containsExactly("unchanged name", "aaaaaaa", "ccccccccc");
+                .containsExactly("unchanged name", "AAAAA");
             ;
         }
 

@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -167,4 +168,19 @@ class UserServiceTest {
             assertThat(underTest.getUserDetails()).isEqualTo(userDetailsMock);
         }
     }
+
+    @Test
+    void shouldReturnTrueForIsCtscUser() {
+        when(roleAssignmentService.getOrganisationalRolesForUser(requestData.userId()))
+            .thenReturn(Set.of(OrganisationalRole.CTSC));
+        assertThat(underTest.isCtscUser()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseForLocalCourtIsCtscUser() {
+        when(roleAssignmentService.getOrganisationalRolesForUser(requestData.userId()))
+            .thenReturn(Set.of(OrganisationalRole.LOCAL_COURT_ADMIN));
+        assertThat(underTest.isCtscUser()).isFalse();
+    }
+
 }
