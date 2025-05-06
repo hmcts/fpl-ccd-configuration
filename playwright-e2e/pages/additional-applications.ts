@@ -39,7 +39,7 @@ export class AdditionalApplications extends BasePage {
     this.selectApplicant = page.getByLabel('Select applicant');
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
-    this.paymentPbaNumber = page.getByLabel('Payment by account (PBA)');
+    this.paymentPbaNumber = page.getByLabel('Payment by account (PBA) number');
     this.typeOfC2Application = page.getByLabel('Application with notice.');
   }
 
@@ -124,7 +124,6 @@ export class AdditionalApplications extends BasePage {
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_title').fill('Draft order title');
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_document').setInputFiles(config.testWordFile);
     await this.expectAllUploadsCompleted();
-    // added hard wait due to EXUI-1194
     await this.page.waitForTimeout(6000);
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
 
@@ -149,7 +148,6 @@ export class AdditionalApplications extends BasePage {
   }
 
   public async payForApplication() {
-    //await this.page.locator('[for="temporaryPbaPayment_usePbaPayment_Yes"]').check();
     await this.paymentPbaNumber.fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();

@@ -43,7 +43,7 @@ export class OtherPeopleInCase extends BasePage {
     await this.placeOfBirth.fill("London");
     await this.currentAddress.getByLabel('No').check();
     await this.reasonUnknownAddress.selectOption('1: No fixed abode');
-    await this.telephoneNumber.fill("0123456789")
+    await this.telephoneNumber.fill("0123456789");
     await this.relationshipToChild.fill("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum augue velit, eget bibendum est viverra vel. Sed id urna mollis")
     await this.contactDetailsHidden.getByLabel('No').check();
     await this.page.getByLabel('Don\'t know').check();
