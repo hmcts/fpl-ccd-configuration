@@ -62,6 +62,8 @@ import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -71,6 +73,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
@@ -3629,4 +3632,70 @@ class MigrateCaseServiceTest {
 
     }
 
+    @Nested
+    class RemoveDraftOrderFromAdditionalApplicationBundle {
+
+        private final UUID bundleId = UUID.randomUUID();
+        private final UUID orderToRemoveId = UUID.randomUUID();
+        private final UUID orderToRetainId = UUID.randomUUID();
+        private final UUID nonExistentBundleId = UUID.randomUUID();
+
+        Element<DraftOrder> draftOrderToRemove = element(orderToRemoveId,
+                DraftOrder.builder()
+                    .title("Order to remove")
+                    .build()
+            );
+
+        Element<DraftOrder> draftOrderToRetain = element(orderToRetainId,
+                DraftOrder.builder()
+                    .title("Order to retain")
+                    .build()
+            );
+
+        private final Element<AdditionalApplicationsBundle> bundleWithOrder = element(bundleId,
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .draftOrdersBundle(List.of(draftOrderToRemove, draftOrderToRetain))
+                    .build())
+                .build());
+
+        private final Element<AdditionalApplicationsBundle> bundleWithoutOrder = element(bundleId,
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .build())
+                .build());
+
+        private final CaseData caseDataWithBundle = CaseData.builder()
+            .id(1L)
+            .additionalApplicationsBundle(List.of(bundleWithOrder))
+            .build();
+
+        private final CaseData caseDataWithoutDraftOrder = CaseData.builder()
+            .id(1L)
+            .additionalApplicationsBundle(List.of(bundleWithoutOrder))
+            .build();
+
+        @Test
+        void shouldRemoveDraftOrderFromBundle() {
+            Map<String, Object> result = underTest.removeDraftOrderFromAdditionalApplication(caseDataWithBundle,
+                MIGRATION_ID, bundleId, orderToRemoveId);
+
+            Element<AdditionalApplicationsBundle> expectedBundle = element(bundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .draftOrdersBundle(List.of(draftOrderToRetain))
+                        .build())
+                    .build());
+
+            assertThat(result).containsEntry("additionalApplicationsBundle", List.of(expectedBundle));
+        }
+
+        @Test
+        void shouldThrowExceptionIfBundleNotFound() {
+            assertThatThrownBy(() -> underTest.removeDraftOrderFromAdditionalApplication(caseDataWithoutDraftOrder,
+                MIGRATION_ID, nonExistentBundleId, orderToRemoveId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("additional application bundle not found");
+        }
+    }
 }

@@ -26,19 +26,34 @@ export class OrdersAndDirectionSought extends BasePage{
   }
 
   async ordersAndDirectionsNeeded() {
-    await expect(this.OrdersAndDirectionsSought).toBeVisible();
-    await this.OrdersAndDirectionsSought.click();
+    // await expect(this.OrdersAndDirectionsSought).toBeVisible();
+    // await this.OrdersAndDirectionsSought.click();
+    await expect(()=>{
+        expect(this.OrdersAndDirectionsSought).toBeVisible();
+        this.OrdersAndDirectionsSought.click();
+        expect(this.OrdersAndDirectionsSought).toBeHidden();
+        this.page.reload();
+    }).toPass();
+
     await expect(this.OrdersAndDirectionsHeading).toBeVisible();
     await this.WhichOrdersDoYouNeedCareOrder.click();
     await this.DoYouNeedAnyOtherDirections.getByRole('radio', { name: 'No' }).check();
     await this.WhichCourtAreYouIssuingFor.selectOption('Barnet');
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
+      await expect(this.page.getByText('has been updated with event:')).toBeVisible();
+
   }
   async SoliciotrC110AAppOrderAndDirectionNeeded(){
 
-      await expect(this.OrdersAndDirectionsSought).toBeVisible();
-      await this.OrdersAndDirectionsSought.click();
+      // await expect(this.OrdersAndDirectionsSought).toBeVisible();
+      // await this.OrdersAndDirectionsSought.click();
+      await expect(()=>{
+          expect(this.OrdersAndDirectionsSought).toBeVisible();
+          this.OrdersAndDirectionsSought.click();
+          expect(this.OrdersAndDirectionsSought).toBeHidden();
+          this.page.reload();
+      }).toPass();
       await expect(this.OrdersAndDirectionsHeading).toBeVisible();
 
       await this.variationOfSupervisionOrder.check();
@@ -52,5 +67,6 @@ export class OrdersAndDirectionSought extends BasePage{
       await this.contactWithChild.uncheck();
       await this.clickContinue();
       await this.checkYourAnsAndSubmit();
+      await expect(this.page.getByText('has been updated with event:')).toBeVisible();
   }
 }

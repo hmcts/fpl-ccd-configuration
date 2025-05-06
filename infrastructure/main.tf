@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.21.1"
+      version = "4.26.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
@@ -99,7 +99,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
   pgsql_server_configuration = [
     {
       name  = "azure.extensions"
-      value = "plpgsql,pg_stat_statements,pg_buffercache"
+      value = "pg_stat_statements,pg_buffercache"
     }
   ]
 

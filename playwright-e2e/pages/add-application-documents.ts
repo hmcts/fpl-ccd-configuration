@@ -33,5 +33,6 @@ export class AddApplicationDocuments {
         await this.page.getByRole('button', { name: 'Continue' }).click();
         await this.page.getByRole('heading', { name: 'Check your answers' }).click();
         await this.page.getByRole('button', { name: 'Save and continue' }).click();
+        await expect(this.page.getByText('has been updated with event:')).toBeVisible();
       }
 }
