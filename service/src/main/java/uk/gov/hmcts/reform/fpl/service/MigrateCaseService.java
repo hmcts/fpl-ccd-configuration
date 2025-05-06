@@ -1335,7 +1335,9 @@ public class MigrateCaseService {
             Element<Other> firstOther = element(getFirstOtherId(caseData), othersToBeMigrated.getFirstOther());
             othersV2.add(firstOther);
         }
-        othersV2.addAll(othersToBeMigrated.getAdditionalOthers());
+        if (isNotEmpty(othersToBeMigrated.getAdditionalOthers())) {
+            othersV2.addAll(othersToBeMigrated.getAdditionalOthers());
+        }
 
         caseDetailsMap.remove("others");
         caseDetailsMap.put("othersV2", othersV2);
@@ -1352,6 +1354,32 @@ public class MigrateCaseService {
         return caseData.getConfidentialOthers().stream().map(Element::getId)
             .filter(co -> !additionalOtherIds.contains(co)).findFirst()
             .orElse(UUID.randomUUID());
+    }
+
+    public Map<String, Object> rollbackOthersV2ToOthers(CaseData caseData, Map<String, Object> caseDetailsMap,
+                                                       String migrationId) {
+        List<Element<Other>> othersV2ToBeMigrated = caseData.getOthersV2();
+
+        if (othersV2ToBeMigrated == null) {
+            throw new AssertionError(format("Migration {id = %s}, there is no othersV2 in case %s", migrationId,
+                caseData.getId()));
+        }
+
+        int othersV2Size = othersV2ToBeMigrated.size();
+        
+        Other firstOther = (othersV2Size > 0) ? othersV2ToBeMigrated.get(0).getValue() : null;
+        List<Element<Other>> additionalOthers =  (othersV2Size > 1) 
+            ? othersV2ToBeMigrated.subList(1, othersV2Size) : null;
+
+        Others others = Others.builder()
+            .firstOther(firstOther)
+            .additionalOthers(additionalOthers)
+            .build();
+
+        caseDetailsMap.remove("othersV2");
+        caseDetailsMap.put("others", others);
+
+        return caseDetailsMap;
     }
 
     public Map<String, Object> removeDraftOrderFromAdditionalApplication(CaseData caseData, String migrationId,

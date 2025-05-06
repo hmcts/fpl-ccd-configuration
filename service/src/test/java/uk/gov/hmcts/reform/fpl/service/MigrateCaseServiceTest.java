@@ -3649,6 +3649,73 @@ class MigrateCaseServiceTest {
             assertThat(migratedCaseDetails).extracting("othersV2")
                 .isEqualTo(List.of(FIRST_OTHER, ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3));
         }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldRollbackOthersV2ToOthers() {
+            List<Element<Other>> othersV2 = List.of(FIRST_OTHER, ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3);
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("othersV2", othersV2);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .othersV2(othersV2)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
+            
+            assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
+
+            Others actualOthers = (Others) migratedCaseDetails.get("others");
+            assertThat(actualOthers.getFirstOther()).isEqualTo(FIRST_OTHER.getValue());
+            assertThat(actualOthers.getAdditionalOthers()).hasSize(3);
+            assertThat(actualOthers.getAdditionalOthers())
+                .isEqualTo(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldRollbackOthersV2ToOthersIfOnlyOneOtherExist() {
+            List<Element<Other>> othersV2 = List.of(FIRST_OTHER);
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("othersV2", othersV2);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .othersV2(othersV2)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
+
+            Others actualOthers = (Others) migratedCaseDetails.get("others");
+            assertThat(actualOthers.getFirstOther()).isEqualTo(FIRST_OTHER.getValue());
+            assertThat(actualOthers.getAdditionalOthers()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldRollbackOthersV2ToOthersIfNoOtherExist() {
+            List<Element<Other>> othersV2 = List.of();
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("othersV2", othersV2);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .othersV2(othersV2)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(Others.builder().build());
+        }
     }
 
     @Nested
