@@ -3653,7 +3653,8 @@ class MigrateCaseServiceTest {
         @SuppressWarnings("unchecked")
         @Test
         void shouldRollbackOthersV2ToOthers() {
-            List<Element<Other>> othersV2 = List.of(FIRST_OTHER, ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3);
+            List<Element<Other>> othersV2 = 
+                List.of(FIRST_OTHER, ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3);
 
             Map<String, Object> caseDetailsMap = new HashMap<>();
             caseDetailsMap.put("othersV2", othersV2);
