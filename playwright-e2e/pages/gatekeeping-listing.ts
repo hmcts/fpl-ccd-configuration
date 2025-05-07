@@ -1,4 +1,4 @@
-import { BasePage } from "./base-page";
+
 import { expect, Page } from "@playwright/test";
 import { HearingDetailsMixin } from "./mixins/hearing-details-mixin";
 import config from "../settings/test-docs/config";
@@ -36,7 +36,7 @@ export class GatekeepingListing extends HearingDetailsMixin()
     await this.clickContinue();
     await this.page.getByLabel('Upload a prepared gatekeeping order').check();
     await this.clickContinue();
-    await this.page.getByRole('textbox', { name: 'Attach prepared order' }).setInputFiles(config.testWordFile);
+    await this.page.getByRole('button', {name: 'Attach prepared order'}).setInputFiles(config.testWordFile);
     await this.waitForAllUploadsToBeCompleted();
     await this.clickContinue();
     await this.page.getByRole('radio', { name: 'Yes' }).check();
@@ -62,11 +62,14 @@ export class GatekeepingListing extends HearingDetailsMixin()
   }
 
   async addHighCourtJudgeAndCompleteGatekeepingListing() {
-    await this.page.getByLabel('Search for Judge (Optional)').fill('Arthur Ramirez');
+    await this.selectjudgeType('fee-paid judge');
+    await this.page.getByRole('combobox', {name: 'Search for Judge'}).fill('Arthur Ramirez');
     await this.page.getByText('Mr Arthur Ramirez (HHJ.Arthur').click();
+    await this.assertFeePaidJudgeTitle();
+    await this.page.getByRole('radio', {name: 'Recorder'}).check();
     await this.clickContinue();
     await this.completeHearingDetails();
-    await this.page.getByRole('radio', { name: 'Yes' }).check();
+    await this.page.getByRole('radio', {name: 'Yes'}).check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
     await expect(this.page.getByText('has been updated with event: List Gatekeeping Hearing')).toBeVisible();
