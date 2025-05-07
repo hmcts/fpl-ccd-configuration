@@ -591,7 +591,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
             .newDocumentsCTSC(Map.of())
             .build();
 
-        when(userService.isHmctsAdminUser()).thenReturn(false);
+        when(userService.isCtscUser()).thenReturn(false);
         underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData,
@@ -616,7 +616,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
             .newDocumentsCTSC(Map.of())
             .build();
 
-        when(userService.isHmctsAdminUser()).thenReturn(true);
+        when(userService.isCtscUser()).thenReturn(true);
         underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
 
         verifyNoInteractions(workAllocationTaskService);
@@ -640,7 +640,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
             .newDocumentsCTSC(Map.of())
             .build();
 
-        when(userService.isHmctsAdminUser()).thenReturn(false);
+        when(userService.isCtscUser()).thenReturn(false);
         underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData,
@@ -665,7 +665,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
             .newDocumentsCTSC(Map.of(COURT_CORRESPONDENCE, notifyDocumentUploadedList))
             .build();
 
-        when(userService.isHmctsAdminUser()).thenReturn(false);
+        when(userService.isCtscUser()).thenReturn(false);
         underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData,
@@ -690,7 +690,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
             .newDocumentsCTSC(Map.of(COURT_CORRESPONDENCE, notifyDocumentUploadedList))
             .build();
 
-        when(userService.isHmctsAdminUser()).thenReturn(true);
+        when(userService.isCtscUser()).thenReturn(true);
         underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
 
         verifyNoInteractions(workAllocationTaskService);
@@ -717,7 +717,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
             .newDocumentsCTSC(Map.of())
             .build();
 
-        when(userService.isHmctsAdminUser()).thenReturn(false);
+        when(userService.isCtscUser()).thenReturn(false);
         underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData,

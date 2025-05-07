@@ -83,7 +83,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForTheApplicationHeadingLabel",
-    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\" OR risks!=\"\" OR factorsParenting!=\"\" OR proceeding!=\"\" OR internationalElement!=\"\"",
+    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\" OR risks!=\"\" OR proceeding!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -246,17 +246,6 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "factorsParenting",
     "TabFieldDisplayOrder": 18
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
-    "CaseFieldID": "factorsAffectingParentingLink",
-    "FieldShowCondition": "factorsParenting!=\"\"",
-    "TabFieldDisplayOrder": 19
   },
   {
     "LiveFrom": "01/01/2017",

@@ -68,7 +68,7 @@ export class AdditionalApplications extends BasePage {
     await this.c1ApplicationType.selectOption('C1 - Change surname or remove from jurisdiction');
 
     // upload application form
-    await this.applicationForm.setInputFiles(config.testTextFile);
+    await this.applicationForm.setInputFiles(config.testPdfFile3);
     await this.expectAllUploadsCompleted();
     await this.page.waitForTimeout(6000);
     await this.acknowledgeOtherApplicationForm.check();
@@ -91,7 +91,7 @@ export class AdditionalApplications extends BasePage {
 
   public async fillC2ApplicationDetails(uploadDraftOrder: boolean = true) {
     // upload application form
-    await this.c2ApplicationForm.setInputFiles(config.testTextFile);
+    await this.c2ApplicationForm.setInputFiles(config.testPdfFile);
     await this.expectAllUploadsCompleted();
     await this.page.waitForTimeout(6000);
 
@@ -112,7 +112,7 @@ export class AdditionalApplications extends BasePage {
   public async uploadDraftOrder() {
     await this.page.locator('#temporaryC2Document_draftOrdersBundle').getByRole('button', { name: 'Add new' }).click();
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_title').fill('Draft order title');
-    await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_document').setInputFiles(config.testTextFile);
+    await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_document').setInputFiles(config.testWordFile);
     await this.expectAllUploadsCompleted();
     // added hard wait due to EXUI-1194
     await this.page.waitForTimeout(6000);
@@ -124,7 +124,7 @@ export class AdditionalApplications extends BasePage {
     await this.page.locator('#temporaryOtherApplicationsBundle_supplementsBundle').getByRole('button', { name: 'Add new' }).click();
     await this.page.getByLabel('Document name').selectOption('1: C13A_SPECIAL_GUARDIANSHIP');
     await this.page.getByLabel('Notes (Optional)').fill('Notes');
-    await this.page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_0_document').setInputFiles(config.testTextFile);
+    await this.page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_0_document').setInputFiles(config.testWordFile);
     await this.page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').click();
     await this.expectAllUploadsCompleted();
   }
@@ -133,7 +133,7 @@ export class AdditionalApplications extends BasePage {
     await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle').getByRole('button', { name: 'Add new' }).click();
     await this.page.getByLabel('File name').fill('supporting document');
     await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_notes').fill('supporting doc notes');
-    await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_document').setInputFiles(config.testTextFile);
+    await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_document').setInputFiles(config.testPdfFile);
     await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
     await this.expectAllUploadsCompleted();
   }

@@ -58,7 +58,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
             Map.of("id", caseData.getId(), "issueDate", formatLocalDateToString(now(), DATE),
                     "age", getAge(LocalDate.of(2020, Month.JANUARY, 1))));
 
-        assertThat(response.getCaseData().getAmountToPay()).isEqualTo("243700");
+        assertThat(response.getCaseData().getAmountToPay()).isEqualTo("251500");
         assertThat(actualApplication).isEqualToNormalizingWhitespace(expectedApplication);
 
         return response.getCaseData();
@@ -74,7 +74,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
 
         CaseData updated = caseData.toBuilder()
             .allocationProposal(Allocation.builder()
-                .proposal("District judge")
+                .proposalV2("District judge")
                 .proposalReason("Example reason")
                 .build())
             .build();

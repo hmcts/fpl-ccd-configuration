@@ -32,7 +32,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillOtherApplicationDetails();
 
       // Payment details
-      await expect(page.getByText('£255.00')).toBeVisible();
+      await expect(page.getByText('£263.00')).toBeVisible();
       await additionalApplications.payForApplication();
 
       await additionalApplications.checkYourAnsAndSubmit();
@@ -79,7 +79,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText('£255.00')).toBeVisible();
+      await expect(page.getByText('£263.00')).toBeVisible();
       await additionalApplications.payForApplication();
 
       await additionalApplications.checkYourAnsAndSubmit();
@@ -98,7 +98,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
       await additionalApplications.fillOtherApplicationDetails();
 
-      await expect(page.getByText('£255.00')).toBeVisible();
+      await expect(page.getByText('£263.00')).toBeVisible();
       await additionalApplications.payForApplication();
 
       await additionalApplications.checkYourAnsAndSubmit();
@@ -129,7 +129,7 @@ test.describe('Upload additional applications', () => {
             await additionalApplications.fillC2ApplicationDetails();
 
             // Payment details
-            await expect(page.getByText('£255.00')).toBeVisible();
+            await expect(page.getByText('£263.00')).toBeVisible();
             await additionalApplications.payForApplication();
 
             await additionalApplications.checkYourAnsAndSubmit();
@@ -174,7 +174,7 @@ test.describe('Upload additional applications', () => {
             await additionalApplications.fillC2ApplicationDetails();
 
             // Payment details
-            await expect(page.getByText('£255.00')).toBeVisible();
+            await expect(page.getByText('£263.00')).toBeVisible();
             await additionalApplications.payForApplication();
 
             await additionalApplications.checkYourAnsAndSubmit();
@@ -217,7 +217,7 @@ test.describe('Upload additional applications', () => {
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Application');
         await caseFileView.openFolder('C2 applications');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.pdf');
+        await expect(page.getByRole('tree')).toContainText('testPdf.pdf');
 
         // If WA is enabled
         if (testConfig.waEnabled) {

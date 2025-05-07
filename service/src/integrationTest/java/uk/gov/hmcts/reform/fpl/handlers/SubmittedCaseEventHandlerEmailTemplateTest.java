@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -73,7 +74,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
             .build()))
         .orders(Orders.builder().orderType(List.of(CARE_ORDER, SUPERVISION_ORDER)).build())
-        .hearing(Hearing.builder().timeFrame("Same day").build())
+        .hearing(Hearing.builder().hearingUrgencyType(HearingUrgencyType.SAME_DAY).build())
         .outsourcingPolicy(OrganisationPolicy.builder()
             .organisation(Organisation.builder()
                 .organisationID("ORG1")

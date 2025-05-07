@@ -156,13 +156,14 @@ def deployWADmns() {
 
   def waStandaloneBranch = "master"
   // For testing DMNs, change this to the branch on the DMN repo, but ensure it is changed back to master before merging
-  def dmnBranch = "DFPL-2537"
+  def dmnBranch = "master"
 
   echo "Checking if we should use WA"
-  if (githubApi.checkForLabel(env.BRANCH_NAME, 'enable_wa')) {
+  if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
     env.SERVICES_WORK_ALLOCATION_TASK_API = "http://fpl-case-api-pr-${CHANGE_ID}-wa-task-management-api"
     env.SERVICES_WA_WORKFLOW_API_URL = "http://fpl-case-api-pr-${CHANGE_ID}-wa-workflow-api"
     env.WA_SUPPORTED_JURISDICTIONS = "PUBLICLAW"
+    env.ENABLE_WA = true
     echo "WA enabled, loading DMNs"
     sh """
         eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
@@ -170,6 +171,8 @@ def deployWADmns() {
         ./bin/pull-camunda-bpmn-files.sh ${waStandaloneBranch}
         ./bin/import-dmn-diagram.sh . publiclaw fpl
         """
+  } else {
+    env.ENABLE_WA = false
   }
 }
 
@@ -215,6 +218,17 @@ withPipeline(type, product, component) {
 
   before('test') {
     setupSecretsForIntegrationTests(pipelineConf)
+  }
+
+  before('akschartsinstall') {
+    onPR {
+      def githubApi = new GithubAPI(this)
+      if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
+        env.ENABLE_WA = true
+      } else {
+        env.ENABLE_WA = false
+      }
+    }
   }
 
   afterAlways('test') {
@@ -345,8 +359,6 @@ withPipeline(type, product, component) {
   }
 
   //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment demo migration for DFPL-1855 completed
-//    def branchesToSync = ['perftest','ithc'] TODO: uncomment perftest for Cafcass API perf test completed
-//    def branchesToSync = ['ithc'] TODO: uncomment ithc for Cafcass API ithc test completed
-  def branchesToSync = []
+  def branchesToSync = ['perftest','ithc']
   syncBranchesWithMaster(branchesToSync)
 }

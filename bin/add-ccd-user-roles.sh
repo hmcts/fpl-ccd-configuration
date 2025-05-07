@@ -14,7 +14,7 @@ done
 ${dir}/utils/ccd-add-role.sh "prd-aac-system"
 
 # publiclaw jurisdiction caseworkers
-roles=("solicitor" "courtadmin" "cafcass" "magistrate" "gatekeeper" "systemupdate" "judiciary" "bulkscan" "bulkscansystemupdate" "localAuthority" "superuser")
+roles=("solicitor" "courtadmin" "cafcass" "magistrate" "gatekeeper" "systemupdate" "judiciary" "bulkscan" "bulkscansystemupdate" "localAuthority" "superuser" "cafcasssystemupdate")
 for role in "${roles[@]}"
 do
   ${dir}/utils/ccd-add-role.sh "caseworker-publiclaw-${role}"
@@ -26,3 +26,5 @@ ${dir}/utils/ccd-add-role.sh "caseworker-wa-task-configuration"
 ${dir}/utils/ccd-add-role.sh "GS_profile"
 ${dir}/utils/ccd-add-role.sh "ctsc"
 ${dir}/utils/ccd-add-role.sh "hearing-centre-admin"
+${dir}/utils/ccd-add-role.sh "legal-adviser"
+${dir}/utils/ccd-add-role.sh "TTL_profile"

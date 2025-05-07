@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.Objects;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Judge extends AbstractJudge {
@@ -61,11 +63,15 @@ public class Judge extends AbstractJudge {
     }
 
     public static Judge fromJudicialUserProfile(JudicialUserProfile jup, YesNo judgeEnterManually) {
+        String postNominals = isNotEmpty(jup.getPostNominals())
+            ? (" " + jup.getPostNominals())
+            : "";
+
         return Judge.builder()
             .judgeTitle(JudgeOrMagistrateTitle.OTHER)
             .otherTitle(jup.getTitle())
-            .judgeLastName(jup.getSurname())
-            .judgeFullName(jup.getFullName())
+            .judgeLastName(jup.getSurname() + postNominals)
+            .judgeFullName(jup.getFullName() + postNominals)
             .judgeEmailAddress(jup.getEmailId())
             .judgeEnterManually(judgeEnterManually)
             .judgeJudicialUser(JudicialUser.builder()
