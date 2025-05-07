@@ -270,8 +270,7 @@ othersToBeGivenNotice: async ({ page }, use) => {
     await use(new ChangeOtherToRespondent(page));
 
   },
-},
-   listHearingAction: async({page},use)=>{
+    listHearingAction: async({page},use)=>{
        await use(new ListingHearingAction(page));
    },
 });
