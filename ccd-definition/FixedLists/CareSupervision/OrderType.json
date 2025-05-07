@@ -45,7 +45,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "OrderType",
     "ListElementCode": "OTHER",
-    "ListElement": "Variation or discharge of care or supervision order",
+    "ListElement": "Variation of supervision order or discharge of care order",
     "DisplayOrder": 7
   },
   {

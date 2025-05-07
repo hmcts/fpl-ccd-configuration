@@ -16,6 +16,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DeclarationOfParentagePrePopulator implements QuestionBlockOrderPrePopulator {
+    private static final String FORMATTED_RESPONDENT = ", Respondent ";
     private final DynamicListService dynamicListService;
 
     @Override
@@ -70,18 +71,18 @@ public class DeclarationOfParentagePrePopulator implements QuestionBlockOrderPre
                 .build());
             hearingParties.getListItems().add(DynamicListElement.builder()
                 .code(r.getValue().getParty().getFullName())
-                .label(r.getValue().getParty().getFullName() + ", Respondent " + respondentIncrementer.getValue())
+                .label(r.getValue().getParty().getFullName() + FORMATTED_RESPONDENT + respondentIncrementer.getValue())
                 .build());
             if (solicitor != null) {
                 hearingParties.getListItems().add(DynamicListElement.builder()
                     .code(solicitor.getFullName())
-                    .label(solicitor.getFullName() + ", Respondent " + respondentIncrementer.getValue()
+                    .label(solicitor.getFullName() + FORMATTED_RESPONDENT + respondentIncrementer.getValue()
                         + "'s solicitor")
                     .build());
             }
             personWhoseParenthoodIs.getListItems().add(DynamicListElement.builder()
                 .code(r.getValue().getParty().getFullName())
-                .label(r.getValue().getParty().getFullName() + ", Respondent " + respondentIncrementer.getValue())
+                .label(r.getValue().getParty().getFullName() + FORMATTED_RESPONDENT + respondentIncrementer.getValue())
                 .build());
             respondentIncrementer.getAndIncrement();
         });

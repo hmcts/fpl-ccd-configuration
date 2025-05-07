@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildrenEventDataFixer;
@@ -39,6 +40,7 @@ public class ChildController extends CallbackController {
     private static final List<State> RESTRICTED_STATES = List.of(OPEN, RETURNED);
 
     private final ConfidentialDetailsService confidentialDetailsService;
+    private final RepresentativeService representativeService;
     private final ChildRepresentationService childRepresentationService;
     private final NoticeOfChangeService noticeOfChangeService;
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
@@ -46,10 +48,16 @@ public class ChildController extends CallbackController {
     private final ChildrenEventDataFixer fixer;
     private final RepresentableLegalCounselUpdater representableCounselUpdater;
 
+    public static final String NO_ACCESS_ERROR = "Contact the applicant or CTSC to modify children details.";
+
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+
+        if (!representativeService.shouldUserHaveAccessToRespondentsChildrenEvent(caseData)) {
+            return respond(caseDetails, List.of(NO_ACCESS_ERROR));
+        }
 
         caseDetails.getData().put("children1", confidentialDetailsService.prepareCollection(
             caseData.getAllChildren(), caseData.getConfidentialChildren(), expandCollection()
@@ -100,7 +108,7 @@ public class ChildController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
 
-        caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
+        caseDetails.getData().putAll(childRepresentationService.finaliseChildrenAndRepresentationDetails(caseData));
 
         caseData = getCaseData(caseDetails);
         if (!RESTRICTED_STATES.contains(caseData.getState())) {

@@ -18,11 +18,18 @@ import uk.gov.hmcts.reform.am.model.RoleType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
+import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
@@ -38,6 +45,9 @@ public class RoleAssignmentService {
     private final AmApi amApi;
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
+
+    private static final String FPL_ROLE_ASSIGNMENT = "fpl-case-role-assignment";
+    private static final String CASE_ID = "caseId";
 
     /**
      * Create a role assignment in AM. This will REPLACE the existing role assignment.
@@ -58,7 +68,7 @@ public class RoleAssignmentService {
             .requestedRoles(buildRoleAssignments(caseId, userIds, role, roleCategory, startTime, endTime))
             .roleRequest(RoleRequest.builder()
                 .assignerId(systemUserService.getUserId(systemUserToken))
-                .reference("fpl-case-role-assignment")
+                .reference(FPL_ROLE_ASSIGNMENT)
                 .replaceExisting(false)
                 .build())
             .build());
@@ -83,13 +93,13 @@ public class RoleAssignmentService {
                 .requestedRoles(roleAssignments)
                 .roleRequest(RoleRequest.builder()
                     .assignerId(systemUserService.getUserId(systemUserToken))
-                    .reference("fpl-case-role-assignment")
+                    .reference(FPL_ROLE_ASSIGNMENT)
                     .replaceExisting(false)
                     .build())
                 .build());
         } catch (Exception e) {
             log.error("Failed to bulk grant {} roles on case {}, falling back to granting each individually",
-                roleAssignments.size(), roleAssignments.get(0).getAttributes().get("caseId"), e);
+                roleAssignments.size(), roleAssignments.get(0).getAttributes().get(CASE_ID), e);
 
             // if we fail in bulk, we will retry each one individually - a strange workaround, but it was necessary for
             // some cases...
@@ -100,20 +110,20 @@ public class RoleAssignmentService {
     private void grantIndividualRole(RoleAssignment role, String systemUserToken, String serviceToken) {
         try {
             log.info("Granting individual case role to {} on case {}", role.getActorId(),
-                role.getAttributes().getOrDefault("caseId", "no-case-id"));
+                role.getAttributes().getOrDefault(CASE_ID, "no-case-id"));
 
             amApi.createRoleAssignment(systemUserToken, serviceToken, AssignmentRequest.builder()
                 .requestedRoles(List.of(role))
                 .roleRequest(RoleRequest.builder()
                     .assignerId(systemUserService.getUserId(systemUserToken))
-                    .reference("fpl-case-role-assignment")
+                    .reference(FPL_ROLE_ASSIGNMENT)
                     .replaceExisting(false)
                     .build())
                 .build());
         } catch (Exception e) {
             log.error("Error when granting individual case role {} to {} on case {}",
                 role.getRoleName(), role.getActorId(),
-                role.getAttributes().getOrDefault("caseId", "no-case-id"), e);
+                role.getAttributes().getOrDefault(CASE_ID, "no-case-id"), e);
         }
     }
 
@@ -186,9 +196,9 @@ public class RoleAssignmentService {
         String systemUserToken = systemUserService.getSysUserToken();
         QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
             QueryRequest.builder()
-                .attributes(Map.of("caseId", List.of(caseId.toString())))
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(roleNames)
-                .validAt(time)
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
         return resp.getRoleAssignmentResponse();
@@ -208,10 +218,10 @@ public class RoleAssignmentService {
 
         QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
             QueryRequest.builder()
-                .attributes(Map.of("caseId", List.of(caseId.toString())))
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .actorId(List.of(userId))
                 .roleName(roleNames)
-                .validAt(time)
+                .validAt(getDateTimeInUtc(time))
                 .build()
         );
 
@@ -228,7 +238,7 @@ public class RoleAssignmentService {
 
         QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
             QueryRequest.builder()
-                .attributes(Map.of("caseId", List.of(caseId.toString())))
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
                 .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
                     HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
                 .build()
@@ -238,5 +248,85 @@ public class RoleAssignmentService {
             amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
 
         log.info("Deleted {} roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
+    }
+
+
+    @Retryable(value = {FeignException.class}, label = "Delete all hearing judicial/legal adviser roles on a case")
+    public void deleteAllHearingRolesOnCase(Long caseId) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        String authToken = authTokenGenerator.generate();
+
+        QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
+                .roleName(List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()))
+                .build()
+        );
+
+        resp.getRoleAssignmentResponse().forEach(role ->
+            amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
+
+        log.info("Deleted {} hearing roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
+    }
+
+    @Retryable(retryFor = {FeignException.class}, label = "Query organisation roles for user")
+    public Set<OrganisationalRole> getOrganisationalRolesForUser(String userId) {
+        QueryResponse response = amApi.queryRoleAssignments(
+            systemUserService.getSysUserToken(),
+            authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .actorId(List.of(userId))
+                .roleType(List.of(RoleType.ORGANISATION.toString()))
+                .build()
+        );
+        if (isNotEmpty(response.getRoleAssignmentResponse())) {
+            return response.getRoleAssignmentResponse().stream()
+                .map(role -> OrganisationalRole.from(role.getRoleName()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
+        } else {
+            return Set.of();
+        }
+    }
+
+    @Retryable(retryFor = {FeignException.class}, label = "Fetch case role assignments for user")
+    public Set<String> getJudicialCaseRolesForUserAtTime(String userId, Long caseId, ZonedDateTime time) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .actorId(List.of(userId))
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
+                .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
+                    HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
+                .validAt(getDateTimeInUtc(time))
+                .build()
+        );
+
+        if (isNotEmpty(resp.getRoleAssignmentResponse())) {
+            return resp.getRoleAssignmentResponse().stream()
+                .map(RoleAssignment::getRoleName)
+                .collect(Collectors.toSet());
+        } else {
+            return Set.of();
+        }
+    }
+
+    @Retryable(value = {FeignException.class}, label = "Fetch judicial case role assignments at time")
+    public List<RoleAssignment> getJudicialCaseRolesAtTime(Long caseId, ZonedDateTime time) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
+                .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
+                    HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
+                .validAt(getDateTimeInUtc(time))
+                .build()
+        );
+        return resp.getRoleAssignmentResponse();
+    }
+
+    static LocalDateTime getDateTimeInUtc(ZonedDateTime time) {
+        return time.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 }

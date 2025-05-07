@@ -27,7 +27,8 @@ import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { OtherProceedings } from "../pages/other-proceedings";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
-import { CourtServicesNeeded } from "../pages/court-services-needed";
+import { CaseLink } from "../pages/link-cases"
+import { CourtServices } from "../pages/court-services";
 import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
 import { Organisation } from "../pages/manage-organisation";
@@ -35,8 +36,13 @@ import { ShareCase } from "../pages/share-case";
 import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
 import { ReturnApplication } from "../pages/return-application";
 import { Orders } from "../pages/orders";
+import { CaseProgressionReport } from "../pages/case-progression-report";
 import { LogExpertReport } from "../pages/log-expert-report";
-
+import { ChangeCaseName } from "../pages/change-case-name";
+import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
+import { ManageRepresentatives } from "../pages/manage-representatives";
+import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
+import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -67,15 +73,22 @@ type CreateFixtures = {
   otherProceedings: OtherProceedings;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
-  courtServicesNeeded: CourtServicesNeeded;
+  caseLink : CaseLink ;
+  courtServices: CourtServices;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
   organisation: Organisation;
   shareCase: ShareCase;
   otherPeopleInCase: OtherPeopleInCase;
   returnApplication: ReturnApplication;
-  orders: Orders;
   logExpertReport: LogExpertReport;
+  changeCaseName: ChangeCaseName;
+  caseProgressionReport: CaseProgressionReport;
+  orders: Orders;
+  manageLaTransferToCourts: ManageLaTransferToCourts
+  manageRepresentatives: ManageRepresentatives;
+  othersToBeGivenNotice: OthersToBeGivenNotice;
+  changeOtherToRespondent: ChangeOtherToRespondent;
 
 };
 
@@ -187,9 +200,11 @@ export const test = base.extend<CreateFixtures>({
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
   },
-
-  courtServicesNeeded: async ({ page }, use) => {
-    await use(new CourtServicesNeeded(page));
+    caseLink: async ({ page }, use) => {
+        await use(new CaseLink(page));
+    },
+  courtServices: async ({ page }, use) => {
+    await use(new CourtServices(page));
   },
 
   addAdminCaseFlag: async ({ page }, use) => {
@@ -219,13 +234,38 @@ export const test = base.extend<CreateFixtures>({
   shareCase: async ({ page }, use) => {
     await use(new ShareCase(page));
   },
-  
-   orders: async ({page}, use) => {
-        await use(new Orders(page));
-   },
 
-   logExpertReport: async ({page}, use) => {
+  orders: async ({ page }, use) => {
+    await use(new Orders(page));
+  },
+
+  logExpertReport: async ({ page }, use) => {
     await use(new LogExpertReport(page));
+  },
+
+  changeCaseName: async ({ page }, use) => {
+    await use(new ChangeCaseName(page));
+  },
+
+  caseProgressionReport: async ({ page }, use) => {
+    await use(new CaseProgressionReport(page));
+  },
+
+  manageLaTransferToCourts: async ({ page }, use) => {
+    await use(new ManageLaTransferToCourts(page));
 },
 
+othersToBeGivenNotice: async ({ page }, use) => {
+  await use(new OthersToBeGivenNotice(page));
+},
+      
+  manageRepresentatives: async ({ page }, use) => {
+    await use(new ManageRepresentatives(page));
+
+  },
+
+  changeOtherToRespondent: async ({ page }, use) => {
+    await use(new ChangeOtherToRespondent(page));
+
+  },
 });

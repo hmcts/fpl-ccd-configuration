@@ -1,0 +1,37 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ListingActionRequest",
+    "ListElementCode": "type",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ListingActionType",
+    "ElementLabel": "Type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ListingActionRequest",
+    "ListElementCode": "details",
+    "FieldType": "TextArea",
+    "ElementLabel": "Details",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ListingActionRequest",
+    "ListElementCode": "dateSent",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date sent",
+    "SecurityClassification": "Public",
+    "DisplayContextParameter": "#DATETIMEDISPLAY(d LLL yyyy)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ListingActionRequest",
+    "ListElementCode": "dateReviewed",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date reviewed",
+    "SecurityClassification": "Public",
+    "DisplayContextParameter": "#DATETIMEDISPLAY(d LLL yyyy)"
+  }
+]

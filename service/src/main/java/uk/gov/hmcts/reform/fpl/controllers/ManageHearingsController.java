@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
-import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
@@ -86,7 +85,6 @@ public class ManageHearingsController extends CallbackController {
     private final StandardDirectionsService standardDirectionsService;
     private final ManageHearingsService hearingsService;
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
-    private final ValidateEmailService validateEmailService;
     private final ManageHearingsOthersGenerator othersGenerator;
     private final JudicialService judicialService;
 
@@ -130,107 +128,118 @@ public class ManageHearingsController extends CallbackController {
         }
 
         caseDetails.getData().putAll(hearingsService.clearPopulatedHearingFields());
-        if (NEW_HEARING == caseData.getHearingOption()) {
-            caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
 
-            PreviousHearingVenue previousHearingVenue = (PreviousHearingVenue) caseDetails.getData()
-                .get(PREVIOUS_HEARING_VENUE_KEY);
+        switch (caseData.getHearingOption()) {
+            case NEW_HEARING:
+                caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
 
-            boolean hasPreviousHearingVenue = previousHearingVenue != null
-                && !StringUtils.isEmpty(previousHearingVenue.getPreviousVenue());
+                PreviousHearingVenue previousHearingVenue = (PreviousHearingVenue) caseDetails.getData()
+                    .get(PREVIOUS_HEARING_VENUE_KEY);
 
-            caseDetails.getData().put(HAS_PREVIOUS_VENUE_HEARING, hasPreviousHearingVenue
-                ? YES.getValue() : NO.getValue());
-            caseDetails.getData()
-                .putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
-        } else if (EDIT_PAST_HEARING == caseData.getHearingOption()) {
-            final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+                boolean hasPreviousHearingVenue = previousHearingVenue != null
+                    && !StringUtils.isEmpty(previousHearingVenue.getPreviousVenue());
 
-            caseDetails.getData().put(PAST_HEARING_DATE_LIST,
-                hearingsService.asDynamicList(caseData.getPastHearings(), hearingBookingId));
+                caseDetails.getData().put(HAS_PREVIOUS_VENUE_HEARING, hasPreviousHearingVenue
+                    ? YES.getValue() : NO.getValue());
+                caseDetails.getData()
+                    .putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
+                break;
+            case EDIT_PAST_HEARING:
+                UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
-            HearingBooking hearingBooking = hearingsService
-                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
-                .orElse(HearingBooking.builder().build());
+                caseDetails.getData().put(PAST_HEARING_DATE_LIST,
+                    hearingsService.asDynamicList(caseData.getPastHearings(), hearingBookingId));
 
-            caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
-                hearingBooking, caseData.getAllocatedJudge()));
+                HearingBooking hearingBooking = hearingsService
+                    .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                    .orElse(HearingBooking.builder().build());
 
-            if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
-                || hearingBooking.getPreviousHearingVenue() == null
-                || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
-                caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
-            }
-        } else if (EDIT_FUTURE_HEARING == caseData.getHearingOption()) {
-            final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+                caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
+                    hearingBooking, caseData.getAllocatedJudge()));
 
-            caseDetails.getData().put(FUTURE_HEARING_LIST,
-                hearingsService.asDynamicList(caseData.getFutureHearings(), hearingBookingId));
+                if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
+                    || hearingBooking.getPreviousHearingVenue() == null
+                    || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
+                    caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
+                }
+                break;
+            case EDIT_FUTURE_HEARING:
+                hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
-            HearingBooking hearingBooking = hearingsService
-                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
-                .orElse(HearingBooking.builder().build());
+                caseDetails.getData().put(FUTURE_HEARING_LIST,
+                    hearingsService.asDynamicList(caseData.getFutureHearings(), hearingBookingId));
 
-            caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
-                hearingBooking, caseData.getAllocatedJudge()));
+                hearingBooking = hearingsService
+                    .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                    .orElse(HearingBooking.builder().build());
 
-            if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
-                || hearingBooking.getPreviousHearingVenue() == null
-                || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
-                caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
-            }
-        } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
-            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+                caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
+                    hearingBooking, caseData.getAllocatedJudge()));
 
-            caseDetails.getData().put(PAST_AND_TODAY_HEARING_DATE_LIST,
-                hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
-        } else if (VACATE_HEARING == caseData.getHearingOption()) {
-            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+                if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
+                    || hearingBooking.getPreviousHearingVenue() == null
+                    || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
+                    caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
+                }
+                break;
+            case ADJOURN_HEARING:
+                hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
-            List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings()
-                .stream().sorted(Comparator.comparing(hearingBooking -> hearingBooking.getValue().getStartDate()))
-                .collect(toList());
+                caseDetails.getData().put(PAST_AND_TODAY_HEARING_DATE_LIST,
+                    hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
+                break;
+            case VACATE_HEARING:
+                hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
-            Collections.reverse(nonCancelledHearings);
+                List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings()
+                    .stream().sorted(Comparator.comparing(booking -> booking.getValue().getStartDate()))
+                    .collect(toList());
 
-            caseDetails.getData().put(VACATE_HEARING_LIST,
-                hearingsService.asDynamicList(nonCancelledHearings, hearingBookingId));
+                Collections.reverse(nonCancelledHearings);
 
-            HearingBooking hearingBooking = hearingsService
-                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
-                .orElse(HearingBooking.builder().build());
+                caseDetails.getData().put(VACATE_HEARING_LIST,
+                    hearingsService.asDynamicList(nonCancelledHearings, hearingBookingId));
 
-            caseDetails.getData().put("showVacatePastHearingWarning",
-                booleanToYesNo(hearingBooking.getEndDate().isBefore(now())));
+                hearingBooking = hearingsService
+                    .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                    .orElse(HearingBooking.builder().build());
 
-            errors.addAll(pastHearingDatesValidatorService.validateVacatedDate(hearingBooking.getEndDate(),
-                caseData.getVacatedHearingDate()));
-        } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
-            if (isEmpty(caseData.getToBeReListedHearings())) {
-                return respond(caseDetails, List.of("There are no adjourned or vacated hearings to re-list"));
-            }
-            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+                caseDetails.getData().put("showVacatePastHearingWarning",
+                    booleanToYesNo(hearingBooking.getEndDate().isBefore(now())));
 
-            HearingBooking cancelledHearing = hearingsService
-                .getHearingBooking(hearingBookingId, caseData.getCancelledHearingDetails());
+                errors.addAll(pastHearingDatesValidatorService.validateVacatedDate(hearingBooking.getEndDate(),
+                    caseData.getVacatedHearingDate()));
+                break;
+            case RE_LIST_HEARING:
+                if (isEmpty(caseData.getToBeReListedHearings())) {
+                    return respond(caseDetails, List.of("There are no adjourned or vacated hearings to re-list"));
+                }
+                hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
-            HearingBooking reListedHearingBooking = cancelledHearing.toBuilder()
-                .previousHearingVenue(null)
-                .startDate(null)
-                .endDate(null)
-                .endDateDerived(null)
-                .hearingDays(null)
-                .hearingHours(null)
-                .hearingMinutes(null)
-                .build();
+                HearingBooking cancelledHearing = hearingsService
+                    .getHearingBooking(hearingBookingId, caseData.getCancelledHearingDetails());
 
-            caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
-                reListedHearingBooking, caseData.getAllocatedJudge()));
+                HearingBooking reListedHearingBooking = cancelledHearing.toBuilder()
+                    .previousHearingVenue(null)
+                    .startDate(null)
+                    .endDate(null)
+                    .endDateDerived(null)
+                    .hearingDays(null)
+                    .hearingHours(null)
+                    .hearingMinutes(null)
+                    .build();
 
-            caseDetails.getData().put(FIRST_HEARING_FLAG, YES.getValue());
-            caseDetails.getData().put(TO_RE_LIST_HEARING_LIST,
-                hearingsService.asDynamicList(caseData.getToBeReListedHearings(), hearingBookingId));
+                caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
+                    reListedHearingBooking, caseData.getAllocatedJudge()));
+
+                caseDetails.getData().put(FIRST_HEARING_FLAG, YES.getValue());
+                caseDetails.getData().put(TO_RE_LIST_HEARING_LIST,
+                    hearingsService.asDynamicList(caseData.getToBeReListedHearings(), hearingBookingId));
+                break;
+            default:
+                return respond(caseDetails, List.of("Invalid hearing type selected"));
         }
+
 
         if (NEW_HEARING != caseData.getHearingOption()) {
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);

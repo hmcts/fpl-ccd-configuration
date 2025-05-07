@@ -164,7 +164,7 @@ public class ManageDocumentsUploadedEventHandler {
                     String documentTypes = documentTypeList.stream()
                         .map(docType ->
                             String.join(" ", BULLET_POINT,
-                                docType.getDescription().replaceAll("└─ ", "")))
+                                docType.getDescription().replace("└─ ", "")))
                         .collect(joining("\n"));
 
                     String subjectInfo = documentTypeList.stream()
@@ -179,7 +179,7 @@ public class ManageDocumentsUploadedEventHandler {
                                 unwrapElements(documentsToBeSent.get(docType)).stream()
                                     .map(NotifyDocumentUploaded::getDocument)
                                     .map(documentReference -> documentReference.toBuilder()
-                                        .type(docType.toString().replaceAll("_", " "))
+                                        .type(docType.toString().replace("_", " "))
                                         .build())
                                     .collect(toSet()))
                             .flatMap(Set::stream)
@@ -361,7 +361,7 @@ public class ManageDocumentsUploadedEventHandler {
     public void createWorkAllocationTask(ManageDocumentsUploadedEvent event) {
         CaseData caseData = event.getCaseData();
 
-        if (!userService.isHmctsAdminUser()
+        if (!userService.isCtscUser()
             && (isNotEmpty(event.getNewDocuments().get(COURT_CORRESPONDENCE))
                 || isNotEmpty(event.getNewDocumentsLA().get(COURT_CORRESPONDENCE))
                 || isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE)))) {

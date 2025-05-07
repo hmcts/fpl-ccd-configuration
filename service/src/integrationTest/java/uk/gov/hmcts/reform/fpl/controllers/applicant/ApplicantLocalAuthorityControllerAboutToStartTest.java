@@ -27,14 +27,14 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ApplicantLocalAuthorityController.class)
@@ -113,7 +113,8 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
                     .postcode(organisation.getContactInformation().get(0).getPostCode())
                     .build())
                 .build())
-            .localAuthorityColleagues(emptyList())
+            .applicantContact(Colleague.builder().build())
+            .applicantContactOthers(List.of())
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedData);
@@ -144,20 +145,25 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
         final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
 
-        final List<Element<Colleague>> expectedColleagues = wrapElements(Colleague.builder()
+        final Colleague expectedColleague = Colleague.builder()
             .role(SOLICITOR)
             .fullName(legacySolicitor.getName())
-            .mainContact("Yes")
-            .notificationRecipient("Yes")
-            .build());
+            .mainContact(YES.getValue())
+            .notificationRecipient(YES.getValue())
+            .build();
 
         final LocalAuthorityEventData expectedEventData = LocalAuthorityEventData.builder()
             .localAuthority(LocalAuthority.builder()
                 .id(organisation.getOrganisationIdentifier())
                 .name(legacyApplicant.getOrganisationName())
-                .colleagues(expectedColleagues)
+                .colleagues(wrapElements(expectedColleague))
                 .build())
-            .localAuthorityColleagues(expectedColleagues)
+            .applicantContact(expectedColleague.toBuilder()
+                .notificationRecipient(null)
+                .fullName(null)
+                .firstName(legacySolicitor.getName())
+                .build())
+            .applicantContactOthers(List.of())
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
@@ -165,16 +171,16 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldGetExistingLocalAuthorityDetails() {
-
-        final List<Element<Colleague>> colleagues = wrapElements(Colleague.builder()
-            .role(SOCIAL_WORKER)
+        final Element<Colleague> colleague = element(Colleague.builder()
+            .role(SOLICITOR)
             .fullName("Alex Smith")
             .build());
+
 
         final LocalAuthority localAuthority = LocalAuthority.builder()
             .id(organisation.getOrganisationIdentifier())
             .email("org@test.com")
-            .colleagues(colleagues)
+            .colleagues(List.of(colleague))
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -187,7 +193,9 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
         final LocalAuthorityEventData expectedEventData = LocalAuthorityEventData.builder()
             .localAuthority(localAuthority)
-            .localAuthorityColleagues(colleagues)
+            .applicantContact(Colleague.builder().build())
+            .applicantContactOthers(List.of(element(colleague.getId(),
+                colleague.getValue().toBuilder().fullName(null).firstName("Alex Smith").build())))
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
