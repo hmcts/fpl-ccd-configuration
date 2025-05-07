@@ -43,6 +43,8 @@ import static java.lang.String.format;
 @RequestMapping("/cases")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassCasesController {
+    public static final int CAFCASS_API_SEARCH_WINDOW_IN_MINUTE = 15;
+
     private final EventService eventPublisher;
     private final CaseConverter caseConverter;
     private final CoreCaseDataService coreCaseDataService;
@@ -56,7 +58,8 @@ public class CafcassCasesController {
         @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         log.info("searchCases, " + startDate + ", " + endDate);
 
-        if (startDate.isAfter(endDate) || startDate.plusMinutes(15).isBefore(endDate)) {
+        if (startDate.isAfter(endDate)
+            || startDate.plusMinutes(CAFCASS_API_SEARCH_WINDOW_IN_MINUTE).isBefore(endDate)) {
             throw new BadInputException();
         }
 

@@ -277,12 +277,12 @@ repositories {
 def versions = [
   reformLogging   : '5.1.9',
   springBoot      : springBoot.class.package.implementationVersion,
-  log4j           : '2.23.1',
+  log4j           : '2.24.3',
   logbackVersion  : '1.5.14',
   jackson         : '2.18.3',
   pdfbox          : '2.0.33',
   mockito         : '5.2.0',
-  serenity        : '4.1.6',
+  serenity        : '4.2.22',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.11.4',
   lombok          : '1.18.38',
@@ -312,14 +312,14 @@ dependencies {
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.13.1'
-  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.11.0'
+  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.14.0'
   implementation 'org.apache.commons:commons-lang3:3.17.0'
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.7.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.0'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.15.2'
-  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.15.2'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.22.0'
+  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.22.0'
 
   implementation group: 'com.github.hmcts', name: 'java-logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
@@ -346,7 +346,7 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
   implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.7.1'
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.6.2'
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.7.1'
 
   implementation 'org.postgresql:postgresql:42.7.5'
 
@@ -364,7 +364,7 @@ dependencies {
 
   integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.13.1'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
-  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.2'
+  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.3.0'
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
@@ -382,7 +382,7 @@ dependencies {
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
   functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured'
-  functionalTestImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '3.2.7'
+  functionalTestImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '3.5.0'
   functionalTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
