@@ -2,6 +2,15 @@
   "state": "PREPARE_FOR_HEARING",
   "caseData": {
     "caseName": "e2e test case",
+    "court": {
+      "code": "151",
+      "name": "Family Court sitting at Bristol",
+      "email": "contactfpl@justice.gov.uk",
+      "epimmsId": "819890",
+      "region": "South West",
+      "regionId": "6"
+    },
+    "bristolDFJCourt": "151",
     "orders": {
       "orderType": [
         "CARE_ORDER"
@@ -334,6 +343,44 @@
           }
         }
       }
-    ]
+    ],
+    "caseManagementLocation": {
+      "region": "6",
+      "baseLocation": "819890"
+    },
+    "caseSummaryAllocatedJudgeEmail": null,
+    "caseSummaryAllocatedJudgeName": null,
+    "caseSummaryCafcassGuardian": null,
+    "caseSummaryCaseFlagNotes": null,
+    "caseSummaryCourtName": "Family Court sitting at Bristol",
+    "caseSummaryDateOfIssue": "2024-11-28",
+    "caseSummaryFinalHearingDate": null,
+    "caseSummaryFirstRespondentLastName": "dad",
+    "caseSummaryFirstRespondentLegalRep": null,
+    "caseSummaryFlagAddedByEmail": null,
+    "caseSummaryFlagAddedByFullName": null,
+    "caseSummaryFlagAssessmentForm": null,
+    "caseSummaryHasFinalHearing": null,
+    "caseSummaryHasNextHearing": null,
+    "caseSummaryHasPreviousHearing": null,
+    "caseSummaryHasUnresolvedMessages": null,
+    "caseSummaryHighCourtCase": "No",
+    "caseSummaryLAHighCourtCase": "No",
+    "caseSummaryLALanguageRequirement": "No",
+    "caseSummaryLanguageRequirement": "No",
+    "caseSummaryLASolicitorEmail": "Mary@mailinator.com",
+    "caseSummaryLASolicitorName": "Sol Mary",
+    "caseSummaryLATabHidden": "Yes",
+    "caseSummaryNextHearingCMO": null,
+    "caseSummaryNextHearingDate": null,
+    "caseSummaryNextHearingDateTime": null,
+    "caseSummaryNextHearingEmailAddress": null,
+    "caseSummaryNextHearingJudge": null,
+    "caseSummaryNextHearingType": null,
+    "caseSummaryNumberOfChildren": 1,
+    "caseSummaryOrdersRequested": "Care order",
+    "caseSummaryPreviousCourtName": null,
+    "caseSummaryPreviousHearingCMO": null,
+    "caseSummaryPreviousHearingDate": null
   }
 }

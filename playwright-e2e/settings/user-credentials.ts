@@ -85,3 +85,7 @@ export const WiltshireOrgCAAUser = {
     email: 'admin@wiltshire.gov.uk',
     password: defaultPwd,
 };
+export const courtAdminBristol = {
+    email: ' hca-south-west@justice.gov.uk',
+    password: defaultPwd,
+};

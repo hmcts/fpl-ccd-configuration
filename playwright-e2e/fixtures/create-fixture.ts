@@ -43,6 +43,8 @@ import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts"
 import { ManageRepresentatives } from "../pages/manage-representatives";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
+import {ListingHearingAction} from "../pages/list-hearing-action";
+
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -89,7 +91,7 @@ type CreateFixtures = {
   manageRepresentatives: ManageRepresentatives;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
-
+  listHearingAction: ListingHearingAction;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -258,7 +260,7 @@ export const test = base.extend<CreateFixtures>({
 othersToBeGivenNotice: async ({ page }, use) => {
   await use(new OthersToBeGivenNotice(page));
 },
-      
+
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
 
@@ -268,4 +270,7 @@ othersToBeGivenNotice: async ({ page }, use) => {
     await use(new ChangeOtherToRespondent(page));
 
   },
+    listHearingAction: async({page},use)=>{
+       await use(new ListingHearingAction(page));
+   },
 });
