@@ -1,0 +1,53 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "email",
+    "FieldType": "Email",
+    "ElementLabel": "Email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "role",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ApplicantContactRoleFixedList",
+    "ElementLabel": "Role",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Enter their role",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "role=\"OTHER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactOther",
+    "ListElementCode": "mainContact",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Main contact",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "role=\"DO_NOT_SHOW\""
+  }
+]

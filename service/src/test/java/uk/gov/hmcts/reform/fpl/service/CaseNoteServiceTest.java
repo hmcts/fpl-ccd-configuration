@@ -40,13 +40,13 @@ class CaseNoteServiceTest {
 
     private CaseNoteService service;
 
-    private static final String userAuthToken = "Bearer";
+    private static final String USER_AUTH_TOKEN = "Bearer";
     private static final UserInfo userDetails = UserInfo.builder().name("John Smith").build();
 
     @BeforeEach
     void setUp() {
         service = new CaseNoteService(idamClient, time);
-        given(idamClient.getUserInfo(userAuthToken)).willReturn(userDetails);
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(userDetails);
     }
 
     @Nested
@@ -56,7 +56,7 @@ class CaseNoteServiceTest {
         @ValueSource(strings = {"new note"})
         @NullAndEmptySource
         void shouldBuildExpectedCaseNote(String note) {
-            CaseNote caseNote = service.buildCaseNote(userAuthToken, note);
+            CaseNote caseNote = service.buildCaseNote(USER_AUTH_TOKEN, note);
 
             assertThat(caseNote).isEqualTo(caseNoteForToday(note));
         }

@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactRoleFixedList",
+    "ListElementCode": "SOLICITOR",
+    "ListElement": "Solicitor",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantContactRoleFixedList",
+    "ListElementCode": "OTHER",
+    "ListElement": "Other",
+    "DisplayOrder": 2
+  }
+]

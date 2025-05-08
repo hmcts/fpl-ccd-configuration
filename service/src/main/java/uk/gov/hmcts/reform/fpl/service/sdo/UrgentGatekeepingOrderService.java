@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UrgentGatekeepingOrderService {
 
+    private static final String URGENT_HEARING_ORDER = "urgentHearingOrder";
     private final CourtLevelAllocationService allocationService;
     private final DocumentSealingService sealingService;
     private final Time time;
@@ -54,7 +55,7 @@ public class UrgentGatekeepingOrderService {
                 caseData, eventData.getUrgentHearingAllocation()
             );
 
-            allocation = allocationDecision.getProposal();
+            allocation = allocationDecision.getProposalV2();
 
             returnedData.put("allocationDecision", allocationDecision);
         }
@@ -67,7 +68,7 @@ public class UrgentGatekeepingOrderService {
             .allocation(allocation)
             .build();
 
-        returnedData.put("urgentHearingOrder", order);
+        returnedData.put(URGENT_HEARING_ORDER, order);
 
         return returnedData;
     }
@@ -84,7 +85,7 @@ public class UrgentGatekeepingOrderService {
                 caseData, eventData.getUrgentHearingAllocation()
             );
 
-            allocation = allocationDecision.getProposal();
+            allocation = allocationDecision.getProposalV2();
 
             returnedData.put("allocationDecision", allocationDecision);
         }
@@ -97,7 +98,7 @@ public class UrgentGatekeepingOrderService {
             .allocation(allocation)
             .build();
 
-        returnedData.put("urgentHearingOrder", order);
+        returnedData.put(URGENT_HEARING_ORDER, order);
 
         return returnedData;
     }
@@ -126,7 +127,7 @@ public class UrgentGatekeepingOrderService {
             .allocation(urgentHearingOrder.getAllocation())
             .build();
 
-        updates.put("urgentHearingOrder", sealedOrder);
+        updates.put(URGENT_HEARING_ORDER, sealedOrder);
         return updates;
     }
 

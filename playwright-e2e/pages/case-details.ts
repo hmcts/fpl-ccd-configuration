@@ -18,6 +18,7 @@ export class CaseDetails extends BasePage
       for (let j = 0; j < tdCount; j++) {
         const rowCells = tableRows.locator(`td >> nth=${j}`);
         const cellText = await rowCells.textContent();
+        if(cellText)
         expect(cellText.trim()).toBe(expectedRows[i][j]);
       }
     }

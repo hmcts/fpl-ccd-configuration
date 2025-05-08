@@ -95,14 +95,23 @@ public class RemoveOrderService {
 
     private List<Element<? extends RemovableOrder>> getRemovableOrderList(CaseData caseData) {
         List<Element<? extends RemovableOrder>> orders = new ArrayList<>();
-        orders.addAll(caseData.getOrderCollection());
+        orders.addAll(caseData.getAllOrderCollections());
         orders.addAll(caseData.getSealedCMOs());
         orders.addAll(getDraftHearingOrders(caseData));
+        orders.addAll(Optional.ofNullable(caseData.getRefusedHearingOrders()).orElse(new ArrayList<>()));
 
-        if (!FINAL_HEARING.equals(caseData.getState()) && caseData.getStandardDirectionOrder() != null) {
-            StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+        if (!FINAL_HEARING.equals(caseData.getState())) {
+            if (caseData.getStandardDirectionOrder() != null)  {
+                StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+                standardDirectionOrder.setOrderTypeIsSdo(true);
+                orders.add(element(standardDirectionOrder.getCollectionId(), standardDirectionOrder));
+            }
 
-            orders.add(element(standardDirectionOrder.getCollectionId(), standardDirectionOrder));
+            if (caseData.getUrgentDirectionsOrder() != null)  {
+                StandardDirectionOrder urgentDirectionOrder = caseData.getUrgentDirectionsOrder();
+                urgentDirectionOrder.setOrderTypeIsSdo(false);
+                orders.add(element(urgentDirectionOrder.getCollectionId(), urgentDirectionOrder));
+            }
         }
 
         return orders;
