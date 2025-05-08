@@ -88,7 +88,9 @@ this._page = page;
   async clickSubmit() {
     await this.page.getByRole('button', { name: 'Submit' }).click();
   }
-
+  async clickSaveAndContinue() {
+      await this.saveAndContinue.click();
+  }
   async enterPostCode(postcode:string){
       await this.page.getByRole('textbox', { name: 'Enter a UK postcode' }).fill(postcode);
       await this.page.getByRole('button', { name: 'Find address' }).click();

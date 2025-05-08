@@ -65,6 +65,7 @@ export default defineConfig({
     },
     {
       name: "preview",
+      use: { ...devices["Desktop Firefox"] },
       use: { ...devices["Desktop Chrome"] },
       dependencies: ['user-session-setup'],
       retries: 3,
