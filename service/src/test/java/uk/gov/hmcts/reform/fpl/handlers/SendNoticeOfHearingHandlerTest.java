@@ -175,7 +175,7 @@ class SendNoticeOfHearingHandlerTest {
         given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
         given(OTHER.isRepresented()).willReturn(false);
         given(OTHER.hasAddressAdded()).willReturn(false);
-        given(OTHER.getFullName()).willReturn("John");
+        given(OTHER.getName()).willReturn("John");
         given(noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
             CASE_DATA, HEARING, OTHER)).willReturn(NO_OTHER_ADDRESS_NOTIFY_DATA);
 
@@ -194,7 +194,7 @@ class SendNoticeOfHearingHandlerTest {
         given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
         given(OTHER.isRepresented()).willReturn(false);
         given(OTHER.hasAddressAdded()).willReturn(false);
-        given(OTHER.getFullName()).willReturn(otherName);
+        given(OTHER.getName()).willReturn(otherName);
 
         underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 

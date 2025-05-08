@@ -9,20 +9,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hasRespondentLA",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentLocalAuthority",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "taskList",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
@@ -311,13 +297,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "proceeding",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "proceedings",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
   },
@@ -2439,13 +2418,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "others",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "othersV2",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
   },

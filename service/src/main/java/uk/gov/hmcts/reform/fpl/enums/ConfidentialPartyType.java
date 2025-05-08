@@ -5,7 +5,7 @@ import lombok.Getter;
 public enum ConfidentialPartyType {
     RESPONDENT("confidentialRespondents", "respondents1"),
     CHILD("confidentialChildren", "children1"),
-    OTHER("confidentialOthers", "othersV2");
+    OTHER("confidentialOthers", "others");
 
     @Getter
     private final String confidentialKey;

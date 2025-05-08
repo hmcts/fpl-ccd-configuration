@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -783,7 +784,7 @@ class DraftOrdersApprovedEventHandlerTest {
             .id(RandomUtils.nextLong())
             .representatives(wrapElements(representative))
             .respondents1(wrapElements(Respondent.builder().party(respondent).build()))
-            .othersV2(wrapElements(firstOther))
+            .others(Others.builder().firstOther(firstOther).build())
             .build();
 
         Party otherParty = firstOther.toParty();
@@ -829,7 +830,7 @@ class DraftOrdersApprovedEventHandlerTest {
             .id(RandomUtils.nextLong())
             .representatives(wrapElements(representative))
             .respondents1(wrapElements(Respondent.builder().party(respondent).build()))
-            .othersV2(wrapElements(firstOther))
+            .others(Others.builder().firstOther(firstOther).build())
             .build();
 
         Party otherParty = firstOther.toParty();

@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -77,17 +78,23 @@ class DeclarationOfParentagePrePopulatorTest {
         ).build();
     }
 
-    private static List<Element<Other>> createOthers(String... names) {
+    private static Others createOthers(String... names) {
         if (names == null) {
             return null;
         }
-
-        List<Other> others = new ArrayList<>();
-        for (String name : names) {
-            others.add(Other.builder().firstName(name).build());
+        Others.OthersBuilder builder = Others.builder();
+        List<Element<Other>> additionalOthers = new ArrayList<>();
+        for (int i = 0; i < names.length; i++) {
+            if (i == 0) {
+                builder.firstOther(Other.builder().name(names[i]).build());
+            } else {
+                additionalOthers.add(element(Other.builder().name(names[i]).build()));
+            }
         }
-
-        return wrapElements(others);
+        if (!additionalOthers.isEmpty()) {
+            builder.additionalOthers(additionalOthers);
+        }
+        return builder.build();
     }
 
     @Test
@@ -101,7 +108,7 @@ class DeclarationOfParentagePrePopulatorTest {
             .localAuthorities(List.of(element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
                 LocalAuthority.builder().name("Swansea local authority").build())))
             .respondents1(respondents)
-            .othersV2(createOthers("Jack Johnson", "Alan Smith"))
+            .others(createOthers("Jack Johnson", "Alan Smith"))
             .build();
 
         when(dynamicListService.asDynamicList(isA(Map.class))).thenAnswer((a) -> DynamicList.builder()
@@ -162,7 +169,7 @@ class DeclarationOfParentagePrePopulatorTest {
             .localAuthorities(List.of(element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
                 LocalAuthority.builder().name("Swansea local authority").build())))
             .respondents1(respondents)
-            .othersV2(createOthers("Jack Johnson", "Alan Smith"))
+            .others(createOthers("Jack Johnson", "Alan Smith"))
             .build();
 
         when(dynamicListService.asDynamicList(isA(Map.class))).thenAnswer((a) -> DynamicList.builder()
@@ -225,7 +232,7 @@ class DeclarationOfParentagePrePopulatorTest {
             .localAuthorities(List.of(element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
                 LocalAuthority.builder().name("Swansea local authority").build())))
             .respondents1(respondents)
-            .othersV2(createOthers("Jack Johnson"))
+            .others(createOthers("Jack Johnson"))
             .build();
 
         when(dynamicListService.asDynamicList(isA(Map.class))).thenAnswer((a) -> DynamicList.builder()

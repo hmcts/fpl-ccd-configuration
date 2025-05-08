@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
@@ -55,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -220,7 +222,7 @@ public class RepresentativeService {
             .map(Element::getValue)
             .map(Representable::getRepresentedBy)
             .forEach(List::clear);
-        caseData.getOthersV2().forEach(o -> o.getValue().getRepresentedBy().clear());
+        caseData.getAllOthers().forEach(o -> o.getValue().getRepresentedBy().clear());
 
         caseData.getRepresentatives()
             .forEach(representative -> associatedRepresentativeWithParty(caseData, representative));
@@ -307,9 +309,11 @@ public class RepresentativeService {
             String.format("Unable to resolve RepresentativeRole: {0} [{1}]", type.name(), sequenceNo));
     }
 
-    public void updateRepresentativeRoleForOthers(CaseData caseData, List<Element<Other>> others) {
-        for (int i = 0; i < others.size(); i++) {
-            updateRepresentativeRole(caseData, others.get(i).getValue().getRepresentedBy(), OTHER, i + 1);
+    public void updateRepresentativeRoleForOthers(CaseData caseData, Others others) {
+        int sequenceNo = 1;
+        updateRepresentativeRole(caseData, others.getFirstOther().getRepresentedBy(), OTHER, sequenceNo);
+        for (Element<Other> otherElement : nullSafeList(others.getAdditionalOthers())) {
+            updateRepresentativeRole(caseData, otherElement.getValue().getRepresentedBy(), OTHER, ++sequenceNo);
         }
     }
 

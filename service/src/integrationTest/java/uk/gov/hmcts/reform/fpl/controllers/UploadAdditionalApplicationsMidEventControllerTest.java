@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -92,8 +93,10 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .respondents1(wrapElements(Respondent.builder().representedBy(wrapElements(representative.getId()))
                 .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
                 .build()))
-            .othersV2(wrapElements(Other.builder().firstName("test1").build(),
-                Other.builder().firstName("test2").build()))
+            .others(Others.builder()
+                .firstOther(Other.builder().name("test1").build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
+                .build())
             .build();
 
         List<FeeType> feeTypes = List.of(FeeType.C2_WITH_NOTICE, FeeType.SPECIAL_GUARDIANSHIP,

@@ -87,10 +87,10 @@ public class DeclarationOfParentagePrePopulator implements QuestionBlockOrderPre
             respondentIncrementer.getAndIncrement();
         });
         IncrementalInteger othersIncrementer = new IncrementalInteger(1);
-        caseData.getOthersV2().forEach(o -> {
+        caseData.getAllOthers().forEach(o -> {
             personWhoseParenthoodIs.getListItems().add(DynamicListElement.builder()
-                .code(o.getValue().getFullName())
-                .label(o.getValue().getFullName() + ", Other to be given notice " + othersIncrementer.getAndIncrement())
+                .code(o.getValue().getName())
+                .label(o.getValue().getName() + ", Other to be given notice " + othersIncrementer.getAndIncrement())
                 .build());
         });
 

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 
@@ -27,16 +26,14 @@ public class OthersChecker implements EventChecker {
 
     @Override
     public boolean isStarted(CaseData caseData) {
-        if (isEmpty(caseData.getOthersV2())) {
-            return false;
-        }
-
-        for (Element<Other> other : caseData.getOthersV2()) {
-            if (!isEmptyOther(other.getValue())) {
+        switch (caseData.getAllOthers().size()) {
+            case 0:
+                return false;
+            case 1:
+                return !isEmptyOther(caseData.getOthers().getFirstOther());
+            default:
                 return true;
-            }
         }
-        return false;
     }
 
     private static boolean isEmptyOther(Other other) {
@@ -45,16 +42,15 @@ public class OthersChecker implements EventChecker {
         }
 
         return isEmptyAddress(other.getAddress()) && allEmpty(
-                other.getFirstName(),
-                other.getLastName(),
+                other.getName(),
                 other.getDateOfBirth(),
+                other.getGender(),
+                other.getBirthPlace(),
                 other.getChildInformation(),
+                other.getDetailsHidden(),
                 other.getLitigationIssues(),
                 other.getTelephone(),
-                other.getAddressKnowV2(),
-                other.getAddressNotKnowReason(),
-                other.getHideAddress(),
-                other.getHideTelephone());
+                other.getAddressNotKnowReason());
     }
 
 }

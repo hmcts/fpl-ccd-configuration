@@ -11,26 +11,25 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
+import static java.util.Objects.nonNull;
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 @ExtendWith(SpringExtension.class)
@@ -75,9 +74,9 @@ class OthersServiceTest {
 
     @Test
     void shouldBuildExpectedOtherSelectorWhenMultipleSelectedOthers() {
-        Other firstOther = Other.builder().firstName("Huey").build();
-        Other secondOther = Other.builder().firstName("Dewey").build();
-        Other thirdOther = Other.builder().firstName("Louie").build();
+        Other firstOther = Other.builder().name("Huey").build();
+        Other secondOther = Other.builder().name("Dewey").build();
+        Other thirdOther = Other.builder().name("Louie").build();
 
         List<Other> allOthers = List.of(firstOther, secondOther, thirdOther);
         List<Other> selectedOthers = List.of(firstOther, thirdOther);
@@ -90,10 +89,11 @@ class OthersServiceTest {
 
     @Test
     void shouldBuildExpectedLabelWhenSingleElementInList() {
-        List<Element<Other>> others = wrapElements(Other.builder()
-                .firstName("James")
-                .lastName("Daniels")
-                .build());
+        Others others = Others.builder()
+            .firstOther(Other.builder()
+                .name("James Daniels")
+                .build())
+            .build();
 
         String result = service.buildOthersLabel(others);
 
@@ -102,7 +102,7 @@ class OthersServiceTest {
 
     @Test
     void shouldBuildExpectedLabelWhenSingleElementInListWithEmptyName() {
-        List<Element<Other>> others = wrapElements(Other.builder().telephone("123456").build());
+        Others others = Others.builder().firstOther(Other.builder().birthPlace("birth place").build()).build();
 
         String result = service.buildOthersLabel(others);
 
@@ -111,23 +111,22 @@ class OthersServiceTest {
 
     @Test
     void shouldBuildExpectedLabelWhenManyElementsInList() {
-        List<Element<Other>> others = wrapElements(
-            Other.builder().firstName("James Daniels").build(),
-            Other.builder().name("Bob Martyn").build(),
-            Other.builder().lastName("Only Last").build(),
-            Other.builder().firstName("First").lastName("Last").build());
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("James Daniels").build())
+            .additionalOthers(wrapElements((Other.builder().name("Bob Martyn").build())))
+            .build();
 
         String result = service.buildOthersLabel(others);
 
-        assertThat(result).isEqualTo("Person 1 - James Daniels\nOther person 1 - Bob Martyn\n"
-                                     + "Other person 2 - Only Last\nOther person 3 - First Last\n");
+        assertThat(result).isEqualTo("Person 1 - James Daniels\nOther person 1 - Bob Martyn\n");
     }
 
     @Test
     void shouldBuildExpectedLabelWhenManyElementsInListWithEmptyName() {
-        List<Element<Other>> others = wrapElements(
-            Other.builder().telephone("123456").build(),
-            Other.builder().telephone("123456").build());
+        Others others = Others.builder()
+            .firstOther(Other.builder().birthPlace("birth place").build())
+            .additionalOthers(wrapElements(Other.builder().birthPlace("birth place").build()))
+            .build();
 
         String result = service.buildOthersLabel(others);
 
@@ -143,7 +142,7 @@ class OthersServiceTest {
 
     @Test
     void shouldBuildExpectedLabelWhenEmptyOthers() {
-        String result = service.buildOthersLabel(List.of());
+        String result = service.buildOthersLabel(Others.builder().build());
 
         assertThat(result).isEqualTo("No others on the case");
     }
@@ -152,34 +151,35 @@ class OthersServiceTest {
     void shouldReturnEmptyOthersWhenNoOthersInCaseData() {
         CaseData caseData = CaseData.builder().build();
 
-        List<Element<Other>> others = service.prepareOthers(caseData);
+        Others others = service.prepareOthers(caseData);
 
-        assertThat(others).isEqualTo(emptyList());
+        assertThat(others).isEqualTo(Others.builder().additionalOthers(emptyList()).build());
     }
 
     @Test
     void shouldNotRemoveRepresentedByWhenPrepareConfidentialOthers() {
-        List<Element<Other>> others = othersWithRemovedConfidentialFields();
-        others.get(0).getValue().addRepresentative(randomUUID());
-
-        List<Element<Other>> confidentialOthers = othersWithConfidentialFields(randomUUID());
+        List<Element<Other>> confidentialOthers = new ArrayList<>();
+        Other firstOther = othersWithRemovedConfidentialFields().get(0).getValue();
+        firstOther.addRepresentative(randomUUID());
+        confidentialOthers.addAll(othersWithConfidentialFields(randomUUID()));
 
         List<Element<Other>> othersWithRemovedConfidentialFields = othersWithRemovedConfidentialFields();
         othersWithRemovedConfidentialFields.forEach(ao -> ao.getValue().addRepresentative(randomUUID()));
 
         othersWithRemovedConfidentialFields.forEach(ao -> confidentialOthers
             .addAll(othersWithConfidentialFields(ao.getId())));
-        others.addAll(othersWithRemovedConfidentialFields);
 
-        CaseData caseData = buildCaseDataWithOthers(others, confidentialOthers);
+        CaseData caseData = buildCaseDataWithOthers(firstOther, othersWithRemovedConfidentialFields,
+            confidentialOthers);
 
-        List<Element<Other>> preparedOthers = service.prepareOthers(caseData);
+        Others others = service.prepareOthers(caseData);
 
-        assertThat(preparedOthers).isNotNull();
-        assertThat(preparedOthers).hasSize(2);
-        assertThat(preparedOthers.get(0)).isNotNull();
-        assertThat(preparedOthers.get(0).getValue().getRepresentedBy()).hasSize(1);
-        assertThat(preparedOthers.get(1).getValue().getRepresentedBy()).hasSize(1);
+        assertThat(others).isNotNull();
+        assertThat(others.getFirstOther()).isNotNull();
+        assertThat(others.getFirstOther().getRepresentedBy()).hasSize(1);
+        assertThat(others.getAdditionalOthers()).isNotNull();
+        assertThat(others.getAdditionalOthers()).hasSize(1);
+        assertThat(others.getAdditionalOthers().get(0).getValue().getRepresentedBy()).hasSize(1);
     }
 
     @Test
@@ -187,29 +187,27 @@ class OthersServiceTest {
         List<Element<Other>> additionalOthersList = othersWithConfidentialFields(randomUUID(), "John");
 
         // firstOther should be the "same" (in name) as the first confidential other, if they have conf data
-        List<Element<Other>> others = othersWithRemovedConfidentialFields("Jack");
-        others.addAll(additionalOthersList);
+        Other firstOther = othersWithRemovedConfidentialFields("Jack").get(0).getValue();
         List<Element<Other>> confidentialOthers = othersWithConfidentialFields(ID, "Jack");
 
-        CaseData caseData = buildCaseDataWithOthers(others, confidentialOthers);
+        CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOthersList, confidentialOthers);
 
-        List<Element<Other>> preparedOthers = service.prepareOthers(caseData);
+        Others others = service.prepareOthers(caseData);
 
-        assertThat(preparedOthers.get(0).getValue()).isEqualTo(confidentialOthers.get(0).getValue());
+        assertThat(others.getFirstOther()).isEqualTo(confidentialOthers.get(0).getValue());
     }
 
     @Test
     void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
-        List<Element<Other>> others = othersWithRemovedConfidentialFields("James");
+        Other firstOther = othersWithRemovedConfidentialFields("James").get(0).getValue();
         List<Element<Other>> additionalOther = othersWithRemovedConfidentialFields("Jack");
-        others.addAll(additionalOther);
         List<Element<Other>> confidentialOther = othersWithConfidentialFields(randomUUID());
 
-        CaseData caseData = buildCaseDataWithOthers(others, confidentialOther);
+        CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOther, confidentialOther);
 
-        List<Element<Other>> preparedOthers = service.prepareOthers(caseData);
+        Others others = service.prepareOthers(caseData);
 
-        assertThat(preparedOthers.get(1)).isEqualTo(additionalOther.get(0));
+        assertThat(others.getAdditionalOthers()).containsOnly(additionalOther.get(0));
     }
 
     @Test
@@ -217,47 +215,52 @@ class OthersServiceTest {
         Other firstOther = otherWithDetailsHiddenValue("No");
         List<Element<Other>> confidentialOther = othersWithConfidentialFields(ID);
 
-        CaseData caseData = buildCaseDataWithOthers(wrapElements(firstOther), confidentialOther);
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, confidentialOther);
 
-        List<Element<Other>> others = service.prepareOthers(caseData);
+        Others others = service.prepareOthers(caseData);
 
-        assertThat(others.get(0).getValue()).isEqualTo(otherWithDetailsHiddenValue("No"));
-        assertThat(others).hasSize(1);
+        assertThat(others.getFirstOther()).isEqualTo(otherWithDetailsHiddenValue("No"));
+        assertThat(others.getAdditionalOthers()).isEmpty();
     }
 
     @Test
     void shouldMaintainOrderingOfOthersWhenPreparingOthersWithConfidential() {
         UUID otherId = randomUUID();
 
-        List<Element<Other>> others = othersWithRemovedConfidentialFields("Jack");
-        others.addAll(othersWithRemovedConfidentialFields("James"));
-        others.addAll(othersWithConfidentialFields(otherId));
+        List<Element<Other>> others = List.of(
+            othersWithRemovedConfidentialFields("James").get(0),
+            othersWithConfidentialFields(otherId).get(0));
 
         List<Element<Other>> confidentialOthers = List.of(othersWithConfidentialFields(otherId).get(0));
 
         CaseData caseData = CaseData.builder()
-            .othersV2(others)
+            .others(Others.builder()
+                .firstOther(othersWithRemovedConfidentialFields("Jack").get(0).getValue())
+                .additionalOthers(others)
+                .build())
             .confidentialOthers(confidentialOthers)
             .build();
 
-        List<Element<Other>> updatedOthers = service.prepareOthers(caseData);
+        Others updatedOthers = service.prepareOthers(caseData);
 
-        assertThat(updatedOthers.get(0).getValue()).isEqualTo(others.get(0).getValue());
-        assertThat(updatedOthers.get(1).getValue()).isEqualTo(others.get(1).getValue());
-        assertThat(updatedOthers.get(2).getValue()).isEqualTo(others.get(2).getValue());
+        assertThat(updatedOthers.getAdditionalOthers().get(0).getValue()).isEqualTo(others.get(0).getValue());
+        assertThat(updatedOthers.getAdditionalOthers().get(1).getValue()).isEqualTo(others.get(1).getValue());
     }
 
     @Test
     void shouldReturnAllOthersWhenUseAllOthers() {
         CaseData caseData = CaseData.builder()
-            .othersV2(wrapElements(testOther("First other"), testOther("Second other")))
+            .others(Others.builder()
+                .firstOther(testOther("First other"))
+                .additionalOthers(List.of(element(testOther("Second other"))))
+                .build())
             .sendOrderToAllOthers("Yes")
-            .build();
+                .build();
 
         List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
 
-        assertThat(selectedOthers.get(0).getValue()).isEqualTo(caseData.getOthersV2().get(0).getValue());
-        assertThat(selectedOthers.get(1).getValue()).isEqualTo(caseData.getOthersV2().get(1).getValue());
+        assertThat(selectedOthers.get(0).getValue()).isEqualTo(caseData.getAllOthers().get(0).getValue());
+        assertThat(selectedOthers.get(1).getValue()).isEqualTo(caseData.getAllOthers().get(1).getValue());
     }
 
     @Test
@@ -296,36 +299,49 @@ class OthersServiceTest {
             element(testOther("Second other")));
 
         String label = service.getOthersLabel(others);
-        assertThat(label).isEqualTo("Other 1: First other\nOther 2: Second other\n");
+        assertThat(label).isEqualTo("Other 1: First other\n"
+            + "Other 2: Second other\n");
     }
 
     @Test
     void shouldReturnSelectedOthersOnly() {
         int selectedOther = 1;
         CaseData caseData = CaseData.builder()
-            .othersV2(wrapElements(testOther("First other"), testOther("Second other")))
+            .others(Others.builder()
+                .firstOther(testOther("First other"))
+                .additionalOthers(List.of(element(testOther("Second other"))))
+                .build())
             .othersSelector(Selector.builder().selected(List.of(selectedOther)).build())
             .sendOrderToAllOthers("No")
             .build();
 
         List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
 
-        assertThat(selectedOthers).containsExactly(caseData.getOthersV2().get(selectedOther));
+        assertThat(selectedOthers).containsExactly(caseData.getAllOthers().get(selectedOther));
     }
 
-    private CaseData buildCaseDataWithOthers(List<Element<Other>> others,
+    private CaseData buildCaseDataWithOthers(Other firstOther,
+                                             List<Element<Other>> additionalOthers,
                                              List<Element<Other>> confidentialOthers) {
         return CaseData.builder()
-            .othersV2(others)
+            .others(Others.builder().firstOther(firstOther).additionalOthers(additionalOthers).build())
             .confidentialOthers(confidentialOthers)
             .build();
     }
 
     private Other otherWithDetailsHiddenValue(String hidden) {
         return Other.builder()
-            .firstName("James")
-            .hideAddress(hidden)
-            .hideTelephone(hidden)
+            .name("James")
+            .gender("Female")
+            .detailsHidden(hidden)
+            .address(Address.builder().addressLine1("Address Line 1").build())
+            .telephone("01227 831393")
+            .build();
+    }
+
+    private Other confidentialOther() {
+        return Other.builder()
+            .name("James")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .telephone("01227 831393")
             .build();
@@ -337,9 +353,9 @@ class OthersServiceTest {
 
     private List<Element<Other>> othersWithConfidentialFields(UUID id, String name) {
         return newArrayList(element(id, Other.builder()
-            .firstName(name)
-            .hideAddress(YesNo.YES.getValue())
-            .hideTelephone(YesNo.YES.getValue())
+            .name(name)
+            .gender("Female")
+            .detailsHidden("Yes")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .telephone("01227 831393")
             .build()));
@@ -351,9 +367,9 @@ class OthersServiceTest {
 
     private List<Element<Other>> othersWithRemovedConfidentialFields(String name) {
         return newArrayList(element(ID, Other.builder()
-            .firstName(name)
-            .hideAddress(YesNo.YES.getValue())
-            .hideTelephone(YesNo.YES.getValue())
+            .name(name)
+            .gender("Female")
+            .detailsHidden("Yes")
             .build()));
     }
 
@@ -362,18 +378,29 @@ class OthersServiceTest {
         return buildSingleSelector(selectedIdx, null);
     }
 
-    private DynamicList buildSingleSelector(int selectedIdx, List<Element<Other>> others) {
+    private DynamicList buildSingleSelector(int selectedIdx, Others others) {
+
+        List<Element<Other>> allElements = new ArrayList<>();
         DynamicList.DynamicListBuilder builder = DynamicList.builder();
 
-        if (isEmpty(others)) {
-            others = wrapElementsWithUUIDs(
-                Other.builder().firstName("First Other").build(),
-                Other.builder().firstName("Additional Other 1").build());
+        if (!nonNull(others)) {
+            others = Others.builder()
+                .firstOther(Other.builder().name("First Other").build())
+                .additionalOthers(List.of(element(Other.builder().name("Additional Other 1").build())))
+                .build();
         }
 
-        List<DynamicListElement> listItems = others.stream().map(
+        if (!nonNull(others.getFirstOther())) {
+            throw new IllegalStateException("firstOther must not be null");
+        }
+        allElements.add(element(others.getFirstOther()));
+        if (nonNull(others.getAdditionalOthers())) {
+            allElements.addAll(others.getAdditionalOthers());
+        }
+
+        List<DynamicListElement> listItems = allElements.stream().map(
             (e) -> DynamicListElement.builder()
-                .code(e.getId()).label(e.getValue().getFullName())
+                .code(e.getId()).label(e.getValue().getName())
                 .build())
             .collect(Collectors.toList());
         builder.listItems(listItems);
@@ -384,39 +411,46 @@ class OthersServiceTest {
     @Test
     void shouldReturnNullWhenThereIsNoOtherPerson() {
         CaseData caseData = CaseData.builder().build();
-        assertThrows(NoSuchElementException.class,
-            () -> service.getSelectedPreparedOther(caseData, buildSingleSelector(0)));
-        assertThrows(NoSuchElementException.class,
-            () -> service.getSelectedOther(caseData, buildSingleSelector(0)));
+        Element<Other> selected = service.getSelectedPreparedOther(caseData, buildSingleSelector(0));
+        assertThat(selected).isNull();
+
+        selected = service.getSelectedOther(caseData, buildSingleSelector(0));
+        assertThat(selected).isNull();
     }
 
     @Test
     void shouldReturnSelectedOtherPersonWithoutAdditionalOthers() {
-        List<Element<Other>> others = wrapElements(Other.builder().firstName("First Other").build());
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("First Other").build())
+            .build();
 
         CaseData caseData = CaseData.builder()
-            .othersV2(others)
+            .others(others)
             .build();
         Element<Other> selected = service.getSelectedPreparedOther(caseData, buildSingleSelector(0, others));
         assertThat(selected).isNotNull();
-        assertThat(selected.getValue().getFullName()).isEqualTo("First Other");
+        assertThat(selected.getValue().getName()).isEqualTo("First Other");
 
         selected = service.getSelectedOther(caseData, buildSingleSelector(0, others));
         assertThat(selected).isNotNull();
-        assertThat(selected.getValue().getFullName()).isEqualTo("First Other");
+        assertThat(selected.getValue().getName()).isEqualTo("First Other");
     }
 
     @Test
     void shouldReturnSelectedFirstOtherWithProvidedFirstUUID() {
-        List<Element<Other>> others = wrapElementsWithUUIDs(Other.builder().firstName("First Other").build());
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("First Other").build())
+            .build();
 
         CaseData caseData = CaseData.builder()
-            .othersV2(others)
+            .others(others)
             .build();
-        Element<Other> selected = service.getSelectedOther(caseData, buildSingleSelector(0, others));
+        UUID firstOtherUUID = randomUUID();
+        Element<Other> selected = service.getSelectedOther(caseData, buildSingleSelector(0, others),
+            firstOtherUUID);
         assertThat(selected).isNotNull();
-        assertThat(selected.getValue().getFullName()).isEqualTo("First Other");
-        assertThat(selected.getId()).isEqualTo(others.get(0).getId());
+        assertThat(selected.getValue().getName()).isEqualTo("First Other");
+        assertThat(selected.getId()).isEqualTo(firstOtherUUID);
     }
 
     private static Stream<Arguments> selectedPreparedOthersSource() {
@@ -430,76 +464,79 @@ class OthersServiceTest {
     @ParameterizedTest
     @MethodSource("selectedPreparedOthersSource")
     void shouldReturnSelectedOtherPerson(int selectedIdx, String expectedName) {
-        List<Element<Other>> others = wrapElementsWithUUIDs(
-            Other.builder().firstName("First Other").build(),
-            Other.builder().firstName("Other 2").build(),
-            Other.builder().firstName("Other 3").build());
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("First Other").build())
+            .additionalOthers(List.of(
+                element(Other.builder().name("Other 2").build()),
+                element(Other.builder().name("Other 3").build())
+            ))
+            .build();
 
         CaseData caseData = CaseData.builder()
-            .othersV2(others)
+            .others(others)
             .build();
         Element<Other> selected = service.getSelectedPreparedOther(caseData, buildSingleSelector(selectedIdx, others));
         assertThat(selected).isNotNull();
-        assertThat(selected.getValue().getFullName()).isEqualTo(expectedName);
+        assertThat(selected.getValue().getName()).isEqualTo(expectedName);
     }
 
     @Test
     void shouldReturnUnchanged() {
         Other firstOther = Other.builder()
-            .firstName("First Other")
+            .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
             .addressKnowV2(null)
             .build();
 
-        CaseData caseData = buildCaseDataWithOthers(wrapElements(firstOther), null);
-        List<Element<Other>> updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
-        assertThat(updatedOthers.get(0).getValue()).isEqualTo(firstOther);
+        assertThat(updatedOthers.getFirstOther()).isEqualTo(firstOther);
     }
 
     @Test
     void shouldRemoveAddress() {
         Other firstOther = Other.builder()
-            .firstName("First Other")
+            .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
             .addressKnowV2(IsAddressKnowType.NO)
             .build();
 
-        CaseData caseData = buildCaseDataWithOthers(wrapElements(firstOther), null);
-        List<Element<Other>> updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
-        assertThat(updatedOthers.get(0).getValue().getAddressNotKnowReason()).isNotNull();
-        assertThat(updatedOthers.get(0).getValue().getAddress()).isNull();
+        assertThat(updatedOthers.getFirstOther().getAddressNotKnowReason()).isNotNull();
+        assertThat(updatedOthers.getFirstOther().getAddress()).isNull();
     }
 
     @Test
     void shouldRemoveAddressNotKnowReason() {
         Other firstOther = Other.builder()
-            .firstName("First Other")
+            .name("First Other")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .addressNotKnowReason("Some reason")
             .addressKnowV2(IsAddressKnowType.YES)
             .build();
 
-        CaseData caseData = buildCaseDataWithOthers(wrapElements(firstOther), null);
-        List<Element<Other>> updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
-        assertThat(updatedOthers.get(0).getValue().getAddressNotKnowReason()).isNull();
-        assertThat(updatedOthers.get(0).getValue().getAddress()).isNotNull();
+        assertThat(updatedOthers.getFirstOther().getAddressNotKnowReason()).isNull();
+        assertThat(updatedOthers.getFirstOther().getAddress()).isNotNull();
     }
 
     @Test
     void shouldSetConfidentialWhenLiveInRefugeIsSelected() {
         Other firstOther = Other.builder()
-            .firstName("First Other")
+            .name("First Other")
             .addressKnowV2(IsAddressKnowType.LIVE_IN_REFUGE)
             .build();
 
-        CaseData caseData = buildCaseDataWithOthers(wrapElements(firstOther), null);
-        List<Element<Other>> updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
+        Others updatedOthers = service.consolidateAndRemoveHiddenFields(caseData);
         assertThat(updatedOthers).isNotNull();
-        assertThat(updatedOthers.get(0).getValue().getHideAddress()).isEqualTo(YesNo.YES.getValue());
+        assertThat(updatedOthers.getFirstOther().getDetailsHidden()).isEqualTo(YesNo.YES.getValue());
     }
 }

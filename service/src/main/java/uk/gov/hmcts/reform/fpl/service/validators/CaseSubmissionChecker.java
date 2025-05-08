@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 
@@ -19,7 +18,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS_3RD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -73,15 +71,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
         }
 
         events.add(CHILDREN);
-
-        // if we're a (new) 3rd party standalone, use that event, otherwise use default event
-        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())
-            && isNotEmpty(caseData.getRespondentLocalAuthority())) {
-            events.add(RESPONDENTS_3RD_PARTY);
-        } else {
-            events.add(RESPONDENTS);
-        }
-
+        events.add(RESPONDENTS);
         events.add(ALLOCATION_PROPOSAL);
 
         if (YES.equals(caseData.getMultiCourts())) {

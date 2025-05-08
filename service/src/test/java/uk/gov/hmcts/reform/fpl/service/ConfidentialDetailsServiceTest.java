@@ -275,8 +275,7 @@ class ConfidentialDetailsServiceTest {
 
             List<Element<Respondent>> confidentialRespondents = service.getConfidentialDetails(respondents);
 
-            assertThat(confidentialRespondents)
-                .containsOnly(respondentWithConfidentialFields(ID, NO_VALUE, CONFIDENTIAL));
+            assertThat(confidentialRespondents).containsOnly(respondentWithConfidentialFields(ID, NO_VALUE));
         }
 
         @Test
@@ -294,8 +293,7 @@ class ConfidentialDetailsServiceTest {
 
             List<Element<Respondent>> confidentialRespondents = service.getConfidentialDetails(respondents);
 
-            assertThat(confidentialRespondents)
-                .containsExactly(respondentWithConfidentialFields(ID, NO_VALUE, CONFIDENTIAL));
+            assertThat(confidentialRespondents).containsExactly(respondentWithConfidentialFields(ID, NO_VALUE));
         }
 
         @Test
@@ -442,9 +440,7 @@ class ConfidentialDetailsServiceTest {
             return RespondentParty.builder()
                 .firstName("James")
                 .lastName("Johnson")
-                .contactDetailsHidden(detailsHidden)
-                .hideAddress(detailsHidden)
-                .hideTelephone(detailsHidden);
+                .contactDetailsHidden(detailsHidden);
         }
 
         private Element<Respondent> respondentWithRemovedConfidentialFields(UUID id) {
@@ -482,22 +478,7 @@ class ConfidentialDetailsServiceTest {
                     .build())
                 .build());
         }
-
-        private Element<Respondent> respondentWithConfidentialFields(UUID id, String detailsHidden,
-                                                                     String hideAddressTelephone) {
-            return element(id, Respondent.builder()
-                .party(baseRespondentBuilder(detailsHidden)
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder().addressLine1("Address Line 1").build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .addressKnow(IsAddressKnowType.LIVE_IN_REFUGE)
-                    .hideTelephone(hideAddressTelephone)
-                    .hideAddress(hideAddressTelephone)
-                    .build())
-                .build());
-        }
     }
-
 
     @Nested
     class OthersTests {

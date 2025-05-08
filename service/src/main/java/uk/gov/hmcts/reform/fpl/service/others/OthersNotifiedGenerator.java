@@ -19,7 +19,7 @@ public class OthersNotifiedGenerator {
             others -> others.stream()
                 .filter(other -> other.getValue().isRepresented() || other.getValue()
                     .hasAddressAdded())
-                .map(other -> other.getValue().getFullName()).collect(Collectors.joining(", "))
+                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
         ).orElse(null);
     }
 }

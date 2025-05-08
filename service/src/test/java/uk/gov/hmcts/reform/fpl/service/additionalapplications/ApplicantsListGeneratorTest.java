@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -28,7 +29,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class ApplicantsListGeneratorTest {
 
@@ -61,16 +61,18 @@ class ApplicantsListGeneratorTest {
             element(Child.builder().party(CHILD_PARTY_1).build()),
             element(Child.builder().party(CHILD_PARTY_2).build()));
 
-        List<Element<Other>> others = wrapElements(
-            Other.builder().firstName("Ross").build(),
-            Other.builder().firstName("Bob").build(),
-            Other.builder().firstName("Smith").build());
+        List<Element<Other>> others = List.of(
+            element(Other.builder().name("Bob").build()),
+            element(Other.builder().name("Smith").build()));
 
         caseData = CaseData.builder()
             .caseLocalAuthorityName("Swansea local authority")
             .respondents1(respondents)
             .children1(children)
-            .othersV2(others)
+            .others(Others.builder()
+                .firstOther(Other.builder().name("Ross").build())
+                .additionalOthers(others)
+                .build())
             .build();
     }
 

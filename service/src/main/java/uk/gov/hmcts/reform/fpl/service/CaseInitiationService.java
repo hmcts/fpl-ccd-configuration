@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.DfjAreaCourtMapping;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
-import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -54,7 +52,6 @@ public class CaseInitiationService {
     private final LocalAuthorityService localAuthorities;
     private final HmctsCourtLookupConfiguration courtLookup;
     private final DfjAreaLookUpService dfjLookUpService;
-    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
 
     public Optional<String> getUserOrganisationId() {
         return organisationService.findOrganisation().map(Organisation::getOrganisationIdentifier);
@@ -254,13 +251,6 @@ public class CaseInitiationService {
         }
 
         return caseData;
-    }
-
-    public RespondentLocalAuthority getRespondentLocalAuthorityDetails(CaseData caseData) {
-        return RespondentLocalAuthority.toRespondentLocalAuthority(
-            localAuthorities.getLocalAuthorityName(caseData.getRelatingLA()),
-            localAuthorityEmailLookupConfiguration.getSharedInbox(caseData.getRelatingLA()).orElse("")
-        );
     }
 
     private CaseData addDfjAndCourtDetails(CaseData caseData) {

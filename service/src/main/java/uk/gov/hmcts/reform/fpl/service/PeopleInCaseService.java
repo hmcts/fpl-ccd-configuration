@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -29,8 +30,8 @@ public class PeopleInCaseService {
     private static final String COMMA_DELIMITER = ", ";
 
     public String buildPeopleInCaseLabel(List<Element<Respondent>> respondents,
-                                         List<Element<Other>> others) {
-        boolean hasNoOthers = isEmpty(others);
+                                         Others others) {
+        boolean hasNoOthers = isNull(others) || !others.hasOthers();
         if (isEmpty(respondents) && hasNoOthers) {
             return "No respondents and others on the case";
         } else {
@@ -50,12 +51,25 @@ public class PeopleInCaseService {
         }
     }
 
-    private String buildOthersLabel(List<Element<Other>> others, int personIndex) {
+    private String buildOthersLabel(Others others, int personIndex) {
+        int otherIndex = 1;
         StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < others.size(); i++) {
+        if (others.getFirstOther() != null) {
             sb.append(String.format("Person %d: Other %d - %s",
-                personIndex + i, i + 1, getOtherPersonName(others.get(i).getValue()))).append("\n");
+                personIndex, otherIndex, getOtherPersonName(others.getFirstOther()))).append("\n");
+            personIndex++;
+            otherIndex++;
+        }
+
+        if (others.getAdditionalOthers() != null) {
+            for (int i = 0; i < others.getAdditionalOthers().size(); i++) {
+                Other other = others.getAdditionalOthers().get(i).getValue();
+
+                sb.append(String.format("Person %d: Other %d - %s",
+                    personIndex, otherIndex, getOtherPersonName(other))).append("\n");
+                personIndex++;
+                otherIndex++;
+            }
         }
 
         return sb.toString();
@@ -75,7 +89,7 @@ public class PeopleInCaseService {
 
     public List<Element<Other>> getSelectedOthers(CaseData caseData) {
         final List<Element<Respondent>> respondents = caseData.getAllRespondents();
-        final List<Element<Other>> others = caseData.getOthersV2();
+        final List<Element<Other>> others = caseData.getAllOthers();
         final Selector selector = caseData.getPersonSelector();
         final String allPeopleSelected = caseData.getNotifyApplicationsToAllOthers();
 
@@ -161,7 +175,7 @@ public class PeopleInCaseService {
     }
 
     private String getOtherPersonName(Other other) {
-        return defaultIfNull(other.getFullName(), "");
+        return defaultIfNull(other.getName(), "");
     }
 
     private boolean useAllPeopleInTheCase(String sendOrdersToAllPeopleInCase) {

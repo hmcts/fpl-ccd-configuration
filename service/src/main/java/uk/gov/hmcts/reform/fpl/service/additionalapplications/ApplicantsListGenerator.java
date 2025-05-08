@@ -90,7 +90,7 @@ public class ApplicantsListGenerator {
         applicantsFullNames.addAll(buildChildNameElements(caseData.getAllChildren()));
 
         if (withOthersOption) {
-            applicantsFullNames.addAll(buildOthersElements(caseData.getOthersV2())); // Others to give notice
+            applicantsFullNames.addAll(buildOthersElements(caseData.getAllOthers())); // Others to give notice
             applicantsFullNames.add(
                 InterlocutoryApplicant.builder().code(APPLICANT_SOMEONE_ELSE).name("Someone else").build());
         }
@@ -108,7 +108,7 @@ public class ApplicantsListGenerator {
         others.forEach(other -> applicants.add(
             InterlocutoryApplicant.builder()
                 .code(String.valueOf(other.getId()))
-                .name(other.getValue().getFullName() + ", Other to be given notice " + i.getAndIncrement())
+                .name(other.getValue().getName() + ", Other to be given notice " + i.getAndIncrement())
                 .build())
         );
 

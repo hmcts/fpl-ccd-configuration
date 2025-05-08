@@ -19,7 +19,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@Deprecated
 public class Others {
     private final Other firstOther;
     private final List<Element<Other>> additionalOthers;

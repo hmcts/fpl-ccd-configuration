@@ -11,15 +11,12 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 
 import java.time.LocalDate;
-
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -36,8 +33,6 @@ public final class RespondentParty extends Party {
     private final String litigationIssuesDetails;
     private final String addressNotKnowReason;
     private final IsAddressKnowType addressKnow;
-    private final String hideAddress;
-    private final String hideTelephone;
 
 
     @Override
@@ -77,10 +72,7 @@ public final class RespondentParty extends Party {
                            String contactDetailsHiddenReason,
                            String litigationIssues,
                            String litigationIssuesDetails,
-                           String addressNotKnowReason,
-                           IsAddressKnowType addressKnow,
-                           String hideAddress,
-                           String hideTelephone) {
+                           String addressNotKnowReason,  IsAddressKnowType addressKnow) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
         this.gender = gender;
@@ -93,11 +85,6 @@ public final class RespondentParty extends Party {
         this.litigationIssuesDetails = litigationIssuesDetails;
         this.addressNotKnowReason = addressNotKnowReason;
         this.addressKnow = addressKnow;
-        // Check value if set, if not check contactDetails hidden (old field), otherwise default to No
-        this.hideAddress = isNotEmpty(hideAddress) ? hideAddress
-            : YesNo.from(YesNo.YES.equalsString(contactDetailsHidden)).getValue();
-        this.hideTelephone = isNotEmpty(hideTelephone) ? hideTelephone
-            : YesNo.from(YesNo.YES.equalsString(contactDetailsHidden)).getValue();
     }
 
     @JsonPOJOBuilder(withPrefix = "")
@@ -111,19 +98,4 @@ public final class RespondentParty extends Party {
         return this.address != null && StringUtils.isNotBlank(this.address.getAddressLine1())
             ? IsAddressKnowType.YES : null;
     }
-
-    public String getHideAddress() {
-        if (isNotEmpty(hideAddress)) {
-            return hideAddress;
-        }
-        return YesNo.from(YesNo.YES.equalsString(contactDetailsHidden)).getValue();
-    }
-
-    public String getHideTelephone() {
-        if (isNotEmpty(hideTelephone)) {
-            return hideTelephone;
-        }
-        return YesNo.from(YesNo.YES.equalsString(contactDetailsHidden)).getValue();
-    }
-
 }

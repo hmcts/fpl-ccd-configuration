@@ -110,7 +110,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "othersV2",
+    "CaseFieldID": "others",
     "TabFieldDisplayOrder": 8
   },
   {

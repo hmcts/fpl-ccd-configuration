@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -658,7 +659,8 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
-            .othersV2(wrapElements(createOther()))
+            .others(Others.builder()
+                .firstOther(createOther()).build())
             .respondents1(createNonRepresentedRespondents())
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()

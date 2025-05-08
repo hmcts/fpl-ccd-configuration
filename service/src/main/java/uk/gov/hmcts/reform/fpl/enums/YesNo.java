@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Getter;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
@@ -8,11 +7,8 @@ import java.util.stream.Stream;
 
 @Getter
 public enum YesNo {
-    @JsonAlias("Yes")
     YES("Yes", "Ie"),
-    @JsonAlias("No")
     NO("No", "Na"),
-    @JsonAlias("DontKnow")
     DONT_KNOW("Don't know", "Ddim yn gwybod"),
     NOT_SPECIFIED("Not Specified", "Heb ei nodi");
 
@@ -42,10 +38,6 @@ public enum YesNo {
 
     public String getValue(Language language) {
         return language == Language.WELSH ? welshValue : value;
-    }
-
-    public boolean equalsString(String value) {
-        return this.equals(YesNo.fromString(value));
     }
 
 }

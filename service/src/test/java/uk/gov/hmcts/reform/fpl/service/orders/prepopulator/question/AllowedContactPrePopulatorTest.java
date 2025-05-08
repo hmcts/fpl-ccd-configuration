@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -46,9 +47,10 @@ class AllowedContactPrePopulatorTest {
             element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
                 Respondent.builder().party(RespondentParty.builder().firstName("Peter").lastName("Smith").build()
                 ).build()));
+        Others others = Others.builder().additionalOthers(wrapElements(mock(Other.class))).build();
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
-            .othersV2(wrapElements(mock(Other.class)))
+            .others(others)
             .build();
 
         when(othersListGenerator.buildOthersList(any())).thenReturn(DynamicList.builder()
