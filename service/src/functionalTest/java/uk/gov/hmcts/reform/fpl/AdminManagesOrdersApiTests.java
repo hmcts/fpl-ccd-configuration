@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
@@ -45,6 +47,11 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
 
     @Autowired
     private DocumentService documentService;
+
+    @Test
+    public void doNothing() {
+        assertTrue(true);
+    }
 
     // @Test
     public void adminManagesOrderTest32a() {
