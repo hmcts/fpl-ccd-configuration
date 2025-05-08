@@ -35,14 +35,16 @@ test.describe('Manage case linking', () => {
             await signInPage.login(CTSCUser.email, CTSCUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
 
-            await caseLink.gotoNextStep('Link cases');
+            await caseLink.gotoCaseLinkNextStep('Link cases');
             await expect.soft(page.getByRole('heading', {name: 'Before you start'})).toBeVisible();
-            await caseLink.clickNext();
+            await expect(page.getByText('If the cases to be linked has no lead, you can start the linking journey from any of those cases.',{exact:true})).toBeVisible();
+            await expect(page.getByText('If a group of linked cases has a lead case, you must start from the lead case.',{exact:true})).toBeVisible();
+            await caseLink.clickSubmit();
             await caseLink.proposeCaseLink(linkedCase1, ['Related proceedings', 'Same Party', 'Same child/ren']);
             await expect(page.getByText(caseLink.hypenateCaseNumber(linkedCase1))).toBeVisible();
             await caseLink.proposeCaseLink(linkedCase2, ['Same Party']);
             await expect(page.getByText(caseLink.hypenateCaseNumber(linkedCase2))).toBeVisible();
-            await caseLink.clickNext();
+            await caseLink.clickSubmit();
             await expect.soft(page.getByText('Proposed case links')).toBeVisible();
             await caseLink.clickSubmit();
             await caseLink.tabNavigation("Linked Cases");
@@ -58,13 +60,14 @@ test.describe('Manage case linking', () => {
             await expect(page.getByRole('link', {name: 'linkedCase2 ' + caseLink.hypenateCaseNumber(linkedCase2)})).toBeVisible();
             await caseLink.openLinkedCase(caseLink.hypenateCaseNumber(linkedCase1));
             await expect(caseLink.linkedCasePage.getByRole('link', {name: 'e2e case ' + caseLink.hypenateCaseNumber(caseNumber)})).toBeVisible();
-            await caseLink.gotoNextStep('Manage case links');
+
+            await caseLink.gotoCaseLinkNextStep('Manage case links');
             await expect.soft(page.getByRole('heading', {name: 'Before you start'})).toBeVisible();
             await expect.soft(page.getByText('If there are linked hearings for the case you need to un-link then you must unlink the hearing first.')).toBeVisible();
-            await caseLink.clickNext();
+            await caseLink.clickSubmit();
             await expect.soft(page.getByText('Select the cases you want to unlink from this case')).toBeVisible();
             await caseLink.selectCaseToUnlink(linkedCase1);
-            await caseLink.clickNext();
+            await caseLink.clickSubmit();
             await caseLink.clickSubmit();
 
             // assert

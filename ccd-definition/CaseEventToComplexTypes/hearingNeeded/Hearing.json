@@ -4,9 +4,9 @@
     "ID": "hearing",
     "CaseEventID": "hearingNeeded",
     "CaseFieldID": "hearing",
-    "ListElementCode": "timeFrame",
-    "EventElementLabel": "*When do you need a hearing?",
-    "DisplayContext": "OPTIONAL",
+    "ListElementCode": "hearingUrgencyType",
+    "EventElementLabel": "Select type of hearing",
+    "DisplayContext": "MANDATORY",
     "Publish": "Y"
   },
   {
@@ -14,51 +14,10 @@
     "ID": "hearing",
     "CaseEventID": "hearingNeeded",
     "CaseFieldID": "hearing",
-    "ListElementCode": "reason",
-    "EventElementLabel": "*Give reason",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearing",
-    "CaseEventID": "hearingNeeded",
-    "CaseFieldID": "hearing",
-    "ListElementCode": "reason2Days",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearing",
-    "CaseEventID": "hearingNeeded",
-    "CaseFieldID": "hearing",
-    "ListElementCode": "reason7Days",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearing",
-    "CaseEventID": "hearingNeeded",
-    "CaseFieldID": "hearing",
-    "ListElementCode": "reason12Days",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearing",
-    "CaseEventID": "hearingNeeded",
-    "CaseFieldID": "hearing",
-    "ListElementCode": "type",
-    "EventElementLabel": "*What type of hearing do you need?",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearing",
-    "CaseEventID": "hearingNeeded",
-    "CaseFieldID": "hearing",
-    "ListElementCode": "type_GiveReason",
-    "EventElementLabel": "*Give reason",
-    "DisplayContext": "OPTIONAL"
+    "ListElementCode": "hearingUrgencyDetails",
+    "EventElementLabel": "How soon do you need the hearing? Tell us why",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hearing.hearingUrgencyType=\"SAME_DAY\" OR hearing.hearingUrgencyType=\"URGENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -66,8 +25,9 @@
     "CaseEventID": "hearingNeeded",
     "CaseFieldID": "hearing",
     "ListElementCode": "withoutNotice",
-    "EventElementLabel": "*Do you need a without notice hearing?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Do you need a without notice hearing?",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hearing.hearingUrgencyType=\"SAME_DAY\" OR hearing.hearingUrgencyType=\"URGENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -75,26 +35,9 @@
     "CaseEventID": "hearingNeeded",
     "CaseFieldID": "hearing",
     "ListElementCode": "withoutNoticeReason",
-    "EventElementLabel": "*Give reason",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearing",
-    "CaseEventID": "hearingNeeded",
-    "CaseFieldID": "hearing",
-    "ListElementCode": "reducedNotice",
-    "EventElementLabel": "*Do you need a hearing with reduced notice?",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearing",
-    "CaseEventID": "hearingNeeded",
-    "CaseFieldID": "hearing",
-    "ListElementCode": "reducedNoticeReason",
-    "EventElementLabel": "*Give reason",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Give us clear details why you need a without notice hearing",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hearing.hearingUrgencyType!=\"STANDARD\" AND hearing.withoutNotice=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -102,8 +45,8 @@
     "CaseEventID": "hearingNeeded",
     "CaseFieldID": "hearing",
     "ListElementCode": "respondentsAware",
-    "EventElementLabel": "*Are respondents aware of proceedings?",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Are respondents aware of proceedings?",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -111,7 +54,8 @@
     "CaseEventID": "hearingNeeded",
     "CaseFieldID": "hearing",
     "ListElementCode": "respondentsAwareReason",
-    "EventElementLabel": "*Give reason",
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Tell us which respondents are not aware and why",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hearing.respondentsAware=\"No\""
   }
 ]

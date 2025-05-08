@@ -120,19 +120,9 @@
     "caseSummaryDateOfIssue": "2024-03-26",
     "caseSummaryPreviousCourtName": null,
     "hearing": {
-      "reason": null,
-      "reducedNoticeReason": null,
-      "reducedNotice": "No",
-      "respondentsAwareReason": null,
-      "reason12Days": null,
-      "type": "Standard case management hearing",
-      "timeFrame": "Within 18 days",
-      "withoutNotice": "No",
-      "respondentsAware": "No",
-      "reason2Days": null,
-      "type_GiveReason": "Test",
-      "reason7Days": null,
-      "withoutNoticeReason": null
+      "hearingUrgencyDetails": "test reason",
+      "hearingUrgencyType": "SAME_DAY",
+      "respondentsAware": "Yes"
     },
     "caseSummaryFinalHearingDate": null,
     "caseSummaryHighCourtCase": "No",
