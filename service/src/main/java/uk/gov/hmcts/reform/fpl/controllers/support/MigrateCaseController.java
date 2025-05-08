@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
@@ -39,6 +40,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-2360", this::run2360,
         "DFPL-2572", this::run2572,
         "DFPL-2487", this::run2487,
         "DFPL-2740", this::run2740,
@@ -86,6 +88,12 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
             orgId, null));
+    }
+
+    private void run2360(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2360";
+        // all existing cases need this field now, new cases will be populated in case initiation
+        caseDetails.getData().put("hasRespondentLA", YesNo.NO);
     }
 
     private void run2487(CaseDetails caseDetails) {
