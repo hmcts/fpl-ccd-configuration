@@ -7,7 +7,7 @@ test.describe('Non mandatory application details before application submit', () 
     let caseNumber: string;
     let casename: string;
 
-     test('LA add risk and harm to children',
+    test('LA add risk and harm to children',
         async ({startApplication, signInPage, riskAndHarmToChildren, makeAxeBuilder}, testInfo) => {
 
             casename = 'Risk and harm  ' + dateTime.slice(0, 10);
@@ -119,7 +119,7 @@ test.describe('Non mandatory application details before application submit', () 
 
         });
 
-     test('LA add c1 application',
+    test('LA add c1 application',
         async ({startApplication, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
             casename = 'c1 application  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
@@ -163,9 +163,10 @@ test.describe('Non mandatory application details before application submit', () 
             await signInPage.isSignedIn();
             await signInPage.navigateTOCaseDetails(caseNumber);
             //add other people in the case
-            await startApplication.addOtherPeopleInCase();
-            await otherPeopleInCase.addOtherPerson();
-            await expect( otherPeopleInCase.page.getByRole('paragraph').filter({ hasText: 'Other people in the case' }).getByRole('img', { name: 'In progress' })).toBeVisible();
+            await startApplication.addOtherPeopleInCase()
+            await otherPeopleInCase.personOneToBeGivenNotice();
+            await otherPeopleInCase.personTwoToBeGivenNotice();
+            await otherPeopleInCase.continueAndCheck();
 
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
@@ -180,4 +181,28 @@ test.describe('Non mandatory application details before application submit', () 
             expect(accessibilityScanResults.violations).toEqual([]);
 
         });
+    test('LA add Other Proceedings details',async({signInPage,startApplication,otherProceedings})=>{
+    
+        casename = 'Other Proceedings  ' + dateTime.slice(0, 10);
+        caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+    
+        await signInPage.visit();
+        await signInPage.login(
+            newSwanseaLocalAuthorityUserOne.email,
+            newSwanseaLocalAuthorityUserOne.password,
+        );
+    
+        await signInPage.isSignedIn();
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await startApplication.otherProceedingsNeeded();
+        await otherProceedings.otherProceedings();
+        await otherProceedings.tabNavigation('View application');
+    
+        //assert the details
+        await expect(otherProceedings.page.getByRole('cell', { name: 'Other proceedings', exact: true }).locator('div')).toBeVisible();
+        await expect(otherProceedings.page.getByText('Ongoing')).toBeVisible();
+        await expect(otherProceedings.page.getByText('Previous')).toBeVisible();
+        await expect(otherProceedings.page.getByRole('link', { name: 'Make changes to other' })).toBeVisible();
+    
+    });
 });
