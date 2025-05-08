@@ -66,8 +66,7 @@ export class OthersToBeGivenNotice extends BasePage {
     }
 }
 
- async othersToBeGivenNotice()
-        {
+ async othersToBeGivenNotice() {
             await expect(this.othersToBeGivenNoticeHeading).toBeVisible;
             await this.fullName.fill("John Doe");
             await this.dobDay.fill("1");
