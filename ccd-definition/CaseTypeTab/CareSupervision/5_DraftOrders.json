@@ -1,0 +1,120 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "draftSDOLabel",
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\"",
+    "TabShowCondition": "hearingOrdersBundlesDrafts!=\"\" OR standardDirectionOrder.orderStatus=\"DRAFT\" OR urgentDirectionsOrder.orderStatus=\"DRAFT\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "reviewCMOLink",
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition": "hearingOrdersBundlesDrafts!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "standardDirectionOrder",
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "urgentDirectionsOrder",
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "urgentDirectionsOrder.orderStatus=\"DRAFT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "draftSDOLinkDraftOrdersTab",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "standardDirectionOrder!=\"\" AND [STATE]=\"Gatekeeping\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "sharedDraftCMODocument",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "cmoToAction",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "caseManagementOrder",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "draftUploadedCMOs",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "hearingOrdersBundlesDrafts=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "TabFieldDisplayOrder": 4
+  }
+]

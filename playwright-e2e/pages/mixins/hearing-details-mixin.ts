@@ -1,6 +1,7 @@
 import {expect, type Locator, Page} from "@playwright/test";
+import {BasePage} from "../base-page";
 
-export function HearingDetailsMixin(BasePage) {
+export function HearingDetailsMixin() {
   return class extends BasePage {
     readonly hearingTypesLabelLocator: Locator;
 
@@ -18,7 +19,7 @@ export function HearingDetailsMixin(BasePage) {
         await this.page.getByLabel('In person').check();
       }
       await this.page.getByRole('textbox', { name: 'Day' }).fill('5');
-      await this.page.getByRole('textbox', { name: 'Month' }).fill(new Date().getMonth().toString());
+      await this.page.getByRole('textbox', { name: 'Month' }).fill((new Date().getMonth()+1).toString());
       await this.page.getByRole('textbox', { name: 'Year' }).fill((new Date().getUTCFullYear()+1).toString());
       await this.page.getByRole('spinbutton', { name: 'Hour' }).fill('01');
       await this.page.getByLabel('Set number of hours and').check();

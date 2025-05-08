@@ -8,33 +8,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
-import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
-import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
-
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.LEGAL_ADVISOR;
-import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 
 @Slf4j
 @RestController
@@ -48,9 +39,12 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2610", this::run2610,
-        "DFPL-2585", this::run2585,
-        "DFPL-2585Rollback", this::run2585Rollback
+        "DFPL-2572", this::run2572,
+        "DFPL-2487", this::run2487,
+        "DFPL-2740", this::run2740,
+        "DFPL-2744", this::run2744,
+        "DFPL-2739", this::run2739,
+        "DFPL-2733", this::run2733
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -79,61 +73,74 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2610(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2610";
-        final long expectedCaseId = 1722860335639318L;
-        CaseData firstInstanceCaseData = getCaseData(caseDetails);
+    private void run2572(CaseDetails caseDetails) {
+        //Required to run migration for TTL
+    }
+
+    private void run2733(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2733";
+        final long expectedCaseId = 1718621798109264L;
+        final String orgId = "NTJRIVB";
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService
-            .removeCharactersFromThresholdDetails(firstInstanceCaseData, migrationId,
-                416, 423, "****"));
 
-        CaseData secondInstanceCaseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService
-            .removeCharactersFromThresholdDetails(secondInstanceCaseData, migrationId,
-                462, 468, "****"));
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
+            orgId, null));
     }
 
-    private void run2585(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2585";
-        migrateCaseService.doStateCheck(
-            caseDetails.getState(), State.CLOSED.toString(), caseDetails.getId(), migrationId);
-        roleAssignmentService.deleteAllRolesOnCase(caseDetails.getId());
-    }
-
-    private void run2585Rollback(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2585Rollback";
+    private void run2487(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        List<RoleAssignment> rolesToAssign = new ArrayList<>();
+        judicialService.cleanupHearingRoles(caseData.getId());
 
-        // If we have an allocated judge with an IDAM ID (added in about-to-submit step from mapping)
-        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
-        if (allocatedJudge.isPresent()
-            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
-            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
-
-            boolean isLegalAdviser = LEGAL_ADVISOR
-                .equals(allocatedJudge.get().getJudgeTitle());
-
-            // attempt to assign allocated-[role]
-            rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
-                caseData.getId(),
-                allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
-                isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
-                isLegalAdviser ? RoleCategory.LEGAL_OPERATIONS : RoleCategory.JUDICIAL,
-                ZonedDateTime.now(),
-                null // no end date
-            ));
-        } else {
-            log.error("Could not assign allocated-judge on case {}, no UUID found on the case", caseData.getId());
-        }
-
-        // get hearing judge roles to add (if any)
-        rolesToAssign.addAll(judicialService.getHearingJudgeRolesForMigration(caseData));
+        List<RoleAssignment> rolesToAssign = judicialService.getHearingJudgeRolesForMigration(caseData);
 
         log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
         judicialService.migrateJudgeRoles(rolesToAssign);
+    }
+
+    private void run2740(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743167066103323L, "DFPL-2740");
+
+        List<Element<ChangeOfRepresentation>> changes = caseData.getChangeOfRepresentatives();
+        List<Element<ChangeOfRepresentation>> after = changes.stream().map(element -> {
+            ChangeOfRepresentation value = element.getValue();
+            if (element.getId().equals(UUID.fromString("625f113c-5673-4b35-bbf1-6507fcf9ec43"))) {
+                element.setValue(value.toBuilder()
+                    .child(value.getChild().substring(0, 5))
+                    .build());
+            }
+            return element;
+        }).toList();
+
+        caseDetails.getData().put("changeOfRepresentatives", after);
+        caseDetails.getData().remove("noticeOfProceedingsBundle");
+    }
+
+    private void run2744(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743174504422687L, "DFPL-2744");
+
+        if (caseData.getHearingOrdersBundlesDrafts().size() == 1
+            && caseData.getHearingOrdersBundlesDrafts().get(0).getId()
+                .equals(UUID.fromString("cff80b00-7300-4cd5-b0cb-f9f7a2ecd862"))) {
+            caseDetails.getData().remove("hearingOrdersBundlesDrafts");
+        } else {
+            throw new AssertionError("Different numbers of hearingOrdersBundlesDrafts or different UUID");
+        }
+    }
+
+    private void run2739(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1726944362364630L, "DFPL-2739");
+
+        caseDetails.getData().putAll(migrateCaseService.removeDraftOrderFromAdditionalApplication(caseData,
+            "DFPL-2739",
+            UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
+            UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
     }
 }

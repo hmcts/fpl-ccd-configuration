@@ -40,8 +40,10 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
+import uk.gov.hmcts.reform.fpl.model.caselink.CaseLink;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.CaseLinksElement;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -171,6 +173,14 @@ public class CaseData extends CaseDataParent {
     private OutsourcingType outsourcingType;
     private RepresentativeType representativeType;
     private YesNo isLocalAuthority;
+
+    @JsonIgnore
+    public boolean checkIfCaseIsSubmittedByLA() {
+        // isLocalAuthority is set to No if submitted by solicitor user and act as respondent / child solicitor
+        // otherwise, it could be null or Yes
+        return RepresentativeType.LOCAL_AUTHORITY.equals(representativeType);
+    }
+
     private Object outsourcingLAs;
     private String relatingLA;
     private Court court;
@@ -178,6 +188,9 @@ public class CaseData extends CaseDataParent {
     @JsonIgnore
     private String courtField;
     private String dfjArea;
+
+    @JsonProperty("caseLinks")
+    private List<CaseLinksElement<CaseLink>> caseLinks;
 
     private final JudicialUser judicialUser;
     private final JudicialUser judicialUserHearingJudge;
@@ -303,6 +316,7 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
+    private final List<Element<Guardian>> guardians;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
@@ -1192,6 +1206,13 @@ public class CaseData extends CaseDataParent {
     public boolean isChildRecoveryOrder() {
         return ofNullable(getOrders())
             .map(Orders::isChildRecoveryOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isChildAssessmentOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildAssessmentOrder)
             .orElse(false);
     }
 

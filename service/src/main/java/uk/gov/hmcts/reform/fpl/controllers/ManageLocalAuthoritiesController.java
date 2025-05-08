@@ -43,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_
 public class ManageLocalAuthoritiesController extends CallbackController {
 
     public static final String PAST_COURT_LIST_KEY = "pastCourtList";
+    public static final String LOCAL_AUTHORITY_LIST = "localAuthorities";
 
     public static final String COURT_KEY = "court";
 
@@ -161,14 +162,14 @@ public class ManageLocalAuthoritiesController extends CallbackController {
 
         if (ADD == action) {
             caseDetails.getData().put("sharedLocalAuthorityPolicy", service.getSharedLocalAuthorityPolicy(caseData));
-            caseDetails.getData().put("localAuthorities", service.addSharedLocalAuthority(caseData));
+            caseDetails.getData().put(LOCAL_AUTHORITY_LIST, service.addSharedLocalAuthority(caseData));
 
             return respond(removeTemporaryFields(caseDetails));
         }
 
         if (REMOVE == action) {
             caseDetails.getData().put("changeOrganisationRequestField", service.getOrgRemovalRequest(caseData));
-            caseDetails.getData().put("localAuthorities", service.removeSharedLocalAuthority(caseData));
+            caseDetails.getData().put(LOCAL_AUTHORITY_LIST, service.removeSharedLocalAuthority(caseData));
 
             return assignmentService.applyDecisionAsSystemUser(removeTemporaryFields(caseDetails));
         }
@@ -180,7 +181,7 @@ public class ManageLocalAuthoritiesController extends CallbackController {
             caseDetails.getData().put(COURT_KEY, caseData.getCourt());
             caseDetails.getData().put("caseLocalAuthority", caseData.getCaseLocalAuthority());
             caseDetails.getData().put("caseLocalAuthorityName", caseData.getCaseLocalAuthorityName());
-            caseDetails.getData().put("localAuthorities", caseData.getLocalAuthorities());
+            caseDetails.getData().put(LOCAL_AUTHORITY_LIST, caseData.getLocalAuthorities());
 
             updateCourtDetails(caseDetails, caseData.getCourt());
 

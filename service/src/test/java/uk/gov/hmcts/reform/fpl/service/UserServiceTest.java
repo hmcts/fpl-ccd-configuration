@@ -2,9 +2,14 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -24,16 +29,24 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_SUPERUSER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
+@ExtendWith({MockitoExtension.class})
 class UserServiceTest {
 
     private static final Long CASE_ID = 12345L;
     private static final String USER_EMAIL = "user@email.com";
     private static final String USER_AUTHORISATION = "USER_AUTH";
 
-    private final RequestData requestData = mock(RequestData.class);
-    private final IdamClient client = mock(IdamClient.class);
-    private final CaseAccessService accessService = mock(CaseAccessService.class);
-    private final UserService underTest = new UserService(client, requestData, accessService);
+    @Mock
+    private RequestData requestData;
+    @Mock
+    private IdamClient client;
+    @Mock
+    private CaseAccessService accessService;
+    @Mock
+    private RoleAssignmentService roleAssignmentService;
+
+    @InjectMocks
+    private UserService underTest;
 
     @Test
     void shouldReturnUserEmail() {
@@ -155,4 +168,19 @@ class UserServiceTest {
             assertThat(underTest.getUserDetails()).isEqualTo(userDetailsMock);
         }
     }
+
+    @Test
+    void shouldReturnTrueForIsCtscUser() {
+        when(roleAssignmentService.getOrganisationalRolesForUser(requestData.userId()))
+            .thenReturn(Set.of(OrganisationalRole.CTSC));
+        assertThat(underTest.isCtscUser()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseForLocalCourtIsCtscUser() {
+        when(roleAssignmentService.getOrganisationalRolesForUser(requestData.userId()))
+            .thenReturn(Set.of(OrganisationalRole.LOCAL_COURT_ADMIN));
+        assertThat(underTest.isCtscUser()).isFalse();
+    }
+
 }
