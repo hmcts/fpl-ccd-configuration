@@ -2,7 +2,6 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class AddStatementOfService extends BasePage {
-
     readonly addStatementOfService: Locator;
     readonly nameOfRecipient: Locator;
     readonly doYouHaverecipientAddress: Locator;

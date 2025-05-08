@@ -21,8 +21,7 @@ test.describe('Add statement of service', () => {
             await signInPage.navigateTOCaseDetails(caseNumber);
 
             await addStatementOfService.gotoNextStep('Add statement of service (c9)');
-            await addStatementOfService.gotoNextStep('Add statement of service (c9)');
             await addStatementOfService.UploadAddStatementOfService();
-            await expect(page.getByText('Add statement of service')).toBeVisible();
+            await expect(page.getByText('Add statement of service (c9)')).toBeVisible();
         })
 });
