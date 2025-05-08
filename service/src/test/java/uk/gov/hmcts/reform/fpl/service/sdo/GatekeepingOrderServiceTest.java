@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -142,7 +143,7 @@ class GatekeepingOrderServiceTest {
 
     @Test
     void getNoticeOfProceedingsTemplatesWithOthers() {
-        CaseData caseData = CaseData.builder().othersV2(wrapElements(mock(Other.class))).build();
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(mock(Other.class)).build()).build();
 
         assertThat(underTest.getNoticeOfProceedingsTemplates(caseData)).isEqualTo(List.of(C6, C6A));
     }

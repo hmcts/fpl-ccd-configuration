@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -20,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 class OtherRecipientsInboxTest {
@@ -53,7 +53,10 @@ class OtherRecipientsInboxTest {
             .build());
 
         CaseData caseData = CaseData.builder()
-            .othersV2(wrapElements(firstOther, secondOther, testOther("Third other")))
+            .others(Others.builder()
+                .firstOther(firstOther)
+            .additionalOthers(List.of(element(secondOther), element(testOther("Third other"))))
+            .build())
             .representatives(List.of(representingOther1, representingOther2))
             .build();
 
@@ -84,7 +87,10 @@ class OtherRecipientsInboxTest {
             .build());
 
         CaseData caseData = CaseData.builder()
-            .othersV2(wrapElements(firstOther, secondOther, testOther("Third other")))
+            .others(Others.builder()
+                .firstOther(firstOther)
+            .additionalOthers(List.of(element(secondOther), element(testOther("Third other"))))
+            .build())
             .representatives(List.of(representingOther1, representingOther2))
             .build();
 
@@ -102,7 +108,12 @@ class OtherRecipientsInboxTest {
         Other secondOther = testOther("Second other");
 
         CaseData caseData = CaseData.builder()
-            .othersV2(wrapElements(firstOther, firstOther, secondOther, testOther("Third other")))
+            .others(Others.builder()
+                .firstOther(firstOther)
+                .additionalOthers(List.of(element(firstOther),
+                    element(secondOther),
+                    element(testOther("Third other"))))
+                .build())
             .build();
 
         List<Element<Other>> othersSelected = List.of(element(firstOther));
@@ -134,7 +145,11 @@ class OtherRecipientsInboxTest {
             .build());
 
         CaseData caseData = CaseData.builder()
-            .othersV2(wrapElements(firstOther, secondOther, testOther("Third other")))
+            .others(Others.builder()
+                .firstOther(firstOther)
+                .additionalOthers(List.of(element(secondOther),
+                    element(testOther("Third other"))))
+                .build())
             .representatives(List.of(representingOther1,
                 representingOther2))
             .build();

@@ -38,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS_3RD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
@@ -107,7 +106,6 @@ public class TaskListRenderer {
         ofNullable(tasks.get(APPLICANT_DETAILS_THIRD_PARTY)).ifPresent(parties::withTask);
         ofNullable(tasks.get(CHILDREN)).ifPresent(parties::withTask);
         ofNullable(tasks.get(RESPONDENTS)).ifPresent(parties::withTask);
-        ofNullable(tasks.get(RESPONDENTS_3RD_PARTY)).ifPresent(parties::withTask);
 
         final TaskSection courtRequirements = newSection("Add court requirements")
             .withTask(tasks.get(ALLOCATION_PROPOSAL));

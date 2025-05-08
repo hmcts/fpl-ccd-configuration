@@ -12,13 +12,12 @@ import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class OthersCheckerIsStartedTest {
@@ -29,9 +28,9 @@ class OthersCheckerIsStartedTest {
     @ParameterizedTest
     @NullSource
     @MethodSource("emptyOthers")
-    void shouldReturnFalseWhenEmptyOthers(List<Element<Other>> others) {
+    void shouldReturnFalseWhenEmptyOthers(Others others) {
         final CaseData caseData = CaseData.builder()
-                .othersV2(others)
+                .others(others)
                 .build();
 
         final boolean isStarted = othersChecker.isStarted(caseData);
@@ -41,11 +40,12 @@ class OthersCheckerIsStartedTest {
 
     @Test
     void shouldReturnTrueWhenMoreThanOneOthersProvided() {
-        final List<Element<Other>> others = wrapElements(
-            Other.builder().firstName("test").build(),
-            Other.builder().build());
+        final Others others = Others.builder()
+                .firstOther(Other.builder().name("test").build())
+                .additionalOthers(ElementUtils.wrapElements(Other.builder().build()))
+                .build();
         final CaseData caseData = CaseData.builder()
-                .othersV2(others)
+                .others(others)
                 .build();
 
         final boolean isStarted = othersChecker.isStarted(caseData);
@@ -56,8 +56,11 @@ class OthersCheckerIsStartedTest {
     @ParameterizedTest
     @MethodSource("nonEmptyOthers")
     void shouldReturnTrueWhenOthersDetailsProvided(Other other) {
+        final Others others = Others.builder()
+                .firstOther(other)
+                .build();
         final CaseData caseData = CaseData.builder()
-                .othersV2(wrapElements(other))
+                .others(others)
                 .build();
 
         final boolean isStarted = othersChecker.isStarted(caseData);
@@ -67,11 +70,12 @@ class OthersCheckerIsStartedTest {
 
     private static Stream<Arguments> nonEmptyOthers() {
         return Stream.of(
-                Other.builder().firstName("Test").build(),
+                Other.builder().name("Test").build(),
                 Other.builder().dateOfBirth("01-01-2010").build(),
+                Other.builder().gender("Male").build(),
+                Other.builder().birthPlace("London").build(),
                 Other.builder().childInformation("Test").build(),
-                Other.builder().hideTelephone("No").build(),
-                Other.builder().hideAddress("No").build(),
+                Other.builder().detailsHidden("No").build(),
                 Other.builder().litigationIssues("No").build(),
                 Other.builder().telephone("777").build(),
                 Other.builder().addressNotKnowReason(AddressNotKnowReason.DECEASED.getType()).build(),
@@ -87,46 +91,27 @@ class OthersCheckerIsStartedTest {
 
     private static Stream<Arguments> emptyOthers() {
         return Stream.of(
-                List.of(),
-                wrapElements(Other.builder().build()),
-                wrapElements(Other.builder()
-                    .name("")
-                    .dateOfBirth("")
-                    .gender("")
-                    .birthPlace("")
-                    .childInformation("")
-                    .detailsHidden("")
-                    .litigationIssues("")
-                    .telephone("")
-                    .address(Address.builder()
-                        .addressLine1("")
-                        .addressLine2("")
-                        .addressLine3("")
-                        .county("")
-                        .country("")
-                        .postTown("")
-                        .postcode("")
-                        .build())
-                    .build()),
-                wrapElements(Other.builder()
-                    .firstName("")
-                    .lastName("")
-                    .dateOfBirth("")
-                    .childInformation("")
-                    .hideAddress("")
-                    .hideTelephone("")
-                    .litigationIssues("")
-                    .telephone("")
-                    .address(Address.builder()
-                        .addressLine1("")
-                        .addressLine2("")
-                        .addressLine3("")
-                        .county("")
-                        .country("")
-                        .postTown("")
-                        .postcode("")
-                        .build())
-                    .build()))
+                Others.builder().build(),
+                Others.builder().firstOther(Other.builder().build()).build(),
+                Others.builder().firstOther(Other.builder()
+                        .name("")
+                        .dateOfBirth("")
+                        .gender("")
+                        .birthPlace("")
+                        .childInformation("")
+                        .detailsHidden("")
+                        .litigationIssues("")
+                        .telephone("")
+                        .address(Address.builder()
+                                .addressLine1("")
+                                .addressLine2("")
+                                .addressLine3("")
+                                .county("")
+                                .country("")
+                                .postTown("")
+                                .postcode("")
+                                .build())
+                        .build()).build())
                 .map(Arguments::of);
     }
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
@@ -34,9 +35,10 @@ class AppointedGuardianBlockPrePopulatorTest {
     @Test
     void prePopulate() {
         List<Element<Respondent>> respondents = wrapElements(mock(Respondent.class));
+        Others others = Others.builder().additionalOthers(wrapElements(mock(Other.class))).build();
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
-            .othersV2(wrapElements(mock(Other.class)))
+            .others(others)
             .build();
 
         when(appointedGuardianFormatter.getGuardiansLabel(caseData)).thenReturn(GUARDIAN_LABEL);

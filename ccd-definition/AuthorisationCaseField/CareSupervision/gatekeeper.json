@@ -2998,7 +2998,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "othersV2",
+    "CaseFieldID": "others",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
   },
@@ -3054,7 +3054,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "proceedings",
+    "CaseFieldID": "proceeding",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
   },

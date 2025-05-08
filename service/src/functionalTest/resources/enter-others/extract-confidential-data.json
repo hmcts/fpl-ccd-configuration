@@ -18,30 +18,29 @@
             },
             "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
           },
-          "othersV2": [
-            {
-              "id": "e1bd82a6-dd09-4b0d-83d4-88beb97add2e",
-              "value": {
-                "firstName": "John",
-                "lastName": "Smith",
-                "DOB": "2000-07-12",
-                "address": {
-                  "AddressLine1": "1st Avenue",
-                  "AddressLine2": "5 Saffron Central Square",
-                  "AddressLine3": "",
-                  "PostTown": "Croydon",
-                  "County": "",
-                  "PostCode": "CR0 2FT",
-                  "Country": "United Kingdom"
-                },
-                "telephone": null,
-                "childInformation": null,
-                "litigationIssues": "NO",
-                "hideAddress": "Yes",
-                "addressKnowV2": "Yes"
-              }
-            }
-          ]
+          "others": {
+            "firstOther": {
+              "name": "John Smith",
+              "DOB": "2000-07-12",
+              "gender": "Male",
+              "birthPlace": "London",
+              "address": {
+                "AddressLine1": "1st Avenue",
+                "AddressLine2": "5 Saffron Central Square",
+                "AddressLine3": "",
+                "PostTown": "Croydon",
+                "County": "",
+                "PostCode": "CR0 2FT",
+                "Country": "United Kingdom"
+              },
+              "telephone": null,
+              "childInformation": null,
+              "litigationIssues": "NO",
+              "detailsHidden": "Yes",
+              "addressKnowV2": "Yes"
+            },
+            "additionalOthers": []
+          }
         },
         "security_classification": "PUBLIC",
         "callback_response_status": null
@@ -80,40 +79,31 @@
           },
           "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
         },
-        "othersV2": [
-          {
-            "id": "e1bd82a6-dd09-4b0d-83d4-88beb97add2e",
-            "value": {
-              "firstName": "John",
-              "lastName": "Smith",
-              "name": null,
-              "gender": null,
-              "address": null,
-              "telephone": null,
-              "birthPlace": null,
-              "childInformation": null,
-              "genderIdentification": null,
-              "litigationIssues": "NO",
-              "litigationIssuesDetails": null,
-              "hideAddress": "Yes",
-              "hideTelephone": null,
-              "detailsHidden": null,
-              "addressKnowV2": null,
-              "detailsHiddenReason": null,
-              "representedBy": [],
-              "DOB": "2000-07-12",
-              "addressNotKnowReason": null,
-              "whereaboutsUnknownDetails": null
-            }
-          }
-        ],
+        "others": {
+          "firstOther": {
+            "name": "John Smith",
+            "gender": "Male",
+            "address": null,
+            "telephone": null,
+            "birthPlace": "London",
+            "childInformation": null,
+            "genderIdentification": null,
+            "litigationIssues": "NO",
+            "litigationIssuesDetails": null,
+            "detailsHidden": "Yes",
+            "addressKnowV2": null,
+            "detailsHiddenReason": null,
+            "representedBy": [],
+            "DOB": "2000-07-12",
+            "addressNotKnowReason": null
+          },
+          "additionalOthers": []
+        },
         "confidentialOthers": [
           {
-            "id": "e1bd82a6-dd09-4b0d-83d4-88beb97add2e",
+            "id": "${IGNORE}",
             "value": {
-              "firstName": "John",
-              "lastName": "Smith",
-              "name": null,
+              "name": "John Smith",
               "gender": null,
               "address": {
                 "AddressLine1": "1st Avenue",
@@ -130,15 +120,12 @@
               "genderIdentification": null,
               "litigationIssues": null,
               "litigationIssuesDetails": null,
-              "hideAddress": "Yes",
-              "hideTelephone": null,
               "detailsHidden": null,
               "detailsHiddenReason": null,
               "representedBy": [],
               "DOB": null,
               "addressKnowV2": "Yes",
-              "addressNotKnowReason": null,
-              "whereaboutsUnknownDetails": null
+              "addressNotKnowReason": null
             }
           }
         ]

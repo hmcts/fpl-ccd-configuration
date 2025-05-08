@@ -31,14 +31,14 @@ public class WhichOthersBlockPrePopulator implements QuestionBlockOrderPrePopula
     public Map<String, Object> prePopulate(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
         OrderTempQuestions orderTempQuestions = caseData.getManageOrdersEventData().getOrderTempQuestions();
-        final Selector othersSelector = newSelector(caseData.getOthersV2().size());
+        final Selector othersSelector = newSelector(caseData.getAllOthers().size());
 
-        if (isEmpty(caseData.getOthersV2())) {
+        if (isEmpty(caseData.getAllOthers())) {
             data.put("orderTempQuestions", orderTempQuestions.toBuilder().whichOthers("NO").build());
         }
 
         data.put("othersSelector", othersSelector);
-        data.put("others_label", othersService.getOthersLabel(caseData.getOthersV2()));
+        data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
 
         return data;
     }

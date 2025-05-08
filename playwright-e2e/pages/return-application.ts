@@ -22,16 +22,6 @@ export class ReturnApplication extends BasePage {
   readonly continueButton: Locator;
   readonly submit: Locator;
   respondentDetailsHeading: Locator;
-  readonly confirmationCheckbox: Locator;
-  readonly firstName: Locator;
-  readonly lastName: Locator;
-  readonly dobDay: Locator;
-  readonly dobMonth: Locator;
-  readonly dobYear: Locator;
-  readonly gender: Locator;
-  readonly difficultyCapacity: Locator;
-  readonly legalRepresentation: Locator;
-
 
   public constructor(page: Page) {
     super(page);
@@ -45,22 +35,13 @@ export class ReturnApplication extends BasePage {
     this.DoTheyHaveLegal = page.getByRole('group', { name: '*Do they have legal' }).getByLabel('No');
     this.DoYouBelieveThisPerson = page.getByRole('group', { name: 'Do you believe this person' }).getByLabel('No', { exact: true });
     this.DoYouNeedContactDetailsHidden = page.getByRole('group', { name: 'Do you need contact details' }).getByLabel('No');
-    this.MakeChangesToAllocationProposal = page.getByRole('link', { name: 'Make changes to allocation' });
+    this.MakeChangesToAllocationProposal= page.getByRole('link', { name: 'Make changes to allocation' });
     this.GiveReasonsOptional = page.getByLabel('*Give reason (Optional)');
     this.MakeChangesToTheRespodentDetails = page.getByRole('link', { name: 'Make changes to the respondents\' details' });
     this.GiveReason = page.getByLabel('*Give reason (Optional)');
     this.continueButton = page.getByRole('button', { name: 'Continue' });
     this.submit = page.getByRole('button', { name: 'Submit' });
     this.respondentDetailsHeading = page.getByRole("heading", { name: 'Respondents\' details' });
-    this.confirmationCheckbox = page.getByLabel('I confirm that each person');
-    this.firstName = page.getByLabel('First name', { exact: true });
-    this.lastName = page.getByLabel('Last name', { exact: true });
-    this.dobDay = page.getByLabel('Day');
-    this.dobMonth = page.getByLabel('Month');
-    this.dobYear = page.getByLabel('Year');
-    this.gender = page.getByLabel('What is the respondent\'s gender? (Optional)');
-    this.difficultyCapacity = page.getByRole('group', { name: 'Do you believe this person will have difficulty understanding what\'s happening with the case? (Optional)' });
-    this.legalRepresentation = page.getByRole('group', { name: 'Do they have legal representation?' });
   }
 
   async ReturnApplication() {
@@ -83,15 +64,8 @@ export class ReturnApplication extends BasePage {
 
   async UpdateRespondent() {
     await expect(this.respondentDetailsHeading).toBeVisible();
-    await this.confirmationCheckbox.check();
-    await this.firstName.fill('Tom');
-    await this.lastName.fill('Jones');
-    await this.dobDay.fill('31');
-    await this.dobMonth.fill('3');
-    await this.dobYear.fill('1980');
-    await this.gender.selectOption('1: Male');
-    await this.difficultyCapacity.getByLabel('Yes').check();
-    await this.legalRepresentation.getByLabel('No').check();
+    await this.DoTheyHaveLegal.check();
+    await this.DoYouNeedContactDetailsHidden.check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
 

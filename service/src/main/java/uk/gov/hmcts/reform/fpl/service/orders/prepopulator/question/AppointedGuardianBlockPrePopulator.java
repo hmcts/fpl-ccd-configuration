@@ -26,7 +26,7 @@ public class AppointedGuardianBlockPrePopulator implements QuestionBlockOrderPre
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
         final Selector appointedGuardianSelector = newSelector(
-            caseData.getAllRespondents().size() + caseData.getOthersV2().size());
+            caseData.getAllRespondents().size() + caseData.getAllOthers().size());
         return Map.of(
             "appointedGuardianSelector", appointedGuardianSelector,
             "appointedGuardians_label",

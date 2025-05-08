@@ -39,7 +39,7 @@ class RespondentControllerChangeFromOtherAboutToStartTest extends AbstractCallba
         CaseDetails caseDetails = CaseDetails.builder()
             .id(RandomUtils.nextLong())
             .data(Map.of(
-                "othersV2", createOthers()))
+                "others", createOthers()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);

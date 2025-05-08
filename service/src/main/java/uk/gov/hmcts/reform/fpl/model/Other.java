@@ -22,7 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
@@ -38,33 +37,20 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class Other implements Representable, ConfidentialParty<Other> {
     @JsonProperty("DOB")
     private final String dateOfBirth;
-    @Deprecated
     private final String name;
-    private final String firstName;
-    private final String lastName;
-
-    @Deprecated
     private final String gender;
     private final Address address;
     private final String telephone;
-    @Deprecated
     private final String birthPlace;
     private final String childInformation;
-    @Deprecated
     private final String genderIdentification;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
-    @Deprecated
     private final String detailsHidden;
-    @Deprecated
     private final String detailsHiddenReason;
-    @Deprecated
     private List<Element<UUID>> representedBy;
     private final String addressNotKnowReason;
     private final IsAddressKnowType addressKnowV2;
-    private final String whereaboutsUnknownDetails;
-    private final String hideAddress;
-    private final String hideTelephone;
 
     public List<Element<UUID>> getRepresentedBy() {
         if (this.representedBy == null) {
@@ -91,19 +77,8 @@ public class Other implements Representable, ConfidentialParty<Other> {
         }
     }
 
-    @JsonIgnore
     public boolean containsConfidentialDetails() {
-        return YES.getValue().equals(detailsHidden)
-               || YES.getValue().equals(hideAddress)
-               || YES.getValue().equals(hideTelephone);
-    }
-
-    @JsonIgnore
-    public String getFullName() {
-        String fullName =  Stream.of(firstName, lastName)
-            .filter(ObjectUtils::isNotEmpty)
-            .collect(Collectors.joining(" "));
-        return (fullName.isEmpty()) ? name : fullName;
+        return "Yes".equals(detailsHidden);
     }
 
     @Data
@@ -131,8 +106,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @Override
     public Party toParty() {
         return OtherParty.builder()
-            .firstName(ObjectUtils.isEmpty(this.getFirstName()) ? this.getFullName() : this.getFirstName())
-            .lastName(this.getLastName())
+            .firstName(this.getName())
             .address(this.getAddress())
             .dateOfBirth(nonNull(this.getDateOfBirth()) ? LocalDate.parse(this.getDateOfBirth(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null)
@@ -142,22 +116,12 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @Override
     public Other extractConfidentialDetails() {
-        Other.OtherBuilder otherBuilder = Other.builder()
-            .name(this.name) // legacy data
-            .firstName(this.firstName)
-            .lastName(this.lastName)
-            .hideAddress(this.getHideAddress())
-            .hideTelephone(this.getHideTelephone());
-
-        if (YES.equalsString(this.detailsHidden) || YES.equalsString(this.getHideAddress())) {
-            otherBuilder = otherBuilder.addressKnowV2(this.addressKnowV2).address(this.address);
-        }
-
-        if (YES.equalsString(this.detailsHidden) || YES.equalsString(this.getHideTelephone())) {
-            otherBuilder = otherBuilder.telephone(this.telephone);
-        }
-
-        return otherBuilder.build();
+        return Other.builder()
+            .addressKnowV2(this.addressKnowV2)
+            .name(this.name)
+            .address(this.address)
+            .telephone(this.telephone)
+            .build();
     }
 
     @Override
@@ -167,17 +131,12 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @Override
     public Other removeConfidentialDetails() {
-        Other.OtherBuilder otherBuilder =  this.toBuilder();
-
-        if (YES.equalsString(this.detailsHidden) || YES.equalsString(this.getHideAddress())) {
-            otherBuilder = otherBuilder.addressKnowV2(null).address(null);
-        }
-
-        if (YES.equalsString(this.detailsHidden) || YES.equalsString(this.getHideTelephone())) {
-            otherBuilder = otherBuilder.telephone(null);
-        }
-
-        return otherBuilder.build();
+        Other other =  this.toBuilder()
+            .addressKnowV2(null)
+            .address(null)
+            .telephone(null)
+            .build();
+        return other;
     }
 
     @JsonIgnore
@@ -194,7 +153,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
     public boolean isEmpty() {
         return Stream.of(dateOfBirth, name, gender, telephone, birthPlace, childInformation, genderIdentification,
             litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy,
-            addressNotKnowReason, firstName, lastName, hideAddress, hideAddress, whereaboutsUnknownDetails
+            addressNotKnowReason
         ).allMatch(ObjectUtils::isEmpty)
             && (isNull(address) || address.equals(Address.builder().build()));
     }

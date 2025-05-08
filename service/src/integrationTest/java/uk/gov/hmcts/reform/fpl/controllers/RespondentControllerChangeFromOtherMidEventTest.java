@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,9 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.localAuthorities;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.otherToRespondentEventData;
-import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareConfidentialOthers;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareConfidentialOthersFromAllOthers;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareConfidentialRespondentsFromRespondents1;
-import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareOthers;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareOthersTestingData;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareRespondentsTestingData;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareTransformedRespondentTestingData;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_1;
@@ -50,7 +52,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -99,6 +100,8 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
                     .addressKnow(IsAddressKnowType.YES)
                     .dateOfBirth(LocalDate.of(2005, Month.JUNE, 4))
                     .firstName("Kyle Stafford")
+                    .placeOfBirth("Newry")
+                    .gender("Male")
                     .relationshipToChild("Child suffers from ADD")
                     .telephoneNumber(Telephone.builder()
                         .telephoneNumber("02838882404")
@@ -118,6 +121,8 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
                     .addressKnow(IsAddressKnowType.YES)
                     .dateOfBirth(LocalDate.of(2002, Month.FEBRUARY, 5))
                     .firstName("Sarah Simpson")
+                    .placeOfBirth("Craigavon")
+                    .gender("Female")
                     .telephoneNumber(Telephone.builder()
                         .telephoneNumber("02838882404")
                         .build())
@@ -130,12 +135,12 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
     @MethodSource("shouldPopulateTransformedRespondentSource")
     void shouldPopulateTransformedRespondent(int selected, Respondent expectedRespondent) {
         UUID otherPerson1Uuid = randomUUID();
-        List<Element<Other>> others = createOthers(otherPerson1Uuid);
+        Others others = createOthers(otherPerson1Uuid);
         CaseDetails caseDetails = CaseDetails.builder()
             .id(RandomUtils.nextLong())
             .data(Map.of(
                 "othersList", buildDynamicListFromOthers(others, selected),
-                "othersV2", others))
+                "others", others))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,"enter-respondent");
@@ -152,9 +157,12 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
         UUID otherPerson1UUID = randomUUID();
         UUID representativeUUID = randomUUID();
 
-        List<Element<Other>> others = createOthers(otherPerson1UUID);
-        others.get(selected).getValue().addRepresentative(representativeUUID);
-
+        Others others = createOthers(otherPerson1UUID);
+        if (selected == 0) {
+            others.getFirstOther().addRepresentative(representativeUUID);
+        } else {
+            others.getAdditionalOthers().get(selected - 1).getValue().addRepresentative(representativeUUID);
+        }
         CaseDetails caseDetails = CaseDetails.builder()
             .id(RandomUtils.nextLong())
             .data(Map.of(
@@ -162,7 +170,7 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
                     .role(selected == 0 ? REPRESENTING_PERSON_1 : REPRESENTING_OTHER_PERSON_1)
                     .build())),
                 "othersList", buildDynamicListFromOthers(others, selected),
-                "othersV2", others))
+                "others", others))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,"enter-respondent");
@@ -178,19 +186,21 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
 
     @Test
     void shouldNotReturnErrorWhenExistingRespondentHavingConfidentialDetails() {
-        List<Element<Other>> others = prepareOthers(1, null);
+        Others others = prepareOthersTestingData(0, true, true);
+        List<Element<Other>> allOthers = new ArrayList<>();
+        allOthers.add(element(others.getFirstOther()));
 
         List<Respondent> respondents = prepareRespondentsTestingData(1, true);
         Respondent transformedRespondent = prepareTransformedRespondentTestingData(true);
 
-        List<Element<Respondent>> respondents1 = wrapElementsWithUUIDs(respondents);
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
 
         CaseData caseData = CaseData.builder()
             .confidentialRespondents(prepareConfidentialRespondentsFromRespondents1(respondents1))
-            .confidentialOthers(prepareConfidentialOthers(others))
+            .confidentialOthers(prepareConfidentialOthersFromAllOthers(allOthers))
             .localAuthorities(localAuthorities())
             .respondents1(respondents1)
-            .othersV2(others)
+            .others(others)
             .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, 0))
             .build();
 

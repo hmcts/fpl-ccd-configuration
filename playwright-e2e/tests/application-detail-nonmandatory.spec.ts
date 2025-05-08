@@ -181,28 +181,5 @@ test.describe('Non mandatory application details before application submit', () 
             expect(accessibilityScanResults.violations).toEqual([]);
 
         });
-    test('LA add Other Proceedings details',async({signInPage,startApplication,otherProceedings})=>{
-    
-        casename = 'Other Proceedings  ' + dateTime.slice(0, 10);
-        caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
-    
-        await signInPage.visit();
-        await signInPage.login(
-            newSwanseaLocalAuthorityUserOne.email,
-            newSwanseaLocalAuthorityUserOne.password,
-        );
-    
-        await signInPage.isSignedIn();
-        await signInPage.navigateTOCaseDetails(caseNumber);
-        await startApplication.otherProceedingsNeeded();
-        await otherProceedings.otherProceedings();
-        await otherProceedings.tabNavigation('View application');
-    
-        //assert the details
-        await expect(otherProceedings.page.getByRole('cell', { name: 'Other proceedings', exact: true }).locator('div')).toBeVisible();
-        await expect(otherProceedings.page.getByText('Ongoing')).toBeVisible();
-        await expect(otherProceedings.page.getByText('Previous')).toBeVisible();
-        await expect(otherProceedings.page.getByRole('link', { name: 'Make changes to other' })).toBeVisible();
-    
-    });
+
 });

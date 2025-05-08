@@ -49,7 +49,7 @@
     "ListElementCode": "gender",
     "FieldType": "FixedList",
     "FieldTypeParameter": "GenderList",
-    "ElementLabel": "What is the respondent's gender?",
+    "ElementLabel": "Gender",
     "SecurityClassification": "Public"
   },
   {
@@ -76,7 +76,7 @@
     "ListElementCode": "addressKnow",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "IsAddressKnowList",
-    "ElementLabel": "Current address known?",
+    "ElementLabel": "*Current address known?",
     "SecurityClassification": "Public"
   },
   {
@@ -101,27 +101,18 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
     "ListElementCode": "addressNotKnowReason",
-    "FieldType": "FixedRadioList",
+    "FieldType": "FixedList",
     "FieldTypeParameter":  "AddressNotKnowType",
-    "ElementLabel": "Why is this address unknown?",
+    "ElementLabel": "*Reason the address is not known",
     "SecurityClassification": "Public",
     "FieldShowCondition": "addressKnow=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
-    "ListElementCode": "whereaboutsUnknownDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give more details",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnow=\"No\" AND addressNotKnowReason=\"Whereabouts unknown\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentParty",
     "ListElementCode": "telephoneNumber",
     "FieldType": "Telephone",
-    "ElementLabel": " ",
+    "ElementLabel": "Telephone",
     "SecurityClassification": "Public"
   },
   {
@@ -138,7 +129,8 @@
     "ID": "RespondentParty",
     "ListElementCode": "relationshipToChild",
     "FieldType": "TextArea",
-    "ElementLabel": "Which children does the respondent have parental responsibility for and what is their relationship?",
+    "ElementLabel": "What is the respondent's relationship to the child or children in this case?",
+    "HintText": "Include: the name of the child or children, the respondent's relationship to them and any details if you're not sure this person has parental responsibility",
     "SecurityClassification": "Public"
   },
   {
@@ -174,7 +166,7 @@
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LitigationCapacityIssues",
-    "ElementLabel": "Do you believe this person will have difficulty understanding what's happening with the case?",
+    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
   {
@@ -184,23 +176,6 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentParty",
-    "ListElementCode": "hideAddress",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need to keep the address confidential?",
-    "FieldShowCondition": "addressKnow=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentParty",
-    "ListElementCode": "hideTelephone",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need to keep the contact number confidential?",
     "SecurityClassification": "Public"
   }
 ]

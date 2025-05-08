@@ -116,6 +116,7 @@ import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -131,12 +132,12 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -234,13 +235,7 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
-    /**
-     * This historical field is deprecated since DFPL-2423.
-     * @deprecated (DFPL-2423, historical field)
-     */
-    @Deprecated(since = "DFPL-2423")
     private final Proceeding proceeding;
-    private final List<Element<Proceeding>> proceedings;
 
     @Deprecated
     @NotNull(message = "Add the applicant's solicitor's details")
@@ -342,10 +337,6 @@ public class CaseData extends CaseDataParent {
     public RepresentativeType getRepresentativeType() {
         return representativeType != null ? representativeType : RepresentativeType.LOCAL_AUTHORITY;
     }
-
-    // This is a clone of the first respondent on the case in new 3rd party standalone apps, used for pre-filling data
-    // on case creation.
-    public final RespondentLocalAuthority respondentLocalAuthority;
 
     @JsonIgnore
     public List<Element<Child>> getAllChildren() {
@@ -543,10 +534,7 @@ public class CaseData extends CaseDataParent {
     @Builder.Default
     private final RemovalToolData removalToolData = RemovalToolData.builder().build();
 
-    @Deprecated
     private final Others others;
-    @Builder.Default
-    private final List<Element<Other>> othersV2 = List.of();
 
     private final String languageRequirement;
     private final String languageRequirementUrgent; // Replica field to work with Urgent Hearing
@@ -610,12 +598,36 @@ public class CaseData extends CaseDataParent {
     private final EPOExclusionRequirementType epoExclusionRequirementType;
 
     @JsonIgnore
+    public List<Element<Proceeding>> getAllProceedings() {
+        List<Element<Proceeding>> proceedings = new ArrayList<>();
+
+        ofNullable(this.getProceeding()).map(ElementUtils::element).ifPresent(proceedings::add);
+        ofNullable(this.getProceeding())
+            .map(Proceeding::getAdditionalProceedings).ifPresent(proceedings::addAll);
+
+        return Collections.unmodifiableList(proceedings);
+    }
+
+    @JsonIgnore
     public String getRelevantProceedings() {
-        return isNotEmpty(proceedings) ? YES.getValue() : NO.getValue();
+        return ofNullable(this.getProceeding())
+            .map(Proceeding::getOnGoingProceeding)
+            .orElse("");
+    }
+
+    @JsonIgnore
+    public List<Element<Other>> getAllOthers() {
+        List<Element<Other>> othersList = new ArrayList<>();
+
+        ofNullable(this.getOthers()).map(Others::getFirstOther).filter(not(Other::isEmpty))
+            .map(ElementUtils::element).ifPresent(othersList::add);
+        ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
+
+        return Collections.unmodifiableList(othersList);
     }
 
     public Optional<Other> findOther(int sequenceNo) {
-        List<Other> allOthers = this.getOthersV2().stream().map(Element::getValue).collect(toList());
+        List<Other> allOthers = this.getAllOthers().stream().map(Element::getValue).collect(toList());
 
         return allOthers.size() <= sequenceNo ? empty() : Optional.of(allOthers.get(sequenceNo));
     }
@@ -631,7 +643,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public boolean hasRespondentsOrOthers() {
-        return isNotEmpty(getAllRespondents()) || isNotEmpty(getOthersV2());
+        return isNotEmpty(getAllRespondents()) || isNotEmpty(getAllOthers());
     }
 
     @JsonIgnore

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -9,10 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
@@ -21,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
@@ -35,20 +31,16 @@ import uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority.DUMMY_UUID;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondent;
@@ -59,9 +51,6 @@ class RespondentServiceTest {
 
     @Spy
     private Time time = new FixedTimeConfiguration().stoppedTime();
-
-    @Mock
-    private LocalAuthorityService localAuthorityService;
 
     @InjectMocks
     private RespondentService service;
@@ -207,8 +196,8 @@ class RespondentServiceTest {
             .build()));
 
         List<Element<Respondent>> updatedRespondents = service.consolidateAndRemoveHiddenFields(respondents);
-        assertThat(updatedRespondents.get(0).getValue().getParty()).extracting("hideAddress", "hideTelephone")
-            .containsExactly(YES.getValue(), NO.getValue());
+        assertThat(updatedRespondents.get(0).getValue().getParty().getContactDetailsHidden())
+            .isEqualTo(YES.getValue());
     }
 
     @Test
@@ -686,55 +675,6 @@ class RespondentServiceTest {
         List<String> respondentSolicitorTelephones = service.getRespondentSolicitorTelephones(respondents);
 
         assertThat(respondentSolicitorTelephones).containsExactlyInAnyOrder("1234 567 890");
-    }
-
-    @Test
-    void shouldTransformLocalAuthorityWithCorrectOrg() {
-        when(localAuthorityService.getLocalAuthorityId(any())).thenReturn("ORG1");
-        when(localAuthorityService.getLocalAuthorityName(any())).thenReturn("Local Authority");
-        RespondentLocalAuthority respondentLocalAuthority = RespondentLocalAuthority.builder()
-            .name("Local Authority")
-            .email("test@test.com")
-            .phoneNumber("1234")
-            .address(Address.builder().build())
-            .usingOtherOrg(NO)
-            .build();
-
-        CaseData caseDataBefore = CaseData.builder()
-            .respondentLocalAuthority(respondentLocalAuthority)
-            .build();
-
-        CaseData caseData = caseDataBefore.toBuilder()
-            .respondentLocalAuthority(respondentLocalAuthority)
-            .build();
-
-
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.transformRespondentLocalAuthority(caseDetails, caseData, caseDataBefore);
-
-        Respondent expectedRespondent = Respondent.builder()
-            .party(RespondentParty.builder()
-                .firstName("Local Authority")
-                .relationshipToChild("Local Authority")
-                .address(Address.builder().build())
-                .addressKnow(IsAddressKnowType.YES)
-                .build())
-            .usingOtherOrg(NO)
-            .isLocalAuthority(YES)
-            .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder()
-                .telephoneNumber(Telephone.builder().telephoneNumber("1234").build())
-                .email("test@test.com")
-                .organisation(Organisation.builder()
-                    .organisationID("ORG1")
-                    .organisationName("Local Authority")
-                    .build())
-                .build())
-            .build();
-
-        assertThat(caseDetails.getData()).extracting("respondents1")
-            .asInstanceOf(InstanceOfAssertFactories.LIST)
-            .contains(element(DUMMY_UUID, expectedRespondent));
     }
 
 }

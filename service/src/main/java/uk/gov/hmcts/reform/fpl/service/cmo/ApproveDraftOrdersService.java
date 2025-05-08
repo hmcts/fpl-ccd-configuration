@@ -187,7 +187,7 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
-                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getOthersV2(),
+                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
@@ -261,7 +261,7 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getOthersV2(),
+                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
@@ -395,7 +395,7 @@ public class ApproveDraftOrdersService {
             others -> others.stream()
                 .filter(other -> other.getValue().isRepresented() || other.getValue()
                     .hasAddressAdded())
-                .map(other -> other.getValue().getFullName()).collect(Collectors.joining(", "))
+                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
         ).orElse(null);
     }
 }

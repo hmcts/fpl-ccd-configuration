@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -72,9 +73,10 @@ class PeopleInCaseServiceTest {
             Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build(),
             Respondent.builder().party(RespondentParty.builder().firstName("Tim").lastName("Jones").build()).build());
 
-        List<Element<Other>> others = wrapElements(
-            Other.builder().firstName("James Daniels").build(),
-            Other.builder().firstName("Bob Martyn").build());
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("James Daniels").build())
+            .additionalOthers(wrapElements(Other.builder().name("Bob Martyn").build()))
+            .build();
 
         String expectedLabel = "Person 1: Respondent 1 - John Smith\nPerson 2: Respondent 2 - Tim Jones\n"
             + "Person 3: Other 1 - James Daniels\nPerson 4: Other 2 - Bob Martyn\n";
@@ -88,7 +90,9 @@ class PeopleInCaseServiceTest {
         List<Element<Respondent>> respondents = wrapElements(
             Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build());
 
-        List<Element<Other>> others = wrapElements(Other.builder().firstName("Bob Martyn").build());
+        Others others = Others.builder()
+            .additionalOthers(wrapElements(Other.builder().name("Bob Martyn").build()))
+            .build();
 
         String expectedLabel = "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - Bob Martyn\n";
 
@@ -102,13 +106,15 @@ class PeopleInCaseServiceTest {
             .party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build());
         String expectedLabel = "Person 1: Respondent 1 - John Smith\n";
 
-        String actual = underTest.buildPeopleInCaseLabel(respondents, List.of());
+        String actual = underTest.buildPeopleInCaseLabel(respondents, Others.builder().build());
         assertThat(actual).isEqualTo(expectedLabel);
     }
 
     @Test
     void shouldBuildExpectedLabelWhenRespondentsAreEmpty() {
-        List<Element<Other>> others = wrapElements(Other.builder().firstName("James Daniels").build());
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("James Daniels").build())
+            .build();
 
         String expectedOthersLabel = "Person 1: Other 1 - James Daniels\n";
 
@@ -119,7 +125,7 @@ class PeopleInCaseServiceTest {
 
     @Test
     void shouldReturnExpectedMessageWhenRespondentsAndOthersAreEmpty() {
-        String actual = underTest.buildPeopleInCaseLabel(List.of(), List.of());
+        String actual = underTest.buildPeopleInCaseLabel(List.of(), Others.builder().build());
 
         assertThat(actual).isEqualTo("No respondents and others on the case");
     }
@@ -128,7 +134,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnAllRespondentsAndOthersWhenSelectedAll() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .othersV2(SELECTED_OTHERS)
+            .others(Others.from(SELECTED_OTHERS))
             .personSelector(Selector.builder().build())
             .notifyApplicationsToAllOthers("Yes")
             .build();
@@ -142,7 +148,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnSelectedOthers() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .othersV2(SELECTED_OTHERS)
+            .others(Others.from(SELECTED_OTHERS))
             .personSelector(Selector.builder().selected(List.of(0, 2)).build())
             .notifyApplicationsToAllOthers("No")
             .build();
@@ -158,7 +164,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnSelectedOthersWhenRespondentsAreNullEmpty(List<Element<Respondent>> respondents) {
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
-            .othersV2(SELECTED_OTHERS)
+            .others(Others.from(SELECTED_OTHERS))
             .personSelector(Selector.builder().selected(List.of(0, 2)).build())
             .notifyApplicationsToAllOthers("No")
             .build();
@@ -172,7 +178,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnEmptyWhenNoneOfTheOthersAreSelected() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .othersV2(SELECTED_OTHERS)
+            .others(Others.from(SELECTED_OTHERS))
             .personSelector(Selector.builder().selected(List.of()).build())
             .notifyApplicationsToAllOthers("No")
             .build();
@@ -184,7 +190,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnEmptyWhenSelectorIsNull() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .othersV2(SELECTED_OTHERS)
+            .others(Others.from(SELECTED_OTHERS))
             .personSelector(null)
             .notifyApplicationsToAllOthers("No")
             .build();

@@ -11,14 +11,13 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
@@ -35,19 +34,22 @@ import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
-import static uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority.DUMMY_UUID;
 import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Slf4j
 @RestController
@@ -55,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentController extends CallbackController {
 
+    private static final String OTHERS_KEY = "others";
     private static final String OTHERS_LIST_KEY = "othersList";
     private static final String REPRESENTATIVES_KEY = "representatives";
     private static final String RESPONDENTS_KEY = "respondents1";
@@ -76,23 +79,12 @@ public class RespondentController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<Respondent>> respondents = confidentialDetailsService.prepareCollection(
-            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
-
-        // if we have a respondent LA, remove from collection and migrate to the other field
-        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())
-            && isNotEmpty(respondents) && respondents.get(0).getId().equals(DUMMY_UUID)) {
-            Respondent fakeRespondentLA = respondents.get(0).getValue();
-            RespondentLocalAuthority respondentLA = RespondentLocalAuthority.fromRespondent(fakeRespondentLA);
-            caseDetails.getData().put("respondentLocalAuthority", respondentLA);
-
-            respondents.remove(0);
-        }
-
-        caseDetails.getData().put(RESPONDENTS_KEY, respondents);
         if (!representativeService.shouldUserHaveAccessToRespondentsChildrenEvent(caseData)) {
             return respond(caseDetails, List.of(NO_ACCESS_ERROR));
         }
+
+        caseDetails.getData().put(RESPONDENTS_KEY, confidentialDetailsService.prepareCollection(
+            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection()));
 
         return respond(caseDetails);
     }
@@ -144,16 +136,6 @@ public class RespondentController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())
-            && isNotEmpty(caseData.getRespondentLocalAuthority())) {
-
-            try {
-                respondentService.transformRespondentLocalAuthority(caseDetails, caseData, caseDataBefore);
-            } catch (IllegalArgumentException ex) {
-                log.error("Failed to transform respondent local authority on case {}", caseDetails.getId(), ex);
-            }
-        }
-
         prepareNewRespondents(caseDetails, caseData, caseDataBefore);
 
         return respond(caseDetails);
@@ -180,7 +162,7 @@ public class RespondentController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<Other>> others = caseData.getOthersV2();
+        List<Element<Other>> others = caseData.getAllOthers();
         DynamicList otherList = othersListGenerator.buildOthersList(others);
 
         List<String> errors = new ArrayList<>();
@@ -226,24 +208,37 @@ public class RespondentController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-    private Element<Other> getSelectedOther(CaseData caseData) {
-        return othersService.getSelectedOther(caseData, caseData.getOtherToRespondentEventData().getOthersList());
+    private UUID getFirstOtherId(CaseData caseData) {
+        // if firstOther exists confidentialOthers, it should return its uuid in confidentialOthers
+        // otherwise, it returns a random UUID
+        Set<UUID> additionalOtherIds = nullSafeList(caseData.getOthers().getAdditionalOthers())
+            .stream().map(Element::getId).collect(Collectors.toSet());
+        return caseData.getConfidentialOthers().stream().map(Element::getId)
+            .filter(co -> !additionalOtherIds.contains(co)).findFirst()
+            .orElse(UUID.randomUUID());
     }
 
-    private List<Element<Other>> prepareNewOthers(CaseData caseData, CaseDetails caseDetails,
-                                                  Element<Other> selectedOther) {
-        List<Element<Other>> newAllOthers = caseData.getOthersV2().stream()
-            .filter(ele -> !Objects.equals(ele.getId(), selectedOther.getId()))
-            .toList();
+    private Element<Other> getSelectedOther(CaseData caseData) {
+        UUID firstOtherUUID = getFirstOtherId(caseData);
+        return othersService.getSelectedOther(caseData,
+            caseData.getOtherToRespondentEventData().getOthersList(), firstOtherUUID);
+    }
+
+    private Others prepareNewOthers(CaseData caseData, CaseDetails caseDetails, Element<Other> selectedOther) {
+        List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
+        newAllOthers.removeIf(ele -> Objects.equals(ele.getValue(), selectedOther.getValue()));
 
         // remove the other person from confidentialOthers if any
-        List<Element<Other>> newConfidentialOthers = caseData.getConfidentialOthers().stream()
-            .filter(ele -> !Objects.equals(ele.getId(), selectedOther.getId()))
-            .toList();
+        caseData.getConfidentialOthers().removeIf(co -> Objects.equals(co.getId(), selectedOther.getId()));
+        caseDetails.getData().put(OTHER.getConfidentialKey(), caseData.getConfidentialOthers());
 
-        caseDetails.getData().put(OTHER.getCaseDataKey(), newAllOthers);
-        caseDetails.getData().put(OTHER.getConfidentialKey(), newConfidentialOthers);
-        return newAllOthers;
+        Others newOthers = Others.from(newAllOthers);
+        if (isNull(newOthers)) {
+            caseDetails.getData().remove(OTHERS_KEY);
+        } else {
+            caseDetails.getData().put(OTHERS_KEY, newOthers);
+        }
+        return newOthers;
     }
 
     private void addTransformedRespondentToRespondents(CaseDetails caseDetails, CaseData caseData,
@@ -254,8 +249,6 @@ public class RespondentController extends CallbackController {
             transformedRespondent = transformedRespondent.toBuilder()
                 .party(transformedRespondent.getParty().toBuilder()
                     .contactDetailsHidden(YesNo.YES.getValue())
-                    .hideAddress(YesNo.YES.getValue())
-                    .hideTelephone(YesNo.YES.getValue())
                     .contactDetailsHiddenReason(null)
                     .build())
                 .build();
@@ -267,11 +260,11 @@ public class RespondentController extends CallbackController {
         caseDetails.getData().put(RESPONDENTS_KEY, newRespondents);
     }
 
-    private void prepareUpdatedRepresentative(CaseDetails caseDetails, CaseData caseData,
-                                              List<Element<Other>> newOthers, Element<Other> selectedOther) {
+    private void prepareUpdatedRepresentative(CaseDetails caseDetails, CaseData caseData, Others newOthers,
+                                              Element<Other> selectedOther) {
         representativeService.updateRepresentativeRole(caseData, selectedOther.getValue()
             .getRepresentedBy(), Type.RESPONDENT, caseData.getRespondents1().size());
-        if (isNotEmpty(newOthers)) {
+        if (nonNull(newOthers) && nonNull(newOthers.getFirstOther())) {
             representativeService.updateRepresentativeRoleForOthers(caseData, newOthers);
         }
         caseDetails.getData().put(REPRESENTATIVES_KEY, caseData.getRepresentatives());
@@ -285,7 +278,7 @@ public class RespondentController extends CallbackController {
         final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         Element<Other> selectedOther = getSelectedOther(caseData);
-        final List<Element<Other>> newOthers = prepareNewOthers(caseData, caseDetails, selectedOther);
+        final Others newOthers = prepareNewOthers(caseData, caseDetails, selectedOther);
         // add the transformedRespondent to respondents1 with the same other id
         // therefore, relations in representedBy can be kept unchanged
         UUID selectedOtherId = selectedOther.getId();

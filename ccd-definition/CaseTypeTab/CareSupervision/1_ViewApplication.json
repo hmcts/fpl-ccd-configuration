@@ -83,7 +83,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForTheApplicationHeadingLabel",
-    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\" OR risks!=\"\" OR proceedings!=\"\" OR internationalElement!=\"\"",
+    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\" OR risks!=\"\" OR proceeding!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -255,7 +255,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationGroundsSubHeadingLabel",
-    "FieldShowCondition": "proceedings!=\"\" OR internationalElement!=\"\"",
+    "FieldShowCondition": "proceeding!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 20
   },
   {
@@ -266,7 +266,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsSubHeadingLabel",
-    "FieldShowCondition": "proceedings!=\"\"",
+    "FieldShowCondition": "proceeding!=\"\"",
     "TabFieldDisplayOrder": 21
   },
   {
@@ -276,7 +276,7 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "proceedings",
+    "CaseFieldID": "proceeding",
     "TabFieldDisplayOrder": 22
   },
   {
@@ -287,7 +287,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsLink",
-    "FieldShowCondition": "proceedings!=\"\"",
+    "FieldShowCondition": "proceeding!=\"\"",
     "TabFieldDisplayOrder": 23
   },
   {

@@ -11,15 +11,6 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "respondentLocalAuthority",
-    "Label": "Details of local authority in this case",
-    "FieldType": "RespondentLocalAuthority",
-    "SecurityClassification": "Public",
-    "Searchable": "Y"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judicialUser",
     "Label": "Search for Judge",
     "FieldType": "JudicialUser",
@@ -474,10 +465,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "proceedings",
+    "ID": "proceeding",
     "Label": "Other proceedings",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Proceeding",
+    "FieldType": "Proceeding",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -558,11 +548,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "othersV2",
-    "Label": "Other people to be given notice",
-    "HintText": "These are people who are not a party to the case but who are notified. If they are made a party later, they'll be added as a respondent.",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Others",
+    "ID": "others",
+    "Label": "Others to be given notice",
+    "FieldType": "Person",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -1102,7 +1090,7 @@
     "Searchable": "N",
     "Comment": "Displays a list of names for others"
   },
-  {
+ {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementRespondentsLabel",
@@ -2031,7 +2019,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "othersSubHeadingLabel",
     "FieldType": "Label",
-    "Label": "#### Other people to be given notice",
+    "Label": "#### Other people in the case",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -2719,16 +2707,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "respondentsConfirmPR",
-    "Label": " ",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "ConfirmPR",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "guardians",
     "Label": "Guardian",
     "FieldType": "Collection",
@@ -2742,15 +2720,6 @@
     "ID": "TTL",
     "Label": "Set up TTL",
     "FieldType": "TTL",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hasRespondentLA",
-    "Label": "The case has a respondent LA",
-    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

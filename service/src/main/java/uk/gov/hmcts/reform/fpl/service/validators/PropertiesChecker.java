@@ -35,13 +35,6 @@ public abstract class PropertiesChecker implements EventChecker {
                 .collect(toList());
     }
 
-    public List<String> validate(Object object, Class<?>... groups) {
-        return validator.validate(object, groups).stream()
-                .map(ConstraintViolation::getMessage)
-                .distinct()
-                .collect(toList());
-    }
-
     private String getViolatedProperty(ConstraintViolation<CaseData> violation) {
         final Iterator<Path.Node> paths = violation.getPropertyPath().iterator();
         if (paths.hasNext()) {
