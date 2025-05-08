@@ -179,24 +179,16 @@ public class SampleCaseSubmissionTestDataHelper {
     private static List<DocmosisOtherParty> expectedDocmosisOtherParty() {
         return of(DocmosisOtherParty.builder()
                 .name("Jason Lavery")
-                .gender("Unknown")
                 .dateOfBirth("2 February 1999")
-                .placeOfBirth("Armagh")
                 .address("Flat 13\nPortadown street\nPortadown road\nPortadown\nArmagh\nBT43 343\nN.Ire")
-                .detailsHidden("-")
-                .detailsHiddenReason("-")
                 .telephoneNumber("07749972245")
                 .relationshipToChild("Cousin")
                 .litigationIssuesDetails("No")
                 .build(),
             DocmosisOtherParty.builder()
                 .name("Peter Lavery")
-                .gender("Male")
                 .dateOfBirth("2 February 2000")
-                .placeOfBirth("Lisburn")
                 .address("Confidential")
-                .detailsHidden("Yes")
-                .detailsHiddenReason("Yes\nOther two hide from parties")
                 .telephoneNumber("Confidential")
                 .relationshipToChild("Friend of family")
                 .litigationIssuesDetails("Yes\nOther two inability to take part in proceedings")
@@ -251,7 +243,6 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static List<DocmosisProceeding> expectedDocmosisProceeding() {
         return List.of(DocmosisProceeding.builder()
-                .onGoingProceeding("Yes")
                 .proceedingStatus("Ongoing")
                 .caseNumber("12345")
                 .started("02-02-2002")
@@ -263,7 +254,6 @@ public class SampleCaseSubmissionTestDataHelper {
                 .sameGuardianDetails("No\nSome guardian not needed")
                 .build(),
             DocmosisProceeding.builder()
-                .onGoingProceeding("Yes")
                 .proceedingStatus("Ongoing")
                 .caseNumber("12345")
                 .started("02-02-2008")

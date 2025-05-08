@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingStatus;
 import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
@@ -43,7 +44,6 @@ import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -96,7 +96,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
@@ -107,6 +106,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -1911,16 +1911,16 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldNotReturnOtherPartyConfidentialDetailsWhenDetailsHiddenIsSetToYes() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
+                .othersV2(wrapElements(
+                    Other.builder()
                         .address(Address.builder()
                             .addressLine1("Flat 13")
                             .postcode("SL11GF")
                             .build())
-                        .detailsHidden("yes")
+                        .hideAddress("Yes")
+                        .hideTelephone("Yes")
                         .telephone("090-0999000")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1933,16 +1933,16 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyAddressAndTelephoneDetailsWhenDetailsHiddenIsSetToNo() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
+                .othersV2(wrapElements(
+                    Other.builder()
                         .address(Address.builder()
                             .addressLine1("Flat 13")
                             .postcode("SL11GF")
                             .build())
-                        .detailsHidden("no")
+                        .hideTelephone("No")
+                        .hideAddress("No")
                         .telephone("090-0999000")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1955,11 +1955,10 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsNull() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
-                        .name("John")
-                        .build())
-                    .build())
+                .othersV2(wrapElements(
+                    Other.builder()
+                        .firstName("John")
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1971,12 +1970,11 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
-                        .name("test")
+                .othersV2(wrapElements(
+                    Other.builder()
+                        .firstName("test")
                         .dateOfBirth("")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1988,11 +1986,10 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyFormattedDOBAsWhenDOBIsGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
+                .othersV2(wrapElements(
+                    Other.builder()
                         .dateOfBirth("1999-02-02")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -2000,46 +1997,16 @@ class CaseSubmissionGenerationServiceTest {
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("2 February 1999");
         }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        void shouldReturnOtherPartyGenderAsMaleWhenNoGenderIdentificationIsNullOrEmpty(String genderIdentification) {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
-                        .gender("Male")
-                        .genderIdentification(genderIdentification)
-                        .build())
-                    .build())
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getOthers()).hasSize(1);
-            assertThat(caseSubmission.getOthers().get(0).getGender()).isEqualTo("Male");
-        }
     }
 
     @Nested
     class DocmosisCaseSubmissionGetValidAnswerOrDefaultValueTest {
-
         @Test
-        void shouldReturnRelevantProceedingAsEmptyWhenGivenProceedingsAreEmpty() {
+        void shouldReturnRelevantProceedingAsYesWhenOnGoingProceedingExist() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .proceeding(null)
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getRelevantProceedings()).isEqualTo("-");
-        }
-
-        @Test
-        void shouldReturnRelevantProceedingAsYesWhenGivenOnGoingProceedingIsYes() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .proceeding(Proceeding.builder()
-                    .onGoingProceeding("yes")
-                    .build())
+                .proceedings(wrapElementsWithUUIDs(Proceeding.builder()
+                    .proceedingStatus(ProceedingStatus.ONGOING)
+                    .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -2048,11 +2015,22 @@ class CaseSubmissionGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnRelevantProceedingAsNoWhenGivenOnGoingProceedingIsYes() {
+        void shouldReturnRelevantProceedingAsYesWhenPreviousProceedingExist() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .proceeding(Proceeding.builder()
-                    .onGoingProceeding("no")
-                    .build())
+                .proceedings(wrapElementsWithUUIDs(Proceeding.builder()
+                    .proceedingStatus(ProceedingStatus.PREVIOUS)
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(YES.getValue());
+        }
+
+        @Test
+        void shouldReturnRelevantProceedingAsNoWhenNoProceedingsIsNull() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .proceedings(null)
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -2061,16 +2039,14 @@ class CaseSubmissionGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnRelevantProceedingAsDontKnowWhenGivenOnGoingProceedingIsDontKnow() {
+        void shouldReturnRelevantProceedingAsNoWhenNoProceedingsIsEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .proceeding(Proceeding.builder()
-                    .onGoingProceeding("Don't know")
-                    .build())
+                .proceedings(List.of())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
-            assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(DONT_KNOW.getValue());
+            assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(NO.getValue());
         }
     }
 
