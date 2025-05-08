@@ -6,19 +6,20 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static java.time.Month.JUNE;
 import static java.util.stream.Collectors.toList;
@@ -34,8 +35,10 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESP
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_7;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_8;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_9;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildDynamicListFromOthers;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public abstract class ChangeFromOtherUtils {
@@ -109,7 +112,8 @@ public abstract class ChangeFromOtherUtils {
         );
     }
 
-    public static OtherToRespondentEventData otherToRespondentEventData(Respondent transformedRespondent, Others others,
+    public static OtherToRespondentEventData otherToRespondentEventData(Respondent transformedRespondent,
+                                                                        List<Element<Other>> others,
                                                                         int selectedOtherSeq) {
         return OtherToRespondentEventData.builder()
             .transformedRespondent(transformedRespondent)
@@ -137,20 +141,6 @@ public abstract class ChangeFromOtherUtils {
             .email(LOCAL_AUTHORITY_1_INBOX)
             .designated(YesNo.YES.getValue())
             .build());
-    }
-
-    public static List<Element<Other>> prepareConfidentialOthersFromAllOthers(List<Element<Other>> allOthers) {
-        return allOthers.stream().map(
-            e -> element(
-                e.getId(),
-                e.getValue()
-                    .toBuilder()
-                    .detailsHidden(null)
-                    .addressKnowV2(IsAddressKnowType.YES)
-                    .telephone("123456789")
-                    .address(buildHiddenAddress(e.getValue().getName()))
-                    .build())
-        ).collect(toList());
     }
 
     public static Respondent prepareExpectedTransformedConfidentialRespondent() {
@@ -214,52 +204,38 @@ public abstract class ChangeFromOtherUtils {
             .build();
     }
 
-    public static List<Element<Other>> prepareConfidentialOthersTestingData(
-        Others others, boolean firstOtherDetailsHidden,
-        Predicate<Integer> additionalOtherDetailsHiddenDecider) {
-        List<Element<Other>> ret = new ArrayList<>();
-        if (firstOtherDetailsHidden) {
-            ret.add(element(Other.builder()
-                .address(Address.builder().addressLine1("FIRST OTHER SECRET ADDRESS 1").build())
-                .build()));
-        }
-        if (others.getAdditionalOthers() != null) {
-            for (int i = 0; i < others.getAdditionalOthers().size(); i++) {
-                if (additionalOtherDetailsHiddenDecider.test(i)) {
-                    Element<Other> ao = others.getAdditionalOthers().get(i);
-                    ret.add(element(ao.getId(), Other.builder()
-                        .address(Address.builder().addressLine1("ADDITIONAL OTHER SECRET ADDRESS 1").build())
-                        .build()));
+    public static List<Element<Other>> prepareConfidentialOthers(List<Element<Other>> others) {
+        return IntStream.range(0, nullSafeList(others).size())
+            .mapToObj(i -> {
+                Element<Other> otherElm = others.get(i);
+                Other other = otherElm.getValue();
+                if (other.containsConfidentialDetails()) {
+                    return element(otherElm.getId(), other.toBuilder()
+                        .telephone(YES.getValue().equals(other.getHideTelephone()) ? "123456789" : null)
+                        .addressKnowV2(YES.getValue().equals(other.getHideAddress()) ? IsAddressKnowType.YES : null)
+                        .address(YES.getValue().equals(other.getHideAddress())
+                            ? buildHiddenAddress(String.valueOf(i + 1)) : null)
+                        .build());
                 }
-            }
-        }
-        return ret;
+                return null;
+            })
+            .filter(Objects::nonNull)
+            .toList();
     }
 
-    public static Others prepareOthersTestingData(int numberOfAdditionalOther, boolean firstOtherDetailsHidden,
-                                                  boolean additionalOtherDetailsHidden) {
-        return prepareOthersTestingData(numberOfAdditionalOther, firstOtherDetailsHidden,
-            (i) -> additionalOtherDetailsHidden);
-    }
-
-    public static Others prepareOthersTestingData(int numberOfAdditionalOther, boolean firstOtherDetailsHidden,
-                                                  Predicate<Integer> additionalOtherDetailsHiddenDecider) {
-        List<Element<Other>> additionalOthers = new ArrayList<>();
-        for (int i = 0; i < numberOfAdditionalOther; i++) {
-            additionalOthers.add(element(Other.builder()
-                .name(String.format("Marco %s", i + 1))
-                .detailsHidden(YesNo.from(additionalOtherDetailsHiddenDecider.test(i)).getValue())
-                .build()));
-        }
-        Other firstOther = Other.builder()
-            .name("Marco 0")
-            .detailsHidden(YesNo.from(firstOtherDetailsHidden).getValue())
-            .build();
-        Others others = Others.builder()
-            .firstOther(firstOther)
-            .additionalOthers(additionalOthers)
-            .build();
-        return others;
+    public static List<Element<Other>> prepareOthers(int numOfOthers, List<Integer> confidentialOtherIdx) {
+        return IntStream.range(0, numOfOthers)
+            .mapToObj(idx -> {
+                final String isConfidential = nullSafeList(confidentialOtherIdx).contains(idx) ? "Yes" : "No";
+                return Other.builder()
+                    .firstName("Marco")
+                    .lastName(String.valueOf(idx + 1))
+                    .hideAddress(isConfidential)
+                    .hideTelephone(isConfidential)
+                    .build();
+            })
+            .map(ElementUtils::element)
+            .toList();
     }
 
     public static Address buildHiddenAddress(String identifier) {

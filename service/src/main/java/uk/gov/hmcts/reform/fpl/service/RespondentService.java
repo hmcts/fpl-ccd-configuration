@@ -167,7 +167,7 @@ public class RespondentService {
         return unwrapElements(respondents)
             .stream()
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
-                && respondent.hasRegisteredOrganisation())
+                                  && respondent.hasRegisteredOrganisation())
             .collect(Collectors.toList());
     }
 
@@ -175,7 +175,7 @@ public class RespondentService {
         return unwrapElements(respondents)
             .stream()
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
-                && respondent.hasUnregisteredOrganisation())
+                                  && respondent.hasUnregisteredOrganisation())
             .collect(Collectors.toList());
     }
 
@@ -254,7 +254,7 @@ public class RespondentService {
     }
 
     public List<Element<Respondent>> getSelectedRespondents(List<Element<Respondent>> respondents, Selector selector,
-                                                  String allRespondentsSelected) {
+                                                            String allRespondentsSelected) {
 
         if (useAllRespondents(allRespondentsSelected)) {
             return respondents;
@@ -279,12 +279,14 @@ public class RespondentService {
             .addressNotKnowReason(other.getAddressNotKnowReason())
             .contactDetailsHidden(other.getDetailsHidden())
             .contactDetailsHiddenReason(other.getDetailsHiddenReason())
+            .hideAddress(other.getHideAddress())
+            .hideTelephone(other.getHideTelephone())
             .dateOfBirth(other.toParty().getDateOfBirth())
             .email(other.toParty().getEmail())
-            .firstName(other.getName()) // other does not have first name, use other.getName() instead
+            .firstName(isEmpty(other.getFirstName()) ? other.getName() : other.getFirstName())
+            .lastName(other.getLastName())
             .gender(other.getGender())
             .genderIdentification(other.getGenderIdentification())
-            //.lastName() // other does not have last name
             .litigationIssuesDetails(other.getLitigationIssuesDetails())
             .litigationIssues(other.getLitigationIssues())
             .organisationName(other.toParty().getOrganisationName())

@@ -6,21 +6,21 @@ import { CaseFileView } from "../pages/case-file-view";
 test.describe('', () => {
     test.slow();
     test("Local Authority submit C110A application @smoke-test @accessibility", async ({
-        signInPage,
-        createCase,
-        ordersAndDirectionSought,
-        startApplication,
-        hearingUrgency,
-        groundsForTheApplication,
-        applicantDetails,
-        allocationProposal,
-        addApplicationDocuments,
-        childDetails,
-        respondentDetails,
-        submitCase,
-        page,
-        makeAxeBuilder
-    }, testInfo) => {
+                                                                                           signInPage,
+                                                                                           createCase,
+                                                                                           ordersAndDirectionSought,
+                                                                                           startApplication,
+                                                                                           hearingUrgency,
+                                                                                           groundsForTheApplication,
+                                                                                           applicantDetails,
+                                                                                           allocationProposal,
+                                                                                           addApplicationDocuments,
+                                                                                           childDetails,
+                                                                                           respondentDetails,
+                                                                                           submitCase,
+                                                                                           page,
+                                                                                           makeAxeBuilder
+                                                                                       }, testInfo) => {
         // Marking this test slow to increase the time for 3 times of other test
 
         // 1. Sign in as local-authority user
@@ -114,22 +114,22 @@ test.describe('', () => {
     })
 
     test('Private solicitor applies C110a application', async ({
-        signInPage,
-        createCase,
-        ordersAndDirectionSought,
-        startApplication,
-        hearingUrgency,
-        groundsForTheApplication,
-        applicantDetails,
-        allocationProposal,
-        addApplicationDocuments,
-        childDetails,
-        respondentDetails,
-        submitCase,
-        page,
-        caseFileView,
-        makeAxeBuilder
-    }, testInfo) => {
+                                                                   signInPage,
+                                                                   createCase,
+                                                                   ordersAndDirectionSought,
+                                                                   startApplication,
+                                                                   hearingUrgency,
+                                                                   groundsForTheApplication,
+                                                                   applicantDetails,
+                                                                   allocationProposal,
+                                                                   addApplicationDocuments,
+                                                                   childDetails,
+                                                                   respondentDetails,
+                                                                   submitCase,
+                                                                   page,
+                                                                   caseFileView,
+                                                                   makeAxeBuilder
+                                                               }, testInfo) => {
 
         // 1. Sign in as local-authority user
         await signInPage.visit();
@@ -202,7 +202,7 @@ test.describe('', () => {
         await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
         await  caseFileView.openDocInNewTab();
         await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
-        })
-    
     })
+
+})
 

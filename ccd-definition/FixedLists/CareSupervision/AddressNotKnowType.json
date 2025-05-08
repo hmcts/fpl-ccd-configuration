@@ -17,7 +17,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AddressNotKnowType",
     "ListElementCode": "Person deceased",
-    "ListElement": "Person deceased",
+    "ListElement": "Deceased",
     "DisplayOrder": 3
   }
 ]

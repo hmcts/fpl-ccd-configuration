@@ -38,10 +38,7 @@
           },
           "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
         },
-        "others": {
-          "firstOther": null,
-          "additionalOthers": []
-        }
+        "othersV2": []
       },
       "errors": null,
       "warnings": null,
