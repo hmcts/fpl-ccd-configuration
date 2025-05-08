@@ -41,9 +41,11 @@ import { LogExpertReport } from "../pages/log-expert-report";
 import { ChangeCaseName } from "../pages/change-case-name";
 import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
+import {ManageTTL} from "../pages/manage-t-t-l";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
 import { AddStatementOfService } from "../pages/add-statement-of-service";
+
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -88,8 +90,10 @@ type CreateFixtures = {
   orders: Orders;
   manageLaTransferToCourts: ManageLaTransferToCourts
   manageRepresentatives: ManageRepresentatives;
+  manageTTL: ManageTTL;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
+
 
 };
 
@@ -268,9 +272,13 @@ othersToBeGivenNotice: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
 
   },
+    manageTTL: async ({ page }, use) => {
+        await use(new ManageTTL(page));
+    },
 
   changeOtherToRespondent: async ({ page }, use) => {
     await use(new ChangeOtherToRespondent(page));
 
   },
+
 });
