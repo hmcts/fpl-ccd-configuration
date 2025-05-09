@@ -1,0 +1,107 @@
+{
+  "state": "Open",
+  "caseData": {
+    "orders": {
+      "orderType": [
+        "INTERIM_CARE_ORDER"
+      ]
+    },
+    "grounds": {
+      "thresholdReason": [
+        "beyondControl",
+        "noCare"
+      ],
+      "hasThresholdDocument": "NO",
+      "thresholdDetails": "Details"
+    },
+    "hearing": {
+      "hearingUrgencyType": "STANDARD",
+      "respondentsAware": "Yes"
+    },
+    "allocationProposal": {
+      "proposalV2": "District judge",
+      "proposalReason": "Example reason"
+    },
+    "representativeType": "LOCAL_AUTHORITY",
+    "children1": [
+      {
+        "id": "51a09959-b76d-4b62-ab12-87f9d547179d",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "White",
+            "firstName": "Alex",
+            "dateOfBirth": "2020-01-01"
+          }
+        }
+      },
+      {
+        "id": "af74e709-42b6-4298-91ab-c0c17f6c796d",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "White",
+            "firstName": "Emma",
+            "dateOfBirth": "2020-01-01"
+          }
+        }
+      }
+    ],
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "designated": "Yes",
+          "name": "Test",
+          "email": "test@test.com",
+          "phone": "077766655544",
+          "customerReference": "ABC123456",
+          "address": {
+            "PostCode": "CR0 2GE",
+            "AddressLine1": "Line 1"
+          },
+          "pbaNumber": "PBA0082848",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "firstName": "Sol",
+                "lastName": "1",
+                "notificationRecipient": "Yes"
+              }
+            },
+            {
+              "id": "1a34928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "OTHER",
+                "title": "Solicitor",
+                "firstName": "testFirst",
+                "lastName": "testLast",
+                "phone": "077766655544",
+                "email": "test2@test.com",
+                "notificationRecipient": "Yes",
+                "mainContact": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "respondents1": [
+      {
+        "id": "b9acd968-a13d-4ac1-8135-1edcb1d78700",
+        "value": {
+          "party": {
+            "lastName": "Wall",
+            "firstName": "John",
+            "relationshipToChild": "uncle"
+          },
+          "representedBy": [],
+          "legalRepresentation": "No"
+        }
+      }
+    ]
+  }
+}

@@ -42,16 +42,19 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      testIgnore: /.*.api.spec.ts/
     },
 
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
+      testIgnore: /.*.api.spec.ts/
     },
 
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
+      testIgnore: /.*.api.spec.ts/
     },
     {
       name: "preview",
@@ -59,16 +62,19 @@ export default defineConfig({
       retries: 3,
       timeout: 3*60*1000,
       expect: { timeout: 1*60*1000 },
+      testIgnore: /.*.api.spec.ts/
     },
 
     /* Test against mobile viewports. */
       {
           name: "ipadPro11",
           use: { ...devices["iPad Pro 11 landscape"] },
+          testIgnore: /.*.api.spec.ts/
       },
     {
       name: "GalaxyS4",
       use: { ...devices["Galaxy Tab S4 landscape"] },
+      testIgnore: /.*.api.spec.ts/
     },
 
 
@@ -81,6 +87,14 @@ export default defineConfig({
     //   name: 'Google Chrome',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
+
+    /* API test*/
+    {
+      name: "APITest",
+      testMatch: /.*.api.spec.ts/,
+      fullyParallel: false,
+      retries: 3
+    },
   ],
 
   /* Run your local dev server before starting the tests */
@@ -89,4 +103,5 @@ export default defineConfig({
   //   url: 'http://127.0.0.1:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
+
 });
