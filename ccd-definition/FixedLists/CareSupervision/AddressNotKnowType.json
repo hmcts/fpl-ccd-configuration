@@ -2,15 +2,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AddressNotKnowType",
-    "ListElementCode": "No fixed abode",
-    "ListElement": "No fixed abode",
+    "ListElementCode": "Whereabouts unknown",
+    "ListElement": "Whereabouts unknown",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AddressNotKnowType",
-    "ListElementCode": "Person deceased",
-    "ListElement": "Person deceased",
+    "ListElementCode": "No fixed abode",
+    "ListElement": "No fixed abode",
     "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AddressNotKnowType",
+    "ListElementCode": "Person deceased",
+    "ListElement": "Deceased",
+    "DisplayOrder": 3
   }
 ]
