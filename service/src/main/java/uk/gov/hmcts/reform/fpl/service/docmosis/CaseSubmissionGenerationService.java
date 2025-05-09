@@ -335,7 +335,7 @@ public class CaseSubmissionGenerationService
             .applicants(buildDocmosisApplicants(caseData))
             .children(buildDocmosisChildren(caseData.getAllChildren(), applicationLanguage))
             .others(buildDocmosisOthers(caseData.getAllOthers(), applicationLanguage))
-            .proceeding(buildDocmosisProceedings(caseData.getAllProceedings(), applicationLanguage))
+            .proceeding(buildDocmosisProceedings(caseData.getProceedings()))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings(), applicationLanguage))
             .dischargeOfOrder(caseData.isDischargeOfCareApplication())
             .groundsForEPOReason(isNotEmpty(caseData.getOrders())
@@ -648,20 +648,16 @@ public class CaseSubmissionGenerationService
             .collect(toList());
     }
 
-    private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<Proceeding>> proceedings,
-                                                              Language applicationLanguage) {
-        return proceedings.stream()
-            .map(Element::getValue)
+    private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<Proceeding>> proceedings) {
+        return unwrapElements(proceedings).stream()
             .filter(Objects::nonNull)
-            .map(proceeding -> buildProceeding(proceeding, applicationLanguage))
-            .collect(toList());
+            .map(this::buildProceeding)
+            .toList();
     }
 
-    private DocmosisProceeding buildProceeding(final Proceeding proceeding,
-                                               Language applicationLanguage) {
+    private DocmosisProceeding buildProceeding(final Proceeding proceeding) {
         return DocmosisProceeding.builder()
-            .onGoingProceeding(getValidAnswerOrDefaultValue(proceeding.getOnGoingProceeding(), applicationLanguage))
-            .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus()))
+            .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus().getValue()))
             .caseNumber(getDefaultIfNullOrEmpty(proceeding.getCaseNumber()))
             .started(getDefaultIfNullOrEmpty(proceeding.getStarted()))
             .ended(getDefaultIfNullOrEmpty(proceeding.getEnded()))
@@ -671,7 +667,7 @@ public class CaseSubmissionGenerationService
             .guardian(getDefaultIfNullOrEmpty(proceeding.getGuardian()))
             .sameGuardianDetails(
                 concatenateKeyAndValue(
-                    proceeding.getSameGuardianNeeded(),
+                    ofNullable(proceeding.getSameGuardianNeeded()).map(YesNo::getValue).orElse(null),
                     proceeding.getSameGuardianDetails()))
             .build();
     }
