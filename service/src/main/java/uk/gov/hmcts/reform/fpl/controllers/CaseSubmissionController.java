@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
@@ -56,7 +55,6 @@ public class CaseSubmissionController extends CallbackController {
     private final CaseSubmissionService caseSubmissionService;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
     private final CaseSubmissionChecker caseSubmissionChecker;
     private final NoticeOfChangeFieldPopulator nocFieldPopulator;
@@ -68,7 +66,6 @@ public class CaseSubmissionController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
-
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
         // check if we want to use a C1 or C110a template
@@ -100,6 +97,9 @@ public class CaseSubmissionController extends CallbackController {
 
         String label = String.format(CONSENT_TEMPLATE, signeeName);
         data.put("submissionConsentLabel", label);
+
+        String caseName = caseSubmissionService.generateCaseName(caseData);
+        data.put("caseName", caseName);
 
         return respond(caseDetails);
     }
