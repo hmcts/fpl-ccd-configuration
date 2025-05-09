@@ -67,7 +67,7 @@ export default defineConfig({
       name: "preview",
       use: { ...devices["Desktop Chrome"] },
       dependencies: ['user-session-setup'],
-      retries: 3,
+      retries: 1,
       timeout: 3*60*1000,
       expect: { timeout: 1*60*1000 },
     },
