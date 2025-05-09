@@ -44,7 +44,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2740", this::run2740,
         "DFPL-2744", this::run2744,
         "DFPL-2739", this::run2739,
-        "DFPL-2733", this::run2733
+        "DFPL-2756", this::run2756
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -77,10 +77,10 @@ public class MigrateCaseController extends CallbackController {
         //Required to run migration for TTL
     }
 
-    private void run2733(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2733";
-        final long expectedCaseId = 1718621798109264L;
-        final String orgId = "NTJRIVB";
+    private void run2756(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2756";
+        final long expectedCaseId = 1725874146484241L;
+        final String orgId = "FLXFDT7";
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
