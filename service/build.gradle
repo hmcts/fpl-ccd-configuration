@@ -333,7 +333,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '4.0.4'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
-  implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
+  implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.59.1'
 
   implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 
