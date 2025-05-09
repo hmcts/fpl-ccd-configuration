@@ -1093,6 +1093,12 @@ public class CaseData extends CaseDataParent {
 
     @JsonUnwrapped
     @Builder.Default
+    private final NoticeOfChangeThirdPartyRespondentAnswersData noticeOfChangeThirdPartyRespondentAnswersData =
+        NoticeOfChangeThirdPartyRespondentAnswersData.builder()
+            .build();
+
+    @JsonUnwrapped
+    @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
     @JsonUnwrapped
     @Builder.Default
