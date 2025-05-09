@@ -1,15 +1,15 @@
-import { type Page, type Locator, expect } from "@playwright/test";
-import { BasePage } from "./base-page";
+import {expect, type Locator} from "@playwright/test";
+import {BasePage} from "./base-page";
 
 export class ChangeCaseName extends BasePage {
-    readonly changeCaseName: Locator;
-    readonly caseName: Locator;
-
-    constructor(page: Page) {
-        super(page);
-        this.changeCaseName = page.getByRole('heading', { name: 'Change case name', exact: true });
-        this.caseName = page.getByLabel('Case name');   
+    get changeCaseName(): Locator {
+        return this.page.getByRole('heading', {name: 'Change case name', exact: true});
     }
+
+    get caseName(): Locator {
+        return this.page.getByLabel('Case name');
+    }
+
 
     async updateCaseName() {
         await expect(this.changeCaseName).toBeVisible;
@@ -17,4 +17,4 @@ export class ChangeCaseName extends BasePage {
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     };
-};
+}

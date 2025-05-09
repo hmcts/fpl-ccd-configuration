@@ -2,27 +2,40 @@ import {type Page, type Locator} from "@playwright/test";
 import {BasePage} from "./base-page";
 
 export class LegalCounsel extends BasePage {
-    readonly addCounsel: Locator;
-    readonly firstName: Locator;
-    readonly lastName: Locator;
-    readonly email: Locator;
-    readonly organisation: Locator;
-    readonly selectOrg: Locator;
-    readonly removeCounsel: Locator;
-    readonly removeCounselAlert: Locator;
-    readonly isRepresented: Locator;
+    get addCounsel(): Locator {
+        return this.page.getByRole('button', {name: 'Add new'});
+    }
 
-    constructor(page: Page) {
-        super(page);
-        this.addCounsel = page.getByRole('button', {name: 'Add new'});
-        this.firstName = page.getByLabel('First name');
-        this.lastName = page.getByLabel('Last name');
-        this.email = page.getByLabel('Email address');
-        this.organisation = page.getByLabel('You can only search for');
-        this.selectOrg = page.getByRole('link', {name: 'Select'});
-        this.removeCounsel = page.getByLabel('Remove Counsel');
-        this.removeCounselAlert = page.getByRole('button', {name: 'Remove'});
-        this.isRepresented = page.getByRole('group', {name: 'Do they have legal'});
+    get firstName(): Locator {
+        return this.page.getByLabel('First name');
+    }
+
+    get lastName(): Locator {
+        return this. page.getByLabel('Last name');
+    }
+
+    get email(): Locator {
+        return this. page.getByLabel('Email address');
+    }
+
+    get organisation(): Locator {
+        return this.page.getByLabel('You can only search for');
+    }
+
+    get selectOrg(): Locator {
+        return this.page.getByRole('link', {name: 'Select'});
+    }
+
+    get removeCounsel(): Locator {
+        return this. page.getByLabel('Remove Counsel');
+    }
+
+    get removeCounselAlert(): Locator {
+        return this.page.getByRole('button', {name: 'Remove'});
+    }
+
+    get isRepresented(): Locator {
+        return this. page.getByRole('group', {name: 'Do they have legal'});
     }
 
     async toAddLegalCounsel() {

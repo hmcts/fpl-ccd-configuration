@@ -2,26 +2,8 @@ import {type Page, type Locator } from "@playwright/test";
 import {BasePage} from "./base-page";
 import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
-export class ManageHearings extends HearingDetailsMixin(BasePage)
+export class ManageHearings extends HearingDetailsMixin()
 {
-  readonly hearingDetails: Locator;
-  readonly hearingDay: Locator;
-  readonly hearingMonth: Locator;
-  readonly hearingYear: Locator;
-  readonly hearingLengthInHours: Locator;
-  readonly hearingLengthInMinutes: Locator;
-  readonly inpPersonCheckbox: Locator;
-
-  constructor(page: Page) {
-    super(page);
-    this.hearingDetails = this.page.getByLabel('Add details (Optional)');
-    this.hearingDay = this.page.getByRole('textbox', { name: 'Day' });
-    this.hearingMonth = this.page.getByRole('textbox', { name: 'Month' });
-    this.hearingYear = this.page.getByRole('textbox', { name: 'Year' });
-    this.hearingLengthInHours = this.page.getByLabel('Hearing length, in hours');
-    this.hearingLengthInMinutes = this.page.getByLabel('Hearing length, in minutes');
-    this.inpPersonCheckbox = this.page.getByText('In person');
-  }
 
   async createNewHearingOnCase(){
     await this.page.getByLabel('Add a new hearing').check();

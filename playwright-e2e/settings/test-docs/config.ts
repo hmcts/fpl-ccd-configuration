@@ -35,6 +35,22 @@ const config: Config = {
     __dirname,
     "../test-docs/testTextFile.txt",
   ),
+  CTSCUserAuthFile:join(
+        __dirname,
+        "../.auth/CTSCLogin.json",
+  ),
+    legalUserAuthFile:join(
+        __dirname,
+        "../.auth/LegalLogin.json",
+    ),
+    LAUserAuthFile:join(
+        __dirname,
+        "../.auth/LALogin.json",
+    ),
+    courtAdminAuthFile:join(
+        __dirname,
+        "../.auth/courtAdminLogin.json",
+    ),
 };
 
 export default config as {
@@ -44,4 +60,8 @@ export default config as {
   testPdfFile4: string;
   testWordFile: string;
   testTextFile: string;
+  CTSCUserAuthFile: string;
+  legalUserAuthFile: string;
+  LAUserAuthFile:string;
+  courtAdminAuthFile:string;
 };
