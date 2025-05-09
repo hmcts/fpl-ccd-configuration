@@ -3,9 +3,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "judicialUser",
+    "CaseFieldID": "judgeType",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "PageID": "ListGatekeepingHearingAllocatedJudge",
     "PageLabel": "Add Allocated Judge",
     "PageDisplayOrder": 1,
@@ -18,37 +18,52 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "enterManually",
+    "CaseFieldID": "judicialUser",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "ListGatekeepingHearingAllocatedJudge",
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "judgeType = \"SALARIED_JUDGE\" OR judgeType = \"FEE_PAID_JUDGE\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "listGatekeepingHearing",
+    "CaseFieldID": "feePaidJudgeTitle",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ListGatekeepingHearingAllocatedJudge",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "judgeType = \"FEE_PAID_JUDGE\"",
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "listGatekeepingHearing",
     "CaseFieldID": "manualJudgeAllocationWarning",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "PageID": "ListGatekeepingHearingAllocatedJudge",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "enterManually = \"Yes\""
+    "FieldShowCondition": "judgeType = \"LEGAL_ADVISOR\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "tempAllocatedJudge",
-    "PageFieldDisplayOrder": 4,
+    "CaseFieldID": "manualJudgeDetails",
+    "PageFieldDisplayOrder": 5,
     "DisplayContext": "COMPLEX",
     "PageID": "ListGatekeepingHearingAllocatedJudge",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "enterManually = \"Yes\""
+    "FieldShowCondition": "judgeType = \"LEGAL_ADVISOR\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -87,7 +102,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "enterManually = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "judicialUser = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -100,6 +115,6 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "Publish": "Y",
-    "FieldShowCondition": "enterManually = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "judicialUser = \"DO_NOT_SHOW\""
   }
 ]

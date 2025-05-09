@@ -9,8 +9,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.ElinksService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
@@ -52,14 +55,32 @@ class AllocatedJudgeControllerAboutToStartTest extends AbstractCallbackTest {
 
     @WithMockUser
     @Test
-    void shouldSetEnterManuallyDefaultToNo() {
+    void shouldPopulateEventData() {
+        JudgeType judgeType = JudgeType.LEGAL_ADVISOR;
+        JudgeOrMagistrateTitle judgeTitle = JudgeOrMagistrateTitle.MAGISTRATES;
+        String judgeFullName = "judgeFullName";
+        String judgeEmailAddress = "judgeEmailAddress";
+
         CaseData caseData = CaseData.builder()
+            .allocatedJudge(Judge.builder()
+                .judgeType(judgeType)
+                .judgeTitle(judgeTitle)
+                .judgeFullName(judgeFullName)
+                .judgeEmailAddress(judgeEmailAddress)
+                .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
         CaseData after = extractCaseData(callbackResponse);
 
-        assertThat(after.getEnterManually()).isEqualTo(YesNo.NO);
+        assertThat(after.getAllocateJudgeEventData()).isEqualTo(new AllocateJudgeEventData(
+            judgeType, null, null,
+            Judge.builder()
+                .judgeTitle(judgeTitle)
+                .judgeFullName(judgeFullName)
+                .judgeEmailAddress(judgeEmailAddress)
+                .build()
+        ));
     }
 
 }

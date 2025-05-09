@@ -3,11 +3,15 @@ import {BasePage} from "../base-page";
 
 export function HearingDetailsMixin() {
   return class extends BasePage {
-    readonly hearingTypesLabelLocator: Locator;
+      readonly hearingTypesLabelLocator: Locator;
+      readonly feePaidJudgeTitleFieldSet: Locator;
+      readonly legalAdviserTitlesFieldSet: Locator;
 
     constructor(page: Page) {
       super(page);
       this.hearingTypesLabelLocator = this.page.locator('#hearingType .multiple-choice > label');
+      this.feePaidJudgeTitleFieldSet = this.page.getByRole('group',{name:'Select judge title'});
+      this.legalAdviserTitlesFieldSet = this.page.getByRole('group',{name:'Judge or magistrate\'s title'});
     }
 
     async completeHearingDetails() {
@@ -45,5 +49,39 @@ export function HearingDetailsMixin() {
       const hearingTypes = await this.hearingTypesLabelLocator.allTextContents();
       expect(hearingTypes).toEqual(expectedHearingTypes);
     }
+      async assertFeePaidJudgeTitle() {
+          const FeePaidTiltleList = [
+              'Deputy High Court Judge',
+              'Recorder',
+              'Deputy District Judge',
+              'Deputy District Judge (Magistrates)',
+          ];
+
+          for (const title of FeePaidTiltleList) {
+              await expect(this.feePaidJudgeTitleFieldSet).toContainText(title);
+          }
+      }
+      async assertLegalAdvisorTitle() {
+          const LegalAdviserTitle = [
+              'Magistrates (JP)',
+              'Legal Adviser'
+          ];
+
+          for (const title of LegalAdviserTitle) {
+              await expect(this.legalAdviserTitlesFieldSet).toContainText(title);
+          }
+
+      }
+
+      async assertJudgeType(){
+          await await expect.soft(this.page.getByRole('radio', { name: 'Salaried judge' })).toBeVisible();
+          await await expect.soft(this.page.getByRole('radio', { name: 'Fee paid judge' })).toBeVisible();
+          await await expect.soft(this.page.getByRole('radio', { name: 'Legal adviser' })).toBeVisible();
+      }
+
+      async selectjudgeType(judgeType: string) {
+          await this.assertJudgeType();
+          await this.page.getByRole('radio', { name: `${judgeType}` }).check();
+      }
   };
 }

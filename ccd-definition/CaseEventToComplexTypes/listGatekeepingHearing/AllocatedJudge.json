@@ -3,20 +3,17 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
-    "ListElementCode": "judgeJudicialUser",
-    "EventElementLabel": "Search for Judge",
+    "CaseFieldID": "manualJudgeDetails",
+    "ListElementCode": "judgeTitle",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "allocatedJudge.judgeTitle = \"DO_NOT_SHOW\""
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
-    "ListElementCode": "judgeTitle",
-    "EventElementLabel": "Judge or magistrate's title",
+    "CaseFieldID": "manualJudgeDetails",
+    "ListElementCode": "judgeLastName",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
@@ -24,9 +21,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
-    "ListElementCode": "otherTitle",
-    "EventElementLabel": "Title",
+    "CaseFieldID": "manualJudgeDetails",
+    "ListElementCode": "judgeFullName",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
@@ -34,30 +30,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
-    "ListElementCode": "judgeLastName",
-    "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
-    "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
-    "ListElementCode": "judgeFullName",
-    "EventElementLabel": "Full name",
-    "FieldDisplayOrder": 5,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
-    "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "manualJudgeDetails",
     "ListElementCode": "judgeEmailAddress",
-    "EventElementLabel": "Email Address",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   }
 ]

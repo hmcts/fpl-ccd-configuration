@@ -1,8 +1,7 @@
 import {type Page, type Locator } from "@playwright/test";
-import {BasePage} from "./base-page";
 import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
-export class ManageHearings extends HearingDetailsMixin(BasePage)
+export class ManageHearings extends HearingDetailsMixin()
 {
   readonly hearingDetails: Locator;
   readonly hearingDay: Locator;
@@ -58,9 +57,14 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     await this.clickContinue();
     await this.completeHearingDetails();
     await this.clickContinue();
-    await this.page.getByRole('radio', { name: 'Yes' }).check();
-    await this.clickContinue();
-    await this.page.getByRole('radio', { name: 'No' }).check();
+    await this.page.getByRole('group',{ name: 'Is the allocated judge or magistrate sitting this hearing?' })
+        .getByText('No').check()
+      await  this.selectjudgeType('legal adviser')
+      await this.page.getByRole('radio', { name: 'Legal Adviser', exact: true }).check();
+      await this.page.getByRole('textbox', { name: 'Last name' }).fill('Legal adviser');
+      await this.page.getByRole('textbox', { name: 'Email Address' }).fill('email@email.com');
+        await this.clickContinue();
+    await this.page.getByRole('group', { name: 'Do you want to send a notice of hearing?' }).getByLabel('No').check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
   }
@@ -92,10 +96,10 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     await this.clickContinue();
     if (typeof updatedHearingJudge !== 'undefined') {
       await this.page.getByRole('radio', { name: 'No' }).check();
-      await this.page.getByLabel('Search for Judge (Optional)').fill(updatedHearingJudge);
-      await this.page.waitForSelector(`span:text("${updatedHearingJudge}")`);
+      await this.selectjudgeType('Salaried judge');
+      await this.page.getByLabel('Search for Judge').fill(updatedHearingJudge);
+      await this.page.waitForSelector(`span:text('${updatedHearingJudge}')`);
       await this.page.getByText(updatedHearingJudge).click();
-      await this.page.getByRole('group', { name: 'Add legal adviser details' }).getByLabel('No').check();
       await this.clickContinue();
       await this.page.waitForSelector(`span:text("Do you want to send a notice of hearing?")`);
     } else {
