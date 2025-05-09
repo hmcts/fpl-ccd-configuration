@@ -22,9 +22,9 @@ test.describe('log expert report', () => {
             await signInPage.login(CTSCUser.email, CTSCUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
 
-            await logExpertReport.gotoNextStep('Log expert report');
+            await logExpertReport.gotoNextStep('Others to be given notice');
             await logExpertReport.logExpertReport();
-            await logExpertReport.tabNavigation('Expert Reports')
+            await logExpertReport.tabNavigation('Others to be given notice')
             await expect(page.getByText('Report 1')).toBeVisible();
             await expect(page.getByText('Psychiatric - On child only')).toBeVisible();
         })

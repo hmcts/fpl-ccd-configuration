@@ -30,7 +30,6 @@ export class StartApplication extends BasePage {
   readonly submitApplicationLink: Locator;
   readonly otherPeopleInCaseLink: Locator;
   readonly returnApplicationLink: Locator;
-  readonly  ordersAndDirectionsSoughtFinishedStatus: Locator;
 
   // readonly logExpertReportLink: Locator;
   public constructor(page: Page) {
@@ -62,6 +61,12 @@ super(page);
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
+
+    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
+    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case' });
+    this.returnApplicationLink = page.getByRole('link', { name: 'Return application' });
+    this.othersToBeGivenNoticeHeading = page.getByRole('heading', { name: 'others to be given notice' });
+
     this.courtServices = page.getByRole('link', { name: 'Court services'});
     this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
     this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
@@ -100,6 +105,11 @@ super(page);
   async riskAndHarmToChildren() {
     await expect(this.riskAndHarmToChildrenLink).toBeVisible();
     await this.riskAndHarmToChildrenLink.click();
+  }
+
+  async othersToBeGivenNoticeHeading() {
+    await expect(this.othersToBeGivenNoticeHeading).toBeVisible();
+    await this.othersToBeGivenNoticeHeading.click();
   }
 
   async addApplicationDocuments() {
