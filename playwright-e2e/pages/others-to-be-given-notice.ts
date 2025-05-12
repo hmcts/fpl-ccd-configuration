@@ -65,34 +65,3 @@ export class OthersToBeGivenNotice extends BasePage {
         await this.saveAndContinue.click();
     }
 }
-
- async othersToBeGivenNotice() {
-            await expect(this.othersToBeGivenNoticeHeading).toBeVisible;
-            await this.fullName.fill("John Doe");
-            await this.dobDay.fill("1");
-            await this.dobMonth.fill("10");
-            await this.dobYear.fill("1990")
-            await this.gender.selectOption('1: Male');
-            await this.placeOfBirth.fill("London");
-            await this.currentAddress.getByLabel('No').check();
-            await this.reasonUnknownAddress.selectOption('1: No fixed abode');
-            await this.telephoneNumber.fill("0123456789")
-            await this.relationshipToChild.fill("uncle")
-            await this.contactDetailsHidden.getByLabel('No').check();
-            await this.page.getByLabel('Don\'t know').check();
-            await this.addNew.click();
-            await this.page.locator('#others_additionalOthers_0_name').fill('John Grey');
-            await this.page.locator('#others_additionalOthers #DOB-day').fill("12");
-            await this.page.locator('#others_additionalOthers #DOB-month').fill("11");
-            await this.page.locator('#others_additionalOthers #DOB-year').fill("1999");
-            await this.page.locator('#others_additionalOthers_0_gender').selectOption('2: Female');
-            await this.page.locator('#others_additionalOthers_0_birthPlace').fill("London");
-            await this.page.locator('#others_additionalOthers_0_addressKnowV2-No').check();
-            await this.page.locator('#others_additionalOthers_0_addressNotKnowReason').selectOption('1: No fixed abode');
-            await this.page.locator('#others_additionalOthers_0_telephone').fill("0000000000");
-            await this.page.locator('#others_additionalOthers_0_childInformation').fill('test');
-            await this.page.locator('#others_additionalOthers_0_litigationIssues-NO').check();
-            await this.submit.click();
-            await this.saveAndContinue.click();
-        }
-};
