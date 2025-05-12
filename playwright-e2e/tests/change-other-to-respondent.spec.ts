@@ -28,8 +28,3 @@ test.describe('Change other to respondent', () => {
             await expect(page.getByText('Respondents 1', { exact: true })).toBeVisible();
         })
 });
-
-            await expect(page.getByText('Respondents 3', { exact: true })).toBeVisible();
-            await expect(page.getByText('Thierry', { exact: true })).toBeVisible();
-        })
-});
