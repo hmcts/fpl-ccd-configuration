@@ -15,8 +15,6 @@ export class ChangeOtherToRespondent extends BasePage {
     readonly reasonUnknownAddress: Locator;
     readonly telephoneNumber: Locator;
     readonly relationshipToChild: Locator;
-    readonly abilityToTakeProceeding: Locator;
-    readonly anyLegalRepresentation: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -29,7 +27,11 @@ export class ChangeOtherToRespondent extends BasePage {
         this.dobYear = page.getByLabel('Year');
         this.gender = page.getByLabel('Gender (Optional)');
         this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
-
+        this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
+        this.currentAddress = page.getByRole('group', { name: '*Current address known? (' });
+        this.reasonUnknownAddress = page.getByLabel('*Reason the address is not');
+        this.telephoneNumber = page.getByLabel('Telephone number (Optional)');
+        this.relationshipToChild = page.getByText('What is this person\'s relationship to the child or children in this case? (Optional)');
     }
 
     async ChangeOtherToRespondent() {
