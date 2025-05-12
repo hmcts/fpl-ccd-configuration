@@ -14,7 +14,7 @@ export default defineConfig({
   testDir: "./playwright-e2e",
   testMatch:'*spec.ts',
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   timeout: 3*60*1000, //each test execution time is set to 3 min
   expect: { timeout: 1*110*1000 }, //wait time for the assertion to be true 110 sec
 
