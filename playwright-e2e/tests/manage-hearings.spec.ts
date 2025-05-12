@@ -11,7 +11,7 @@ import {expect} from "@playwright/test";
 import {testConfig} from "../settings/test-config";
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe('manage hearings', () => {
+test.describe('manage hearings @sessionreuse', () => {
   const dateTime = new Date().toISOString();
   let caseNumber : string;
   let caseName : string;
@@ -59,6 +59,7 @@ test.describe('manage hearings', () => {
       caseName = 'CTSC admin edits future hearing judge ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, preJudgeAllocationCaseData);
       await manageHearings.switchUser(ctscUser.page);
+      await gateKeepingListing.switchUser(ctscUser.page);
       await manageHearings.navigateTOCaseDetails(caseNumber);
       await gateKeepingListing.gotoNextStep('Judicial Gatekeeping');
       await gateKeepingListing.completeJudicialGatekeeping();

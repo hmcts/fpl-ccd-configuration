@@ -9,7 +9,7 @@ import { setHighCourt } from '../utils/update-case-details';
 import { SubmitCase } from '../pages/submit-case';
 import { ReturnApplication } from '../pages/return-application';
 
-test.describe('Return application', () => {
+test.describe('Return application @sessionreuse', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;

@@ -12,7 +12,7 @@ import {
 import { expect } from '@playwright/test';
 import {urlConfig} from "../settings/urls";
 
-test.describe('Manage child representatives ', () => {
+test.describe('Manage child representatives @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;

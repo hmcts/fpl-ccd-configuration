@@ -4,7 +4,7 @@ import caseData from '../caseData/caseWithRespodentDetailsAttached.json' assert 
 import { newSwanseaLocalAuthorityUserOne, CTSCUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
-test.describe('Change other to respondent', () => {
+test.describe('Change other to respondent @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;

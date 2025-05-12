@@ -4,7 +4,7 @@ import caseData from '../caseData/mandatorySubmissionFields.json' assert { type:
 import { CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
-test.describe('Change case name', () => {
+test.describe('Change case name @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;

@@ -5,7 +5,7 @@ import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert
 import {expect} from "@playwright/test";
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe('manage orders', () => {
+test.describe('manage orders @sessionreuse', () => {
     let dateTime = new Date().toISOString();
     new Date().toTimeString()
     let caseNumber: string;

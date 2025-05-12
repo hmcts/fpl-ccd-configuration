@@ -6,7 +6,7 @@ import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
 
-test.describe('Placement', () => {
+test.describe('Placement @sessionreuse', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;

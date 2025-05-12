@@ -4,7 +4,7 @@ import {createCase, updateCase} from "../utils/api-helper";
 import caseWithCourtService from "../caseData/mandatoryWithOtherSubmissionFields.json" assert {type: "json"}
 
 
-test.describe('Court Service', () => {
+test.describe('Court Service @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
 

@@ -5,7 +5,7 @@ import { newSwanseaLocalAuthorityUserOne, CTSCUser} from "../settings/user-crede
 import { expect } from "@playwright/test";
 import {LAUserPage} from "../pages/local-authority-user-browser.ts";
 
-test.describe('Case progression report ', () => {
+test.describe('Case progression report @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;

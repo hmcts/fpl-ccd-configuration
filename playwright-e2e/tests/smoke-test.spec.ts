@@ -3,7 +3,7 @@ import {newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser} from "../setti
 import {CreateCaseName} from "../utils/create-case-name";
 import {CaseFileView} from "../pages/case-file-view";
 
-test.describe('', () => {
+test.describe(' smoke Tests @sessionreuse', () => {
     test.slow();
     test("Local Authority submit C110A application @smoke-test @accessibility", async ({
                                                                                            signInPage,

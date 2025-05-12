@@ -4,7 +4,7 @@ import caseData from '../caseData/caseSentToGatekeeper.json' assert { type: "jso
 import { newSwanseaLocalAuthorityUserOne, CTSCUser} from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
-test.describe('Others to be given notice', () => {
+test.describe('Others to be given notice @sessionreuse', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let casename: string;

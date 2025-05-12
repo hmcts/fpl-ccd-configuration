@@ -4,7 +4,7 @@ import caseData from '../caseData/mandatorySubmissionFields.json' with { type: "
 import { CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
-test.describe('Manage representatives', () => {
+test.describe('Manage representatives @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;

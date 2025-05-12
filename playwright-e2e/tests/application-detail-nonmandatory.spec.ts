@@ -73,7 +73,7 @@ test.describe('Non mandatory application details before application submit @sess
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
 
             await courtServices.switchUser(localAuthorityUser.page);
-            await startApplication.switchUser(localAuthorityUser.page)
+            await startApplication.switchUser(localAuthorityUser.page);
             await courtServices.navigateTOCaseDetails(caseNumber);
 
             // Court Services Needed
@@ -102,6 +102,8 @@ test.describe('Non mandatory application details before application submit @sess
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
 
             await otherPeopleInCase.switchUser(localAuthorityUser.page);
+            await startApplication.switchUser(localAuthorityUser.page);
+
             await otherPeopleInCase.navigateTOCaseDetails(caseNumber);
 //add other people in the case
             await startApplication.addOtherPeopleInCase()

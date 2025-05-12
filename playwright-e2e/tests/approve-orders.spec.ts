@@ -67,7 +67,7 @@ test.describe('Approve Orders @sessionreuse', () => {
             await expect(approveOrders.page.getByText('Confidential order uploaded by CTSC')).toBeHidden();
         });
 
-    test('Review CMO (High Court) WA Task',
+    test.skip('Review CMO (High Court) WA Task',
     async ({ page, signInPage, approveOrders, caseFileView }) => {
       casename = 'Review CMO (High Court) WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);

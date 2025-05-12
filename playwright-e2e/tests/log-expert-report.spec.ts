@@ -5,7 +5,7 @@ import returnedCase from '../caseData/returnCase.json' assert { type: 'json' };
 import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
-test.describe('log expert report', () => {
+test.describe('log expert report @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;

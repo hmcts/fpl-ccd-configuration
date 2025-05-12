@@ -60,9 +60,9 @@ test.describe('send and reply message @sessionreuse',()=>{
         await judicialMessages.judgeReplyMessage();
         await judicialMessages.checkYourAnsAndSubmit();
         await judicialMessages.tabNavigation('Judicial messages');
-        await expect(legalUser.page.getByText('FamilyPublicLaw+ctsc@gmail.com - Some note judiciary-only@mailnesia.com - Reply CTSC admin about the hearing.')).toBeVisible();
-        await expect(legalUser.page.getByRole('cell', { name: 'FamilyPublicLaw+ctsc@gmail.com - Some note Other Judge/Legal Adviser (judiciary-only@mailnesia.com) - Reply CTSC admin about the hearing.', exact: true })).toBeVisible();
-        await expect(legalUser.page.getByText('Reply CTSC admin about the hearing.', { exact: true })).toBeVisible();
+        await expect(judicialMessages.page.getByText('FamilyPublicLaw+ctsc@gmail.com - Some note judiciary-only@mailnesia.com - Reply CTSC admin about the hearing.')).toBeVisible();
+        await expect(judicialMessages.page.getByRole('cell', { name: 'FamilyPublicLaw+ctsc@gmail.com - Some note Other Judge/Legal Adviser (judiciary-only@mailnesia.com) - Reply CTSC admin about the hearing.', exact: true })).toBeVisible();
+        await expect(judicialMessages.page.getByText('Reply CTSC admin about the hearing.', { exact: true })).toBeVisible();
     });
 
     test('CTSC admin close the Message',async({judicialMessages,ctscUser}) =>{
@@ -75,7 +75,7 @@ test.describe('send and reply message @sessionreuse',()=>{
       await judicialMessages.CTSCUserCloseMessage();
       await judicialMessages.checkYourAnsAndSubmit();
       await judicialMessages.tabNavigation('Judicial messages');
-      await expect(ctscUser.page.getByRole('cell', { name: 'Closed', exact: true })).toBeVisible();
+      await expect(judicialMessages.page.getByRole('cell', { name: 'Closed', exact: true })).toBeVisible();
     })
 
 });

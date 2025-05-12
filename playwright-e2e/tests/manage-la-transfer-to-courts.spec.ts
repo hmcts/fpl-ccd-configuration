@@ -9,7 +9,7 @@ import { expect } from "@playwright/test";
 import {testConfig} from "../settings/test-config";
 import {urlConfig} from "../settings/urls";
 
-test.describe('Manage LAs / Transfer to court', () => {
+test.describe('Manage LAs / Transfer to court @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
