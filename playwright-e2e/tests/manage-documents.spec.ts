@@ -11,7 +11,7 @@ import {setHighCourt} from '../utils/update-case-details';
 const require = createRequire(import.meta.url);
 
 
-test.describe('Manage Documents @sessionreuse', () => {
+test.describe('Manage Documents @sessionreuse @test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
