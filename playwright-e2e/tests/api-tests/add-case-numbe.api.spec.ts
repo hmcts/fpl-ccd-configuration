@@ -1,6 +1,5 @@
 import { test } from "../../fixtures/api-test-fixture";
 import { swanseaOrgCAAUser } from "../../settings/user-credentials";
-import caseDetailsJson from '../../caseData/apiTest/mandatoryOpenCase.json' assert { type: 'json' };
 import { expect } from "@playwright/test";
 
 test.describe('Add case number API test @apiTest', () => {
