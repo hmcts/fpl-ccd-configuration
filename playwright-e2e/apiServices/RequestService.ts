@@ -128,10 +128,8 @@ export class RequestService {
 
     async getAccessToken(user: UserCredential): Promise<string> {
         if (ACCESS_TOKEN_SIMPLE_CACHE[user.email]) {
-            console.log('return Idam token from cache');
             return ACCESS_TOKEN_SIMPLE_CACHE[user.email];
         } else {
-            console.log('getting Idam token');
             let token = await getAccessToken({user: user})
                 .then(tokenRsp => tokenRsp?.data.access_token as string);
             ACCESS_TOKEN_SIMPLE_CACHE[user.email] = token;
