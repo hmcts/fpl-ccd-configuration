@@ -58,7 +58,7 @@
     "ListElementCode": "genderIdentification",
     "FieldType": "Text",
     "ElementLabel": "What gender do they identify with?",
-    "FieldShowCondition": "gender=\"Indeterminate\"",
+    "FieldShowCondition": "gender=\"They identify in another way\"",
     "SecurityClassification": "Public"
   },
   {
@@ -319,5 +319,56 @@
     "FieldTypeParameter": "CaseExtensionReasonList",
     "ElementLabel": "Why is this case being extended?",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "detailsHidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you need contact details hidden from other parties?",
+    "FieldShowCondition": "livingSituation!=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public",
+    "Comment": "DEPRECATED"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "detailsHiddenReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "livingSituation=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public",
+    "Comment": "DEPRECATED"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "proceedingsLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Ability to take part in proceedings",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "proceedingsLabel=\"DO_NOT_SHOW\"",
+    "Comment": "DEPRECATED"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "litigationIssues",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LitigationCapacityIssues",
+    "ElementLabel": "Do you believe this child will have problems with litigation capacity (understanding what's happening in the case)?",
+    "FieldShowCondition": "livingSituation=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public",
+    "Comment": "DEPRECATED"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "litigationIssuesDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "livingSituation=\"DO_NOT_SHOW\"",
+    "Comment": "DEPRECATED"
   }
 ]
