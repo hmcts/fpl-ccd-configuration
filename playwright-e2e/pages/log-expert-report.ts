@@ -23,7 +23,7 @@ export class LogExpertReport extends BasePage {
     }
     public async logExpertReport() {
         await this.addNew.click();
-        await this.typeOfReport.selectOption('Psychiatric - On child only');
+        await this.typeOfReport.selectOption('Log expert report');
         await this.Day.fill('14');
         await this.Month.fill('3');
         await this.Year.fill('2024');

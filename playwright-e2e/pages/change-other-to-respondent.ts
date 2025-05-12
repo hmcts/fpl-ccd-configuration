@@ -44,7 +44,7 @@ export class ChangeOtherToRespondent extends BasePage {
         await this.dobMonth.fill('04');
         await this.dobYear.fill('2000');
         await this.gender.selectOption('1: Male');
-        await this.currentAddress.getByLabel('No').check();
+        await this.currentAddress.check();
         await this.reasonUnknownAddress.selectOption('1: No fixed abode');
         await this.telephoneNumber.fill("00000000000");
         await this.relationshipToChild.fill("Uncle");
