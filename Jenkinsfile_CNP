@@ -323,6 +323,8 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:previews') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
