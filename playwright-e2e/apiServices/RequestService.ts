@@ -17,7 +17,7 @@ export class RequestService {
         this.request = request;
     }
 
-    async createCase(user: UserCredential, caseDetails: any, caseName: string = "API test case", caseState?: string) {
+    async createCase(user: UserCredential, caseName: string = "API test case", caseDetails?: any, caseState?: string) {
         const createCaseRsp = await this.sendRequest("testing-support/case/create", user, {caseName: caseName});
         expect(createCaseRsp.ok()).toBeTruthy();
 
@@ -28,12 +28,20 @@ export class RequestService {
 
         let populatedCaseDetails = {
             id: caseDetailsCreated.id,
-            state: (caseState) ? caseState : caseDetails.state,
-            caseData: Object.assign(caseDetailsCreated.data, caseDetails.caseData) as any
+            state: 'Open',
+            caseData: caseDetailsCreated.data
         };
 
-        let updateRsp = await this.sendRequest(`testing-support/case/populate/${populatedCaseDetails.id}`, systemUpdateUser, populatedCaseDetails);
-        expect(updateRsp.ok()).toBeTruthy();
+        if (caseDetails) {
+            populatedCaseDetails = {
+                id: caseDetailsCreated.id,
+                state: (caseState) ? caseState : caseDetails.state,
+                caseData: Object.assign(caseDetailsCreated.data, caseDetails.caseData) as any
+            };
+
+            let updateRsp = await this.sendRequest(`testing-support/case/populate/${populatedCaseDetails.id}`, systemUpdateUser, populatedCaseDetails);
+            expect(updateRsp.ok()).toBeTruthy();
+        }
 
         populatedCaseDetails.caseData.id = populatedCaseDetails.id;
         populatedCaseDetails.caseData.state = populatedCaseDetails.state;
@@ -41,20 +49,20 @@ export class RequestService {
         return populatedCaseDetails;
     }
 
-    async callAboutToStart(eventName: string, user: UserCredential, caseData: any, caseDataBefore?: any) {
-        return await this.callback(`${eventName}/about-to-start`, user, caseData, caseDataBefore);
+    async callAboutToStart(eventName: string, user: UserCredential, caseDetails: any, caseDetailsBefore?: any) {
+        return await this.callback(`${eventName}/about-to-start`, user, caseDetails, caseDetailsBefore);
     }
 
-    async callMidEvent(eventName: string, user: UserCredential, caseData: any, caseDataBefore?: any) {
-        return await this.callback(`${eventName}/mid-event`, user, caseData, caseDataBefore);
+    async callMidEvent(eventName: string, user: UserCredential, caseDetails: any, caseDetailsBefore?: any) {
+        return await this.callback(`${eventName}/mid-event`, user, caseDetails, caseDetailsBefore);
     }
 
-    async callAboutToSubmit(eventName: string, user: UserCredential, caseData: any, caseDataBefore?: any) {
-        return await this.callback(`${eventName}/about-to-submit`, user, caseData, caseDataBefore);
+    async callAboutToSubmit(eventName: string, user: UserCredential, caseDetails: any, caseDetailsBefore?: any) {
+        return await this.callback(`${eventName}/about-to-submit`, user, caseDetails, caseDetailsBefore);
     }
 
-    async callSubmitted(eventName: string, user: UserCredential, caseData: any, caseDataBefore?: any) {
-        return await this.callback(`${eventName}/submitted`, user, caseData, caseDataBefore);
+    async callSubmitted(eventName: string, user: UserCredential, caseDetails: any, caseDetailsBefore?: any) {
+        return await this.callback(`${eventName}/submitted`, user, caseDetails, caseDetailsBefore);
     }
 
     async callback(eventUrl: string, user: UserCredential, caseDetails: any, caseDetailsBefore?: any) {
@@ -72,19 +80,29 @@ export class RequestService {
                 state: caseDetailsBefore.state,
                 data: caseDetailsBefore.caseData
             };
+        } else {
+            data.case_details_before = data.case_details;
         }
+
         let response = await this.sendRequest(`callback/${eventUrl}`, user, data);
         expect(response.ok()).toBeTruthy();
 
-        let aboutToStartOrSubmitCallbackResponse = await response.json();
-        return {
-            caseData: aboutToStartOrSubmitCallbackResponse.data,
-            dataClassification: aboutToStartOrSubmitCallbackResponse.data_classification,
-            securityClassification: aboutToStartOrSubmitCallbackResponse.security_classification,
-            errors: aboutToStartOrSubmitCallbackResponse.errors,
-            warnings: aboutToStartOrSubmitCallbackResponse.warnings,
-            state: aboutToStartOrSubmitCallbackResponse.state
-        };
+        try {
+            let aboutToStartOrSubmitCallbackResponse = await response.json();
+            return {
+                caseData: aboutToStartOrSubmitCallbackResponse?.data,
+                dataClassification: aboutToStartOrSubmitCallbackResponse?.data_classification,
+                securityClassification: aboutToStartOrSubmitCallbackResponse?.security_classification,
+                errors: aboutToStartOrSubmitCallbackResponse?.errors,
+                warnings: aboutToStartOrSubmitCallbackResponse?.warnings,
+                state: aboutToStartOrSubmitCallbackResponse?.state,
+                httpStatus: response.status()
+            };
+        } catch (e) {
+            return {
+                httpStatus: response.status()
+            };
+        }
     }
 
     async sendRequest(urlPath: string, user: UserCredential, data: any, method: "get" | "post" = "post") {

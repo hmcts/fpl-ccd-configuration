@@ -44,6 +44,9 @@ export class DocumentService {
                     extractedLine = "";
                 }
             });
+            if (extractedLine) {
+                extractedPage += normalizeWhitespace(extractedLine) + "\n";
+            }
 
             const paginationText = `${pageNum} of ${pdf.numPages}`;
             extractedPage = extractedPage.replace(new RegExp(`${paginationText}(?!.*${paginationText})`), "");

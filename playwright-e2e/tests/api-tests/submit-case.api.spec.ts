@@ -2,7 +2,7 @@ import { test } from "../../fixtures/api-test-fixture";
 import caseDetailsJson from '../../caseData/apiTest/mandatoryOpenCase.json' assert { type: 'json' };
 import { swanseaOrgCAAUser } from "../../settings/user-credentials";
 import { expect } from "@playwright/test";
-import { formatDateToStringInDocument, getAge } from "../../utils/format-helper";
+import { formatDateToString, getAge } from "../../utils/format-helper";
 
 const EVENT = "case-submission";
 const APPLICATION_FEE = "251500";
@@ -13,10 +13,10 @@ test.describe('Submit case API test @apiTest', () => {
     let caseDetailsBefore : any;
     let placeHolderForDocument: { [index: string]: any; };
     test.beforeAll(async ({ callback }) => {
-        caseDetailsBefore = await callback.createCase(swanseaOrgCAAUser, caseDetailsJson, "Submit case API test");
+        caseDetailsBefore = await callback.createCase(swanseaOrgCAAUser, "Submit case API test", caseDetailsJson);
         placeHolderForDocument = {
             "id": `${caseDetailsBefore.caseData.id}`,
-            "issueDate": formatDateToStringInDocument(new Date()),
+            "issueDate": formatDateToString(new Date()),
             "age": getAge("2020-01-01")
         };
     });
