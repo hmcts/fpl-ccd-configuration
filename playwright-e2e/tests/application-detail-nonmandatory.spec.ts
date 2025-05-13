@@ -2,7 +2,7 @@ import {test} from "../fixtures/fixtures";
 import {newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
 import {createCase} from "../utils/api-helper";
 
-test.describe('Non mandatory application details before application submit @sessionreuse', () => {
+test.describe('Non mandatory application details before application submit @sessionreuse @test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;

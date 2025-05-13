@@ -10,7 +10,7 @@ import {AddAndRemoveAdminCaseFlag} from '../pages/add-and-remove-admin-case-flag
 import {SignInPage} from '../pages/sign-in';
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe('Add a case flag @sessionreuse', () => {
+test.describe('Add a case flag @sessionreuse @test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
