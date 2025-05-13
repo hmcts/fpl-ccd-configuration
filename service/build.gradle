@@ -189,7 +189,7 @@ task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke 
   dependsOn(inStrictOrder(runSmokeTests))
 }
 
-task functional(type:Test,description: 'Runs the functional tests.') {
+task functional(description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(runApiTests))
 }
 
