@@ -25,8 +25,8 @@ export class AdditionalApplications extends BasePage {
     this.nonConfidentialC2Order = page.locator('[for="isC2Confidential_No"]');
     this.applicant = page.getByLabel('Select applicant');
     this.c1ApplicationType = page.getByLabel('Select application');
-    this.applicationForm = page.getByRole('textbox', { name: 'Upload application' });
-    this.c2ApplicationForm = page.getByRole('textbox', { name: 'Upload C2 application' });
+    this.applicationForm = page.getByText('Upload application' ,{ exact: true });
+    this.c2ApplicationForm = page.getByText( 'Upload C2 application' ,{ exact: true });
     this.acknowledgeOtherApplicationForm = page.locator('[name="temporaryOtherApplicationsBundle_documentAcknowledge"]');
     this.acknowledgeC2ApplicationForm = page.locator('[name="temporaryC2Document_documentAcknowledge"]');
     this.sameDay = page.getByText('On the same day');

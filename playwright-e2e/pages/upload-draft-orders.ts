@@ -1,5 +1,6 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
+import {stubTrue} from "lodash";
 
 export class UploadDraftOrders extends BasePage {
 
@@ -12,10 +13,10 @@ export class UploadDraftOrders extends BasePage {
     constructor(page: Page) {
         super(page);
         this.addNewLocator = page.getByRole('button', { name: 'Add new' });
-        this.uploadOrderLocator = page.getByRole('textbox', { name: 'Upload the order' });
+        this.uploadOrderLocator = page.getByText('Upload the order' ,{ exact: true });
         this.cmoOptionLocator = page.getByLabel('Case Management (CMO)');
         this.otherOptionalLocator = page.getByLabel('Additional order (PDO ETC)');
-        this.attachCmoLocator = page.getByRole('textbox', { name: 'Attach CMO' });
+        this.attachCmoLocator = page.getByText( 'Attach CMO' ,{exact:true});
     }
 
     //upload CMO

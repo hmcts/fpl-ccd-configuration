@@ -11,7 +11,7 @@ export class Placement extends BasePage
   async submitPlacementOrder() {
     await this.page.getByLabel('Which child?').selectOption('Timothy Jones');
     await this.clickContinue();
-    await this.page.getByRole('textbox', { name: 'Application document' }).setInputFiles(config.testPdfFile);
+    await this.page.locator('#placement_placementApplication').setInputFiles(config.testPdfFile);
     await this.waitForAllUploadsToBeCompleted();
     await this.page.waitForTimeout(5000);
     await this.page.locator('#placement_placementSupportingDocuments_0_document').setInputFiles(config.testPdfFile2);

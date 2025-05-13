@@ -18,12 +18,12 @@ export class C1WithSupplement extends BasePage {
         super(page);
         this.c1WithSupplementHeading = page.getByRole('heading', { name: 'C1 with supplement' });
         this.yesRadio = page.getByRole('checkbox', { name: 'Yes' });
-        this.uploadApplicationTextbox = page.getByRole('textbox', { name: 'Upload application' });
+        this.uploadApplicationTextbox = page.getByText( 'Upload application' ,{ exact: true });
         this.onTheSameDay = page.getByLabel('On the same day');
         this.addNewSupplementBundle = page.locator('#submittedC1WithSupplement_supplementsBundle').getByRole('button', { name: 'Add new' });
         this.documentName = page.getByLabel('Document name');
         this.notes = page.getByLabel('Notes (Optional)');
-        this.uploadDocument = page.getByRole('textbox', { name: 'Upload document' });
+        this.uploadDocument = page.getByText( 'Upload document',{ exact:true});
         this.ackRelatedToCase = page.locator('#submittedC1WithSupplement_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE');
     }
     async c1WithSupplementSmokeTest() {
