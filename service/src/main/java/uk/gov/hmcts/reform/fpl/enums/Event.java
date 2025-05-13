@@ -25,7 +25,7 @@ public enum Event {
     COURT_SERVICES("attendingHearing", "Court services"),
     LANGUAGE_REQUIREMENTS("languageSelection", "Welsh language requirements"),
     SUBMIT_APPLICATION("submitApplication", "Submit application"),
-    CASE_NAME("changeCaseName", "Change case name"),
+    CASE_NAME("changeCaseName", "Change draft case name"),
     APPLICATION_DOCUMENTS("uploadDocuments", "Upload documents"),
     SELECT_COURT("selectCourt", "Select court to issue"),
     ADD_URGENT_DIRECTIONS("addUrgentDirections", "Add urgent directions"),

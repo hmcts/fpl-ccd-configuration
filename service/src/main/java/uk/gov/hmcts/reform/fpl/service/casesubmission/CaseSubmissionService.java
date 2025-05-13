@@ -92,4 +92,17 @@ public class CaseSubmissionService {
     public String getSigneeName(CaseData caseData) {
         return documentGenerationService.getSigneeName(caseData);
     }
+
+    public String generateCaseName(CaseData caseData) {
+        String applicantNames = String.join(", ", caseData.getLocalAuthorities().stream()
+            .map(localAuthority -> localAuthority.getValue().getName())
+            .toList());
+
+        String respondentNames = String.join(", ", caseData.getRespondents1().stream()
+            .map(respondent -> respondent.getValue().getParty().getLastName())
+            .distinct()
+            .toList());
+
+        return String.format("%s & %s", applicantNames, respondentNames);
+    }
 }
