@@ -346,13 +346,29 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('functionalTest:preview') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+    publishHTML([
+            allowMissing         : false,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "../test-results/apiTest",
+            reportFiles          : 'index.html',
+            reportName           : 'API Test Report'
+    ])
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/tests/apiTest/**/*'
   }
 
   afterAlways('functionalTest:aat') {
+    publishHTML([
+            allowMissing         : false,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "../test-results/apiTest",
+            reportFiles          : 'index.html',
+            reportName           : 'API Test Report'
+    ])
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/tests/apiTest/**/*'
     env.ENV = 'prod'
     // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
   }
