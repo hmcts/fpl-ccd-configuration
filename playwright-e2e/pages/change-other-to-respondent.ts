@@ -13,8 +13,7 @@ export class ChangeOtherToRespondent extends BasePage {
     readonly placeOfBirth: Locator;
     readonly currentAddress: Locator;
     readonly reasonUnknownAddress: Locator;
-    readonly telephoneNumber: Locator;
-    readonly relationshipToChild: Locator;
+    readonly litigationCapacity: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -28,10 +27,9 @@ export class ChangeOtherToRespondent extends BasePage {
         this.gender = page.getByLabel('Gender (Optional)');
         this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
         this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
-        this.currentAddress = page.getByRole('group', { name: '*Current address known? (' });
+        this.currentAddress = page.getByRole('group', { name: '*Current address known?' });
         this.reasonUnknownAddress = page.getByLabel('*Reason the address is not');
-        this.telephoneNumber = page.getByLabel('Telephone number (Optional)');
-        this.relationshipToChild = page.getByText('What is this person\'s relationship to the child or children in this case? (Optional)');
+        this.litigationCapacity = page.getByRole('group', { name: 'Do they have legal' });
     }
 
     async ChangeOtherToRespondent() {
@@ -44,12 +42,9 @@ export class ChangeOtherToRespondent extends BasePage {
         await this.dobMonth.fill('04');
         await this.dobYear.fill('2000');
         await this.gender.selectOption('1: Male');
-        await this.page.waitForTimeout(300);
-       // await this.currentAddress.getByLabel('No').click();
-        await this.currentAddress.getByLabel('No').click({force: true});
+        await this.currentAddress.getByLabel('No').check();
         await this.reasonUnknownAddress.selectOption('1: No fixed abode');
-        await this.telephoneNumber.fill("00000000000");
-        await this.relationshipToChild.fill("Uncle");
+        await this.litigationCapacity.getByLabel('No').check();
         await this.continueButton.click();
         await this.checkYourAnsAndSubmit();
     }
