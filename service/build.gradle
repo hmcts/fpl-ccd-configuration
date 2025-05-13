@@ -120,7 +120,7 @@ task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
   commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
-task runApiTests(type: Exec, description: 'Runs api tests.', group: 'Verification') {
+task runApiTests(type: Exec, description: 'Runs api tests.') {
   onlyIf {
     return System.env.SKIP_API_TESTS == null || System.env.SKIP_API_TESTS == 'false'
   }
