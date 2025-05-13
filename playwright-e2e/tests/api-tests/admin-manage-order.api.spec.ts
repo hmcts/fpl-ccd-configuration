@@ -4,7 +4,7 @@ import { swanseaOrgCAAUser } from "../../settings/user-credentials";
 test.describe('Admin manage order API test @apiTest', () => {
     let caseDetailsBefore : any;
     test.beforeAll(async ({ callback }) => {
-        caseDetailsBefore = await callback.createCase(swanseaOrgCAAUser, "Submit case API test");
+        caseDetailsBefore = await callback.createCase(swanseaOrgCAAUser, "Admin manage order API test");
     });
 
     test('C32a', async ({ manageOrderTestService }) => {
@@ -41,5 +41,9 @@ test.describe('Admin manage order API test @apiTest', () => {
 
     test('C47a', async ({ manageOrderTestService }) => {
         await manageOrderTestService.testManageOrderContentSame(caseDetailsBefore, 'c47a');
+    });
+
+    test('C21 blank order', async ({ manageOrderTestService }) => {
+        await manageOrderTestService.testManageOrderContentSame(caseDetailsBefore, 'c21');
     });
 });

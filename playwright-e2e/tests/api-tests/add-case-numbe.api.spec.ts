@@ -5,7 +5,7 @@ import { expect } from "@playwright/test";
 test.describe('Add case number API test @apiTest', () => {
     let caseDetailsBefore : any;
     test.beforeAll(async ({ callback }) => {
-        caseDetailsBefore = await callback.createCase(swanseaOrgCAAUser, "Submit case API test");
+        caseDetailsBefore = await callback.createCase(swanseaOrgCAAUser, "Add case number API test");
     });
 
     test('submitted', async ({ callback }) => {

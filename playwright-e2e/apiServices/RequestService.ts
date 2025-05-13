@@ -65,6 +65,21 @@ export class RequestService {
         return await this.callback(`${eventName}/submitted`, user, caseDetails, caseDetailsBefore);
     }
 
+    async getCase(user: UserCredential, caseId: string, expected: boolean = true) {
+        let response = await this.sendRequest(`testing-support/case/${caseId}`, user, null, "get");
+        if (expected) {
+            expect(response.ok()).toBeTruthy();
+
+            let caseDetails = await response.json();
+            expect(caseDetails).toBeDefined();
+            expect(caseDetails.id).toBeDefined();
+            return caseDetails;
+        } else {
+            expect(response.ok()).toBeFalsy();
+            return null;
+        }
+    }
+
     async callback(eventUrl: string, user: UserCredential, caseDetails: any, caseDetailsBefore?: any) {
         let data = {
             case_details: {
@@ -136,4 +151,5 @@ export class RequestService {
             return token;
         }
     }
+    
 }
