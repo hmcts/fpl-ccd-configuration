@@ -14,7 +14,7 @@ export class Orders extends BasePage {
     }
 
     get uploadAmendOrder(): Locator {
-        return this.page.getByRole('textbox', {name: 'Upload the amended order. It will then be dated and stamped as amended.'});
+        return this.page.getByText('the amended order. It will then be dated and stamped as amended.',{exact:true});
     }
 
     get EPOEndDate(): Locator {

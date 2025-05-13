@@ -128,7 +128,7 @@ export class ManageDocuments extends BasePage {
         await this.page.getByLabel('Upload new documents').check();
         await this.clickContinue();
 
-        await this.page.getByRole('textbox', { name: 'Upload a document' })
+        await this.page.getByText('Upload a document',{exact:true} )
             .setInputFiles(config.testTextFile);
 
         await this.page.getByLabel('Document type').selectOption(type);
