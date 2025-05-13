@@ -36,7 +36,7 @@ export class RequestService {
             populatedCaseDetails = {
                 id: caseDetailsCreated.id,
                 state: (caseState) ? caseState : caseDetails.state,
-                caseData: Object.assign(caseDetailsCreated.data, caseDetails.caseData) as any
+                caseData: {...caseDetailsCreated.data, ...caseDetails.caseData}
             };
 
             let updateRsp = await this.sendRequest(`testing-support/case/populate/${populatedCaseDetails.id}`, systemUpdateUser, populatedCaseDetails);

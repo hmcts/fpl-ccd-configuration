@@ -39,8 +39,8 @@ test.describe('Submit case API test @apiTest', () => {
     });
 
     test('mid-event with missing required field', async ({ callback }) => {
-        let inCompleteCaseDetails = Object.assign({}, caseDetailsBefore);
-        inCompleteCaseDetails.caseData = Object.assign({}, caseDetailsBefore.caseData, {"allocationProposal" : null});
+        let inCompleteCaseDetails = {...caseDetailsBefore};
+        inCompleteCaseDetails.caseData = {...caseDetailsBefore.caseData, allocationProposal : null};
         let caseDetails = await callback.callMidEvent(EVENT, swanseaOrgCAAUser, inCompleteCaseDetails);
 
         expect(caseDetails.errors).toEqual([

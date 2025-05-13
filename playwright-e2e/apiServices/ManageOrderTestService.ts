@@ -17,36 +17,37 @@ export class ManageOrderTestService {
 
     async testManageOrderContentSame(caseDetailsBefore: any, orderType: string, user: UserCredential = swanseaOrgCAAUser) {
         let orderCaseDetailsJson = (await import(`../caseData/apiTest/manageOrder/${orderType}.json`, { assert: { type: "json" } })).default;
-        let caseData = Object.assign({}, caseDetailsBefore.caseData, orderCaseDetailsJson.caseData);
+        let caseData = {...caseDetailsBefore.caseData, ...orderCaseDetailsJson.caseData};
         let orderDocumentReference : any;
 
         let caseDetailsAfter : any;
         
         let today = new Date();
         await test.step('call about-to-submit', async () => {
-            caseData = Object.assign({}, caseData, {
-                "manageOrdersType": caseData.manageOrdersType,
-                "manageOrdersTitle": "Order title",
-                "manageOrdersDirections": "Order details",
-                "manageOrdersApprovalDate": today,
-                "manageOrdersCareOrderIssuedDate": today,  // c32b
-                "manageOrdersEndDateTime": today, // c23
-                "manageOrdersApprovalDateTime": today, // c23
-                "manageOrdersExclusionStartDate": today, // c23
-                "manageOrdersOrderCreatedDate": today, // c29
-                "manageOrdersSetDateEndDate": today, //c33
-                "manageOrdersEndDateTypeWithEndOfProceedings": "END_OF_PROCEEDINGS", //c33
-                "manageOrdersEndDateTypeWithMonth": "NUMBER_OF_MONTHS", //c35a
-                "manageOrdersSetMonthsEndDate": 12, //c35a
-                "manageOrdersCafcassOfficesEngland": "BOURNEMOUTH", //c47a
-                "manageOrdersCafcassRegion": "ENGLAND",
-                "manageOrdersPlacedUnderOrder": "CARE_ORDER",
-                "manageOrdersActionsPermitted": [
+            caseData = {
+                ...caseData,
+                manageOrdersType: caseData.manageOrdersType,
+                manageOrdersTitle: "Order title",
+                manageOrdersDirections: "Order details",
+                manageOrdersApprovalDate: today,
+                manageOrdersCareOrderIssuedDate: today,  // c32b
+                manageOrdersEndDateTime: today, // c23
+                manageOrdersApprovalDateTime: today, // c23
+                manageOrdersExclusionStartDate: today, // c23
+                manageOrdersOrderCreatedDate: today, // c29
+                manageOrdersSetDateEndDate: today, //c33
+                manageOrdersEndDateTypeWithEndOfProceedings: "END_OF_PROCEEDINGS", //c33
+                manageOrdersEndDateTypeWithMonth: "NUMBER_OF_MONTHS", //c35a
+                manageOrdersSetMonthsEndDate: 12, //c35a
+                manageOrdersCafcassOfficesEngland: "BOURNEMOUTH", //c47a
+                manageOrdersCafcassRegion: "ENGLAND",
+                manageOrdersPlacedUnderOrder: "CARE_ORDER",
+                manageOrdersActionsPermitted: [
                     "ENTRY"
                 ]
-            });
+            };
 
-            let caseDetails = Object.assign({}, caseDetailsBefore, {caseData: caseData});
+            let caseDetails = {...caseDetailsBefore, caseData: caseData};
             caseDetailsAfter = await this.requestSvc.callAboutToSubmit(EVENT, user, caseDetails);
             let updatedCaseData = caseDetailsAfter?.caseData;
             expect(updatedCaseData).toBeDefined();
