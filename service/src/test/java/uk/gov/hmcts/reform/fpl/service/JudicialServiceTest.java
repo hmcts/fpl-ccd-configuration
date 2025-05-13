@@ -286,6 +286,68 @@ class JudicialServiceTest {
     }
 
     @Test
+    void shouldReturnTrueIfCaseHasAllocatedJudgeOrLegalAdvisor() {
+        List<RoleAssignment> existing = Stream.of("12345", "67890")
+            .map(id -> RoleAssignment.builder()
+                .actorId(id)
+                .id(id)
+                .roleName("allocated-judge")
+                .roleCategory(RoleCategory.JUDICIAL)
+                .build())
+            .toList();
+
+        when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+            .thenReturn(existing);
+
+        boolean result = underTest.caseHasAllocatedJudgeOrLegalAdvisor(CASE_ID);
+
+        assertThat(result).isTrue();
+        verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+    }
+
+    @Test
+    void shouldReturnFalseIfCaseDoesNotHaveAllocatedJudgeOrLegalAdvisor() {
+        when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+            .thenReturn(List.of());
+
+        boolean result = underTest.caseHasAllocatedJudgeOrLegalAdvisor(CASE_ID);
+
+        assertThat(result).isFalse();
+        verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+    }
+
+    @Test
+    void shouldReturnTrueIfCaseHasHearingJudgeOrLegalAdvisor() {
+        List<RoleAssignment> existing = Stream.of("12345", "67890")
+            .map(id -> RoleAssignment.builder()
+                .actorId(id)
+                .id(id)
+                .roleName("hearing-judge")
+                .roleCategory(RoleCategory.JUDICIAL)
+                .build())
+            .toList();
+
+        when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+            .thenReturn(existing);
+
+        boolean result = underTest.caseHasHearingJudgeOrLegalAdvisor(CASE_ID);
+
+        assertThat(result).isTrue();
+        verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+    }
+
+    @Test
+    void shouldReturnFalseIfCaseDoesNotHaveHearingJudgeOrLegalAdvisor() {
+        when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+            .thenReturn(List.of());
+
+        boolean result = underTest.caseHasHearingJudgeOrLegalAdvisor(CASE_ID);
+
+        assertThat(result).isFalse();
+        verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+    }
+
+    @Test
     void shouldCheckJudgeExistsWhenPresentInJrd() {
         when(judicialApi.findUsers(any(), any(), anyInt(), any(), any()))
             .thenReturn(List.of(JudicialUserProfile.builder().build()));
