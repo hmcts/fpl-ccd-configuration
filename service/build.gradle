@@ -124,7 +124,7 @@ task runApiTests(type: Exec, description: 'Runs api tests.') {
   onlyIf {
     return System.env.SKIP_API_TESTS == null || System.env.SKIP_API_TESTS == 'false'
   }
-  commandLine '/usr/bin/yarn', 'test:api-test'
+  commandLine '/usr/bin/yarn', '--silent', 'test:api-test'
 //  testLogging.showStandardStreams = true
 //  testClassesDirs = sourceSets.functionalTest.output.classesDirs
 //  classpath = sourceSets.functionalTest.runtimeClasspath
@@ -189,7 +189,7 @@ task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke 
   dependsOn(inStrictOrder(runSmokeTests))
 }
 
-task functional(description: 'Runs the functional tests.') {
+task functional(type:Test,description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(runApiTests))
 }
 
