@@ -247,6 +247,16 @@ withPipeline(type, product, component) {
 
   }
   afterAlways('fullFunctionalTest:preview') {
+    publishHTML([
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "../test-results/functional",
+            reportFiles          : 'index.html',
+            reportName           : 'API Test Report'
+    ])
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+    
     stage('UIFunctionalTests') {
       try {
           yarnBuilder.yarn('test:functional-nightly-preview')
@@ -343,6 +353,18 @@ withPipeline(type, product, component) {
 
   before('functionalTest:demo') {
     env.SKIP_API_TESTS = 'true'
+  }
+
+  afterAlways('functionalTest:preview') {
+    publishHTML([
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "../test-results/functional",
+            reportFiles          : 'index.html',
+            reportName           : 'API Test Report'
+    ])
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
   }
 
   afterAlways('functionalTest:aat') {
