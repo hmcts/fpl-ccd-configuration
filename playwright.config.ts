@@ -13,6 +13,7 @@ export default defineConfig({
 
   testDir: "./playwright-e2e",
   testMatch:'*spec.ts',
+  testIgnore:'*api.spec.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
   timeout: 3*60*1000, //each test execution time is set to 3 min
@@ -28,9 +29,7 @@ export default defineConfig({
   workers: process.env.CI ? 4 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [[process.env.CI ? 'html' : 'list'],
-             ['html', { outputFolder: '../test-results/functionalTest' }],
-             ['junit', { outputFolder: '../test-results/functional' }]
-  ],
+             ['html', { outputFolder: '../test-results/functionalTest' }]],
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -44,19 +43,16 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
-      testIgnore: /.*.api.spec.ts/
     },
 
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
-      testIgnore: /.*.api.spec.ts/
     },
 
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
-      testIgnore: /.*.api.spec.ts/
     },
     {
       name: "preview",
@@ -64,19 +60,16 @@ export default defineConfig({
       retries: 3,
       timeout: 3*60*1000,
       expect: { timeout: 1*60*1000 },
-      testIgnore: /.*.api.spec.ts/
     },
 
     /* Test against mobile viewports. */
-      {
-          name: "ipadPro11",
-          use: { ...devices["iPad Pro 11 landscape"] },
-          testIgnore: /.*.api.spec.ts/
-      },
+    {
+      name: "ipadPro11",
+      use: { ...devices["iPad Pro 11 landscape"] },
+    },
     {
       name: "GalaxyS4",
       use: { ...devices["Galaxy Tab S4 landscape"] },
-      testIgnore: /.*.api.spec.ts/
     },
 
 
@@ -89,14 +82,6 @@ export default defineConfig({
     //   name: 'Google Chrome',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
-
-    /* API test*/
-    {
-      name: "APITest",
-      testMatch: /.*.api.spec.ts/,
-      fullyParallel: false,
-      retries: 3
-    },
   ],
 
   /* Run your local dev server before starting the tests */
@@ -105,5 +90,4 @@ export default defineConfig({
   //   url: 'http://127.0.0.1:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
-
 });
