@@ -246,6 +246,7 @@ class LocalAuthorityServiceTest {
     @SuppressWarnings("unchecked")
     void shouldUpdateLocalAuthorityFromChangeOrgRequest() {
         when(organisationService.getOrganisation("ORG456")).thenReturn(Organisation.builder()
+                .name("New Organisation Name") // Updated organisation name
                 .companyNumber("444555666")
                 .contactInformation(List.of(ContactInformation.builder()
                         .addressLine1("New Test Road")
@@ -283,7 +284,7 @@ class LocalAuthorityServiceTest {
 
         LocalAuthority expectedUpdatedLocalAuthority = LocalAuthority.builder()
             .id("ORG456")
-            .name("Joe Bloggs")
+            .name("New Organisation Name") // Updated to match the new organisation's name
             .email("test2@testmail.com")
             .phone("444555666")
             .address(Address.builder()
@@ -300,3 +301,4 @@ class LocalAuthorityServiceTest {
     }
 
 }
+

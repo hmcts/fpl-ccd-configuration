@@ -90,7 +90,7 @@ public class LocalAuthorityService {
 
         LocalAuthority updatedLocalAuthority = LocalAuthority.builder()
             .id(newOrganisationId)
-            .name(oldLocalAuthority.getName())
+            .name(newOrganisation.getName())
             .email(nocRequest.getCreatedBy())
             .phone(newOrganisation.getCompanyNumber())
             .address(newOrganisation.getContactInformation().get(0).toAddress())
