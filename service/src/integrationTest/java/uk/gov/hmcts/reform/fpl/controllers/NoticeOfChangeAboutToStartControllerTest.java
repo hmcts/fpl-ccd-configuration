@@ -254,14 +254,17 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
         when(organisationService.getOrganisation("NEW_ORG")).thenReturn(
             uk.gov.hmcts.reform.rd.model.Organisation.builder()
                 .organisationIdentifier("NEW_ORG")
+                .name("New Organisation Name")
+                .companyNumber("444555666")
                 .contactInformation(List.of(ContactInformation.builder()
-                       .addressLine1("New Test Road")
-                   .build()))
-            .build());
+                    .addressLine1("New Test Road")
+                    .build()))
+                .build());
 
         final ChangeOrganisationRequest changeRequest = ChangeOrganisationRequest.builder()
             .organisationToAdd(NEW_ORGANISATION)
             .caseRoleId(caseRoleDynamicList("[APPSOLICITOR]"))
+            .createdBy(SOLICITOR_USER_EMAIL)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -288,7 +291,9 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
 
         final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
             .id(NEW_ORGANISATION.getOrganisationID())
-            .name("Joe Bloggs")
+            .name("New Organisation Name")
+            .email(SOLICITOR_USER_EMAIL)
+            .phone("444555666")
             .address(Address.builder()
                 .addressLine1("New Test Road")
                 .build())
