@@ -63,10 +63,10 @@ export default defineConfig({
     },
 
     /* Test against mobile viewports. */
-    {
-      name: "ipadPro11",
-      use: { ...devices["iPad Pro 11 landscape"] },
-    },
+      {
+          name: "ipadPro11",
+          use: { ...devices["iPad Pro 11 landscape"] },
+      },
     {
       name: "GalaxyS4",
       use: { ...devices["Galaxy Tab S4 landscape"] },

@@ -349,9 +349,6 @@ withPipeline(type, product, component) {
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
     env.TEST_RETRIES = 3
-
-    env.URL = "https://manage-case.aat.platform.hmcts.net"
-    env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
   }
 
   before('functionalTest:demo') {
