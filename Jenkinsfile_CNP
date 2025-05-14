@@ -176,6 +176,18 @@ def deployWADmns() {
   }
 }
 
+def archiveApiTestResult() {
+  publishHTML([
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "test-results/functional",
+          reportFiles          : 'index.html',
+          reportName           : 'API Test Report'
+  ])
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+}
+
 // Vars for Kubernetes
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
@@ -247,16 +259,7 @@ withPipeline(type, product, component) {
 
   }
   afterAlways('fullFunctionalTest:preview') {
-    publishHTML([
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "../test-results/functional",
-            reportFiles          : 'index.html',
-            reportName           : 'API Test Report'
-    ])
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
-    
+    archiveApiTestResult()
     stage('UIFunctionalTests') {
       try {
           yarnBuilder.yarn('test:functional-nightly-preview')
@@ -356,18 +359,11 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('functionalTest:preview') {
-    publishHTML([
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "../test-results/functional",
-            reportFiles          : 'index.html',
-            reportName           : 'API Test Report'
-    ])
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+    archiveApiTestResult()
   }
 
   afterAlways('functionalTest:aat') {
+    archiveApiTestResult()
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
