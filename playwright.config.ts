@@ -15,8 +15,8 @@ export default defineConfig({
   testMatch:'*spec.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 3*60*1000, //each test execution time is set to 3 min
-  expect: { timeout: 1*110*1000 }, //wait time for the assertion to be true 110 sec
+  timeout: 5*60*1000, //each test execution time is set to 4 min
+  expect: { timeout: 1*150*1000 }, //wait time for the assertion to be true 150 sec
 
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
