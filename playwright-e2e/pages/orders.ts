@@ -71,7 +71,7 @@ export class Orders extends BasePage {
         this.excluded = page.getByLabel('Who\'s excluded');
         this.powerOfExclusionStart = page.getByRole('group', {name: 'Date power of exclusion starts'});
         this.orderToAmend = page.getByLabel('Select order to amend');
-        this.uploadAmendOrder = page.getByRole('textbox', {name: 'Upload the amended order. It will then be dated and stamped as amended.'});
+        this.uploadAmendOrder = page.getByText( 'Upload the amended order. It will then be dated and stamped as amended.', { exact: true });
         this.judgeLastName = page.getByLabel('Last name');
         this.judgeEmail= page.getByLabel('Email Address');
         this.legalAdvisorName =page.getByLabel('Justices\' Legal Adviser\'s');
