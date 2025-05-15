@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -241,7 +242,8 @@ class CaseAccessServiceTest {
         @ParameterizedTest
         @ValueSource(strings = {"allocated-judge", "hearing-judge", "allocated-legal-adviser", "hearing-legal-adviser"})
         void shouldFilterOutInternalStaffRoles(String roleToFilter) {
-            when(caseAssignmentApi.getUserRoles(any(), any(), (String) any(), any()))
+            when(caseAssignmentApi.getUserRoles(any(), any(), Collections.singletonList(any()),
+                Collections.singletonList(any())))
                 .thenReturn(CaseAssignmentUserRolesResource.builder().caseAssignmentUserRoles(List.of(
                         CaseAssignmentUserRole.builder()
                             .caseRole(roleToFilter)
@@ -259,7 +261,8 @@ class CaseAccessServiceTest {
 
         @Test
         void shouldFilterOutInternalStaffRolesAndKeepExternalRoles() {
-            when(caseAssignmentApi.getUserRoles(any(), any(), (String) any(), any()))
+            when(caseAssignmentApi.getUserRoles(any(), any(), Collections.singletonList(any()),
+                Collections.singletonList(any())))
                 .thenReturn(CaseAssignmentUserRolesResource.builder().caseAssignmentUserRoles(List.of(
                         CaseAssignmentUserRole.builder()
                             .caseRole("allocated-judge")
@@ -282,7 +285,8 @@ class CaseAccessServiceTest {
 
         @Test
         void shouldGetUserCaseRoles() {
-            when(caseAssignmentApi.getUserRoles(any(), any(),(String) any(), any()))
+            when(caseAssignmentApi.getUserRoles(any(), any(), Collections.singletonList(any()),
+                Collections.singletonList(any())))
                 .thenReturn(CaseAssignmentUserRolesResource.builder().caseAssignmentUserRoles(List.of(
                     CaseAssignmentUserRole.builder()
                         .caseRole("[SOLICITORA]")
