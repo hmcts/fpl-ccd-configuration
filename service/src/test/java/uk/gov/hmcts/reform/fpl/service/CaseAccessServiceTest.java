@@ -12,13 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
-import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesResponse;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
+import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRole;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesResource;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesResponse;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -65,7 +64,7 @@ class CaseAccessServiceTest {
     private OrganisationService organisationService;
 
     @Mock
-    private CaseAccessDataStoreApi caseAccessDataStoreApi;
+    private CaseAssignmentApi caseAssignmentApi;
 
     @Mock
     private RequestData requestData;
@@ -97,15 +96,15 @@ class CaseAccessServiceTest {
 
             when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).thenReturn(localAuthorityUsers);
             when(organisationService.findOrganisation()).thenReturn(Optional.of(organisation));
-            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
-                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+            when(caseAssignmentApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(CaseAssignmentUserRolesResponse.builder().statusMessage("Granted").build());
 
-            final AddCaseAssignedUserRolesRequest assignmentRequest = buildAssignmentRequest(CASE_ID,
-                localAuthorityUsers, organisation.getOrganisationIdentifier(), caseRole);
+            final CaseAssignmentUserRolesRequest assignmentRequest = buildAssignmentRequest(localAuthorityUsers,
+                organisation.getOrganisationIdentifier(), caseRole);
 
             caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, CREATOR_ID, LOCAL_AUTHORITY, caseRole);
 
-            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
+            verify(caseAssignmentApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
 
         @Test
@@ -125,15 +124,15 @@ class CaseAccessServiceTest {
 
             when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).thenReturn(localAuthorityUsers);
             when(organisationService.findOrganisation()).thenReturn(Optional.of(organisation));
-            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
-                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+            when(caseAssignmentApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(CaseAssignmentUserRolesResponse.builder().statusMessage("Granted").build());
 
-            final AddCaseAssignedUserRolesRequest assignmentRequest = buildAssignmentRequest(CASE_ID,
-                expectedUsers, organisation.getOrganisationIdentifier(), caseRole);
+            final CaseAssignmentUserRolesRequest assignmentRequest = buildAssignmentRequest(expectedUsers,
+                organisation.getOrganisationIdentifier(), caseRole);
 
             caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, CREATOR_ID, LOCAL_AUTHORITY, caseRole);
 
-            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
+            verify(caseAssignmentApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
 
         @Test
@@ -147,15 +146,15 @@ class CaseAccessServiceTest {
 
             when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).thenReturn(localAuthorityUsers);
             when(organisationService.findOrganisation()).thenReturn(Optional.empty());
-            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
-                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+            when(caseAssignmentApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(CaseAssignmentUserRolesResponse.builder().statusMessage("Granted").build());
 
-            final AddCaseAssignedUserRolesRequest assignmentRequest =
-                buildAssignmentRequest(CASE_ID, localAuthorityUsers, null, caseRole);
+            final CaseAssignmentUserRolesRequest assignmentRequest =
+                buildAssignmentRequest(localAuthorityUsers, null, caseRole);
 
             caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, CREATOR_ID, LOCAL_AUTHORITY, caseRole);
 
-            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
+            verify(caseAssignmentApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
 
         @Test
@@ -181,30 +180,30 @@ class CaseAccessServiceTest {
         void shouldGrantAccessToUser() {
             final CaseRole caseRole = EPSMANAGING;
 
-            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
-                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+            when(caseAssignmentApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(CaseAssignmentUserRolesResponse.builder().statusMessage("Granted").build());
 
-            final AddCaseAssignedUserRolesRequest assignmentRequest =
-                buildAssignmentRequest(CASE_ID, Set.of(USER_1_ID), null, caseRole);
+            final CaseAssignmentUserRolesRequest assignmentRequest =
+                buildAssignmentRequest(Set.of(USER_1_ID), null, caseRole);
 
             caseRoleService.grantCaseRoleToUser(CASE_ID, USER_1_ID, caseRole);
 
-            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
+            verify(caseAssignmentApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
 
         @Test
         void shouldRevokeCaseRoleFromUser() {
             caseRoleService.revokeCaseRoleFromUser(CASE_ID, USER_1_ID, CREATOR);
 
-            CaseAssignedUserRolesRequest caseAssignedUserRolesRequest = CaseAssignedUserRolesRequest.builder()
-                .caseAssignedUserRoles(List.of(CaseAssignedUserRoleWithOrganisation.builder()
+            CaseAssignmentUserRolesRequest caseAssignedUserRolesRequest = CaseAssignmentUserRolesRequest.builder()
+                .caseAssignmentUserRolesWithOrganisation(List.of(CaseAssignmentUserRoleWithOrganisation.builder()
                     .userId(USER_1_ID)
                     .caseRole(CREATOR.formattedName())
                     .caseDataId(CASE_ID.toString())
                     .build()))
                 .build();
 
-            verify(caseAccessDataStoreApi)
+            verify(caseAssignmentApi)
                 .removeCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, caseAssignedUserRolesRequest);
         }
     }
@@ -218,15 +217,15 @@ class CaseAccessServiceTest {
 
             Set<String> userIds = Set.of(USER_1_ID, USER_2_ID);
 
-            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
-                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+            when(caseAssignmentApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(CaseAssignmentUserRolesResponse.builder().statusMessage("Granted").build());
 
-            final AddCaseAssignedUserRolesRequest assignmentRequest =
-                buildAssignmentRequest(CASE_ID, userIds, null, caseRole);
+            final CaseAssignmentUserRolesRequest assignmentRequest =
+                buildAssignmentRequest(userIds, null, caseRole);
 
             caseRoleService.grantCaseRoleToUsers(CASE_ID, userIds, caseRole);
 
-            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
+            verify(caseAssignmentApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
     }
 
@@ -242,9 +241,9 @@ class CaseAccessServiceTest {
         @ParameterizedTest
         @ValueSource(strings = {"allocated-judge", "hearing-judge", "allocated-legal-adviser", "hearing-legal-adviser"})
         void shouldFilterOutInternalStaffRoles(String roleToFilter) {
-            when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-                .thenReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
-                        CaseAssignedUserRole.builder()
+            when(caseAssignmentApi.getUserRoles(any(), any(), (String) any(), any()))
+                .thenReturn(CaseAssignmentUserRolesResource.builder().caseAssignmentUserRoles(List.of(
+                        CaseAssignmentUserRole.builder()
                             .caseRole(roleToFilter)
                             .userId(USER_1_ID)
                             .caseDataId("123")
@@ -253,21 +252,21 @@ class CaseAccessServiceTest {
 
             Set<CaseRole> roles =  caseRoleService.getUserCaseRoles(123L);
 
-            verify(caseAccessDataStoreApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
+            verify(caseAssignmentApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
                 List.of("123"), List.of(USER_1_ID));
             assertThat(roles).isEmpty();
         }
 
         @Test
         void shouldFilterOutInternalStaffRolesAndKeepExternalRoles() {
-            when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-                .thenReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
-                        CaseAssignedUserRole.builder()
+            when(caseAssignmentApi.getUserRoles(any(), any(), (String) any(), any()))
+                .thenReturn(CaseAssignmentUserRolesResource.builder().caseAssignmentUserRoles(List.of(
+                        CaseAssignmentUserRole.builder()
                             .caseRole("allocated-judge")
                             .userId(USER_1_ID)
                             .caseDataId("123")
                             .build(),
-                        CaseAssignedUserRole.builder()
+                        CaseAssignmentUserRole.builder()
                             .caseRole("[CHILDSOLICITORA]")
                             .userId(USER_1_ID)
                             .caseDataId("123")
@@ -276,16 +275,16 @@ class CaseAccessServiceTest {
 
             Set<CaseRole> roles =  caseRoleService.getUserCaseRoles(123L);
 
-            verify(caseAccessDataStoreApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
+            verify(caseAssignmentApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
                 List.of("123"), List.of(USER_1_ID));
             assertThat(roles).containsExactly(CaseRole.CHILDSOLICITORA);
         }
 
         @Test
         void shouldGetUserCaseRoles() {
-            when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-                .thenReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
-                    CaseAssignedUserRole.builder()
+            when(caseAssignmentApi.getUserRoles(any(), any(),(String) any(), any()))
+                .thenReturn(CaseAssignmentUserRolesResource.builder().caseAssignmentUserRoles(List.of(
+                    CaseAssignmentUserRole.builder()
                         .caseRole("[SOLICITORA]")
                         .userId(USER_1_ID)
                         .caseDataId("123")
@@ -294,24 +293,24 @@ class CaseAccessServiceTest {
 
             caseRoleService.getUserCaseRoles(123L);
 
-            verify(caseAccessDataStoreApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
+            verify(caseAssignmentApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
                 List.of("123"), List.of(USER_1_ID));
         }
     }
 
-    private AddCaseAssignedUserRolesRequest buildAssignmentRequest(Long caseId, Set<String> userIds, String orgId,
+    private CaseAssignmentUserRolesRequest buildAssignmentRequest(Set<String> userIds, String orgId,
                                                                    CaseRole caseRole) {
-        final List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = userIds.stream()
-            .map(userId -> CaseAssignedUserRoleWithOrganisation.builder()
-                .caseDataId(caseId.toString())
+        final List<CaseAssignmentUserRoleWithOrganisation> caseAssignedRoles = userIds.stream()
+            .map(userId -> CaseAssignmentUserRoleWithOrganisation.builder()
+                .caseDataId(CASE_ID.toString())
                 .userId(userId)
                 .organisationId(orgId)
                 .caseRole(caseRole.formattedName())
                 .build())
             .collect(Collectors.toList());
 
-        return AddCaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(caseAssignedRoles)
+        return CaseAssignmentUserRolesRequest.builder()
+            .caseAssignmentUserRolesWithOrganisation(caseAssignedRoles)
             .build();
     }
 }

@@ -6,12 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
-import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
+import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRole;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesResource;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -32,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVIS
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseAccessService {
 
-    private final CaseAccessDataStoreApi caseAccessDataStoreApi;
+    private final CaseAssignmentApi caseAssignmentApi;
     private final RequestData requestData;
     private final AuthTokenGenerator authTokenGenerator;
     private final SystemUserService systemUserService;
@@ -70,26 +69,26 @@ public class CaseAccessService {
         final String userToken = systemUserService.getSysUserToken();
         final String serviceToken = authTokenGenerator.generate();
 
-        CaseAssignedUserRolesRequest caseAssignedUserRolesRequest = CaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(CaseAssignedUserRoleWithOrganisation.builder()
+        CaseAssignmentUserRolesRequest caseAssignmentUserRolesRequest = CaseAssignmentUserRolesRequest.builder()
+            .caseAssignmentUserRolesWithOrganisation(List.of(CaseAssignmentUserRoleWithOrganisation.builder()
                 .userId(userId)
                 .caseRole(caseRole.formattedName())
                 .caseDataId(caseId.toString())
                 .build()))
             .build();
 
-        caseAccessDataStoreApi.removeCaseUserRoles(userToken, serviceToken, caseAssignedUserRolesRequest);
+        caseAssignmentApi.removeCaseUserRoles(userToken, serviceToken, caseAssignmentUserRolesRequest);
 
         log.info("User {} revoked {} to case {}", userId, caseRole, caseId);
     }
 
     public Set<CaseRole> getUserCaseRoles(Long caseId) {
-        CaseAssignedUserRolesResource userRolesResource = caseAccessDataStoreApi.getUserRoles(
+        CaseAssignmentUserRolesResource userRolesResource = caseAssignmentApi.getUserRoles(
             requestData.authorisation(), authTokenGenerator.generate(),
             List.of(caseId.toString()), List.of(requestData.userId()));
 
-        return userRolesResource.getCaseAssignedUserRoles().stream()
-            .map(CaseAssignedUserRole::getCaseRole)
+        return userRolesResource.getCaseAssignmentUserRoles().stream()
+            .map(CaseAssignmentUserRole::getCaseRole)
             .filter(role -> !excludedInternalWACaseRoles.contains(role))
             .map(CaseRole::from)
             .collect(Collectors.toSet());
@@ -104,8 +103,8 @@ public class CaseAccessService {
                 .map(Organisation::getOrganisationIdentifier)
                 .orElse(null);
 
-            List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = users.stream()
-                .map(user -> CaseAssignedUserRoleWithOrganisation.builder()
+            List<CaseAssignmentUserRoleWithOrganisation> caseAssignmentRoles = users.stream()
+                .map(user -> CaseAssignmentUserRoleWithOrganisation.builder()
                     .caseDataId(caseId.toString())
                     .organisationId(organisationId)
                     .userId(user)
@@ -113,12 +112,12 @@ public class CaseAccessService {
                     .build())
                 .collect(Collectors.toList());
 
-            AddCaseAssignedUserRolesRequest addCaseAssignedUserRolesRequest =
-                AddCaseAssignedUserRolesRequest.builder()
-                    .caseAssignedUserRoles(caseAssignedRoles)
+            CaseAssignmentUserRolesRequest caseAssignmentUserRolesRequest =
+                CaseAssignmentUserRolesRequest.builder()
+                    .caseAssignmentUserRolesWithOrganisation(caseAssignmentRoles)
                     .build();
 
-            caseAccessDataStoreApi.addCaseUserRoles(userToken, serviceToken, addCaseAssignedUserRolesRequest);
+            caseAssignmentApi.addCaseUserRoles(userToken, serviceToken, caseAssignmentUserRolesRequest);
         } catch (FeignException ex) {
             log.error("Could not assign the users to the case", ex);
             throw new GrantCaseAccessException(caseId, users, caseRole);

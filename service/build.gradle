@@ -413,7 +413,7 @@ dependencies {
   contractTestImplementation (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.1') {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
-  contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
+  contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.1.0'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 }
 
