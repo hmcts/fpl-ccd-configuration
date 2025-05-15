@@ -18,7 +18,7 @@ test.describe('Return application', () => {
 
   });
 
-  test('CTSC return Application',
+  test('CTSC return Application @xbrowser',
     async ({ page, signInPage, returnApplication }) => {
       caseName = 'CTSC return Application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);

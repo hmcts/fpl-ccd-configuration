@@ -65,7 +65,7 @@ test.describe('manage orders', () => {
             });
     })
 
-    test('Amend order under slip rule', async ({signInPage, orders}) => {
+    test('Amend order under slip rule @xbrowser', async ({signInPage, orders}) => {
         caseName = 'Amend EPO order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
@@ -93,7 +93,7 @@ test.describe('manage orders', () => {
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
     })
-    test('C32 Care Order', async ({page,signInPage, orders}) => {
+    test('C32 Care Order @xbrowser', async ({page,signInPage, orders}) => {
         caseName = 'C32 Care Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
@@ -205,7 +205,7 @@ test.describe('manage orders', () => {
         await expect(page.locator('ccd-read-document-field')).toContainText('c47a_appointment_of_a_childrens_guardian.pdf');
 
     })
-    test('C26 Authority to keep a child in secure accommodation ', async ({page,signInPage, orders}) => {
+    test('C26 Authority to keep a child in secure accommodation @xbrowser', async ({page,signInPage, orders}) => {
         caseName = 'C26 Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();

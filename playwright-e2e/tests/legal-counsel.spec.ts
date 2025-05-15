@@ -20,7 +20,7 @@ test.describe('Respondent solicitor counsel ', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('Respondent solicitor add counsel',
+    test('Respondent solicitor add counsel @xbrowser',
         async ({page, signInPage, legalCounsel}) => {
             caseName = 'Respondent Solicitor add Counsel ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseWithResSolicitor);

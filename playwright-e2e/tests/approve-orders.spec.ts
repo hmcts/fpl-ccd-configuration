@@ -17,7 +17,7 @@ test.describe('Approve Orders', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('Judge approves a confidential order uploaded by LA',
+    test('Judge approves a confidential order uploaded by LA @xbrowser',
         async ({ page, signInPage, approveOrders }) => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseDataByLa);

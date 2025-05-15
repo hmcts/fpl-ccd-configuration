@@ -19,7 +19,7 @@ test.describe('Upload additional applications', () => {
     //mark test as slow to give extra timeout
     test.slow();
 
-  test('LA uploads a C1 application',
+  test('LA uploads a C1 application @xbrowser',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
@@ -85,7 +85,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.checkYourAnsAndSubmit();
   });
 
-  test('LA uploads combined Other and C2 applications',
+  test('LA uploads combined Other and C2 applications @xbrowser',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);

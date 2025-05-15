@@ -113,7 +113,7 @@ test.describe('', () => {
 
         expect(accessibilityScanResults.violations).toEqual([]);
     });
-    test('Private solicitor applies C110a application', async ({
+    test('Private solicitor applies C110a application @xbrowser', async ({
                              signInPage,
                              createCase,
                              ordersAndDirectionSought,

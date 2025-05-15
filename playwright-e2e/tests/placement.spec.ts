@@ -14,7 +14,7 @@ test.describe('Placement', () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
-  test('Check Placement Application High Court WA Task',
+  test('Check Placement Application High Court WA Task @xbrowser',
     async ({ page, signInPage, placement,
       caseFileView }) => {
       caseName = 'Placement Application High Court WA Task ' + dateTime.slice(0, 10);

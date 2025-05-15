@@ -19,7 +19,7 @@ test.describe('manage hearings', () => {
     caseNumber =  await createCase('e2e case',newSwanseaLocalAuthorityUserOne);
   });
 
-  test('CTSC admin adds new hearing',
+  test('CTSC admin adds new hearing @xbrowser',
     async ({page,signInPage,manageHearings}) => {
       caseName = 'CTSC manage hearings ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);

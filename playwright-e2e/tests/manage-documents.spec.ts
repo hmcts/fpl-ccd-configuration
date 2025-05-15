@@ -21,7 +21,7 @@ test.describe('Manage Documents', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('LA uploads documents', async ({ page, signInPage, manageDocuments, caseFileView }) => {
+    test('LA uploads documents @xbrowser', async ({ page, signInPage, manageDocuments, caseFileView }) => {
         caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
@@ -86,7 +86,7 @@ test.describe('Manage Documents', () => {
         await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
     });
 
-    test('LA uploads confidential documents visible in CFV not visible to solicitor', async ({ signInPage, manageDocuments, caseFileView, page }) => {
+    test('LA uploads confidential documents visible in CFV not visible to solicitor @xbrowser', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'LA uploads confidential position document ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
@@ -180,7 +180,7 @@ test.describe('Manage Documents', () => {
         await expect(page.getByRole('tree')).not.toContainText('mock.pdf');
     });
 
-    test('CTSC user can move document between folder ', async ({ page, signInPage, caseFileView }) => {
+    test('CTSC user can move document between folder @xbrowser ', async ({ page, signInPage, caseFileView }) => {
         caseName = 'CTSC moved documents between folder ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithManageDocumentUploads);
         await signInPage.visit();

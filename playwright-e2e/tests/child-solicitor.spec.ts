@@ -20,7 +20,7 @@ test.describe('Manage child representatives ', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('CTSC user can add one legal representative to all children ',
+    test('CTSC user can add one legal representative to all children @xbrowser',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC add one solicitor to represent all children ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseWithMultipleChild);

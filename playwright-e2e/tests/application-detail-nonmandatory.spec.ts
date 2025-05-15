@@ -7,7 +7,7 @@ test.describe('Non mandatory application details before application submit', () 
     let caseNumber: string;
     let casename: string;
 
-    test('LA add risk and harm to children',
+    test('LA add risk and harm to children @xbrowser',
         async ({startApplication, signInPage, riskAndHarmToChildren, makeAxeBuilder}, testInfo) => {
 
             casename = 'Risk and harm  ' + dateTime.slice(0, 10);
@@ -48,7 +48,7 @@ test.describe('Non mandatory application details before application submit', () 
 
         });
 
-    test('LA add welsh language requirement',
+    test('LA add welsh language requirement @xbrowser',
         async ({startApplication, signInPage, welshLangRequirements, makeAxeBuilder}, testInfo) => {
 
             casename = 'Welsh language requirement  ' + dateTime.slice(0, 10);
@@ -82,7 +82,7 @@ test.describe('Non mandatory application details before application submit', () 
         });
 
 
-    test('LA add international element',
+    test('LA add international element @xbrowser',
         async ({startApplication, signInPage, internationalElement, makeAxeBuilder}, testInfo) =>  {
             casename = 'International element  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
@@ -149,7 +149,7 @@ test.describe('Non mandatory application details before application submit', () 
 
         });
 
-    test('LA add other people',
+    test('LA add other people @xbrowser',
         async ({startApplication, signInPage, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
             casename = 'Other people in case ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
