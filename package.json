@@ -61,7 +61,7 @@
     "mochawesome": "^6.3.1"
   },
   "resolutions": {
-    "yargs-parser": "^20.2.9"
+    "yargs-parser": "^21.0.0"
   },
   "packageManager": "yarn@3.8.6",
   "license": "MIT",
