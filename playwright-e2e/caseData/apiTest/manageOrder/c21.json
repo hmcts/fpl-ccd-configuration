@@ -1,0 +1,101 @@
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "state": "Submitted",
+    "caseName": "test",
+    "manageOrdersType": "C21_BLANK_ORDER",
+    "solicitor": {
+      "dx": null,
+      "name": "Solicitor 1",
+      "email": "test@test.com",
+      "mobile": "02027725772",
+      "reference": null,
+      "telephone": "02027725772"
+    },
+    "others_label": "No others on the case",
+    "respondents1": [
+      {
+        "id": "cb0775db-a1b4-4109-85b9-91312f5be2ab",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {},
+            "partyId": "97649861-d73e-4ca8-ad50-c6aa584d4857",
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "2018-01-01",
+            "telephoneNumber": {},
+            "relationshipToChild": "uncle"
+          },
+          "representedBy": [
+            {
+              "id": "ffbbb625-6000-4b42-90f0-5dc3d619bd2b",
+              "value": "217239b4-4669-48ff-90fa-a271003a713a"
+            }
+          ],
+          "legalRepresentation": "No"
+        }
+      },
+      {
+        "id": "0ad407e1-92bc-4eb3-93ad-c62fb54999d9",
+        "value": {
+          "party": {
+            "gender": "Female",
+            "address": {},
+            "lastName": "White",
+            "firstName": "Emma",
+            "dateOfBirth": "2004-01-01",
+            "telephoneNumber": {},
+            "relationshipToChild": "sister"
+          },
+          "solicitor": {
+            "email": "sam@hillingdon.gov.uk",
+            "lastName": "(local-authority)",
+            "firstName": "sam@hillingdon.gov.uk",
+            "organisation": {
+              "OrganisationID": "ORGSA",
+              "OrganisationName": "Swansea City Council"
+            },
+            "regionalOfficeAddress": {},
+            "unregisteredOrganisation": {
+              "name": null,
+              "address": {}
+            }
+          },
+          "representedBy": [],
+          "legalRepresentation": "Yes"
+        }
+      }
+    ],
+    "orderTypeAndDocument": {
+      "type": "BLANK_ORDER"
+    },
+    "judgeAndLegalAdvisor": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    },
+    "representatives": [
+      {
+        "id": "217239b4-4669-48ff-90fa-a271003a713a",
+        "value": {
+          "role": "REPRESENTING_RESPONDENT_1",
+          "email": "tomas.powroznik@gmail.com",
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "SE16 6BA",
+            "PostTown": "London",
+            "AddressLine1": "10",
+            "AddressLine2": "Campion House",
+            "AddressLine3": "6 Blondin Way"
+          },
+          "fullName": "Szymon Powroznik",
+          "positionInACase": "lkmk",
+          "telephoneNumber": null,
+          "servingPreferences": "POST"
+        }
+      }
+    ]
+  }
+}
