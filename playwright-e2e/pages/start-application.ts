@@ -63,7 +63,7 @@ super(page);
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
     this.courtServices = page.getByRole('link', { name: 'Court services'});
-    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
+    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people to be given' });
     this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
     this.ordersAndDirectionsSoughtFinishedStatus = page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img');
 

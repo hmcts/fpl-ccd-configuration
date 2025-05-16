@@ -5,6 +5,23 @@
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Full name",
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
     "SecurityClassification": "Public"
   },
   {
@@ -39,7 +56,8 @@
     "FieldType": "FixedList",
     "FieldTypeParameter": "GenderList",
     "ElementLabel": "Gender",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -48,7 +66,8 @@
     "FieldType": "Text",
     "ElementLabel": "What gender do they identify with?",
     "FieldShowCondition": "gender=\"They identify in another way\"",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -57,7 +76,8 @@
     "FieldType": "Text",
     "ElementLabel": "Place of birth",
     "HintText": "For example, town or city",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -75,7 +95,7 @@
     "ListElementCode": "addressKnowV2",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "IsAddressKnowList",
-    "ElementLabel": "*Current address known?",
+    "ElementLabel": "Current address known?",
     "SecurityClassification": "Public"
   },
   {
@@ -100,9 +120,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "addressNotKnowReason",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter":  "AddressNotKnowType",
-    "ElementLabel": "*Reason the address is not known",
+    "ElementLabel": "Why is the address unknown?",
     "SecurityClassification": "Public",
     "FieldShowCondition": "addressKnowV2=\"No\""
   },
@@ -149,7 +169,8 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need contact details hidden from other parties?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "addressKnowV2!=\"LIVE_IN_REFUGE\""
+    "FieldShowCondition": "addressKnowV2!=\"LIVE_IN_REFUGE\"",
+    "Comment": "Deprecated"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -158,15 +179,15 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "FieldShowCondition": "detailsHidden=\"Yes\" AND addressKnowV2!=\"LIVE_IN_REFUGE\"",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment": "Deprecated"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "childInformation",
     "FieldType": "TextArea",
-    "ElementLabel": "What is this person's relationship to the child or children in this case?",
-    "HintText": "Include: the name of the child or children, this person's relationship to them and whether this person has parental responsibility",
+    "ElementLabel": "What is this person's relationship to the child or children in the case?",
     "SecurityClassification": "Public"
   },
   {
@@ -175,7 +196,9 @@
     "ListElementCode": "proceedingsLabel",
     "FieldType": "Label",
     "ElementLabel": "## Ability to take part in proceedings",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "proceedingsLabel=\"DO_NOT_SHOW\"",
+    "Comment": "Deprecated"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -183,7 +206,7 @@
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LitigationCapacityIssues",
-    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
+    "ElementLabel": "Do you believe this person will have difficulty understanding what's happening with the case?",
     "SecurityClassification": "Public"
   },
   {
@@ -203,6 +226,7 @@
     "FieldTypeParameter": "Text",
     "ElementLabel": "Represented by",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "representedBy=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "representedBy=\"DO_NOT_SHOW\"",
+    "Comment": "Deprecated"
   }
 ]

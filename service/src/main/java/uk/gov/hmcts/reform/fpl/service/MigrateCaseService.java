@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -56,7 +58,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -1315,6 +1319,67 @@ public class MigrateCaseService {
         }
 
         return Map.of(ORDERS, caseData.getOrders().toBuilder().address(null).build());
+    }
+
+    public Map<String, Object> migrateOthersToOthersV2(CaseData caseData, Map<String, Object> caseDetailsMap,
+                                                       String migrationId) {
+        Others othersToBeMigrated = caseData.getOthers();
+
+        if (othersToBeMigrated == null) {
+            throw new AssertionError(format("Migration {id = %s}, there is no others in case %s", migrationId,
+                caseData.getId()));
+        }
+
+        List<Element<Other>> othersV2 = new ArrayList<>();
+        if (othersToBeMigrated.getFirstOther() != null) {
+            Element<Other> firstOther = element(getFirstOtherId(caseData), othersToBeMigrated.getFirstOther());
+            othersV2.add(firstOther);
+        }
+        if (isNotEmpty(othersToBeMigrated.getAdditionalOthers())) {
+            othersV2.addAll(othersToBeMigrated.getAdditionalOthers());
+        }
+
+        caseDetailsMap.remove("others");
+        caseDetailsMap.put("othersV2", othersV2);
+
+        return caseDetailsMap;
+    }
+
+    private UUID getFirstOtherId(CaseData caseData) {
+        // Copied from respondentController
+        // if firstOther exists confidentialOthers, it should return its uuid in confidentialOthers
+        // otherwise, it returns a random UUID
+        Set<UUID> additionalOtherIds = nullSafeList(caseData.getOthers().getAdditionalOthers())
+            .stream().map(Element::getId).collect(Collectors.toSet());
+        return caseData.getConfidentialOthers().stream().map(Element::getId)
+            .filter(co -> !additionalOtherIds.contains(co)).findFirst()
+            .orElse(UUID.randomUUID());
+    }
+
+    public Map<String, Object> rollbackOthersV2ToOthers(CaseData caseData, Map<String, Object> caseDetailsMap,
+                                                       String migrationId) {
+        List<Element<Other>> othersV2ToBeMigrated = caseData.getOthersV2();
+
+        if (othersV2ToBeMigrated == null) {
+            throw new AssertionError(format("Migration {id = %s}, there is no othersV2 in case %s", migrationId,
+                caseData.getId()));
+        }
+
+        int othersV2Size = othersV2ToBeMigrated.size();
+        
+        Other firstOther = (othersV2Size > 0) ? othersV2ToBeMigrated.get(0).getValue() : null;
+        List<Element<Other>> additionalOthers =  (othersV2Size > 1) 
+            ? othersV2ToBeMigrated.subList(1, othersV2Size) : null;
+
+        Others others = Others.builder()
+            .firstOther(firstOther)
+            .additionalOthers(additionalOthers)
+            .build();
+
+        caseDetailsMap.remove("othersV2");
+        caseDetailsMap.put("others", others);
+
+        return caseDetailsMap;
     }
 
     public Map<String, Object> removeDraftOrderFromAdditionalApplication(CaseData caseData, String migrationId,

@@ -132,7 +132,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -338,6 +337,10 @@ public class CaseData extends CaseDataParent {
         return representativeType != null ? representativeType : RepresentativeType.LOCAL_AUTHORITY;
     }
 
+    // This is a clone of the first respondent on the case in new 3rd party standalone apps, used for pre-filling data
+    // on case creation.
+    public final RespondentLocalAuthority respondentLocalAuthority;
+
     @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
@@ -534,7 +537,10 @@ public class CaseData extends CaseDataParent {
     @Builder.Default
     private final RemovalToolData removalToolData = RemovalToolData.builder().build();
 
+    @Deprecated
     private final Others others;
+    @Builder.Default
+    private final List<Element<Other>> othersV2 = List.of();
 
     private final String languageRequirement;
     private final String languageRequirementUrgent; // Replica field to work with Urgent Hearing
@@ -615,19 +621,8 @@ public class CaseData extends CaseDataParent {
             .orElse("");
     }
 
-    @JsonIgnore
-    public List<Element<Other>> getAllOthers() {
-        List<Element<Other>> othersList = new ArrayList<>();
-
-        ofNullable(this.getOthers()).map(Others::getFirstOther).filter(not(Other::isEmpty))
-            .map(ElementUtils::element).ifPresent(othersList::add);
-        ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
-
-        return Collections.unmodifiableList(othersList);
-    }
-
     public Optional<Other> findOther(int sequenceNo) {
-        List<Other> allOthers = this.getAllOthers().stream().map(Element::getValue).collect(toList());
+        List<Other> allOthers = this.getOthersV2().stream().map(Element::getValue).collect(toList());
 
         return allOthers.size() <= sequenceNo ? empty() : Optional.of(allOthers.get(sequenceNo));
     }
@@ -643,7 +638,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public boolean hasRespondentsOrOthers() {
-        return isNotEmpty(getAllRespondents()) || isNotEmpty(getAllOthers());
+        return isNotEmpty(getAllRespondents()) || isNotEmpty(getOthersV2());
     }
 
     @JsonIgnore

@@ -181,7 +181,7 @@ test.describe('', () => {
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
-        await respondentDetails.respondentDetailsNeeded();
+        await respondentDetails.respondentDetailsPrivateSolicitor();
         await startApplication.tabNavigation('View application');
 
         // Allocation Proposal

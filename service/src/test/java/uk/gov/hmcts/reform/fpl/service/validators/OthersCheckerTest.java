@@ -7,9 +7,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -26,9 +27,9 @@ class OthersCheckerTest {
     @ParameterizedTest
     @NullSource
     @MethodSource("others")
-    void shouldReturnEmptyErrorsAndNonCompletedStateForOptionalEvent(Others others) {
+    void shouldReturnEmptyErrorsAndNonCompletedStateForOptionalEvent(List<Element<Other>> others) {
         final CaseData caseData = CaseData.builder()
-                .others(others)
+                .othersV2(others)
                 .build();
 
         final List<String> errors = othersChecker.validate(caseData);
@@ -40,17 +41,24 @@ class OthersCheckerTest {
 
     private static Stream<Arguments> others() {
         return Stream.of(
-                Others.builder().build(),
-                Others.builder()
-                        .firstOther(Other.builder().build())
-                        .additionalOthers(wrapElements(Other.builder().build())).build(),
-                Others.builder()
-                        .firstOther(Other.builder()
-                                .name("Test")
-                                .build())
-                        .additionalOthers(wrapElements(Other.builder()
-                                .gender("Male")
-                                .build())).build())
+                List.of(),
+                wrapElements(Other.builder().build(), Other.builder().build()),
+                wrapElements(Other.builder()
+                        .firstName("Test")
+                        .build()),
+                wrapElements(Other.builder()
+                    .firstName("Test")
+                    .lastName("last")
+                    .build()),
+                wrapElements(Other.builder()
+                    .firstName("Test")
+                    .lastName("last")
+                    .addressKnowV2(IsAddressKnowType.NO)
+                    .build()),
+                wrapElements(Other.builder()
+                    .addressKnowV2(IsAddressKnowType.YES)
+                    .build())
+            )
                 .map(Arguments::of);
     }
 }

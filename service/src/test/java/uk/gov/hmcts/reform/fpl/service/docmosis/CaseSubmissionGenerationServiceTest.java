@@ -43,7 +43,6 @@ import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -1911,16 +1910,16 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldNotReturnOtherPartyConfidentialDetailsWhenDetailsHiddenIsSetToYes() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
+                .othersV2(wrapElements(
+                    Other.builder()
                         .address(Address.builder()
                             .addressLine1("Flat 13")
                             .postcode("SL11GF")
                             .build())
-                        .detailsHidden("yes")
+                        .hideAddress("Yes")
+                        .hideTelephone("Yes")
                         .telephone("090-0999000")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1933,16 +1932,16 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyAddressAndTelephoneDetailsWhenDetailsHiddenIsSetToNo() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
+                .othersV2(wrapElements(
+                    Other.builder()
                         .address(Address.builder()
                             .addressLine1("Flat 13")
                             .postcode("SL11GF")
                             .build())
-                        .detailsHidden("no")
+                        .hideTelephone("No")
+                        .hideAddress("No")
                         .telephone("090-0999000")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1955,11 +1954,10 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsNull() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
-                        .name("John")
-                        .build())
-                    .build())
+                .othersV2(wrapElements(
+                    Other.builder()
+                        .firstName("John")
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1971,12 +1969,11 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
-                        .name("test")
+                .othersV2(wrapElements(
+                    Other.builder()
+                        .firstName("test")
                         .dateOfBirth("")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1988,35 +1985,16 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyFormattedDOBAsWhenDOBIsGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
+                .othersV2(wrapElements(
+                    Other.builder()
                         .dateOfBirth("1999-02-02")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("2 February 1999");
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        void shouldReturnOtherPartyGenderAsMaleWhenNoGenderIdentificationIsNullOrEmpty(String genderIdentification) {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
-                        .gender("Male")
-                        .genderIdentification(genderIdentification)
-                        .build())
-                    .build())
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getOthers()).hasSize(1);
-            assertThat(caseSubmission.getOthers().get(0).getGender()).isEqualTo("Male");
         }
     }
 
