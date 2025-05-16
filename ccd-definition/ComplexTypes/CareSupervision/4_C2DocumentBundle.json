@@ -73,7 +73,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "usePbaPayment",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Paid with PBA",
+    "ElementLabel": "Do you want to enter PBA details?",
     "SecurityClassification": "Public"
   },
   {
