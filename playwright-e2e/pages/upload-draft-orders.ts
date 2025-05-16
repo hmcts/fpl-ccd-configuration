@@ -1,22 +1,27 @@
-import { type Page, type Locator, expect } from "@playwright/test";
-import { BasePage } from "./base-page";
+import {expect, type Locator} from "@playwright/test";
+import {BasePage} from "./base-page";
 
 export class UploadDraftOrders extends BasePage {
-
-    readonly addNewLocator: Locator;
-    readonly uploadOrderLocator: Locator;
-    readonly cmoOptionLocator: Locator;
-    readonly otherOptionalLocator: Locator;
-    readonly attachCmoLocator: Locator;
-
-    constructor(page: Page) {
-        super(page);
-        this.addNewLocator = page.getByRole('button', { name: 'Add new' });
-        this.uploadOrderLocator = page.getByRole('textbox', { name: 'Upload the order' });
-        this.cmoOptionLocator = page.getByLabel('Case Management (CMO)');
-        this.otherOptionalLocator = page.getByLabel('Additional order (PDO ETC)');
-        this.attachCmoLocator = page.getByRole('textbox', { name: 'Attach CMO' });
+    get addNewLocator(): Locator {
+        return this.page.getByRole('button', {name: 'Add new'});
     }
+
+    get uploadOrderLocator(): Locator {
+        return this.page.getByRole('textbox', {name: 'Upload the order'});
+    }
+
+    get cmoOptionLocator(): Locator {
+        return this.page.getByLabel('Case Management (CMO)');
+    }
+
+    get otherOptionalLocator(): Locator {
+        return this.page.getByLabel('Additional order (PDO ETC)');
+    }
+
+    get attachCmoLocator(): Locator {
+        return this.page.getByRole('textbox', {name: 'Attach CMO'});
+    }
+
 
     //upload CMO
     async uploadCMODraftOrders() {

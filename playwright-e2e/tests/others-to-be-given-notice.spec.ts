@@ -4,7 +4,7 @@ import caseData from '../caseData/caseSentToGatekeeper.json' assert { type: "jso
 import { newSwanseaLocalAuthorityUserOne, CTSCUser} from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
-test.describe('Others to be given notice', () => {
+test.describe('Others to be given notice @sessionreuse', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let casename: string;
@@ -14,17 +14,16 @@ test.describe('Others to be given notice', () => {
   });
 
     test('Others to be given notice',
-        async ({ page, signInPage, othersToBeGivenNotice }) => {
+        async ({ ctscUser, othersToBeGivenNotice }) => {
             casename = 'CTSC added other person to case ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseData);
-            await signInPage.visit();
-            await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await othersToBeGivenNotice.switchUser(ctscUser.page);
+            await othersToBeGivenNotice.navigateTOCaseDetails(caseNumber);
 
-            await signInPage.navigateTOCaseDetails(caseNumber);
+
             await othersToBeGivenNotice.gotoNextStep('Others to be given notice');
             await othersToBeGivenNotice.othersToBeGivenNotice();
             await othersToBeGivenNotice.tabNavigation('People in the case');
-            await expect(page.getByText('Other person 1',{exact: true})).toBeVisible();
+            await expect(othersToBeGivenNotice.page .getByText('Other person 1',{exact: true})).toBeVisible();
         })
     });

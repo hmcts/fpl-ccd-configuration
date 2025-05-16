@@ -1,19 +1,24 @@
-import {type Page, type Locator, expect} from "@playwright/test";
-import { BasePage } from "./base-page";
+import {expect, type Locator} from "@playwright/test";
+import {BasePage} from "./base-page";
 
 export class InternationalElement extends BasePage {
-    readonly internationalElementHeading: Locator;
-    readonly countryInvolved: Locator;
-    readonly importantDetails: Locator;
-    readonly outSideHague: Locator;
 
-    public constructor(page: Page) {
-        super(page);
-        this.internationalElementHeading = page.getByRole('heading', {name: 'International element', exact: true,level:1});
-        this.countryInvolved = page.getByLabel('Which other countries are involved?');
-        this.outSideHague = page.getByRole('group', {name: 'Are any of these countries outside of the Hague Convention?'});
-        this.importantDetails = page.getByLabel('Provide all important details');
+    get internationalElementHeading(): Locator {
+        return this.page.getByRole('heading', {name: 'International element', exact: true, level: 1});
     }
+
+    get countryInvolved(): Locator {
+        return this.page.getByLabel('Which other countries are involved?');
+    }
+
+    get importantDetails(): Locator {
+        return this.page.getByLabel('Provide all important details');
+    }
+
+    get outSideHague(): Locator {
+        return this.page.getByRole('group', {name: 'Are any of these countries outside of the Hague Convention?'});
+    }
+
 
     async internationalElementSmokeTest() {
         await expect(this.internationalElementHeading).toBeVisible();

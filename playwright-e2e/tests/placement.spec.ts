@@ -6,7 +6,7 @@ import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
 
-test.describe('Placement', () => {
+test.describe('Placement @sessionreuse', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
@@ -15,14 +15,14 @@ test.describe('Placement', () => {
   });
 
   test('Check Placement Application High Court WA Task',
-    async ({ page, signInPage, placement,
+    async ({ ctscUser,signInPage, page,placement,
       caseFileView }) => {
       caseName = 'Placement Application High Court WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
       await updateCase(caseName, caseNumber, caseData);
-      await signInPage.visit();
-      await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await placement.switchUser(ctscUser.page);
+      await caseFileView.switchUser(ctscUser.page);
+      await placement.navigateTOCaseDetails(caseNumber);
 
       await placement.gotoNextStep('Placement');
       await placement.submitPlacementOrder();
@@ -30,12 +30,13 @@ test.describe('Placement', () => {
       //Check CFV
       await caseFileView.goToCFVTab();
       await caseFileView.openFolder('Placement applications and responses');
-      await expect(page.getByRole('tree')).toContainText('testPdf.pdf');
-      await expect(page.getByRole('tree')).toContainText('testPdf2.pdf');
-      await expect(page.getByRole('tree')).toContainText('testPdf3.pdf');
+      await expect(placement.page.getByRole('tree')).toContainText('testPdf.pdf');
+      await expect(placement.page.getByRole('tree')).toContainText('testPdf2.pdf');
+      await expect(placement.page.getByRole('tree')).toContainText('testPdf3.pdf');
+
       await caseFileView.openFolder('Confidential');
-      await expect(page.getByRole('tree')).toContainText('testPdf4.pdf');
-      await placement.clickSignOut();
+      await expect(placement.page.getByRole('tree')).toContainText('testPdf4.pdf');
+     // await placement.clickSignOut();
 
       if (testConfig.waEnabled) {
         //Test WA Task exists

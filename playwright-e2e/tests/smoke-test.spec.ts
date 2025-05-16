@@ -3,7 +3,7 @@ import {newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser} from "../setti
 import {CreateCaseName} from "../utils/create-case-name";
 import {CaseFileView} from "../pages/case-file-view";
 
-test.describe('', () => {
+test.describe(' smoke Tests @sessionreuse', () => {
     test.slow();
     test("Local Authority submit C110A application @smoke-test @accessibility", async ({
                                                                                            signInPage,
@@ -37,37 +37,40 @@ test.describe('', () => {
         await createCase.caseName();
         await createCase.createCase();
         await createCase.submitCase(createCase.generatedCaseName);
-        await startApplication.tabNavigation('View application');
-        //this has to be refracted to new test as the test execution time exceed 8m
-        //await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+        await startApplication.caseNameUpdated();
+
+
 
         // Orders and directions sought
         await startApplication.tabNavigation('Start application');
         await ordersAndDirectionSought.ordersAndDirectionsNeeded();
         await startApplication.addApplicationDetailsHeading.isVisible();
-        await startApplication.tabNavigation('View application');
 
         // Hearing urgency
         await startApplication.tabNavigation('Start application');
         await startApplication.hearingUrgency();
         await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
         await hearingUrgency.hearingUrgencySmokeTest();
+        await startApplication.hearingurgencyHasBeenUpdate();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByRole('link',{name:'Make changes to hearing urgency',exact:true})).toBeVisible();
+
 
         // Grounds for the application
-       await startApplication.tabNavigation('Start application');
+        await startApplication.tabNavigation('Start application');
         await startApplication.groundsForTheApplication();
         await groundsForTheApplication.groundsForTheApplicationSmokeTest();
         await startApplication.groundsForTheApplicationHasBeenUpdated();
-         await startApplication.tabNavigation('View application');
+        await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('How does this case meet the threshold criteria?',{exact:true})).toBeVisible();
 
         //Add application documents
-         await startApplication.tabNavigation('Start application');
-        await startApplication.addApplicationDetailsHeading.isVisible();
+        await startApplication.tabNavigation('Start application');
         await startApplication.addApplicationDocuments();
         await addApplicationDocuments.uploadDocumentSmokeTest();
         await startApplication.addApplicationDocumentsInProgress();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Documents 1',{exact:true})).toBeVisible();
 
 // Applicant Details
         await startApplication.tabNavigation('Start application');
@@ -75,6 +78,7 @@ test.describe('', () => {
         await applicantDetails.applicantDetailsNeeded();
         await startApplication.applicantDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Applicant 1',{exact:true})).toBeVisible();
 
         // Child details
         await startApplication.tabNavigation('Start application');
@@ -82,12 +86,15 @@ test.describe('', () => {
         await childDetails.childDetailsNeeded();
         await startApplication.childDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Child 1',{exact:true})).toBeVisible();
 
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsNeeded();
+        await startApplication.respondentDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Respondents 1',{exact:true})).toBeVisible();
 
         // Allocation Proposal
         await startApplication.tabNavigation('Start application');
@@ -95,6 +102,9 @@ test.describe('', () => {
         await allocationProposal.allocationProposalSmokeTest();
         await startApplication.allocationProposalHasBeenUpdated();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByRole('link',{name:'Make changes to allocation proposal',exact:true})).toBeVisible();
+
+
 
         // Submit the case
         await startApplication.tabNavigation('Start application');
@@ -146,14 +156,15 @@ test.describe('', () => {
         await createCase.createCase();
         await createCase.respondentSolicitorCreatCase();
         await createCase.submitCase('Private Solicitor -C110 a Application ' + CreateCaseName.getFormattedDate());
-        await startApplication.tabNavigation('View application');
-
+        await startApplication.caseNameUpdated();
 
         // Orders and directions sought
         await startApplication.tabNavigation('Start application');
         await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
-        await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
+        await startApplication.orderAndDirectionUpdated();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByRole('link',{name:'Make changes to orders and directions sought',exact:true})).toBeVisible();
+
 
 
         // Hearing urgency
@@ -161,8 +172,8 @@ test.describe('', () => {
         await startApplication.hearingUrgency();
         await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
         await hearingUrgency.hearingUrgencySmokeTest();
+        await startApplication.hearingurgencyHasBeenUpdate();
         await startApplication.tabNavigation('View application');
-
 
         // Applicant Details
         await startApplication.tabNavigation('Start application');
@@ -170,6 +181,8 @@ test.describe('', () => {
         await applicantDetails.solicitorC110AApplicationApplicantDetails();
         await startApplication.applicantDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Applicant 1',{exact:true})).toBeVisible();
+
 
         // Child details
         await startApplication.tabNavigation('Start application');
@@ -177,12 +190,18 @@ test.describe('', () => {
         await childDetails.childDetailsNeeded();
         await startApplication.childDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Child 1',{exact:true})).toBeVisible();
+
 
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsNeeded();
+        await startApplication.respondentDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
+        await expect(startApplication.page.getByText('Respondents 1',{exact:true})).toBeVisible();
+
+
 
         // Allocation Proposal
         await startApplication.tabNavigation('Start application');

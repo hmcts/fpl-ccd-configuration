@@ -1,26 +1,32 @@
-import { expect, type Locator, type Page } from "@playwright/test";
-import { BasePage } from "./base-page";
-import config from "../settings/test-docs/config";
+import {type Locator} from "@playwright/test";
+import {BasePage} from "./base-page";
 
 export class LogExpertReport extends BasePage {
-    readonly logExpertRerort: Locator;
-    readonly Day: Locator;
-    readonly Month: Locator;
-    readonly Year: Locator;
-    readonly radioButton: Locator;
-    readonly addNew: Locator;
-    readonly typeOfReport: Locator;
 
-    public constructor(page: Page) {
-        super(page);
-        this.logExpertRerort = page.getByRole('heading', { name: 'Log expert report', exact: true });
-        this.addNew = page.getByRole('button', { name: 'Add new' });
-        this.typeOfReport = page.getByLabel('What type of report have you');
-        this.Day = page.getByRole('textbox', { name: 'Day' });
-        this.Month = page.getByRole('textbox', { name: 'Month' });
-        this.Year = page.getByRole('textbox', { name: 'Year' });
-        this.radioButton = page.getByRole('radio', { name: 'No' });
+    get Day(): Locator {
+        return this.page.getByRole('textbox', {name: 'Day'});
     }
+
+    get Month(): Locator {
+        return this.page.getByRole('textbox', {name: 'Month'});
+    }
+
+    get Year(): Locator {
+        return this.page.getByRole('textbox', {name: 'Year'});
+    }
+
+    get radioButton(): Locator {
+        return this.page.getByRole('radio', {name: 'No'});
+    }
+
+    get addNew(): Locator {
+        return this.page.getByRole('button', {name: 'Add new'});
+    }
+
+    get typeOfReport(): Locator {
+        return this.page.getByLabel('What type of report have you');
+    }
+
     public async logExpertReport() {
         await this.addNew.click();
         await this.typeOfReport.selectOption('Psychiatric - On child only');
@@ -30,6 +36,6 @@ export class LogExpertReport extends BasePage {
         await this.radioButton.click();
         await this.radioButton.click();
         await this.clickSubmit();
-        await this.saveAndContinue.click();
+        await this.checkYourAnsAndSubmit();
     }
-};
+}

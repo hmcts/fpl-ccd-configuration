@@ -12,7 +12,7 @@ import {
 import { expect } from '@playwright/test';
 import {urlConfig} from "../settings/urls";
 
-test.describe('Manage child representatives ', () => {
+test.describe('Manage child representatives @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
@@ -21,12 +21,13 @@ test.describe('Manage child representatives ', () => {
     });
 
     test('CTSC user can add one legal representative to all children ',
-        async ({page, signInPage, childDetails}) => {
+        async ({ctscUser, childDetails}) => {
             casename = 'CTSC add one solicitor to represent all children ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseWithMultipleChild);
-            await signInPage.visit();
-            await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await childDetails.switchUser(ctscUser.page);
+            // await signInPage.visit();
+            // await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
+            await childDetails.navigateTOCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.addRegisteredSOlOrg();
@@ -35,18 +36,19 @@ test.describe('Manage child representatives ', () => {
             await childDetails.clickContinue();
             await childDetails.checkYourAnsAndSubmit();
             await childDetails.tabNavigation('People in the case');
-            await expect(page.getByText('Private solicitors', {exact: true})).toHaveCount(4);
+            await expect(childDetails.page.getByText('Private solicitors', {exact: true})).toHaveCount(4);
             await childDetails.tabNavigation('Change of representatives')
-            await expect(page.getByText('Added representative', {exact: true})).toHaveCount(4);
+            await expect(childDetails.page.getByText('Added representative', {exact: true})).toHaveCount(4);
         });
 
     test(' CTSC user can add different legal representative to each children',
-        async ({page, signInPage, childDetails}) => {
+        async ({ctscUser, childDetails}) => {
             casename = 'CTSC different Child solicitors ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseWithMultipleChild);
-            await signInPage.visit();
-            await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            // await signInPage.visit();
+            // await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
+            await childDetails.switchUser(ctscUser.page);
+            await childDetails.navigateTOCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.addRegisteredSOlOrg();
@@ -59,19 +61,20 @@ test.describe('Manage child representatives ', () => {
             await childDetails.clickContinue();
             await childDetails.checkYourAnsAndSubmit();
             await childDetails.tabNavigation('People in the case');
-            await expect(page.getByText('Private solicitors', {exact: true})).toHaveCount(3);
-            await expect(page.getByText('FPLSolicitorOrg', {exact: true})).toHaveCount(1);
+            await expect(childDetails.page.getByText('Private solicitors', {exact: true})).toHaveCount(3);
+            await expect(childDetails.page.getByText('FPLSolicitorOrg', {exact: true})).toHaveCount(1);
             await childDetails.tabNavigation('Change of representatives')
-            await expect(page.getByText('Added representative', {exact: true})).toHaveCount(4);
+            await expect(childDetails.page.getByText('Added representative', {exact: true})).toHaveCount(4);
         });
 
     test('CTSC user able to add unregistered solicitor to a child ',
-        async ({page, signInPage, childDetails}) => {
+        async ({ctscUser, childDetails}) => {
             casename = 'CTSC add unregistered child solicitor ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseWithMultipleChild);
-            await signInPage.visit();
-            await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            // await signInPage.visit();
+            // await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
+            await childDetails.switchUser(ctscUser.page);
+            await childDetails.navigateTOCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.addUnregisteredSolOrg();
@@ -80,13 +83,13 @@ test.describe('Manage child representatives ', () => {
             await childDetails.clickContinue();
             await childDetails.checkYourAnsAndSubmit();
             await childDetails.tabNavigation('People in the case');
-            await expect(page.locator('#case-viewer-field-read--children1')).toContainText('Organisation (unregistered)');
-            await expect(page.locator('#case-viewer-field-read--children1')).toContainText('NewOrganisation');
-            await expect(page.getByRole('tab', {name: 'Change of representatives'})).toBeHidden();
+            await expect(childDetails.page.locator('#case-viewer-field-read--children1')).toContainText('Organisation (unregistered)');
+            await expect(childDetails.page.locator('#case-viewer-field-read--children1')).toContainText('NewOrganisation');
+            await expect(childDetails.page.getByRole('tab', {name: 'Change of representatives'})).toBeHidden();
         });
 
     test('CTSC user remove child solicitors',
-        async ({page, signInPage, childDetails}) => {
+        async ({ctscUser, childDetails}) => {
             casename = 'CTSC change child solicitor ' + dateTime.slice(0, 10);
             if(urlConfig.env=='demo') {
                 await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitorDemo);
@@ -95,17 +98,18 @@ test.describe('Manage child representatives ', () => {
                 await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitor);
             }
             await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]');
-            await signInPage.visit();
-            await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            // await signInPage.visit();
+            // await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
+            childDetails.switchUser(ctscUser.page);
+            await childDetails.navigateTOCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.removeSolicitor();
             await childDetails.clickContinue();
             await childDetails.checkYourAnsAndSubmit();
             await childDetails.tabNavigation('People in the case');
-            await expect(page.getByText('Private solicitors', {exact: true})).toHaveCount(0);
+            await expect(childDetails.page.getByText('Private solicitors', {exact: true})).toHaveCount(0);
             await childDetails.tabNavigation('Change of representatives');
-            await expect(page.getByText('Removed representative', {exact: true})).toHaveCount(1);
+            await expect(childDetails.page.getByText('Removed representative', {exact: true})).toHaveCount(1);
         });
 });

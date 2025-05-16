@@ -1,31 +1,49 @@
-import { type Page, type Locator, expect } from "@playwright/test";
-import { BasePage } from "./base-page";
+import {type Locator, type Page} from "@playwright/test";
+import {BasePage} from "./base-page";
 import config from "../settings/test-docs/config";
 
 export class C1WithSupplement extends BasePage {
-    readonly c1WithSupplementHeading: Locator;
-    readonly yesRadio: Locator;
-    readonly uploadApplicationTextbox: Locator;
-    readonly onTheSameDay: Locator;
-    readonly addNewSupplementBundle: Locator;
-    readonly documentName: Locator;
-    readonly notes: Locator;
-
-    readonly uploadDocument: Locator;
-    readonly ackRelatedToCase: Locator;
-
     constructor(page: Page) {
         super(page);
-        this.c1WithSupplementHeading = page.getByRole('heading', { name: 'C1 with supplement' });
-        this.yesRadio = page.getByRole('checkbox', { name: 'Yes' });
-        this.uploadApplicationTextbox = page.getByRole('textbox', { name: 'Upload application' });
-        this.onTheSameDay = page.getByLabel('On the same day');
-        this.addNewSupplementBundle = page.locator('#submittedC1WithSupplement_supplementsBundle').getByRole('button', { name: 'Add new' });
-        this.documentName = page.getByLabel('Document name');
-        this.notes = page.getByLabel('Notes (Optional)');
-        this.uploadDocument = page.getByRole('textbox', { name: 'Upload document' });
-        this.ackRelatedToCase = page.locator('#submittedC1WithSupplement_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE');
+
     }
+
+    get c1WithSupplementHeading(): Locator {
+        return this.page.getByRole('heading', {name: 'C1 with supplement'});
+    }
+
+    get yesRadio(): Locator {
+        return this.page.getByRole('checkbox', {name: 'Yes'});
+    }
+
+    get uploadApplicationTextbox(): Locator {
+        return this.page.getByRole('textbox', {name: 'Upload application'});
+    }
+
+    get onTheSameDay(): Locator {
+        return this.page.getByLabel('On the same day');
+    }
+
+    get addNewSupplementBundle(): Locator {
+        return this.page.locator('#submittedC1WithSupplement_supplementsBundle').getByRole('button', {name: 'Add new'});
+    }
+
+    get documentName(): Locator {
+        return this.page.getByLabel('Document name');
+    }
+
+    get notes(): Locator {
+        return this.page.getByLabel('Notes (Optional)');
+    }
+
+    get uploadDocument(): Locator {
+        return this.page.getByRole('textbox', {name: 'Upload document'});
+    }
+
+    get ackRelatedToCase(): Locator {
+        return this.page.locator('#submittedC1WithSupplement_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE');
+    }
+
     async c1WithSupplementSmokeTest() {
         await this.gotoNextStep('C1 with supplement');
         await this.yesRadio.check();
@@ -40,8 +58,9 @@ export class C1WithSupplement extends BasePage {
         await this.uploadDocument.setInputFiles(config.testPdfFile);
         await this.page.waitForTimeout(6000);
         await this.ackRelatedToCase.check();
-        await this.continueButton.click();
-        await this.saveAndContinue.click();
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
+
     }
 }
 

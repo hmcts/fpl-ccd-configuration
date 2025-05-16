@@ -55,7 +55,7 @@ export class CourtServices extends BasePage {
         await this.separateWaitingRoom.uncheck();
         await this.interpreterDetails.fill('Needed new intrepreter for welsh language');
         await this.clickSubmit();
-        await this.saveAndContinue.click();
+        await this.checkYourAnsAndSubmit();
 
     }
 }

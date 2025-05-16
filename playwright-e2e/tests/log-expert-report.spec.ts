@@ -5,7 +5,7 @@ import returnedCase from '../caseData/returnCase.json' assert { type: 'json' };
 import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
-test.describe('log expert report', () => {
+test.describe('log expert report @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
@@ -15,17 +15,16 @@ test.describe('log expert report', () => {
     });
 
     test('log expert report',
-        async ({ page, signInPage, logExpertReport }) => {
+        async ({ ctscUser, logExpertReport }) => {
             caseName = 'CTSC log expert report ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
-            await signInPage.visit();
-            await signInPage.login(CTSCUser.email, CTSCUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await logExpertReport.switchUser(ctscUser.page);
+            await logExpertReport.navigateTOCaseDetails(caseNumber);
 
             await logExpertReport.gotoNextStep('Log expert report');
             await logExpertReport.logExpertReport();
             await logExpertReport.tabNavigation('Expert Reports')
-            await expect(page.getByText('Report 1')).toBeVisible();
-            await expect(page.getByText('Psychiatric - On child only')).toBeVisible();
+            await expect(logExpertReport.page.getByText('Report 1')).toBeVisible();
+            await expect(logExpertReport.page.getByText('Psychiatric - On child only')).toBeVisible();
         })
 });

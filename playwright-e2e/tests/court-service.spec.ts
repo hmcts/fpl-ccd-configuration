@@ -4,7 +4,7 @@ import {createCase, updateCase} from "../utils/api-helper";
 import caseWithCourtService from "../caseData/mandatoryWithOtherSubmissionFields.json" assert {type: "json"}
 
 
-test.describe('Court Service', () => {
+test.describe('Court Service @sessionreuse', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
 
@@ -12,17 +12,18 @@ test.describe('Court Service', () => {
         caseNumber = await createCase('Court service', newSwanseaLocalAuthorityUserOne);
     });
     test('LA add court service',
-        async ({startApplication, signInPage, courtServices, makeAxeBuilder}, testInfo) => {
+        async ({startApplication, localAuthorityUser, courtServices, makeAxeBuilder}, testInfo) => {
 
-            // 1. Sign in as local-authority user
-            await signInPage.visit();
-            await signInPage.login(
-                newSwanseaLocalAuthorityUserOne.email,
-                newSwanseaLocalAuthorityUserOne.password,
-            );
-            //sign in page
-            await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            // // 1. Sign in as local-authority user
+            // await signInPage.visit();
+            // await signInPage.login(
+            //     newSwanseaLocalAuthorityUserOne.email,
+            //     newSwanseaLocalAuthorityUserOne.password,
+            // );
+            // //sign in page
+            // await signInPage.isSignedIn();
+            await courtServices.switchUser(localAuthorityUser.page);
+            await courtServices.navigateTOCaseDetails(caseNumber);
 
             // Court Services Needed
             await startApplication.courtServicesReqUpdated();
@@ -65,20 +66,21 @@ test.describe('Court Service', () => {
         });
 
     test('CTSC user update court service',
-        async ({ signInPage, courtServices}) => {
+        async ({ ctscUser, courtServices}) => {
             let casename = 'Amend Court service  ' + dateTime.slice(0, 10);
 
             await updateCase(casename, caseNumber, caseWithCourtService);
 
             // 1. Sign in as local-authority user
-            await signInPage.visit();
-            await signInPage.login(
-                CTSCUser.email,
-                CTSCUser.password,
-            );
-            //sign in page
-            await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            // await signInPage.visit();
+            // await signInPage.login(
+            //     CTSCUser.email,
+            //     CTSCUser.password,
+            // );
+            // //sign in page
+            // await signInPage.isSignedIn();
+            await courtServices.switchUser(ctscUser.page);
+            await courtServices.navigateTOCaseDetails(caseNumber);
             await courtServices.gotoNextStep('Court services');
             await courtServices.updateCourtServices();
 

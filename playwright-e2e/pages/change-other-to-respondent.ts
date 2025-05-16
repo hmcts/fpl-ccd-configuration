@@ -1,46 +1,71 @@
-import { type Page, type Locator, expect } from "@playwright/test";
-import { BasePage } from "./base-page";
+import {expect, type Locator} from "@playwright/test";
+import {BasePage} from "./base-page";
 
 export class ChangeOtherToRespondent extends BasePage {
-    readonly changeOtherToRespondent: Locator;
-    readonly giveNotice: Locator;
-    readonly firstName: Locator;
-    readonly lastName: Locator;
-    readonly dobDay: Locator;
-    readonly dobMonth: Locator;
-    readonly dobYear: Locator;
-    readonly gender: Locator;
-    readonly placeOfBirth: Locator;
-    readonly currentAddress: Locator;
-    readonly reasonUnknownAddress: Locator;
-    readonly telephoneNumber: Locator;
-    readonly relationshipToChild: Locator;
-    readonly abilityToTakeProceeding: Locator;
-    readonly anyLegalRepresentation: Locator;
+    get changeOtherToRespondent(): Locator {
+        return this.page.getByRole('heading', {name: 'Change other to respondent', exact: true});
+    }
 
-    constructor(page: Page) {
-        super(page);
-        this.changeOtherToRespondent = page.getByRole('heading', { name: 'Change other to respondent', exact: true });
-        this.giveNotice = page.getByLabel('Select one of the others to');
-        this.firstName = page.getByLabel('First name (Optional)', { exact: true });
-        this.lastName = page.getByLabel('Last name (Optional)', { exact: true });
-        this.dobDay = page.getByLabel('Day');
-        this.dobMonth = page.getByLabel('Month');
-        this.dobYear = page.getByLabel('Year');
-        this.gender = page.getByLabel('Gender (Optional)');
-        this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
-        this.currentAddress = page.getByRole('group', { name: '*Current address known?' });
-        this.reasonUnknownAddress = page.getByLabel('*Reason the address is not');
-        this.telephoneNumber =  page.getByRole('group', { name: 'Telephone (Optional)' }).locator('#transformedRespondent_party_telephoneNumber_telephoneNumber');
-        this.relationshipToChild = page.getByLabel('What is the respondent\'s relationship to the child or children in this case? (Optional)');
-        this.abilityToTakeProceeding = page.getByRole('group', { name: 'Do you believe this person will have problems with litigation capacity' });
-        this.anyLegalRepresentation = page.getByRole('group', { name: 'Do they have legal representation? (Optional)' });
+    get giveNotice(): Locator {
+        return this.page.getByLabel('Select one of the others to');
+    }
+
+    get firstName(): Locator {
+        return this.page.getByLabel('First name (Optional)', {exact: true});
+    }
+
+    get lastName(): Locator {
+        return this.page.getByLabel('Last name (Optional)', {exact: true});
+    }
+
+    get dobDay(): Locator {
+        return this.page.getByLabel('Day');
+    }
+
+    get dobMonth(): Locator {
+        return this.page.getByLabel('Month');
+    }
+
+    get dobYear(): Locator {
+        return this.page.getByLabel('Year');
+    }
+
+    get gender(): Locator {
+        return this.page.getByLabel('Gender (Optional)');
+    }
+
+    get placeOfBirth(): Locator {
+        return this.page.getByLabel('Place of birth (Optional)');
+    }
+
+    get currentAddress(): Locator {
+        return this.page.getByRole('group', {name: '*Current address known?'});
+    }
+
+    get reasonUnknownAddress(): Locator {
+        return this.page.getByLabel('*Reason the address is not');
+    }
+
+    get telephoneNumber(): Locator {
+        return this.page.getByRole('group', {name: 'Telephone (Optional)'}).locator('#transformedRespondent_party_telephoneNumber_telephoneNumber');
+    }
+
+    get relationshipToChild(): Locator {
+        return this.page.getByLabel('What is the respondent\'s relationship to the child or children in this case? (Optional)');
+    }
+
+    get abilityToTakeProceeding(): Locator {
+        return this.page.getByRole('group', {name: 'Do you believe this person will have problems with litigation capacity'});
+    }
+
+    get anyLegalRepresentation(): Locator {
+        return this.page.getByRole('group', {name: 'Do they have legal representation? (Optional)'});
     }
 
     async ChangeOtherToRespondent() {
         await expect(this.changeOtherToRespondent).toBeVisible;
         await this.giveNotice.selectOption('Doel Sany');
-        await this.continueButton.click();
+        await this.clickContinue();
         await this.firstName.fill('Thierry');
         await this.lastName.fill('John');
         await this.dobDay.fill('11');
@@ -51,9 +76,9 @@ export class ChangeOtherToRespondent extends BasePage {
         await this.reasonUnknownAddress.selectOption('1: No fixed abode');
         await this.telephoneNumber.fill("00000000000");
         await this.relationshipToChild.fill("Uncle");
-        await this.abilityToTakeProceeding.getByLabel('No',{exact: true}).check();
-        await this.anyLegalRepresentation.getByLabel('No',{exact: true}).check();
-        await this.continueButton.click();
+        await this.abilityToTakeProceeding.getByLabel('No', {exact: true}).check();
+        await this.anyLegalRepresentation.getByLabel('No', {exact: true}).check();
+        await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     }
 }

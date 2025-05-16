@@ -1,213 +1,270 @@
-import { type Page, type Locator, expect } from "@playwright/test";
-import {BasePage} from "./base-page";
+import {expect, type Locator, type Page} from "@playwright/test";
+import {BasePage} from "./base-page.ts";
 
 export class StartApplication extends BasePage {
-  readonly addApplicationDetailsHeading: Locator;
-  readonly ordersAndDirectionsSoughtLink: Locator;
-  readonly factorsAffectingParentingLink: Locator;
-  readonly hearingUrgencyLink: Locator;
-  readonly groundsForTheApplicationLink: Locator;
-  readonly riskAndHarmToChildrenLink: Locator;
-  readonly hearingUrgencyHeader: Locator;
-  readonly groundsForTheApplicationHeading: Locator;
-  readonly groundsForTheApplicationHasBeenUpdatedFinished: Locator;
-  readonly allocationProposalFinished: Locator;
-  readonly allocationProposalLink: Locator;
-  readonly allocationProposalHeading: Locator;
-  readonly addApplicationDocsHeading: Locator;
-  readonly uploadDocumentsLink: Locator;
-  readonly upLoadDocsInProgress: Locator;
-  readonly applicantDetailsLink: Locator;
-  readonly childDetailsLink: Locator;
-  readonly childDetailsUpdated: Locator;
-  readonly respondentsDetailsLink: Locator;
-  readonly applicantDetailsUpdated: Locator;
-  readonly welshLanguageRequirements: Locator;
-  readonly welshLanguageReqFinished: Locator;
-  readonly otherProceedingsLink: Locator;
-  readonly internationalElementsHeading: Locator;
-  readonly courtServices: Locator;
-  readonly submitApplicationLink: Locator;
-  readonly otherPeopleInCaseLink: Locator;
-  readonly returnApplicationLink: Locator;
-  readonly  ordersAndDirectionsSoughtFinishedStatus: Locator;
+    // readonly logExpertReportLink: Locator;
+    public constructor(page: Page) {
+        super(page)
 
-  // readonly logExpertReportLink: Locator;
-  public constructor(page: Page) {
-super(page);
-    this.addApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details", });
-    this.ordersAndDirectionsSoughtLink = page.getByRole("heading", { name: "Orders and directions sought", });
-    this.factorsAffectingParentingLink = page.getByRole("heading", { name: "Factors affecting parenting", });
-    this.hearingUrgencyLink = page.getByRole("link", { name: "Hearing urgency", });
-    this.hearingUrgencyHeader = page.getByRole("heading", { name: "Hearing urgency", });
-    this.groundsForTheApplicationLink = page.getByRole("link", { name: "Grounds for the application", });
-    this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
-   // this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('heading-h2',);
-    this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img',);
-    this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
-    this.allocationProposalFinished = page.locator('p').filter({ hasText: 'Allocation proposal' }).getByRole('img', { name: 'Finished' });
-    this.allocationProposalHeading = page.getByRole("group", { name: "Allocation proposal" }).getByRole("heading");
-    this.allocationProposalLink = page.getByRole("link", { name: "Allocation proposal", });
-    this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });
-    this.addApplicationDocsHeading = page.getByRole("heading", { name: "Application documents", });
-    this.upLoadDocsInProgress = page.locator('p').filter({ hasText: 'Upload documents' }).getByRole('img', { name: 'Finished' })
-    this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
-    this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
-    this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' });
-    this.childDetailsLink = page.getByRole("link", { name: 'Child\'s Details', });
-    this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
-    this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
-    this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
-    this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
-    this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
-    this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
-    this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
-    this.courtServices = page.getByRole('link', { name: 'Court services'});
-    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
-    this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
-    this.ordersAndDirectionsSoughtFinishedStatus = page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img');
+    }
 
-  }
-  async groundsForTheApplication() {
+    get addApplicationDetailsHeading(): Locator {
+        return this.page.getByRole("heading", {name: "Add application details",});
+    }
 
-    await  expect(()=>{
-       this.page.reload();
-        expect(this.groundsForTheApplicationLink).toBeVisible();
-        this.groundsForTheApplicationLink.click();
-        expect( this.groundsForTheApplicationLink).toBeHidden();
-      }).toPass();
-   // expect(await this.groundsForTheApplicationLink).toBeVisible();
 
-   // await expect(this.groundsForTheApplicationHeading).toBeVisible();
-  }
+    get hearingUrgencyLink(): Locator {
+        return this.page.getByRole("link", {name: "Hearing urgency",exact:true});
+    }
 
-  async groundsForTheApplicationHasBeenUpdated() {
-    await expect(this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible();
-  }
+    get groundsForTheApplicationLink(): Locator {
+        return this.page.getByRole("link", {name: "Grounds for the application",exact:true});
+    }
 
-  async hearingUrgency() {
-      await expect(() => {
-       expect(this.hearingUrgencyLink).toBeVisible();
-          this.hearingUrgencyLink.click();
-          expect(this.hearingUrgencyLink).toBeHidden();
-          this.page.reload();
+    get riskAndHarmToChildrenLink(): Locator {
+        return this.page.getByRole("link", {name: "Risk and harm to children",exact:true});
+    }
 
-      }).toPass();
+    get hearingUrgencyHeader(): Locator {
+        return this.page.getByRole("heading", {name: "Hearing urgency"});
+    }
 
-    await expect(this.hearingUrgencyHeader).toBeVisible();
-  }
+    get groundsForTheApplicationHeading(): Locator {
+        return this.page.getByRole("heading", {name: "Grounds for the application",});
+    }
 
-  async riskAndHarmToChildren() {
-    await expect(this.riskAndHarmToChildrenLink).toBeVisible();
-    await this.riskAndHarmToChildrenLink.click();
-  }
+    get groundsForTheApplicationHasBeenUpdatedFinished(): Locator {
+        return this.page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img',);
+    }
 
-  async addApplicationDocuments() {
+    get ordersAndDirectionUpdated(): Locator {
+        return this.page.locator('p').filter({hasText: 'Orders and directions sought'}).getByRole('img', {name: 'Finished'});
+    }
+    get hearingUrgencyUpdated(): Locator {
+        return this.page.locator('p').filter({hasText: 'Hearing urgency'}).getByRole('img', {name: 'Finished'});
+    }
 
-      await expect(()=>{
-         expect(this.uploadDocumentsLink).toBeVisible();
-          this.uploadDocumentsLink.click();
-          expect(this.uploadDocumentsLink).toBeHidden();
-          this.page.reload();
-      }).toPass();
-    // await expect(this.uploadDocumentsLink).toBeVisible();
-    // await this.uploadDocumentsLink.click();
-  }
+    get allocationProposalFinished(): Locator {
+        return this.page.locator('p').filter({hasText: 'Allocation proposal'}).getByRole('img', {name: 'Finished'});
+    }
+    get caseNameFinished(): Locator {
+        return this.page.locator('p').filter({hasText: 'Case Name'}).getByRole('img', {name: 'Finished'});
+    }
 
-  async addApplicationDocumentsInProgress() {
-    await expect(this.upLoadDocsInProgress).toBeVisible();
-  }
 
-  async applicantDetails() {
-      await expect(()=>{
-         expect(this.applicantDetailsLink).toBeVisible();
-          this.applicantDetailsLink.click();
-          expect(this.applicantDetailsLink).toBeHidden();
-          this.page.reload();
-      }).toPass();
-    // await expect(this.applicantDetailsLink).toBeVisible();
-    // await this.applicantDetailsLink.click();
-  }
 
-  async applicantDetailsHasBeenUpdated() {
-    await expect(this.applicantDetailsUpdated).toBeVisible();
-  }
+    get allocationProposalLink(): Locator {
+        return this.page.getByRole("link", {name: "Allocation proposal",exact:true});
+    }
 
-  async childDetails() {
-      await expect(()=>{
-          expect(this.childDetailsLink).toBeVisible();
-           this.childDetailsLink.click();
-           expect(this.childDetailsLink).toBeHidden();
-          this.page.reload();
-      }).toPass();
-    // await expect(this.childDetailsLink).toBeVisible();
-    // await this.childDetailsLink.click();
-  }
 
-  async childDetailsHasBeenUpdated() {
-    await expect(this.childDetailsUpdated).toBeVisible();
-  }
+    get uploadDocumentsLink(): Locator {
+        return this.page.getByRole("link", {name: "Upload documents",exact:true});
+    }
 
-  async respondentDetails() {
-      await expect(()=>{
-          expect(this.respondentsDetailsLink).toBeVisible();
-          this.respondentsDetailsLink.click();
-          expect(this.respondentsDetailsLink).toBeHidden();
-          this.page.reload();
-      }).toPass();
-    // await expect(this.respondentsDetailsLink).toBeVisible();
-    // await this.respondentsDetailsLink.click();
-  }
+    get upLoadDocsInProgress(): Locator {
+        return this.page.locator('p').filter({hasText: 'Upload documents'}).getByRole('img', {name: 'Finished'});
+    }
 
-  async allocationProposal() {
+    get applicantDetailsLink(): Locator {
+        return this.page.getByRole('link', {name: 'Applicant\'s details',exact:true});
+    }
 
-      await expect(()=>{
-          expect(this.allocationProposalLink).toBeVisible();
-          this.allocationProposalLink.click();
-          expect(this.allocationProposalLink).toBeHidden();
-          this.page.reload();
-      }).toPass();
-    // await this.allocationProposalLink.click();
-      // await expect(this.allocationProposalLink).toBeVisible();
-  }
+    get childDetailsLink(): Locator {
+        return this.page.getByRole("link", {name: 'Child\'s details',exact:true});
+    }
 
-  async allocationProposalHasBeenUpdated() {
-    await expect(this.allocationProposalFinished).toBeVisible();
-  }
 
-  async otherProceedingsNeeded() {
-    await this.otherProceedingsLink.click();
-  }
 
-  async welshLanguageReq() {
-    await this.welshLanguageRequirements.click();
-  }
+    get respondentsDetailsLink(): Locator {
+        return this.page.getByRole('link', {name: 'Respondents\' details',exact:true});
+    }
 
-  async welshLanguageReqUpdated() {
-    await expect(this.welshLanguageReqFinished).toBeVisible;
-  }
+    get applicantDetailsUpdated(): Locator {
+        return this.page.locator('p').filter({hasText: 'Applicant\'s details'}).getByRole('img', {name: 'Information added'});
+    }
 
-  async internationalElementReqUpdated() {
-    await expect(this.internationalElementsHeading).toBeVisible();
-    await this.internationalElementsHeading.click();
-  }
+    get respondentDetailsUpdated(): Locator {
+        return this.page.locator('p').filter({hasText: 'Respondents\' details'}).getByRole('img', {name: 'Information added'});
+    }
 
-  async courtServicesReqUpdated() {
-    await expect(this.courtServices).toBeVisible();
-    await this.courtServices.click();
-  }
+    get childDetailsUpdated(): Locator {
+        return this.page.locator('p').filter({hasText: 'Child\'s details'}).getByRole('img', {name: 'Information added'});
+    }
 
-  async addOtherPeopleInCase() {
-    await expect(this.otherPeopleInCaseLink).toBeVisible();
-    await this.otherPeopleInCaseLink.click();
-  }
+    get welshLanguageRequirements(): Locator {
+        return this.page.getByRole('link', {name: 'Welsh language requirements',exact:true});
+    }
 
-  async returnApplication() {
-    await expect(this.returnApplicationLink).toBeVisible();
-    await this.returnApplicationLink.click();
-  }
+    get welshLanguageReqFinished(): Locator {
+        return this.page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
+    }
 
-  async submitCase() {
-    await this.submitApplicationLink.click();
-  }
+    get otherProceedingsLink(): Locator {
+        return this.page.getByRole('link', {name: "Other Proceedings",exact:true});
+    }
+
+    get internationalElementsHeading(): Locator {
+        return this.page.getByRole('link', {name: 'International element',exact:true});
+    }
+
+    get courtServices(): Locator {
+        return this.page.getByRole('link', {name: 'Court services needed',exact:true});
+    }
+
+    get submitApplicationLink(): Locator {
+        return this.page.getByRole('link', {name: 'Submit application',exact:true})
+    }
+
+    get otherPeopleInCaseLink(): Locator {
+        return this.page.getByRole('link', {name: 'Other people in the case',exact:true});
+    }
+
+    get returnApplicationLink(): Locator {
+        return this.page.getByRole('link', {name: 'Return application',exact:true});
+    }
+
+    async groundsForTheApplication() {
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.groundsForTheApplicationLink.first().click();
+            await expect(this.groundsForTheApplicationLink).toBeHidden();
+        }).toPass();
+    }
+
+    async groundsForTheApplicationHasBeenUpdated() {
+        await expect(this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible();
+    }
+
+    async caseNameUpdated() {
+        await expect(this.caseNameFinished).toBeVisible();
+    }
+
+    async riskAndHarmToChildren() {
+        await expect(this.riskAndHarmToChildrenLink).toBeVisible();
+        await this.riskAndHarmToChildrenLink.click();
+    }
+    async orderAndDirectionUpdated(){
+        await expect(this.ordersAndDirectionUpdated).toBeVisible();
+    }
+
+    async hearingUrgency() {
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.hearingUrgencyLink.first().click();
+            await expect(this.hearingUrgencyLink).toBeHidden();
+        }).toPass();
+
+    }
+
+
+    async addApplicationDocuments() {
+        await expect(async () => {
+            await this.page.reload();
+            await this.uploadDocumentsLink.click();
+            await expect(this.uploadDocumentsLink).toBeHidden();
+        }).toPass();
+
+    }
+
+    async addApplicationDocumentsInProgress() {
+        await expect(this.upLoadDocsInProgress).toBeVisible();
+    }
+
+    async applicantDetails() {
+
+        await expect(async () => {
+            await this.page.reload();
+            await this.applicantDetailsLink.first().click();
+            await expect(this.applicantDetailsLink).toBeHidden();
+        }).toPass();
+
+
+    }
+
+    async applicantDetailsHasBeenUpdated() {
+        await expect(this.applicantDetailsUpdated).toBeVisible();
+    }
+
+    async childDetails() {
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.childDetailsLink.first().click();
+            await expect(this.childDetailsLink).toBeHidden();
+        }).toPass();
+
+    }
+
+    async childDetailsHasBeenUpdated() {
+        await expect(this.childDetailsUpdated).toBeVisible();
+    }
+
+    async respondentDetails() {
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.respondentsDetailsLink.first().click();
+            await expect(this.respondentsDetailsLink).toBeHidden();
+        }).toPass();
+
+
+
+    }
+
+    async allocationProposal() {
+
+        await expect(async () => {
+            await this.page.reload();
+            await  this.allocationProposalLink.first().click();
+            await expect(this.allocationProposalLink).toBeHidden();
+        }).toPass();
+
+    }
+
+    async allocationProposalHasBeenUpdated() {
+        await expect(this.allocationProposalFinished).toBeVisible();
+    }
+
+    async welshLanguageReq() {
+        await this.welshLanguageRequirements.click();
+    }
+
+    async welshLanguageReqUpdated() {
+        await expect(this.welshLanguageReqFinished).toBeVisible;
+    }
+
+    async internationalElementReqUpdated() {
+        await expect(this.internationalElementsHeading).toBeVisible();
+        await this.internationalElementsHeading.click();
+    }
+
+    async courtServicesReqUpdated() {
+        await expect(this.courtServices).toBeVisible();
+        await this.courtServices.click();
+    }
+
+
+    async addOtherPeopleInCase() {
+        await expect(this.otherPeopleInCaseLink).toBeVisible();
+        await this.otherPeopleInCaseLink.click();
+    }
+
+
+    async submitCase() {
+        await this.submitApplicationLink.click();
+    }
+    async respondentDetailsHasBeenUpdated(){
+        await expect(this.respondentDetailsUpdated).toBeVisible();
+    }
+    async hearingurgencyHasBeenUpdate(){
+        await expect(this.hearingUrgencyUpdated).toBeVisible();
+    }
+    async verifyCanBesubmitted()
+    {
+        await expect(this.page.getByText('Why can\'t I submit my application?', { exact: true })).toBeVisible();
+        await this.page.getByText('Why can\'t I submit my application?', { exact: true }).click();
+    }
 }

@@ -2,38 +2,54 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class ManageLaTransferToCourts extends BasePage {
-    readonly manageLaTransferToCourts: Locator;
-    readonly caseType: Locator;
-    readonly transferAnotherCourt: Locator;
-    readonly selectNewCourt: Locator;
-    readonly giveAccessToAnotherLa: Locator;
-    readonly selectLocalAuthority: Locator;
-    readonly localAuthorityToTransfer: Locator;
-    readonly removeAccess: Locator;
-    readonly transferToAnotherLa: Locator;
-    readonly fullName: Locator;
-    readonly email: Locator;
-    readonly courtTransfer: Locator;
-
-    constructor(page: Page) {
-        super(page);
-        this.manageLaTransferToCourts = page.getByRole('heading', { name: 'Manage LAs / Transfer to court', exact: true });
-        this.caseType = page.getByLabel('Case type');
-        this.transferAnotherCourt = page.getByLabel('Transfer to another Court');
-        this.selectNewCourt = page.getByLabel('Select new court');
-        this.giveAccessToAnotherLa = page.getByRole('radio', { name: 'Give case access to another' });
-        this.selectLocalAuthority = page.getByLabel('Select local authority');
-        this.localAuthorityToTransfer = page.getByLabel('Select local authority to');
-        this.removeAccess = page.getByRole('radio', { name: 'Remove case access from local' });
-        this.transferToAnotherLa = page.getByLabel('Transfer the case to another');
-        this.fullName = page.getByRole('textbox', { name: 'Full name' });
-        this.email = page.getByLabel('Email', { exact: true });
-        this.courtTransfer = page.getByRole('group', { name: 'Is the case transferring to a different court' });
+    get manageLaTransferToCourts(): Locator {
+        return this.page.getByRole('heading', { name: 'Manage LAs / Transfer to court', exact: true });
     }
+
+    get transferAnotherCourt(): Locator {
+        return this.page.getByLabel('Transfer to another Court');
+    }
+
+    get selectNewCourt(): Locator {
+        return this.page.getByLabel('Select new court');
+    }
+
+    get giveAccessToAnotherLa(): Locator {
+        return this.page.getByRole('radio', { name: 'Give case access to another' });
+    }
+
+    get selectLocalAuthority(): Locator {
+        return this.page.getByLabel('Select local authority');
+    }
+
+    get localAuthorityToTransfer(): Locator {
+        return this.page.getByLabel('Select local authority to');
+    }
+
+    get removeAccess(): Locator {
+        return this.page.getByRole('radio', { name: 'Remove case access from local' });
+    }
+
+    get transferToAnotherLa(): Locator {
+        return this.page.getByLabel('Transfer the case to another');
+    }
+
+    get fullName(): Locator {
+        return this. page.getByRole('textbox', { name: 'Full name' });
+    }
+
+    get email(): Locator {
+        return this.page.getByLabel('Email', { exact: true });
+    }
+
+    get courtTransfer(): Locator {
+        return this.page.getByRole('group', { name: 'Is the case transferring to a different court' });
+    }
+
     public async updateManageLaTransferToCourts() {
         await expect(this.manageLaTransferToCourts).toBeVisible();
         await this.transferAnotherCourt.click();
-        await this.continueButton.click();
+        await this.clickContinue();
         await this.selectNewCourt.selectOption('Central Family Court');
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
@@ -56,9 +72,9 @@ export class ManageLaTransferToCourts extends BasePage {
     public async updateTranferToLa() {
         await expect(this.manageLaTransferToCourts).toBeVisible();
         await this.transferToAnotherLa.click();
-        await this.continueButton.click();
+        await this.clickContinue();
         await this.localAuthorityToTransfer.selectOption('London Borough Hillingdon');
-        await this.continueButton.click();
+        await this.clickContinue();
         await this.fullName.fill('Sam Hill');
         await this.email.fill('sam@hillingdon.gov.uk');
         await this.clickContinue();
