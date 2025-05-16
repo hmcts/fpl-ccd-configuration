@@ -706,7 +706,9 @@ public class CaseSubmissionGenerationService
 
     private DocmosisChild buildChild(final ChildParty child,
                                      Language applicationLanguage) {
-        final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
+        final boolean isAddressConfidential = equalsIgnoreCase(child.getIsAddressConfidential(), YES.getValue());
+        final boolean isSocialWorkerDetailsHidden = equalsIgnoreCase(child.getSocialWorkerDetailsHidden(),
+            YES.getValue());
         return DocmosisChild.builder()
             .name(child.getFullName())
             .age(formatAge(child.getDateOfBirth(), applicationLanguage))
@@ -715,27 +717,29 @@ public class CaseSubmissionGenerationService
                     .map(gender -> gender.getLabel(applicationLanguage)).orElse(null),
                 child.getGenderIdentification()))
             .dateOfBirth(formatDateDisplay(child.getDateOfBirth(), applicationLanguage))
-            .livingSituation(getChildLivingSituation(child, isConfidential, applicationLanguage))
-            .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
-            .careAndContactPlan(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
-            .adoption(getValidAnswerOrDefaultValue(child.getAdoption(), applicationLanguage))
-            .placementOrderApplication(getValidAnswerOrDefaultValue(child.getPlacementOrderApplication(),
+            .livingSituation(getChildLivingSituation(child, isAddressConfidential, applicationLanguage))
+            .keyDatesTemplate(getDefaultIfNullOrEmpty(child.getKeyDates()))
+            .careAndContactPlanTemplate(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
+            .adoptionTemplate(getValidAnswerOrDefaultValue(child.getAdoption(), applicationLanguage))
+            .placementOrderApplicationTemplate(getValidAnswerOrDefaultValue(child.getPlacementOrderApplication(),
                 applicationLanguage))
-            .placementCourt(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
+            .placementCourtTemplate(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
             .mothersName(getDefaultIfNullOrEmpty(child.getMothersName()))
             .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
-            .fathersResponsibility(getValidAnswerOrDefaultValue(child.getFathersResponsibility(), applicationLanguage))
-            .socialWorkerName(getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
-            .socialWorkerTelephoneNumber(getTelephoneNumber(child.getSocialWorkerTelephoneNumber()))
+            .socialWorkerName(isSocialWorkerDetailsHidden
+                ? DEFAULT_STRING : getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
+            .socialWorkerTelephoneNumber(isSocialWorkerDetailsHidden
+                ? DEFAULT_STRING : getTelephoneNumber(child.getSocialWorkerTelephoneNumber()))
+            .socialWorkerEmailAddress(isSocialWorkerDetailsHidden
+                ? DEFAULT_STRING : getDefaultIfNullOrEmpty(child.getSocialWorkerEmail()))
+            .socialWorkerDetailsHiddenReason(
+                concatenateYesOrNoKeyAndValue(child.getSocialWorkerDetailsHidden(),
+                    child.getSocialWorkerDetailsHiddenReason(),
+                    applicationLanguage))
             .additionalNeeds(
                 concatenateYesOrNoKeyAndValue(child.getAdditionalNeeds(),
                     child.getAdditionalNeedsDetails(),
                     applicationLanguage))
-            .litigationIssues(
-                concatenateYesOrNoKeyAndValue(child.getLitigationIssues(), child.getLitigationIssuesDetails(),
-                    applicationLanguage))
-            .detailsHiddenReason(
-                concatenateKeyAndValue(child.getDetailsHidden(), child.getDetailsHiddenReason()))
             .build();
     }
 
@@ -864,6 +868,10 @@ public class CaseSubmissionGenerationService
         StringBuilder stringBuilder = new StringBuilder();
         if (StringUtils.isNotEmpty(child.getLivingSituation())) {
             stringBuilder.append(child.getLivingSituation());
+
+            if (StringUtils.isNotEmpty(child.getLivingWithDetails())) {
+                stringBuilder.append(NEW_LINE).append(child.getLivingWithDetails());
+            }
 
             if (isConfidential) {
                 stringBuilder.append(NEW_LINE).append(getConfidential(applicationLanguage));
