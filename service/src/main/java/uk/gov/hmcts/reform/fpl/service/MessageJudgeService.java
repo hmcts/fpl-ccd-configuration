@@ -152,17 +152,21 @@ public abstract class MessageJudgeService {
             )
             .build());
 
-        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
-        allocatedJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
-            .code(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())
-            .label(getJudgeLabel(JudicialMessageRoleType.ALLOCATED_JUDGE, judge.toJudgeAndLegalAdvisor()))
-            .build()));
+        if (judicialService.caseHasAllocatedJudgeOrLegalAdvisor(caseData.getId())) {
+            Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
+            allocatedJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
+                .code(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())
+                .label(getJudgeLabel(JudicialMessageRoleType.ALLOCATED_JUDGE, judge.toJudgeAndLegalAdvisor()))
+                .build()));
+        }
 
-        Optional<JudgeAndLegalAdvisor> hearingJudge = judicialService.getCurrentHearingJudge(caseData);
-        hearingJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
-            .code(JudicialMessageRoleType.HEARING_JUDGE.toString())
-            .label(getJudgeLabel(JudicialMessageRoleType.HEARING_JUDGE, judge))
-            .build()));
+        if (judicialService.caseHasHearingJudgeOrLegalAdvisor(caseData.getId())) {
+            Optional<JudgeAndLegalAdvisor> hearingJudge = judicialService.getCurrentHearingJudge(caseData);
+            hearingJudge.ifPresent(judge -> elements.add(DynamicListElement.builder()
+                .code(JudicialMessageRoleType.HEARING_JUDGE.toString())
+                .label(getJudgeLabel(JudicialMessageRoleType.HEARING_JUDGE, judge))
+                .build()));
+        }
 
         elements.add(DynamicListElement.builder()
                 .code(JudicialMessageRoleType.OTHER.toString())
