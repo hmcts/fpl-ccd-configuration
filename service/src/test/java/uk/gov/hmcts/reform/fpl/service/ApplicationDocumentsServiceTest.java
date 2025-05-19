@@ -497,6 +497,38 @@ class ApplicationDocumentsServiceTest {
             assertThat(applicationDocuments).isEqualTo(expectedApplicationDocuments);
         }
 
+        @Test
+        void shouldRebuildTemporaryDocumentsFromConfidentialDocumentsFiledOnIssue() {
+            UUID docFiledOnIssueID = UUID.randomUUID();
+            ManagedDocument docFiledOnIssue = ManagedDocument.builder()
+                .document(DocumentReference.builder().filename("SWET").build())
+                .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .documentsFiledOnIssueListLA(List.of(element(docFiledOnIssueID, docFiledOnIssue)))
+                .build();
+
+            List<Element<ApplicationDocument>> expectedApplicationDocuments = List.of(
+                element(docFiledOnIssueID,
+                    ApplicationDocument.builder()
+                        .document(docFiledOnIssue.getDocument())
+                        .documentType(OTHER)
+                        .documentName("SWET")
+                        .confidential(List.of("CONFIDENTIAL"))
+                        .uploaderCaseRoles(docFiledOnIssue.getUploaderCaseRoles())
+                        .uploaderType(docFiledOnIssue.getUploaderType())
+                        .build()
+                ));
+
+            List<Element<ApplicationDocument>> applicationDocuments = applicationDocumentsService
+                .rebuildTemporaryApplicationDocuments(caseData);
+
+            assertThat(applicationDocuments).hasSize(1);
+            assertThat(applicationDocuments).isEqualTo(expectedApplicationDocuments);
+        }
+
     }
 
 }
