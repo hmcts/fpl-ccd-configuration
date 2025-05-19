@@ -123,6 +123,8 @@ public class CaseSubmissionGenerationService
         TranslationSection.REASON, LanguagePair.of("Reason:", "Rheswm:"),
         TranslationSection.CONFIDENTIAL, LanguagePair.of("Confidential", "Cyfrinachol")
     );
+    private static final String DATE_SITUATION_BEGAN = "Date this began: ";
+    private static final String DATE_SITUATION_BEGAN_WEL = "Dyddiad y bu i hyn gychwyn: ";
 
     private final Time time;
     private final UserService userService;
@@ -910,10 +912,10 @@ public class CaseSubmissionGenerationService
             case VOLUNTARILY_SECTION_CARE_ORDER, UNDER_CARE_OF_LA:
                 if (child.getCareStartDate() != null) {
                     if (applicationLanguage.equals(Language.ENGLISH)) {
-                        sb.append("Date this began: ")
+                        sb.append(DATE_SITUATION_BEGAN)
                             .append(formatDateDisplay(child.getCareStartDate(), applicationLanguage));
                     } else {
-                        sb.append("Dyddiad y bu i hyn gychwyn: ")
+                        sb.append(DATE_SITUATION_BEGAN_WEL)
                             .append(formatDateDisplay(child.getCareStartDate(), applicationLanguage));
                     }
                 }
@@ -922,11 +924,11 @@ public class CaseSubmissionGenerationService
                 if (child.getAddressChangeDate() != null) {
                     if (applicationLanguage.equals(Language.ENGLISH)) {
                         sb.append("Who are they living with: ").append(child.getLivingWithDetails());
-                        sb.append("Date this began: ")
+                        sb.append(DATE_SITUATION_BEGAN)
                             .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
                     } else {
                         sb.append("Gyda phwy maen nhw'n byw: ").append(child.getLivingWithDetails());
-                        sb.append("Dyddiad y bu i hyn gychwyn: ")
+                        sb.append(DATE_SITUATION_BEGAN_WEL)
                             .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
                     }
                 }
@@ -934,10 +936,10 @@ public class CaseSubmissionGenerationService
             default:
                 if (child.getAddressChangeDate() != null) {
                     if (applicationLanguage.equals(Language.ENGLISH)) {
-                        sb.append("Date this began: ")
+                        sb.append(DATE_SITUATION_BEGAN)
                             .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
                     } else {
-                        sb.append("Dyddiad y bu i hyn gychwyn: ")
+                        sb.append(DATE_SITUATION_BEGAN_WEL)
                             .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
                     }
                 }
