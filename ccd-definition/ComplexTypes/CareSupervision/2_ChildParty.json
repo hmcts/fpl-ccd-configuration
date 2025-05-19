@@ -93,7 +93,7 @@
     "ID": "ChildParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
-    "ElementLabel": "Current address",
+    "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\" OR livingSituation=\"Living in a refuge\""
   },
@@ -122,7 +122,7 @@
     "ListElementCode": "addressChangeDate",
     "FieldType": "Date",
     "ElementLabel": "When did they start staying here?",
-    "FieldShowCondition": "livingSituation=\"Living with *\"",
+    "FieldShowCondition": "livingSituation=\"Living with other family or friends\"",
     "HintText": "For example, 31 3 2018",
     "SecurityClassification": "Public"
   },
@@ -142,7 +142,7 @@
     "ListElementCode": "careStartDate",
     "FieldType": "Date",
     "ElementLabel": "Date they went into care",
-    "FieldShowCondition": "livingSituation=\"Voluntarily in section 20 care order\"",
+    "FieldShowCondition": "livingSituation=\"Voluntarily in section 20 care order\" OR livingSituation=\"Under the care of local authority\"",
     "HintText": "For example, 31 3 2018",
     "SecurityClassification": "Public"
   },
@@ -151,7 +151,7 @@
     "ID": "ChildParty ",
     "ListElementCode": "dischargeDate",
     "FieldType": "Date",
-    "ElementLabel": "Discharge date",
+    "ElementLabel": "Date of discharge",
     "FieldShowCondition": "livingSituation=\"In hospital and soon to be discharged\"",
     "HintText": "For example, 31 3 2018",
     "SecurityClassification": "Public"
@@ -280,7 +280,7 @@
     "ID": "ChildParty",
     "ListElementCode": "socialWorkerDetailsHiddenReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
+    "ElementLabel": "Give a reason",
     "FieldShowCondition": "socialWorkerDetailsHidden=\"Yes\"",
     "SecurityClassification": "Public"
   },

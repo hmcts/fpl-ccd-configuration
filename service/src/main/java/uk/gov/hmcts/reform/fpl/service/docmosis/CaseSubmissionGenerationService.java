@@ -869,10 +869,6 @@ public class CaseSubmissionGenerationService
         if (StringUtils.isNotEmpty(child.getLivingSituation())) {
             stringBuilder.append(child.getLivingSituation());
 
-            if (StringUtils.isNotEmpty(child.getLivingWithDetails())) {
-                stringBuilder.append(NEW_LINE).append(child.getLivingWithDetails());
-            }
-
             if (isConfidential) {
                 stringBuilder.append(NEW_LINE).append(getConfidential(applicationLanguage));
             } else if (isNotEmpty(child.getAddress())) {
@@ -911,7 +907,7 @@ public class CaseSubmissionGenerationService
                     }
                 }
                 break;
-            case VOLUNTARILY_SECTION_CARE_ORDER:
+            case VOLUNTARILY_SECTION_CARE_ORDER, UNDER_CARE_OF_LA:
                 if (child.getCareStartDate() != null) {
                     if (applicationLanguage.equals(Language.ENGLISH)) {
                         sb.append("Date this began: ")
@@ -922,9 +918,21 @@ public class CaseSubmissionGenerationService
                     }
                 }
                 break;
+            case LIVE_WITH_FAMILY_OR_FRIENDS:
+                if (child.getAddressChangeDate() != null) {
+                    if (applicationLanguage.equals(Language.ENGLISH)) {
+                        sb.append("Who are they living with: ").append(child.getLivingWithDetails());
+                        sb.append("Date this began: ")
+                            .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
+                    } else {
+                        sb.append("Gyda phwy maen nhw'n byw: ").append(child.getLivingWithDetails());
+                        sb.append("Dyddiad y bu i hyn gychwyn: ")
+                            .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
+                    }
+                }
+                break;
             default:
                 if (child.getAddressChangeDate() != null) {
-
                     if (applicationLanguage.equals(Language.ENGLISH)) {
                         sb.append("Date this began: ")
                             .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));

@@ -52,24 +52,23 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
     @Override
     public Child extractConfidentialDetails() {
         ChildPartyBuilder childPartyBuilder = ChildParty.builder()
-            .livingSituation(this.party.getLivingSituation())
-            .livingSituationDetails(this.party.getLivingSituationDetails())
             .firstName(this.party.getFirstName())
             .lastName(this.party.getLastName())
             .telephoneNumber(this.party.getTelephoneNumber())
             .email(this.party.getEmail()) // legacy behaviour, always hide email if present (no longer entered)
-            .isAddressConfidential(this.party.getIsAddressConfidential())
-            .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden())
-            .socialWorkerDetailsHiddenReason(this.party.getSocialWorkerDetailsHiddenReason());
+            .isAddressConfidential(this.party.getIsAddressConfidential());
 
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
-            childPartyBuilder = childPartyBuilder.address(this.party.getAddress());
+            childPartyBuilder = childPartyBuilder.address(this.party.getAddress())
+                .livingSituation(this.party.getLivingSituation())
+                .livingSituationDetails(this.party.getLivingSituationDetails());
         }
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
             childPartyBuilder = childPartyBuilder.socialWorkerName(this.party.getSocialWorkerName())
                 .socialWorkerEmail(this.party.getSocialWorkerEmail())
-                .socialWorkerTelephoneNumber(this.party.getSocialWorkerTelephoneNumber());
+                .socialWorkerTelephoneNumber(this.party.getSocialWorkerTelephoneNumber())
+                .socialWorkerDetailsHiddenReason(this.party.getSocialWorkerDetailsHiddenReason());
         }
 
         return this.toBuilder()
@@ -86,20 +85,22 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
             .email(party.getEmail()); // legacy behaviour, always hide email if present (no longer entered)
 
         // Do not nullify old data that may not have been moved over prior to DFPL-2639
-        if (!isEmpty(((ChildParty) party).getLivingSituation())) {
-            childPartyBuilder.livingSituation(((ChildParty) party).getLivingSituation());
-        }
 
-        if (!isEmpty(((ChildParty) party).getLivingSituationDetails())) {
-            childPartyBuilder.livingSituationDetails(((ChildParty) party).getLivingSituationDetails());
-        }
-
-        if (!isEmpty(((ChildParty) party).getLivingWithDetails())) {
-            childPartyBuilder.livingWithDetails(((ChildParty) party).getLivingWithDetails());
-        }
 
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
             childPartyBuilder = childPartyBuilder.address(party.getAddress());
+
+            if (!isEmpty(((ChildParty) party).getLivingSituation())) {
+                childPartyBuilder.livingSituation(((ChildParty) party).getLivingSituation());
+            }
+
+            if (!isEmpty(((ChildParty) party).getLivingSituationDetails())) {
+                childPartyBuilder.livingSituationDetails(((ChildParty) party).getLivingSituationDetails());
+            }
+
+            if (!isEmpty(((ChildParty) party).getLivingWithDetails())) {
+                childPartyBuilder.livingWithDetails(((ChildParty) party).getLivingWithDetails());
+            }
         }
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
@@ -118,6 +119,7 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
         ChildPartyBuilder childPartyBuilder = this.party.toBuilder();
         childPartyBuilder.livingSituation(null);
         childPartyBuilder.livingSituationDetails(null);
+        childPartyBuilder.livingSituation(null);
         childPartyBuilder.telephoneNumber(null);
         childPartyBuilder.email(null); // legacy behaviour, always hide email if present (no longer entered)
 

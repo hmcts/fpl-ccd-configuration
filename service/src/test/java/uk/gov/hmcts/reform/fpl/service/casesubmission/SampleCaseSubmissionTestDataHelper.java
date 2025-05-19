@@ -138,7 +138,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .age(formatAgeDisplay(parse("2018-06-15"), LANGUAGE))
                 .gender("Male")
                 .dateOfBirth("15 June 2018")
-                .livingSituation("Living with respondents\nUncle Fred\nConfidential\nDate this began: 8 November 2018")
+                .livingSituation("Living with respondents\nConfidential\nDate this began: 8 November 2018")
                 .keyDatesTemplate("child starting primary school or taking GCSEs")
                 .careAndContactPlanTemplate("Place baby in local authority foster care")
                 .adoptionTemplate("Yes")
@@ -159,7 +159,6 @@ public class SampleCaseSubmissionTestDataHelper {
                 .dateOfBirth("2 February 2002")
                 .livingSituation("""
                     Living with respondents
-                    Auntie Margaret
                     Carnegie House
                     Central Milton Keynes
                     Milton Keynes
