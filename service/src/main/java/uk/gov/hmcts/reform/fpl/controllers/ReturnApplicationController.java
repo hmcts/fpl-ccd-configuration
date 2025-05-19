@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.ReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.ReturnApplicationService;
 
 @RestController
@@ -21,6 +22,7 @@ public class ReturnApplicationController extends CallbackController {
     public static final String RETURN_APPLICATION = "returnApplication";
 
     private final ReturnApplicationService returnApplicationService;
+    private final ApplicationDocumentsService applicationDocumentsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -45,6 +47,10 @@ public class ReturnApplicationController extends CallbackController {
         ));
 
         caseDetails.getData().remove("submittedForm");
+
+        // Rebuild the temporaryApplicationDocuments as they may need to modify those documents
+        caseDetails.getData().put("temporaryApplicationDocuments",
+            applicationDocumentsService.rebuildTemporaryApplicationDocuments(caseData));
 
         return respond(caseDetails);
     }

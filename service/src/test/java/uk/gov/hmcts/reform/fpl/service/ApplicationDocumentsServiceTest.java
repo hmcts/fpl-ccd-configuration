@@ -401,4 +401,102 @@ class ApplicationDocumentsServiceTest {
         }
     }
 
+    @Nested
+    class RebuildTemporaryApplicationDocuments {
+
+        @Test
+        void shouldRebuildTemporaryDocumentsFromCarePlanDocs() {
+            UUID carePlanID = UUID.randomUUID();
+            ManagedDocument carePlan = ManagedDocument.builder()
+                .document(DocumentReference.builder().filename("carePlan").build())
+                .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .carePlanList(List.of(element(carePlanID, carePlan)))
+                .build();
+
+            List<Element<ApplicationDocument>> expectedApplicationDocuments = List.of(
+                element(carePlanID,
+                    ApplicationDocument.builder()
+                        .document(carePlan.getDocument())
+                        .documentType(CARE_PLAN)
+                        .documentName("carePlan")
+                        .uploaderCaseRoles(carePlan.getUploaderCaseRoles())
+                        .uploaderType(carePlan.getUploaderType())
+                        .build()
+                ));
+
+            List<Element<ApplicationDocument>> applicationDocuments = applicationDocumentsService
+                .rebuildTemporaryApplicationDocuments(caseData);
+
+            assertThat(applicationDocuments).hasSize(1);
+            assertThat(applicationDocuments).isEqualTo(expectedApplicationDocuments);
+        }
+
+        @Test
+        void shouldRebuildTemporaryDocumentsFromThresholdDocs() {
+            UUID thresholdID = UUID.randomUUID();
+            ManagedDocument threshold = ManagedDocument.builder()
+                .document(DocumentReference.builder().filename("threshold").build())
+                .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .thresholdList(List.of(element(thresholdID, threshold)))
+                .build();
+
+            List<Element<ApplicationDocument>> expectedApplicationDocuments = List.of(
+                element(thresholdID,
+                    ApplicationDocument.builder()
+                        .document(threshold.getDocument())
+                        .documentType(THRESHOLD)
+                        .documentName("threshold")
+                        .uploaderCaseRoles(threshold.getUploaderCaseRoles())
+                        .uploaderType(threshold.getUploaderType())
+                        .build()
+                ));
+
+            List<Element<ApplicationDocument>> applicationDocuments = applicationDocumentsService
+                .rebuildTemporaryApplicationDocuments(caseData);
+
+            assertThat(applicationDocuments).hasSize(1);
+            assertThat(applicationDocuments).isEqualTo(expectedApplicationDocuments);
+        }
+
+        @Test
+        void shouldRebuildTemporaryDocumentsFromDocumentsFiledOnIssue() {
+            UUID docFiledOnIssueID = UUID.randomUUID();
+            ManagedDocument docFiledOnIssue = ManagedDocument.builder()
+                .document(DocumentReference.builder().filename("SWET").build())
+                .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .documentsFiledOnIssueList(List.of(element(docFiledOnIssueID, docFiledOnIssue)))
+                .build();
+
+            List<Element<ApplicationDocument>> expectedApplicationDocuments = List.of(
+                element(docFiledOnIssueID,
+                    ApplicationDocument.builder()
+                        .document(docFiledOnIssue.getDocument())
+                        .documentType(OTHER)
+                        .documentName("SWET")
+                        .uploaderCaseRoles(docFiledOnIssue.getUploaderCaseRoles())
+                        .uploaderType(docFiledOnIssue.getUploaderType())
+                        .build()
+                ));
+
+            List<Element<ApplicationDocument>> applicationDocuments = applicationDocumentsService
+                .rebuildTemporaryApplicationDocuments(caseData);
+
+            assertThat(applicationDocuments).hasSize(1);
+            assertThat(applicationDocuments).isEqualTo(expectedApplicationDocuments);
+        }
+
+    }
+
 }
