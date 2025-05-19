@@ -8,7 +8,7 @@ test.describe('Non mandatory application details before application submit', () 
     let casename: string;
 
     test('LA add risk and harm to children @xbrowser',
-        async ({startApplication, signInPage, riskAndHarmToChildren, makeAxeBuilder}, testInfo) => {
+        async ({ signInPage, riskAndHarmToChildren, makeAxeBuilder}, testInfo) => {
 
             casename = 'Risk and harm  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
@@ -22,7 +22,7 @@ test.describe('Non mandatory application details before application submit', () 
             await signInPage.isSignedIn();
             await signInPage.navigateTOCaseDetails(caseNumber);
             // Risk and harm to children
-            await startApplication.riskAndHarmToChildren();
+            await riskAndHarmToChildren.gotoNextStep('Risk and harm to children');
             await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
 
             await riskAndHarmToChildren.tabNavigation('View application');
@@ -64,7 +64,7 @@ test.describe('Non mandatory application details before application submit', () 
             await signInPage.navigateTOCaseDetails(caseNumber);
 
             // Welsh language requirements
-            await startApplication.welshLanguageReq();
+            await welshLangRequirements.gotoNextStep('Welsh language requirements');
             await welshLangRequirements.welshLanguageSmokeTest();
             await startApplication.welshLanguageReqUpdated();
             const accessibilityScanResults = await makeAxeBuilder()
@@ -83,7 +83,7 @@ test.describe('Non mandatory application details before application submit', () 
 
 
     test('LA add international element @xbrowser',
-        async ({startApplication, signInPage, internationalElement, makeAxeBuilder}, testInfo) =>  {
+        async ({signInPage, internationalElement, makeAxeBuilder}, testInfo) =>  {
             casename = 'International element  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
             // 1. Sign in as local-authority user
@@ -97,7 +97,7 @@ test.describe('Non mandatory application details before application submit', () 
             await signInPage.navigateTOCaseDetails(caseNumber)
 
             // International element
-            await startApplication.internationalElementReqUpdated();
+            await internationalElement.gotoNextStep('International element');
             await internationalElement.internationalElementSmokeTest();
             //assert
             await internationalElement.tabNavigation('View application')
@@ -120,7 +120,7 @@ test.describe('Non mandatory application details before application submit', () 
         });
 
     test('LA add c1 application',
-        async ({startApplication, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
+        async ({ signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
             casename = 'c1 application  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
             // 1. Sign in as local-authority user
@@ -150,7 +150,7 @@ test.describe('Non mandatory application details before application submit', () 
         });
 
     test('LA add other people @xbrowser',
-        async ({startApplication, signInPage, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
+        async ({signInPage, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
             casename = 'Other people in case ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
             // 1. Sign in as local-authority user
@@ -163,7 +163,7 @@ test.describe('Non mandatory application details before application submit', () 
             await signInPage.isSignedIn();
             await signInPage.navigateTOCaseDetails(caseNumber);
             //add other people in the case
-            await startApplication.addOtherPeopleInCase()
+            await otherPeopleInCase.gotoNextStep('Other people in the case');
             await otherPeopleInCase.personOneToBeGivenNotice();
             await otherPeopleInCase.personTwoToBeGivenNotice();
             await otherPeopleInCase.continueAndCheck();
