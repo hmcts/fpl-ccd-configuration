@@ -55,12 +55,11 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
             .firstName(this.party.getFirstName())
             .lastName(this.party.getLastName())
             .telephoneNumber(this.party.getTelephoneNumber())
-            .email(this.party.getEmail()) // legacy behaviour, always hide email if present (no longer entered)
-            .isAddressConfidential(this.party.getIsAddressConfidential())
-            .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden());
+            .email(this.party.getEmail()); // legacy behaviour, always hide email if present (no longer entered)
 
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
             childPartyBuilder = childPartyBuilder.address(this.party.getAddress())
+                .isAddressConfidential(this.party.getIsAddressConfidential())
                 .livingSituation(this.party.getLivingSituation())
                 .livingSituationDetails(this.party.getLivingSituationDetails())
                 .livingWithDetails(this.party.getLivingWithDetails())
@@ -72,6 +71,7 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
             childPartyBuilder = childPartyBuilder.socialWorkerName(this.party.getSocialWorkerName())
+                .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden())
                 .socialWorkerEmail(this.party.getSocialWorkerEmail())
                 .socialWorkerTelephoneNumber(this.party.getSocialWorkerTelephoneNumber())
                 .socialWorkerDetailsHiddenReason(this.party.getSocialWorkerDetailsHiddenReason());
@@ -154,6 +154,7 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
             childPartyBuilder = childPartyBuilder.socialWorkerName(null)
+                .socialWorkerDetailsHiddenReason(null)
                 .socialWorkerEmail(null)
                 .socialWorkerTelephoneNumber(null);
         }
