@@ -1451,7 +1451,8 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
-            String expectedLivingSituation = "Under the care of local authority\nDate this began: " + FORMATTED_DATE;
+            String expectedLivingSituation = "Under the care of local authority\nDate this began: "
+                + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
         }
 
@@ -1502,8 +1503,8 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
-            String expectedLivingSituation = "Living with other family or friends\n" +
-                "Who are they living with: Uncle Test\nDate this began: " + FORMATTED_DATE;
+            String expectedLivingSituation = "Living with other family or friends\n"
+                + "Who are they living with: Uncle Test\nDate this began: " + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
         }
     }

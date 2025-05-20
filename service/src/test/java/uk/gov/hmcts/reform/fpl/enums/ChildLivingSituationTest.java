@@ -23,7 +23,7 @@ class ChildLivingSituationTest {
         assertThat(ChildLivingSituation.fromString("Voluntarily in section 20 care order"))
             .isEqualTo(VOLUNTARILY_SECTION_CARE_ORDER);
         assertThat(ChildLivingSituation.fromString("Living with other family or friends"))
-        .isEqualTo(LIVE_WITH_FAMILY_OR_FRIENDS);
+            .isEqualTo(LIVE_WITH_FAMILY_OR_FRIENDS);
         assertThat(ChildLivingSituation.fromString("Under the care of local authority"))
             .isEqualTo(UNDER_CARE_OF_LA);
     }
