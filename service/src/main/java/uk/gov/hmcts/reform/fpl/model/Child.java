@@ -56,12 +56,14 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
             .lastName(this.party.getLastName())
             .telephoneNumber(this.party.getTelephoneNumber())
             .email(this.party.getEmail()) // legacy behaviour, always hide email if present (no longer entered)
-            .isAddressConfidential(this.party.getIsAddressConfidential());
+            .isAddressConfidential(this.party.getIsAddressConfidential())
+            .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden());
 
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
             childPartyBuilder = childPartyBuilder.address(this.party.getAddress())
                 .livingSituation(this.party.getLivingSituation())
-                .livingSituationDetails(this.party.getLivingSituationDetails());
+                .livingSituationDetails(this.party.getLivingSituationDetails())
+                .livingWithDetails(this.party.getLivingWithDetails());
         }
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
@@ -85,8 +87,6 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
             .email(party.getEmail()); // legacy behaviour, always hide email if present (no longer entered)
 
         // Do not nullify old data that may not have been moved over prior to DFPL-2639
-
-
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
             childPartyBuilder = childPartyBuilder.address(party.getAddress());
 
@@ -106,6 +106,7 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
             childPartyBuilder = childPartyBuilder.socialWorkerName(this.party.getSocialWorkerName())
                 .socialWorkerEmail(this.party.getSocialWorkerEmail())
+                .socialWorkerDetailsHiddenReason(this.party.getSocialWorkerDetailsHiddenReason())
                 .socialWorkerTelephoneNumber(this.party.getSocialWorkerTelephoneNumber());
         }
 
@@ -117,14 +118,14 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
     @Override
     public Child removeConfidentialDetails() {
         ChildPartyBuilder childPartyBuilder = this.party.toBuilder();
-        childPartyBuilder.livingSituation(null);
-        childPartyBuilder.livingSituationDetails(null);
-        childPartyBuilder.livingSituation(null);
         childPartyBuilder.telephoneNumber(null);
         childPartyBuilder.email(null); // legacy behaviour, always hide email if present (no longer entered)
 
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
             childPartyBuilder = childPartyBuilder.address(null);
+            childPartyBuilder.livingSituation(null);
+            childPartyBuilder.livingSituationDetails(null);
+            childPartyBuilder.livingWithDetails(null);
         }
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
