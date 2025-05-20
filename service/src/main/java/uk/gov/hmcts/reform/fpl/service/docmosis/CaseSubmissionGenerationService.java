@@ -924,11 +924,11 @@ public class CaseSubmissionGenerationService
                 if (child.getAddressChangeDate() != null) {
                     if (applicationLanguage.equals(Language.ENGLISH)) {
                         sb.append("Who are they living with: ").append(child.getLivingWithDetails());
-                        sb.append(DATE_SITUATION_BEGAN)
+                        sb.append(NEW_LINE).append(DATE_SITUATION_BEGAN)
                             .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
                     } else {
                         sb.append("Gyda phwy maen nhw'n byw: ").append(child.getLivingWithDetails());
-                        sb.append(DATE_SITUATION_BEGAN_WEL)
+                        sb.append(NEW_LINE).append(DATE_SITUATION_BEGAN_WEL)
                             .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
                     }
                 }

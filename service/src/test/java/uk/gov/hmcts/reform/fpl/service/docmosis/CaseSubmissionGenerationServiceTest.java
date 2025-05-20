@@ -1439,6 +1439,23 @@ class CaseSubmissionGenerationServiceTest {
         }
 
         @Test
+        void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsUnderCareOfLa() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation("Under the care of local authority")
+                        .careStartDate(NOW)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Under the care of local authority\nDate this began: " + FORMATTED_DATE;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
         void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsOther() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
@@ -1468,6 +1485,25 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "Other";
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
+        void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsLivingWithFamilyOrFriends() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation("Living with other family or friends")
+                        .livingWithDetails("Uncle Test")
+                        .addressChangeDate(NOW)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Living with other family or friends\n" +
+                "Who are they living with: Uncle Test\nDate this began: " + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
         }
     }
