@@ -15,8 +15,9 @@
       "thresholdDetails": "mock threshold details"
     },
     "hearing": {
-      "reason": "test reason",
-      "timeFrame": "Same day"
+      "hearingUrgencyDetails": "test reason",
+      "hearingUrgencyType": "SAME_DAY",
+      "respondentsAware": "Yes"
     },
     "children1": [
       {
@@ -166,6 +167,25 @@
         }
       }
     ],
+    "skeletonArgumentList": [
+      {
+      "id": "87ac3aa1-5183-4cd3-8d02-3af704c994e4",
+      "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "Test.txt",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploaderType": "HMCTS",
+          "uploaderCaseRoles": [],
+          "markAsConfidential": "No",
+          "documentAcknowledge": [
+            "ACK_RELATED_TO_CASE"
+          ],
+          "hasConfidentialAddress": "No"
+        }
+      }
+    ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
     "submittedForm": {
       "document_url": "${TEST_DOCUMENT_URL}",
@@ -182,7 +202,7 @@
     "familyManCaseNumber": "SW24C51337",
     "localAuthorityPolicy": {
       "Organisation": {
-        "OrganisationID": "ORGSA",
+        "OrganisationID": "W9V61CP",
         "OrganisationName": "Swansea City Council"
       },
       "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"

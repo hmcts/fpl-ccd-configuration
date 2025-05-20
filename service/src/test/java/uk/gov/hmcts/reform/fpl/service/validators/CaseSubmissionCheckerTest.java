@@ -9,7 +9,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 
@@ -21,14 +20,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_THIRD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
-import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -42,9 +40,6 @@ class CaseSubmissionCheckerTest {
     @Mock
     private EventsChecker eventsChecker;
 
-    @Mock
-    private FeatureToggleService featureToggles;
-
     @InjectMocks
     private CaseSubmissionChecker caseSubmissionValidator;
 
@@ -52,8 +47,8 @@ class CaseSubmissionCheckerTest {
     private final List<String> ordersNeededErrors = List.of("Orders needed error 1", "Orders needed error 2");
     private final List<String> hearingNeededErrors = List.of("Hearing needed error");
     private final List<String> groundsErrors = List.of("Grounds for application error");
-    private final List<String> applicantErrors = List.of("Applicant error 1", "Applicant error 2");
-    private final List<String> localAuthorityErrors = List.of("Local authority error 1", "Local authority error 2");
+    private final List<String> applicantLaErrors = List.of("Applicant error LA 1", "Applicant error LA 2");
+    private final List<String> applicantSolicitorErrors = List.of("Applicant error Sol 1", "Applicant error Sol 2");
     private final List<String> childrenErrors = List.of("Children error");
     private final List<String> respondentsErrors = List.of("Respondent error 1", "Respondent error 2");
     private final List<String> allocationProposalErrors = List.of("Allocation proposal error");
@@ -71,8 +66,8 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
-            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
-            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -87,8 +82,8 @@ class CaseSubmissionCheckerTest {
                 "In the grounds for the application section:",
                 "• Grounds for application error",
                 "In the applicant's details section:",
-                "• Applicant error 1",
-                "• Applicant error 2",
+                "• Applicant error Sol 1",
+                "• Applicant error Sol 2",
                 "In the child's details section:",
                 "• Children error",
                 "In the respondents' details section:",
@@ -110,8 +105,8 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
-            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
-            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -128,8 +123,8 @@ class CaseSubmissionCheckerTest {
                 "In the grounds for the application section:",
                 "• Grounds for application error",
                 "In the applicant's details section:",
-                "• Applicant error 1",
-                "• Applicant error 2",
+                "• Applicant error Sol 1",
+                "• Applicant error Sol 2",
                 "In the child's details section:",
                 "• Children error",
                 "In the respondents' details section:",
@@ -151,8 +146,8 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
-            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
-            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -169,8 +164,8 @@ class CaseSubmissionCheckerTest {
                 "In the grounds for the application section:",
                 "• Grounds for application error",
                 "In the applicant's details section:",
-                "• Applicant error 1",
-                "• Applicant error 2",
+                "• Applicant error Sol 1",
+                "• Applicant error Sol 2",
                 "In the child's details section:",
                 "• Children error",
                 "In the respondents' details section:",
@@ -182,49 +177,7 @@ class CaseSubmissionCheckerTest {
 
         }
 
-        @Test
-        void shouldValidateLegacyApplicantInsteadOfLocalAuthorityWhenAdditionalContactFeatureIsToggledOff() {
 
-            when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(false);
-
-            when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
-            when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
-            when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
-            when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
-            when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
-            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
-            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
-            when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
-            when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
-            when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
-
-            final List<String> errors = caseSubmissionValidator.validate(caseData);
-            final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
-
-            assertThat(errors).containsExactly(
-                "In the change case name section:",
-                "• Case name error",
-                "In the orders and directions sought section:",
-                "• Orders needed error 1",
-                "• Orders needed error 2",
-                "In the hearing urgency section:",
-                "• Hearing needed error",
-                "In the grounds for the application section:",
-                "• Grounds for application error",
-                "In the applicant's details section:",
-                "• Applicant error 1",
-                "• Applicant error 2",
-                "In the child's details section:",
-                "• Children error",
-                "In the respondents' details section:",
-                "• Respondent error 1",
-                "• Respondent error 2",
-                "In the allocation proposal section:",
-                "• Allocation proposal error"
-            );
-
-            assertThat(isAvailable).isFalse();
-        }
 
         @Test
         void shouldReportEventsErrorIncludingCourtSelectionErrorWhenCourtNotSelected() {
@@ -236,7 +189,8 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
-            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -256,8 +210,8 @@ class CaseSubmissionCheckerTest {
                 "In the grounds for the application section:",
                 "• Grounds for application error",
                 "In the applicant's details section:",
-                "• Applicant error 1",
-                "• Applicant error 2",
+                "• Applicant error Sol 1",
+                "• Applicant error Sol 2",
                 "In the child's details section:",
                 "• Children error",
                 "In the respondents' details section:",
@@ -270,22 +224,18 @@ class CaseSubmissionCheckerTest {
             );
 
             assertThat(isAvailable).isFalse();
-
-            verify(eventsChecker, never()).validate(eq(LOCAL_AUTHORITY_DETAILS), any());
         }
 
         @Test
         void shouldValidateLocalAuthorityInsteadOfLegacyApplicantWhenAdditionalContactFeatureIsToggledOn() {
-
-            when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
             when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
             when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
-            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
-            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -304,8 +254,8 @@ class CaseSubmissionCheckerTest {
                 "In the grounds for the application section:",
                 "• Grounds for application error",
                 "In the applicant's details section:",
-                "• Local authority error 1",
-                "• Local authority error 2",
+                "• Applicant error Sol 1",
+                "• Applicant error Sol 2",
                 "In the child's details section:",
                 "• Children error",
                 "In the respondents' details section:",
@@ -316,14 +266,10 @@ class CaseSubmissionCheckerTest {
             );
 
             assertThat(isAvailable).isFalse();
-
-            verify(eventsChecker, never()).validate(eq(ORGANISATION_DETAILS), any());
         }
 
         @Test
         void shouldExcludeGroundForApplicationWhenDischargeOfCareApplication() {
-
-            when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
             when(caseData.isDischargeOfCareApplication()).thenReturn(true);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
@@ -331,8 +277,8 @@ class CaseSubmissionCheckerTest {
             when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
-            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
-            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -349,8 +295,8 @@ class CaseSubmissionCheckerTest {
                 "In the hearing urgency section:",
                 "• Hearing needed error",
                 "In the applicant's details section:",
-                "• Local authority error 1",
-                "• Local authority error 2",
+                "• Applicant error Sol 1",
+                "• Applicant error Sol 2",
                 "In the child's details section:",
                 "• Children error",
                 "In the respondents' details section:",
@@ -363,6 +309,94 @@ class CaseSubmissionCheckerTest {
             assertThat(isAvailable).isFalse();
 
             verify(eventsChecker, never()).validate(eq(GROUNDS), any());
+        }
+
+        @Test
+        void shouldValidateApplicantLAIfLocalAuthorityIsYes() {
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(true);
+
+            when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
+            when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
+            when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
+            when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
+            when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
+            when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
+            when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
+
+            final List<String> errors = caseSubmissionValidator.validate(caseData);
+            final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
+
+            assertThat(errors).containsExactly(
+                "In the change case name section:",
+                "• Case name error",
+                "In the orders and directions sought section:",
+                "• Orders needed error 1",
+                "• Orders needed error 2",
+                "In the hearing urgency section:",
+                "• Hearing needed error",
+                "In the grounds for the application section:",
+                "• Grounds for application error",
+                "In the applicant's details section:",
+                "• Applicant error LA 1",
+                "• Applicant error LA 2",
+                "In the child's details section:",
+                "• Children error",
+                "In the respondents' details section:",
+                "• Respondent error 1",
+                "• Respondent error 2",
+                "In the allocation proposal section:",
+                "• Allocation proposal error"
+            );
+
+            assertThat(isAvailable).isFalse();
+            verify(eventsChecker, never()).validate(eq(APPLICANT_DETAILS_THIRD_PARTY), any());
+        }
+
+        @Test
+        void shouldValidateApplicantSolIfLocalAuthorityIsNo() {
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(false);
+
+            when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
+            when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
+            when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
+            when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
+            when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
+            when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
+            when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
+            when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
+
+            final List<String> errors = caseSubmissionValidator.validate(caseData);
+            final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
+
+            assertThat(errors).containsExactly(
+                "In the change case name section:",
+                "• Case name error",
+                "In the orders and directions sought section:",
+                "• Orders needed error 1",
+                "• Orders needed error 2",
+                "In the hearing urgency section:",
+                "• Hearing needed error",
+                "In the grounds for the application section:",
+                "• Grounds for application error",
+                "In the applicant's details section:",
+                "• Applicant error Sol 1",
+                "• Applicant error Sol 2",
+                "In the child's details section:",
+                "• Children error",
+                "In the respondents' details section:",
+                "• Respondent error 1",
+                "• Respondent error 2",
+                "In the allocation proposal section:",
+                "• Allocation proposal error"
+            );
+
+            assertThat(isAvailable).isFalse();
+            verify(eventsChecker, never()).validate(eq(APPLICANT_DETAILS_LA), any());
         }
 
         @Test
@@ -424,16 +458,16 @@ class CaseSubmissionCheckerTest {
     class GroupedValidation {
 
         @Test
-        void shouldValidateLocalAuthorityInsteadOfLegacyApplicantWhenAdditionalContactFeatureIsToggledOn() {
-            when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
+        void shouldValidateApplicantLAIfLocalAuthorityIsYes() {
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(true);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
             when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
             when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
-            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
-            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -445,26 +479,28 @@ class CaseSubmissionCheckerTest {
                 eventValidationErrors(ORDERS_SOUGHT, ordersNeededErrors),
                 eventValidationErrors(HEARING_URGENCY, hearingNeededErrors),
                 eventValidationErrors(GROUNDS, groundsErrors),
-                eventValidationErrors(LOCAL_AUTHORITY_DETAILS, localAuthorityErrors),
+                eventValidationErrors(APPLICANT_DETAILS_LA, applicantLaErrors),
                 eventValidationErrors(CHILDREN, childrenErrors),
                 eventValidationErrors(RESPONDENTS, respondentsErrors),
                 eventValidationErrors(ALLOCATION_PROPOSAL, allocationProposalErrors)
             );
 
-            verify(eventsChecker, never()).validate(eq(ORGANISATION_DETAILS), any());
+            verify(eventsChecker, never()).validate(eq(APPLICANT_DETAILS_THIRD_PARTY), any());
         }
 
+
+
         @Test
-        void shouldValidateLegacyApplicantInsteadOfLocalAuthorityWhenAdditionalContactFeatureIsToggledOff() {
-            when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(false);
+        void shouldValidateApplicantLAIfLocalAuthorityIsNo() {
+            when(caseData.checkIfCaseIsSubmittedByLA()).thenReturn(false);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
             when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
             when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
             when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
             when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
-            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
-            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_LA, caseData)).thenReturn(applicantLaErrors);
+            when(eventsChecker.validate(APPLICANT_DETAILS_THIRD_PARTY, caseData)).thenReturn(applicantSolicitorErrors);
             when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
             when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
             when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
@@ -476,13 +512,13 @@ class CaseSubmissionCheckerTest {
                 eventValidationErrors(ORDERS_SOUGHT, ordersNeededErrors),
                 eventValidationErrors(HEARING_URGENCY, hearingNeededErrors),
                 eventValidationErrors(GROUNDS, groundsErrors),
-                eventValidationErrors(ORGANISATION_DETAILS, applicantErrors),
+                eventValidationErrors(APPLICANT_DETAILS_THIRD_PARTY, applicantSolicitorErrors),
                 eventValidationErrors(CHILDREN, childrenErrors),
                 eventValidationErrors(RESPONDENTS, respondentsErrors),
                 eventValidationErrors(ALLOCATION_PROPOSAL, allocationProposalErrors)
             );
 
-            verify(eventsChecker, never()).validate(eq(APPLICATION_DOCUMENTS), any());
+            verify(eventsChecker, never()).validate(eq(APPLICANT_DETAILS_LA), any());
         }
 
         @Test

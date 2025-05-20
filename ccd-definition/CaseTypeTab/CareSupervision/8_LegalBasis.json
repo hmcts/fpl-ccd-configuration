@@ -1,0 +1,181 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "statementOfService",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "groundsForEPO",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "grounds",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
+    "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\"",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "groundsForChildAssessmentOrder",
+    "FieldShowCondition": "orders.orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "groundsForContactWithChild",
+    "FieldShowCondition": "orders.orderType CONTAINS \"CONTACT_WITH_CHILD_IN_CARE\"",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "groundsForSecureAccommodationOrder",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "orders.orderType CONTAINS \"SECURE_ACCOMMODATION_ORDER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "orders.orderType CONTAINS \"REFUSE_CONTACT_WITH_CHILD\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "groundsForChildRecoveryOrder",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "orders.orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "groundsForEducationSupervisionOrder",
+    "FieldShowCondition": "orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\"",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "risks",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "factorsParenting",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "internationalElement",
+    "TabFieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "proceeding",
+    "TabFieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "allocationDecision",
+    "TabFieldDisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "allocationProposal",
+    "TabFieldDisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "hearingPreferences",
+    "TabFieldDisplayOrder": 10
+  }
+]

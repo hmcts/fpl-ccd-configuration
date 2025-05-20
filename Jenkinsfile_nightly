@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-    pipelineTriggers([cron('H 13 * * 1-5')]),
+    pipelineTriggers([cron('0 06 * * 1-5')]),
     parameters([
         string(name: 'FE_BASE_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
             description: 'The URL you want to run the full functional tests against'),
@@ -67,38 +67,38 @@ def teardownSecretsForIntegrationTests() {
 }
 
 withNightlyPipeline(type, product, component) {
-  pipelineConf = config;
+    pipelineConf = config;
 
-  env.URL = params.FRONTEND_URL
-  env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
-  env.IDAM_API_URL = params.IDAM_API_URL
-  env.CASE_SERVICE_URL = params.CASE_SERVICE_URL
-  env.SECURITY_RULES = params.SECURITY_RULES
-  env.ORG_ID = params.ORG_ID
+    env.URL = params.FRONTEND_URL
+    env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
+    env.IDAM_API_URL = params.IDAM_API_URL
+    env.CASE_SERVICE_URL = params.CASE_SERVICE_URL
+    env.SECURITY_RULES = params.SECURITY_RULES
+    env.ORG_ID = params.ORG_ID
 
-  loadVaultSecrets(integrationTestSecrets)
+    loadVaultSecrets(integrationTestSecrets)
 
-  enableMutationTest()
-  enableFortifyScan('fpl-aat')
-  enableFullFunctionalTest(240)
+    enableMutationTest()
+    enableFortifyScan('fpl-aat')
+    enableFullFunctionalTest(240)
 
-  before('mutationTest') {
-    setupSecretsForIntegrationTests(pipelineConf)
-  }
+    before('mutationTest') {
+        setupSecretsForIntegrationTests(pipelineConf)
+    }
 
-  afterAlways('mutationTest') {
-    archiveExtraFilesForIntegrationTests()
-    teardownSecretsForIntegrationTests()
-  }
+    afterAlways('mutationTest') {
+        archiveExtraFilesForIntegrationTests()
+        teardownSecretsForIntegrationTests()
+    }
 
-  before('fullFunctionalTest') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
-    env.MOCKED_PAYMENTS = false
-    env.TEST_RETRIES = 5
-    env.TESTS_FOR_ACCESSIBILITY = true
-    env.ENV = 'aat'
-  }
+    before('fullFunctionalTest') {
+        yarnBuilder.yarn('yarn-update')
+        yarnBuilder.yarn('install-dependencies')
+        env.MOCKED_PAYMENTS = false
+        env.TEST_RETRIES = 5
+        env.TESTS_FOR_ACCESSIBILITY = true
+        env.ENV = 'aat'
+    }
 
   afterAlways('fullFunctionalTest') {
     stage('Functional UI tests chromium') {

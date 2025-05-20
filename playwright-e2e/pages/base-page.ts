@@ -16,12 +16,12 @@ export class BasePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.nextStep = page.getByLabel("Next step");
+    this.nextStep = page.getByLabel('Next step');
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
-    this.continueButton = page.getByRole("button", { name: "Continue" });
+    this.continueButton = page.getByRole("button", { name: 'Continue' });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-    this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
+    this.saveAndContinue = page.getByRole("button", { name: 'Save and Continue'});
     this.submit = page.getByRole('button', { name: 'Submit' });
     this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
     this.findAddress = page.getByRole('button', { name: 'Find address' });
@@ -33,7 +33,7 @@ export class BasePage {
           await this.page.reload();
           await this.nextStep.selectOption(eventName);
           await this.goButton.click({clickCount:2,delay:300});
-          await expect(this.page.getByRole('button', { name: 'Continue' })).toBeVisible();
+          await expect(this.page.getByRole('button', { name: 'Previous' })).toBeDisabled();
       }).toPass();
   }
 
@@ -54,7 +54,7 @@ export class BasePage {
   }
 
   async clickContinue() {
-    await this.continueButton.click();
+    await this.continueButton.click({});
   }
 
   async waitForAllUploadsToBeCompleted() {
@@ -94,7 +94,9 @@ export class BasePage {
   async clickSubmit() {
     await this.submit.click();
   }
-
+  async clickSaveAndContinue() {
+      await this.saveAndContinue.click();
+  }
   async enterPostCode(postcode:string){
       await this.postCode.fill(postcode);
       await this.findAddress.click();

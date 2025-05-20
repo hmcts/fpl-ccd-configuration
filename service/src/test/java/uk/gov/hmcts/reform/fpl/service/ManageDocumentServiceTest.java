@@ -102,6 +102,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_AND_VIABILIT
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_EVIDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.HAEMATOLOGIST;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.INDEPENDENT_SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.JUDGEMENTS;
@@ -425,6 +426,7 @@ class ManageDocumentServiceTest {
                     toPair(RESPONDENTS_STATEMENTS),
                     toPair(RESPONDENTS_WITNESS_STATEMENTS),
                     toPair(GUARDIAN_EVIDENCE),
+                    i == 4 ? toPair(GUARDIAN_REPORT) : Pair.of("", ""),
                     toPair(AA_PARENT_EXPERT_REPORTS),
                     toPair(ADULT_PSYCHIATRIC_REPORT_ON_PARENTS),
                     toPair(FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL),
@@ -774,7 +776,7 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
                 .build()))
-                && list.contains(element(elementIdTwo, ManagedDocument.builder()
+                    && list.contains(element(elementIdTwo, ManagedDocument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -799,7 +801,7 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
                 .build()))
-                && list.contains(element(elementIdTwo, CaseSummary.builder()
+                    && list.contains(element(elementIdTwo, CaseSummary.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -823,7 +825,7 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
                 .build()))
-                && list.contains(element(elementIdTwo, SkeletonArgument.builder()
+                    && list.contains(element(elementIdTwo, SkeletonArgument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -848,7 +850,7 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
                 .build()))
-                && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
+                    && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -870,7 +872,7 @@ class ManageDocumentServiceTest {
             list -> {
                 List<Element> flist = (List<Element>) list.stream()
                     .filter(p -> elementIdOne.equals(((Element) p).getId())
-                        || elementIdTwo.equals(((Element) p).getId()))
+                                 || elementIdTwo.equals(((Element) p).getId()))
                     .collect(Collectors.toList());
                 if (flist.size() != 2) {
                     return false;
@@ -951,7 +953,7 @@ class ManageDocumentServiceTest {
                 .uploaderType(getUploaderType(loginType))
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .build()))
-                && list.contains(element(elementIdTwo, ManagedDocument.builder()
+                    && list.contains(element(elementIdTwo, ManagedDocument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -971,7 +973,7 @@ class ManageDocumentServiceTest {
                 .uploaderType(getUploaderType(loginType))
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .build()))
-                && list.contains(element(elementIdTwo, CaseSummary.builder()
+                    && list.contains(element(elementIdTwo, CaseSummary.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -991,7 +993,7 @@ class ManageDocumentServiceTest {
                 .uploaderType(getUploaderType(loginType))
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .build()))
-                && list.contains(element(elementIdTwo, SkeletonArgument.builder()
+                    && list.contains(element(elementIdTwo, SkeletonArgument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -1012,7 +1014,7 @@ class ManageDocumentServiceTest {
                 .uploaderType(getUploaderType(loginType))
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .build()))
-                && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
+                    && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -1031,7 +1033,7 @@ class ManageDocumentServiceTest {
             list -> {
                 List<Element> flist = (List<Element>) list.stream()
                     .filter(p -> elementIdOne.equals(((Element) p).getId())
-                        || elementIdTwo.equals(((Element) p).getId()))
+                                 || elementIdTwo.equals(((Element) p).getId()))
                     .toList();
                 if (flist.size() != 2) {
                     return false;
@@ -1455,7 +1457,7 @@ class ManageDocumentServiceTest {
             when(caseConverter.toMap(any())).thenReturn(Map.of());
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder().build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1483,7 +1485,7 @@ class ManageDocumentServiceTest {
                 Pair.of(COURT_BUNDLE.name(), COURT_BUNDLE.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder().build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1515,7 +1517,7 @@ class ManageDocumentServiceTest {
                 Pair.of(TRANSCRIPTS.name(), TRANSCRIPTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder().build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1548,7 +1550,7 @@ class ManageDocumentServiceTest {
                 Pair.of(PLACEMENT_RESPONSES.name(), PLACEMENT_RESPONSES.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .placementEventData(PlacementEventData.builder()
                     .placements(List.of(element(Placement.builder()
                         .noticeDocuments(List.of(element(PlacementNoticeDocument.builder().build())))
@@ -1569,7 +1571,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C1_APPLICATION_DOCUMENTS.name(), C1_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
                         .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
@@ -1594,7 +1596,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C1_APPLICATION_DOCUMENTS.name(), C1_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
                         .document(testDocumentReference())
@@ -1617,7 +1619,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C2_APPLICATION_DOCUMENTS.name(), C2_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
                     .c2DocumentBundle(C2DocumentBundle.builder()
                         .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
@@ -1642,7 +1644,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C2_APPLICATION_DOCUMENTS.name(), C2_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
                     .c2DocumentBundleConfidential(C2DocumentBundle.builder()
                         .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
@@ -1672,7 +1674,7 @@ class ManageDocumentServiceTest {
                 Pair.of(C2_APPLICATION_DOCUMENTS.name(), C2_APPLICATION_DOCUMENTS.getDescription())
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+            DynamicList dynamicList = underTest.buildExistingDocumentTypeDynamicList(CaseData.builder()
                 .additionalApplicationsBundle(List.of(element(
                     toConfidentialAdditionalApplicationsBundleBuilder(modifier,
                         C2DocumentBundle.builder()
@@ -1742,7 +1744,7 @@ class ManageDocumentServiceTest {
                 Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
             ))).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1775,7 +1777,7 @@ class ManageDocumentServiceTest {
             ))).thenReturn(expectedDynamicList1);
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             if (uploaderType == DocumentUploaderType.HMCTS) {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList1);
             } else {
@@ -1812,7 +1814,7 @@ class ManageDocumentServiceTest {
             ))).thenReturn(expectedDynamicList1);
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             if (uploaderType == DocumentUploaderType.HMCTS
                 || uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
                 || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
@@ -1850,7 +1852,7 @@ class ManageDocumentServiceTest {
             ))).thenReturn(expectedDynamicList1);
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             if (loginType == LA_LOGIN_TYPE || loginType == 2) { // LAs should get an empty dynamic list
                 assertThat(dynamicList).isEqualTo(expectedDynamicList2);
             } else {
@@ -1892,7 +1894,7 @@ class ManageDocumentServiceTest {
 
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
@@ -1944,11 +1946,11 @@ class ManageDocumentServiceTest {
             ))).thenReturn(expectedDynamicList2);
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList3);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             if (uploaderType == DocumentUploaderType.HMCTS) {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList2);
             } else if (uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
-                || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
+                       || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList3);
             } else {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList1);
@@ -1984,7 +1986,7 @@ class ManageDocumentServiceTest {
 
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
 
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            DynamicList dynamicList = underTest.buildAvailableDocumentsDynamicList(builder.build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
     }
@@ -2814,7 +2816,7 @@ class ManageDocumentServiceTest {
             CaseData caseDataBefore = ManageDocumentsUploadedEventTestData.commonCaseBuilder().build();
 
             CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
+                List.of(confidentialLevel));
 
             List<Element<Object>> documentList = ObjectHelper.getFieldValue(caseData,
                 documentType.getBaseFieldNameResolver().apply(confidentialLevel), List.class);

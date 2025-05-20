@@ -42,7 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseInitiationService {
-
+    public static final String REGISTER = "Register for an account.";
     public static final String NOT_PRESENT = "NOT_PRESENT";
     private final RequestData requestData;
     private final DynamicListService dynamicLists;
@@ -150,7 +150,7 @@ public class CaseInitiationService {
         if (!userInMO) {
             if (!userInLA && !caseOutsourced) {
                 return List.of(
-                    "Register for an account.",
+                    REGISTER,
                     "You cannot start an online application until you’re fully registered"
                         + " and have permission to start a case for a local authority.",
                     "Email MyHMCTSsupport@justice.gov.uk for further guidance."
@@ -160,14 +160,14 @@ public class CaseInitiationService {
             if (!featureToggleService.isCaseCreationForNotOnboardedUsersEnabled(caseLA.get())) {
                 if (userInLA) {
                     return List.of(
-                        "Register for an account.",
+                        REGISTER,
                         "You cannot start an online application until you’re fully registered.",
                         "Ask your local authority’s public law administrator, "
                             + "or email MyHMCTSsupport@justice.gov.uk, for help with registration.");
                 }
 
                 return List.of(
-                    "Register for an account.",
+                    REGISTER,
                     "You cannot start an online application until you’re fully registered.",
                     "Email MyHMCTSsupport@justice.gov.uk for help with registration.");
             }

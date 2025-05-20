@@ -24,7 +24,7 @@
     "FieldType": "Document",
     "ElementLabel": "Order",
     "SecurityClassification": "Public",
-    "RegularExpression": ".doc,.docx",
+    "RegularExpression": ".doc,.docx,.pdf",
     "CategoryID": "orders"
   },
   {
@@ -34,7 +34,7 @@
     "FieldType": "Document",
     "ElementLabel": "Order",
     "SecurityClassification": "Public",
-    "RegularExpression": ".doc,.docx",
+    "RegularExpression": ".doc,.docx,.pdf",
     "CategoryID": "ordersConfidential"
   },
   {

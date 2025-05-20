@@ -61,6 +61,8 @@ import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -70,6 +72,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
@@ -102,6 +105,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -151,6 +155,25 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdListCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
+    }
+
+    @Test
+    void shouldDoStateCheck() {
+        assertDoesNotThrow(() -> underTest.doStateCheck(
+            State.CASE_MANAGEMENT.toString(),
+            State.CASE_MANAGEMENT.toString(),
+            1L,
+            MIGRATION_ID));
+    }
+
+    @Test
+    void shouldThrowExceptionIfStateCheckFails() {
+        assertThrows(AssertionError.class, () -> underTest.doStateCheck(
+            State.CASE_MANAGEMENT.toString(),
+            State.CLOSED.toString(),
+            1L,
+            MIGRATION_ID
+        ));
     }
 
     @Mock
@@ -213,7 +236,7 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
-    class UpdateThirdPartyStandaloneApplicant {
+    class UpdateOutsourcingPolicy {
 
         private final String previousOrgId = "ABCDEFG";
         private final String previousOrgName = "Previous Organisation Name";
@@ -247,7 +270,7 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+            Map<String, OrganisationPolicy> fields = underTest.updateOutsourcingPolicy(caseData, newOrgId,
                 null);
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
@@ -266,7 +289,7 @@ class MigrateCaseServiceTest {
                 .id(1L)
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+            Map<String, OrganisationPolicy> fields = underTest.updateOutsourcingPolicy(caseData, newOrgId,
                 CaseRole.EPSMANAGING.formattedName());
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
@@ -278,11 +301,11 @@ class MigrateCaseServiceTest {
         @Test
         void removeApplicantEmailAndStopNotifyingTheirColleagues() {
             Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
-                    .notificationRecipient(YesNo.YES.getValue()).build());
+                    .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
 
             Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
                 .email("localAuthority1@email.com")
@@ -322,11 +345,11 @@ class MigrateCaseServiceTest {
         @Test
         void throwExceptionIfApplicantNotFound() {
             Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
-                .notificationRecipient(YesNo.YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
 
             Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
                 .email("localAuthority1@email.com")
@@ -2240,7 +2263,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             Map<String, Object> updatedGrounds = underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
-                thresholdDetailsStartIndex, thresholdDetailsEndIndex);
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex, "");
 
             assertThat(updatedGrounds).extracting("grounds").isEqualTo(expectedGrounds);
         }
@@ -2260,7 +2283,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
-                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex, ""))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s},"
                         + " threshold details is shorter than provided index",
@@ -2282,7 +2305,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
-                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex, ""))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, "
                         + "threshold details does not contain provided text",
@@ -2473,7 +2496,7 @@ class MigrateCaseServiceTest {
                         .build()),
                     element(GeneratedOrder.builder()
                         .type("Interim testing order")
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .build())
                     )
                 ).build();
@@ -2513,7 +2536,7 @@ class MigrateCaseServiceTest {
                     element(GeneratedOrder.builder()
                         .type(orderType)
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build()))
                 ).build();
@@ -2528,7 +2551,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE)
                         .approvalDateTime(null)
                         .build()))
@@ -2544,7 +2567,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(null)
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build()))
@@ -2560,7 +2583,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE)
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
                         .build()))
@@ -2576,7 +2599,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE.minusDays(1))
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build()))
@@ -2604,7 +2627,7 @@ class MigrateCaseServiceTest {
                     // no approval date
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(null)
                         .approvalDateTime(null)
                         .build()),
@@ -2612,27 +2635,27 @@ class MigrateCaseServiceTest {
                     // approved final orders
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
                         .build()),
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE.minusDays(2))
                         .build()),
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(3))
                         .build()),
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(LATEST_APPROVAL_DATE.minusDays(4))
                         .build()),
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .build()),
                     element(GeneratedOrder.builder()
                         .type("Final Care order")
@@ -2657,7 +2680,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDate(null)
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build()))
@@ -2700,7 +2723,7 @@ class MigrateCaseServiceTest {
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
+                        .markedFinal(YES.getValue())
                         .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
                         .build())))
                 .build();
@@ -3496,7 +3519,7 @@ class MigrateCaseServiceTest {
                 .type("test")
                 .reason("reason")
                 .timeFrame("timeFrame")
-                .withoutNotice("withoutNotice")
+                .withoutNotice(YES.getValue())
                 .withoutNoticeReason("withoutNoticeReason")
                 .build();
 
@@ -3534,4 +3557,70 @@ class MigrateCaseServiceTest {
 
     }
 
+    @Nested
+    class RemoveDraftOrderFromAdditionalApplicationBundle {
+
+        private final UUID bundleId = UUID.randomUUID();
+        private final UUID orderToRemoveId = UUID.randomUUID();
+        private final UUID orderToRetainId = UUID.randomUUID();
+        private final UUID nonExistentBundleId = UUID.randomUUID();
+
+        Element<DraftOrder> draftOrderToRemove = element(orderToRemoveId,
+                DraftOrder.builder()
+                    .title("Order to remove")
+                    .build()
+            );
+
+        Element<DraftOrder> draftOrderToRetain = element(orderToRetainId,
+                DraftOrder.builder()
+                    .title("Order to retain")
+                    .build()
+            );
+
+        private final Element<AdditionalApplicationsBundle> bundleWithOrder = element(bundleId,
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .draftOrdersBundle(List.of(draftOrderToRemove, draftOrderToRetain))
+                    .build())
+                .build());
+
+        private final Element<AdditionalApplicationsBundle> bundleWithoutOrder = element(bundleId,
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .build())
+                .build());
+
+        private final CaseData caseDataWithBundle = CaseData.builder()
+            .id(1L)
+            .additionalApplicationsBundle(List.of(bundleWithOrder))
+            .build();
+
+        private final CaseData caseDataWithoutDraftOrder = CaseData.builder()
+            .id(1L)
+            .additionalApplicationsBundle(List.of(bundleWithoutOrder))
+            .build();
+
+        @Test
+        void shouldRemoveDraftOrderFromBundle() {
+            Map<String, Object> result = underTest.removeDraftOrderFromAdditionalApplication(caseDataWithBundle,
+                MIGRATION_ID, bundleId, orderToRemoveId);
+
+            Element<AdditionalApplicationsBundle> expectedBundle = element(bundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .draftOrdersBundle(List.of(draftOrderToRetain))
+                        .build())
+                    .build());
+
+            assertThat(result).containsEntry("additionalApplicationsBundle", List.of(expectedBundle));
+        }
+
+        @Test
+        void shouldThrowExceptionIfBundleNotFound() {
+            assertThatThrownBy(() -> underTest.removeDraftOrderFromAdditionalApplication(caseDataWithoutDraftOrder,
+                MIGRATION_ID, nonExistentBundleId, orderToRemoveId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("additional application bundle not found");
+        }
+    }
 }

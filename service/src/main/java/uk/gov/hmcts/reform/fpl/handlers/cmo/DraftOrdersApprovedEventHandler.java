@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -78,6 +79,7 @@ public class DraftOrdersApprovedEventHandler {
     private final TranslationRequestService translationRequestService;
     private final CafcassNotificationService cafcassNotificationService;
     private final WorkAllocationTaskService workAllocationTaskService;
+    private final FeatureToggleService featureToggleService;
 
     private boolean isUrgent(CaseData caseData) {
         return Optional.ofNullable(caseData.getOrderReviewUrgency()).orElse(
@@ -91,27 +93,31 @@ public class DraftOrdersApprovedEventHandler {
     @Async
     @EventListener
     public void sendNotificationToAdmin(final DraftOrdersApproved event) {
-        CaseData caseData = event.getCaseData();
-        List<HearingOrder> approvedOrders = new ArrayList<>();
-        approvedOrders.addAll(event.getApprovedOrders());
-        approvedOrders.addAll(unwrapElements(event.getApprovedConfidentialOrders()));
+        if (featureToggleService.isWATaskEmailsEnabled()) {
+            CaseData caseData = event.getCaseData();
+            List<HearingOrder> approvedOrders = new ArrayList<>();
+            approvedOrders.addAll(event.getApprovedOrders());
+            approvedOrders.addAll(unwrapElements(event.getApprovedConfidentialOrders()));
 
-        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
-            caseData.getHearingDetails())
-            .map(Element::getValue)
-            .orElse(null);
+            final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+                caseData.getHearingDetails())
+                .map(Element::getValue)
+                .orElse(null);
 
-        final ApprovedOrdersTemplate content = contentProvider.buildOrdersApprovedContent(caseData, hearing,
-            approvedOrders, DIGITAL_SERVICE);
+            final ApprovedOrdersTemplate content = contentProvider.buildOrdersApprovedContent(caseData, hearing,
+                approvedOrders, DIGITAL_SERVICE);
 
-        String adminEmail = courtService.getCourtEmail(caseData);
+            String adminEmail = courtService.getCourtEmail(caseData);
 
-        notificationService.sendEmail(
-            getJudgeApprovesDraftOrderTemplateId(caseData),
-            adminEmail,
-            content,
-            caseData.getId()
-        );
+            notificationService.sendEmail(
+                getJudgeApprovesDraftOrderTemplateId(caseData),
+                adminEmail,
+                content,
+                caseData.getId()
+            );
+        } else {
+            log.info("WA EMAIL SKIPPED - draft order approved - {}", event.getCaseData().getId());
+        }
     }
 
     @Async
@@ -214,8 +220,7 @@ public class DraftOrdersApprovedEventHandler {
 
             approvedOrders.forEach(hearingOrder ->
                     cafcassNotificationService.sendEmail(caseData,
-                            Set.of(hearingOrder.isConfidentialOrder() ? hearingOrder.getOrderConfidential()
-                                : hearingOrder.getOrder()),
+                            Set.of(hearingOrder.getOrderOrOrderConfidential()),
                             ORDER,
                             OrderCafcassData.builder()
                                     .documentName(hearingOrder.getTitle())
@@ -367,7 +372,7 @@ public class DraftOrdersApprovedEventHandler {
         approvedOrders.forEach(
             order -> translationRequestService.sendRequest(event.getCaseData(),
                 Optional.ofNullable(order.getTranslationRequirements()),
-                (order.isConfidentialOrder()) ? order.getOrderConfidential() : order.getOrder(),
+                order.getOrderOrOrderConfidential(),
                 String.format("%s - %s", defaultIfEmpty(order.getTitle(), "Blank order (C21)"),
                     formatLocalDateTimeBaseUsingFormat(order.getDateIssued().atStartOfDay(), DATE)
                 )

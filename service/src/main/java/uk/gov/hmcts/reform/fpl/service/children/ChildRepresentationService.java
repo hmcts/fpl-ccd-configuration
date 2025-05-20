@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.LIVE_IN_REFUGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.fromString;
@@ -49,15 +50,26 @@ public class ChildRepresentationService {
         return data;
     }
 
-    public Map<String, Object> finaliseRepresentationDetails(CaseData caseData) {
+    public Map<String, Object> finaliseChildrenAndRepresentationDetails(CaseData caseData) {
         ChildrenEventData eventData = caseData.getChildrenEventData();
         List<Element<Child>> children = caseData.getAllChildren();
 
         return Map.of(
             "children1", IntStream.range(0, children.size())
-                .mapToObj(idx -> element(children.get(idx).getId(), children.get(idx).getValue().toBuilder()
-                    .solicitor(selectSpecifiedRepresentative(eventData, idx))
-                    .build()))
+                .mapToObj(idx -> {
+                    final Element<Child> childElement = children.get(idx);
+                    Child.ChildBuilder childBuilder = childElement.getValue().toBuilder()
+                        .solicitor(selectSpecifiedRepresentative(eventData, idx));
+
+                    if (childElement.getValue().getParty() != null
+                        && LIVE_IN_REFUGE.getValue().equalsIgnoreCase(
+                            childElement.getValue().getParty().getLivingSituation())) {
+                        childBuilder = childBuilder.party(childElement.getValue().getParty().toBuilder()
+                            .detailsHidden(YES.getValue()).build());
+                    }
+
+                    return element(childElement.getId(), childBuilder.build());
+                })
                 .collect(Collectors.toList())
         );
     }

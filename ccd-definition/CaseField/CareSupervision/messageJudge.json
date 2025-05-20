@@ -11,9 +11,37 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "isMessageRegardingAdditionalApplications",
-    "Label": "Is it about an Application?",
+    "ID": "isSendingEmailsInCourt",
+    "Label": " ",
     "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isMessageRegardingDocuments",
+    "Label": "Is it about an Application or Document?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "MessageAttachmentSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "attachDocumentLabel",
+    "Label": "Attach a document or application",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentDynamicList",
+    "FieldType": "DynamicList",
+    "Label": "Which document?",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -23,6 +51,15 @@
     "ID": "additionalApplicationsDynamicList",
     "Label": "Which application?",
     "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentTypesDynamicList",
+    "FieldType": "DynamicList",
+    "Label": "Document type",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

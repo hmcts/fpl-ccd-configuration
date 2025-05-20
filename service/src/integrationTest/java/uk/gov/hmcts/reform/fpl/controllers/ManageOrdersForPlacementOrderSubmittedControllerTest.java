@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
@@ -127,6 +129,9 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
     private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @MockBean
     private CafcassNotificationService cafcassNotificationService;
 
     @Captor
@@ -139,6 +144,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
     @BeforeEach
     void setUp() {
         givenFplService();
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
     }
 
     @Test
@@ -365,7 +371,8 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
         return Map.of(
             "callout", "^Theodore Bailey, " + TEST_FAMILY_MAN_NUMBER,
             "courtName", DEFAULT_LA_COURT,
-            "documentLink", Map.of("file", encodedOrderDocument, "is_csv", false),
+            "documentLink", Map.of("file", encodedOrderDocument, "filename", JSONObject.NULL,
+                "confirm_email_before_download", JSONObject.NULL, "retention_period", JSONObject.NULL),
             "caseUrl", "http://fake-url/cases/case-details/" + TEST_CASE_ID + "#Orders",
             "childLastName", "Bailey"
         );

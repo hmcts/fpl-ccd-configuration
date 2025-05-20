@@ -1,4 +1,4 @@
-import {systemUpdateUser} from '../settings/user-credentials';
+import {systemUpdateUser,privateSolicitorOrgUser} from '../settings/user-credentials';
 import {urlConfig} from '../settings/urls';
 import axios from 'axios';
 import * as qs from 'qs';
@@ -7,29 +7,24 @@ import {APIRequestContext} from '@playwright/test';
 import config from "../settings/test-docs/config";
 import * as fs from "fs";
 
-export const getAccessToken = async (user: { email: string, password: string }) => {
-    let response;
-    try {
-        let axiosConfig = {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        };
-        let url = `${urlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
-        return axios.post(url, qs.stringify(axiosConfig)).then(res => {
-                return res.data.access_token;
+ export const  getAccessToken = async ({user}: { user: any }) => {
+        try {
+            let axiosConfig = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            };
+            let url = `${urlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
+            return await axios.post(url, qs.stringify(axiosConfig));
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log(error.status)
+                console.error(error.response);
+            } else {
+                console.error(error);
             }
-        );
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.log(error.status)
-            console.error(error.response);
-            return error.response
-        } else {
-            console.error(error);
         }
     }
-}
 
 export const createCase = async (caseName = 'e2e UI Test', user: { email: string, password: string }) => {
 
@@ -71,39 +66,39 @@ export const updateCase = async (caseName = 'e2e Test', caseID: string, caseData
     }
 }
 
-export const apiRequest = async (postURL: string, authUser: any, method: string = 'get', data: any = {}) => {
-    const systemUserAuthToke = await getAccessToken(authUser);
-    const requestConfig = {
-        method: method,
-        url: postURL,
-        data: data,
-        headers: {
-            'Authorization': `Bearer ${systemUserAuthToke}`,
-            'Content-Type': 'application/json'
-        },
-    };
-    try {
-        return axios.request(requestConfig).then((res) => {
-            return res.data;
-        });
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.log(error.status);
-            console.log(error.request);
-            console.log(error.response);
-        }
+   export const apiRequest = async (postURL: string, authUser: any, method: string = 'get', data: any = {}) => {
+        const systemUserAuthToke = await getAccessToken({user: authUser});
+        const requestConfig = {
+            method: method,
+            url: postURL,
+            data: data,
+            headers: {
+                'Authorization': `Bearer ${systemUserAuthToke?.data.access_token}`,
+                'Content-Type': 'application/json'
+            },
+        };
+        try {
+            return axios.request(requestConfig).then((res) => {
+                return res.data;
+            });
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log(error.status);
+                console.log(error.request);
+                console.log(error.response);
+            }
 
     }
 
 }
 
-export const giveAccessToCase = async (caseID: string, user: { email: string, password: string }, role: string) => {
+export const giveAccessToCase = async (caseID: string,user: {email: string ,password: string},role: string ) => {
     let data = JSON.stringify({
         'email': user.email,
         'password': user.password,
         'role': role
     });
-    let postURL: string = `${urlConfig.serviceUrl}/testing-support/case/${caseID}/access`;
+    let postURL : string = `${urlConfig.serviceUrl}/testing-support/case/${caseID}/access`;
     try {
         let res = await apiRequest(postURL, systemUpdateUser, 'post', data);
     } catch (error) {
