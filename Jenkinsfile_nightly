@@ -152,7 +152,40 @@ withNightlyPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
       }
     }
-
+    stage('Functional UI tests ipadPro11 ') {
+      try {
+        yarnBuilder.yarn('test:functional-ipadPro11')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } finally {
+        publishHTML([
+          allowMissing: true,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: 'playwright-report',
+          reportFiles: 'index.html',
+          reportName: 'UITestipadPro11Report'
+        ])
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+      }
+    }
+    stage('Functional UI tests galaxyS4 ') {
+      try {
+        yarnBuilder.yarn('test:functional-galaxyS4')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } finally {
+        publishHTML([
+          allowMissing: true,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: 'playwright-report',
+          reportFiles: 'index.html',
+          reportName: 'UITestGalaxyS4Report'
+        ])
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+      }
+    }
     stage('cafCassAPITest') {
       try {
         yarnBuilder.yarn('test:functional-API')
@@ -171,7 +204,6 @@ withNightlyPipeline(type, product, component) {
       }
     }
   }
-
 
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
