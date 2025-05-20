@@ -63,7 +63,11 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
             childPartyBuilder = childPartyBuilder.address(this.party.getAddress())
                 .livingSituation(this.party.getLivingSituation())
                 .livingSituationDetails(this.party.getLivingSituationDetails())
-                .livingWithDetails(this.party.getLivingWithDetails());
+                .livingWithDetails(this.party.getLivingWithDetails())
+                .careStartDate(this.party.getCareStartDate())
+                .datePowersEnd(this.party.getDatePowersEnd())
+                .dischargeDate(this.party.getDischargeDate())
+                .addressChangeDate(this.party.getAddressChangeDate());
         }
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
@@ -101,6 +105,22 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
             if (!isEmpty(((ChildParty) party).getLivingWithDetails())) {
                 childPartyBuilder.livingWithDetails(((ChildParty) party).getLivingWithDetails());
             }
+
+            if (!isEmpty(((ChildParty) party).getCareStartDate())) {
+                childPartyBuilder.careStartDate(((ChildParty) party).getCareStartDate());
+            }
+
+            if (!isEmpty(((ChildParty) party).getDatePowersEnd())) {
+                childPartyBuilder.datePowersEnd(((ChildParty) party).getDatePowersEnd());
+            }
+
+            if (!isEmpty(((ChildParty) party).getDischargeDate())) {
+                childPartyBuilder.dischargeDate(((ChildParty) party).getDischargeDate());
+            }
+
+            if (!isEmpty(((ChildParty) party).getAddressChangeDate())) {
+                childPartyBuilder.addressChangeDate(((ChildParty) party).getAddressChangeDate());
+            }
         }
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
@@ -126,6 +146,10 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
             childPartyBuilder.livingSituation(null);
             childPartyBuilder.livingSituationDetails(null);
             childPartyBuilder.livingWithDetails(null);
+            childPartyBuilder.careStartDate(null);
+            childPartyBuilder.datePowersEnd(null);
+            childPartyBuilder.dischargeDate(null);
+            childPartyBuilder.addressChangeDate(null);
         }
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
