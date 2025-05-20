@@ -126,6 +126,7 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
             childPartyBuilder = childPartyBuilder.socialWorkerName(this.party.getSocialWorkerName())
                 .socialWorkerEmail(this.party.getSocialWorkerEmail())
+                .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden())
                 .socialWorkerDetailsHiddenReason(this.party.getSocialWorkerDetailsHiddenReason())
                 .socialWorkerTelephoneNumber(this.party.getSocialWorkerTelephoneNumber());
         }
@@ -154,6 +155,7 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
             childPartyBuilder = childPartyBuilder.socialWorkerName(null)
+                .socialWorkerDetailsHidden(null)
                 .socialWorkerDetailsHiddenReason(null)
                 .socialWorkerEmail(null)
                 .socialWorkerTelephoneNumber(null);
