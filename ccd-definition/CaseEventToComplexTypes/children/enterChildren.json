@@ -317,7 +317,6 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.socialWorkerTelephoneNumber.telephoneNumber",
-    "EventElementLabel": "Social worker's phone number",
     "FieldDisplayOrder": 29,
     "DisplayContext": "OPTIONAL"
   },

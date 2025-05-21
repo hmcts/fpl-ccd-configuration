@@ -255,7 +255,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
     "ListElementCode": "socialWorkerTelephoneNumber",
-    "FieldType": "Telephone",
+    "FieldType": "SocialWorkerTelephone",
     "ElementLabel": " ",
     "SecurityClassification": "Public"
   },
@@ -326,7 +326,7 @@
     "ListElementCode": "detailsHidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need contact details hidden from other parties?",
-    "FieldShowCondition": "livingSituation!=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "livingSituation=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public",
     "Comment": "DEPRECATED"
   },

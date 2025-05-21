@@ -59,7 +59,6 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
         if (YesNo.YES.equalsString(this.party.getIsAddressConfidential())) {
             childPartyBuilder = childPartyBuilder.address(this.party.getAddress())
-                .isAddressConfidential(this.party.getIsAddressConfidential())
                 .livingSituation(this.party.getLivingSituation())
                 .livingSituationDetails(this.party.getLivingSituationDetails())
                 .livingWithDetails(this.party.getLivingWithDetails())
@@ -71,7 +70,6 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
             childPartyBuilder = childPartyBuilder.socialWorkerName(this.party.getSocialWorkerName())
-                .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden())
                 .socialWorkerEmail(this.party.getSocialWorkerEmail())
                 .socialWorkerTelephoneNumber(this.party.getSocialWorkerTelephoneNumber())
                 .socialWorkerDetailsHiddenReason(this.party.getSocialWorkerDetailsHiddenReason());
@@ -126,7 +124,6 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
             childPartyBuilder = childPartyBuilder.socialWorkerName(this.party.getSocialWorkerName())
                 .socialWorkerEmail(this.party.getSocialWorkerEmail())
-                .socialWorkerDetailsHidden(this.party.getSocialWorkerDetailsHidden())
                 .socialWorkerDetailsHiddenReason(this.party.getSocialWorkerDetailsHiddenReason())
                 .socialWorkerTelephoneNumber(this.party.getSocialWorkerTelephoneNumber());
         }
@@ -155,7 +152,6 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
         if (YesNo.YES.equalsString(this.party.getSocialWorkerDetailsHidden())) {
             childPartyBuilder = childPartyBuilder.socialWorkerName(null)
-                .socialWorkerDetailsHidden(null)
                 .socialWorkerDetailsHiddenReason(null)
                 .socialWorkerEmail(null)
                 .socialWorkerTelephoneNumber(null);

@@ -554,7 +554,6 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .socialWorkerName(null)
                 .socialWorkerEmail(null)
                 .socialWorkerDetailsHiddenReason(null)
-                .socialWorkerDetailsHidden(null)
                 .socialWorkerTelephoneNumber(null)
                 .build(),
             nonConfidentialParty
