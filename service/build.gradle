@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1666'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1701'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -345,8 +345,8 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackVersion
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.7.1'
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.7.1'
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.7.2'
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.7.2'
 
   implementation 'org.postgresql:postgresql:42.7.5'
 

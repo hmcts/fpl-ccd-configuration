@@ -2,22 +2,36 @@ package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
-import static org.springframework.util.ObjectUtils.isEmpty;
+import java.util.Arrays;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = Judge.class),
+    @JsonSubTypes.Type(value = JudgeAndLegalAdvisor.class)
+})
+@Jacksonized
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public abstract class AbstractJudge {
-
+@SuperBuilder(toBuilder = true)
+public class AbstractJudge {
+    private final JudgeType judgeType;
     private JudgeOrMagistrateTitle judgeTitle;
     private String otherTitle;
     private final String judgeLastName;
@@ -25,6 +39,7 @@ public abstract class AbstractJudge {
     private final String judgeEmailAddress;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Deprecated
     private final YesNo judgeEnterManually;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -47,8 +62,38 @@ public abstract class AbstractJudge {
         return judgeLastName;
     }
 
-    public YesNo getJudgeEnterManually() {
-        return !isEmpty(this.judgeEnterManually) ? this.judgeEnterManually : YesNo.YES;
+    @JsonIgnore
+    public boolean isDetailsEnterManually() {
+        return YesNo.YES.equals(judgeEnterManually) // historical data
+               || (judgeType == null && judgeEnterManually == null) // historical data
+               || JudgeType.LEGAL_ADVISOR.equals(judgeType);
+    }
+
+    public static <T extends AbstractJudge> T fromJudicialUserProfile(AbstractJudgeBuilder<T,?> builder,
+                                                                      JudicialUserProfile jup,
+                                                                      JudgeOrMagistrateTitle title) {
+        String postNominals = isNotEmpty(jup.getPostNominals())
+            ? (" " + jup.getPostNominals())
+            : "";
+
+        JudgeOrMagistrateTitle judgeTitle = (title != null)
+            ? title
+            : Arrays.stream(JudgeOrMagistrateTitle.values())
+                .filter(titleEnum -> titleEnum.getLabel().equalsIgnoreCase(jup.getTitle()))
+                .findFirst()
+                .orElse(null);
+
+        return builder
+            .judgeTitle((judgeTitle == null) ? JudgeOrMagistrateTitle.OTHER : judgeTitle)
+            .otherTitle((judgeTitle == null) ? jup.getTitle() : null)
+            .judgeLastName(jup.getSurname() + postNominals)
+            .judgeFullName(jup.getFullName() + postNominals)
+            .judgeEmailAddress(jup.getEmailId())
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId(jup.getSidamId())
+                .personalCode(jup.getPersonalCode())
+                .build())
+            .build();
     }
 }
 

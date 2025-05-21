@@ -111,7 +111,6 @@ public class ManageHearingsController extends CallbackController {
         }
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
-        caseDetails.getData().put("enterManuallyHearingJudge", NO.getValue());
 
         return respond(caseDetails);
     }
