@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -22,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
-import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
@@ -30,12 +29,7 @@ import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
@@ -45,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
 
 @Slf4j
@@ -65,6 +60,7 @@ public class JudicialService {
     private final JudicialUsersConfiguration judicialUsersConfiguration;
     private final LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
     private final ElinksService elinksService;
+    private final UserService userService;
 
     /**
      * Delete a set of allocated-[users] on a specific case.
@@ -329,7 +325,7 @@ public class JudicialService {
     // TODO - see if these can be combined/parameterised somehow
     public Optional<String> validateAllocatedJudge(CaseData caseData) {
         Optional<String> error;
-        if (caseData.getEnterManually().equals(YesNo.NO)) {
+        if (caseData.getEnterManually().equals(NO)) {
             // validate judge
             error = this.validateJudicialUserField(caseData.getJudicialUser());
         } else {
@@ -342,7 +338,7 @@ public class JudicialService {
 
     public Optional<String> validateTempAllocatedJudge(CaseData caseData) {
         Optional<String> error;
-        if (caseData.getEnterManually().equals(YesNo.NO)) {
+        if (caseData.getEnterManually().equals(NO)) {
             // validate judge
             error = this.validateJudicialUserField(caseData.getJudicialUser());
         } else {
@@ -356,7 +352,7 @@ public class JudicialService {
 
     public Optional<String> validateHearingJudge(CaseData caseData) {
         Optional<String> error;
-        if (caseData.getEnterManuallyHearingJudge().equals(YesNo.NO)) {
+        if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
             // validate judge
             error = this.validateJudicialUserField(caseData.getJudicialUserHearingJudge());
         } else {
@@ -407,7 +403,7 @@ public class JudicialService {
 
                 boolean isLegalAdviser = userRoleCategory.get().equals(RoleCategory.LEGAL_OPERATIONS);
 
-                return RoleAssignmentUtils.buildRoleAssignment(
+                return buildRoleAssignment(
                     caseData.getId(),
                     time.getJudgeId(),
                     isLegalAdviser
@@ -493,6 +489,15 @@ public class JudicialService {
         }
         caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
         return List.of();
+    }
+
+    public String getJudgeTitleAndNameOfCurrentUser() {
+        UserDetails userDetails = userService.getUserDetails();
+
+        return judicialUsersConfiguration.getJudicialUserProfile(userDetails.getEmail())
+            .map(judicialUserProfile ->
+                formatJudgeTitleAndName(JudgeAndLegalAdvisor.fromJudicialUserProfile(judicialUserProfile)))
+            .orElse(userDetails.getFullName());
     }
 
     private ZonedDateTime currentTimeUK() {

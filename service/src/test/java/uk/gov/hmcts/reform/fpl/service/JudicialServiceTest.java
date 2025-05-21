@@ -4,11 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
@@ -24,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
@@ -36,18 +33,12 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = LENIENT)
@@ -79,6 +70,9 @@ class JudicialServiceTest {
 
     @Mock
     private ElinksService elinksService;
+
+    @Mock
+    private UserService userService;
 
     @Captor
     private ArgumentCaptor<List<RoleAssignment>> rolesCaptor;
@@ -532,4 +526,34 @@ class JudicialServiceTest {
         }
     }
 
+    @Nested
+    class GetJudgeTitleAndName {
+        private static final JudicialUserProfile JUDICIAL_USER_PROFILE = JudicialUserProfile.builder()
+            .title("Judge")
+            .fullName("John Smith")
+            .build();
+
+        @Test
+        void shouldReturnJudgeTitleAndNameFromJRD() {
+            when(userService.getUserDetails()).thenReturn(UserDetails.builder().email(EMAIL).build());
+            when(judicialUsersConfiguration.getJudicialUserProfile(EMAIL))
+                .thenReturn(Optional.of(JUDICIAL_USER_PROFILE));
+
+            assertThat(underTest.getJudgeTitleAndNameOfCurrentUser())
+                .isEqualTo(formatJudgeTitleAndName(JudgeAndLegalAdvisor
+                    .fromJudicialUserProfile(JUDICIAL_USER_PROFILE)));
+        }
+
+        @Test
+        void shouldReturnIdamUserFullNameIfJRDNotFound() {
+            when(userService.getUserDetails()).thenReturn(UserDetails.builder()
+                .email(EMAIL)
+                .forename("John")
+                .surname("Smith")
+                .build());
+            when(judicialUsersConfiguration.getJudicialUserProfile(EMAIL)).thenReturn(Optional.empty());
+
+            assertThat(underTest.getJudgeTitleAndNameOfCurrentUser()).isEqualTo("John Smith");
+        }
+    }
 }

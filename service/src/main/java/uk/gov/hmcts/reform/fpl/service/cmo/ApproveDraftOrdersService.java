@@ -7,11 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -21,12 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,9 +25,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
-import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.*;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -191,10 +180,8 @@ public class ApproveDraftOrdersService {
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
-                        cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers),
-                        caseData.getSealType(),
-                        caseData.getCourt()
-                    );
+                        caseData, cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers),
+                        false);
 
                     List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
                     sealedCMOs.add(reviewedOrder);
@@ -265,9 +252,8 @@ public class ApproveDraftOrdersService {
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
-                        reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
-                        caseData.getSealType(),
-                        caseData.getCourt());
+                        caseData, reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
+                        true);
 
                     Element<GeneratedOrder> generatedBlankOrder = blankOrderGenerator.buildBlankOrder(caseData,
                         selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers));

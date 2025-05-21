@@ -433,8 +433,8 @@ class ApproveDraftOrdersServiceTest {
                 .draftCmos(emptyList())
                 .build()
         );
-        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified,
-            SealType.ENGLISH, caseData.getCourt()))
+        given(hearingOrderGenerator.buildSealedHearingOrder(caseData, reviewDecision, agreedCMO, others,
+            othersNotified))
             .willReturn(element(agreedCMO.getId(), expectedCmo));
 
         Map<String, Object> actualData = underTest.reviewCMO(caseData, ordersBundleElement);
@@ -539,8 +539,7 @@ class ApproveDraftOrdersServiceTest {
         Element<GeneratedOrder> expectedBlankOrder = element(UUID.randomUUID(),
             GeneratedOrder.builder().type(String.valueOf(C21)).build());
 
-        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), "",
-            SealType.ENGLISH, caseData.getCourt()))
+        given(hearingOrderGenerator.buildSealedHearingOrder(caseData, reviewDecision, draftOrder1, emptyList(), ""))
             .willReturn(expectedSealedOrder);
         given(blankOrderGenerator.buildBlankOrder(
             caseData, ordersBundleElement, expectedSealedOrder, emptyList(), ""))
@@ -661,8 +660,8 @@ class ApproveDraftOrdersServiceTest {
             .hearingDetails(emptyList())
             .build();
 
-        given(hearingOrderGenerator.buildSealedHearingOrder(any(), eq(agreedCMO), eq(emptyList()), eq(""),
-            eq(SealType.ENGLISH), eq(caseData.getCourt())))
+        given(hearingOrderGenerator.buildSealedHearingOrder(eq(caseData), any(), eq(agreedCMO), eq(emptyList()),
+            eq("")))
             .willReturn(element(agreedCMO.getId(), agreedCMO.getValue().toBuilder().status(APPROVED).build()));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -761,8 +760,7 @@ class ApproveDraftOrdersServiceTest {
             Element<GeneratedOrder> expectedBlankOrder = element(UUID.randomUUID(),
                 GeneratedOrder.builder().type(String.valueOf(C21)).build());
 
-            given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), "",
-                SealType.ENGLISH, caseData.getCourt()))
+            given(hearingOrderGenerator.buildSealedHearingOrder(caseData, reviewDecision, draftOrder1, emptyList(), ""))
                 .willReturn(expectedSealedOrder);
             given(blankOrderGenerator.buildBlankOrder(
                 caseData, ordersBundleElement, expectedSealedOrder, emptyList(), ""))

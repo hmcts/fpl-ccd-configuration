@@ -27,7 +27,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Configuration
 public class JudicialUsersConfiguration {
 
-    private Map<String, String> mapping;
+    private Map<String, JudicialUserProfile> mapping;
 
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
@@ -61,11 +61,16 @@ public class JudicialUsersConfiguration {
     }
 
     public Optional<String> getJudgeUUID(String email) {
+        return Optional.ofNullable(mapping.getOrDefault(email.toLowerCase(), null))
+            .map(JudicialUserProfile::getSidamId);
+    }
+
+    public Optional<JudicialUserProfile> getJudicialUserProfile(String email) {
         return Optional.ofNullable(mapping.getOrDefault(email.toLowerCase(), null));
     }
 
     @Retryable(value = FeignException.class, recover = "recoverFailedJudgeCall", maxAttempts = 5)
-    public Map<String, String> getAllJudges() {
+    public Map<String, JudicialUserProfile> getAllJudges() {
         String systemUserToken = systemUserService.getSysUserToken();
 
         List<JudicialUserProfile> users = judicialApi.findUsers(systemUserToken, authTokenGenerator.generate(),
@@ -77,7 +82,7 @@ public class JudicialUsersConfiguration {
 
         return users.stream()
             .filter(jup -> !isEmpty(jup.getSidamId()))
-            .collect(Collectors.toMap(profile -> profile.getEmailId().toLowerCase(), JudicialUserProfile::getSidamId));
+            .collect(Collectors.toMap(profile -> profile.getEmailId().toLowerCase(), profile -> profile));
     }
 
     @Recover
