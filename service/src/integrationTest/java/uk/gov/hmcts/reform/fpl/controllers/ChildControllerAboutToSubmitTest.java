@@ -476,6 +476,9 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         ChildParty confidentialParty = ChildParty.builder()
             .firstName("Phil")
             .lastName("Lynott")
+            .livingSituation("Living with other family or friends")
+            .livingWithDetails("Uncle Test")
+            .addressChangeDate(dateNow())
             .address(Address.builder()
                 .addressLine1("Horsell Common")
                 .addressLine2("Shores Road")
@@ -504,6 +507,9 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseData.getChildren1()).extracting(child -> child.getValue().getParty()).containsExactly(
             confidentialParty.toBuilder()
                 .address(null)
+                .livingSituation(null)
+                .addressChangeDate(null)
+                .livingWithDetails(null)
                 .telephoneNumber(null).build(),
             nonConfidentialParty
         );
@@ -548,6 +554,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .socialWorkerName(null)
                 .socialWorkerEmail(null)
                 .socialWorkerDetailsHiddenReason(null)
+                .socialWorkerDetailsHidden(null)
                 .socialWorkerTelephoneNumber(null)
                 .build(),
             nonConfidentialParty
