@@ -168,12 +168,23 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party.isAddressConfidential",
+    "FieldDisplayOrder": 14,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "AmendChildren",
     "CaseEventID": "amendChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.detailsHidden",
     "FieldDisplayOrder": 14,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "Comment": "Deprecated",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -182,7 +193,9 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.detailsHiddenReason",
     "FieldDisplayOrder": 15,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "Comment": "Deprecated",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
