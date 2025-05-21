@@ -259,7 +259,6 @@ class ConfidentialDetailsServiceTest {
                     .email(EmailAddress.builder().email("email@email.com").build())
                     .address(Address.builder().addressLine1("Address Line 1").build())
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .isAddressConfidential("Yes")
                     .livingSituation("Living in a refuge")
                     .build())
                 .build());

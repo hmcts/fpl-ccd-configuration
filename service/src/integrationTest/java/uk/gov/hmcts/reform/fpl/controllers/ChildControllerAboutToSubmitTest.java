@@ -553,7 +553,6 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .containsExactly(confidentialChild.toBuilder()
                 .socialWorkerName(null)
                 .socialWorkerEmail(null)
-                .socialWorkerDetailsHiddenReason(null)
                 .socialWorkerTelephoneNumber(null)
                 .build(),
             nonConfidentialParty

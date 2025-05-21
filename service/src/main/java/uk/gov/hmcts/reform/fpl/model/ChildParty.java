@@ -115,15 +115,21 @@ public final class ChildParty extends Party {
     public String getIsAddressConfidential() {
         if (isNotEmpty(isAddressConfidential)) {
             return isAddressConfidential;
+        } else if (isNotEmpty(detailsHidden)) {
+            return YesNo.from(YesNo.YES.equalsString(getDetailsHidden())).getValue();
+        } else {
+            return null;
         }
-        return YesNo.from(YesNo.YES.equalsString(getDetailsHidden())).getValue();
     }
 
     public String getSocialWorkerDetailsHidden() {
         if (isNotEmpty(socialWorkerDetailsHidden)) {
             return socialWorkerDetailsHidden;
+        } else if (isNotEmpty(detailsHidden)) {
+            return YesNo.from(YesNo.YES.equalsString(getDetailsHidden())).getValue();
+        } else {
+            return null;
         }
-        return YesNo.from(YesNo.YES.equalsString(getDetailsHidden())).getValue();
     }
 
     @Builder(toBuilder = true)
@@ -176,7 +182,7 @@ public final class ChildParty extends Party {
         this.livingSituation = livingSituation;
         this.livingSituationDetails = livingSituationDetails;
         this.isAddressConfidential = isNotEmpty(isAddressConfidential) ? isAddressConfidential :
-            YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue();
+            isNotEmpty(detailsHidden) ? YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue() : null;
         this.livingWithDetails = livingWithDetails;
         this.addressChangeDate = addressChangeDate;
         this.datePowersEnd = datePowersEnd;
@@ -194,7 +200,7 @@ public final class ChildParty extends Party {
         this.socialWorkerTelephoneNumber = socialWorkerTelephoneNumber;
         this.socialWorkerEmail = socialWorkerEmail;
         this.socialWorkerDetailsHidden = isNotEmpty(socialWorkerDetailsHidden) ? socialWorkerDetailsHidden :
-            YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue();
+            isNotEmpty(detailsHidden) ? YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue() : null;
         this.socialWorkerDetailsHiddenReason = socialWorkerDetailsHiddenReason;
         this.additionalNeeds = additionalNeeds;
         this.additionalNeedsDetails = additionalNeedsDetails;
