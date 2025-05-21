@@ -44,6 +44,7 @@ import { ManageRepresentatives } from "../pages/manage-representatives";
 import {ManageTTL} from "../pages/manage-t-t-l";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
+import { AddStatementOfService } from "../pages/add-statement-of-service";
 
 
 type CreateFixtures = {
@@ -209,6 +210,10 @@ export const test = base.extend<CreateFixtures>({
     },
   courtServices: async ({ page }, use) => {
     await use(new CourtServices(page));
+  },
+
+  addStatementOfService: async ({ page }, use) => {
+    await use(new AddStatementOfService(page));
   },
 
   addAdminCaseFlag: async ({ page }, use) => {

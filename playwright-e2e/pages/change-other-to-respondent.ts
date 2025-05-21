@@ -13,10 +13,7 @@ export class ChangeOtherToRespondent extends BasePage {
     readonly placeOfBirth: Locator;
     readonly currentAddress: Locator;
     readonly reasonUnknownAddress: Locator;
-    readonly telephoneNumber: Locator;
-    readonly relationshipToChild: Locator;
-    readonly abilityToTakeProceeding: Locator;
-    readonly anyLegalRepresentation: Locator;
+    readonly litigationCapacity: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -29,12 +26,10 @@ export class ChangeOtherToRespondent extends BasePage {
         this.dobYear = page.getByLabel('Year');
         this.gender = page.getByLabel('Gender (Optional)');
         this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
+        this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
         this.currentAddress = page.getByRole('group', { name: '*Current address known?' });
         this.reasonUnknownAddress = page.getByLabel('*Reason the address is not');
-        this.telephoneNumber =  page.getByRole('group', { name: 'Telephone (Optional)' }).locator('#transformedRespondent_party_telephoneNumber_telephoneNumber');
-        this.relationshipToChild = page.getByLabel('What is the respondent\'s relationship to the child or children in this case? (Optional)');
-        this.abilityToTakeProceeding = page.getByRole('group', { name: 'Do you believe this person will have problems with litigation capacity' });
-        this.anyLegalRepresentation = page.getByRole('group', { name: 'Do they have legal representation? (Optional)' });
+        this.litigationCapacity = page.getByRole('group', { name: 'Do they have legal' });
     }
 
     async ChangeOtherToRespondent() {
@@ -49,10 +44,7 @@ export class ChangeOtherToRespondent extends BasePage {
         await this.gender.selectOption('1: Male');
         await this.currentAddress.getByLabel('No').check();
         await this.reasonUnknownAddress.selectOption('1: No fixed abode');
-        await this.telephoneNumber.fill("00000000000");
-        await this.relationshipToChild.fill("Uncle");
-        await this.abilityToTakeProceeding.getByLabel('No',{exact: true}).check();
-        await this.anyLegalRepresentation.getByLabel('No',{exact: true}).check();
+        await this.litigationCapacity.getByLabel('No').check();
         await this.continueButton.click();
         await this.checkYourAnsAndSubmit();
     }
