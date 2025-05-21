@@ -223,11 +223,7 @@ public class JudicialService {
             return false;
         }
         String systemUserToken = systemUserService.getSysUserToken();
-        List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
-            authTokenGenerator.generate(),
-            JUDICIAL_PAGE_SIZE,
-            elinksService.getElinksAcceptHeader(),
-            JudicialUserRequest.fromPersonalCode(personalCode));
+        List<JudicialUserProfile> judges = getJudicialUserProfiles(JudicialUserRequest.fromPersonalCode(personalCode));
 
         return !judges.isEmpty();
     }
@@ -262,11 +258,7 @@ public class JudicialService {
             return Optional.empty();
         }
         String systemUserToken = systemUserService.getSysUserToken();
-        List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
-            authTokenGenerator.generate(),
-            JUDICIAL_PAGE_SIZE,
-            elinksService.getElinksAcceptHeader(),
-            JudicialUserRequest.fromPersonalCode(personalCode));
+        List<JudicialUserProfile> judges = getJudicialUserProfiles(JudicialUserRequest.fromPersonalCode(personalCode));
 
         if (judges.isEmpty()) {
             return Optional.empty();
@@ -529,12 +521,22 @@ public class JudicialService {
         return resultMap;
     }
 
+    public List<JudicialUserProfile> getJudicialUserProfiles(JudicialUserRequest request) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        return judicialApi.findUsers(systemUserToken,
+            authTokenGenerator.generate(),
+            JUDICIAL_PAGE_SIZE,
+            elinksService.getElinksAcceptHeader(),
+            request);
+    }
+
     public String getJudgeTitleAndNameOfCurrentUser() {
         UserDetails userDetails = userService.getUserDetails();
 
-        return judicialUsersConfiguration.getJudicialUserProfile(userDetails.getEmail())
-            .map(judicialUserProfile ->
+        return getJudicialUserProfiles(JudicialUserRequest.builder().idamId(List.of(userDetails.getId())).build())
+            .stream().map(judicialUserProfile ->
                 formatJudgeTitleAndName(JudgeAndLegalAdvisor.fromJudicialUserProfile(judicialUserProfile, null)))
+            .findFirst()
             .orElse(userDetails.getFullName());
     }
 }

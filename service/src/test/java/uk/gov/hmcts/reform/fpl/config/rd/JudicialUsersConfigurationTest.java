@@ -66,7 +66,8 @@ class JudicialUsersConfigurationTest {
         JudicialUsersConfiguration config = new JudicialUsersConfiguration(jrdApi, systemUserService,
             authTokenGenerator, elinksService, true);
 
-        Map<String, JudicialUserProfile> judges = config.getAllJudges();
-        assertThat(judges.get("email@test.com").getSidamId()).isEqualTo("12345");
+        Map<String, String> judges = config.getAllJudges();
+        assertThat(judges).isEqualTo(Map.of("email@test.com", "12345"));
+
     }
 }

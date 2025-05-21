@@ -24,13 +24,13 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -43,7 +43,6 @@ class HearingOrderGeneratorTest {
 
     private static final DocumentReference order = testDocumentReference();
     private static final DocumentReference sealedOrder = testDocumentReference();
-    private static final DocmosisDocument DOCMOSIS_DOCUMENT_COVER_SHEET = DocmosisDocument.builder().build();
     private static final byte[] ORDER_WITH_COVER_SHEET_BYTES = new byte[]{1,2,3};
     private static final DocmosisDocument DOCMOSIS_DOCUMENT_ORDER_WITH_COVER_SHEET = DocmosisDocument.builder()
         .bytes(ORDER_WITH_COVER_SHEET_BYTES)
@@ -76,7 +75,7 @@ class HearingOrderGeneratorTest {
     }
 
     @Test
-    void shouldBuildSealedHearingOrderWhenReviewDecisionIsApproved() {
+    void shouldBuildSealedHearingOrderWhenReviewDecisionIsApproved() throws IOException {
         HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
         String othersNotified = "John Smith";
         List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
@@ -89,9 +88,7 @@ class HearingOrderGeneratorTest {
             .build();
 
         when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
-        when(docmosisApprovedOrderCoverSheetService.createCoverSheet(caseData))
-            .thenReturn(DOCMOSIS_DOCUMENT_COVER_SHEET);
-        when(documentMerger.mergeDocuments(DOCMOSIS_DOCUMENT_COVER_SHEET, List.of(sealedOrder)))
+        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder))
             .thenReturn(DOCMOSIS_DOCUMENT_ORDER_WITH_COVER_SHEET);
         when(uploadDocumentService.uploadPDF(eq(ORDER_WITH_COVER_SHEET_BYTES), any()))
             .thenReturn(ORDER_WITH_COVER_SHEET_DOCUMENT);
@@ -107,13 +104,14 @@ class HearingOrderGeneratorTest {
             reviewDecision,
             element(ORDER_ID, hearingOrder),
             selectedOthers,
-            othersNotified);
+            othersNotified,
+            true);
 
         assertThat(actual).isEqualTo(expectedOrder);
     }
 
     @Test
-    void shouldBuildSealedHearingOrderWhenJudgeAmendsTheDocument() {
+    void shouldBuildSealedHearingOrderWhenJudgeAmendsTheDocument() throws IOException {
         HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
         Court court = Court.builder().build();
         ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
@@ -123,9 +121,7 @@ class HearingOrderGeneratorTest {
             .reviewCMODecision(reviewDecision)
             .build();
         when(documentSealingService.sealDocument(amendedOrder, court, SealType.ENGLISH)).thenReturn(sealedOrder);
-        when(docmosisApprovedOrderCoverSheetService.createCoverSheet(caseData))
-            .thenReturn(DOCMOSIS_DOCUMENT_COVER_SHEET);
-        when(documentMerger.mergeDocuments(DOCMOSIS_DOCUMENT_COVER_SHEET, List.of(sealedOrder)))
+        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder))
             .thenReturn(DOCMOSIS_DOCUMENT_ORDER_WITH_COVER_SHEET);
         when(uploadDocumentService.uploadPDF(eq(ORDER_WITH_COVER_SHEET_BYTES), any()))
             .thenReturn(ORDER_WITH_COVER_SHEET_DOCUMENT);
@@ -139,7 +135,39 @@ class HearingOrderGeneratorTest {
             caseData,
             ReviewDecision.builder().decision(JUDGE_AMENDS_DRAFT).judgeAmendedDocument(amendedOrder).build(),
             element(ORDER_ID, hearingOrder),
-            List.of(), "");
+            List.of(), "", true);
+
+        assertThat(actual).isEqualTo(expectedOrder);
+    }
+
+    @Test
+    void shouldBuildSealedHearingOrderWithoutCoverSheetIfNotRequired() {
+        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
+        String othersNotified = "John Smith";
+        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
+        Court court = Court.builder().build();
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
+
+        CaseData caseData = CaseData.builder()
+            .court(court)
+            .reviewCMODecision(reviewDecision)
+            .build();
+
+        when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
+
+        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
+            .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
+            .othersNotified(othersNotified)
+            .others(selectedOthers)
+            .order(sealedOrder).lastUploadedOrder(order).build());
+
+        Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
+            caseData,
+            reviewDecision,
+            element(ORDER_ID, hearingOrder),
+            selectedOthers,
+            othersNotified,
+            false);
 
         assertThat(actual).isEqualTo(expectedOrder);
     }

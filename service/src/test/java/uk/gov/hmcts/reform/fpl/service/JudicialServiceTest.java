@@ -683,23 +683,25 @@ class JudicialServiceTest {
 
         @Test
         void shouldReturnJudgeTitleAndNameFromJRD() {
-            when(userService.getUserDetails()).thenReturn(UserDetails.builder().email(EMAIL).build());
-            when(judicialUsersConfiguration.getJudicialUserProfile(EMAIL))
-                .thenReturn(Optional.of(JUDICIAL_USER_PROFILE));
+            when(userService.getUserDetails()).thenReturn(UserDetails.builder().id("testId").build());
+            when(judicialApi
+                .findUsers(any(), any(), anyInt(), any(),
+                    eq(JudicialUserRequest.builder().idamId(List.of("testId")).build())))
+                .thenReturn(List.of(JUDICIAL_USER_PROFILE));
 
             assertThat(underTest.getJudgeTitleAndNameOfCurrentUser())
                 .isEqualTo(formatJudgeTitleAndName(JudgeAndLegalAdvisor
-                    .fromJudicialUserProfile(JUDICIAL_USER_PROFILE)));
+                    .fromJudicialUserProfile(JUDICIAL_USER_PROFILE, null)));
         }
 
         @Test
         void shouldReturnIdamUserFullNameIfJRDNotFound() {
             when(userService.getUserDetails()).thenReturn(UserDetails.builder()
-                .email(EMAIL)
+                .id("testId")
                 .forename("John")
                 .surname("Smith")
                 .build());
-            when(judicialUsersConfiguration.getJudicialUserProfile(EMAIL)).thenReturn(Optional.empty());
+            when(judicialApi.findUsers(any(), any(), anyInt(), any(), any())).thenReturn(List.of());
 
             assertThat(underTest.getJudgeTitleAndNameOfCurrentUser()).isEqualTo("John Smith");
         }
