@@ -530,6 +530,7 @@ public class JudicialService {
             request);
     }
 
+    @Retryable(value = {FeignException.class}, label = "Search JRD for a judge by idam id")
     public String getJudgeTitleAndNameOfCurrentUser() {
         UserDetails userDetails = userService.getUserDetails();
 
