@@ -14,13 +14,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
@@ -32,7 +34,9 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -42,9 +46,15 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_HIGH_COURT_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.RECORDER;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
 
 @Slf4j
@@ -63,6 +73,11 @@ public class JudicialService {
     private static final List<String> HEARING_ROLES = List.of(
         HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()
     );
+
+    public static final List<JudgeOrMagistrateTitle> FEE_PAID_JUDGE_TITLES =
+        List.of(DEPUTY_HIGH_COURT_JUDGE, RECORDER, DEPUTY_DISTRICT_JUDGE, DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT);
+    public static final List<JudgeOrMagistrateTitle> LEGAL_ADVISOR_TITLES =
+        List.of(JudgeOrMagistrateTitle.MAGISTRATES, JudgeOrMagistrateTitle.LEGAL_ADVISOR);
 
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
@@ -342,42 +357,14 @@ public class JudicialService {
             .collect(Collectors.toSet());
     }
 
-    // TODO - see if these can be combined/parameterised somehow
-    public Optional<String> validateAllocatedJudge(CaseData caseData) {
+    public Optional<String> validateAllocatedJudge(AllocateJudgeEventData eventData) {
         Optional<String> error;
-        if (caseData.getEnterManually().equals(YesNo.NO)) {
+        if (isJudgeDetailsFromJUP(eventData)) {
             // validate judge
-            error = this.validateJudicialUserField(caseData.getJudicialUser());
+            error = this.validateJudicialUserField(eventData.getJudicialUser());
         } else {
             // validate manual judge details
-            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
-            error = validateEmailService.validate(email);
-        }
-        return error;
-    }
-
-    public Optional<String> validateTempAllocatedJudge(CaseData caseData) {
-        Optional<String> error;
-        if (caseData.getEnterManually().equals(YesNo.NO)) {
-            // validate judge
-            error = this.validateJudicialUserField(caseData.getJudicialUser());
-        } else {
-            // validate manual judge details
-            String email = caseData.getTempAllocatedJudge().getJudgeEmailAddress();
-            error = validateEmailService.validate(email);
-        }
-        return error;
-    }
-
-
-    public Optional<String> validateHearingJudge(CaseData caseData) {
-        Optional<String> error;
-        if (caseData.getEnterManuallyHearingJudge().equals(YesNo.NO)) {
-            // validate judge
-            error = this.validateJudicialUserField(caseData.getJudicialUserHearingJudge());
-        } else {
-            // validate manual judge details
-            String email = caseData.getHearingJudge().getJudgeEmailAddress();
+            String email = eventData.getManualJudgeDetails().getJudgeEmailAddress();
             error = validateEmailService.validate(email);
         }
         return error;
@@ -465,54 +452,94 @@ public class JudicialService {
     }
 
     public List<String> validateHearingJudgeEmail(CaseDetails caseDetails, CaseData caseData) {
-        JudgeAndLegalAdvisor hearingJudge;
+        AllocateJudgeEventData eventData = caseData.getHearingJudgeEventData();
 
-        final Optional<String> error = this.validateHearingJudge(caseData);
+        final Optional<String> error = this.validateAllocatedJudge(eventData);
 
         if (error.isPresent()) {
             return List.of(error.get());
         }
 
-        if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
-            // not entering manually - lookup the personal_code in JRD
-            Optional<JudicialUserProfile> jup = this
-                .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
+        JudgeAndLegalAdvisor hearingJudge = this.buildAllocatedJudgeFromEventData(eventData)
+            .toJudgeAndLegalAdvisor().toBuilder()
+            .legalAdvisorName(caseData.getLegalAdvisorName())
+            .build();
 
-            if (jup.isPresent()) {
-                // we have managed to search the user from the personal code
-                hearingJudge = JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
-                    .legalAdvisorName(caseData.getLegalAdvisorName())
-                    .build();
-            } else {
-                return List.of("No Judge could be found, please retry your search or enter their"
-                    + " details manually.");
-            }
-        } else {
-            // entered the judge manually - lookup in our mappings and add UUID manually
-            Optional<String> possibleId = this
-                .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
-
-            if (possibleId.isPresent()) {
-                // we can manually assign the role again based on our knowledge of JRD/SRD
-                hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
-                    .judgeJudicialUser(JudicialUser.builder()
-                        .idamId(possibleId.get())
-                        .build())
-                    .legalAdvisorName(caseData.getLegalAdvisorName())
-                    .build();
-            } else {
-                // We cannot assign manually, just have to leave the judge as is.
-                hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
-                    .legalAdvisorName(caseData.getLegalAdvisorName())
-                    .build();
-            }
-        }
         caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
         return List.of();
     }
 
     private ZonedDateTime currentTimeUK() {
         return ZonedDateTime.now(LONDON_TIMEZONE);
+    }
+
+    public Judge buildAllocatedJudgeFromEventData(AllocateJudgeEventData eventData) {
+        if (isJudgeDetailsFromJUP(eventData)) {
+            if (isEmpty(eventData.getJudicialUser()) || isEmpty(eventData.getJudicialUser().getPersonalCode())) {
+                return null;
+            }
+
+            return this.getJudge(eventData.getJudicialUser().getPersonalCode())
+                .map(judicialUserProfile -> Judge.fromJudicialUserProfile(judicialUserProfile,
+                        (FEE_PAID_JUDGE.equals(eventData.getJudgeType())) ? eventData.getFeePaidJudgeTitle() : null)
+                    .toBuilder()
+                    .judgeType(eventData.getJudgeType())
+                    .build()
+                )
+                .orElse(null);
+        } else {
+            Judge manualJudgeDetails = eventData.getManualJudgeDetails()
+                .toBuilder()
+                .judgeType(eventData.getJudgeType())
+                .build();
+
+            // entering manually, check against our lookup tables, they may be a legal adviser
+            Optional<String> possibleId = this.getJudgeUserIdFromEmail(manualJudgeDetails.getJudgeEmailAddress());
+
+            // if they are in our maps - add their UUID extra info to the case
+            if (possibleId.isPresent()) {
+                return manualJudgeDetails.toBuilder()
+                    .judgeJudicialUser(JudicialUser.builder()
+                        .idamId(possibleId.get())
+                        .build())
+                    .build();
+            } else {
+                if (MAGISTRATES.equals(manualJudgeDetails.getJudgeTitle())) {
+                    return manualJudgeDetails.toBuilder().judgeLastName(null).build();
+                } else {
+                    return manualJudgeDetails.toBuilder().judgeFullName(null).build();
+                }
+            }
+        }
+    }
+
+    private boolean isJudgeDetailsFromJUP(AllocateJudgeEventData eventData) {
+        return !LEGAL_ADVISOR.equals(eventData.getJudgeType());
+    }
+
+    public Map<String, Object> populateEventDataMapFromJudge(AbstractJudge judge) {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        if (judge != null) {
+            resultMap.put("judgeType", judge.getJudgeType());
+            resultMap.put("judicialUser", judge.getJudgeJudicialUser());
+
+            if (judge.isDetailsEnterManually()) {
+                Map<String, Object> manualJudgeDetails = new HashMap<>();
+                manualJudgeDetails.put("judgeFullName", judge.getJudgeFullName());
+                manualJudgeDetails.put("judgeLastName", judge.getJudgeLastName());
+                manualJudgeDetails.put("judgeEmailAddress", judge.getJudgeEmailAddress());
+                if (LEGAL_ADVISOR_TITLES.contains(judge.getJudgeTitle())) {
+                    manualJudgeDetails.put("judgeTitle", judge.getJudgeTitle());
+                }
+                resultMap.put("manualJudgeDetails", manualJudgeDetails);
+            } else if (JudgeType.FEE_PAID_JUDGE.equals(judge.getJudgeType())
+                       && FEE_PAID_JUDGE_TITLES.contains(judge.getJudgeTitle())) {
+                resultMap.put("feePaidJudgeTitle", judge.getJudgeTitle());
+            }
+        }
+
+        return resultMap;
     }
 
     private List<RoleAssignment> getAllocatedJudgeAndLegalAdvisorRoleAssignments(Long caseId) {

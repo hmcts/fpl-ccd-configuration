@@ -1,0 +1,37 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManualLegalAdvisorDetail",
+    "ListElementCode": "judgeTitle",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LegalAdvisorTitle",
+    "ElementLabel": "Judge or magistrate's title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManualLegalAdvisorDetail",
+    "ListElementCode": "judgeLastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "FieldShowCondition": "judgeTitle!=\"MAGISTRATES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManualLegalAdvisorDetail",
+    "ListElementCode": "judgeFullName",
+    "FieldType": "Text",
+    "ElementLabel": "Full name",
+    "FieldShowCondition": "judgeTitle=\"MAGISTRATES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManualLegalAdvisorDetail",
+    "ListElementCode": "judgeEmailAddress",
+    "FieldType": "Email",
+    "ElementLabel": "Email Address",
+    "SecurityClassification": "Public"
+  }
+]
