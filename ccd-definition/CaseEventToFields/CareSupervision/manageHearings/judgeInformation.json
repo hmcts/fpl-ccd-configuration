@@ -29,68 +29,80 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "judicialUserHearingJudge",
+    "CaseFieldID": "hearingJudgeType",
     "PageFieldDisplayOrder": 3,
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge =\"No\" OR allocatedJudgeLabel=\"\""
+    "FieldShowCondition": "useAllocatedJudge=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "enterManuallyHearingJudge",
+    "CaseFieldID": "hearingJudicialUser",
     "PageFieldDisplayOrder": 4,
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge =\"No\" OR allocatedJudgeLabel=\"\""
+    "FieldShowCondition": "useAllocatedJudge=\"No\" AND hearingJudgeType!=\"LEGAL_ADVISOR\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingFeePaidJudgeTitle",
+    "PageFieldDisplayOrder": 5,
+    "PageID": "JudgeInformation",
+    "PageDisplayOrder": 7,
+    "DisplayContext": "MANDATORY",
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "useAllocatedJudge=\"No\" AND hearingJudgeType=\"FEE_PAID_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "manualJudgeAllocationWarningHearingJudge",
-    "PageFieldDisplayOrder": 5,
+    "PageFieldDisplayOrder": 6,
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "enterManuallyHearingJudge =\"Yes\""
+    "FieldShowCondition": "useAllocatedJudge=\"No\" AND hearingJudgeType=\"LEGAL_ADVISOR\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingJudge",
-    "PageFieldDisplayOrder": 6,
+    "CaseFieldID": "hearingManualJudgeDetails",
+    "PageFieldDisplayOrder": 7,
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "DisplayContext": "COMPLEX",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "enterManuallyHearingJudge =\"Yes\""
+    "FieldShowCondition": "useAllocatedJudge=\"No\" AND hearingJudgeType=\"LEGAL_ADVISOR\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "legalAdvisorName",
-    "PageFieldDisplayOrder": 7,
+    "PageFieldDisplayOrder": 8,
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "DisplayContext": "OPTIONAL",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "enterManuallyHearingJudge =\"DO_NOT_SHOW\""
+    "FieldShowCondition": "hearingJudicialUser =\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "judgeAndLegalAdvisor",
-    "PageFieldDisplayOrder": 8,
+    "PageFieldDisplayOrder": 9,
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "DisplayContext": "READONLY",
