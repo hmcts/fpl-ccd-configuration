@@ -71,7 +71,7 @@ public class JudicialService {
     public static final List<JudgeOrMagistrateTitle> FEE_PAID_JUDGE_TITLES =
         List.of(DEPUTY_HIGH_COURT_JUDGE, RECORDER, DEPUTY_DISTRICT_JUDGE, DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT);
     public static final List<JudgeOrMagistrateTitle> LEGAL_ADVISOR_TITLES =
-        List.of(JudgeOrMagistrateTitle.MAGISTRATES, JudgeOrMagistrateTitle.LEGAL_ADVISOR);
+        List.of(MAGISTRATES, JudgeOrMagistrateTitle.LEGAL_ADVISOR);
 
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
@@ -389,7 +389,7 @@ public class JudicialService {
 
                 boolean isLegalAdviser = userRoleCategory.get().equals(RoleCategory.LEGAL_OPERATIONS);
 
-                return RoleAssignmentUtils.buildRoleAssignment(
+                return buildRoleAssignment(
                     caseData.getId(),
                     time.getJudgeId(),
                     isLegalAdviser
@@ -534,8 +534,15 @@ public class JudicialService {
     public String getJudgeTitleAndNameOfCurrentUser() {
         UserDetails userDetails = userService.getUserDetails();
 
-        return getJudicialUserProfiles(JudicialUserRequest.builder().idamId(List.of(userDetails.getId())).build())
-            .stream().map(judicialUserProfile ->
+        List<JudicialUserProfile> judicialUserProfiles = List.of();
+        try {
+            judicialUserProfiles = getJudicialUserProfiles(JudicialUserRequest.builder()
+                .idamId(List.of(userDetails.getId())).build());
+        } catch (Exception e) {
+            log.warn("Error while fetching JudicialUserProfile", e);
+        }
+
+        return judicialUserProfiles.stream().map(judicialUserProfile ->
                 formatJudgeTitleAndName(JudgeAndLegalAdvisor.fromJudicialUserProfile(judicialUserProfile, null)))
             .findFirst()
             .orElse(userDetails.getFullName());

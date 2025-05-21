@@ -26,8 +26,6 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.APPROVED_ORDER_COVER;
-import static uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration.getHmctsLogoLarge;
-import static uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration.getHmctsLogoSmall;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -62,7 +60,7 @@ public class DocmosisApprovedOrderCoverSheetService {
                 contentStream.setFont(PDType1Font.TIMES_BOLD, 12);
 
                 float textX = 50;
-                float textY = pageSize.getHeight() - 50;
+                float textY = pageSize.getHeight() - 45;
                 contentStream.newLineAtOffset(textX,  textY); // Adjust position
                 contentStream.showText("ANNEX A:");
                 contentStream.endText();
