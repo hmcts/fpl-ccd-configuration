@@ -58,11 +58,13 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.event.HearingJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
@@ -192,10 +194,13 @@ public class CaseData extends CaseDataParent {
     @JsonProperty("caseLinks")
     private List<CaseLinksElement<CaseLink>> caseLinks;
 
-    private final JudicialUser judicialUser;
-    private final JudicialUser judicialUserHearingJudge;
-    private final YesNo enterManually;
-    private final YesNo enterManuallyHearingJudge;
+    @Builder.Default
+    @JsonUnwrapped
+    private final AllocateJudgeEventData allocateJudgeEventData = new AllocateJudgeEventData();
+    @Builder.Default
+    @JsonUnwrapped
+    private final HearingJudgeEventData hearingJudgeEventData = new HearingJudgeEventData();
+
 
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());
@@ -266,12 +271,6 @@ public class CaseData extends CaseDataParent {
     private final Judge allocatedJudge;
 
     @Temp
-    private final Judge tempAllocatedJudge;
-
-    // Temporary hearing judge field + legal advisor
-    @Temp
-    private final Judge hearingJudge;
-    @Temp
     private final String legalAdvisorName;
     @Temp
     private final YesNo useAllocatedJudge;
@@ -337,6 +336,10 @@ public class CaseData extends CaseDataParent {
     public RepresentativeType getRepresentativeType() {
         return representativeType != null ? representativeType : RepresentativeType.LOCAL_AUTHORITY;
     }
+
+    // This is a clone of the first respondent on the case in new 3rd party standalone apps, used for pre-filling data
+    // on case creation.
+    public final RespondentLocalAuthority respondentLocalAuthority;
 
     @JsonIgnore
     public List<Element<Child>> getAllChildren() {

@@ -33,7 +33,7 @@ export class OthersToBeGivenNotice extends BasePage {
             this.contactDetailsHidden = page.getByRole('group', {name: 'Do you need contact details'});
             this.addNew = page.getByRole('button', {name: 'Add new'});
             this.hiddenDetails = page.locator('#others_additionalOthers_0_detailsHidden_No');
-        }
+    }
 
 
         async othersToBeGivenNotice()
@@ -46,7 +46,7 @@ export class OthersToBeGivenNotice extends BasePage {
             await this.gender.selectOption('1: Male');
             await this.placeOfBirth.fill("London");
             await this.currentAddress.getByLabel('No').check();
-            await this.reasonUnknownAddress.selectOption('1: No fixed abode');
+            await this.reasonUnknownAddress.selectOption('No fixed abode');
             await this.telephoneNumber.fill("0123456789")
             await this.relationshipToChild.fill("uncle")
             await this.contactDetailsHidden.getByLabel('No').check();
@@ -59,11 +59,11 @@ export class OthersToBeGivenNotice extends BasePage {
             await this.page.locator('#others_additionalOthers_0_gender').selectOption('2: Female');
             await this.page.locator('#others_additionalOthers_0_birthPlace').fill("London");
             await this.page.locator('#others_additionalOthers_0_addressKnowV2-No').check();
-            await this.page.locator('#others_additionalOthers_0_addressNotKnowReason').selectOption('1: No fixed abode');
+            await this.page.locator('#others_additionalOthers_0_addressNotKnowReason').selectOption('No fixed abode');
             await this.page.locator('#others_additionalOthers_0_telephone').fill("0000000000");
             await this.page.locator('#others_additionalOthers_0_childInformation').fill('test');
             await this.page.locator('#others_additionalOthers_0_litigationIssues-NO').check();
             await this.submit.click();
             await this.saveAndContinue.click();
-        }
+    }
 };

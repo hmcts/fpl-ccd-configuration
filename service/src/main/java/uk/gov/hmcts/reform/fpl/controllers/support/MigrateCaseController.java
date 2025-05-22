@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
@@ -39,12 +40,13 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-2360", this::run2360,
         "DFPL-2572", this::run2572,
         "DFPL-2487", this::run2487,
         "DFPL-2740", this::run2740,
         "DFPL-2744", this::run2744,
         "DFPL-2739", this::run2739,
-        "DFPL-2733", this::run2733
+        "DFPL-2756", this::run2756
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -77,15 +79,21 @@ public class MigrateCaseController extends CallbackController {
         //Required to run migration for TTL
     }
 
-    private void run2733(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2733";
-        final long expectedCaseId = 1718621798109264L;
-        final String orgId = "NTJRIVB";
+    private void run2756(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2756";
+        final long expectedCaseId = 1725874146484241L;
+        final String orgId = "FLXFDT7";
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
             orgId, null));
+    }
+
+    private void run2360(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2360";
+        // all existing cases need this field now, new cases will be populated in case initiation
+        caseDetails.getData().put("hasRespondentLA", YesNo.NO);
     }
 
     private void run2487(CaseDetails caseDetails) {
