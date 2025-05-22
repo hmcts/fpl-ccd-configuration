@@ -23,6 +23,7 @@
     "ID": "ChildParty",
     "ListElementCode": "firstName",
     "FieldType": "Text",
+    "HintText": "Include any middle names and check that the spelling is correct to avoid delays.",
     "ElementLabel": "First name",
     "SecurityClassification": "Public"
   },
@@ -31,6 +32,7 @@
     "ID": "ChildParty",
     "ListElementCode": "lastName",
     "FieldType": "Text",
+    "HintText": "This is the family name of the child. Again, check that spelling is accurate.",
     "ElementLabel": "Last name",
     "SecurityClassification": "Public"
   },
