@@ -160,6 +160,8 @@ public abstract class ChangeFromOtherUtils {
                 .addressKnow(IsAddressKnowType.YES)
                 .address(buildHiddenAddress("Converting"))
                 .telephoneNumber(Telephone.builder().telephoneNumber("123456789").build())
+                .hideTelephone(YesNo.YES.getValue())
+                .hideAddress(YesNo.YES.getValue())
                 .build())
             .build();
     }
@@ -171,6 +173,8 @@ public abstract class ChangeFromOtherUtils {
                 .addressKnow(IsAddressKnowType.YES)
                 .address(buildHiddenAddress(String.format("existing respondent %s", seqNo)))
                 .telephoneNumber(Telephone.builder().telephoneNumber("777777777").build())
+                .hideTelephone(YesNo.YES.getValue())
+                .hideAddress(YesNo.YES.getValue())
                 .build())
             .build();
     }

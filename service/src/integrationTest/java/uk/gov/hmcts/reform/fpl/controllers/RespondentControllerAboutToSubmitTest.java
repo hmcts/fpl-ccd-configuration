@@ -6,6 +6,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -13,9 +16,11 @@ import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
 import java.time.LocalDate;
@@ -26,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority.DUMMY_UUID;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -187,6 +193,52 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseData.getRespondents1().get(1).getValue().getParty().getAddress()).isNotNull();
     }
 
+    @Test
+    void shouldPushLocalAuthorityIntoRespondentsCollection() {
+        CaseData caseData = CaseData.builder()
+            .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+            .relatingLA("test1")
+            .respondentLocalAuthority(RespondentLocalAuthority.builder()
+                .name("Swansea County Council")
+                .address(Address.builder().addressLine1("addr1").build())
+                .email("test@test.com")
+                .representativeFirstName("John")
+                .representativeLastName("Smith")
+                .organisation(Organisation.builder()
+                    .organisationName("Swansea")
+                    .organisationID("test")
+                    .build())
+                .phoneNumber("123")
+                .usingOtherOrg(YesNo.YES)
+                .build())
+            .respondents1(List.of())
+            .build();
+
+        CaseData after = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(after.getRespondents1()).containsExactly(
+            element(DUMMY_UUID, Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Swansea County Council")
+                    .address(Address.builder().addressLine1("addr1").build())
+                    .relationshipToChild("Local Authority")
+                    .build())
+                .legalRepresentation(YesNo.YES.getValue())
+                .solicitor(RespondentSolicitor.builder()
+                    .email("test@test.com")
+                    .telephoneNumber(Telephone.builder().telephoneNumber("123").build())
+                    .organisation(Organisation.builder()
+                        .organisationName("Swansea")
+                        .organisationID("test")
+                        .build())
+                    .firstName("John")
+                    .lastName("Smith")
+                    .build())
+                .usingOtherOrg(YesNo.YES)
+                .isLocalAuthority(YesNo.YES)
+                .build()));
+    }
+
     private Respondent respondent(LocalDate dateOfBirth) {
         return Respondent.builder()
             .party(RespondentParty.builder()
@@ -203,6 +255,8 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .address(respondent.getValue().getParty().getAddress())
                 .telephoneNumber(respondent.getValue().getParty().getTelephoneNumber())
                 .email(respondent.getValue().getParty().getEmail())
+                .hideAddress("Yes")
+                .hideTelephone("Yes")
                 .build())
             .build());
     }
