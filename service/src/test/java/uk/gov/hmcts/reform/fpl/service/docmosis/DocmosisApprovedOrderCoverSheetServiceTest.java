@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -18,18 +19,23 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.APPROVED_ORDER_COVER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 class DocmosisApprovedOrderCoverSheetServiceTest {
@@ -48,7 +54,6 @@ class DocmosisApprovedOrderCoverSheetServiceTest {
         DocmosisChild.builder().name("Test Child").build(),
         DocmosisChild.builder().name("Confidential Child").build()
     );
-
     private static final DocmosisDocument COVER_SHEET = new DocmosisDocument(FILE_NAME, PDF_BYTES);
     public static final String COURT_NAME = "Test Court";
     public static final String JUDGE_NAME = "Test Judge";
@@ -57,6 +62,8 @@ class DocmosisApprovedOrderCoverSheetServiceTest {
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     @Mock
     private CaseDataExtractionService caseDataExtractionService;
+    @Mock
+    private DocumentMerger documentMerger;
     @Mock
     private Time time;
     @InjectMocks
@@ -97,5 +104,48 @@ class DocmosisApprovedOrderCoverSheetServiceTest {
         DocmosisDocument result = underTest.createCoverSheet(caseData);
 
         assertThat(result).isEqualTo(COVER_SHEET);
+    }
+
+    @Test
+    void shouldAddCoverSheetAndAddAnnexAWording() throws IOException {
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .familyManCaseNumber(FAMILY_MAN_NUMBER)
+            .court(COURT)
+            .c110A(C110A.builder()
+                .languageRequirementApplication(LANGUAGE)
+                .build())
+            .children1(List.of(CHILD))
+            .confidentialChildren(List.of(CONFIDENTIAL_CHILD))
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().judgeTitleAndName(JUDGE_NAME).build())
+            .build();
+
+        given(caseDataExtractionService.getCourtName(caseData)).willReturn(COURT_NAME);
+        given(caseDataExtractionService.getChildrenDetails(caseData.getAllChildren())).willReturn(DOCMOSIS_CHILDREN);
+        given(time.now()).willReturn(TEST_TIME);
+
+        DocmosisApprovedOrderCoverSheet expectedDocmosisData = DocmosisApprovedOrderCoverSheet.builder()
+            .familyManCaseNumber(FAMILY_MAN_NUMBER)
+            .courtName(COURT_NAME)
+            .children(DOCMOSIS_CHILDREN)
+            .judgeTitleAndName(JUDGE_NAME)
+            .dateOfApproval(formatLocalDateToString(TEST_TIME.toLocalDate(), DATE, Language.ENGLISH))
+            .crest(CREST.getValue())
+            .build();
+
+
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(expectedDocmosisData, APPROVED_ORDER_COVER,
+            RenderFormat.PDF, LANGUAGE))
+            .willReturn(COVER_SHEET);
+
+        byte[] mergedOrderBytes = ResourceReader.readBytes("documents/document.pdf");
+        DocmosisDocument MERGED_ORDER = new DocmosisDocument("merged_order.pdf", mergedOrderBytes);
+        given(documentMerger.mergeDocuments(any(), any())).willReturn(MERGED_ORDER);
+
+        DocmosisDocument result = underTest.addCoverSheetToApprovedOrder(caseData, testDocumentReference());
+
+        String resultText = (new DocmosisHelper()).extractPdfContent(result.getBytes());
+
+        assertThat(resultText).isEqualToNormalizingWhitespace("First page Second page ANNEX A: ");
     }
 }
