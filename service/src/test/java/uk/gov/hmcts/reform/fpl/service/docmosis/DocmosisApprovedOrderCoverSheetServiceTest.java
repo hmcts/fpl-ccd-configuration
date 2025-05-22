@@ -139,8 +139,8 @@ class DocmosisApprovedOrderCoverSheetServiceTest {
             .willReturn(COVER_SHEET);
 
         byte[] mergedOrderBytes = ResourceReader.readBytes("documents/document.pdf");
-        DocmosisDocument MERGED_ORDER = new DocmosisDocument("merged_order.pdf", mergedOrderBytes);
-        given(documentMerger.mergeDocuments(any(), any())).willReturn(MERGED_ORDER);
+        DocmosisDocument mergedOrder = new DocmosisDocument("merged_order.pdf", mergedOrderBytes);
+        given(documentMerger.mergeDocuments(any(), any())).willReturn(mergedOrder);
 
         DocmosisDocument result = underTest.addCoverSheetToApprovedOrder(caseData, testDocumentReference());
 
