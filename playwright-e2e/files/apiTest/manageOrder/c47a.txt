@@ -1,0 +1,10 @@
+MOCKCASEID
+${id}
+Appointment of a children's guardian
+Section 41(1) Children Act 1989
+Ordered on ${issueDate} by Her Honour Judge Moley
+Family Court sitting at Swansea
+Child in the case
+Timothy Jones Male Born 1 August 2015
+The Court appoints Cafcass Bournemouth as a children's guardian for the child in the
+proceedings.
