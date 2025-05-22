@@ -28,7 +28,6 @@ export class DocumentService {
 
     async getPdfContent(pdfFile: Buffer, ignoreTexts?: string[]) : Promise<string> {
         const pdf = await getDocument(pdfFile.buffer.slice(pdfFile.byteOffset, pdfFile.byteOffset + pdfFile.byteLength)).promise;
-        // const pdf = await getDocument(pdfFile).promise;
         let extractedText = "";
 
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
