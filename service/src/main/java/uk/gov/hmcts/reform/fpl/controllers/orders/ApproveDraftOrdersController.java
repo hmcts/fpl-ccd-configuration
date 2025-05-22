@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrdersEventNotificationBuilder;
@@ -35,6 +36,7 @@ public class ApproveDraftOrdersController extends CallbackController {
     private final ApproveDraftOrdersService approveDraftOrdersService;
     private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
     private final CoreCaseDataService coreCaseDataService;
+    private final JudicialService judicialService;
 
     private static final String DRAFT_ORDERS_APPROVED = "draftOrdersApproved";
 
@@ -90,6 +92,9 @@ public class ApproveDraftOrdersController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        // Capture the title and name of the Judge who approved the order
+        caseDetails.getData().put("judgeTitleAndName", judicialService.getJudgeTitleAndNameOfCurrentUser());
 
         // DFPL-1171 move all document processing step to post-about-to-submitted stage
 

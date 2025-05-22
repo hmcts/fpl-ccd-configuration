@@ -191,10 +191,8 @@ public class ApproveDraftOrdersService {
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
-                        cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers),
-                        caseData.getSealType(),
-                        caseData.getCourt()
-                    );
+                        caseData, cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers),
+                        false);
 
                     List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
                     sealedCMOs.add(reviewedOrder);
@@ -265,9 +263,8 @@ public class ApproveDraftOrdersService {
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
-                        reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
-                        caseData.getSealType(),
-                        caseData.getCourt());
+                        caseData, reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
+                        true);
 
                     Element<GeneratedOrder> generatedBlankOrder = blankOrderGenerator.buildBlankOrder(caseData,
                         selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers));
