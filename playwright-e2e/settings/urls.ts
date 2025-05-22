@@ -15,4 +15,5 @@ export const urlConfig: UrlConfig = {
   frontEndBaseURL: process.env.FE_BASE_URL || `https://manage-case.${env}.platform.hmcts.net`,
 
   // You can add other URLs as needed
+
 };
