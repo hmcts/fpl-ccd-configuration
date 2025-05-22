@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
+import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
-import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
@@ -67,15 +67,22 @@ public class JudicialService {
 
     public static final int JUDICIAL_PAGE_SIZE = 3000;
 
+    private static final List<String> ALLOCATED_ROLES = List.of(
+        ALLOCATED_JUDGE.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()
+    );
+
+    private static final List<String> HEARING_ROLES = List.of(
+        HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()
+    );
+
     public static final List<JudgeOrMagistrateTitle> FEE_PAID_JUDGE_TITLES =
         List.of(DEPUTY_HIGH_COURT_JUDGE, RECORDER, DEPUTY_DISTRICT_JUDGE, DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT);
     public static final List<JudgeOrMagistrateTitle> LEGAL_ADVISOR_TITLES =
-        List.of(MAGISTRATES, JudgeOrMagistrateTitle.LEGAL_ADVISOR);
+        List.of(JudgeOrMagistrateTitle.MAGISTRATES, JudgeOrMagistrateTitle.LEGAL_ADVISOR);
 
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
     private final JudicialApi judicialApi;
-    private final StaffApi staffApi;
     private final RoleAssignmentService roleAssignmentService;
     private final ValidateEmailService validateEmailService;
     private final JudicialUsersConfiguration judicialUsersConfiguration;
@@ -89,17 +96,27 @@ public class JudicialService {
      * @param caseId the case to delete allocated-[users] on
      */
     public void removeExistingAllocatedJudgesAndLegalAdvisers(Long caseId) {
-        List<String> allocatedRoles = List.of(ALLOCATED_JUDGE.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName());
-
-        List<RoleAssignment> currentAllocatedJudges = roleAssignmentService
-            .getCaseRolesAtTime(caseId,
-                allocatedRoles,
-                currentTimeUK());
-
-        currentAllocatedJudges
-            .stream()
-            .filter(role -> allocatedRoles.contains(role.getRoleName()))
+        getAllocatedJudgeAndLegalAdvisorRoleAssignments(caseId).stream()
+            .filter(role -> ALLOCATED_ROLES.contains(role.getRoleName()))
             .forEach(roleAssignmentService::deleteRoleAssignment);
+    }
+
+    /**
+     * Returns true or false if the case has any allocated judge/legal advisors on it.
+     *
+     * @param caseId the case to verify whether there are allocated judge/legal advisors present.
+     */
+    public boolean caseHasAllocatedJudgeOrLegalAdvisor(Long caseId) {
+        return !getAllocatedJudgeAndLegalAdvisorRoleAssignments(caseId).isEmpty();
+    }
+
+    /**
+     * Returns true or false if the case has any hearing judge/legal advisors on it.
+     *
+     * @param caseId the case to verify whether there are hearing judge/legal advisors present.
+     */
+    public boolean caseHasHearingJudgeOrLegalAdvisor(Long caseId) {
+        return !getHearingJudgeAndLegalAdviserRoleAssignments(caseId, currentTimeUK()).isEmpty();
     }
 
     /**
@@ -110,19 +127,17 @@ public class JudicialService {
      * @param endTime the time which we don't want any existing hearing-users to have roles at
      */
     public void setExistingHearingJudgesAndLegalAdvisersToExpire(Long caseId, ZonedDateTime endTime) {
-        List<String> hearingRoles = List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName());
-        List<RoleAssignment> judgesAndLegalAdvisers = roleAssignmentService.getCaseRolesAtTime(caseId,
-            hearingRoles, endTime);
+        List<RoleAssignment> judgesAndLegalAdvisers = getHearingJudgeAndLegalAdviserRoleAssignments(caseId, endTime);
 
         // delete these role assignments in AM
         judgesAndLegalAdvisers
             .stream()
-            .filter(role -> hearingRoles.contains(role.getRoleName()))
+            .filter(role -> HEARING_ROLES.contains(role.getRoleName()))
             .forEach(roleAssignmentService::deleteRoleAssignment);
 
         // loop through all role assignments, and recreate them in AM with the new endTime
         List<RoleAssignment> newRoleAssignments = judgesAndLegalAdvisers.stream()
-            .filter(role -> hearingRoles.contains(role.getRoleName()))
+            .filter(role -> HEARING_ROLES.contains(role.getRoleName()))
             .map(ra -> buildRoleAssignment(
                 caseId,
                 ra.getActorId(),
@@ -388,7 +403,7 @@ public class JudicialService {
 
                 boolean isLegalAdviser = userRoleCategory.get().equals(RoleCategory.LEGAL_OPERATIONS);
 
-                return buildRoleAssignment(
+                return RoleAssignmentUtils.buildRoleAssignment(
                     caseData.getId(),
                     time.getJudgeId(),
                     isLegalAdviser
@@ -518,6 +533,14 @@ public class JudicialService {
         }
 
         return resultMap;
+    }
+
+    private List<RoleAssignment> getAllocatedJudgeAndLegalAdvisorRoleAssignments(Long caseId) {
+        return roleAssignmentService.getCaseRolesAtTime(caseId, ALLOCATED_ROLES, currentTimeUK());
+    }
+
+    private List<RoleAssignment> getHearingJudgeAndLegalAdviserRoleAssignments(Long caseId, ZonedDateTime endTime) {
+        return roleAssignmentService.getCaseRolesAtTime(caseId, HEARING_ROLES, endTime);
     }
 
     public List<JudicialUserProfile> getJudicialUserProfiles(JudicialUserRequest request) {
