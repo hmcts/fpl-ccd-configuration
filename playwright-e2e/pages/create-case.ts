@@ -134,7 +134,7 @@ export class CreateCase extends BasePage{
 
     async respondentSolicitorCreatCase(){
         await this.respondentSolicitorUser.check();
-        await this.applicationFor.selectOption('Barnet Borough Hillingdon');
+        await this.applicationFor.selectOption('Swansea City Council');
         await this.clickContinue();
     }
 }
