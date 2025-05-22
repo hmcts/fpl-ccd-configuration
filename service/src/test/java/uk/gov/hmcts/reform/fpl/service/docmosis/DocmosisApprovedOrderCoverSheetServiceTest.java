@@ -5,8 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -17,9 +15,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApprovedOrderCoverSheet;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -60,8 +58,6 @@ class DocmosisApprovedOrderCoverSheetServiceTest {
     @Mock
     private CaseDataExtractionService caseDataExtractionService;
     @Mock
-    private JudicialService judicialService;
-    @Mock
     private Time time;
     @InjectMocks
     private DocmosisApprovedOrderCoverSheetService underTest;
@@ -77,11 +73,11 @@ class DocmosisApprovedOrderCoverSheetServiceTest {
                 .build())
             .children1(List.of(CHILD))
             .confidentialChildren(List.of(CONFIDENTIAL_CHILD))
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().judgeTitleAndName(JUDGE_NAME).build())
             .build();
 
         given(caseDataExtractionService.getCourtName(caseData)).willReturn(COURT_NAME);
         given(caseDataExtractionService.getChildrenDetails(caseData.getAllChildren())).willReturn(DOCMOSIS_CHILDREN);
-        given(judicialService.getJudgeTitleAndNameOfCurrentUser()).willReturn(JUDGE_NAME);
         given(time.now()).willReturn(TEST_TIME);
 
         DocmosisApprovedOrderCoverSheet expectedDocmosisData = DocmosisApprovedOrderCoverSheet.builder()

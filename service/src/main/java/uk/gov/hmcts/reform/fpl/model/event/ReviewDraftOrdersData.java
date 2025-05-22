@@ -13,6 +13,8 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ReviewDraftOrdersData {
+    String judgeTitleAndName;
+
     String draftCMOExists;
     String draftBlankOrdersCount;
 
@@ -59,7 +61,7 @@ public class ReviewDraftOrdersData {
             "cmoDraftOrderDocument", "draftOrder1Document", "draftOrder2Document", "draftOrder3Document",
             "draftOrder4Document", "draftOrder5Document", "draftOrder6Document", "draftOrder7Document",
             "draftOrder8Document", "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles",
-            "draftOrdersTitlesInBundle", "draftOrdersApproved"
+            "draftOrdersTitlesInBundle", "draftOrdersApproved", "judgeTitleAndName"
         };
     }
 

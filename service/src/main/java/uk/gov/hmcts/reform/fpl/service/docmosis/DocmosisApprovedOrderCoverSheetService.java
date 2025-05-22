@@ -15,14 +15,12 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApprovedOrderCoverSheet;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.APPROVED_ORDER_COVER;
@@ -35,11 +33,10 @@ public class DocmosisApprovedOrderCoverSheetService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final DocumentMerger documentMerger;
-    private final JudicialService judicialService;
     private final Time time;
 
-    public DocmosisDocument addCoverSheetToApprovedOrder(CaseData caseData, DocumentReference order) throws IOException
-    {
+    public DocmosisDocument addCoverSheetToApprovedOrder(CaseData caseData,
+                                                         DocumentReference order) throws IOException {
         // Create
         DocmosisDocument coverSheet = createCoverSheet(caseData);
 
@@ -55,7 +52,9 @@ public class DocmosisApprovedOrderCoverSheetService {
 
             PDPage secondPage = document.getPage(1); // Index 1 is the second page
             PDRectangle pageSize = secondPage.getMediaBox();
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, secondPage, PDPageContentStream.AppendMode.APPEND, true, true)) {
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, secondPage,
+                PDPageContentStream.AppendMode.APPEND, true, true)) {
+
                 contentStream.beginText();
                 contentStream.setFont(PDType1Font.TIMES_BOLD, 12);
 
@@ -84,24 +83,20 @@ public class DocmosisApprovedOrderCoverSheetService {
     }
 
     public DocmosisDocument createCoverSheet(CaseData caseData) {
-        Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
-            .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
         DocmosisApprovedOrderCoverSheet coverDocumentData = buildCoverDocumentsData(caseData);
         return docmosisDocumentGeneratorService.generateDocmosisDocument(coverDocumentData,
             APPROVED_ORDER_COVER,
             RenderFormat.PDF,
-            applicationLanguage);
+            Language.ENGLISH);
     }
 
     public DocmosisApprovedOrderCoverSheet buildCoverDocumentsData(CaseData caseData) {
-        Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
-            .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
         return DocmosisApprovedOrderCoverSheet.builder()
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .courtName(caseDataExtractionService.getCourtName(caseData))
             .children(caseDataExtractionService.getChildrenDetails(caseData.getAllChildren()))
-            .judgeTitleAndName(judicialService.getJudgeTitleAndNameOfCurrentUser())
-            .dateOfApproval(formatLocalDateToString(time.now().toLocalDate(), DATE, applicationLanguage))
+            .judgeTitleAndName(caseData.getReviewDraftOrdersData().getJudgeTitleAndName())
+            .dateOfApproval(formatLocalDateToString(time.now().toLocalDate(), DATE, Language.ENGLISH))
             .crest(CREST.getValue())
             .build();
     }

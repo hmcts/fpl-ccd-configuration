@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
-import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.client.StaffApi;
@@ -531,13 +530,17 @@ public class JudicialService {
     }
 
     @Retryable(value = {FeignException.class}, label = "Search JRD for a judge by idam id")
+    public List<JudicialUserProfile> getJudicialUserProfilesByIdamId(String idamId) {
+        return getJudicialUserProfiles(JudicialUserRequest.builder()
+            .idamId(List.of(idamId)).build());
+    }
+
     public String getJudgeTitleAndNameOfCurrentUser() {
         UserDetails userDetails = userService.getUserDetails();
 
         List<JudicialUserProfile> judicialUserProfiles = List.of();
         try {
-            judicialUserProfiles = getJudicialUserProfiles(JudicialUserRequest.builder()
-                .idamId(List.of(userDetails.getId())).build());
+            judicialUserProfiles = getJudicialUserProfilesByIdamId(userDetails.getId());
         } catch (Exception e) {
             log.warn("Error while fetching JudicialUserProfile", e);
         }

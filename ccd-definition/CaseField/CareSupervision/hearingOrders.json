@@ -1224,5 +1224,15 @@
     "FieldType": "DraftOrderUrgencyOption",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judgeTitleAndName",
+    "Label": "Title and name of the judge who approved the order",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "FieldShownCondition": "judgeTitleAndName=\"DO_NOT_SHOW\"",
+    "Searchable": "N"
   }
 ]
