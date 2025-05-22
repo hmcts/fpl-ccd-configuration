@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
@@ -43,8 +44,8 @@ public class NoticeOfChangeFieldPopulator {
             SolicitorRole solicitorRole = solicitorRoles.get(i);
 
             Optional<Element<WithSolicitor>> solicitorContainer = i < numElements
-                                                                  ? Optional.of(elements.get(i))
-                                                                  : Optional.empty();
+                ? Optional.of(elements.get(i))
+                : Optional.empty();
 
             OrganisationPolicy organisationPolicy = policyConverter.generate(
                 solicitorRole, solicitorContainer
@@ -59,6 +60,30 @@ public class NoticeOfChangeFieldPopulator {
             if (possibleAnswer.isPresent()) {
                 data.put(String.format(representing.getNocAnswersTemplate(), i), possibleAnswer.get());
             }
+        }
+
+        return data;
+    }
+
+    public Map<String, Object> generateApplicantAnswer(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+        NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder().build();
+
+        if (caseData.isOutsourced()) {
+            Optional<LocalAuthority> localAuthority = caseData.getLocalAuthorities().stream()
+                .map(Element::getValue)
+                .filter(la -> la.getId().equals(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID()))
+                .findFirst();
+
+            if (localAuthority.isPresent()) {
+                nocAnswers = NoticeOfChangeAnswers.builder()
+                    .respondentFirstName(localAuthority.get().getRepresentingDetails().getFirstName())
+                    .respondentLastName(localAuthority.get().getRepresentingDetails().getLastName())
+                    .build();
+            }
+            data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);
+        } else {
+            data.put("noticeOfChangeAnswersApplicant", nocAnswers);
         }
 
         return data;

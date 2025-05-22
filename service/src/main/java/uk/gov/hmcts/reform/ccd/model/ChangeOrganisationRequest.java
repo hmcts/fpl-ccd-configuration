@@ -36,6 +36,9 @@ public class ChangeOrganisationRequest {
     @JsonProperty("ApprovalStatus")
     private ChangeOrganisationApprovalStatus approvalStatus;
 
+    @JsonProperty("CreatedBy")
+    private String createdBy;
+
     @JsonIgnore
     public SolicitorRole getCaseRole() {
         return Optional.ofNullable(caseRoleId)
