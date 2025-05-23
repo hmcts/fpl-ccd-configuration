@@ -79,7 +79,8 @@ test.describe('', () => {
         // Child details
         await startApplication.tabNavigation('Start application');
         await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
+        await childDetails.addchildDetails();
+        await startApplication.tabNavigation('Start application');
         await startApplication.childDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
@@ -113,7 +114,7 @@ test.describe('', () => {
         expect(accessibilityScanResults.violations).toEqual([]);
     })
 
-    test('Private solicitor applies C110a application', async ({
+    test.only('Private solicitor applies C110a application', async ({
         signInPage,
         createCase,
         ordersAndDirectionSought,
@@ -174,7 +175,8 @@ test.describe('', () => {
         // Child details
         await startApplication.tabNavigation('Start application');
         await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
+        await childDetails.addchildDetails();
+        await startApplication.tabNavigation('Start application');
         await startApplication.childDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
@@ -203,6 +205,6 @@ test.describe('', () => {
         await  caseFileView.openDocInNewTab();
         await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
         })
-    
+
     })
 
