@@ -106,7 +106,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need to keep the address confidential?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\""
+    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\" OR isAddressConfidential=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
