@@ -83,7 +83,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildParty ",
+    "ID": "ChildParty",
     "ListElementCode": "addressAutoConfidentialLabel",
     "FieldType": "Label",
     "ElementLabel": "## This address is automatically made confidential",
@@ -106,7 +106,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need to keep the address confidential?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\""
+    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\" OR isAddressConfidential=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -120,7 +120,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildParty ",
+    "ID": "ChildParty",
     "ListElementCode": "addressChangeDate",
     "FieldType": "Date",
     "ElementLabel": "When did they start staying here?",
@@ -130,7 +130,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildParty ",
+    "ID": "ChildParty",
     "ListElementCode": "datePowersEnd",
     "FieldType": "Date",
     "ElementLabel": "Date powers end",
@@ -140,7 +140,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildParty ",
+    "ID": "ChildParty",
     "ListElementCode": "careStartDate",
     "FieldType": "Date",
     "ElementLabel": "Date they went into care",
@@ -150,7 +150,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildParty ",
+    "ID": "ChildParty",
     "ListElementCode": "dischargeDate",
     "FieldType": "Date",
     "ElementLabel": "Date of discharge",
