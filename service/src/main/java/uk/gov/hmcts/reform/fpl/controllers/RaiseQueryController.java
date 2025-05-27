@@ -109,6 +109,7 @@ public class RaiseQueryController extends CallbackController {
         );
 
         Map<String,Object> latestCaseMessage = unwrapElements(caseMessages).stream()
+            .filter(caseMessage -> !caseMessage.containsKey("parentId")) //filtering out responses
             .max(Comparator.comparing(caseMessage -> LocalDateTime.parse(caseMessage.get("createdOn").toString(),
                 formatter)))
             .orElse(null);
