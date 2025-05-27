@@ -51,11 +51,11 @@ public class ChildrenEventDataFixer {
         final CaseData caseData = converter.convert(caseDetails);
 
         List<Element<Child>> updatedChildren = caseData.getAllChildren().stream().map(childElement -> {
-                ChildParty updatedParty = nullifyUnusedChildFields(childElement.getValue().getParty());
-                Child updatedChild = childElement.getValue().toBuilder().party(updatedParty).build();
+            ChildParty updatedParty = nullifyUnusedChildFields(childElement.getValue().getParty());
+            Child updatedChild = childElement.getValue().toBuilder().party(updatedParty).build();
 
-                return childElement.toBuilder().value(updatedChild).build();
-            }).toList();
+            return childElement.toBuilder().value(updatedChild).build();
+        }).toList();
 
         caseDetails.getData().put("children1", updatedChildren);
     }

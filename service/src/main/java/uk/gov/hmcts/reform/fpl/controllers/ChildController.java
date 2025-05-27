@@ -106,12 +106,13 @@ public class ChildController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = fixer.fixRepresentationDetails(request.getCaseDetails());
         CaseData caseData = getCaseData(caseDetails);
-        CaseData caseDataBefore = getCaseDataBefore(request);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseChildrenAndRepresentationDetails(caseData));
         fixer.fixPersistentChildDetails(caseDetails);
 
         caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(request);
+
         if (!RESTRICTED_STATES.contains(caseData.getState())) {
             caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
                 caseData, caseDataBefore, Representing.CHILD,
