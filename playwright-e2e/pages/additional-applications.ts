@@ -16,12 +16,17 @@ export class AdditionalApplications extends BasePage {
   readonly acknowledgeC2ApplicationForm: Locator;
   readonly sameDay: Locator;
   readonly within2Days: Locator;
+  readonly selectApplicant: Locator;
+  readonly selectApplication: Locator;
+  readonly checkbox: Locator;
+  readonly paymentPbaNumber: Locator;
+  readonly typeOfC2Application: Locator;
 
   public constructor(page: Page) {
     super(page);
     this.otherSpecificOrder = page.getByText('Other specific order - including C1 and C100 orders, and supplements');
     this.c2Order = page.getByText('C2 - to add or remove someone on a case, or for a specific request to the judge');
-    this.confidentialC2Order = page.locator('[for="isC2Confidential_Yes"]');
+    this.confidentialC2Order = page.getByLabel('Yes')
     this.nonConfidentialC2Order = page.locator('[for="isC2Confidential_No"]');
     this.applicant = page.getByLabel('Select applicant');
     this.c1ApplicationType = page.getByLabel('Select application');
@@ -31,19 +36,24 @@ export class AdditionalApplications extends BasePage {
     this.acknowledgeC2ApplicationForm = page.locator('[name="temporaryC2Document_documentAcknowledge"]');
     this.sameDay = page.getByText('On the same day');
     this.within2Days = page.getByText('Within 2 days');
+    this.selectApplicant = page.getByLabel('Select applicant');
+    this.selectApplication = page.getByLabel('What type of C2 application?');
+    this.checkbox = page.getByLabel('Yes');
+    this.paymentPbaNumber = page.getByLabel('Payment by account (PBA) number');
+    this.typeOfC2Application = page.getByLabel('Application with notice.');
   }
 
   public async chooseOtherApplicationType() {
     await this.otherSpecificOrder.click();
-    await this.applicant.selectOption('Swansea City Council, Applicant');
+    await this.selectApplicant.selectOption('1: applicant');
     await this.clickContinue();
   }
 
   public async chooseC2ApplicationType() {
     await this.c2Order.click();
-    await this.applicant.selectOption('Swansea City Council, Applicant');
-    await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
-    await this.nonConfidentialC2Order.click();
+    await this.typeOfC2Application.click();
+    await this.confidentialC2Order.click();
+    await this.selectApplicant.selectOption('3: 5c578fcc-7e41-45b0-82f7-46c38a769cb3');
     await this.clickContinue();
   }
 
@@ -59,7 +69,7 @@ export class AdditionalApplications extends BasePage {
     await this.c2Order.click();
     await this.otherSpecificOrder.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
-    await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.typeOfC2Application.click();
     await this.nonConfidentialC2Order.click();
     await this.clickContinue();
   }
@@ -103,7 +113,7 @@ export class AdditionalApplications extends BasePage {
 
     // add new draft order if required
     if (uploadDraftOrder) {
-        await this.uploadDraftOrder();
+      await this.uploadDraftOrder();
     }
 
     await this.clickContinue();
@@ -114,7 +124,6 @@ export class AdditionalApplications extends BasePage {
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_title').fill('Draft order title');
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_document').setInputFiles(config.testWordFile);
     await this.expectAllUploadsCompleted();
-    // added hard wait due to EXUI-1194
     await this.page.waitForTimeout(6000);
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
 
@@ -139,8 +148,7 @@ export class AdditionalApplications extends BasePage {
   }
 
   public async payForApplication() {
-    await this.page.locator('[for="temporaryPbaPayment_usePbaPayment_Yes"]').check();
-    await this.page.getByLabel('Payment by account (PBA) number').fill('PBA1234567');
+    await this.paymentPbaNumber.fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }
