@@ -3,9 +3,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "allocatedJudge",
-    "CaseFieldID": "judicialUser",
+    "CaseFieldID": "judgeType",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "PageID": "AllocatedJudge",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
@@ -15,35 +15,48 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "allocatedJudge",
-    "CaseFieldID": "enterManually",
+    "CaseFieldID": "judicialUser",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "AllocatedJudge",
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "judgeType = \"SALARIED_JUDGE\" OR judgeType = \"FEE_PAID_JUDGE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "allocatedJudge",
+    "CaseFieldID": "feePaidJudgeTitle",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "AllocatedJudge",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "judgeType = \"FEE_PAID_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "allocatedJudge",
     "CaseFieldID": "manualJudgeAllocationWarning",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "PageID": "AllocatedJudge",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "enterManually = \"Yes\""
+    "FieldShowCondition": "judgeType = \"LEGAL_ADVISOR\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "allocatedJudge",
-    "CaseFieldID": "allocatedJudge",
-    "PageFieldDisplayOrder": 4,
+    "CaseFieldID": "manualJudgeDetails",
+    "PageFieldDisplayOrder": 5,
     "DisplayContext": "COMPLEX",
     "PageID": "AllocatedJudge",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "enterManually = \"Yes\""
+    "FieldShowCondition": "judgeType = \"LEGAL_ADVISOR\""
   }
 ]
