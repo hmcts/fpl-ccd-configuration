@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
@@ -52,6 +53,7 @@ import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = LENIENT)
@@ -83,6 +85,9 @@ class JudicialServiceTest {
 
     @Mock
     private ElinksService elinksService;
+
+    @Mock
+    private UserService userService;
 
     @Captor
     private ArgumentCaptor<List<RoleAssignment>> rolesCaptor;
@@ -731,4 +736,36 @@ class JudicialServiceTest {
         }
     }
 
+    @Nested
+    class GetJudgeTitleAndName {
+        private static final JudicialUserProfile JUDICIAL_USER_PROFILE = JudicialUserProfile.builder()
+            .title("Judge")
+            .fullName("John Smith")
+            .build();
+
+        @Test
+        void shouldReturnJudgeTitleAndNameFromJRD() {
+            when(userService.getUserDetails()).thenReturn(UserDetails.builder().id("testId").build());
+            when(judicialApi
+                .findUsers(any(), any(), anyInt(), any(),
+                    eq(JudicialUserRequest.builder().idamId(List.of("testId")).build())))
+                .thenReturn(List.of(JUDICIAL_USER_PROFILE));
+
+            assertThat(underTest.getJudgeTitleAndNameOfCurrentUser())
+                .isEqualTo(formatJudgeTitleAndName(JudgeAndLegalAdvisor
+                    .fromJudicialUserProfile(JUDICIAL_USER_PROFILE, null)));
+        }
+
+        @Test
+        void shouldReturnIdamUserFullNameIfJRDNotFound() {
+            when(userService.getUserDetails()).thenReturn(UserDetails.builder()
+                .id("testId")
+                .forename("John")
+                .surname("Smith")
+                .build());
+            when(judicialApi.findUsers(any(), any(), anyInt(), any(), any())).thenReturn(List.of());
+
+            assertThat(underTest.getJudgeTitleAndNameOfCurrentUser()).isEqualTo("John Smith");
+        }
+    }
 }

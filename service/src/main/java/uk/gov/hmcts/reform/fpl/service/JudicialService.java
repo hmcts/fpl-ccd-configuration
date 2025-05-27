@@ -25,8 +25,8 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
-import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
@@ -55,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
 
 @Slf4j
@@ -82,12 +83,12 @@ public class JudicialService {
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
     private final JudicialApi judicialApi;
-    private final StaffApi staffApi;
     private final RoleAssignmentService roleAssignmentService;
     private final ValidateEmailService validateEmailService;
     private final JudicialUsersConfiguration judicialUsersConfiguration;
     private final LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
     private final ElinksService elinksService;
+    private final UserService userService;
 
     /**
      * Delete a set of allocated-[users] on a specific case.
@@ -236,11 +237,7 @@ public class JudicialService {
             return false;
         }
         String systemUserToken = systemUserService.getSysUserToken();
-        List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
-            authTokenGenerator.generate(),
-            JUDICIAL_PAGE_SIZE,
-            elinksService.getElinksAcceptHeader(),
-            JudicialUserRequest.fromPersonalCode(personalCode));
+        List<JudicialUserProfile> judges = getJudicialUserProfiles(JudicialUserRequest.fromPersonalCode(personalCode));
 
         return !judges.isEmpty();
     }
@@ -275,11 +272,7 @@ public class JudicialService {
             return Optional.empty();
         }
         String systemUserToken = systemUserService.getSysUserToken();
-        List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
-            authTokenGenerator.generate(),
-            JUDICIAL_PAGE_SIZE,
-            elinksService.getElinksAcceptHeader(),
-            JudicialUserRequest.fromPersonalCode(personalCode));
+        List<JudicialUserProfile> judges = getJudicialUserProfiles(JudicialUserRequest.fromPersonalCode(personalCode));
 
         if (judges.isEmpty()) {
             return Optional.empty();
@@ -548,5 +541,36 @@ public class JudicialService {
 
     private List<RoleAssignment> getHearingJudgeAndLegalAdviserRoleAssignments(Long caseId, ZonedDateTime endTime) {
         return roleAssignmentService.getCaseRolesAtTime(caseId, HEARING_ROLES, endTime);
+    }
+
+    public List<JudicialUserProfile> getJudicialUserProfiles(JudicialUserRequest request) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        return judicialApi.findUsers(systemUserToken,
+            authTokenGenerator.generate(),
+            JUDICIAL_PAGE_SIZE,
+            elinksService.getElinksAcceptHeader(),
+            request);
+    }
+
+    @Retryable(value = {FeignException.class}, label = "Search JRD for a judge by idam id")
+    public List<JudicialUserProfile> getJudicialUserProfilesByIdamId(String idamId) {
+        return getJudicialUserProfiles(JudicialUserRequest.builder()
+            .idamId(List.of(idamId)).build());
+    }
+
+    public String getJudgeTitleAndNameOfCurrentUser() {
+        UserDetails userDetails = userService.getUserDetails();
+
+        List<JudicialUserProfile> judicialUserProfiles = List.of();
+        try {
+            judicialUserProfiles = getJudicialUserProfilesByIdamId(userDetails.getId());
+        } catch (Exception e) {
+            log.warn("Error while fetching JudicialUserProfile", e);
+        }
+
+        return judicialUserProfiles.stream().map(judicialUserProfile ->
+                formatJudgeTitleAndName(JudgeAndLegalAdvisor.fromJudicialUserProfile(judicialUserProfile, null)))
+            .findFirst()
+            .orElse(userDetails.getFullName());
     }
 }
