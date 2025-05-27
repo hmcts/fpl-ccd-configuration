@@ -109,6 +109,7 @@ public class ChildController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(request);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseChildrenAndRepresentationDetails(caseData));
+        fixer.fixPersistentChildDetails(caseDetails);
 
         caseData = getCaseData(caseDetails);
         if (!RESTRICTED_STATES.contains(caseData.getState())) {
