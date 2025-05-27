@@ -5,6 +5,7 @@ import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from ".
 import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
+import { Placement } from '../pages/placement';
 
 test.describe('Placement', () => {
   const dateTime = new Date().toISOString();
@@ -53,5 +54,22 @@ test.describe('Placement', () => {
         // Should be no more tasks on the page
         await expect(page.getByText('Check Placement Application (High Court)')).toHaveCount(0);
       }
+
     });
+
+  test('CTSC actions notice of placement',
+    async ({ page, signInPage, placement,
+      caseFileView }) => {
+      caseName = 'CTSC actions notice of placement' + dateTime.slice(0, 10);
+      setHighCourt(caseData);
+      await updateCase(caseName, caseNumber, caseData);
+      await signInPage.visit();
+      await signInPage.login(CTSCUser.email, CTSCUser.password)
+      await signInPage.navigateTOCaseDetails(caseNumber);
+
+      await placement.gotoNextStep('Placement');
+      await placement.noticeOfPlacement();
+
+      await expect(page.getByText('CTSC actions notice of placement2025-05-27')).toBeVisible();
+    })
 });
