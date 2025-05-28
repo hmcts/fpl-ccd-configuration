@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -39,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,6 +50,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -283,6 +287,68 @@ class JudicialServiceTest {
 
             verifyNoMoreInteractions(roleAssignmentService);
         }
+    }
+
+    @Test
+    void shouldReturnTrueIfCaseHasAllocatedJudgeOrLegalAdvisor() {
+        List<RoleAssignment> existing = Stream.of("12345", "67890")
+            .map(id -> RoleAssignment.builder()
+                .actorId(id)
+                .id(id)
+                .roleName("allocated-judge")
+                .roleCategory(RoleCategory.JUDICIAL)
+                .build())
+            .toList();
+
+        when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+            .thenReturn(existing);
+
+        boolean result = underTest.caseHasAllocatedJudgeOrLegalAdvisor(CASE_ID);
+
+        assertThat(result).isTrue();
+        verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+    }
+
+    @Test
+    void shouldReturnFalseIfCaseDoesNotHaveAllocatedJudgeOrLegalAdvisor() {
+        when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+            .thenReturn(List.of());
+
+        boolean result = underTest.caseHasAllocatedJudgeOrLegalAdvisor(CASE_ID);
+
+        assertThat(result).isFalse();
+        verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+    }
+
+    @Test
+    void shouldReturnTrueIfCaseHasHearingJudgeOrLegalAdvisor() {
+        List<RoleAssignment> existing = Stream.of("12345", "67890")
+            .map(id -> RoleAssignment.builder()
+                .actorId(id)
+                .id(id)
+                .roleName("hearing-judge")
+                .roleCategory(RoleCategory.JUDICIAL)
+                .build())
+            .toList();
+
+        when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+            .thenReturn(existing);
+
+        boolean result = underTest.caseHasHearingJudgeOrLegalAdvisor(CASE_ID);
+
+        assertThat(result).isTrue();
+        verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+    }
+
+    @Test
+    void shouldReturnFalseIfCaseDoesNotHaveHearingJudgeOrLegalAdvisor() {
+        when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+            .thenReturn(List.of());
+
+        boolean result = underTest.caseHasHearingJudgeOrLegalAdvisor(CASE_ID);
+
+        assertThat(result).isFalse();
+        verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
     }
 
     @Test
@@ -529,6 +595,139 @@ class JudicialServiceTest {
 
             assertThat(idamId).isEqualTo(Optional.empty());
             verifyNoInteractions(judicialApi);
+        }
+    }
+
+    @Nested
+    class PopulateAllocateJudgeEventDataMap {
+        @Test
+        void shouldPopulateEventDataMapFromSalariedJudge() {
+            JudgeType judgeType = JudgeType.SALARIED_JUDGE;
+            JudicialUser judicialUser = mock(JudicialUser.class);
+
+
+            Judge judge = Judge.builder()
+                .judgeType(judgeType)
+                .judgeJudicialUser(judicialUser)
+                .build();
+
+            Map<String, Object> actual = underTest.populateEventDataMapFromJudge(judge);
+
+            assertThat(actual).isEqualTo(Map.of(
+                "judgeType", judgeType,
+                "judicialUser", judicialUser
+            ));
+        }
+
+        @Test
+        void shouldPopulateEventDataMapFromFeePaidJudge() {
+            JudgeType judgeType = JudgeType.FEE_PAID_JUDGE;
+            JudicialUser judicialUser = mock(JudicialUser.class);
+            JudgeOrMagistrateTitle judgeTitle = JudgeOrMagistrateTitle.DEPUTY_HIGH_COURT_JUDGE;
+
+
+            Judge judge = Judge.builder()
+                .judgeType(judgeType)
+                .judgeJudicialUser(judicialUser)
+                .judgeTitle(judgeTitle)
+                .build();
+
+            Map<String, Object> actual = underTest.populateEventDataMapFromJudge(judge);
+
+            assertThat(actual).isEqualTo(Map.of(
+                "judgeType", judgeType,
+                "judicialUser", judicialUser,
+                "feePaidJudgeTitle", judgeTitle
+            ));
+        }
+
+        @Test
+        void shouldNotPopulateTitleFromFeePaidJudgeIfTitleNotValid() {
+            JudgeType judgeType = JudgeType.FEE_PAID_JUDGE;
+            JudicialUser judicialUser = mock(JudicialUser.class);
+            JudgeOrMagistrateTitle judgeTitle = JudgeOrMagistrateTitle.LEGAL_ADVISOR;
+
+            Judge judge = Judge.builder()
+                .judgeType(judgeType)
+                .judgeJudicialUser(judicialUser)
+                .judgeTitle(judgeTitle)
+                .build();
+
+            Map<String, Object> actual = underTest.populateEventDataMapFromJudge(judge);
+
+            assertThat(actual).isEqualTo(Map.of(
+                "judgeType", judgeType,
+                "judicialUser", judicialUser
+            ));
+        }
+
+        @Test
+        void  shouldPopulateEventDataMapFromLegalAdvisor() {
+            JudgeType judgeType = LEGAL_ADVISOR;
+            JudicialUser judicialUser = mock(JudicialUser.class);
+            JudgeOrMagistrateTitle judgeTitle = JudgeOrMagistrateTitle.LEGAL_ADVISOR;
+            String judgeLastName = "judgeLastName";
+            String judgeFullName = "judgeFullName";
+            String judgeEmailAddress = "judgeEmailAddress";
+
+            Judge judge = Judge.builder()
+                .judgeJudicialUser(judicialUser)
+                .judgeType(judgeType)
+                .judgeTitle(judgeTitle)
+                .judgeFullName(judgeFullName)
+                .judgeLastName(judgeLastName)
+                .judgeEmailAddress(judgeEmailAddress)
+                .build();
+
+            Map<String, Object> actual = underTest.populateEventDataMapFromJudge(judge);
+
+            assertThat(actual).isEqualTo(Map.of(
+                "judgeType", judgeType,
+                "judicialUser", judicialUser,
+                "manualJudgeDetails", Map.of(
+                    "judgeLastName", judgeLastName,
+                    "judgeFullName", judgeFullName,
+                    "judgeEmailAddress", judgeEmailAddress,
+                    "judgeTitle", judgeTitle
+                )
+            ));
+        }
+
+        @Test
+        void shouldNotPopulateTitleFromLegalAdvisorIfTitleNotValid() {
+            JudgeType judgeType = LEGAL_ADVISOR;
+            JudicialUser judicialUser = mock(JudicialUser.class);
+            JudgeOrMagistrateTitle judgeTitle = JudgeOrMagistrateTitle.DEPUTY_HIGH_COURT_JUDGE;
+            String judgeLastName = "judgeLastName";
+            String judgeFullName = "judgeFullName";
+            String judgeEmailAddress = "judgeEmailAddress";
+
+            Judge judge = Judge.builder()
+                .judgeJudicialUser(judicialUser)
+                .judgeType(judgeType)
+                .judgeTitle(judgeTitle)
+                .judgeFullName(judgeFullName)
+                .judgeLastName(judgeLastName)
+                .judgeEmailAddress(judgeEmailAddress)
+                .build();
+
+            Map<String, Object> actual = underTest.populateEventDataMapFromJudge(judge);
+
+            assertThat(actual).isEqualTo(Map.of(
+                "judgeType", judgeType,
+                "judicialUser", judicialUser,
+                "manualJudgeDetails", Map.of(
+                    "judgeLastName", judgeLastName,
+                    "judgeFullName", judgeFullName,
+                    "judgeEmailAddress", judgeEmailAddress
+                )
+            ));
+        }
+
+        @Test
+        void shouldReturnEmptyMapIfJudgeNotExist() {
+            Map<String, Object> actual = underTest.populateEventDataMapFromJudge(null);
+            assertThat(actual).isEqualTo(Map.of());
         }
     }
 
