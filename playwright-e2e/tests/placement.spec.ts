@@ -69,6 +69,7 @@ test.describe('Placement', () => {
       await placement.gotoNextStep('Placement');
       await placement.noticeOfPlacement();
 
-      await expect(page.getByText('CTSC actions notice of placement2025-05-27')).toBeVisible();
+      await placement.tabNavigation('Placement');
+      await expect(page.getByText(' Notice of hearing for placement ')).toBeVisible();
     })
 });
