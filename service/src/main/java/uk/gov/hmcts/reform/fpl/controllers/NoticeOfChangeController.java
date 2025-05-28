@@ -75,8 +75,6 @@ public class NoticeOfChangeController extends CallbackController {
         CaseData oldCaseData = getCaseDataBefore(callbackRequest);
         CaseData newCaseData = getCaseData(callbackRequest);
 
-        ChangeOrganisationRequest changeOrganisationRequest =  oldCaseData.getChangeOrganisationRequestField();
-
         if (newCaseData.isThirdPartyApplicant()) {
             publishEventsForThirdPartyOutsourcingNoC(oldCaseData, newCaseData);
         } else {
