@@ -5,7 +5,6 @@ import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from ".
 import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
-import { Placement } from '../pages/placement';
 
 test.describe('Placement', () => {
   const dateTime = new Date().toISOString();

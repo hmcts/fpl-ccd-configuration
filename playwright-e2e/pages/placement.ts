@@ -3,10 +3,7 @@ import { expect, Page } from "@playwright/test";
 import config from "../settings/test-docs/config";
 
 export class Placement extends BasePage {
-  static tabNavigation(arg0: string) {
-    throw new Error('Method not implemented.');
-  }
-  getByLabel: any;
+
   constructor(page: Page) {
     super(page);
 
