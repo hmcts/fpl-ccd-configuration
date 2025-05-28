@@ -49,6 +49,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -231,6 +233,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             "applicants", List.of(element(buildApplicant())),
             "outsourcingPolicy", OrganisationPolicy.builder()
                 .organisation(Organisation.builder().organisationID("ABC123").build())
+                .orgPolicyCaseAssignedRole(APPSOLICITOR.formattedName())
                 .build(),
             "localAuthorities", List.of(element(LocalAuthority.builder()
                 .id("ABC123")
@@ -247,7 +250,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         OrganisationPolicy expectedRespondentPolicyOne = OrganisationPolicy.builder()
             .organisation(solicitorOrganisation)
-            .orgPolicyCaseAssignedRole(SolicitorRole.SOLICITORA.getCaseRoleLabel())
+            .orgPolicyCaseAssignedRole(SOLICITORA.formattedName())
             .build();
 
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswers = NoticeOfChangeAnswers.builder()

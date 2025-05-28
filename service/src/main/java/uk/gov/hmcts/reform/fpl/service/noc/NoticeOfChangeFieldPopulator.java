@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.noc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.POPULATE;
 
@@ -69,10 +71,14 @@ public class NoticeOfChangeFieldPopulator {
         Map<String, Object> data = new HashMap<>();
         NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder().build();
 
-        if (caseData.isOutsourced()) {
+        data.put("applicantSolicitorPolicy", Optional.ofNullable(caseData.getApplicantSolicitorPolicy())
+            .orElseGet(() -> OrganisationPolicy.builder().organisation(Organisation.builder().build())
+                .orgPolicyCaseAssignedRole(APPSOLICITOR.formattedName()).build()));
+
+        if (caseData.isThirdPartyApplicant()) {
             Optional<LocalAuthority> localAuthority = caseData.getLocalAuthorities().stream()
                 .map(Element::getValue)
-                .filter(la -> la.getId().equals(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID()))
+                .filter(la -> la.getId().equals(caseData.getApplicantSolicitorPolicy().getOrganisation().getOrganisationID()))
                 .findFirst();
 
             if (localAuthority.isPresent()) {
@@ -82,8 +88,6 @@ public class NoticeOfChangeFieldPopulator {
                     .build();
             }
             data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);
-        } else {
-            data.put("noticeOfChangeAnswersApplicant", nocAnswers);
         }
 
         return data;

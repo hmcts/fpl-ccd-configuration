@@ -61,7 +61,7 @@ public class NoticeOfChangeController extends CallbackController {
 
         ChangeOrganisationRequest nocRequest = caseData.getChangeOrganisationRequestField();
 
-        if (noticeOfChangeService.isThirdPartyOutsourcing(caseData.getChangeOrganisationRequestField())) {
+        if (caseData.isThirdPartyApplicant()) {
             caseDetails.getData().putAll(localAuthorityService.updateLocalAuthorityFromNoC(caseData, nocRequest));
         } else {
             caseDetails.getData().putAll(legalCounselUpdater.updateLegalCounselFromNoC(caseData, originalCaseData));
@@ -77,7 +77,7 @@ public class NoticeOfChangeController extends CallbackController {
 
         ChangeOrganisationRequest changeOrganisationRequest =  oldCaseData.getChangeOrganisationRequestField();
 
-        if (noticeOfChangeService.isThirdPartyOutsourcing(changeOrganisationRequest)) {
+        if (newCaseData.isThirdPartyApplicant()) {
             publishEventsForThirdPartyOutsourcingNoC(oldCaseData, newCaseData);
         } else {
             publishNoCEventsForRespondentOrChildSolicitor(newCaseData, oldCaseData);
@@ -85,8 +85,8 @@ public class NoticeOfChangeController extends CallbackController {
     }
 
     private void publishEventsForThirdPartyOutsourcingNoC(CaseData oldData, CaseData newData) {
-        String newOrgId = newData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
-        String previousOrgId = oldData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
+        String newOrgId = newData.getApplicantSolicitorPolicy().getOrganisation().getOrganisationID();
+        String previousOrgId = oldData.getApplicantSolicitorPolicy().getOrganisation().getOrganisationID();
 
         LocalAuthority oldThirdPartyOrg = oldData.getLocalAuthorities().stream().filter(la ->
             la.getValue().getId().equals(previousOrgId)).findFirst().orElseThrow().getValue();

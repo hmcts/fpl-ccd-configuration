@@ -2080,6 +2080,15 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicantSolicitorPolicy",
+    "Label": "Applicant solicitor policy",
+    "FieldType": "OrganisationPolicy",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orderTabHeading",
     "Label": "## Orders",
     "FieldType": "Label",
