@@ -2148,10 +2148,10 @@ class CaseDataTest {
         return Stream.of(
             OrganisationPolicy.builder().build(),
             OrganisationPolicy.builder()
-                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder().build())
+                .organisation(Organisation.builder().build())
                 .build(),
             OrganisationPolicy.builder()
-                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder().organisationID("").build())
+                .organisation(Organisation.builder().organisationID("").build())
                 .build()
         );
     }
