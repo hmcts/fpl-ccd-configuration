@@ -1,0 +1,23 @@
+MOCKCASEID
+${id}
+Special guardianship order
+Section 14A(1) Children Act 1989
+Ordered on ${dateTimeComma} by Her Honour Judge Moley
+Family Court sitting at Swansea
+Child in the case
+Timothy Jones Male Born 1 August 2015
+Warning
+Where a Special Guardianship Order is in force no person may cause the child to be known by
+a new surname or remove the child from the United Kingdom without either the written consent
+of every person who has parental responsibility for the child or the leave of the Court.
+However, this does not prevent the removal of a child for a period of less than 3 months, by its
+special guardian(s) (Section 14C (3) and (4) Children Act 1989).
+It may be a criminal offence under the Child Abduction Act 1984 to remove the child from the
+United Kingdom without leave of the Court.
+By consent 
+The Court orders that Joe Bloggs is appointed as special guardian for the child. 
+Further special guardianship details.
+Notice
+Any person with parental responsibility for a child may obtain advice on what can be done
+to prevent the issue of a passport to the child. They should write to Glasgow CPST, HMPO
+Glasgow, 96 Milton Street, Glasgow, G4 0BT or email Glasgowcaveats@hmpo.gov.uk.

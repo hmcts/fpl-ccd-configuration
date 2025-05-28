@@ -176,6 +176,18 @@ def deployWADmns() {
   }
 }
 
+def archiveApiTestResult() {
+  publishHTML([
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "test-results/functional",
+          reportFiles          : 'index.html',
+          reportName           : 'API Test Report'
+  ])
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+}
+
 // Vars for Kubernetes
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
@@ -247,6 +259,7 @@ withPipeline(type, product, component) {
 
   }
   afterAlways('fullFunctionalTest:preview') {
+    archiveApiTestResult()
     stage('UIFunctionalTests') {
       try {
           yarnBuilder.yarn('test:functional-nightly-preview')
@@ -322,14 +335,32 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
   }
 
+  before('functionalTest:preview') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.TEST_RETRIES = 3
+  }
+
   before('functionalTest:aat') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.CASE_SERVICE_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
+    env.TEST_RETRIES = 3
   }
 
   before('functionalTest:demo') {
     env.SKIP_API_TESTS = 'true'
   }
 
+  afterAlways('functionalTest:preview') {
+    archiveApiTestResult()
+  }
+
   afterAlways('functionalTest:aat') {
+    archiveApiTestResult()
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'

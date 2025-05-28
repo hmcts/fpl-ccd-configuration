@@ -1,0 +1,13 @@
+MOCKCASEID
+${id}
+Recovery of a child (C29)
+Section 50 Children Act 1989
+Ordered on ${dateSuffix} by Her Honour Judge Moley
+Family Court sitting at Swansea
+Child in the case
+Timothy Jones Male Born 1 August 2015
+The Court is satisfied that Swansea City Council has parental responsibility for the child by
+virtue of a Care order made on ${dateSuffix}.
+The court authorises Officer Barbrady to enter the premises known as , and search for
+the child, using reasonable force if necessary.
+This order has been made exparte.
