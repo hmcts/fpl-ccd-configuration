@@ -23,7 +23,7 @@
     "ID": "RespondentNew",
     "ListElementCode": "party",
     "FieldType": "RespondentParty",
-    "ElementLabel": "Party",
+    "ElementLabel": " ",
     "SecurityClassification": "Public"
   },
   {
@@ -70,5 +70,23 @@
     "FieldTypeParameter": "LegalCounsellor",
     "ElementLabel": "Counsel",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "usingOtherOrg",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this Local Authority outsourcing their work on this case to a separate organisation?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "legalCounsellors = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "isLocalAuthority",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this actually a Local Authority?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "legalCounsellors = \"DO_NOT_SHOW\""
   }
 ]

@@ -167,7 +167,7 @@
     "ListElementCode": "party.relationshipLabel",
     "FieldDisplayOrder": 12,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "party!=\"SHOW_LABEL\""
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
   {
     "ID": "ChangeOtherToRespondent",
@@ -175,7 +175,7 @@
     "CaseFieldID": "transformedRespondent",
     "ListElementCode": "party.relationshipToChild",
     "FieldDisplayOrder": 13,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "ChangeOtherToRespondent",
