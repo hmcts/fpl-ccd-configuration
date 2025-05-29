@@ -130,7 +130,7 @@ class NoticeOfChangeServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
-                .outsourcingPolicy(OrganisationPolicy.builder()
+                .applicantSolicitorPolicy(OrganisationPolicy.builder()
                     .organisation(newOrg)
                     .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
                     .build())

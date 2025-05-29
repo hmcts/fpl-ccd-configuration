@@ -311,9 +311,9 @@ class UpdateRepresentationServiceTest {
             .build();
 
         final CaseData caseData = CaseData.builder()
-            .outsourcingPolicy(OrganisationPolicy.builder()
+            .applicantSolicitorPolicy(OrganisationPolicy.builder()
                 .organisation(oldOrg)
-                .orgPolicyCaseAssignedRole("[EPSMANAGING]")
+                .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
                 .build())
             .changeOrganisationRequestField(ChangeOrganisationRequest.builder()
                 .organisationToAdd(newOrg)

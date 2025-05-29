@@ -217,8 +217,8 @@ class NoticeOfChangeFieldPopulatorTest {
 
     @Test
     void generateApplicantAnswer() {
-        when(caseData.isOutsourced()).thenReturn(true);
-        when(caseData.getOutsourcingPolicy()).thenReturn(OrganisationPolicy.builder()
+        when(caseData.isThirdPartyApplicant()).thenReturn(true);
+        when(caseData.getApplicantSolicitorPolicy()).thenReturn(OrganisationPolicy.builder()
             .organisation(Organisation.builder()
                 .organisationID("ABC123")
                 .build())
