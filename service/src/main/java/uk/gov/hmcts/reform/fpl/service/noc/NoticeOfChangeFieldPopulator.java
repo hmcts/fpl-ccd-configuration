@@ -78,7 +78,8 @@ public class NoticeOfChangeFieldPopulator {
         if (caseData.isThirdPartyApplicant()) {
             Optional<LocalAuthority> localAuthority = caseData.getLocalAuthorities().stream()
                 .map(Element::getValue)
-                .filter(la -> la.getId().equals(caseData.getApplicantSolicitorPolicy().getOrganisation().getOrganisationID()))
+                .filter(la -> la.getId().equals(caseData.getApplicantSolicitorPolicy()
+                    .getOrganisation().getOrganisationID()))
                 .findFirst();
 
             if (localAuthority.isPresent()) {

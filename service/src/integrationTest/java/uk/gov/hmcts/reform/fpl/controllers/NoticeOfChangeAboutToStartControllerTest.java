@@ -270,7 +270,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .changeOrganisationRequestField(changeRequest)
-            .outsourcingPolicy(OrganisationPolicy.builder()
+            .applicantSolicitorPolicy(OrganisationPolicy.builder()
                 .organisation(OLD_ORGANISATION)
                 .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
                 .build())
