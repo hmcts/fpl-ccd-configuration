@@ -519,8 +519,7 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]",
-          "[APPSOLICITOR]"
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -540,7 +539,8 @@
       {
         "UserRoles": [
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "[APPSOLICITOR]"
         ],
         "CRUD": "CR"
       },
