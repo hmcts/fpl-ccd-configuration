@@ -266,6 +266,28 @@ class SendDocumentServiceTest {
         }
 
         @Test
+        void shouldNotReturnRespondentWithAddressKnownNoAndNoReason() {
+            final Respondent respondentWithUnknownAddress = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Unknown")
+                    .lastName("Address")
+                    .address(testAddress())
+                    .addressKnow(IsAddressKnowType.NO)
+                    .build())
+                .legalRepresentation(null)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .respondents1(wrapElements(respondentWithUnknownAddress))
+                .build();
+
+            final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
+
+            assertThat(actualRecipients).isEmpty();
+        }
+
+
+        @Test
         void shouldReturnNotRepresentedRespondentsWithConfidentialAddressByPost() {
 
             final UUID confidentialAddressRespondentId = UUID.randomUUID();

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -105,7 +107,8 @@ public class SendDocumentService {
             return caseData.getRespondents1().stream()
                 .filter(respondent -> ObjectUtils.isEmpty(respondent.getValue().getRepresentedBy())
                     && hasNoLegalRepresentation(respondent.getValue()))
-                .filter(respondent -> !respondent.getValue().isDeceasedOrNFA())
+                .filter(respondent ->
+                    !Objects.equals(respondent.getValue().getParty().getAddressKnow(), IsAddressKnowType.NO))
                 .map(respondent -> respondent.getValue().getParty().toBuilder()
                         .address(getPartyAddress(respondent, caseData)).build())
                 .collect(toList());
