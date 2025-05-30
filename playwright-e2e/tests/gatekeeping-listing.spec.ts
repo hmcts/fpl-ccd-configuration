@@ -1,6 +1,7 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
 import caseData from '../caseData/caseSentToGatekeeper.json' assert { type: "json" };
+import caseWithUDO from '../caseData/caseInGateKeepingListingUDO.json' assert { type: "json" };
 import { newSwanseaLocalAuthorityUserOne, HighCourtAdminUser, judgeLondonUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
@@ -59,4 +60,12 @@ test.describe('Gatekeeping Listing', () => {
         await expect(page.getByText('Review Standard Direction Order (High Court)')).toHaveCount(0);
       }
     });
-});
+  test.only('Review urgent Direction Order High Court WA Task - Judge',
+      async({ page, signInPage, gateKeepingListing})  =>{
+
+        caseName = 'Review urgent Direction Order High Court WA Task - Judge ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithUDO);
+        console.log(caseName);
+      })
+
+  });
