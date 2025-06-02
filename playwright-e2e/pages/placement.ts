@@ -39,8 +39,7 @@ export class Placement extends BasePage {
 
   public async noticeOfPlacement() {
     await this.submitPlacementOrder();
-    await this.page.getByLabel('Next step').selectOption('Notice of Placement - Hearing');
-    await this.page.getByRole('button', { name: 'Go' }).click();
+    await this.gotoNextStep('Notice of Placement - Hearing');
     await this.page.getByLabel('Which placement application').selectOption('Timothy Jones');
     await this.page.getByRole('button', { name: 'Continue' }).click();
     await this.page.getByRole('textbox', { name: 'Day' }).fill('10');
@@ -49,8 +48,8 @@ export class Placement extends BasePage {
     await this.page.getByRole('spinbutton', { name: 'Hour', exact: true }).fill('10');
     await this.page.getByRole('spinbutton', { name: 'Hearing duration (hours)' }).fill('1');
     await this.page.getByLabel('Hearing venue').selectOption('2: -1');
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.getByRole('button', { name: 'Save and continue' }).click();
+    await this.clickContinue();
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
   }
 }
