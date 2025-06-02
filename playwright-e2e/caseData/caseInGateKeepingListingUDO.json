@@ -18,15 +18,8 @@
     "otherOrderType": "NO",
     "refuseContactWithChildOrderType": null,
     "secureAccommodationOrderType": "NO",
-    "caseNameHmctsInternal": "Smoke Test",
-    "caseSummaryLAHighCourtCase": "No",
-    "caseSummaryLALanguageRequirement": "No",
-    "caseSummaryLATabHidden": "Yes",
     "contactWithChildInCareOrderType": null,
     "caseName": "e2e test new case",
-    "EPO_REASONING_SHOW": [
-      "SHOW_FIELD"
-    ],
     "hearing": {
       "hearingUrgencyDetails": null,
       "hearingUrgencyType": "STANDARD",
