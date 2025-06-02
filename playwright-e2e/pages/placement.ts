@@ -39,6 +39,7 @@ export class Placement extends BasePage {
 
   public async noticeOfPlacement() {
     await this.submitPlacementOrder();
+    await expect(this.page.getByText('has been updated with event: Placement ')).toBeVisible();
     await this.gotoNextStep('Notice of Placement - Hearing');
     await this.page.getByLabel('Which placement application').selectOption('Timothy Jones');
     await this.page.getByRole('button', { name: 'Continue' }).click();
