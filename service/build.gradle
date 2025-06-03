@@ -326,7 +326,7 @@ dependencies {
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
   implementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
-  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
+  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
   implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.1.0'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '4.0.4'
@@ -411,7 +411,7 @@ dependencies {
   contractTestImplementation (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.1') {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
-  contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
+  contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 }
 
