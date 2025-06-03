@@ -55,7 +55,7 @@ export default defineConfig({
     },
     {
       name: "preview",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Firefox"] },
       retries: 3,
       timeout: 3*60*1000,
       expect: { timeout: 1*60*1000 },

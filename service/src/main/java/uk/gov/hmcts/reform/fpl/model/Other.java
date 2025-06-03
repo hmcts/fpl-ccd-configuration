@@ -171,10 +171,12 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
         /** <h2>Deprecated. use addressKnowV2 instead</h2>
          * <h3>This builder method will convert the old addressKnow field to addressKnowV2 during deserialization</h3>
+         *
          * <p>Was having ElasticSearch initialisation exception during the release:
          * <br>
          * <i>ElasticSearch initialisation exception" mapper [data.hearingDetails.value.others.value.addressKnow]
          * cannot be changed from type [keyword] to [text]</i></p>
+         *
          * <p>Creating a new field to avoid updating the existing indexed field.
          * Review all indexed field in the future</p>
          * @see IsAddressKnowType

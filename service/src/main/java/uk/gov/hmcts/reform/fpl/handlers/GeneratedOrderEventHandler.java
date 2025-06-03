@@ -145,7 +145,7 @@ public class GeneratedOrderEventHandler {
     @EventListener
     public void createWorkAllocationTask(GeneratedOrderEvent event) {
         // Create a review order task for the CTSC if the CTSC didn't upload/generate it
-        if (!userService.isHmctsAdminUser()) {
+        if (!userService.isCtscUser()) {
             CaseData caseData = event.getCaseData();
             workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.ORDER_UPLOADED);
         }

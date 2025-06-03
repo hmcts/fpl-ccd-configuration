@@ -7,12 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.ObjectProvider;
 import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
 import uk.gov.hmcts.reform.fpl.exceptions.api.ServiceUnavailableException;
-import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiFeatureFlag;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassInterceptorService;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.List;
@@ -33,26 +30,20 @@ public class CafcassApiInterceptorTest {
         UserInfo.builder().roles(List.of(LOCAL_AUTHORITY.getRoleName())).build();
 
     @Mock
-    private IdamClient idamClient;
-    @Mock
-    private FeatureToggleService featureToggleService;
-    @Mock
-    private ObjectProvider<IdamClient> idamClientObjectProvider;
+    private CafcassInterceptorService cafcassInterceptorService;
     @InjectMocks
     private CafcassApiInterceptor underTest;
 
     @BeforeEach
     public void setUp() {
-        when(featureToggleService.getCafcassAPIFlag())
-            .thenReturn(CafcassApiFeatureFlag.builder().enableApi(true).build());
+        when(cafcassInterceptorService.isCafcassApiToggledOn()).thenReturn(true);
     }
 
     @Test
     public void shouldReturnTrueIfCafcassSystemUpdateUser() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader("Authorization")).thenReturn(AUTH_TOKEN_TEST);
-        when(idamClientObjectProvider.getIfAvailable()).thenReturn(idamClient);
-        when(idamClient.getUserInfo(AUTH_TOKEN_TEST)).thenReturn(CAFCASS_SYSTEM_UPDATE_USER);
+        when(cafcassInterceptorService.getIdamUserInfo(AUTH_TOKEN_TEST)).thenReturn(CAFCASS_SYSTEM_UPDATE_USER);
 
         assertTrue(underTest.preHandle(request, null, null));
     }
@@ -61,8 +52,7 @@ public class CafcassApiInterceptorTest {
     public void shouldThrowAuthExceptionIfNotCafcassSystemUpdateUser() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader("Authorization")).thenReturn(AUTH_TOKEN_TEST);
-        when(idamClientObjectProvider.getIfAvailable()).thenReturn(idamClient);
-        when(idamClient.getUserInfo(AUTH_TOKEN_TEST)).thenReturn(LOCAL_AUTHORITY_UPDATE_USER);
+        when(cafcassInterceptorService.getIdamUserInfo(AUTH_TOKEN_TEST)).thenReturn(LOCAL_AUTHORITY_UPDATE_USER);
 
         assertThrows(AuthorizationException.class,
             () -> underTest.preHandle(request, null, null));
@@ -79,13 +69,9 @@ public class CafcassApiInterceptorTest {
 
     @Test
     public void shouldReturnFalseIfCafcassApiIsToggledOff() throws Exception {
-        when(featureToggleService.getCafcassAPIFlag())
-            .thenReturn(CafcassApiFeatureFlag.builder().enableApi(false).build());
+        when(cafcassInterceptorService.isCafcassApiToggledOn())
+            .thenReturn(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        assertThrows(ServiceUnavailableException.class,
-            () -> underTest.preHandle(request, null, null));
-
-        when(featureToggleService.getCafcassAPIFlag()).thenReturn(null);
         assertThrows(ServiceUnavailableException.class,
             () -> underTest.preHandle(request, null, null));
     }

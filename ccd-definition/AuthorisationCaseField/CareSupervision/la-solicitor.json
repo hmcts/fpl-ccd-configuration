@@ -9,6 +9,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentLocalAuthority",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "taskListLabel",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
@@ -3566,6 +3573,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentsConfirmPR",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantContactLabel",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRUD"
@@ -3618,6 +3632,13 @@
     "CaseFieldID": "guardianReportsListRemoved",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "U"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "lastGenuineUpdateTime",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",

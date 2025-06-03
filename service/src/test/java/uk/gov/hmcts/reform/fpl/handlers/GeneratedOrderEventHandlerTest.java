@@ -412,7 +412,7 @@ class GeneratedOrderEventHandlerTest {
 
     @Test
     void shouldCreateWorkAllocationTaskWhenNonCtscUserUploadsOrder() {
-        given(userService.isHmctsAdminUser()).willReturn(false);
+        given(userService.isCtscUser()).willReturn(false);
         underTest.createWorkAllocationTask(EVENT);
 
         verify(workAllocationTaskService).createWorkAllocationTask(CASE_DATA,
@@ -421,7 +421,7 @@ class GeneratedOrderEventHandlerTest {
 
     @Test
     void shouldNotCreateWorkAllocationTaskWhenCtscUserUploadsOrder() {
-        given(userService.isHmctsAdminUser()).willReturn(true);
+        given(userService.isCtscUser()).willReturn(true);
         underTest.createWorkAllocationTask(EVENT);
 
         verify(workAllocationTaskService, never()).createWorkAllocationTask(any(),

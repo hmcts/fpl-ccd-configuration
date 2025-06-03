@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
@@ -39,13 +40,13 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-2360", this::run2360,
         "DFPL-2572", this::run2572,
-        "DFPL-2635", this::run2635,
-        "DFPL-2642", this::run2642,
-        "DFPL-2640", this::run2640,
         "DFPL-2487", this::run2487,
         "DFPL-2740", this::run2740,
-        "DFPL-2744", this::run2744
+        "DFPL-2744", this::run2744,
+        "DFPL-2739", this::run2739,
+        "DFPL-2756", this::run2756
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -78,35 +79,21 @@ public class MigrateCaseController extends CallbackController {
         //Required to run migration for TTL
     }
 
-    private void run2635(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2635";
-        final long expectedCaseId = 1721982839307738L;
-        final String orgId = "F9PXZ94";
+    private void run2756(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2756";
+        final long expectedCaseId = 1725874146484241L;
+        final String orgId = "FLXFDT7";
+
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
             orgId, null));
     }
 
-    private void run2642(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2642";
-        final long expectedCaseId = 1722424779915245L;
-        final String orgId = "CS35UMJ";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, null));
-    }
-
-    private void run2640(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2640";
-        final long expectedCaseId = 1717064003872528L;
-        final String orgId = "1B8LGGK";
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, null));
+    private void run2360(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2360";
+        // all existing cases need this field now, new cases will be populated in case initiation
+        caseDetails.getData().put("hasRespondentLA", YesNo.NO);
     }
 
     private void run2487(CaseDetails caseDetails) {
@@ -154,4 +141,14 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
+    private void run2739(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1726944362364630L, "DFPL-2739");
+
+        caseDetails.getData().putAll(migrateCaseService.removeDraftOrderFromAdditionalApplication(caseData,
+            "DFPL-2739",
+            UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
+            UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
+    }
 }
