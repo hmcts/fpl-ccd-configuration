@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
@@ -44,7 +43,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -415,19 +413,22 @@ public class ApproveDraftOrdersService {
 
         final ReviewDraftOrdersData reviewDraftOrdersData = caseData.getReviewDraftOrdersData();
 
+        Map<String, Object> data = new HashMap<>();
         // Filter out the orders that have been approved by Judge without amendments
-        return Map.of(
-            "previewApprovedOrders", IntStream.range(0, draftOrders.size())
-                .filter(counter -> CMOReviewOutcome.SEND_TO_ALL_PARTIES
-                    .equals(reviewDraftOrdersData.getReviewDecision(counter).getDecision()))
-                .mapToObj(counter -> {
-                    Element<HearingOrder> approvedOrderElement = draftOrders.get(counter);
-                    HearingOrder approvedOrder = approvedOrderElement.getValue();
-                    return element(approvedOrderElement.getId(), approvedOrder.toBuilder()
-                        .order(hearingOrderGenerator.addCoverSheet(caseData, (approvedOrder.isConfidentialOrder()
-                            ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder())))
-                        .build());
-                })
-                .toList());
+        int labelCounter = 1;
+        for (int i = 0; i <  draftOrders.size(); i++) {
+            if (CMOReviewOutcome.SEND_TO_ALL_PARTIES
+                .equals(reviewDraftOrdersData.getReviewDecision(i + 1).getDecision())) {
+                HearingOrder approvedOrder = draftOrders.get(i).getValue();
+
+                data.put("previewApprovedOrder" + labelCounter,
+                    hearingOrderGenerator.addCoverSheet(caseData, (approvedOrder.isConfidentialOrder()
+                        ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder())));
+                data.put("previewApprovedOrderTitle" + labelCounter,
+                    String.format("Order %d %s", (i + 1), approvedOrder.getTitle()));
+                labelCounter++;
+            }
+        }
+        return data;
     }
 }
