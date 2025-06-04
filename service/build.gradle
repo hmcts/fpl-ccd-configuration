@@ -235,8 +235,6 @@ jacocoTestReport {
   }
 }
 
-project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
-
 dependencyUpdates.resolutionStrategy = {
   componentSelection { rules ->
     rules.all { ComponentSelection selection ->
@@ -247,16 +245,6 @@ dependencyUpdates.resolutionStrategy = {
         selection.reject('Release candidate')
       }
     }
-  }
-}
-
-sonarqube {
-  properties {
-    property "sonar.projectName", "fpl-service"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    property "sonar.pitest.mode", "reuseReport"
-    property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java, **/testingsupport/**, **MigrateCaseController.java, **/controllers/support/**, **RespondQueryController.java, **RespondQueryEvent.java, **RespondQueryEventHandler.java, **RespondQueryNotifyData.java, **QueryManagementUtils.java"
   }
 }
 
