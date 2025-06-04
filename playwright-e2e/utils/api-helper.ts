@@ -1,29 +1,30 @@
 import {systemUpdateUser,privateSolicitorOrgUser} from '../settings/user-credentials';
 import {urlConfig} from '../settings/urls';
-
-
 import axios from 'axios';
 import * as qs from 'qs';
 import lodash from 'lodash';
+import {APIRequestContext} from '@playwright/test';
+import config from "../settings/test-docs/config";
+import * as fs from "fs";
 
-export const  getAccessToken = async ({user}: { user: any }) => {
-    try {
-        let axiosConfig = {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        };
-        let url = `${urlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
-        return await axios.post(url, qs.stringify(axiosConfig));
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.log(error.status)
-            console.error(error.response);
-        } else {
-            console.error(error);
+ export const  getAccessToken = async ({user}: { user: any }) => {
+        try {
+            let axiosConfig = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            };
+            let url = `${urlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
+            return await axios.post(url, qs.stringify(axiosConfig));
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log(error.status)
+                console.error(error.response);
+            } else {
+                console.error(error);
+            }
         }
     }
-}
 
 export const createCase = async (caseName = 'e2e UI Test', user: { email: string, password: string }) => {
 
@@ -65,27 +66,27 @@ export const updateCase = async (caseName = 'e2e Test', caseID: string, caseData
     }
 }
 
-export const apiRequest = async (postURL: string, authUser: any, method: string = 'get', data: any = {}) => {
-    const systemUserAuthToke = await getAccessToken({user: authUser});
-    const requestConfig = {
-        method: method,
-        url: postURL,
-        data: data,
-        headers: {
-            'Authorization': `Bearer ${systemUserAuthToke?.data.access_token}`,
-            'Content-Type': 'application/json'
-        },
-    };
-    try {
-        return axios.request(requestConfig).then((res) => {
-            return res.data;
-        });
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.log(error.status);
-            console.log(error.request);
-            console.log(error.response);
-        }
+   export const apiRequest = async (postURL: string, authUser: any, method: string = 'get', data: any = {}) => {
+        const systemUserAuthToke = await getAccessToken({user: authUser});
+        const requestConfig = {
+            method: method,
+            url: postURL,
+            data: data,
+            headers: {
+                'Authorization': `Bearer ${systemUserAuthToke?.data.access_token}`,
+                'Content-Type': 'application/json'
+            },
+        };
+        try {
+            return axios.request(requestConfig).then((res) => {
+                return res.data;
+            });
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log(error.status);
+                console.log(error.request);
+                console.log(error.response);
+            }
 
     }
 
@@ -103,4 +104,82 @@ export const giveAccessToCase = async (caseID: string,user: {email: string ,pass
     } catch (error) {
         console.log(error);
     }
+
+}
+
+export const cafcassAPICaseSearch = async (request: APIRequestContext, AuthToken: string, startTime: string, endTime: string) => {
+
+    let response = await request.get(`${urlConfig.serviceUrl}/cases`,
+        {
+            headers: {
+                'Authorization': `Bearer ${AuthToken}`,
+                'Content-Type': 'application/json'
+            }
+            , params: {
+                'startDate': `${startTime}`,
+                'endDate': `${endTime}`
+            }
+        })
+    return response;
+}
+
+export const cafcassAPIDocSearch = async (request: APIRequestContext, AuthToken: string,docId:string) => {
+    let response = await request.get(`${urlConfig.serviceUrl}/cases/documents/${docId}/binary`,
+        {
+            headers: {
+                'Authorization': `Bearer ${AuthToken}`,
+
+            }
+        })
+    return await response;
+}
+export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, AuthToken: string, caseID: string, data: {
+    guardianName: string;
+    telephoneNumber: string;
+    email: string;
+    children: string[];
+}[] | undefined) => {
+    let url = `${urlConfig.serviceUrl}/cases/${caseID}/guardians`
+    let response = await request.post(url,
+        {
+            headers: {
+                'Authorization': `Bearer ${AuthToken}`,
+                'Content-Type': 'application/json',
+            },
+            data: data,
+
+        })
+    return response;
+}
+export const cafcassAPICaseDocSearch = async (request: APIRequestContext, AuthToken: string, documentId: string) => {
+    let url = `${urlConfig.serviceUrl}/cases/documents/{documentId}/binary`
+
+    let response = await request.get(`${urlConfig.serviceUrl}/cases`,
+        {
+            headers: {
+                'Authorization': `Bearer ${AuthToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+    return response;
+}
+export const cafcassAPIUploadDoc = async (request: APIRequestContext,AuthToken:string, caseID:string,docType:string,fileType:string='pdf') => {
+    let url = `${urlConfig.serviceUrl}/cases/${caseID}/document`;
+    let docUpload = fs.readFileSync(config.testPdfFile);
+
+    let response = await request.post(url,
+        {
+            headers: {
+                'Authorization': `Bearer ${AuthToken}`,
+            },
+            multipart: {
+                file: {
+                    name: config.testPdfFile,
+                    mimeType: `application/${fileType}`,
+                    buffer: docUpload,
+                },
+                typeOfDocument: docType
+            }
+        });
+    return response;
 }
