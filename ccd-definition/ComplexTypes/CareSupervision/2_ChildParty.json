@@ -182,7 +182,7 @@
     "ListElementCode": "additionalNeeds",
     "FieldType": "YesOrNo",
     "ElementLabel": "Does the child have any additional needs?",
-    "HintText": "For example, child has severe autism and learning disabilities. Special needs for autism should be taken into account.",
+    "HintText": "For example, physical or learning disabilities, severe allergies or conditions that need to be taken into account.",
     "SecurityClassification": "Public"
   },
   {
