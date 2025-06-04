@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
+import uk.gov.hmcts.reform.aac.client.NocApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -28,7 +28,7 @@ public class CaseAssignmentService {
     private final RequestData requestData;
     private final AuthTokenGenerator tokenGenerator;
     private final SystemUserService systemUserService;
-    private final CaseAssignmentApi caseAssignmentApi;
+    private final NocApi nocApi;
 
     public AboutToStartOrSubmitCallbackResponse applyDecisionAsSystemUser(CaseDetails caseDetails) {
         return applyDecision(caseDetails, systemUserService.getSysUserToken());
@@ -50,7 +50,7 @@ public class CaseAssignmentService {
     }
 
     private AboutToStartOrSubmitCallbackResponse applyDecision(CaseDetails caseDetails, String userToken) {
-        return caseAssignmentApi.applyDecision(
+        return nocApi.applyDecision(
             userToken,
             tokenGenerator.generate(),
             decisionRequest(caseDetails));

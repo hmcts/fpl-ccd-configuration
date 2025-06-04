@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.AuditEventsResponse;
+import uk.gov.hmcts.reform.fpl.config.feign.FeignClientConfiguration;
 
 import java.util.Map;
 
@@ -19,7 +20,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @FeignClient(
     name = "core-case-data-api-v2",
     url = "${core_case_data.api.url}",
-    configuration = CoreCaseDataConfiguration.class
+    configuration = FeignClientConfiguration.class
 )
 public interface CoreCaseDataApiV2 {
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
