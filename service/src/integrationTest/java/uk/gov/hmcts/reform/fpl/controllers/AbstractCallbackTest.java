@@ -303,6 +303,11 @@ public abstract class AbstractCallbackTest extends AbstractTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> postMetadataCallback(String path, CallbackRequest callbackRequest) {
+        return postEvent(path, toBytes(callbackRequest), SC_OK, Map.class);
+    }
+
     private byte[] toBytes(Object o) {
         try {
             return mapper.writeValueAsString(o).getBytes();

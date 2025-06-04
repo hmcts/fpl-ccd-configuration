@@ -34,7 +34,7 @@
     "PageDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge=\"No\""
+    "FieldShowCondition": "allocatedJudgeLabel=\"\" OR useAllocatedJudge=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -46,7 +46,7 @@
     "PageDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge=\"No\" AND hearingJudgeType!=\"LEGAL_ADVISOR\""
+    "FieldShowCondition": "(allocatedJudgeLabel=\"\" OR useAllocatedJudge=\"No\") AND hearingJudgeType!=\"LEGAL_ADVISOR\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -58,7 +58,7 @@
     "PageDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge=\"No\" AND hearingJudgeType=\"FEE_PAID_JUDGE\""
+    "FieldShowCondition": "(allocatedJudgeLabel=\"\" OR useAllocatedJudge=\"No\") AND hearingJudgeType=\"FEE_PAID_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -70,7 +70,7 @@
     "PageDisplayOrder": 3,
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge=\"No\" AND hearingJudgeType=\"LEGAL_ADVISOR\""
+    "FieldShowCondition": "(allocatedJudgeLabel=\"\" OR useAllocatedJudge=\"No\") AND hearingJudgeType=\"LEGAL_ADVISOR\""
   },
 
   {
@@ -83,7 +83,7 @@
     "PageDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge=\"No\" AND hearingJudgeType=\"LEGAL_ADVISOR\""
+    "FieldShowCondition": "(allocatedJudgeLabel=\"\" OR useAllocatedJudge=\"No\") AND hearingJudgeType=\"LEGAL_ADVISOR\""
   },
   {
     "LiveFrom": "01/01/2017",

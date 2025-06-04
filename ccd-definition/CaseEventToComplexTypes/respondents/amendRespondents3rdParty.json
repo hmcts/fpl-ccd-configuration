@@ -1,8 +1,8 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.firstName",
     "FieldDisplayOrder": 1,
@@ -10,8 +10,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.lastName",
     "FieldDisplayOrder": 2,
@@ -19,8 +19,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.dateOfBirth",
     "FieldDisplayOrder": 3,
@@ -28,8 +28,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.gender",
     "FieldDisplayOrder": 4,
@@ -37,8 +37,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.genderIdentification",
     "FieldDisplayOrder": 5,
@@ -46,8 +46,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.addressKnow",
     "FieldDisplayOrder": 6,
@@ -55,8 +55,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.addressNotKnowReason",
     "FieldDisplayOrder": 7,
@@ -64,8 +64,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.addressAutoConfidentialLabel",
     "FieldDisplayOrder": 7,
@@ -73,66 +73,66 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address",
     "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.AddressLine1",
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.AddressLine2",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.AddressLine3",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.PostTown",
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.County",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.PostCode",
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.Country",
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.hideAddress",
     "FieldDisplayOrder": 9,
@@ -140,8 +140,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.telephoneNumber",
     "FieldDisplayOrder": 10,
@@ -149,16 +149,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.telephoneNumber.telephoneNumber",
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.telephoneNumber.contactDirection",
     "DisplayContext": "OPTIONAL",
@@ -166,8 +166,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.hideTelephone",
     "FieldDisplayOrder": 11,
@@ -175,8 +175,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.contactDetailsHidden",
     "FieldDisplayOrder": 12,
@@ -185,8 +185,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.contactDetailsHiddenReason",
     "FieldDisplayOrder": 13,
@@ -195,8 +195,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.relationshipLabel",
     "FieldDisplayOrder": 14,
@@ -205,8 +205,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.relationshipToChild",
     "FieldDisplayOrder": 15,
@@ -214,8 +214,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.proceedingsLabel",
     "FieldDisplayOrder": 16,
@@ -224,8 +224,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.litigationIssues",
     "FieldDisplayOrder": 17,
@@ -233,8 +233,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.litigationIssuesDetails",
     "FieldDisplayOrder": 18,
@@ -242,23 +242,23 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "legalRepresentationLabel",
     "DisplayContext": "READONLY"
   },  {
   "LiveFrom": "01/01/2017",
-  "ID": "AmendRespondents",
-  "CaseEventID": "amendRespondents",
+  "ID": "AmendRespondents3rdParty",
+  "CaseEventID": "amendRespondents3rdParty",
   "CaseFieldID": "respondents1",
   "ListElementCode": "legalRepresentation",
   "DisplayContext": "OPTIONAL"
 },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.firstName",
     "FieldDisplayOrder": 1,
@@ -266,8 +266,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.lastName",
     "FieldDisplayOrder": 2,
@@ -275,8 +275,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.email",
     "FieldDisplayOrder": 3,
@@ -284,8 +284,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.organisation",
     "FieldDisplayOrder": 4,
@@ -293,16 +293,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.organisation.OrganisationName",
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation",
     "FieldDisplayOrder": 6,
@@ -312,8 +312,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.signUpRequestHeader",
     "DisplayContext": "READONLY",
@@ -321,8 +321,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.signupRequestLabel",
     "DisplayContext": "READONLY",
@@ -330,74 +330,74 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.name",
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "EventElementLabel": "Address",
     "ListElementCode": "solicitor.unregisteredOrganisation.address",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.address.AddressLine1",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.address.AddressLine2",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.address.AddressLine3",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.address.PostTown",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.address.County",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.address.PostCode",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.address.Country",
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress",
     "EventElementLabel": "Add the regional office managing this case",
@@ -405,57 +405,57 @@
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress.AddressLine1",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress.AddressLine2",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress.AddressLine3",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress.PostTown",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress.County",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress.PostCode",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress.Country",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "legalCounsellors",
     "DisplayContext": "READONLY",
@@ -463,10 +463,142 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AmendRespondents",
-    "CaseEventID": "amendRespondents",
+    "ID": "AmendRespondents3rdParty",
+    "CaseEventID": "amendRespondents3rdParty",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.telephoneNumber.telephoneNumber",
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "name",
+    "EventElementLabel": "Local authority name",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "email",
+    "EventElementLabel": "Email address",
+    "HintText": "This should be the email to receive notifications about the application.",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "phoneNumber",
+    "EventElementLabel": "Phone number",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "representativeFirstName",
+    "EventElementLabel": "Lawyer first name",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "representativeLastName",
+    "EventElementLabel": "Lawyer last name",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "address",
+    "EventElementLabel": "Local authority address",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "COMPLEX"
+  },
+  {
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "address.AddressLine1",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "address.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "address.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "address.PostTown",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "address.County",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "address.PostCode",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "address.Country",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "usingOtherOrg",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "organisation",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents3rd",
+    "CaseEventID": "amendRespondents3rdParty",
+    "CaseFieldID": "respondentLocalAuthority",
+    "ListElementCode": "organisation.OrganisationName",
+    "DisplayContext": "MANDATORY"
   }
 ]
