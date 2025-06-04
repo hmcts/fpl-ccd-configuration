@@ -1234,5 +1234,24 @@
     "SecurityClassification": "Public",
     "FieldShownCondition": "judgeTitleAndName=\"DO_NOT_SHOW\"",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previewOrderLabel",
+    "Label": "Cover sheets will be automatically added to the following C21 orders. If the content is incorrect, please return to the previous step and upload a revised document.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previewApprovedOrders",
+    "Label": " ",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

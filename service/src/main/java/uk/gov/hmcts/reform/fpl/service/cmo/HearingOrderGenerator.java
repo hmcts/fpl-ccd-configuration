@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisApprovedOrderCoverSheetService;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
@@ -32,7 +31,6 @@ public class HearingOrderGenerator {
     private final DocumentSealingService documentSealingService;
     private final Time time;
     private final DocmosisApprovedOrderCoverSheetService docmosisApprovedOrderCoverSheetService;
-    private final DocumentMerger documentMerger;
     private final UploadDocumentService uploadDocumentService;
 
     public Element<HearingOrder> buildSealedHearingOrder(CaseData caseData,
@@ -63,16 +61,7 @@ public class HearingOrderGenerator {
             caseData.getSealType());
 
         if (addCoverSheet) {
-            try {
-                DocmosisDocument orderWithCoverSheet = docmosisApprovedOrderCoverSheetService
-                    .addCoverSheetToApprovedOrder(caseData, sealedOrder);
-
-                sealedOrder = buildFromDocument(uploadDocumentService
-                    .uploadPDF(orderWithCoverSheet.getBytes(), order.getFilename()));
-            } catch (Exception e) {
-                // TODO handle this better, maybe a notification to FPL service?
-                log.error("Error adding cover sheet to order", e);
-            }
+            sealedOrder = addCoverSheet(caseData, sealedOrder);
         }
 
         builder = (isConfidentialOrder)
@@ -88,5 +77,19 @@ public class HearingOrderGenerator {
             .status(CMOStatus.RETURNED)
             .requestedChanges(changesRequested)
             .build());
+    }
+
+    public DocumentReference addCoverSheet(CaseData caseData, DocumentReference order) {
+        try {
+            DocmosisDocument orderWithCoverSheet = docmosisApprovedOrderCoverSheetService
+                .addCoverSheetToApprovedOrder(caseData, order);
+
+            return buildFromDocument(uploadDocumentService
+                .uploadPDF(orderWithCoverSheet.getBytes(), order.getFilename()));
+        } catch (Exception e) {
+            // TODO handle this better, maybe a notification to FPL service?
+            log.error("Error adding cover sheet to order", e);
+            return order;
+        }
     }
 }

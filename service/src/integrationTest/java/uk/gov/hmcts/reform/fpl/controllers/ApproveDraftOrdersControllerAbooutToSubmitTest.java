@@ -24,7 +24,7 @@ class ApproveDraftOrdersControllerAbooutToSubmitTest extends AbstractCallbackTes
 
     @Test
     void shouldCaptureJudgeTitleAndName() {
-        when(judicialService.getJudgeTitleAndNameOfCurrentUser()).thenReturn("Judge Name");
+        when(judicialService.getJudgeTitleAndNameOfCurrentUser(null)).thenReturn("Judge Name");
 
         CaseData returnedCaseData = extractCaseData(postAboutToSubmitEvent(CaseData.builder().build()));
         assertThat(returnedCaseData.getReviewDraftOrdersData().getJudgeTitleAndName())

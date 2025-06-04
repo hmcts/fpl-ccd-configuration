@@ -24,12 +24,15 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
+import uk.gov.hmcts.reform.rd.model.JudicialUserAppointment;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -42,8 +45,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
+import static uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration.SERVICE_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
@@ -55,8 +60,10 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
+import static uk.gov.hmcts.reform.rd.model.JudicialUserAppointment.APPOINTMENT_TYPE_FEE_PAID;
 
 @Slf4j
 @Service
@@ -89,6 +96,7 @@ public class JudicialService {
     private final LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
     private final ElinksService elinksService;
     private final UserService userService;
+    private final Time time;
 
     /**
      * Delete a set of allocated-[users] on a specific case.
@@ -558,19 +566,49 @@ public class JudicialService {
             .idamId(List.of(idamId)).build());
     }
 
-    public String getJudgeTitleAndNameOfCurrentUser() {
+    public String getJudgeTitleAndNameOfCurrentUser(JudgeOrMagistrateTitle judgeTitle) {
         UserDetails userDetails = userService.getUserDetails();
-
-        List<JudicialUserProfile> judicialUserProfiles = List.of();
-        try {
-            judicialUserProfiles = getJudicialUserProfilesByIdamId(userDetails.getId());
-        } catch (Exception e) {
-            log.warn("Error while fetching JudicialUserProfile", e);
-        }
+        List<JudicialUserProfile> judicialUserProfiles = getJudicialUserProfilesByIdamId(userDetails.getId());
 
         return judicialUserProfiles.stream().map(judicialUserProfile ->
-                formatJudgeTitleAndName(JudgeAndLegalAdvisor.fromJudicialUserProfile(judicialUserProfile, null)))
+                    formatJudgeTitleAndName(JudgeAndLegalAdvisor.fromJudicialUserProfile(judicialUserProfile,
+                        judgeTitle)))
             .findFirst()
             .orElse(userDetails.getFullName());
+    }
+
+    public boolean isCurrentUserFeePaidJudge() {
+        UserDetails userDetails = userService.getUserDetails();
+        List<JudicialUserProfile> judicialUserProfiles  = getJudicialUserProfilesByIdamId(userDetails.getId());
+
+        return !judicialUserProfiles.isEmpty() && isFeePaidJudge(judicialUserProfiles.get(0));
+    }
+
+    private boolean isFeePaidJudge(JudicialUserProfile judicialUserProfile) {
+        LocalDate todayDate = time.now().toLocalDate();
+
+        List<String> feePaidAppointments =
+            nullSafeCollection(judicialUserProfile.getAppointments()).stream()
+                .filter(appointment ->
+                    APPOINTMENT_TYPE_FEE_PAID.equals(appointment.getAppointmentType())
+                        && isWithinDateRange(todayDate, appointment.getStartDate(), appointment.getEndDate()))
+                .map(JudicialUserAppointment::getAppointmentId)
+                .toList();
+
+        if (!feePaidAppointments.isEmpty()) {
+            return nullSafeCollection(judicialUserProfile.getAuthorisations()).stream()
+                .anyMatch(authorisation ->
+                    nullSafeCollection(authorisation.getServiceCodes()).contains(SERVICE_CODE)
+                        && isWithinDateRange(todayDate, authorisation.getStartDate(), authorisation.getEndDate())
+                        && feePaidAppointments.contains(authorisation.getAppointmentId())
+                );
+        }
+
+        return false;
+    }
+
+    private boolean isWithinDateRange(LocalDate todayDate, LocalDate startDate, LocalDate endDate) {
+        return isNotEmpty(startDate) && todayDate.isAfter(startDate)
+            && (isEmpty(endDate) || todayDate.isBefore(endDate));
     }
 }

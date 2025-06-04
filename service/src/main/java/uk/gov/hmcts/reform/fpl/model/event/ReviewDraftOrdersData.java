@@ -5,14 +5,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
+import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 
 @Value
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ReviewDraftOrdersData {
+    @Temp
     String judgeTitleAndName;
 
     String draftCMOExists;
@@ -61,7 +64,8 @@ public class ReviewDraftOrdersData {
             "cmoDraftOrderDocument", "draftOrder1Document", "draftOrder2Document", "draftOrder3Document",
             "draftOrder4Document", "draftOrder5Document", "draftOrder6Document", "draftOrder7Document",
             "draftOrder8Document", "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles",
-            "draftOrdersTitlesInBundle", "draftOrdersApproved", "judgeTitleAndName"
+            "draftOrdersTitlesInBundle", "draftOrdersApproved", "judgeTitleAndName", "feePaidJudgeTitle", "judgeType",
+            "previewApprovedOrders"
         };
     }
 
@@ -87,4 +91,33 @@ public class ReviewDraftOrdersData {
             || (!isEmpty(reviewDecision10) && reviewDecision10.hasBeenApproved());
     }
 
+    @JsonIgnore
+    public boolean hasADraftBeenApprovedWithoutChanges() {
+        return (!isEmpty(reviewDecision1) && reviewDecision1.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(reviewDecision2) && reviewDecision2.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(reviewDecision3) && reviewDecision3.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(reviewDecision4) && reviewDecision4.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(reviewDecision5) && reviewDecision5.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(reviewDecision6) && reviewDecision6.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(reviewDecision7) && reviewDecision7.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(reviewDecision8) && reviewDecision8.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(reviewDecision9) && reviewDecision9.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(reviewDecision10) && reviewDecision10.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES));
+    }
+
+    public ReviewDecision getReviewDecision(int counter) {
+        return switch (counter) {
+            case 1 -> reviewDecision1;
+            case 2 -> reviewDecision2;
+            case 3 -> reviewDecision3;
+            case 4 -> reviewDecision4;
+            case 5 -> reviewDecision5;
+            case 6 -> reviewDecision6;
+            case 7 -> reviewDecision7;
+            case 8 -> reviewDecision8;
+            case 9 -> reviewDecision9;
+            case 10 -> reviewDecision10;
+            default -> null;
+        };
+    }
 }

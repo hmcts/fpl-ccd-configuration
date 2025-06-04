@@ -751,7 +751,7 @@ class JudicialServiceTest {
                     eq(JudicialUserRequest.builder().idamId(List.of("testId")).build())))
                 .thenReturn(List.of(JUDICIAL_USER_PROFILE));
 
-            assertThat(underTest.getJudgeTitleAndNameOfCurrentUser())
+            assertThat(underTest.getJudgeTitleAndNameOfCurrentUser(null))
                 .isEqualTo(formatJudgeTitleAndName(JudgeAndLegalAdvisor
                     .fromJudicialUserProfile(JUDICIAL_USER_PROFILE, null)));
         }
@@ -765,7 +765,7 @@ class JudicialServiceTest {
                 .build());
             when(judicialApi.findUsers(any(), any(), anyInt(), any(), any())).thenReturn(List.of());
 
-            assertThat(underTest.getJudgeTitleAndNameOfCurrentUser()).isEqualTo("John Smith");
+            assertThat(underTest.getJudgeTitleAndNameOfCurrentUser(null)).isEqualTo("John Smith");
         }
     }
 }
