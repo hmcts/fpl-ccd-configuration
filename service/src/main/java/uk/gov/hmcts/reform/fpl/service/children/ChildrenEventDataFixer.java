@@ -69,6 +69,7 @@ public class ChildrenEventDataFixer {
             .livingSituationDetails(null)
             .addressChangeDate(null)
             .livingWithDetails(null)
+            .isAddressConfidential(YesNo.NO.getValue())
             .address(null);
 
         // Only add back details that are required for the selected situation
@@ -85,10 +86,12 @@ public class ChildrenEventDataFixer {
             case LIVE_WITH_FAMILY_OR_FRIENDS:
                 childPartyBuilder.livingWithDetails(childParty.getLivingWithDetails())
                         .addressChangeDate(childParty.getAddressChangeDate())
-                        .address(childParty.getAddress());
+                        .address(childParty.getAddress())
+                        .isAddressConfidential(childParty.getIsAddressConfidential());
                 break;
             case LIVE_IN_REFUGE, LIVING_WITH_RESPONDENTS:
-                childPartyBuilder.address(childParty.getAddress());
+                childPartyBuilder.address(childParty.getAddress())
+                    .isAddressConfidential(childParty.getIsAddressConfidential());
                 break;
             case NOT_SPECIFIED:
                 childPartyBuilder.livingSituationDetails(childParty.getLivingSituationDetails());
