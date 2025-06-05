@@ -39,7 +39,7 @@ public class RespondQueryControllerTest extends AbstractCallbackTest {
     void shouldTriggerRespondQueryEventAndSendNotification() {
         when(userService.getUserDetailsById(any())).thenReturn(UserDetails.builder().email("test@test.com").build());
         Long caseId = 1L;
-        String LaUserId = UUID.randomUUID().toString();
+        String laUserId = UUID.randomUUID().toString();
         String queryId = UUID.randomUUID().toString();
 
         CaseDetails caseDetailsBefore = CaseDetails.builder()
@@ -56,7 +56,7 @@ public class RespondQueryControllerTest extends AbstractCallbackTest {
                                 "subject", "query",
                                 "name", "Local Authority",
                                 "createdOn", "2025-06-01T12:00:00.000Z",
-                                "createdBy", LaUserId
+                                "createdBy", laUserId
                             )
                         )
                     )
@@ -78,7 +78,7 @@ public class RespondQueryControllerTest extends AbstractCallbackTest {
                                 "subject", "query",
                                 "name", "Local Authority",
                                 "createdOn", "2025-06-01T12:00:00.000Z",
-                                "createdBy", LaUserId
+                                "createdBy", laUserId
                             )
                         ),
                         element(
