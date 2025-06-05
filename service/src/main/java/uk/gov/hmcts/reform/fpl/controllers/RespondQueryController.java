@@ -37,7 +37,7 @@ public class RespondQueryController extends CallbackController {
         log.info("Parent query: {}", parentQuery); //For debugging purposes
 
         publishEvent(new RespondQueryEvent(
-            getCaseData(callbackRequest),
+            getCaseData(callbackRequest.getCaseDetails()),
             getUserIdFromQuery(parentQuery),
             getQueryDateFromQuery(parentQuery))
         );
