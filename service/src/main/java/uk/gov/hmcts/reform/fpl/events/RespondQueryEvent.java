@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 @RequiredArgsConstructor
 public class RespondQueryEvent {
     private final CaseData caseData;
-    private final String queryId;
     private final String userId;
     private final String queryDate;
 }

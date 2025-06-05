@@ -3,58 +3,43 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.RespondQueryEvent;
-import uk.gov.hmcts.reform.fpl.exceptions.api.NotFoundException;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
-import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getUserIdFromQueryId;
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getQueryDateFromQueryId;
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getParentQueryFromResponse;
+import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getQueryDateFromQuery;
+import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getQueryResponseFromCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getUserIdFromQuery;
 
 @Slf4j
 @RestController
-@RequestMapping("/query-management")
+@RequestMapping("/callback/respond-query")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class RespondQueryController {
-    private final EventService eventPublisher;
-    private final CaseConverter caseConverter;
-    private final CoreCaseDataService coreCaseDataService;
+public class RespondQueryController extends CallbackController {
 
-    @PostMapping("/query/{caseId}/3/{queryId}")
-    public void sendNotificationToUser(@PathVariable String caseId,
-                                     @PathVariable String queryId,
-                                     @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = getCaseDetails(caseId);
-        CaseData caseData = getCaseData(caseDetails);
-
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         log.info("Going to send notification");
 
-        eventPublisher.publishEvent(RespondQueryEvent.builder()
-            .caseData(caseData)
-            .queryId(queryId)
-            .userId(getUserIdFromQueryId(queryId, caseDetails))
-            .queryDate(getQueryDateFromQueryId(queryId, caseDetails))
-            .build());
-    }
+        Map<String,Object> queryResponse = getQueryResponseFromCaseDetails(callbackRequest.getCaseDetailsBefore(),
+            callbackRequest.getCaseDetails());
 
-    private CaseDetails getCaseDetails(String caseId) {
-        try {
-            return coreCaseDataService.findCaseDetailsById(caseId);
-        } catch (Exception e) {
-            throw new NotFoundException("Case reference not found");
-        }
-    }
+        log.info("Query response: {}", queryResponse); //For debugging purposes
 
-    private CaseData getCaseData(CaseDetails caseDetails) {
-        return caseConverter.convert(caseDetails);
+        Map<String,Object> parentQuery = getParentQueryFromResponse(callbackRequest.getCaseDetails(), queryResponse);
+
+        log.info("Parent query: {}", parentQuery); //For debugging purposes
+
+        publishEvent(new RespondQueryEvent(
+            getCaseData(callbackRequest),
+            getUserIdFromQuery(parentQuery),
+            getQueryDateFromQuery(parentQuery))
+        );
     }
 }

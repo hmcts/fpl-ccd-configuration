@@ -1287,6 +1287,7 @@
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "Publish": "Y",
-    "EndButtonLabel": "Respond to Query"
+    "EndButtonLabel": "Respond to Query",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/respond-query/submitted"
   }
 ]

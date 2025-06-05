@@ -50,8 +50,7 @@ public class QueryManagementUtils {
         );
     }
 
-    public static List<Element<Map<String,Object>>> getCaseMessages(CaseDetails caseDetails,
-                                                                    Map<String,Object> collection) {
+    public static List<Element<Map<String,Object>>> getCaseMessages(Map<String,Object> collection) {
         ObjectMapper objectMapper = new ObjectMapper();
 
         return objectMapper.convertValue(
@@ -60,15 +59,20 @@ public class QueryManagementUtils {
         );
     }
 
-    public static Map<String,Object> getQueryByQueryId(CaseDetails caseDetails, String queryId) {
-        List<Map<String,Object>> allQueries = new ArrayList<>();
+    public static List<Map<String,Object>> getAllCaseMessages(CaseDetails caseDetails) {
+        List<Map<String,Object>> caseMessages = new ArrayList<>();
 
         for (String collection : queryCollectionList) {
             if (caseDetails.getData().getOrDefault(collection, null) != null) {
-                allQueries.addAll(unwrapElements(getCaseMessages(caseDetails,
-                    getQueryCollection(caseDetails, collection))));
+                caseMessages.addAll(unwrapElements(getCaseMessages(getQueryCollection(caseDetails, collection))));
             }
         }
+
+        return caseMessages;
+    }
+
+    public static Map<String,Object> getQueryByQueryId(CaseDetails caseDetails, String queryId) {
+        List<Map<String,Object>> allQueries = getAllCaseMessages(caseDetails);
 
         return allQueries.stream()
             .filter(query -> query.getOrDefault("id", null).equals(queryId))
@@ -76,14 +80,32 @@ public class QueryManagementUtils {
             .orElseThrow(() -> new IllegalArgumentException("No query found for queryId " + queryId));
     }
 
-    public static String getUserIdFromQueryId(String queryId, CaseDetails caseDetails) {
-        Map<String,Object> query = getQueryByQueryId(caseDetails, queryId);
+    public static Map<String,Object> getQueryResponseFromCaseDetails(CaseDetails caseDetailsBefore,
+                                                                     CaseDetails caseDetailsAfter) {
+        List<Map<String,Object>> caseMessagesBefore = getAllCaseMessages(caseDetailsBefore);
+        List<Map<String,Object>> caseMessagesAfter = getAllCaseMessages(caseDetailsAfter);
 
+        List<Map<String,Object>> newCaseMessages = caseMessagesAfter.stream()
+            .filter(query -> !caseMessagesBefore.contains(query))
+            .toList();
+
+        return newCaseMessages.stream().findFirst().orElse(null);
+    }
+
+    public static Map<String,Object> getParentQueryFromResponse(CaseDetails caseDetails,
+                                                                Map<String,Object> queryResponse) {
+        String parentId = queryResponse.getOrDefault("parentId", null).toString();
+
+        return parentId != null
+            ? getQueryByQueryId(caseDetails, parentId)
+            : null;
+    }
+
+    public static String getUserIdFromQuery(Map<String,Object> query) {
         return query != null ? query.getOrDefault("createdBy", null).toString() : null;
     }
 
-    public static String getQueryDateFromQueryId(String queryId, CaseDetails caseDetails) {
-        Map<String,Object> query = getQueryByQueryId(caseDetails, queryId);
+    public static String getQueryDateFromQuery(Map<String,Object> query) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
         return query != null
@@ -97,7 +119,7 @@ public class QueryManagementUtils {
 
         Map<String,Object> collection = getQueryCollection(caseDetails, queryCollection);
 
-        List<Element<Map<String,Object>>> caseMessages = getCaseMessages(caseDetails, collection);
+        List<Element<Map<String,Object>>> caseMessages = getCaseMessages(collection);
 
         return unwrapElements(caseMessages).stream()
             .filter(caseMessage -> !caseMessage.containsKey("parentId")) //filtering out responses
