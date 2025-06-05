@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApprovedOrderCoverSheet;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
@@ -24,12 +23,16 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.APPROVED_ORDER_COVER;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocmosisApprovedOrderCoverSheetService {
+    private static final String ANNEX_A = "ANNEX A:";
+    private static final String ANNEX_A_WEL = "Atodiad A:";
+
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final DocumentMerger documentMerger;
@@ -61,11 +64,11 @@ public class DocmosisApprovedOrderCoverSheetService {
                 float textX = 50;
                 float textY = pageSize.getHeight() - 45;
                 contentStream.newLineAtOffset(textX,  textY); // Adjust position
-                contentStream.showText("ANNEX A:");
+                contentStream.showText(getAnnexText(caseData));
                 contentStream.endText();
 
-                // Calculate underline position and length
-                float textWidth = PDType1Font.TIMES_BOLD.getStringWidth("ANNEX A:") / 1000 * 12; // Font size is 12
+                // Calculate underline position and length, font size is 12
+                float textWidth = PDType1Font.TIMES_BOLD.getStringWidth(getAnnexText(caseData)) / 1000 * 12;
                 float underlineY = textY - 2; // Slightly below the text
 
                 // Draw underline
@@ -87,7 +90,7 @@ public class DocmosisApprovedOrderCoverSheetService {
         return docmosisDocumentGeneratorService.generateDocmosisDocument(coverDocumentData,
             APPROVED_ORDER_COVER,
             RenderFormat.PDF,
-            Language.ENGLISH);
+            caseData.getC110A().getLanguageRequirementApplication());
     }
 
     public DocmosisApprovedOrderCoverSheet buildCoverDocumentsData(CaseData caseData) {
@@ -96,8 +99,14 @@ public class DocmosisApprovedOrderCoverSheetService {
             .courtName(caseDataExtractionService.getCourtName(caseData))
             .children(caseDataExtractionService.getChildrenDetails(caseData.getAllChildren()))
             .judgeTitleAndName(caseData.getReviewDraftOrdersData().getJudgeTitleAndName())
-            .dateOfApproval(formatLocalDateToString(time.now().toLocalDate(), DATE, Language.ENGLISH))
+            .dateOfApproval(formatLocalDateToString(time.now().toLocalDate(), DATE,
+                caseData.getC110A().getLanguageRequirementApplication()))
             .crest(CREST.getValue())
             .build();
+    }
+
+    private String getAnnexText(CaseData caseData) {
+        return WELSH.equals(caseData.getC110A().getLanguageRequirementApplication())
+            ? ANNEX_A_WEL : ANNEX_A;
     }
 }
