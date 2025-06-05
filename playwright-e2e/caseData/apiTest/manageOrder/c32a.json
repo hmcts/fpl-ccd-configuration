@@ -1,0 +1,332 @@
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "respondentPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+    },
+    "respondentPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+    },
+    "respondentPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+    },
+    "respondentPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+    },
+    "respondentPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+    },
+    "submissionConsent": [
+      "agree"
+    ],
+    "sendToCtsc": "Yes",
+    "respondentPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+    },
+    "respondentPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+    },
+    "respondentPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+    },
+    "judgeAndLegalAdvisor": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Jimbo",
+      "judgeEmailAddress": "test@test.com"
+    },
+    "manageOrdersEpoRemovalAddress": {},
+    "groundsForSecureAccommodationOrder": {},
+    "manageOrdersMultiSelectListForC43": [],
+    "respondentPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+    },
+    "respondentPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+    },
+    "childSelector": {},
+    "hearingDetailsSectionSubHeader": "Care order (C32A)",
+    "manageOrdersOperation": "CREATE",
+    "orderTempQuestions": {
+      "approvalDateTime": "NO",
+      "reasonForSecureAccommodation": "NO",
+      "previewOrder": "YES",
+      "approvalDate": "YES",
+      "manageOrdersExpiryDateWithMonth": "NO",
+      "refuseContactQuestions": "NO",
+      "hearingDetails": "YES",
+      "dischargeOfCareDetails": "NO",
+      "parentResponsible": "NO",
+      "manageOrdersExclusionRequirementDetails": "NO",
+      "orderIsByConsent": "NO",
+      "orderJurisdiction": "NO",
+      "linkApplication": "NO",
+      "isFinalOrder": "NO",
+      "whichOthers": "NO",
+      "orderToAmend": "NO",
+      "manageOrdersVaryOrExtendSupervisionOrder": "NO",
+      "childLegalRepresentation": "NO",
+      "orderTitle": "NO",
+      "manageOrdersExpiryDateWithEndOfProceedings": "NO",
+      "manageOrdersChildAssessment": "NO",
+      "approver": "YES",
+      "selectSingleChild": "NO",
+      "uploadOrderFile": "NO",
+      "manageOrdersEducationSupervision": "NO",
+      "childPlacementApplications": "NO",
+      "whichChildren": "YES",
+      "epoIncludePhrase": "NO",
+      "translationRequirements": "NO",
+      "respondentsRefused": "NO",
+      "orderPlacedChildInCustody": "NO",
+      "childArrangementSpecificIssueProhibitedSteps": "NO",
+      "furtherDirections": "YES",
+      "orderDetails": "NO",
+      "childPlacementQuestions": "NO",
+      "epoChildrenDescription": "NO",
+      "epoExpiryDate": "NO",
+      "needSealing": "NO",
+      "cafcassJurisdictions": "NO",
+      "appointedGuardian": "NO",
+      "epoTypeAndPreventRemoval": "NO",
+      "uploadAmendedOrder": "NO",
+      "closeCase": "YES"
+    },
+    "caseLocalAuthority": "SA",
+    "court": {
+      "name": "Family Court sitting at Swansea",
+      "code": "344",
+      "email": "FamilyPublicLaw+sa@gmail.com"
+    },
+    "caseSummaryCourtName": "Family Court sitting at Swansea",
+    "children_label": "Child 1: Jim Test",
+    "localAuthorities": [
+      {
+        "value": {
+          "address": {
+            "AddressLine3": "40 Fleet street",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "Country": "United Kingdom",
+            "PostTown": "Swansea",
+            "PostCode": "CR0 2GE",
+            "County": "Swansea"
+          },
+          "designated": "Yes",
+          "phone": "01792 637000",
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "value": {
+                "mainContact": "Yes",
+                "notificationRecipient": "No",
+                "role": "OTHER",
+                "phone": "01792 637000",
+                "fullName": "John",
+                "title": "Colleague Test Title",
+                "email": "test@gmail.com"
+              },
+              "id": "ba336d06-6cdf-4305-8e4c-4c642875fa35"
+            }
+          ],
+          "name": "Swansea City Council",
+          "id": "ORGSA",
+          "email": "FamilyPublicLaw+sa@gmail.com"
+        },
+        "id": "5d5f6d84-ce2a-4c89-ab55-4ea3fc7a6651"
+      }
+    ],
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ],
+      "emergencyProtectionOrders": [],
+      "address": {},
+      "directions": "No",
+      "emergencyProtectionOrderDirections": [],
+      "court": "344"
+    },
+    "orderAppliesToAllChildren": "Yes",
+    "caseSummaryLATabHidden": "Yes",
+    "groundsForChildAssessmentOrder": {},
+    "manageOrdersActionsPermittedAddress": {},
+    "caseSummaryOrdersRequested": "Care order",
+    "taskList": "<div class='width-50'>\n\n<br/>\n\n<div class='govuk-tag govuk-tag--blue'>C110a Application<\/div>\n\n<br/>\n\n## Add application details\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/in-progress.png' title='In progress'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add grounds for the application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information<\/span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting<\/a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information<\/span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add application documents\n\n<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information <\/span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add information about the parties\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Local authority's details<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add court requirements\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add additional information\n\n<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete if relevant<\/div>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterInternationalElement'>International element<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/languageSelection'>Welsh language requirements<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Send application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/submitApplication'>Submit application<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<\/div>",
+    "caseSummaryLAHighCourtCase": "No",
+    "issuingDetailsSectionSubHeader": "Care order (C32A)",
+    "hearing": {
+      "withoutNotice": "Yes",
+      "respondentsAware": "Yes",
+      "reducedNotice": "No",
+      "type": "Standard case management hearing",
+      "timeFrame": "Other"
+    },
+    "caseSummaryFirstRespondentLastName": "Bloggs",
+    "displayAmountToPay": "Yes",
+    "caseSummaryNumberOfChildren": 1,
+    "manageOrdersFurtherDirections": "No further direction",
+    "children1": [
+      {
+        "value": {
+          "party": {
+            "lastName": "Test",
+            "firstName": "Jim",
+            "litigationIssues": "DONT_KNOW",
+            "address": {},
+            "gender": "Boy",
+            "socialWorkerTelephoneNumber": {},
+            "detailsHidden": "No",
+            "additionalNeeds": "No",
+            "dateOfBirth": "2016-03-31",
+            "livingSituation": "Other",
+            "partyId": "f4e1006e-0695-419e-881f-63fccd715054"
+          },
+          "legalCounsellors": []
+        },
+        "id": "fa6cfb1c-7d06-4dfa-8408-850a002255c2"
+      }
+    ],
+    "caseSummaryLALanguageRequirement": "No",
+    "amountToPay": "205500",
+    "noticeOfChangeAnswers0": {
+      "respondentLastName": "Bloggs",
+      "respondentFirstName": "Joe",
+      "applicantName": "Swansea City Council"
+    },
+    "childPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORI]"
+    },
+    "childPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
+    },
+    "childPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORG]"
+    },
+    "childPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORH]"
+    },
+    "childPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORE]"
+    },
+    "childPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORF]"
+    },
+    "childPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORC]"
+    },
+    "childPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORD]"
+    },
+    "noticeOfChangeChildAnswers0": {
+      "respondentLastName": "Test",
+      "respondentFirstName": "Jim",
+      "applicantName": "Swansea City Council"
+    },
+    "childPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+    },
+    "childPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORB]"
+    },
+    "caseName": "Ali Test Case",
+    "groundsForEPO": {},
+    "secureAccommodationOrderType": "NO",
+    "caseSummaryLASolicitorName": "John",
+    "caseLocalAuthorityName": "Swansea City Council",
+    "orderDetailsSectionSubHeader": "Care order (C32A)",
+    "dateAndTimeSubmitted": "2022-09-13T16:05:20.27812+01:00",
+    "manageOrdersCloseCase": "No",
+    "manageOrdersApprovedAtHearing": "No",
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "Test Details of threshold criteria"
+    },
+    "allocationProposal": {
+      "proposal": "District judge",
+      "proposalReason": "Would be a good idea"
+    },
+    "manageOrdersActionsPermitted": [],
+    "manageOrdersFullAddressToStayIfKeepAwayFromHome": {},
+    "childPolicy11": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORL]"
+    },
+    "childPolicy12": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORM]"
+    },
+    "childPolicy10": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORK]"
+    },
+    "otherOrderType": "NO",
+    "caseSummaryLASolicitorEmail": "test@gmail.com",
+    "caseSummaryLanguageRequirement": "No",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "manageOrdersType": "C32A_CARE_ORDER",
+    "childPolicy13": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORN]"
+    },
+    "childPolicy14": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORO]"
+    },
+    "caseSummaryHighCourtCase": "No",
+    "EPO_REASONING_SHOW": [],
+    "respondents1": [
+      {
+        "value": {
+          "legalRepresentation": "No",
+          "representedBy": [],
+          "legalCounsellors": [],
+          "party": {
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "litigationIssues": "NO",
+            "address": {},
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "gender": "Male",
+            "dateOfBirth": "1980-01-01",
+            "contactDetailsHidden": "No",
+            "addressKnow": "No",
+            "relationshipToChild": "Uncle",
+            "partyId": "8ce9e299-7b6a-42c3-806b-24d5dbdabe98",
+            "addressNotKnowReason": "No fixed abode"
+          }
+        },
+        "id": "415dcf0a-94b9-4a1b-a846-1783a8ba1a90"
+      }
+    ],
+    "childrenDetailsSectionSubHeader": "Care order (C32A)"
+  }
+}
