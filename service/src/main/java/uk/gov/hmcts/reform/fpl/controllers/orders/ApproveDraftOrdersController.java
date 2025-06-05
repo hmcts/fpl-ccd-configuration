@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrdersEventNotificationBuilder;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
 
@@ -35,6 +37,7 @@ public class ApproveDraftOrdersController extends CallbackController {
     private final ApproveDraftOrdersService approveDraftOrdersService;
     private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
     private final CoreCaseDataService coreCaseDataService;
+    private final JudicialService judicialService;
 
     private static final String DRAFT_ORDERS_APPROVED = "draftOrdersApproved";
 
@@ -44,7 +47,8 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency", DRAFT_ORDERS_APPROVED);
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency", DRAFT_ORDERS_APPROVED,
+            "feePaidJudgeTitle");
 
         caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 
@@ -84,12 +88,43 @@ public class ApproveDraftOrdersController extends CallbackController {
             data.put(DRAFT_ORDERS_APPROVED, "No");
         }
 
+        data.remove("judgeType");
+        if ((caseData.getReviewDraftOrdersData() != null
+            && caseData.getReviewDraftOrdersData().hasADraftBeenApprovedWithoutChanges())) {
+            if (judicialService.isCurrentUserFeePaidJudge()) {
+                data.put("judgeType", FEE_PAID_JUDGE);
+            } else {
+                data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData));
+            }
+        }
+
         return respond(caseDetails, errors);
+    }
+
+    @PostMapping("/preview-orders/mid-event")
+    public AboutToStartOrSubmitCallbackResponse previewOrders(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseData = caseData.toBuilder()
+            .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+                .judgeTitleAndName(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData))
+                .build())
+                .build();
+
+        // Generate the preview of the orders with cover sheet
+        caseDetails.getData().putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData));
+
+        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().put("judgeTitleAndName",
+            approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData));
 
         // DFPL-1171 move all document processing step to post-about-to-submitted stage
 
