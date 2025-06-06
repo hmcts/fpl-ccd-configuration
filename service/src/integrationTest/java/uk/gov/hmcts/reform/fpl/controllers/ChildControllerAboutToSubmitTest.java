@@ -528,6 +528,8 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .firstName("Phil")
             .lastName("Lynott")
             .address(nonConfidentialAddress)
+            .livingSituation("Living with other family or friends")
+            .livingWithDetails("Uncle Test")
             .socialWorkerEmail("test@test.com")
             .socialWorkerTelephoneNumber(Telephone.builder().telephoneNumber("12345").build())
             .socialWorkerName("Jim Test")

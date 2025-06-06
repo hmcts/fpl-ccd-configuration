@@ -122,12 +122,12 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.isAddressConfidential",
     "FieldDisplayOrder": 9,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -341,7 +341,7 @@
     "CaseFieldID": "children1",
     "ListElementCode": "party.socialWorkerDetailsHidden",
     "FieldDisplayOrder": 31,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -106,7 +106,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need to keep the address confidential?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\" OR isAddressConfidential=\"Yes\""
+    "FieldShowCondition": "livingSituation=\"Living with respondents\" OR livingSituation=\"Living with other family or friends\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -182,7 +182,7 @@
     "ListElementCode": "additionalNeeds",
     "FieldType": "YesOrNo",
     "ElementLabel": "Does the child have any additional needs?",
-    "HintText": "For example, child has severe autism and learning disabilities. Special needs for autism should be taken into account.",
+    "HintText": "For example, physical or learning disabilities, severe allergies or conditions that need to be taken into account.",
     "SecurityClassification": "Public"
   },
   {
