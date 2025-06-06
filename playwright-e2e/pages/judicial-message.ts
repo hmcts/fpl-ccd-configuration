@@ -36,10 +36,10 @@ export class JudicialMessage extends BasePage
         await this.clickContinue();
         await this.whichApplication.selectOption('C2, 25 March 2021, 3:16pm');
         await this.clickContinue();
-        await this.recipient.selectOption('Allocated Judge - Her Honour Judge Moley (moley@example.com)');
-        await this.subject.fill('Message To the allocated Judge');
+        await this.recipient.selectOption('Other Judge/Legal Adviser');
+        await this.subject.fill('Message To the legal adviser');
         await this.urgency.fill('Urgent');
-        await this.message.fill('message send to allocated Judge');
+        await this.message.fill('message send to legal adviser');
         await this.clickContinue();
     }
 
@@ -49,10 +49,10 @@ export class JudicialMessage extends BasePage
         await this.clickContinue();
         await this.whichDocument.selectOption('Test.txt');
         await this.clickContinue();
-        await this.recipient.selectOption('Allocated Judge - Her Honour Judge Moley (moley@example.com)');
-        await this.subject.fill('Message To the allocated Judge');
+        await this.recipient.selectOption('Other Judge/Legal Adviser');
+        await this.subject.fill('Message To the legal adviser');
         await this.urgency.fill('Urgent');
-        await this.message.fill('message send to allocated Judge');
+        await this.message.fill('message send to legal adviser');
         await this.clickContinue();
     }
 

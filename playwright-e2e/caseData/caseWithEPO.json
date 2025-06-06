@@ -1,0 +1,353 @@
+{
+"state": "GATEKEEPING",
+  "caseData": {
+    "amountToPay": "26300",
+    "familyManCaseNumber": "Familyman",
+    "westLondonDFJCourt": "117",
+    "submissionConsent": [
+      "agree"
+    ],
+    "sendToCtsc": "Yes",
+    "caseManagementLocation": {
+      "baseLocation": "229786",
+      "region": "1"
+    },
+    "otherOrderType": "NO",
+    "caseSummaryLAHighCourtCase": "No",
+    "representativeType": "LOCAL_AUTHORITY",
+    "caseManagementCategory": {
+      "value": {
+        "code": "FPL",
+        "label": "Family Public Law"
+      },
+      "list_items": [
+        {
+          "code": "FPL",
+          "label": "Family Public Law"
+        }
+      ]
+    },
+    "submittedForm": {
+      "upload_timestamp": "2025-06-02T16:06:28.907198803",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+      "document_filename": "EPO_order.pdf",
+      "document_url": "${TEST_DOCUMENT_URL}"
+    },
+    "localAuthorityDirections": [
+      {
+        "id": "3402469c-7760-44e9-92c2-b1f8349ad9e3",
+        "value": {
+          "directionType": "Send documents to all parties",
+          "directionText": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on\n",
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "147ff964-ece0-42c9-82f5-070a61a8945a",
+        "value": {
+          "directionType": "Send missing annex documents to the court and all parties",
+          "directionText": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents\n",
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "2c33249e-fefe-48dc-a9f1-b149fd17e2d1",
+        "value": {
+          "directionType": "Identify alternative carers",
+          "directionText": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "ab0ce759-abb2-481b-9c9a-48c73bf5c489",
+        "value": {
+          "directionType": "Send translated case documents to respondents",
+          "directionText": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "cc29f13d-ae61-4460-a516-3db6dfa34fad",
+        "value": {
+          "directionType": "Lodge a bundle",
+          "directionText": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "853a02c1-ffc4-43ff-b775-b264c9395aa9",
+        "value": {
+          "directionType": "Send case summary to all parties",
+          "directionText": "Send to the court and all parties.",
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "7c324dbb-0c17-4f12-9736-dedba475031f",
+        "value": {
+          "directionType": "Urgently consider jurisdiction and invite any representations",
+          "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.\n",
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "842e62c5-2933-437f-9c9f-3e0f7c2c78f2",
+        "value": {
+          "directionType": "Reduce time for service of notice of the proceedings",
+          "directionText": "",
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      }
+    ],
+    "hearing": {
+      "reason": null,
+      "reducedNotice": null,
+      "reducedNoticeReason": null,
+      "reason12Days": null,
+      "respondentsAwareReason": "test",
+      "type": null,
+      "timeFrame": null,
+      "withoutNotice": null,
+      "respondentsAware": "No",
+      "reason2Days": null,
+      "hearingUrgencyDetails": null,
+      "type_GiveReason": null,
+      "reason7Days": null,
+      "withoutNoticeReason": null,
+      "hearingUrgencyType": "STANDARD"
+    },
+    "caseName": "EPO order",
+    "localAuthorityPolicy": {
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]",
+      "Organisation": {
+        "OrganisationID": "W9V61CP",
+        "OrganisationName": "Swansea City Council"
+      }
+    },
+    "groundsForEPO": {
+      "reason": [
+        "URGENT_ACCESS_TO_CHILD_IS_OBSTRUCTED",
+        "HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION",
+        "HARM_IF_NOT_MOVED_TO_NEW_ACCOMMODATION"
+      ]
+    },
+    "secureAccommodationOrderType": "NO",
+    "dfjArea": "WEST_LONDON",
+    "respondents1": [
+      {
+        "id": "5d56325f-2ceb-46ab-b1dd-168d77103b0c",
+        "value": {
+          "legalRepresentation": "No",
+          "legalCounsellors": [],
+          "isLocalAuthority": "NO",
+          "representedBy": [],
+          "party": {
+            "lastName": "Yule",
+            "address": {},
+            "telephoneNumber": {
+              "telephoneNumber": "07425835822"
+            },
+            "gender": "Female",
+            "hideTelephone": "No",
+            "dateOfBirth": "1985-04-12",
+            "relationshipToChild": "child one",
+            "firstName": "Respondent",
+            "litigationIssues": "NO",
+            "hideAddress": "No",
+            "addressKnow": "No",
+            "partyId": "b9aa25be-af90-43aa-8b43-73424b9809fb",
+            "addressNotKnowReason": "No fixed abode"
+          }
+        }
+      }
+    ],
+    "displayAmountToPay": "Yes",
+    "hasRespondentLA": "NO",
+    "caseLocalAuthority": "SA",
+    "court": {
+      "epimmsId": "229786",
+      "code": "117",
+      "regionId": "1",
+      "name": "Family Court sitting at Barnet",
+      "dateTransferred": null,
+      "region": "London",
+      "email": null
+    },
+    "dateAndTimeSubmitted": "2025-06-02T17:06:28.271024143+01:00",
+    "caseNameHmctsInternal": "EPO order",
+    "SearchCriteria": {
+      "SearchParties": [
+        {
+          "id": "0c1d38ee-b43d-4e72-b6e6-e360b369b3de",
+          "value": {
+            "DateOfBirth": "1985-04-12",
+            "Name": "Respondent Yule"
+          }
+        },
+        {
+          "id": "d5b02b7f-0861-4d92-9583-76fd340898cb",
+          "value": {
+            "DateOfBirth": "2000-04-12",
+            "AddressLine1": "81 Pears Road",
+            "PostCode": "TW3 1SS",
+            "Name": "child One"
+          }
+        }
+      ]
+    },
+    "grounds": {
+      "thresholdDetails": "summary",
+      "thresholdReason": [
+        "beyondControl",
+        "noCare"
+      ],
+      "hasThresholdDocument": "NO"
+    },
+    "respondentsConfirmPR": [
+      "confirm"
+    ],
+    "allocationProposal": {
+      "proposal": null,
+      "proposalV2": "Circuit judge",
+      "proposalReason": "Reasons"
+    },
+    "children1": [
+      {
+        "id": "8a77f413-2e2e-403f-b7ed-af8b7d830010",
+        "value": {
+          "legalCounsellors": [],
+          "party": {
+            "lastName": "One",
+            "firstName": "child",
+            "litigationIssues": "NO",
+            "address": {
+              "AddressLine3": "",
+              "AddressLine2": "",
+              "AddressLine1": "81 Pears Road",
+              "Country": "United Kingdom",
+              "PostTown": "Hounslow",
+              "PostCode": "TW3 1SS",
+              "County": ""
+            },
+            "gender": "Girl",
+            "addressChangeDate": "2024-04-03",
+            "detailsHidden": "No",
+            "dateOfBirth": "2000-04-12",
+            "livingSituation": "Living with other family or friends",
+            "partyId": "eda84f4f-abc0-495a-9234-5000428836f8"
+          }
+        }
+      }
+    ],
+    "refuseContactWithChildOrderType": null,
+    "localAuthorities": [
+      {
+        "id": "7b0127d0-800e-4f97-bdf3-323d56b519d3",
+        "value": {
+          "address": {
+            "AddressLine3": "40 Fleet street",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "Country": "United Kingdom",
+            "PostTown": "Swansea",
+            "PostCode": "CR0 2GE",
+            "County": "United Kingdom"
+          },
+          "designated": "Yes",
+          "pbaNumber": "PBA1234567",
+          "phone": null,
+          "clientCode": null,
+          "legalTeamManager": "Hertfordshire",
+          "representingDetails": {
+            "firstName": null,
+            "lastName": null
+          },
+          "colleagues": [
+            {
+              "id": "c53e455d-0aa4-4957-a3a2-12e3c5683432",
+              "value": {
+                "lastName": "Dany",
+                "firstName": "Sam",
+                "mainContact": "Yes",
+                "notificationRecipient": "Yes",
+                "phone": "07425835822",
+                "email": "samdany@justice.gov.uk"
+              }
+            }
+          ],
+          "customerReference": "customer",
+          "name": "Swansea City Council",
+          "id": "W9V61CP",
+          "email": "FamilyPublicLaw+sa@gmail.com"
+        }
+      }
+    ],
+    "orders": {
+      "particularsOfChildren": [],
+      "orderType": [
+        "EMERGENCY_PROTECTION_ORDER"
+      ],
+      "emergencyProtectionOrders": [
+        "CHILD_WHEREABOUTS"
+      ],
+      "address": {
+        "AddressLine3": "",
+        "AddressLine2": "",
+        "AddressLine1": "75 Pears Road",
+        "Country": "United Kingdom",
+        "PostTown": "Hounslow",
+        "PostCode": "TW3 1SS",
+        "County": ""
+      },
+      "directionDetails": null,
+      "epoType": "PREVENT_REMOVAL",
+      "emergencyProtectionOrderDirections": [
+        "CONTACT_WITH_NAMED_PERSON"
+      ],
+      "childAssessmentOrderContactDirections": null,
+      "court": "117",
+      "particularsOfChildrenDetails": null,
+      "childRecoveryOrderDirectionsAppliedFor": null,
+      "educationSupervisionOrderPriorConsultationType": [],
+      "excluded": null,
+      "educationSupervisionOrderDirectionsAppliedFor": null,
+      "educationSupervisionOrderPriorConsultationOtherLA": null,
+      "directions": "No",
+      "emergencyProtectionOrderDirectionDetails": null,
+      "childAssessmentOrderAssessmentDirections": null,
+      "emergencyProtectionOrderDetails": null,
+      "otherOrder": null
+    },
+    "caseSummaryLATabHidden": "Yes",
+    "caseSummaryLALanguageRequirement": "No",
+    "c1Application": "No",
+
+    "contactWithChildInCareOrderType": null,
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA"
+  }
+}

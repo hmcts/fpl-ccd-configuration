@@ -1,0 +1,409 @@
+{
+  "state": "GATEKEEPING_LISTING",
+  "caseData": {
+    "amountToPay": "26300",
+    "c1Application": "No",
+    "caseManagementCategory": {
+      "list_items": [
+        {
+          "code": "FPL",
+          "label": "Family Public Law"
+        }
+      ],
+      "value": {
+        "code": "FPL",
+        "label": "Family Public Law"
+      }
+    },
+    "otherOrderType": "NO",
+    "refuseContactWithChildOrderType": null,
+    "secureAccommodationOrderType": "NO",
+    "contactWithChildInCareOrderType": null,
+    "caseName": "e2e test new case",
+    "hearing": {
+      "hearingUrgencyDetails": null,
+      "hearingUrgencyType": "STANDARD",
+      "reason": null,
+      "reason12Days": null,
+      "reason2Days": null,
+      "reason7Days": null,
+      "reducedNotice": null,
+      "reducedNoticeReason": null,
+      "respondentsAware": "No",
+      "respondentsAwareReason": "test",
+      "timeFrame": null,
+      "type": null,
+      "type_GiveReason": null,
+      "withoutNotice": null,
+      "withoutNoticeReason": null
+    },
+    "westLondonDFJCourt": "117",
+    "submissionConsent": [
+      "agree"
+    ],
+    "sendToCtsc": "Yes",
+    "caseManagementLocation": {
+      "baseLocation": "229786",
+      "region": "1"
+    },
+    "representativeType": "LOCAL_AUTHORITY",
+    "submittedForm": {
+      "upload_timestamp": "2025-05-23T13:28:02.960501959",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+      "document_filename": "Smoke_Test.pdf",
+      "document_url": "${TEST_DOCUMENT_URL}"
+    },
+    "familyManCaseNumber": "Familyman",
+    "localAuthorityPolicy": {
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]",
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      }
+    },
+    "groundsForEPO": {
+      "reason": [
+        "URGENT_ACCESS_TO_CHILD_IS_OBSTRUCTED"
+      ]
+    },
+
+    "urgentDirectionsOrder": {
+      "translationRequirements": "NO",
+      "orderStatus": "DRAFT",
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "DEPUTY_DISTRICT_JUDGE",
+        "judgeJudicialUser": {
+          "personalCode": null,
+          "idamId": null
+        },
+        "judgeLastName": "blogg",
+        "judgeEmailAddress": "fr_applicant_sol@sharklasers.com"
+      },
+      "needTranslation": "NO",
+      "standardDirections": [
+        {
+          "id": "bcc46e91-9ba6-41ef-a9d0-5ed0af5f4002",
+          "value": {
+            "dueDateType": "DAYS",
+            "dateToBeCompletedBy": null,
+            "description": "Parties and their legal representatives must attend the pre-hearing and hearing",
+            "assignee": "ALL_PARTIES",
+            "title": "Attend the pre-hearing and hearing",
+            "type": "ATTEND_HEARING",
+            "daysBeforeHearing": 2
+          }
+        },
+        {
+          "id": "5e5aa79f-3e38-4634-9d8f-a9fd77224eec",
+          "value": {
+            "dueDateType": "DAYS",
+            "dateToBeCompletedBy": null,
+            "description": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
+            "assignee": "LOCAL_AUTHORITY",
+            "title": "Lodge a bundle",
+            "type": "LODGE_BUNDLE",
+            "daysBeforeHearing": 2
+          }
+        },
+        {
+          "id": "1d7ba271-6522-4c34-bf0f-f0d2c06945d8",
+          "value": {
+            "dueDateType": null,
+            "dateToBeCompletedBy": null,
+            "description": "",
+            "assignee": "CAFCASS",
+            "title": "Appoint a children's guardian",
+            "type": "APPOINT_CHILDREN_GUARDIAN_IMMEDIATE",
+            "daysBeforeHearing": null
+          }
+        },
+        {
+          "id": "ac021aab-4c85-40b9-9148-68e4b73cfacc",
+          "value": {
+            "dueDateType": null,
+            "dateToBeCompletedBy": null,
+            "description": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+            "assignee": "COURT",
+            "title": "Arrange interpreters",
+            "type": "ARRANGE_INTERPRETERS_IMMEDIATE",
+            "daysBeforeHearing": null
+          }
+        }
+      ],
+      "orderDoc": {
+        "upload_timestamp": "2025-05-23T13:32:27.648364418",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+        "document_filename": "draft-urgent-directions-order.pdf",
+        "document_url": "${TEST_DOCUMENT_URL}"
+      },
+      "customDirections": []
+    },
+    "dfjArea": "WEST_LONDON",
+    "respondents1": [
+      {
+        "id": "d8e554a6-b6e7-46c5-96b3-715ae5abd086",
+        "value": {
+          "legalRepresentation": "No",
+          "legalCounsellors": [],
+          "isLocalAuthority": "NO",
+          "representedBy": [],
+          "party": {
+            "lastName": "Nelson",
+            "firstName": "Simone",
+            "telephoneNumber": {
+              "telephoneNumber": "+1 (716) 648-8556"
+            },
+            "address": {},
+            "gender": "Female",
+            "hideTelephone": "No",
+            "hideAddress": "No",
+            "dateOfBirth": "2004-09-23",
+            "addressKnow": "No",
+            "relationshipToChild": "Nostrud id dolor ips",
+            "partyId": "51de6e38-00ee-4ce7-bcbc-21d84b9fe7c8",
+            "addressNotKnowReason": "No fixed abode"
+          }
+        }
+      }
+    ],
+    "displayAmountToPay": "Yes",
+    "hasRespondentLA": "NO",
+    "caseLocalAuthority": "SA",
+    "court": {
+      "epimmsId": "229786",
+      "code": "117",
+      "regionId": "1",
+      "name": "Family Court sitting at Barnet",
+      "dateTransferred": null,
+      "region": "London",
+      "email": null
+    },
+
+    "grounds": {
+      "thresholdDetails": null,
+      "thresholdReason": [
+        "beyondControl"
+      ],
+      "hasThresholdDocument": "YES"
+    },
+    "respondentsConfirmPR": [
+      "confirm"
+    ],
+    "allocationProposal": {
+      "proposal": null,
+      "proposalV2": "District judge",
+      "proposalReason": "Reason"
+    },
+    "children1": [
+      {
+        "id": "5e28f92c-ce77-47d3-8d4e-9d0255402fa1",
+        "value": {
+          "legalCounsellors": [],
+          "party": {
+            "lastName": "May",
+            "address": {
+              "AddressLine3": "Trent Park",
+              "AddressLine2": "Cockfosters Road",
+              "AddressLine1": "2 Shaws Wood Cottages",
+              "Country": "United Kingdom",
+              "PostTown": "Barnet",
+              "PostCode": "EN4 0PS",
+              "County": ""
+            },
+            "gender": "Girl",
+            "fathersName": "Sean Collins",
+            "careAndContactPlan": "Nobis ad sit dolore",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "+1 (152) 789-4972",
+              "contactDirection": "Maia Gibbs"
+            },
+            "detailsHidden": "No",
+            "socialWorkerName": "Salvador Logan",
+            "dateOfBirth": "1990-04-10",
+            "fathersResponsibility": "Don't know",
+            "livingSituationDetails": "Other",
+            "firstName": "Malachi",
+            "litigationIssues": "NO",
+            "adoption": "No",
+            "additionalNeeds": "No",
+            "mothersName": "Morgan Brock",
+            "livingSituation": "Other",
+            "partyId": "39092ef2-f8d0-4429-9792-86df69be462a",
+            "keyDates": "Deserunt sit aliquam"
+          }
+        }
+      }
+    ],
+    "localAuthorities": [
+      {
+        "id": "116cc0d6-ac53-4422-b274-08d336349849",
+        "value": {
+          "address": {
+            "AddressLine3": "40 Fleet street",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "Country": "United Kingdom",
+            "PostTown": "Swansea",
+            "PostCode": "CR0 2GE",
+            "County": "United Kingdom"
+          },
+          "designated": "Yes",
+          "pbaNumber": "PBA1234567",
+          "phone": null,
+          "clientCode": null,
+          "legalTeamManager": "Hertfordshire",
+          "representingDetails": {
+            "lastName": null,
+            "firstName": null
+          },
+          "customerReference": "Customer",
+          "colleagues": [
+            {
+              "id": "3c5f605e-885b-4a17-9c49-0b51eda49ecf",
+              "value": {
+                "lastName": "Caldwell",
+                "firstName": "Griffith",
+                "mainContact": "Yes",
+                "notificationRecipient": "Yes",
+                "phone": "+1 (788) 187-7253",
+                "alternativePhone": "+1 (988) 612-1551",
+                "email": "timize@mailinator.com"
+              }
+            }
+          ],
+          "name": "Swansea City Council",
+          "id": "W9V61CP",
+          "email": "FamilyPublicLaw+sa@gmail.com"
+        }
+      }
+    ],
+    "localAuthorityDirections": [
+      {
+        "id": "23fdd70c-b7f4-4fb0-aa6e-8337454618b9",
+        "value": {
+          "directionType": "Send documents to all parties",
+          "directionText": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on\n",
+          "readOnly": "No",
+          "directionRemovable": "Yes",
+          "directionNeeded": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "7fa3adbc-662c-48f6-bce8-02059ec50b4b",
+        "value": {
+          "directionType": "Send missing annex documents to the court and all parties",
+          "directionText": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents\n",
+          "readOnly": "No",
+          "directionRemovable": "Yes",
+          "directionNeeded": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "e1692518-4dda-4b2e-9369-5d1141801022",
+        "value": {
+          "directionType": "Identify alternative carers",
+          "directionText": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
+          "readOnly": "Yes",
+          "directionRemovable": "Yes",
+          "directionNeeded": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "46db136d-8d72-45c0-ad7d-f4363f17f423",
+        "value": {
+          "directionType": "Send translated case documents to respondents",
+          "directionText": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
+          "readOnly": "No",
+          "directionRemovable": "Yes",
+          "directionNeeded": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "ba5aa563-b7e2-4f57-9cfa-a60c9b91bc33",
+        "value": {
+          "directionType": "Lodge a bundle",
+          "directionText": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
+          "readOnly": "Yes",
+          "directionRemovable": "Yes",
+          "directionNeeded": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "25e18f6e-f3a3-4eb2-bd68-a8829295a611",
+        "value": {
+          "directionType": "Send case summary to all parties",
+          "directionText": "Send to the court and all parties.",
+          "readOnly": "Yes",
+          "directionRemovable": "Yes",
+          "directionNeeded": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "c20b02e8-c9c3-4748-9f86-063498dc829a",
+        "value": {
+          "directionType": "Urgently consider jurisdiction and invite any representations",
+          "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.\n",
+          "readOnly": "No",
+          "directionRemovable": "Yes",
+          "directionNeeded": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      },
+      {
+        "id": "2d9c1783-e02c-4c57-a6b0-ab075556ee56",
+        "value": {
+          "directionType": "Reduce time for service of notice of the proceedings",
+          "directionText": "",
+          "readOnly": "Yes",
+          "directionRemovable": "Yes",
+          "directionNeeded": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        }
+      }
+    ],
+    "orders": {
+      "orderType": [
+        "EMERGENCY_PROTECTION_ORDER"
+      ],
+      "particularsOfChildren": [],
+      "emergencyProtectionOrders": [
+        "CHILD_WHEREABOUTS"
+      ],
+      "directionDetails": null,
+      "address": {
+        "AddressLine3": null,
+        "AddressLine2": null,
+        "AddressLine1": null,
+        "Country": null,
+        "PostTown": null,
+        "PostCode": null,
+        "County": null
+      },
+      "epoType": "REMOVE_TO_ACCOMMODATION",
+      "emergencyProtectionOrderDirections": [
+        "CONTACT_WITH_NAMED_PERSON"
+      ],
+      "childAssessmentOrderContactDirections": null,
+      "court": "117",
+      "particularsOfChildrenDetails": null,
+      "childRecoveryOrderDirectionsAppliedFor": null,
+      "educationSupervisionOrderPriorConsultationType": [],
+      "excluded": null,
+      "educationSupervisionOrderDirectionsAppliedFor": null,
+      "educationSupervisionOrderPriorConsultationOtherLA": null,
+      "directions": "No",
+      "emergencyProtectionOrderDirectionDetails": null,
+      "childAssessmentOrderAssessmentDirections": null,
+      "emergencyProtectionOrderDetails": null,
+      "otherOrder": null
+    },
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA"
+  }
+}
