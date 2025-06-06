@@ -77,12 +77,13 @@ test.describe('', () => {
         await startApplication.tabNavigation('View application');
 
         // Child details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetails();
-        await childDetails.addchildDetails();
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+         await startApplication.tabNavigation('Start application');
+         await startApplication.childDetails();
+         await childDetails.addChildDetailsForC110AApplication();
+         await startApplication.childDetailsHasBeenUpdated();
+         await startApplication.tabNavigation('Confidential Information');
+         await childDetails.assertChildConfidentialInformation();
+         await startApplication.tabNavigation('View application');
 
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
@@ -114,7 +115,7 @@ test.describe('', () => {
         expect(accessibilityScanResults.violations).toEqual([]);
     })
 
-    test.only('Private solicitor applies C110a application', async ({
+    test('Private solicitor applies C110a application', async ({
         signInPage,
         createCase,
         ordersAndDirectionSought,
@@ -175,7 +176,7 @@ test.describe('', () => {
         // Child details
         await startApplication.tabNavigation('Start application');
         await startApplication.childDetails();
-        await childDetails.addchildDetails();
+        await childDetails.addChildDetailsForC110AApplication();
         await startApplication.tabNavigation('Start application');
         await startApplication.childDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
@@ -193,7 +194,7 @@ test.describe('', () => {
         await startApplication.tabNavigation('View application');
 
 
-        // Submit the case
+       // Submit the case
         await startApplication.tabNavigation('Start application');
         await startApplication.submitCase();
         await submitCase.submitCaseSmokeTest('£263.00');
