@@ -40,7 +40,7 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public void handleAboutToStartOrSubmitCallbackException(RuntimeException exception, HttpServletRequest request) {
-        log.error("Exception for caller {}. {}", getCaller(request), exception.getMessage(), exception);
+        log.error("Caller {}", getCaller(request));
         throw exception;
     }
 
