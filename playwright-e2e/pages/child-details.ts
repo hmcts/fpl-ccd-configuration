@@ -119,60 +119,58 @@ export class ChildDetails extends BasePage{
 
     async assertChildConfidentialInformation(){
         await expect(this.page.locator('ccd-read-collection-field')).toMatchAriaSnapshot(`
-          - cell /Child 1 Party First name First Last name Child Child's current living situation Living with respondents Building and Street \\d+ Crescent Road Town or City Barnet Postcode\\/Zipcode EN4 9RS Country United Kingdom Name of social worker Social Samy Social worker's telephone number \\d+ Social worker's email socialWorker@email\\.com/:
-            - term: Child 1
+            - term: Party
             - definition
             - table:
               - rowgroup:
-                - row /Party First name First Last name Child Child's current living situation Living with respondents Building and Street \\d+ Crescent Road Town or City Barnet Postcode\\/Zipcode EN4 9RS Country United Kingdom Name of social worker Social Samy Social worker's telephone number \\d+ Social worker's email socialWorker@email\\.com/:
-                  - cell /Party First name First Last name Child Child's current living situation Living with respondents Building and Street \\d+ Crescent Road Town or City Barnet Postcode\\/Zipcode EN4 9RS Country United Kingdom Name of social worker Social Samy Social worker's telephone number \\d+ Social worker's email socialWorker@email\\.com/:
-                    - term: Party
+                - row "First name First":
+                  - cell "First name"
+                  - cell "First"
+                - row "Last name Child":
+                  - cell "Last name"
+                  - cell "Child"
+                - row "Child's current living situation Living with respondents":
+                  - cell "Child's current living situation"
+                  - cell "Living with respondents"
+                - row "Building and Street Northbury House Address Line 2 Rosslyn Avenue Address Line 3 East Barnet Town or City Barnet Postcode/Zipcode EN4 8DH Country United Kingdom":
+                  - cell "Building and Street Northbury House Address Line 2 Rosslyn Avenue Address Line 3 East Barnet Town or City Barnet Postcode/Zipcode EN4 8DH Country United Kingdom":
+                    - term
                     - definition
                     - table:
                       - rowgroup:
-                        - row "First name First":
-                          - cell "First name"
-                          - cell "First"
-                        - row "Last name Child":
-                          - cell "Last name"
-                          - cell "Child"
-                        - row "Child's current living situation Living with respondents":
-                          - cell "Child's current living situation"
-                          - cell "Living with respondents"
-                        - row /Building and Street \\d+ Crescent Road Town or City Barnet Postcode\\/Zipcode EN4 9RS Country United Kingdom/:
-                          - cell /Building and Street \\d+ Crescent Road Town or City Barnet Postcode\\/Zipcode EN4 9RS Country United Kingdom/:
-                            - term
-                            - definition
-                            - table:
-                              - rowgroup:
-                                - row /Building and Street \\d+ Crescent Road/:
-                                  - cell "Building and Street"
-                                  - cell /\\d+ Crescent Road/
-                                - row "Town or City Barnet":
-                                  - cell "Town or City"
-                                  - cell "Barnet"
-                                - row "Postcode/Zipcode EN4 9RS":
-                                  - cell "Postcode/Zipcode"
-                                  - cell "EN4 9RS"
-                                - row "Country United Kingdom":
-                                  - cell "Country"
-                                  - cell "United Kingdom"
-                        - row "Name of social worker Social Samy":
-                          - cell "Name of social worker"
-                          - cell "Social Samy"
+                        - row "Building and Street Northbury House":
+                          - cell "Building and Street"
+                          - cell "Northbury House"
+                        - row "Address Line 2 Rosslyn Avenue":
+                          - cell "Address Line 2"
+                          - cell "Rosslyn Avenue"
+                        - row "Address Line 3 East Barnet":
+                          - cell "Address Line 3"
+                          - cell "East Barnet"
+                        - row "Town or City Barnet":
+                          - cell "Town or City"
+                          - cell "Barnet"
+                        - row "Postcode/Zipcode EN4 8DH":
+                          - cell "Postcode/Zipcode"
+                          - cell "EN4 8DH"
+                        - row "Country United Kingdom":
+                          - cell "Country"
+                          - cell "United Kingdom"
+                - row "Name of social worker Social Samy":
+                  - cell "Name of social worker"
+                  - cell "Social Samy"
+                - row /Social worker's telephone number \\d+/:
+                  - cell /Social worker's telephone number \\d+/:
+                    - term
+                    - definition
+                    - table:
+                      - rowgroup:
                         - row /Social worker's telephone number \\d+/:
-                          - cell /Social worker's telephone number \\d+/:
-                            - term
-                            - definition
-                            - table:
-                              - rowgroup:
-                                - row /Social worker's telephone number \\d+/:
-                                  - cell "Social worker's telephone number"
-                                  - cell /\\d+/
-                        - row "Social worker's email socialWorker@email.com":
-                          - cell "Social worker's email"
-                          - cell "socialWorker@email.com"
+                          - cell "Social worker's telephone number"
+                          - cell /\\d+/
+                - row "Social worker's email socialWorker@email.com":
+                  - cell "Social worker's email"
+                  - cell "socialWorker@email.com"
           `);
-
     }
 }
