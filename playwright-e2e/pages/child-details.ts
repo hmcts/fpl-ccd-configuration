@@ -92,7 +92,7 @@ export class ChildDetails extends BasePage{
         await this.page.getByLabel('What was the child\'s sex at').selectOption('Indeterminate');
         await this.page.getByRole('textbox', { name: 'What gender do they identify' }).fill('Baby');
         await this.page.getByRole('radio', { name: 'Living with respondents' }).check();
-        await this.enterPostCode('EN4');
+        await this.enterPostCode('EN4 0BJ');
         await this.page.getByRole('group', { name: 'Do you need to keep the address confidential?' }).getByLabel('Yes').check();
         expect(this.page.getByText('For example, place baby in local authority foster care until further assessments are completed. Supervised contact for parents will be arranged.')).toBeVisible();
         await this.page.getByRole('textbox', { name: 'Brief summary of care and' }).fill('Brief summary');
@@ -118,19 +118,28 @@ export class ChildDetails extends BasePage{
 
 
     async assertChildConfidentialInformation() {
-        await expect(this.page.getByRole('cell', { name: 'First name', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'First', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'Last name', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('row', { name: 'Last name Child', exact: true }).locator('td')).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'Child\'s current living situation', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'Living with respondents', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'Building and Street 42 Bevan Road Town or City Barnet Postcode/Zipcode EN4 9EA Country United Kingdom', exact: true }).locator('dl')).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'Name of social worker', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'Social Samy', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'Social worker\'s telephone number', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: '0564575685', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'Social worker\'s email', exact: true })).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: 'socialWorker@email.com', exact: true })).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'First name', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'First', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Last name', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('row', {name: 'Last name Child', exact: true}).locator('td')).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Child\'s current living situation', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Living with respondents', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Building and Street', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: '2 Sussex Way', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Address Line 3', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Cockfosters', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Town or City', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Barnet', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Postcode/Zipcode', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'EN4 0BJ', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Country', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'United Kingdom', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Name of social worker', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Social Samy', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Social worker\'s telephone number', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: '0564575685', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Social worker\'s email', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'socialWorker@email.com', exact: true})).toBeVisible();
 
     }
 }
