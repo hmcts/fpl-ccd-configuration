@@ -114,7 +114,6 @@ public class QueryManagementUtils {
     }
 
     public static Map<String,Object> getLatestQueryInCollection(CaseDetails caseDetails, String queryCollection) {
-        ObjectMapper objectMapper = new ObjectMapper();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
         Map<String,Object> collection = getQueryCollection(caseDetails, queryCollection);
