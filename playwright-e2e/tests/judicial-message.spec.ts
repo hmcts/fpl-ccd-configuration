@@ -27,8 +27,8 @@ test.describe('send and reply message',()=>{
         await judicialMessages.checkYourAnsAndSubmit();
         await judicialMessages.tabNavigation('Judicial messages');
         await expect(page.getByText('Message 1',{exact:true})).toBeVisible();
-        await expect(page.getByText('Allocated Judge/Legal Adviser')).toBeVisible();
-        await expect(page.getByRole('cell', { name: 'CTSC - message send to allocated Judge', exact: true })).toBeVisible();
+        await expect(page.getByText('Other Judge/Legal Adviser')).toBeVisible();
+        await expect(page.getByRole('cell', { name: 'CTSC - message send to legal adviser', exact: true })).toBeVisible();
   });
 
     test('CTSC admin send message to Judge with document',
@@ -43,8 +43,8 @@ test.describe('send and reply message',()=>{
         await judicialMessages.checkYourAnsAndSubmit();
         await judicialMessages.tabNavigation('Judicial messages');
         await expect(page.getByText('Message 1',{exact:true})).toBeVisible();
-        await expect(page.getByText('Allocated Judge/Legal Adviser')).toBeVisible();
-        await expect(page.getByRole('cell', { name: 'CTSC - message send to allocated Judge', exact: true })).toBeVisible();
+        await expect(page.getByText('Other Judge/Legal Adviser')).toBeVisible();
+        await expect(page.getByRole('cell', { name: 'CTSC - message send to legal adviser', exact: true })).toBeVisible();
     });
 
     test('Judge reply CTCS message',async({page,signInPage,judicialMessages})=>{
