@@ -155,11 +155,21 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run2677(CaseDetails caseDetails) {
+        if (caseDetails.getData().get("dateSubmitted") == null
+            || caseDetails.getData().get("lastSubmittedDate") != null) {
+            throw new RuntimeException("[Case %s], dateSubmitted is null or lastSubmittedDate is not null"
+                .formatted(caseDetails.getId()));
+        }
         caseDetails.getData().put("lastSubmittedDate", caseDetails.getData().get("dateSubmitted"));
         caseDetails.getData().put("dateSubmitted", null);
     }
 
     private void rollback2677(CaseDetails caseDetails) {
+        if (caseDetails.getData().get("lastSubmittedDate") == null
+            || caseDetails.getData().get("dateSubmitted") != null) {
+            throw new RuntimeException("[Case %s], lastSubmittedDate is null or dateSubmitted is not null"
+                .formatted(caseDetails.getId()));
+        }
         caseDetails.getData().put("dateSubmitted", caseDetails.getData().get("lastSubmittedDate"));
         caseDetails.getData().remove("lastSubmittedDate");
     }
