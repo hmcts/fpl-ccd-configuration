@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -79,5 +80,37 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             ;
         }
 
+    }
+
+    @Nested
+    class Dfpl2677 {
+        private static final LocalDate NOW = LocalDate.now();
+        @Test
+        void shouldMigrateCase() {
+            CaseData caseData = CaseData.builder()
+                .id(1743167066103323L)
+                .dateSubmitted(NOW)
+                .build();
+
+            CaseData after = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData,
+                "DFPL-2677")));
+
+            assertThat(after.getDateSubmitted()).isNull();
+            assertThat(after.getLastSubmittedDate()).isEqualTo(NOW);
+        }
+
+        @Test
+        void shouldRollbackCase() {
+            CaseData caseData = CaseData.builder()
+                .id(1743167066103323L)
+                .lastSubmittedDate(NOW)
+                .build();
+
+            CaseData after = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData,
+                "DFPL-2677-rollback")));
+
+            assertThat(after.getLastSubmittedDate()).isNull();
+            assertThat(after.getDateSubmitted()).isEqualTo(NOW);
+        }
     }
 }

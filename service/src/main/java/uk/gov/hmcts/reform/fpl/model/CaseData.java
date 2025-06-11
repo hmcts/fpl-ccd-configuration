@@ -373,6 +373,7 @@ public class CaseData extends CaseDataParent {
     }
 
     private LocalDate dateSubmitted;
+    private LocalDate lastSubmittedDate;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
