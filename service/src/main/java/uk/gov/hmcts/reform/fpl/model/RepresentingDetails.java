@@ -15,6 +15,10 @@ public class RepresentingDetails {
 
     @JsonIgnore
     public String getFullName() {
-        return firstName + " " + lastName;
+        if (firstName != null || lastName != null) {
+            return firstName + " " + lastName;
+        } else {
+            return "";
+        }
     }
 }

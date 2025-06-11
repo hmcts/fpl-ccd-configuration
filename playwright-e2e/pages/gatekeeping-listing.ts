@@ -74,4 +74,54 @@ export class GatekeepingListing extends HearingDetailsMixin()
     await this.checkYourAnsAndSubmit();
     await expect(this.page.getByText('has been updated with event: List Gatekeeping Hearing')).toBeVisible();
   }
+
+    async completeUrgentDirectionsOrder() {
+        await this.page.getByRole('radio', {name: 'Create the urgent directions'}).check();
+        await this.clickContinue();
+        await this.page.getByRole('checkbox', {name: 'Attend the pre-hearing and'}).check();
+        await this.page.getByRole('checkbox', {name: 'Lodge a bundle'}).check();
+        await this.page.getByRole('checkbox', {name: 'Reduce time for service of'}).check();
+        await this.page.getByRole('checkbox', {name: 'Appoint a children\'s guardian'}).check();
+        await this.page.getByRole('checkbox', {name: 'Arrange interpreters'}).check();
+        await this.clickContinue();
+
+        await this.clickContinue();
+
+        await this.page.getByRole('button', {name: 'Add new'}).click();
+        await this.page.getByRole('textbox', {name: 'Title'}).fill('Accomation Direction');
+        await this.page.getByRole('textbox', {name: 'Description (Optional)'}).fill('To accomadate way from the parent home');
+        await this.page.getByLabel('Party responsible').selectOption('Local authority');
+        await this.page.getByRole('radio', {name: 'Number of working days before'}).check();
+        await this.page.getByRole('spinbutton', {name: 'Number of days'}).fill('6');
+        await this.clickContinue();
+        await this.page.getByRole('radio', {name: 'District Judge', exact: true}).check();
+        await this.page.getByRole('textbox', {name: 'Last name'}).fill('Judge Damien');
+        await this.page.getByRole('textbox', {name: 'Email Address'}).fill('email@email.com');
+
+        await this.clickContinue();
+        await this.page.getByRole('radio', {name: 'I complete the listing and'}).check();
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
+    }
+
+    async completeUDOListing() {
+        await this.page.getByRole('radio', {name: 'Emergency protection order'}).check();
+        await this.page.locator('#hearingVenue').selectOption('8: 99');
+        await this.page.getByRole('checkbox', {name: 'In person'}).check();
+        await this.page.getByRole('textbox', {name: 'Add details (Optional)'}).fill('Details');
+        await this.fillDateInputs(this.page, new Date(new Date().setMonth(new Date().getMonth() + 3)));
+        await this.fillTimeInputs(this.page, '10', '00', '00');
+        await this.page.getByText('Specific end date and time').click();
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Day').fill(new Date(new Date().setMonth(new Date().getMonth() + 5)).getDate().toString());
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Month').fill(new Date(new Date().setMonth(new Date().getMonth() + 5)).getMonth().toString());
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Year').fill(new Date(new Date().setMonth(new Date().getMonth() + 5)).getFullYear().toString());
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Hour').fill('10');
+        await this.clickContinue();
+
+        await this.page.getByRole('radio', {name: 'Salaried judge'}).check();
+        await this.page.getByRole('combobox', {name: 'Search for Judge'}).fill('cra');
+        await this.page.getByText('District Judge (MC) Craig').click();
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
+    }
 }
