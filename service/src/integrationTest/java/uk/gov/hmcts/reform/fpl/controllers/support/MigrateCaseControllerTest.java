@@ -85,6 +85,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @Nested
     class Dfpl2677 {
         private static final LocalDate NOW = LocalDate.now();
+
         @Test
         void shouldMigrateCase() {
             CaseData caseData = CaseData.builder()
