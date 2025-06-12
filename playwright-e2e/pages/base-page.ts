@@ -103,12 +103,25 @@ export class BasePage {
       await this.page.getByLabel('Select an address').selectOption('1: Object');
 
   }
-    getCurrentDate():string {
-        let date = new Date();
-        let year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
-        let month = new Intl.DateTimeFormat('en', { month: 'short' }).format(date);
-        let day = new Intl.DateTimeFormat('en', { day: 'numeric'}).format(date);
-        let todayDate = `${day} ${month} ${year}`;
-        return todayDate;
+  getCurrentDate():string {
+    let date = new Date();
+    let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
+    let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
+    let day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
+    let todayDate = `${day} ${month} ${year}`;
+    return todayDate;
+    }
+
+    async fillDateInputs(page: Page, date: Date) {
+      await page.getByRole('textbox', {name: 'Day'}).fill(new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date))
+      await page.getByRole('textbox', {name: 'Month'}).fill(new Intl.DateTimeFormat('en', {month: 'numeric'}).format(date));
+      await page.getByRole('textbox', {name: 'Year'}).fill(new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date));
+
+    }
+
+    async fillTimeInputs(page: Page, hour = '10', min = '00', sec = '00') {
+      await page.getByRole('spinbutton', {name: 'Hour'}).fill(hour);
+      await page.locator('#hearingStartDate-minute').fill(min);
+      await page.getByRole('spinbutton', {name: 'Second'}).fill(sec);
     }
 }
