@@ -21,11 +21,11 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 3 : 0,
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 4 : undefined,
+  workers: process.env.CI ? 5 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [[process.env.CI ? 'html' : 'list'],
              ['html', { outputFolder: '../test-results/functionalTest' }]],
@@ -33,12 +33,17 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     // Record trace only when retrying a test for the first time.
-    trace: 'on-first-retry'
+    trace: 'on-first-retry',
 
   },
 
   /* Configure projects for major browsers */
   projects: [
+
+    {
+        name: 'usertoken',
+        testMatch: /global\.setup\.ts/,
+    },
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
@@ -55,22 +60,32 @@ export default defineConfig({
     },
     {
       name: "preview",
-      use: { ...devices["Desktop Firefox"] },
-      retries: 3,
-      timeout: 3*60*1000,
-      expect: { timeout: 1*60*1000 },
+      use: { ...devices["Desktop Chrome"] },
+      grepInvert:/.*API.spec.ts/,
+      retries: 1,
+        timeout: 4*60*1000,
+        expect: { timeout: 1*60*1000 },
+
     },
+      {
+          name: "CafcassAPI",
+          use: { ...devices["Desktop Chrome"] },
+          grep:/.*API.spec.ts/,
+          timeout: 3*60*1000,
+          expect: { timeout: 1*60*1000 },
+          dependencies:['usertoken'],
+      },
+
 
     /* Test against mobile viewports. */
-      {
-          name: "ipadPro11",
-          use: { ...devices["iPad Pro 11 landscape"] },
-      },
-    {
-      name: "GalaxyS4",
-      use: { ...devices["Galaxy Tab S4 landscape"] },
-    },
-
+    // {
+    //   name: "Mobile Chrome",
+    //   use: { ...devices["Pixel 5"] },
+    // },
+    // {
+    //   name: "Mobile Safari",
+    //   use: { ...devices["iPad Mini"] },
+    // },
 
     /* Test against branded browsers. */
     // {
