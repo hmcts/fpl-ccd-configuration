@@ -61,7 +61,7 @@ public class HearingOrderGenerator {
             caseData.getSealType());
 
         if (addCoverSheet) {
-            sealedOrder = addCoverSheet(caseData, sealedOrder);
+            sealedOrder = addCoverSheet(caseData, sealedOrder, hearingOrderElement);
         }
 
         builder = (isConfidentialOrder)
@@ -79,17 +79,18 @@ public class HearingOrderGenerator {
             .build());
     }
 
-    public DocumentReference addCoverSheet(CaseData caseData, DocumentReference order) {
+    public DocumentReference addCoverSheet(CaseData caseData, DocumentReference orderDoc,
+                                           Element<HearingOrder> hearingOrderElement) {
         try {
             DocmosisDocument orderWithCoverSheet = docmosisApprovedOrderCoverSheetService
-                .addCoverSheetToApprovedOrder(caseData, order);
+                .addCoverSheetToApprovedOrder(caseData, orderDoc, hearingOrderElement);
 
             return buildFromDocument(uploadDocumentService
-                .uploadPDF(orderWithCoverSheet.getBytes(), order.getFilename()));
+                .uploadPDF(orderWithCoverSheet.getBytes(), orderDoc.getFilename()));
         } catch (Exception e) {
             // TODO handle this better, maybe a notification to FPL service?
             log.error("Error adding cover sheet to order", e);
-            return order;
+            return orderDoc;
         }
     }
 }

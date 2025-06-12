@@ -419,11 +419,12 @@ public class ApproveDraftOrdersService {
         for (int i = 0; i <  draftOrders.size(); i++) {
             if (CMOReviewOutcome.SEND_TO_ALL_PARTIES
                 .equals(reviewDraftOrdersData.getReviewDecision(i + 1).getDecision())) {
+                Element<HearingOrder> orderElement = draftOrders.get(i);
                 HearingOrder approvedOrder = draftOrders.get(i).getValue();
 
                 data.put("previewApprovedOrder" + labelCounter,
                     hearingOrderGenerator.addCoverSheet(caseData, (approvedOrder.isConfidentialOrder()
-                        ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder())));
+                        ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder()), orderElement));
                 data.put("previewApprovedOrderTitle" + labelCounter,
                     String.format("Order %d %s", (i + 1), approvedOrder.getTitle()));
                 labelCounter++;

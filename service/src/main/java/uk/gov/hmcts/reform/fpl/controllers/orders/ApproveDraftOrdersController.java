@@ -27,6 +27,7 @@ import java.util.Map;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.previewApprovedOrderFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
 
@@ -89,6 +90,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         }
 
         data.remove("judgeType");
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, previewApprovedOrderFields());
         if ((caseData.getReviewDraftOrdersData() != null
             && caseData.getReviewDraftOrdersData().hasADraftBeenApprovedWithoutChanges())) {
             if (judicialService.isCurrentUserFeePaidJudge()) {
@@ -113,6 +115,7 @@ public class ApproveDraftOrdersController extends CallbackController {
                 .build();
 
         // Generate the preview of the orders with cover sheet
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, previewApprovedOrderFields());
         caseDetails.getData().putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData));
 
         return respond(caseDetails);
@@ -125,6 +128,7 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         caseDetails.getData().put("judgeTitleAndName",
             approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData));
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, previewApprovedOrderFields());
 
         // DFPL-1171 move all document processing step to post-about-to-submitted stage
 

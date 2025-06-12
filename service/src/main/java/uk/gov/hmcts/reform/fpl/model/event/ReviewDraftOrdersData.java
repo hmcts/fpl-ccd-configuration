@@ -64,8 +64,7 @@ public class ReviewDraftOrdersData {
             "cmoDraftOrderDocument", "draftOrder1Document", "draftOrder2Document", "draftOrder3Document",
             "draftOrder4Document", "draftOrder5Document", "draftOrder6Document", "draftOrder7Document",
             "draftOrder8Document", "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles",
-            "draftOrdersTitlesInBundle", "draftOrdersApproved", "judgeTitleAndName", "feePaidJudgeTitle", "judgeType",
-            "previewApprovedOrders"
+            "draftOrdersTitlesInBundle", "draftOrdersApproved", "judgeTitleAndName", "feePaidJudgeTitle", "judgeType"
         };
     }
 
@@ -74,6 +73,21 @@ public class ReviewDraftOrdersData {
             "reviewCMODecision", "reviewDecision1", "reviewDecision2", "reviewDecision3", "reviewDecision4",
             "reviewDecision5", "reviewDecision6", "reviewDecision7", "reviewDecision8", "reviewDecision9",
             "reviewDecision10"
+        };
+    }
+
+    public static String[] previewApprovedOrderFields() {
+        return new String[]{
+            "previewApprovedOrder1", "previewApprovedOrderTitle1",
+            "previewApprovedOrder2", "previewApprovedOrderTitle2",
+            "previewApprovedOrder3", "previewApprovedOrderTitle3",
+            "previewApprovedOrder4", "previewApprovedOrderTitle4",
+            "previewApprovedOrder5", "previewApprovedOrderTitle5",
+            "previewApprovedOrder6", "previewApprovedOrderTitle6",
+            "previewApprovedOrder7", "previewApprovedOrderTitle7",
+            "previewApprovedOrder8", "previewApprovedOrderTitle8",
+            "previewApprovedOrder9", "previewApprovedOrderTitle9",
+            "previewApprovedOrder10", "previewApprovedOrderTitle10"
         };
     }
 
