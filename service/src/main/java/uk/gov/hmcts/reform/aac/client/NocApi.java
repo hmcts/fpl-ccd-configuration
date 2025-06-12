@@ -14,11 +14,11 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATION;
 
 @FeignClient(
-    name = "case-assignment-api",
+    name = "aac-api",
     url = "${case-assignment.api.url}",
     configuration = FeignClientConfiguration.class
 )
-public interface CaseAssignmentApi {
+public interface NocApi {
 
     @PostMapping(
         value = "/noc/apply-decision",

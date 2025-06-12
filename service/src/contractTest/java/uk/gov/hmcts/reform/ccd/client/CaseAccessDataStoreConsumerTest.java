@@ -15,9 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 
 import java.io.IOException;
@@ -48,7 +47,7 @@ public class CaseAccessDataStoreConsumerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    CaseAccessDataStoreApi caseAccessDataStoreApi;
+    CaseAssignmentApi caseAssignmentApi;
 
 
     @Pact(provider = "ccdDataStoreAPI_caseAssignedUserRoles", consumer = "fpl_ccdConfiguration")
@@ -60,7 +59,7 @@ public class CaseAccessDataStoreConsumerTest {
             .method("DELETE")
             .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER, AUTHORIZATION_TOKEN)
             .path("/case-users")
-            .body(createJsonObject(buildCaseAssignedUserRolesRequest()))
+            .body(createJsonObject(buildCaseAssignmentUserRolesRequest()))
             .willRespondWith()
             .status(HttpStatus.SC_OK)
             .toPact();
@@ -85,22 +84,22 @@ public class CaseAccessDataStoreConsumerTest {
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentForDelete")
     public void verifyRemoveRoles() {
-        caseAccessDataStoreApi.removeCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
-            buildCaseAssignedUserRolesRequest());
+        caseAssignmentApi.removeCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
+            buildCaseAssignmentUserRolesRequest());
 
     }
 
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentForAdd")
     public void verifyAddRoles() {
-        caseAccessDataStoreApi.addCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
+        caseAssignmentApi.addCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
             buildAssignmentRequest(CASE_ID, Set.of(USER_ID), "organisationId", CaseRole.EPSMANAGING));
 
     }
 
-    private CaseAssignedUserRolesRequest buildCaseAssignedUserRolesRequest() {
-        return CaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(CaseAssignedUserRoleWithOrganisation.builder()
+    private CaseAssignmentUserRolesRequest buildCaseAssignmentUserRolesRequest() {
+        return CaseAssignmentUserRolesRequest.builder()
+            .caseAssignmentUserRolesWithOrganisation(List.of(CaseAssignmentUserRoleWithOrganisation.builder()
                 .userId(USER_ID)
                 .caseRole(CREATOR.formattedName())
                 .caseDataId(Long.toString(CASE_ID))
@@ -108,10 +107,10 @@ public class CaseAccessDataStoreConsumerTest {
             .build();
     }
 
-    private AddCaseAssignedUserRolesRequest buildAssignmentRequest(Long caseId, Set<String> userIds, String orgId,
+    private CaseAssignmentUserRolesRequest buildAssignmentRequest(Long caseId, Set<String> userIds, String orgId,
                                                                    CaseRole caseRole) {
-        final List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = userIds.stream()
-            .map(userId -> CaseAssignedUserRoleWithOrganisation.builder()
+        final List<CaseAssignmentUserRoleWithOrganisation> caseAssignedRoles = userIds.stream()
+            .map(userId -> CaseAssignmentUserRoleWithOrganisation.builder()
                 .caseDataId(caseId.toString())
                 .userId(userId)
                 .organisationId(orgId)
@@ -119,8 +118,8 @@ public class CaseAccessDataStoreConsumerTest {
                 .build())
             .collect(Collectors.toList());
 
-        return AddCaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(caseAssignedRoles)
+        return CaseAssignmentUserRolesRequest.builder()
+            .caseAssignmentUserRolesWithOrganisation(caseAssignedRoles)
             .build();
     }
 
