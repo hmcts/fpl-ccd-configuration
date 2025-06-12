@@ -147,6 +147,9 @@ ccd:
       devmemoryLimits: '2048Mi'
       devcpuRequests: '900m'
       environment:
+        CCD_MULTIPARTY_FIX_ENABLED: true
+        CCD_MULTIPARTY_CASE_TYPES: "*"
+        CCD_MULTIPARTY_EVENTS: "*"
         DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         DATA_STORE_DB_USERNAME: hmcts
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
