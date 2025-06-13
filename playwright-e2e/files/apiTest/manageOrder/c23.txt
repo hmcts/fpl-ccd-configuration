@@ -1,0 +1,45 @@
+MOCKCASEID
+${id}
+Emergency protection order
+Section 44 Children Act 1989
+Ordered on ${issueDate} by Her Honour Judge Moley
+Family Court sitting at Swansea
+Child in the case
+Timothy Jones Male Born 1 August 2015
+Warning
+It’s a criminal offence to intentionally obstruct a person who’s authorised under
+section 44(4)(b) Children Act 1989 either to remove a child or to prevent the removal
+of a child (section 44(15) Children Act 1989).
+An Emergency Protection Order is granted to the applicant, Swansea City Council.
+The order gives the applicant parental responsibility for the child.
+The Court authorises the applicant to remove the child to accommodation provided by or on behalf of the applicant. 
+This order directs that any person who can produce the child to the applicant must do so. some text
+This order starts on ${dateTimeAt}.
+This order ends on ${dateTimeAt}.
+Notes about the emergency protection order
+About this order
+This is an Emergency Protection Order.
+This order states what has been authorised in respect of the child and when the order will
+end.
+The Court can extend this order for up to 7 days but it can only do this once.
+Warning
+If you are shown this order, you must comply with it. If you do not, you may commit an
+offence. Read the order now.
+What you may do
+You may apply to the Court at any time to:
+ change the directions
+ end the order
+If you would like to ask the Court to change the directions, or end the order, you must fill in
+a form. You can obtain the form from a Court office.
+If the Court has directed that the child should have a medical, psychiatric or another kind of
+examination, you may ask the Court to allow a doctor of your choice to be at the
+examination.
+What you should do
+Go to a solicitor as soon as you can.
+Some solicitors specialise in Court proceedings which involve children. You can obtain the
+address of a solicitor or advice agency from the Yellow Pages or the Solicitors’ Regional
+Directory. You will find these books at:
+ a Citizens Advice centre
+ a Law Centre
+ a library
+A solicitor or an advice agency will be able to tell you whether you may be eligible for Legal Aid.
