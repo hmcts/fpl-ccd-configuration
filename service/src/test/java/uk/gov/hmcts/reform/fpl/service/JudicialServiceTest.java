@@ -474,8 +474,8 @@ class JudicialServiceTest {
 
     @Test
     void shouldReturnFalseIfPersonalCodeIsEmpty() {
-        assertThat( underTest.checkJudgeExists("")).isFalse();
-        assertThat( underTest.checkJudgeExists(null)).isFalse();
+        assertThat(underTest.checkJudgeExists("")).isFalse();
+        assertThat(underTest.checkJudgeExists(null)).isFalse();
     }
 
     @Test
