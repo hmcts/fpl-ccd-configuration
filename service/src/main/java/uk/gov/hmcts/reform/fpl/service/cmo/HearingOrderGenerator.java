@@ -88,7 +88,6 @@ public class HearingOrderGenerator {
             return buildFromDocument(uploadDocumentService
                 .uploadPDF(orderWithCoverSheet.getBytes(), orderDoc.getFilename()));
         } catch (Exception e) {
-            // TODO handle this better, maybe a notification to FPL service?
             log.error("Error adding cover sheet to order", e);
             return orderDoc;
         }

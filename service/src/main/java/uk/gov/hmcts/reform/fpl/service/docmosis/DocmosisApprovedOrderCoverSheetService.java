@@ -54,7 +54,6 @@ public class DocmosisApprovedOrderCoverSheetService {
         // Create
         DocmosisDocument coverSheet = createCoverSheet(caseData, hearingOrderElement);
 
-        // TODO could we use the byte array from the approved order instead of downloading it again?
         // Add cover sheet to the order
         DocmosisDocument orderWithCoverSheet = documentMerger.mergeDocuments(coverSheet, List.of(order));
 

@@ -25,11 +25,15 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
+import uk.gov.hmcts.reform.rd.model.JudicialUserAppointment;
+import uk.gov.hmcts.reform.rd.model.JudicialUserAuthorisations;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -51,9 +55,13 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
+import static uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration.SERVICE_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.rd.model.JudicialUserAppointment.APPOINTMENT_TYPE_FEE_PAID;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = LENIENT)
@@ -88,6 +96,9 @@ class JudicialServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private Time time;
 
     @Captor
     private ArgumentCaptor<List<RoleAssignment>> rolesCaptor;
@@ -292,6 +303,93 @@ class JudicialServiceTest {
 
             verifyNoMoreInteractions(roleAssignmentService);
         }
+
+        @Test
+        void shouldAssignAllocatedJudgeIfLegalAdvisor() {
+            List<RoleAssignment> existing = Stream.of("12345", "67890")
+                .map(id -> RoleAssignment.builder()
+                    .actorId(id)
+                    .id(id)
+                    .roleName("allocated-judge")
+                    .roleCategory(RoleCategory.JUDICIAL)
+                    .build())
+                .toList();
+
+            when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+                .thenReturn(existing);
+
+            underTest.assignAllocatedJudge(12345L, "mock-userId", true);
+
+            verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+            verify(roleAssignmentService, times(2)).deleteRoleAssignment(roleAssignmentCaptor.capture());
+
+            assertThat(roleAssignmentCaptor.getAllValues())
+                .extracting("id")
+                .containsExactlyInAnyOrder("12345", "67890");
+
+            verify(roleAssignmentService)
+                .assignLegalAdvisersRole(eq(12345L), eq(List.of("mock-userId")), eq(ALLOCATED_LEGAL_ADVISER),
+                    any(), eq(null));
+
+            verifyNoMoreInteractions(roleAssignmentService);
+        }
+
+        @Test
+        void shouldAssignAllocatedJudgeIfNotLegalAdvisor() {
+            List<RoleAssignment> existing = Stream.of("12345", "67890")
+                .map(id -> RoleAssignment.builder()
+                    .actorId(id)
+                    .id(id)
+                    .roleName("allocated-judge")
+                    .roleCategory(RoleCategory.JUDICIAL)
+                    .build())
+                .toList();
+
+            when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+                .thenReturn(existing);
+
+            underTest.assignAllocatedJudge(12345L, "mock-userId", false);
+
+            verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+            verify(roleAssignmentService, times(2)).deleteRoleAssignment(roleAssignmentCaptor.capture());
+
+            assertThat(roleAssignmentCaptor.getAllValues())
+                .extracting("id")
+                .containsExactlyInAnyOrder("12345", "67890");
+
+            verify(roleAssignmentService)
+                .assignJudgesRole(eq(12345L), eq(List.of("mock-userId")), eq(ALLOCATED_JUDGE),
+                    any(), eq(null));
+
+            verifyNoMoreInteractions(roleAssignmentService);
+        }
+    }
+
+    @Nested
+    class GetJudge {
+        @Test
+        void shouldGetJudicialUserProfilesByPersonalCode() {
+            final String personalCode = "12345";
+            JudicialUserProfile jup = mock(JudicialUserProfile.class);
+            when(judicialApi.findUsers(any(), any(), anyInt(), any(),
+                eq(JudicialUserRequest.fromPersonalCode(personalCode))))
+                .thenReturn(List.of(jup));
+
+            assertThat(underTest.getJudge(personalCode)).isEqualTo(Optional.of(jup));
+        }
+
+        @Test
+        void shouldReturnEmptyIfJudicialUserProfileNotFound() {
+            final String personalCode = "12345";
+            when(judicialApi.findUsers(any(), any(), anyInt(), any(), any())).thenReturn(List.of());
+            assertThat(underTest.getJudge(personalCode)).isEqualTo(Optional.empty());
+        }
+
+        @Test
+        void shouldReturnEmptyIfPersonalCodeIsEmpty() {
+            assertThat(underTest.getJudge(null)).isEqualTo(Optional.empty());
+            assertThat(underTest.getJudge("")).isEqualTo(Optional.empty());
+        }
     }
 
     @Test
@@ -372,6 +470,12 @@ class JudicialServiceTest {
         boolean exists = underTest.checkJudgeExists("1234");
 
         assertThat(exists).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseIfPersonalCodeIsEmpty() {
+        assertThat( underTest.checkJudgeExists("")).isFalse();
+        assertThat( underTest.checkJudgeExists(null)).isFalse();
     }
 
     @Test
@@ -766,6 +870,136 @@ class JudicialServiceTest {
             when(judicialApi.findUsers(any(), any(), anyInt(), any(), any())).thenReturn(List.of());
 
             assertThat(underTest.getJudgeTitleAndNameOfCurrentUser(null)).isEqualTo("John Smith");
+        }
+    }
+
+    @Nested
+    class IsFeePaidJudge {
+        @Test
+        void returnsTrueWhenCurrentUserHasActiveFeePaidAppointment() {
+            final LocalDateTime today = LocalDateTime.now();
+            when(time.now()).thenReturn(today);
+
+            final LocalDate starDate = today.toLocalDate().minusDays(1);
+            final LocalDate endDate = today.toLocalDate().plusDays(1);
+
+            UserDetails userDetails = UserDetails.builder().id("idamId").build();
+            when(userService.getUserDetails()).thenReturn(userDetails);
+
+            JudicialUserProfile profile = JudicialUserProfile.builder()
+                .appointments(List.of(
+                    JudicialUserAppointment.builder()
+                        .appointmentId("feePaidAppointmentId")
+                        .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAppointment.builder()
+                        .appointmentId("otherAppointmentId")
+                        .appointmentType("Other Appointment Type")
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()))
+                .authorisations(List.of(
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("feePaidAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()
+                ))
+                .build();
+            when(underTest.getJudicialUserProfilesByIdamId("idamId")).thenReturn(List.of(profile));
+
+            assertThat(underTest.isCurrentUserFeePaidJudge()).isTrue();
+        }
+
+        @Test
+        void returnsFalseWhenNoFeePaidAppointment() {
+            final LocalDateTime today = LocalDateTime.now();
+            when(time.now()).thenReturn(today);
+
+            final LocalDate starDate = today.toLocalDate().minusDays(1);
+            final LocalDate endDate = today.toLocalDate().plusDays(1);
+
+            UserDetails userDetails = UserDetails.builder().id("idamId").build();
+            when(userService.getUserDetails()).thenReturn(userDetails);
+
+            JudicialUserProfile profile = JudicialUserProfile.builder()
+                .appointments(List.of(
+                    JudicialUserAppointment.builder()
+                        .appointmentId("otherAppointmentId")
+                        .appointmentType("Other Appointment Type")
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()))
+                .authorisations(List.of(
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("otherAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()
+                ))
+                .build();
+            when(underTest.getJudicialUserProfilesByIdamId("idamId")).thenReturn(List.of(profile));
+
+            assertThat(underTest.isCurrentUserFeePaidJudge()).isFalse();
+        }
+
+        @Test
+        void returnsFalseWhenFeePaidAppointmentExpiredOrNotAppointedToFPL() {
+            final LocalDateTime today = LocalDateTime.now();
+            when(time.now()).thenReturn(today);
+
+            final LocalDate starDate = today.toLocalDate().minusDays(1);
+            final LocalDate endDate = today.toLocalDate().plusDays(1);
+
+            UserDetails userDetails = UserDetails.builder().id("idamId").build();
+            when(userService.getUserDetails()).thenReturn(userDetails);
+
+            JudicialUserProfile profile = JudicialUserProfile.builder()
+                .appointments(List.of(
+                    JudicialUserAppointment.builder()
+                        .appointmentId("feePaidAppointmentId_expired")
+                        .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .startDate(starDate.minusDays(10))
+                        .endDate(endDate.minusDays(10))
+                        .build(),
+                    JudicialUserAppointment.builder()
+                        .appointmentId("feePaidAppointmentId_otherService")
+                        .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()))
+                .authorisations(List.of(
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("feePaidAppointmentId_expired")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("feePaidAppointmentId_otherService")
+                        .serviceCodes(List.of("Other_service"))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()
+                ))
+                .build();
+            when(underTest.getJudicialUserProfilesByIdamId("idamId")).thenReturn(List.of(profile));
+
+            assertThat(underTest.isCurrentUserFeePaidJudge()).isFalse();
+        }
+
+        @Test
+        void returnsFalseWhenNoJudicialUserProfilesFound() {
+            UserDetails userDetails = UserDetails.builder().id("idamId").build();
+
+            when(userService.getUserDetails()).thenReturn(userDetails);
+            when(underTest.getJudicialUserProfilesByIdamId("idamId")).thenReturn(List.of());
+
+            assertThat(underTest.isCurrentUserFeePaidJudge()).isFalse();
         }
     }
 }
