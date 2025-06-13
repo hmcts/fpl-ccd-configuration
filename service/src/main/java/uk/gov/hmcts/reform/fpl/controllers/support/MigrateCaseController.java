@@ -46,7 +46,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2740", this::run2740,
         "DFPL-2744", this::run2744,
         "DFPL-2739", this::run2739,
-        "DFPL-2756", this::run2756
+        "DFPL-2756", this::run2756,
+        "DFPL-2677", this::run2677,
+        "DFPL-2677-rollback", this::rollback2677
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -150,5 +152,25 @@ public class MigrateCaseController extends CallbackController {
             "DFPL-2739",
             UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
             UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
+    }
+
+    private void run2677(CaseDetails caseDetails) {
+        if (caseDetails.getData().get("dateSubmitted") == null
+            || caseDetails.getData().get("lastSubmittedDate") != null) {
+            throw new RuntimeException("[Case %s], dateSubmitted is null or lastSubmittedDate is not null"
+                .formatted(caseDetails.getId()));
+        }
+        caseDetails.getData().put("lastSubmittedDate", caseDetails.getData().get("dateSubmitted"));
+        caseDetails.getData().put("dateSubmitted", null);
+    }
+
+    private void rollback2677(CaseDetails caseDetails) {
+        if (caseDetails.getData().get("lastSubmittedDate") == null
+            || caseDetails.getData().get("dateSubmitted") != null) {
+            throw new RuntimeException("[Case %s], lastSubmittedDate is null or dateSubmitted is not null"
+                .formatted(caseDetails.getId()));
+        }
+        caseDetails.getData().put("dateSubmitted", caseDetails.getData().get("lastSubmittedDate"));
+        caseDetails.getData().remove("lastSubmittedDate");
     }
 }

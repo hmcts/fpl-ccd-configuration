@@ -45,6 +45,8 @@ public class ReturnApplicationController extends CallbackController {
         ));
 
         caseDetails.getData().remove("submittedForm");
+        caseDetails.getData().put("dateSubmitted", null);
+        caseDetails.getData().put("lastSubmittedDate", caseData.getDateSubmitted());
 
         return respond(caseDetails);
     }
