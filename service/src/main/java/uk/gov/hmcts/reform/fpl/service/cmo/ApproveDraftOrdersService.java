@@ -417,8 +417,8 @@ public class ApproveDraftOrdersService {
         // Filter out the orders that have been approved by Judge without amendments
         int labelCounter = 1;
         for (int i = 0; i <  draftOrders.size(); i++) {
-            if (CMOReviewOutcome.SEND_TO_ALL_PARTIES
-                .equals(reviewDraftOrdersData.getReviewDecision(i + 1).getDecision())) {
+            ReviewDecision reviewDecision = reviewDraftOrdersData.getReviewDecision(i + 1);
+            if (reviewDecision != null && CMOReviewOutcome.SEND_TO_ALL_PARTIES.equals(reviewDecision.getDecision())) {
                 Element<HearingOrder> orderElement = draftOrders.get(i);
                 HearingOrder approvedOrder = draftOrders.get(i).getValue();
 

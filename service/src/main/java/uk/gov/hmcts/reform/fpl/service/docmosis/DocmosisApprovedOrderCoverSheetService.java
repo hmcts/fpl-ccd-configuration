@@ -104,7 +104,8 @@ public class DocmosisApprovedOrderCoverSheetService {
             getCaseLanguage(caseData));
     }
 
-    public DocmosisApprovedOrderCoverSheet buildCoverDocumentsData(CaseData caseData, Element<HearingOrder> hearingOrder) {
+    public DocmosisApprovedOrderCoverSheet buildCoverDocumentsData(CaseData caseData,
+                                                                   Element<HearingOrder> hearingOrder) {
 
         return DocmosisApprovedOrderCoverSheet.builder()
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())

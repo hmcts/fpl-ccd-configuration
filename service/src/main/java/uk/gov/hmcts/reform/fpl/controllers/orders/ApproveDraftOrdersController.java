@@ -89,14 +89,16 @@ public class ApproveDraftOrdersController extends CallbackController {
             data.put(DRAFT_ORDERS_APPROVED, "No");
         }
 
-        data.remove("judgeType");
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, previewApprovedOrderFields());
-        if ((caseData.getReviewDraftOrdersData() != null
-            && caseData.getReviewDraftOrdersData().hasADraftBeenApprovedWithoutChanges())) {
-            if (judicialService.isCurrentUserFeePaidJudge()) {
-                data.put("judgeType", FEE_PAID_JUDGE);
-            } else {
-                data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData));
+        if (errors.isEmpty()) {
+            data.remove("judgeType");
+            CaseDetailsHelper.removeTemporaryFields(caseDetails, previewApprovedOrderFields());
+            if ((caseData.getReviewDraftOrdersData() != null
+                && caseData.getReviewDraftOrdersData().hasADraftBeenApprovedWithoutChanges())) {
+                if (judicialService.isCurrentUserFeePaidJudge()) {
+                    data.put("judgeType", FEE_PAID_JUDGE);
+                } else {
+                    data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData));
+                }
             }
         }
 

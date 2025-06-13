@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisApprovedOrderCoverSheetService;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -61,8 +60,6 @@ class HearingOrderGeneratorTest {
     @Mock
     private DocmosisApprovedOrderCoverSheetService docmosisApprovedOrderCoverSheetService;
     @Mock
-    private DocumentMerger documentMerger;
-    @Mock
     private UploadDocumentService uploadDocumentService;
 
     @InjectMocks
@@ -71,7 +68,7 @@ class HearingOrderGeneratorTest {
     @BeforeEach
     void setUp() {
         underTest = new HearingOrderGenerator(documentSealingService, time, docmosisApprovedOrderCoverSheetService,
-            documentMerger, uploadDocumentService);
+            uploadDocumentService);
     }
 
     @Test
@@ -88,7 +85,8 @@ class HearingOrderGeneratorTest {
             .build();
 
         when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
-        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder))
+        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder,
+            element(ORDER_ID, hearingOrder)))
             .thenReturn(DOCMOSIS_DOCUMENT_ORDER_WITH_COVER_SHEET);
         when(uploadDocumentService.uploadPDF(eq(ORDER_WITH_COVER_SHEET_BYTES), any()))
             .thenReturn(ORDER_WITH_COVER_SHEET_DOCUMENT);
@@ -121,7 +119,8 @@ class HearingOrderGeneratorTest {
             .reviewCMODecision(reviewDecision)
             .build();
         when(documentSealingService.sealDocument(amendedOrder, court, SealType.ENGLISH)).thenReturn(sealedOrder);
-        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder))
+        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder,
+            element(ORDER_ID, hearingOrder)))
             .thenReturn(DOCMOSIS_DOCUMENT_ORDER_WITH_COVER_SHEET);
         when(uploadDocumentService.uploadPDF(eq(ORDER_WITH_COVER_SHEET_BYTES), any()))
             .thenReturn(ORDER_WITH_COVER_SHEET_DOCUMENT);
