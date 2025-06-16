@@ -315,6 +315,10 @@ test.describe('manage orders', () => {
 
     test('CTSC uploads Transparency Order ', async ({ page, signInPage, orders }) => {
         caseName = 'Transparency Order ' + dateTime.slice(0, 10);
+      
+    test('CTSC uploads Family assistance order', async ({ page, signInPage, orders }) => {
+        caseName = 'Family Assistance Order ' + dateTime.slice(0, 10);
+
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
@@ -332,6 +336,11 @@ test.describe('manage orders', () => {
         await expect.soft(page.getByText('Transparency Order', { exact: true })).toBeVisible();
 
         await orders.ctscUploadsTransparencyOrder();
+  
+        await orders.selectOrder('Family assistance order (C42)');
+        await orders.clickContinue();
+
+        await orders.ctscFamilyAssistanceOrder();
         await orders.clickContinue();
 
         await orders.clickContinue();
@@ -343,6 +352,16 @@ test.describe('manage orders', () => {
 
     test('Judge uploads Transparency Order ', async ({ page, signInPage, orders }) => {
         caseName = 'Transparency Order ' + dateTime.slice(0, 10);
+      
+        await orders.tabNavigation('Orders')
+        await expect(page.getByText('Family assistance order (C42)',{exact:true})).toBeVisible();
+        await expect(page.getByText('c42_family_assistance_order.pdf',{exact:true})).toBeVisible();
+
+    })
+
+    test('Judge uploads Family assistance order', async ({ page, signInPage, orders }) => {
+        caseName = ' Judge uploads Family Assistance Order ' + dateTime.slice(0, 10);
+
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(judgeUser.email, judgeUser.password);
@@ -360,6 +379,11 @@ test.describe('manage orders', () => {
         await expect.soft(page.getByText('Transparency Order', { exact: true })).toBeVisible();
 
         await orders.judgeUploadsTransparencyOrder();
+
+        await orders.selectOrder('Family assistance order (C42)');
+        await orders.clickContinue();
+
+        await orders.ctscFamilyAssistanceOrder();
         await orders.clickContinue();
 
         await orders.clickContinue();
@@ -367,5 +391,10 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('link', { name: 'transparency_order.pdf' })).toBeVisible();
+      
+        await orders.tabNavigation('Orders')
+        await expect(page.getByText('Family assistance order (C42)',{exact:true})).toBeVisible();
+        await expect(page.getByText('c42_family_assistance_order.pdf',{exact:true})).toBeVisible();
+
     })
 });
