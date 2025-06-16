@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
@@ -113,7 +112,7 @@ public class DocmosisApprovedOrderCoverSheetService {
             .judgeTitleAndName(caseData.getReviewDraftOrdersData().getJudgeTitleAndName())
             .dateOfApproval(formatLocalDateToString(time.now().toLocalDate(), DATE, getCaseLanguage(caseData)))
             .crest(CREST.getValue())
-            .orderByConsent(isC2OrderByConsent(caseData, hearingOrder.getId()) ? YES.getValue() : null)
+            .orderByConsent(isC2OrderByConsent(caseData, hearingOrder) ? YES.getValue() : null)
             .build();
     }
 
@@ -125,7 +124,7 @@ public class DocmosisApprovedOrderCoverSheetService {
         return Optional.ofNullable(caseData.getC110A().getLanguageRequirementApplication()).orElse(Language.ENGLISH);
     }
 
-    private boolean isC2OrderByConsent(CaseData caseData, UUID hearingOrderId) {
+    private boolean isC2OrderByConsent(CaseData caseData, Element<HearingOrder> hearingOrder) {
         // 1. filter out all additional applications bundles by consent
         // 2. check if the hearing order id is present in any of the bundle
         return unwrapElements(caseData.getAdditionalApplicationsBundle()).stream()
@@ -137,7 +136,9 @@ public class DocmosisApprovedOrderCoverSheetService {
                     .map(C2DocumentBundle::getDraftOrdersBundle)
                     .filter(Objects::nonNull)
                     .flatMap(List::stream)
-                    .anyMatch(draftOrderElement -> draftOrderElement.getId().equals(hearingOrderId))
+                    .anyMatch(draftOrderElement ->
+                        draftOrderElement.getValue().getDocument().getUrl()
+                            .equals(hearingOrder.getValue().getOrderOrOrderConfidential().getUrl()))
             );
     }
 }

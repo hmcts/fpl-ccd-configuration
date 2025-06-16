@@ -178,8 +178,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 order.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
             });
             List<Element<HearingOrder>> newDrafts = draftOrders.stream()
-                .map(draftOrderElement ->
-                    element(draftOrderElement.getId(), HearingOrder.from(draftOrderElement.getValue())))
+                .map(Element::getValue)
+                .map(HearingOrder::from)
+                .map(ElementUtils::element)
                 .collect(Collectors.toList());
 
             HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
