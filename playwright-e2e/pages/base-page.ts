@@ -33,7 +33,7 @@ export class BasePage {
           await this.page.reload();
           await this.nextStep.selectOption(eventName);
           await this.goButton.click({clickCount:2,delay:300});
-          await expect(this.page.getByRole('button', { name: 'Previous' })).toBeDisabled();
+          await expect(this.page.getByRole('button', { name: 'Previous',exact: true })).toBeDisabled();
       }).toPass();
   }
 
@@ -50,7 +50,7 @@ export class BasePage {
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByRole('tab', { name: tabName }).click();
+    await this.page.getByRole('tab', { name: tabName, exact: true }).click();
   }
 
   async clickContinue() {
