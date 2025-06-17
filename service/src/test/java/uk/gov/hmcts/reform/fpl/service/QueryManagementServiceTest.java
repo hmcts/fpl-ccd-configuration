@@ -548,7 +548,6 @@ class QueryManagementServiceTest {
                         )
                     )
                 ))
-
             ))
             .build();
 
