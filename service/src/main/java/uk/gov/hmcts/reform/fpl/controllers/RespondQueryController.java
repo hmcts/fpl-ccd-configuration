@@ -9,13 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.RespondQueryEvent;
+import uk.gov.hmcts.reform.fpl.service.QueryManagementService;
 
 import java.util.Map;
-
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getParentQueryFromResponse;
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getQueryDateFromQuery;
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getQueryResponseFromCaseDetails;
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getUserIdFromQuery;
 
 @Slf4j
 @RestController
@@ -23,23 +19,21 @@ import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getUserIdFromQu
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondQueryController extends CallbackController {
 
+    private final QueryManagementService queryManagementService;
+
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         log.info("Going to send notification");
 
-        Map<String,Object> queryResponse = getQueryResponseFromCaseDetails(callbackRequest.getCaseDetailsBefore(),
+        Map<String,Object> queryResponse = queryManagementService.getQueryResponseFromCaseDetails(callbackRequest.getCaseDetailsBefore(),
             callbackRequest.getCaseDetails());
 
-        log.info("Query response: {}", queryResponse); //For debugging purposes
-
-        Map<String,Object> parentQuery = getParentQueryFromResponse(callbackRequest.getCaseDetails(), queryResponse);
-
-        log.info("Parent query: {}", parentQuery); //For debugging purposes
+        Map<String,Object> parentQuery = queryManagementService.getParentQueryFromResponse(callbackRequest.getCaseDetails(), queryResponse);
 
         publishEvent(new RespondQueryEvent(
             getCaseData(callbackRequest.getCaseDetails()),
-            getUserIdFromQuery(parentQuery),
-            getQueryDateFromQuery(parentQuery))
+            queryManagementService.getUserIdFromQuery(parentQuery),
+            queryManagementService.getQueryDateFromQuery(parentQuery))
         );
     }
 }

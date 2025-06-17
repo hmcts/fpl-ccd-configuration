@@ -10,17 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.QueryManagementService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
-
-import java.util.Map;
-
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getCurrentCollectionByUserService;
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getLatestQueryIDForCollection;
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.getRoleToCollectionMapping;
-import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.logAllQueryCollections;
 
 @Slf4j
 @RestController
@@ -29,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.QueryManagementUtils.logAllQueryColl
 public class RaiseQueryController extends CallbackController {
 
     private final UserService userService;
-    private static final Map<CaseRole, String> COLLECTION_MAPPING = getRoleToCollectionMapping();
+    private final QueryManagementService queryManagementService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -37,13 +30,13 @@ public class RaiseQueryController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         String queryCollection;
 
-        logAllQueryCollections(caseDetails);
+        queryManagementService.logAllQueryCollections(caseDetails);
 
         if (userService.isCafcassUser()) {
             queryCollection = "qmCaseQueriesCollectionCafcass";
             log.info("Current logged-in user's case role is {}", UserRole.CAFCASS);
         } else {
-            queryCollection = getCurrentCollectionByUserService(caseData, userService, COLLECTION_MAPPING);
+            queryCollection = queryManagementService.getCurrentCollectionByLoggedInUserType(caseData);
         }
 
         log.info("Query collection for this user is {}.", queryCollection);
@@ -51,7 +44,7 @@ public class RaiseQueryController extends CallbackController {
         log.info("Setting {} to value {}", queryCollection, caseDetails.getData().get(queryCollection));
 
         log.info("Final values of query collections: ");
-        logAllQueryCollections(caseDetails);
+        queryManagementService.logAllQueryCollections(caseDetails);
 
         return respond(caseDetails);
     }
@@ -61,8 +54,8 @@ public class RaiseQueryController extends CallbackController {
         final CaseData caseData = getCaseData(callbackRequest);
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        caseDetails.getData().put("latestQueryID", getLatestQueryIDForCollection(caseDetails,
-            getCurrentCollectionByUserService(caseData, userService, COLLECTION_MAPPING)));
+        caseDetails.getData().put("latestQueryID", queryManagementService.getLatestQueryIDForCollection(caseDetails,
+            queryManagementService.getCurrentCollectionByLoggedInUserType(caseData)));
 
         log.info("latestQueryID is set to: {}", caseDetails.getData().get("latestQueryID"));
 
