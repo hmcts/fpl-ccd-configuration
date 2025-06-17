@@ -36,7 +36,7 @@ public class RaiseQueryController extends CallbackController {
             queryCollection = "qmCaseQueriesCollectionCafcass";
             log.info("Current logged-in user's case role is {}", UserRole.CAFCASS);
         } else {
-            queryCollection = queryManagementService.getCurrentCollectionByLoggedInUserType(caseData);
+            queryCollection = queryManagementService.getCurrentCollectionByLoggedInUserRole(caseData);
         }
 
         log.info("Query collection for this user is {}.", queryCollection);
@@ -55,7 +55,7 @@ public class RaiseQueryController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         caseDetails.getData().put("latestQueryID", queryManagementService.getLatestQueryIDForCollection(caseDetails,
-            queryManagementService.getCurrentCollectionByLoggedInUserType(caseData)));
+            queryManagementService.getCurrentCollectionByLoggedInUserRole(caseData)));
 
         log.info("latestQueryID is set to: {}", caseDetails.getData().get("latestQueryID"));
 

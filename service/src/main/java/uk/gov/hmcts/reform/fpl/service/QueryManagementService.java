@@ -106,7 +106,7 @@ public class QueryManagementService {
         return collectionMapping;
     }
 
-    public String getCurrentCollectionByLoggedInUserType(CaseData caseData) {
+    public String getCurrentCollectionByLoggedInUserRole(CaseData caseData) {
         Set<CaseRole> currentUserRoles = userService.getCaseRoles(caseData.getId());
         log.info("Current logged-in user's case roles are: {}", currentUserRoles);
 
