@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -74,7 +75,6 @@ public class ApplicationDocumentsService {
         return ret;
     }
 
-    @SuppressWarnings("unchecked")
     public Map<String, Object> synchroniseToNewFields(List<Element<ApplicationDocument>> applicationDocuments) {
         Map<String, Object> ret = new HashMap<>();
         ret.putAll(synchroniseToNewFields(applicationDocuments, List.of(SWET, SOCIAL_WORK_CHRONOLOGY,
@@ -83,6 +83,61 @@ public class ApplicationDocumentsService {
         ret.putAll(synchroniseToNewFields(applicationDocuments, List.of(CARE_PLAN), "carePlanList"));
         ret.putAll(synchroniseToNewFields(applicationDocuments, List.of(THRESHOLD), "thresholdList"));
         return ret;
+    }
+
+    public List<Element<ApplicationDocument>> buildTemporaryApplicationDocumentsWithType(
+        List<Element<ManagedDocument>> nonConfidential,
+        List<Element<ManagedDocument>> confidential,
+        ApplicationDocumentType type) {
+
+        List<Element<ApplicationDocument>> documents = new ArrayList<>();
+
+        // rebuild confidential documents
+        for (Element<ManagedDocument> document : nullSafeList(confidential)) {
+            documents.add(element(document.getId(), ApplicationDocument.builder()
+                .document(document.getValue().getDocument())
+                .documentType(type)
+                .documentName(document.getValue().getDocument().getFilename())
+                .uploaderCaseRoles(document.getValue().getUploaderCaseRoles())
+                .uploaderType(document.getValue().getUploaderType())
+                .confidential(List.of("CONFIDENTIAL"))
+                .build()));
+        }
+
+        // rebuild non-confidential documents
+        for (Element<ManagedDocument> document : nullSafeList(nonConfidential)) {
+            documents.add(element(document.getId(), ApplicationDocument.builder()
+                .document(document.getValue().getDocument())
+                .documentType(type)
+                .documentName(document.getValue().getDocument().getFilename())
+                .uploaderCaseRoles(document.getValue().getUploaderCaseRoles())
+                .uploaderType(document.getValue().getUploaderType())
+                .build()));
+        }
+
+        return documents;
+    }
+
+    public List<Element<ApplicationDocument>> rebuildTemporaryApplicationDocuments(CaseData caseData) {
+        List<Element<ApplicationDocument>> documents = new ArrayList<>();
+
+        // documentsFiledOnIssueList -> ApplicationDocument.type(OTHER) as we have lost the type information
+        documents.addAll(buildTemporaryApplicationDocumentsWithType(
+            caseData.getDocumentsFiledOnIssueList(),
+            caseData.getDocumentsFiledOnIssueListLA(),
+            OTHER));
+
+        documents.addAll(buildTemporaryApplicationDocumentsWithType(
+            caseData.getCarePlanList(),
+            caseData.getCarePlanListLA(),
+            CARE_PLAN));
+
+        documents.addAll(buildTemporaryApplicationDocumentsWithType(
+            caseData.getThresholdList(),
+            caseData.getThresholdListLA(),
+            THRESHOLD));
+
+        return documents;
     }
 
     public Map<String, Object> updateApplicationDocuments(CaseData caseData,
