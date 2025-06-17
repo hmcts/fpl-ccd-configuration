@@ -49,6 +49,7 @@ class HearingOrderGeneratorTest {
     private static final Document ORDER_WITH_COVER_SHEET_DOCUMENT = testDocument();
     private static final DocumentReference ORDER_WITH_COVER_SHEET = DocumentReference
         .buildFromDocument(ORDER_WITH_COVER_SHEET_DOCUMENT);
+    private static final DocumentReference ORDER_WITH_SEALED_COVERSHEET = testDocumentReference();
     private static final DocumentReference amendedOrder = testDocumentReference();
 
     private static final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -90,12 +91,14 @@ class HearingOrderGeneratorTest {
             .thenReturn(DOCMOSIS_DOCUMENT_ORDER_WITH_COVER_SHEET);
         when(uploadDocumentService.uploadPDF(eq(ORDER_WITH_COVER_SHEET_BYTES), any()))
             .thenReturn(ORDER_WITH_COVER_SHEET_DOCUMENT);
+        when(documentSealingService.sealDocument(ORDER_WITH_COVER_SHEET, court, SealType.ENGLISH))
+            .thenReturn(ORDER_WITH_SEALED_COVERSHEET);
 
         Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
             .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
             .othersNotified(othersNotified)
             .others(selectedOthers)
-            .order(ORDER_WITH_COVER_SHEET).lastUploadedOrder(order).build());
+            .order(ORDER_WITH_SEALED_COVERSHEET).lastUploadedOrder(order).build());
 
         Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
             caseData,
@@ -124,11 +127,13 @@ class HearingOrderGeneratorTest {
             .thenReturn(DOCMOSIS_DOCUMENT_ORDER_WITH_COVER_SHEET);
         when(uploadDocumentService.uploadPDF(eq(ORDER_WITH_COVER_SHEET_BYTES), any()))
             .thenReturn(ORDER_WITH_COVER_SHEET_DOCUMENT);
+        when(documentSealingService.sealDocument(ORDER_WITH_COVER_SHEET, court, SealType.ENGLISH))
+            .thenReturn(ORDER_WITH_SEALED_COVERSHEET);
 
         Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
             .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
             .others(List.of()).othersNotified("")
-            .order(ORDER_WITH_COVER_SHEET).lastUploadedOrder(amendedOrder).build());
+            .order(ORDER_WITH_SEALED_COVERSHEET).lastUploadedOrder(amendedOrder).build());
 
         Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
             caseData,

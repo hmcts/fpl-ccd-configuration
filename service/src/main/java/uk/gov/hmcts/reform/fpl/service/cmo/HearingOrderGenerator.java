@@ -61,7 +61,9 @@ public class HearingOrderGenerator {
             caseData.getSealType());
 
         if (addCoverSheet) {
-            sealedOrder = addCoverSheet(caseData, sealedOrder, hearingOrderElement);
+            // add a sealed cover sheet to the order
+            sealedOrder = documentSealingService.sealDocument(addCoverSheet(caseData, sealedOrder, hearingOrderElement),
+                caseData.getCourt(), caseData.getSealType());
         }
 
         builder = (isConfidentialOrder)
