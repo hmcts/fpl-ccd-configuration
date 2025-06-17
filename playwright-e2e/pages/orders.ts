@@ -60,6 +60,9 @@ export class Orders extends BasePage {
     readonly endDateMonth: Locator;
     readonly endDateYear: Locator;
     readonly addFutherDirection: Locator;
+    readonly applicationOrder: Locator;
+    readonly addExclusionDetails: Locator;
+    readonly endOfProceedings: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -112,7 +115,7 @@ export class Orders extends BasePage {
         this.costOrderDetails = page.getByLabel('Cost order details');
         this.orderTitle = page.getByLabel('Add order title (Optional)');
         this.orderDirectionDetails = page.getByLabel('Add order directions');
-        this.radioButton = page.getByRole('radio', { name: 'Yes' });
+        this.radioButton = page.getByRole('radio', { name: 'No' });
         this.firstPartyBefriended = page.getByLabel('First party to be befriended');
         this.secondPartyBefriended = page.getByLabel('Second party to be befriended');
         this.thirdPartyBefriended = page.getByLabel('Third party to be befriended');
@@ -120,6 +123,9 @@ export class Orders extends BasePage {
         this.endDateMonth = page.getByRole('textbox', { name: 'Month' });
         this.endDateYear = page.getByRole('textbox', { name: 'Year' });
         this.addFutherDirection = page.getByRole('textbox', { name: 'Add further directions, if' });
+        this.applicationOrder = page.getByRole('group', { name: 'Is there an application for' });
+        this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
+        this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
 
     }
 
@@ -318,4 +324,28 @@ export class Orders extends BasePage {
         await this.addFutherDirection.fill('test');
         await this.finalOrder.getByLabel('No').check();
     }
-}
+
+    async ctscUploadsInterimCareOrder() {
+        await this.orderApproved.getByLabel('No').check();
+        await this.applicationOrder.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.childInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.radioButton.click();
+        await this.endOfProceedings.check();
+    }
+
+    async judgeUploadsInterimCareOrder() {
+        await this.orderApproved.getByLabel('No').check();
+        await this.applicationOrder.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.childInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.radioButton.check();
+        await this.endOfProceedings.check();
+    }
+};
