@@ -25,10 +25,12 @@ public class RespondQueryController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         log.info("Going to send notification");
 
-        Map<String,Object> queryResponse = queryManagementService.getQueryResponseFromCaseDetails(callbackRequest.getCaseDetailsBefore(),
+        Map<String,Object> queryResponse =
+            queryManagementService.getQueryResponseFromCaseDetails(callbackRequest.getCaseDetailsBefore(),
             callbackRequest.getCaseDetails());
 
-        Map<String,Object> parentQuery = queryManagementService.getParentQueryFromResponse(callbackRequest.getCaseDetails(), queryResponse);
+        Map<String,Object> parentQuery =
+            queryManagementService.getParentQueryFromResponse(callbackRequest.getCaseDetails(), queryResponse);
 
         publishEvent(new RespondQueryEvent(
             getCaseData(callbackRequest.getCaseDetails()),
