@@ -21,7 +21,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 4 : undefined,
+  workers: process.env.CI ? 2 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['html', { outputFolder: 'test-results/functional' }],
              ['junit', { outputFile: 'test-results/functional/results.xml' }]
@@ -31,16 +31,14 @@ export default defineConfig({
   use: {
     // Record trace only when retrying a test for the first time.
     trace: 'on-first-retry'
-
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects */
   projects: [
     {
       name: "APITest",
       testMatch: /.*.api.spec.ts/,
       fullyParallel: false,
-      retries: 0,
     },
   ],
 });
