@@ -267,7 +267,7 @@ public class ApproveDraftOrdersService {
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
                         caseData, reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
-                        true);
+                        SEND_TO_ALL_PARTIES.equals(reviewDecision.getDecision()));
 
                     Element<GeneratedOrder> generatedBlankOrder = blankOrderGenerator.buildBlankOrder(caseData,
                         selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers));
