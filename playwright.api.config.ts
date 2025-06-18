@@ -38,9 +38,7 @@ export default defineConfig({
   projects: [
     {
       name: "APITest",
-      testMatch: /.*.api.spec.ts/,
-      fullyParallel: false,
-      retries: 0,
+      testMatch: /.*.api.spec.ts/
     },
   ],
 });
