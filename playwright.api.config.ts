@@ -31,10 +31,9 @@ export default defineConfig({
   use: {
     // Record trace only when retrying a test for the first time.
     trace: 'on-first-retry'
-
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects */
   projects: [
     {
       name: "APITest",
