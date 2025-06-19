@@ -7,12 +7,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
+import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRole;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesResource;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
@@ -70,7 +70,7 @@ public abstract class AbstractTest {
     protected IdamClient idamClient;
 
     @MockBean
-    protected CaseAccessDataStoreApi caseAccessApi;
+    protected CaseAssignmentApi caseAssignmentApi;
 
     @MockBean
     protected CoreCaseDataApiV2 coreCaseDataApi;
@@ -123,16 +123,16 @@ public abstract class AbstractTest {
     }
 
     protected void givenCaseRoles(Long caseId, String userId, CaseRole... caseRoles) {
-        final List<CaseAssignedUserRole> assignedRoles = Stream.of(caseRoles)
+        final List<CaseAssignmentUserRole> assignedRoles = Stream.of(caseRoles)
             .map(CaseRole::formattedName)
-            .map(caseRoleName -> CaseAssignedUserRole.builder()
+            .map(caseRoleName -> CaseAssignmentUserRole.builder()
                 .caseRole(caseRoleName)
                 .caseDataId(caseId.toString())
                 .build())
             .collect(toList());
 
-        given(caseAccessApi.getUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, of(caseId.toString()), of(userId)))
-            .willReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(assignedRoles).build());
+        given(caseAssignmentApi.getUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, of(caseId.toString()), of(userId)))
+            .willReturn(CaseAssignmentUserRolesResource.builder().caseAssignmentUserRoles(assignedRoles).build());
     }
 
     protected void givenFplService() {
