@@ -333,7 +333,7 @@ test.describe('manage orders', () => {
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
-      
+
         await orders.tabNavigation('Orders')
         await expect(page.getByText('Family assistance order (C42)',{exact:true})).toBeVisible();
         await expect(page.getByText('c42_family_assistance_order.pdf',{exact:true})).toBeVisible();
@@ -360,7 +360,7 @@ test.describe('manage orders', () => {
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
-      
+
         await orders.tabNavigation('Orders')
         await expect(page.getByText('Family assistance order (C42)',{exact:true})).toBeVisible();
         await expect(page.getByText('c42_family_assistance_order.pdf',{exact:true})).toBeVisible();
