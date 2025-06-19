@@ -63,7 +63,7 @@ export class Orders extends BasePage {
     readonly applicationOrder: Locator;
     readonly addExclusionDetails: Locator;
     readonly endOfProceedings: Locator;
-
+   
     constructor(page: Page) {
         super(page);
         this.orderTypeRadio = page.getByRole('group', { name: 'Select order' });
@@ -77,8 +77,8 @@ export class Orders extends BasePage {
         this.EPOEndDate = page.getByRole('group', { name: 'When does it end?' });
         this.finalOrder = page.getByRole('group', { name: 'Is this a final order?' });
         this.orderPreviewLink = page.getByRole('link', { name: 'Preview order.pdf' });
-        this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
         this.orderPage = page;
+        this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
         this.excluded = page.getByLabel('Who\'s excluded');
         this.powerOfExclusionStart = page.getByRole('group', { name: 'Date power of exclusion starts' });
         this.orderToAmend = page.getByLabel('Select order to amend');
@@ -130,11 +130,13 @@ export class Orders extends BasePage {
     }
 
     async selectOrderOperation(toDo: string) {
+        //await this.page.getByRole('radio', { name: `${toDo}`}).click();
         await this.page.getByRole('radio', { name: `${toDo}` }).click();
     }
 
     async selectOrder(orderType: string) {
         await this.orderTypeRadio.getByLabel(`${orderType}`).check();
+
     }
 
     async addIssuingDetailsOfApprovedOrder(approvalDate: string) {
@@ -143,6 +145,7 @@ export class Orders extends BasePage {
         await this.orderApplication.getByLabel('No').click();
         await this.clickContinue();
         await this.addIssuingJudgeDetails('Yes');
+
         if (approvalDate == 'yes') {
             await this.approvalDate.getByRole('textbox', { name: 'Day' }).fill('04');
             await this.approvalDate.getByRole('textbox', { name: 'Month' }).fill('11');
@@ -196,6 +199,7 @@ export class Orders extends BasePage {
             await this.powerOfExclusionStart.getByLabel('Year').fill('2024');
             await this.powerOfExclusionStart.getByLabel('Day').fill('12');
         }
+
         await this.page.getByRole('group', { name: 'Include: "Any person who can produce the children to the applicant must do so"' }).getByLabel('Yes').click();
         await this.page.getByLabel('Add description of children (').fill('Children description');
         await this.page.getByLabel('Add further directions, if').fill('Furhter direction\nto the applicant \nto take care of children');
@@ -282,6 +286,35 @@ export class Orders extends BasePage {
         await this.waitForAllUploadsToBeCompleted();
     }
 
+    async ctscUploadsTransparencyOrder() {
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.finalOrder.getByLabel('No').check();
+        await this.dateChosen.check();
+        await this.endDate.getByLabel('Day').fill('12');
+        await this.endDate.getByLabel('Month').fill('12');
+        await this.endDate.getByLabel('Year').fill('2030');
+        await this.permissionReport.getByLabel('Day').fill('12');
+        await this.permissionReport.getByLabel('Month').fill('12');
+        await this.permissionReport.getByLabel('Year').fill('2031');
+    }
+
+    async judgeUploadsTransparencyOrder() {
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.finalOrder.getByLabel('No').check();
+        await this.dateChosen.check();
+        await this.endDate.getByLabel('Day').fill('12');
+        await this.endDate.getByLabel('Month').fill('12');
+        await this.endDate.getByLabel('Year').fill('2030');
+        await this.permissionReport.getByLabel('Day').fill('09');
+        await this.permissionReport.getByLabel('Month').fill('10');
+        await this.permissionReport.getByLabel('Year').fill('2031');
+
+    }
+
     async ctscFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
@@ -290,22 +323,21 @@ export class Orders extends BasePage {
         await expect(this.page.getByText(' Family assistance order (C42)', { exact: true })).toBeVisible();
         await this.page.pause();
         await this.childInvolved.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
         await expect(this.page.getByText(' Family assistance order (C42)', { exact: true })).toBeVisible();
-        await this.firstPartyBefriended.selectOption('John Black');
-        await this.secondPartyBefriended.selectOption('Joe Bloggs');
-        await this.thirdPartyBefriended.selectOption('Sarah Black');
-        await this.endDateDay.fill('07');
-        await this.endDateMonth.fill('08');
-        await this.endDateYear.fill('2025');
+        await this.firstFamilyBefriended.selectOption('John Black');
+        await this.secondFamilyBefriended.selectOption('Joe Bloggs');
+        await this.thirdFamilyBefriended.selectOption('Sarah Black');
+        await this.day.fill('07');
+        await this.month.fill('08');
+        await this.year.fill('2025');
         await this.orderConsent.getByLabel('Yes').click();
         await this.orderConsent.getByLabel('Yes').click(); // checkbox not clicking had to work around it
-        await this.addFutherDirection.fill('test');
+        await this.furtherDirections.fill('test');
         await this.finalOrder.getByLabel('No').check();
     }
 
-    async judgeFamilyAssistanceOrder() {
+    async judgeUploadsFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
         await this.page.pause();
@@ -314,14 +346,15 @@ export class Orders extends BasePage {
         await this.childInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await expect(this.page.getByText(' Family assistance order (C42)', { exact: true })).toBeVisible();
-        await this.firstPartyBefriended.selectOption('John Black');
-        await this.secondPartyBefriended.selectOption('Sarah Black');
-        await this.thirdPartyBefriended.selectOption('Joe Bloggs');
-        await this.endDateDay.fill('07');
-        await this.endDateMonth.fill('08');
-        await this.endDateYear.fill('2025');
+        await this.firstFamilyBefriended.selectOption('John Black');
+        await this.secondFamilyBefriended.selectOption('Sarah Black');
+        await this.thirdFamilyBefriended.selectOption('Joe Bloggs');
+        await this.day.fill('07');
+        await this.month.fill('08');
+        await this.year.fill('2025');
         await this.orderConsent.getByLabel('Yes').click();
-        await this.addFutherDirection.fill('test');
+        await this.orderConsent.getByLabel('Yes').click();
+        await this.furtherDirections.fill('test');
         await this.finalOrder.getByLabel('No').check();
     }
 
