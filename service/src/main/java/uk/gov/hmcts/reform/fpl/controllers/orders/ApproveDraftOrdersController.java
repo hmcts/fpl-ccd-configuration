@@ -97,7 +97,11 @@ public class ApproveDraftOrdersController extends CallbackController {
                 if (judicialService.isCurrentUserFeePaidJudge()) {
                     data.put("judgeType", FEE_PAID_JUDGE);
                 } else {
-                    data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData));
+                    data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData.toBuilder()
+                        .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+                            .judgeTitleAndName(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData))
+                            .build())
+                        .build()));
                 }
             }
         }
