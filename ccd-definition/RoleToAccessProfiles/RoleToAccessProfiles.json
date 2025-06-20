@@ -86,6 +86,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[APPSOLICITOR]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[APPSOLICITOR]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "[LAMANAGING]",
     "ReadOnly": "N",
     "AccessProfiles": "[LAMANAGING]"

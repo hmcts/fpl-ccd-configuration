@@ -75,6 +75,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCU
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C2_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.APPSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
@@ -160,6 +161,9 @@ public class ManageDocumentService {
         }
         if (caseRoles.contains(CaseRole.LASHARED)) {
             return SECONDARY_LOCAL_AUTHORITY;
+        }
+        if (caseRoles.contains(CaseRole.APPSOLICITOR)) {
+            return APPSOLICITOR;
         }
         if (Optional.ofNullable(userService.getIdamRoles()).orElse(Set.of()).contains(UserRole.CAFCASS.getRoleName())) {
             return CAFCASS;
@@ -626,6 +630,7 @@ public class ManageDocumentService {
             case BARRISTER:
                 return documentType.isHiddenFromSolicitorUpload();
             case DESIGNATED_LOCAL_AUTHORITY:
+            case APPSOLICITOR:
             case SECONDARY_LOCAL_AUTHORITY:
                 return documentType.isHiddenFromLAUpload();
             case HMCTS:
