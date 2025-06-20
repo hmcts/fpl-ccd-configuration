@@ -110,7 +110,7 @@ withNightlyPipeline(type, product, component) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
               // Run last failed tests with retry
               try {
-                yarnBuilder.yarn('test:functional-chromium --last-failed --retries=1')
+                yarnBuilder.yarn('test:functional-chromium -- --last-failed --retries=1')
               } catch (RetryError) {
                 unstable(message: "${STAGE_NAME} retry of failed tests is unstable: " + RetryError.toString())
               }
