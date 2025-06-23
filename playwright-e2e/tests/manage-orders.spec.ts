@@ -441,7 +441,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf',exact :true })).toBeVisible();
+        await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
     })
 
@@ -466,7 +466,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf',exact: true })).toBeVisible()
+        await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
     })
 })
