@@ -39,6 +39,10 @@ public class NoticeOfChangeService {
 
         UserDetails solicitor = userService.getUserDetailsById(auditEvent.getUserId());
 
+        if (caseData.isThirdPartyApplicant()) {
+            return updateRepresentationService.updateRepresentationThirdPartyOutsourcing(caseData, solicitor);
+        }
+
         return updateRepresentationService.updateRepresentation(caseData, solicitor);
     }
 
@@ -67,7 +71,5 @@ public class NoticeOfChangeService {
 
             log.info("Representation change applied {}", changeRequest);
         }
-
     }
-
 }
