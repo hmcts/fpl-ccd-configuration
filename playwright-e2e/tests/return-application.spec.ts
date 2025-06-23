@@ -36,7 +36,7 @@ test.describe('Return application', () => {
 
     });
 
-  test('LA submit application',
+  test('LA submit application @xbrowser',
     async ({ page, signInPage, returnApplication }) => {
       caseName = 'LA submit application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, returnedCase);

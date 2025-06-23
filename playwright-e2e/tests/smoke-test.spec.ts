@@ -3,7 +3,7 @@ import { newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from "../set
 import { CreateCaseName } from "../utils/create-case-name";
 import { CaseFileView } from "../pages/case-file-view";
 
-test.describe('', () => {
+test.describe('Smoke Test @xbrowser', () => {
     test.slow();
     test("Local Authority submit C110A application @smoke-test @accessibility", async ({
         signInPage,
@@ -203,6 +203,6 @@ test.describe('', () => {
         await  caseFileView.openDocInNewTab();
         await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
         })
-    
+
     })
 
