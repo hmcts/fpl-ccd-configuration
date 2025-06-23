@@ -65,6 +65,7 @@ export class Orders extends BasePage {
     readonly applicationOrder: Locator;
     readonly addExclusionDetails: Locator;
     readonly endOfProceedings: Locator;
+    readonly endDate: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -130,6 +131,7 @@ export class Orders extends BasePage {
         this.applicationOrder = page.getByRole('group', { name: 'Is there an application for' });
         this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
         this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
+        this.endDate = page.getByRole('group', { name: 'End Date' });
 
     }
 
@@ -295,9 +297,9 @@ export class Orders extends BasePage {
         await this.orderConsent.getByLabel('Yes').check();
         await this.finalOrder.getByLabel('No').check();
         await this.dateChosen.check();
-        await this.day.getByLabel('Day').fill('12');
-        await this.month.getByLabel('Month').fill('12');
-        await this.year.getByLabel('Year').fill('2030');
+        await this.endDate.getByLabel('Day').fill('11');
+        await this.endDate.getByLabel('Month').fill('11');
+        await this.endDate.getByLabel('Year').fill('2030');
         await this.permissionReport.getByLabel('Day').fill('12');
         await this.permissionReport.getByLabel('Month').fill('12');
         await this.permissionReport.getByLabel('Year').fill('2031');
@@ -309,12 +311,12 @@ export class Orders extends BasePage {
         await this.orderConsent.getByLabel('Yes').check();
         await this.finalOrder.getByLabel('No').check();
         await this.dateChosen.check();
-        await this.day.getByLabel('Day').fill('12');
-        await this.month.getByLabel('Month').fill('12');
-        await this.year.getByLabel('Year').fill('2030');
-        await this.permissionReport.getByLabel('Day').fill('09');
-        await this.permissionReport.getByLabel('Month').fill('10');
-        await this.permissionReport.getByLabel('Year').fill('2031');
+        await this.endDate.getByLabel('Day').fill('11');
+        await this.endDate.getByLabel('Month').fill('07');
+        await this.endDate.getByLabel('Year').fill('2030');
+        await this.permissionReport.getByLabel('Day').fill('10');
+        await this.permissionReport.getByLabel('Month').fill('08');
+        await this.permissionReport.getByLabel('Year').fill('2020');
 
     }
 
@@ -343,10 +345,8 @@ export class Orders extends BasePage {
         await this.issuingJudge.getByLabel('Yes').check();
         await this.page.pause();
         await this.clickContinue();
-      //  await expect(this.page.getByText(' Family assistance order (C42)', { exact: true })).toBeVisible();
         await this.childInvolved.getByLabel('Yes').check();
         await this.clickContinue();
-       // await expect(this.page.getByText(' Family assistance order (C42)', { exact: true })).toBeVisible();
         await this.firstFamilyBefriended.selectOption('John Black');
         await this.secondFamilyBefriended.selectOption('Sarah Black');
         await this.thirdFamilyBefriended.selectOption('Joe Bloggs');
