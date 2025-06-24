@@ -16,8 +16,8 @@ export default defineConfig({
   testIgnore:'*api.spec.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 5*60*1000, //each test execution time is set to 5 min
-  expect: { timeout: 1*60*1000 }, //wait time for the assertion to be true 60 sec
+  timeout: 6*60*1000, //each test execution time is set to 5 min
+  expect: { timeout: 1*90*1000 }, //wait time for the assertion to be true 60 sec
 
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,

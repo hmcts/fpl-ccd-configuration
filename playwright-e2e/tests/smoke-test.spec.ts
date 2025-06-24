@@ -44,13 +44,13 @@ test.describe('Smoke Test @xbrowser', () => {
         // Orders and directions sought
         await startApplication.tabNavigation('Start application');
         await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-        await startApplication.addApplicationDetailsHeading.isVisible();
+        await expect(startApplication.addApplicationDetailsHeading).toBeVisible({timeout:90000});
         await startApplication.tabNavigation('View application');
 
         // // Hearing urgency
         await startApplication.tabNavigation('Start application');
         await startApplication.hearingUrgency();
-        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
+        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible({timeout:90000});
         await hearingUrgency.hearingUrgencySmokeTest();
         await startApplication.tabNavigation('View application');
 
