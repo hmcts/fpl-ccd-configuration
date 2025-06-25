@@ -54,6 +54,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private DocumentReference orderConfidential;
     private DocumentReference translatedOrder;
     private DocumentReference lastUploadedOrder;
+    private DocumentReference refusedOrder;
     private String hearing;
     // Case management order, 21 June 2020
     private UUID hearingId;
