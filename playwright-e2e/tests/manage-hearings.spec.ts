@@ -19,7 +19,7 @@ test.describe('manage hearings', () => {
     caseNumber =  await createCase('e2e case',newSwanseaLocalAuthorityUserOne);
   });
 
-  test('CTSC admin adds new hearing',
+  test('CTSC admin adds new hearing @xbrowser',
     async ({page,signInPage,manageHearings}) => {
       caseName = 'CTSC manage hearings ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
@@ -94,7 +94,7 @@ test.describe('manage hearings', () => {
         'His Honour Judge Arthur Ramirez');
   });
 
-  test('CTSC admin vacates a hearing',
+  test('CTSC admin vacates a hearing ',
     async({page,signInPage,manageHearings}) => {
       caseName = 'CTSC admin vacates a hearing ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
