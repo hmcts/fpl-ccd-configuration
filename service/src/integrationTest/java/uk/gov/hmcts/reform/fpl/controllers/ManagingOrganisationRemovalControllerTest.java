@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
+import uk.gov.hmcts.reform.aac.client.NocApi;
 import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
@@ -56,7 +56,7 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
     private OrganisationApi organisationApi;
 
     @MockBean
-    private CaseAssignmentApi caseAssignmentApi;
+    private NocApi nocApi;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -113,7 +113,7 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
             .builder()
             .build();
 
-        given(caseAssignmentApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN),
+        given(nocApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN),
             removalRequestCaptor.capture())).willReturn(expectedResponse);
 
         final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(caseData);
