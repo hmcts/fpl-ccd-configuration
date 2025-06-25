@@ -5,8 +5,6 @@ import { CaseFileView } from "../pages/case-file-view";
 
 test.describe('Smoke Test @xbrowser', () => {
     test.slow();
-    test.setTimeout(90_000);
-
 
     test("Local Authority submit C110A application @smoke-test @accessibility", async ({
         signInPage,
@@ -155,7 +153,7 @@ test.describe('Smoke Test @xbrowser', () => {
         //Orders and directions sought
         await startApplication.tabNavigation('Start application');
         await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
-        await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
+        await expect (startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
         await startApplication.tabNavigation('View application');
 
 
