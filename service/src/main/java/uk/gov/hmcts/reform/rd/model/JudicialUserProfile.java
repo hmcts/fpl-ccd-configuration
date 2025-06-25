@@ -77,6 +77,10 @@ public class JudicialUserProfile {
 
     private String personalCode;
 
+    private List<JudicialUserAppointment> appointments;
+
+    private List<JudicialUserAuthorisations> authorisations;
+
     public String getTitle() {
         if (isEmpty(this.title) || this.title.equalsIgnoreCase("Unknown")) {
             // if no title from JRD - pattern match it from the known list of titles in JRD full name fields
