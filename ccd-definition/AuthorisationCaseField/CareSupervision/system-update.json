@@ -4538,11 +4538,5 @@
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRU"
   },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "OrgPolicyCaseAssignedRole",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
-  }
+
 ]
