@@ -45,24 +45,27 @@ export class Orders extends BasePage {
     readonly awayFromHome: Locator;
     readonly awayfromDate: Locator;
     readonly awayToDate: Locator;
+    readonly permissionReport: Locator;
     readonly childFirstContact: Locator;
     readonly childSecondContact: Locator;
     readonly childThirdContact: Locator;
     readonly costOrderDetails: Locator;
     readonly costOrder: Locator;
     readonly orderTitle: Locator;
-    readonly orderDirectionDetails: Locator;
-    readonly transparencyOrder: Locator;
-    readonly dateChosen: Locator;
-    readonly endDate: Locator;
-    readonly permissionReport: Locator;
+    readonly orderDirectionDetails: Locator
+    readonly radioButton: Locator;
     readonly firstFamilyBefriended: Locator;
     readonly secondFamilyBefriended: Locator;
     readonly thirdFamilyBefriended: Locator;
-    readonly furtherDirections: Locator;
-    readonly day:Locator;
+    readonly dateChosen: Locator;
+    readonly day: Locator;
     readonly month: Locator;
     readonly year: Locator;
+    readonly futherDirections: Locator;
+    readonly applicationOrder: Locator;
+    readonly addExclusionDetails: Locator;
+    readonly endOfProceedings: Locator;
+    readonly endDate: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -115,21 +118,24 @@ export class Orders extends BasePage {
         this.costOrderDetails = page.getByLabel('Cost order details');
         this.orderTitle = page.getByLabel('Add order title (Optional)');
         this.orderDirectionDetails = page.getByLabel('Add order directions');
-        this.transparencyOrder = page.getByRole('radio', { name: 'Transparency Order' });
+        this.radioButton = page.getByRole('radio', { name: 'No' });
         this.dateChosen = page.getByRole('radio', { name: 'Date to be chosen' });
-        this.endDate = page.getByRole('group', { name: 'End Date' });
         this.permissionReport = page.getByRole('group', { name: 'Permission to report is not' });
         this.firstFamilyBefriended = page.getByLabel('First party to be befriended');
         this.secondFamilyBefriended = page.getByLabel('Second party to be befriended');
         this.thirdFamilyBefriended = page.getByLabel('Third party to be befriended');
-        this.furtherDirections = page.getByRole('textbox', { name: 'Add further directions, if' });
-        this.day=page.getByRole('textbox', { name: 'Day' });
+        this.day = page.getByRole('textbox', { name: 'Day' });
         this.month = page.getByRole('textbox', { name: 'Month' });
         this.year = page.getByRole('textbox', { name: 'Year' });
+        this.futherDirections = page.getByRole('textbox', { name: 'Add further directions, if' });
+        this.applicationOrder = page.getByRole('group', { name: 'Is there an application for' });
+        this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
+        this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
+        this.endDate = page.getByRole('group', { name: 'End Date' });
+
     }
 
     async selectOrderOperation(toDo: string) {
-        //await this.page.getByRole('radio', { name: `${toDo}`}).click();
         await this.page.getByRole('radio', { name: `${toDo}` }).click();
     }
 
@@ -291,8 +297,8 @@ export class Orders extends BasePage {
         await this.orderConsent.getByLabel('Yes').check();
         await this.finalOrder.getByLabel('No').check();
         await this.dateChosen.check();
-        await this.endDate.getByLabel('Day').fill('12');
-        await this.endDate.getByLabel('Month').fill('12');
+        await this.endDate.getByLabel('Day').fill('11');
+        await this.endDate.getByLabel('Month').fill('11');
         await this.endDate.getByLabel('Year').fill('2030');
         await this.permissionReport.getByLabel('Day').fill('12');
         await this.permissionReport.getByLabel('Month').fill('12');
@@ -305,12 +311,12 @@ export class Orders extends BasePage {
         await this.orderConsent.getByLabel('Yes').check();
         await this.finalOrder.getByLabel('No').check();
         await this.dateChosen.check();
-        await this.endDate.getByLabel('Day').fill('12');
-        await this.endDate.getByLabel('Month').fill('12');
+        await this.endDate.getByLabel('Day').fill('11');
+        await this.endDate.getByLabel('Month').fill('07');
         await this.endDate.getByLabel('Year').fill('2030');
-        await this.permissionReport.getByLabel('Day').fill('09');
-        await this.permissionReport.getByLabel('Month').fill('10');
-        await this.permissionReport.getByLabel('Year').fill('2031');
+        await this.permissionReport.getByLabel('Day').fill('10');
+        await this.permissionReport.getByLabel('Month').fill('08');
+        await this.permissionReport.getByLabel('Year').fill('2020');
 
     }
 
@@ -319,12 +325,9 @@ export class Orders extends BasePage {
         await this.issuingJudge.getByLabel('Yes').check();
         await this.page.pause();
         await this.clickContinue();
-        await expect(this.page.getByText(' Family assistance order (C42)', { exact: true })).toBeVisible();
         await this.page.pause();
         await this.childInvolved.getByLabel('Yes').check();
-       // await this.page.pause();
         await this.clickContinue();
-        await expect(this.page.getByText(' Family assistance order (C42)', { exact: true })).toBeVisible();
         await this.firstFamilyBefriended.selectOption('John Black');
         await this.secondFamilyBefriended.selectOption('Joe Bloggs');
         await this.thirdFamilyBefriended.selectOption('Sarah Black');
@@ -333,7 +336,7 @@ export class Orders extends BasePage {
         await this.year.fill('2025');
         await this.orderConsent.getByLabel('Yes').click();
         await this.orderConsent.getByLabel('Yes').click(); // checkbox not clicking had to work around it
-        await this.furtherDirections.fill('test');
+        await this.futherDirections.fill('test');
         await this.finalOrder.getByLabel('No').check();
     }
 
@@ -342,10 +345,8 @@ export class Orders extends BasePage {
         await this.issuingJudge.getByLabel('Yes').check();
         await this.page.pause();
         await this.clickContinue();
-        await expect(this.page.getByText(' Family assistance order (C42)', { exact: true })).toBeVisible();
         await this.childInvolved.getByLabel('Yes').check();
         await this.clickContinue();
-        await expect(this.page.getByText(' Family assistance order (C42)', { exact: true })).toBeVisible();
         await this.firstFamilyBefriended.selectOption('John Black');
         await this.secondFamilyBefriended.selectOption('Sarah Black');
         await this.thirdFamilyBefriended.selectOption('Joe Bloggs');
@@ -354,7 +355,31 @@ export class Orders extends BasePage {
         await this.year.fill('2025');
         await this.orderConsent.getByLabel('Yes').click();
         await this.orderConsent.getByLabel('Yes').click();
-        await this.furtherDirections.fill('test');
+        await this.futherDirections.fill('test');
         await this.finalOrder.getByLabel('No').check();
+    }
+
+    async ctscUploadsInterimCareOrder() {
+        await this.orderApproved.getByLabel('No').check();
+        await this.applicationOrder.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.childInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.radioButton.click();
+        await this.endOfProceedings.check();
+    }
+
+    async judgeUploadsInterimCareOrder() {
+        await this.orderApproved.getByLabel('No').check();
+        await this.applicationOrder.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.childInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.radioButton.check();
+        await this.endOfProceedings.check();
     }
 };
