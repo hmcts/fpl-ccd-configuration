@@ -97,6 +97,31 @@
       "Organisation": {},
       "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORD]"
     },
+    "childPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORE]"
+    },
+    "childPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORF]"
+    },
+    "childPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORG]"
+    },
+    "childPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORH]"
+    },
+    "childPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORI]"
+    },
+    "childPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
+    },
+
     "respondents1": [
       {
         "id": "00000000-0000-0000-0000-000000000000",
@@ -258,25 +283,49 @@
       }
     ],
     "lastCreatedWATask": "FAILED_PAYMENT",
-    "respondentPolicy0": {
-      "Organisation": {
-        "OrganisationID": "W9V61CP",
-        "OrganisationName": "Swansea City Council"
+      "respondentPolicy0": {
+        "Organisation": {
+          "OrganisationID": "W9V61CP",
+          "OrganisationName": "Swansea City Council"
+        },
+        "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
       },
-      "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
-    },
-    "respondentPolicy1": {
-      "Organisation": {},
-      "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
-    },
-    "respondentPolicy2": {
-      "Organisation": {},
-      "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
-    },
-    "respondentPolicy3": {
-      "Organisation": {},
-      "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
-    },
+      "respondentPolicy1": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+      },
+      "respondentPolicy2": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+      },
+      "respondentPolicy3": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+      },
+      "respondentPolicy4": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+      },
+      "respondentPolicy5": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+      },
+      "respondentPolicy6": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+      },
+      "respondentPolicy7": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+      },
+      "respondentPolicy8": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+      },
+      "respondentPolicy9": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+      },
     "submissionConsent": [
       "agree"
     ],
