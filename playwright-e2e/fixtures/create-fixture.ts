@@ -137,7 +137,6 @@ type CreateFixtures = {
   envDataConfig: EnvironmentConfig;
   noticeOfChange: NoticeOfChange;
 
-
 };
 
 export const test = base.extend<CreateFixtures>({
