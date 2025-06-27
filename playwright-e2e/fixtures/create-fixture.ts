@@ -95,7 +95,6 @@ type CreateFixtures = {
   changeOtherToRespondent: ChangeOtherToRespondent;
   noticeOfChange: NoticeOfChange;
 
-
 };
 
 export const test = base.extend<CreateFixtures>({
