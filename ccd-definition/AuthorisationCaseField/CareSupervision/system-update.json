@@ -354,7 +354,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "isLocalAuthority",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
