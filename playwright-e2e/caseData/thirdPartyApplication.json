@@ -121,6 +121,31 @@
       "Organisation": {},
       "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
     },
+    "childPolicy10": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORK]"
+    },
+    "childPolicy11": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORL]"
+    },
+    "childPolicy12": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORM]"
+    },
+    "childPolicy13": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORN]"
+    },
+    "childPolicy14": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORO]"
+    },
 
     "respondents1": [
       {
