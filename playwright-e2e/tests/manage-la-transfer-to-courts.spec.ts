@@ -17,7 +17,7 @@ test.describe('Manage LAs / Transfer to court', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('CTSC transfer to a new court and submit case',
+    test('CTSC transfer to a new court and submit case @xbrowser',
         async ({ page, signInPage, manageLaTransferToCourts }) => {
             caseName = 'CTSC transfers case' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
@@ -74,7 +74,7 @@ test.describe('Manage LAs / Transfer to court', () => {
             await expect(page.getByText('Applicant 2')).toBeHidden();
             await expect(page.getByText('London Borough Hillingdon')).toBeHidden();
         })
-    test('CTSC tranfers to another local authority',
+    test('CTSC tranfers to another local authority @xbrowser',
         async ({ page, signInPage, manageLaTransferToCourts }) => {
             caseName = 'CTSC transfers to another local authority' + dateTime.slice(0, 10);
             if(urlConfig.env.toUpperCase() === 'DEMO'){
