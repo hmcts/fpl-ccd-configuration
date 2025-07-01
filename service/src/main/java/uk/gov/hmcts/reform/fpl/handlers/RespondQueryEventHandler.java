@@ -31,7 +31,11 @@ public class RespondQueryEventHandler {
         String recipient = userDetails.getEmail();
         String queryDate = event.getQueryDate();
 
+        log.info("TESING: about to send QM response notification email.");
+
         notificationService.sendEmail(QUERY_RESPONDED, recipient,
             respondQueryContentProvider.getRespondQueryNotifyData(caseData, queryDate), caseData.getId());
+
+        log.info("TESING: Successfully sent QM response notification email.");
     }
 }
