@@ -52,7 +52,8 @@
     "ListElementCode": "refusedOrder",
     "FieldType": "Document",
     "ElementLabel": "Order",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "refusedOrder"
   },
   {
     "LiveFrom": "01/01/2017",
