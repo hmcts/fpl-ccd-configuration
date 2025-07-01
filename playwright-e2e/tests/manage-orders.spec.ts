@@ -469,4 +469,54 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
     })
+
+    test('CTSC uploads Declaration of percentage (C63A)', async ({ page, signInPage, orders }) => {
+        caseName = 'Declaration of Percentage (C63A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Declaration of parentage (C63A)');
+        await orders.clickContinue()
+
+        await orders.ctscUloadsDeclarationOfPercentage();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c63a_declaration_of_parentage.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('Judge uploads Declaration of percentage (C63A)', async ({ page, signInPage, orders }) => {
+        caseName = 'Declaration of Percentage (C63A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Declaration of parentage (C63A)');
+        await orders.clickContinue()
+
+        await orders.judgeUloadsDeclarationOfPercentage();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c63a_declaration_of_parentage.pdf', exact: true })).toBeVisible();
+
+    })
 })
