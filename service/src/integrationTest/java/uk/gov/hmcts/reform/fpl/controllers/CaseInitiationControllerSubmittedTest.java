@@ -7,9 +7,8 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
@@ -88,17 +87,17 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        CaseAssignedUserRolesRequest expectedUnAssignment = unAssignment(caseData, CREATOR, LOGGED_USER_ID);
+        CaseAssignmentUserRolesRequest expectedUnAssignment = unAssignment(caseData, CREATOR, LOGGED_USER_ID);
 
-        AddCaseAssignedUserRolesRequest expectedAssignment = assignment(caseData, organisation, LASOLICITOR,
+        CaseAssignmentUserRolesRequest expectedAssignment = assignment(caseData, organisation, LASOLICITOR,
             LOGGED_USER_ID, OTHER_USER_ID);
 
-        verify(caseAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedAssignment);
-        verify(caseAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
+        verify(caseAssignmentApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedAssignment);
+        verify(caseAssignmentApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
 
         verifyTaskListUpdated(caseData);
 
-        verifyNoMoreInteractions(caseAccessApi);
+        verifyNoMoreInteractions(caseAssignmentApi);
     }
 
     @ParameterizedTest
@@ -120,15 +119,15 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        CaseAssignedUserRolesRequest expectedUnAssignment = unAssignment(caseData, CREATOR, LOGGED_USER_ID);
+        CaseAssignmentUserRolesRequest expectedUnAssignment = unAssignment(caseData, CREATOR, LOGGED_USER_ID);
 
-        AddCaseAssignedUserRolesRequest expectedUserAssignment = assignment(caseData, organisation, outsourcedCaseRole,
+        CaseAssignmentUserRolesRequest expectedUserAssignment = assignment(caseData, organisation, outsourcedCaseRole,
             LOGGED_USER_ID);
 
-        verify(caseAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
-        verify(caseAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUserAssignment);
+        verify(caseAssignmentApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
+        verify(caseAssignmentApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUserAssignment);
 
-        verifyNoMoreInteractions(caseAccessApi);
+        verifyNoMoreInteractions(caseAssignmentApi);
 
         verifyTaskListUpdated(caseData);
     }
@@ -139,7 +138,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
 
         givenUsersInSameOrganisation(LOGGED_USER_ID, OTHER_USER_ID);
 
-        doThrow(feignException(SC_BAD_REQUEST)).when(caseAccessApi).addCaseUserRoles(any(), any(), any());
+        doThrow(feignException(SC_BAD_REQUEST)).when(caseAssignmentApi).addCaseUserRoles(any(), any(), any());
 
         CaseData caseData = CaseData.builder()
             .id(nextLong())
@@ -170,11 +169,11 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
             any());
     }
 
-    private AddCaseAssignedUserRolesRequest assignment(CaseData caseData, Organisation organisation,
+    private CaseAssignmentUserRolesRequest assignment(CaseData caseData, Organisation organisation,
                                                        CaseRole caseRole, String... users) {
 
-        List<CaseAssignedUserRoleWithOrganisation> assignments = Stream.of(users)
-            .map(userId -> CaseAssignedUserRoleWithOrganisation.builder()
+        List<CaseAssignmentUserRoleWithOrganisation> assignments = Stream.of(users)
+            .map(userId -> CaseAssignmentUserRoleWithOrganisation.builder()
                 .organisationId(ofNullable(organisation).map(Organisation::getOrganisationIdentifier).orElse(null))
                 .caseRole(caseRole.formattedName())
                 .caseDataId(caseData.getId().toString())
@@ -182,15 +181,15 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
                 .build())
             .collect(Collectors.toList());
 
-        return AddCaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(assignments)
+        return CaseAssignmentUserRolesRequest.builder()
+            .caseAssignmentUserRolesWithOrganisation(assignments)
             .build();
     }
 
-    private CaseAssignedUserRolesRequest unAssignment(CaseData caseData, CaseRole caseRole, String userId) {
-        return CaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(
-                CaseAssignedUserRoleWithOrganisation.builder()
+    private CaseAssignmentUserRolesRequest unAssignment(CaseData caseData, CaseRole caseRole, String userId) {
+        return CaseAssignmentUserRolesRequest.builder()
+            .caseAssignmentUserRolesWithOrganisation(List.of(
+                CaseAssignmentUserRoleWithOrganisation.builder()
                     .caseRole(caseRole.formattedName())
                     .caseDataId(caseData.getId().toString())
                     .userId(userId)

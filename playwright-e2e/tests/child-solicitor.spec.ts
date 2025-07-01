@@ -40,7 +40,7 @@ test.describe('Manage child representatives ', () => {
             await expect(page.getByText('Added representative', {exact: true})).toHaveCount(4);
         });
 
-    test(' CTSC user can add different legal representative to each children',
+    test(' CTSC user can add different legal representative to each children @xbrowser',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC different Child solicitors ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseWithMultipleChild);
@@ -85,7 +85,7 @@ test.describe('Manage child representatives ', () => {
             await expect(page.getByRole('tab', {name: 'Change of representatives'})).toBeHidden();
         });
 
-    test('CTSC user remove child solicitors',
+    test('CTSC user remove child solicitors @xbrowser',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC change child solicitor ' + dateTime.slice(0, 10);
             if(urlConfig.env=='demo') {
