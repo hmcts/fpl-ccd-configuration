@@ -66,7 +66,6 @@ export class Orders extends BasePage {
     readonly addExclusionDetails: Locator;
     readonly endOfProceedings: Locator;
     readonly endDate: Locator;
-    readonly orderApplicationOnSystem: Locator;
     readonly whichHearing: Locator;
     readonly whichChild: Locator;
     readonly whoAppliedForOrder: Locator;
@@ -140,7 +139,6 @@ export class Orders extends BasePage {
         this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
         this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
         this.endDate = page.getByRole('group', { name: 'End Date' });
-        this.orderApplicationOnSystem = page.getByRole('group', { name: 'Is there an application for' });
         this.whichHearing = page.getByLabel('Which hearing?');
         this.whichChild = page.getByLabel('Which child is the order for?');
         this.whoAppliedForOrder = page.getByLabel('Who applied for the order on');
@@ -399,10 +397,10 @@ export class Orders extends BasePage {
         await this.endOfProceedings.check();
     }
 
-    async ctscUloadsDeclarationOfPercentage() {
+    async ctscUploadsDeclarationOfPercentage() {
         await this.orderApproved.getByLabel('Yes').check();
         await this.whichHearing.selectOption('Case management hearing, 3 November 2012');
-        await this.orderApplicationOnSystem.getByLabel('No').check();
+        await this.orderApplication.getByLabel('No').check();
         await this.clickContinue();
         await this.clickContinue();// checkbox not clicking had to work around it
         await this.whichChild.selectOption('Timothy Jones');
@@ -416,10 +414,10 @@ export class Orders extends BasePage {
 
     }
 
-    async judgeUloadsDeclarationOfPercentage() {
+    async judgeUploadsDeclarationOfPercentage() {
         await this.orderApproved.getByLabel('Yes').check();
         await this.whichHearing.selectOption('Case management hearing, 3 November 2012');
-        await this.orderApplicationOnSystem.getByLabel('No').check();
+        await this.orderApplication.getByLabel('No').check();
         await this.clickContinue();
         await this.clickContinue();// checkbox not clicking had to work around it
         await this.whichChild.selectOption('Timothy Jones');
