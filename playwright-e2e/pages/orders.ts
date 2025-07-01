@@ -73,6 +73,7 @@ export class Orders extends BasePage {
     readonly uponHearingParty2: Locator;
     readonly personApplying: Locator;
     readonly action: Locator;
+    readonly applications: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -146,6 +147,7 @@ export class Orders extends BasePage {
         this.uponHearingParty2 = page.getByLabel('Upon hearing party 2 (');
         this.personApplying = page.getByLabel('Person applying for');
         this.action = page.getByLabel('Action');
+        this.applications = page.getByLabel('Applications');
 
     }
 
@@ -331,7 +333,6 @@ export class Orders extends BasePage {
         await this.permissionReport.getByLabel('Day').fill('10');
         await this.permissionReport.getByLabel('Month').fill('08');
         await this.permissionReport.getByLabel('Year').fill('2020');
-
     }
 
     async ctscFamilyAssistanceOrder() {
@@ -411,13 +412,13 @@ export class Orders extends BasePage {
         await this.uponHearingParty2.selectOption('2: Joe Bloggs');
         await this.personApplying.selectOption('Joe Bloggs, Respondent 1');
         await this.action.selectOption('1: IS');
-
     }
 
     async judgeUploadsDeclarationOfPercentage() {
         await this.orderApproved.getByLabel('Yes').check();
         await this.whichHearing.selectOption('Case management hearing, 3 November 2012');
-        await this.orderApplication.getByLabel('No').check();
+        await this.orderApplication.getByLabel('Yes').check();
+        await this.applications.selectOption('C100, 25 March 2021, 3:16pm');
         await this.clickContinue();
         await this.clickContinue();// checkbox not clicking had to work around it
         await this.whichChild.selectOption('Timothy Jones');
@@ -428,6 +429,5 @@ export class Orders extends BasePage {
         await this.uponHearingParty2.selectOption('2: Joe Bloggs');
         await this.personApplying.selectOption('Joe Bloggs, Respondent 1');
         await this.action.selectOption('1: IS');
-
     }
 };
