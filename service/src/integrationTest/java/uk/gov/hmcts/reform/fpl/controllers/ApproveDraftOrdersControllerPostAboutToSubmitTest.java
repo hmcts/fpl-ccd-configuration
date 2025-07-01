@@ -114,7 +114,8 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         assertThat(responseData.getReviewCMODecision()).isEqualTo(reviewDecision);
         assertThat(responseData.getOrdersToBeSent()).containsOnly(
             element(cmoElement.getId(),
-                cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ").build())
+                cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ")
+                    .refusedOrder(cmo.getOrder()).order(null).build())
         );
     }
 
@@ -319,7 +320,9 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
             .build();
 
         HearingOrder expectedRejectedOrder = draftOrder.toBuilder()
-            .status(RETURNED).requestedChanges("missing data").build();
+            .status(RETURNED).requestedChanges("missing data")
+            .refusedOrder(draftOrder.getOrder()).order(null)
+            .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 

@@ -14,8 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialRefusedOrders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -27,6 +29,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
 @RestController
@@ -46,7 +51,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2740", this::run2740,
         "DFPL-2744", this::run2744,
         "DFPL-2739", this::run2739,
-        "DFPL-2756", this::run2756
+        "DFPL-2756", this::run2756,
+        "DFPL-2773", this::run2773
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -150,5 +156,37 @@ public class MigrateCaseController extends CallbackController {
             "DFPL-2739",
             UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
             UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
+    }
+
+    private void run2773(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isNotEmpty(caseData.getRefusedHearingOrders())) {
+            caseDetails.getData().put("refusedHearingOrders", migrateRefusedOrders(caseData.getRefusedHearingOrders()));
+        }
+
+        // Process all confidential refused orders
+        ConfidentialRefusedOrders existingConfidentialRefusedOrders = caseData.getConfidentialRefusedOrders();
+        if (existingConfidentialRefusedOrders != null) {
+            existingConfidentialRefusedOrders.processAllConfidentialOrders((suffix, refusedOrderElements) -> {
+                if (isNotEmpty(refusedOrderElements)) {
+                    caseDetails.getData().put(
+                        existingConfidentialRefusedOrders.getFieldBaseName() + suffix,
+                        migrateRefusedOrders(refusedOrderElements));
+                }
+            });
+        }
+    }
+
+    // one off migration only, can't any reason to keep this method in the future
+    private List<Element<HearingOrder>> migrateRefusedOrders(List<Element<HearingOrder>> refusedOrders) {
+        return refusedOrders.stream()
+            .map(refusedOrderElement -> element(
+                refusedOrderElement.getId(),
+                refusedOrderElement.getValue().toBuilder()
+                    .refusedOrder(refusedOrderElement.getValue().getOrder())
+                    .order(null)
+                    .build()))
+            .toList();
     }
 }
