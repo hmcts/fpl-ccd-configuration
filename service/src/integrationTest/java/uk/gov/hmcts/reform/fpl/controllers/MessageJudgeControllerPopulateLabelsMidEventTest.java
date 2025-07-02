@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
@@ -28,9 +27,6 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -39,40 +35,13 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
-class MessageJudgeControllerPopulateLabelsMidEventTest extends AbstractCallbackTest {
+class MessageJudgeControllerPopulateLabelsMidEventTest extends MessageJudgeControllerAbstractTest {
     private static final UUID DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
     private static final DocumentReference DOCUMENT_REFERENCE_1 = testDocumentReference("Test Doc One");
     private static final DocumentReference DOCUMENT_REFERENCE_2 = testDocumentReference("Test Doc Two");
 
     MessageJudgeControllerPopulateLabelsMidEventTest() {
         super("message-judge/populate-document-labels");
-    }
-
-    @Test
-    void shouldSetHearingLabelWhenNextHearingExists() {
-        HearingBooking expectedNextHearing = HearingBooking.builder()
-            .startDate(now().plusDays(1))
-            .type(CASE_MANAGEMENT)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(
-                element(HearingBooking.builder()
-                    .startDate(now().plusDays(3))
-                    .type(FINAL)
-                    .build()),
-                element(expectedNextHearing),
-                element(HearingBooking.builder()
-                    .startDate(now().plusDays(5))
-                    .type(ISSUE_RESOLUTION)
-                    .build())
-            ))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
-
-        assertThat(response.getData().get("nextHearingLabel")).isEqualTo(
-            String.format("Next hearing in the case: %s", expectedNextHearing.toLabel()));
     }
 
     @Test

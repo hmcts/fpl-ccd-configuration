@@ -450,5 +450,264 @@
       }
     ],
     "overrideAll": true
+  },
+  {
+    "email": "slc-south-west@justice.gov.uk",
+    "id": "ab64ca76-90dc-4fe9-9537-1df7e6ecda4d",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "735217", "region": "6" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "735217", "region": "6" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-legal-ops",
+        "grantType": "BASIC",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "735217", "region": "6" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "slc-south-east@justice.gov.uk",
+    "id": "a00c3300-1660-4ce3-9255-6a3f258519b2",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "185657", "region": "5" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "185657", "region": "5" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-legal-ops",
+        "grantType": "BASIC",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "185657", "region": "5" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "slc-wales@justice.gov.uk",
+    "id": "fbaf62da-5dd3-44f8-ab68-3a614608db84",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "234946", "region": "7" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "234946", "region": "7" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-legal-ops",
+        "grantType": "BASIC",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "234946", "region": "7" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "slc-midlands@justice.gov.uk",
+    "id": "8c0786c8-9760-4cf1-822f-315a8ca3784a",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "231596", "region": "2" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "231596", "region": "2" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-legal-ops",
+        "grantType": "BASIC",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "231596", "region": "2" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "slc-north-west@justice.gov.uk",
+    "id": "7b10a4d3-6cdf-4491-9908-de1b09ffd3de",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "701411", "region": "4" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "701411", "region": "4" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-legal-ops",
+        "grantType": "BASIC",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "701411", "region": "4" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "slc-north-east@justice.gov.uk",
+    "id": "69357cdb-3d86-474d-915d-48198b878a79",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "455174", "region": "3" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "455174", "region": "3" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-legal-ops",
+        "grantType": "BASIC",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "455174", "region": "3" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "slc-london@justice.gov.uk",
+    "id": "fbaec817-ccde-4806-9eb4-998b179e6895",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584", "region": "1" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584", "region": "1" },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-legal-ops",
+        "grantType": "BASIC",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584", "region": "1" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
   }
 ]

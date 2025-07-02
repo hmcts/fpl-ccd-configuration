@@ -95,4 +95,17 @@ public class DocumentUploadedNotificationConfiguration {
         NO_CAFCASS_NOTIFICATION_CONFIG.toBuilder()
             .sendToCafcassRepresentative(null)
             .build();
+
+    public static final DocumentUploadedNotificationConfiguration CAFCASS_API_NOTIFICATION_CONFIG =
+        DEFAULT_NOTIFICATION_CONFIG.builder()
+            .sendToCafcassEngland(null)
+            .sendToRespondentSolicitor(ConfidentialLevel.NON_CONFIDENTIAL)
+            .sendToChildSolicitor(ConfidentialLevel.NON_CONFIDENTIAL)
+            .sendToDesignatedLA(ConfidentialLevel.LA)
+            .sendToSecondaryLA(ConfidentialLevel.LA)
+            .sendToCafcassRepresentative(null)
+            .sendToLegalRepresentative(ConfidentialLevel.LA)
+            .sendToTranslationTeam(ConfidentialLevel.CTSC)
+            .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.NEW_DOCUMENT)
+            .build();
 }

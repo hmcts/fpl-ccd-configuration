@@ -10,7 +10,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "CMOActionType",
     "ListElementCode": "JUDGE_REQUESTED_CHANGE",
-    "ListElement": "No, the local authority needs to make changes",
+    "ListElement": "No, the applicant needs to make changes",
     "DisplayOrder": 2
   },
   {

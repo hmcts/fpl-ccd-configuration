@@ -26,14 +26,13 @@ Allocation proposal
 Proposal by applicant Section 9 circuit judge
 Reason                allocation proposal reason
 
-Attending the hearing
-Interpreter                                       Yes interpreter required
+Court services
+Interpreter                                       Interpreter required
 Welsh language requirement                        ${languageRequirement}
-Spoken or written Welsh                           Yes welsh proceedings
-Intermediary                                      Yes intermediary hearing required
-Facilities or assistance for a disability         Yes learning disability
-Separate waiting room or other security measures  Yes security needed
-Something else                                    Yes I need this from someone
+Intermediary                                      Intermediary hearing required
+Facilities or assistance for a disability         Learning disability
+Separate waiting rooms                            Separate waiting room required
+Something else                                    I need this from someone
 
 Child 1
 Name                                          Tom Reeves
@@ -176,28 +175,26 @@ Confidential contact details                      Yes Other two hide from partie
 
 Grounds for the application
 Grounds for emergency protection order                                                                There’s reasonable cause to believe the child is likely to suffer significant harm if they’re not moved to accommodation provided by you, or on your behalf There’s reasonable cause to believe the child is likely to suffer significant harm if they don’t stay in their current accommodation
-Threshold is met as the child is suffering or is likely to suffer significant harm because they are   Not receiving care that would be reasonably expected from a parent. Beyond parental control.
+The reason(s) behind the child suffering or being likely to suffer significant harm                   The care given to the child not being what it would be reasonable to expect a parent to give. Child is beyond parental control.
 
 Threshold evidence
-grounds for application criteria
+Details
 
 Risk and harm to children
-Physical harm including non-accidental injury Yes Past harm Future risk of harm
-Emotional harm                                Yes Past harm Future risk of harm
-Sexual abuse                                  Yes Past harm Future risk of harm
-Neglect                                       Yes Past harm Future risk of harm
+Physical harm including non-accidental injury Yes
+Emotional harm                                Yes
+Sexual abuse                                  Yes
+Neglect                                       Yes
 
 Factors affecting parenting
-Alcohol or drug abuse     Yes history of drug abuse
-Domestic violence         Yes history of domestic violence
-Anything else             No
+Alcohol or drug abuse     Yes
+Domestic abuse            Yes
+Anything else             Something else
 
 International element
-Suitable carers outside of the UK                                 Yes Aunt outside UK
-Significant events outside the UK                                 Yes Something happened in France
-Issues with jurisdiction                                          Yes Brussels 2 regulation
-Proceedings outside the UK                                        Yes Outside of the UK
-Government or central authority in another country been involved  Yes French authorities were involved
+Other countries which are involved                                Italy, Spain, France
+Are any of these countries outside the Hague Convention           Yes
+Important details                                                 Something happened in France
 
 Other proceedings 1
 Previous or ongoing   Ongoing

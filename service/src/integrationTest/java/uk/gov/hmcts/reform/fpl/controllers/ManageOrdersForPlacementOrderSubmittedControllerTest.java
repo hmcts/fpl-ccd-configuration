@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
@@ -128,6 +129,9 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
     private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @MockBean
     private CafcassNotificationService cafcassNotificationService;
 
     @Captor
@@ -140,6 +144,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
     @BeforeEach
     void setUp() {
         givenFplService();
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
     }
 
     @Test

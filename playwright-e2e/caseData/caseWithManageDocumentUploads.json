@@ -14,8 +14,9 @@
       "thresholdDetails": "mock threshold details"
     },
     "hearing": {
-      "reason": "test reason",
-      "timeFrame": "Same day"
+      "hearingUrgencyDetails": "test reason",
+      "hearingUrgencyType": "SAME_DAY",
+      "respondentsAware": "Yes"
     },
     "children1": [
       {

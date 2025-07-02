@@ -5,8 +5,17 @@
     "ListElementCode": "thresholdReason",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "GroundsList",
-    "ElementLabel": "The child concerned is suffering or is likely to suffer significant harm because they are:",
+    "ElementLabel": "What is the reason behind the child suffering or being likely to suffer significant harm?",
     "HintText": "Select all that apply",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Grounds",
+    "ListElementCode": "hasThresholdDocument",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ThresholdDocumentList",
+    "ElementLabel": "Do you have the threshold document?",
     "SecurityClassification": "Public"
   },
   {
@@ -14,7 +23,8 @@
     "ID": "Grounds",
     "ListElementCode": "thresholdDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details of how this case meets the threshold criteria",
+    "ElementLabel": "Provide a summary of how this case meets threshold criteria",
+    "FieldShowCondition": "hasThresholdDocument = \"NO\"",
     "SecurityClassification": "Public"
   }
 ]

@@ -26,6 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_LA;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT_DETAILS_THIRD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
@@ -36,12 +38,11 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.LANGUAGE_REQUIREMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS_3RD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
@@ -59,15 +60,17 @@ class EventsCheckerTest {
     @MockBean
     private RespondentsChecker respondentsChecker;
     @MockBean
+    private Respondents3rdPartyChecker respondents3rdPartyChecker;
+    @MockBean
     private HearingUrgencyChecker hearingUrgencyChecker;
     @MockBean
     private OrdersSoughtChecker ordersSoughtChecker;
     @MockBean
     private GroundsChecker groundsChecker;
-    @MockBean
-    private OrganisationDetailsChecker organisationDetailsChecker;
-    @MockBean
+    @MockBean(name = "localAuthorityDetailsChecker")
     private LocalAuthorityDetailsChecker localAuthorityDetailsChecker;
+    @MockBean(name = "localAuthorityDetailsChecker")
+    private ThirdPartyApplicantDetailsChecker thirdPartyApplicantDetailsChecker;
     @MockBean
     private AllocationProposalChecker allocationProposalChecker;
     @MockBean
@@ -152,11 +155,12 @@ class EventsCheckerTest {
             caseNameChecker,
             childrenChecker,
             respondentsChecker,
+            respondents3rdPartyChecker,
             hearingUrgencyChecker,
             ordersSoughtChecker,
             groundsChecker,
-            organisationDetailsChecker,
             localAuthorityDetailsChecker,
+            thirdPartyApplicantDetailsChecker,
             allocationProposalChecker,
             applicationDocumentChecker,
             caseSubmissionChecker,
@@ -176,11 +180,12 @@ class EventsCheckerTest {
             Arguments.of(CASE_NAME, caseNameChecker),
             Arguments.of(CHILDREN, childrenChecker),
             Arguments.of(RESPONDENTS, respondentsChecker),
+            Arguments.of(RESPONDENTS_3RD_PARTY, respondents3rdPartyChecker),
             Arguments.of(HEARING_URGENCY, hearingUrgencyChecker),
             Arguments.of(ORDERS_SOUGHT, ordersSoughtChecker),
             Arguments.of(GROUNDS, groundsChecker),
-            Arguments.of(ORGANISATION_DETAILS, organisationDetailsChecker),
-            Arguments.of(LOCAL_AUTHORITY_DETAILS, localAuthorityDetailsChecker),
+            Arguments.of(APPLICANT_DETAILS_LA, localAuthorityDetailsChecker),
+            Arguments.of(APPLICANT_DETAILS_THIRD_PARTY, thirdPartyApplicantDetailsChecker),
             Arguments.of(ALLOCATION_PROPOSAL, allocationProposalChecker),
             Arguments.of(APPLICATION_DOCUMENTS, applicationDocumentChecker),
             Arguments.of(SUBMIT_APPLICATION, caseSubmissionChecker),

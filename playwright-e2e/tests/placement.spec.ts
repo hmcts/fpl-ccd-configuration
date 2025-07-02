@@ -14,7 +14,7 @@ test.describe('Placement', () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
-  test('Check Placement Application High Court WA Task',
+  test('Check Placement Application High Court WA Task @xbrowser',
     async ({ page, signInPage, placement,
       caseFileView }) => {
       caseName = 'Placement Application High Court WA Task ' + dateTime.slice(0, 10);
@@ -53,5 +53,23 @@ test.describe('Placement', () => {
         // Should be no more tasks on the page
         await expect(page.getByText('Check Placement Application (High Court)')).toHaveCount(0);
       }
+
     });
+
+  test('CTSC actions notice of placement @xbrowser',
+    async ({ page, signInPage, placement,
+      caseFileView }) => {
+      caseName = 'CTSC actions notice of placement' + dateTime.slice(0, 10);
+      setHighCourt(caseData);
+      await updateCase(caseName, caseNumber, caseData);
+      await signInPage.visit();
+      await signInPage.login(CTSCUser.email, CTSCUser.password)
+      await signInPage.navigateTOCaseDetails(caseNumber);
+
+      await placement.gotoNextStep('Placement');
+      await placement.noticeOfPlacement();
+
+      await placement.tabNavigation('Placement');
+      await expect(page.getByText(' Notice of hearing for placement ')).toBeVisible();
+    })
 });

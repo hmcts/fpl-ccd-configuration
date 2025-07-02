@@ -16,10 +16,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
+import uk.gov.hmcts.reform.fpl.enums.FactorsAffectingParentingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
+import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildRecoveryOrder;
@@ -42,8 +45,10 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -58,7 +63,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC17Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
@@ -1005,21 +1009,22 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCasData);
 
-            assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("Beyond parental control.");
+            assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("Child is beyond parental control.");
         }
 
         @Test
         void shouldNotAppendBeyondParentalControlToGroundsThresholdReasonWhenThresholdReasonIsNotBeyondControl() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .thresholdReason(of("test", "noCare"))
+                .thresholdReason(of("noCare"))
                     .build())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCasData);
 
             assertThat(caseSubmission.getGroundsThresholdReason())
-                .isEqualTo("Not receiving care that would be reasonably expected from a parent.");
+                .isEqualTo("The care given to the child not being what it would be"
+                    + " reasonable to expect a parent to give.");
         }
 
         @Test
@@ -1155,7 +1160,159 @@ class CaseSubmissionGenerationServiceTest {
 
             assertThat(caseSubmission.getThresholdDetails()).isEqualTo("-");
             assertThat(caseSubmission.getGroundsThresholdReason())
-                .isEqualTo("Not receiving care that would be reasonably expected from a parent.");
+                .isEqualTo("The care given to the child not being what it would be"
+                    + " reasonable to expect a parent to give.");
+        }
+    }
+
+    @Nested
+    class DocmosisRisksTest {
+
+        @Test
+        void shouldReturnEmptyWhenRisksNotAvailable() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .risks(null)
+                .factorsParenting(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRisks().getPhysicalHarm()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getEmotionalHarm()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getSexualAbuse()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getNeglect()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getAlcoholDrugAbuse()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getDomesticAbuse()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getAnythingElse()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnCorrectDocmosisRisks() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .risks(Risks.builder()
+                    .whatKindOfRiskAndHarmToChildren(List.of(
+                        RiskAndHarmToChildrenType.PHYSICAL_HARM,
+                        RiskAndHarmToChildrenType.EMOTIONAL_HARM))
+                    .factorsAffectingParenting(List.of(
+                        FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE))
+                    .build())
+                .factorsParenting(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRisks().getPhysicalHarm()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getEmotionalHarm()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getSexualAbuse()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getNeglect()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getAlcoholDrugAbuse()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getDomesticAbuse()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getAnythingElse()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnCorrectDocmosisRisksWhenOldAndNewRisksFieldsArePopulated() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .risks(Risks.builder()
+                    .whatKindOfRiskAndHarmToChildren(List.of(
+                        RiskAndHarmToChildrenType.PHYSICAL_HARM,
+                        RiskAndHarmToChildrenType.EMOTIONAL_HARM))
+                    .factorsAffectingParenting(List.of(
+                        FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE))
+                    .physicalHarm("No")
+                    .emotionalHarm("No")
+                    .sexualAbuse("No")
+                    .neglect("No")
+                    .build())
+                .factorsParenting(FactorsParenting.builder()
+                    .alcoholDrugAbuse("No")
+                    .domesticViolence("No")
+                    .anythingElse("No")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRisks().getPhysicalHarm()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getEmotionalHarm()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getSexualAbuse()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getNeglect()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getAlcoholDrugAbuse()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getDomesticAbuse()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getAnythingElse()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnCorrectDocmosisRisksWhenOldRisksAndFactorsParentingPopulatedButNewRisksIsNot() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .risks(Risks.builder()
+                    .physicalHarm("Yes")
+                    .emotionalHarm("Yes")
+                    .sexualAbuse("No")
+                    .neglect("No")
+                    .build())
+                .factorsParenting(FactorsParenting.builder()
+                    .alcoholDrugAbuse("Yes")
+                    .domesticViolence("No")
+                    .anythingElse("No")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRisks().getPhysicalHarm()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getEmotionalHarm()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getSexualAbuse()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getNeglect()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getAlcoholDrugAbuse()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getDomesticAbuse()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getAnythingElse()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnCorrectDocmosisRisksWhenOldRisksPopulatedButNewRisksIsNot() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .risks(Risks.builder()
+                    .physicalHarm("Yes")
+                    .emotionalHarm("Yes")
+                    .sexualAbuse("No")
+                    .neglect("No")
+                    .build())
+                .factorsParenting(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRisks().getPhysicalHarm()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getEmotionalHarm()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getSexualAbuse()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getNeglect()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getAlcoholDrugAbuse()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getDomesticAbuse()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getAnythingElse()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnCorrectDocmosisRisksWhenOldFactorsParentingPopulatedButRisksIsNot() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .risks(null)
+                .factorsParenting(FactorsParenting.builder()
+                    .alcoholDrugAbuse("Yes")
+                    .domesticViolence("No")
+                    .anythingElse("No")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRisks().getPhysicalHarm()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getEmotionalHarm()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getSexualAbuse()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getNeglect()).isEqualTo("-");
+            assertThat(caseSubmission.getRisks().getAlcoholDrugAbuse()).isEqualTo("Yes");
+            assertThat(caseSubmission.getRisks().getDomesticAbuse()).isEqualTo("No");
+            assertThat(caseSubmission.getRisks().getAnythingElse()).isEqualTo("-");
+
         }
     }
 
@@ -1327,10 +1484,8 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisHearing expectedDefaultHearing = DocmosisHearing.builder()
                 .timeFrame("-")
                 .respondentsAwareReason("-")
-                .reducedNoticeDetails("-")
                 .withoutNoticeDetails("-")
                 .respondentsAware("-")
-                .typeAndReason("-")
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1352,7 +1507,6 @@ class CaseSubmissionGenerationServiceTest {
                 .intermediary("-")
                 .interpreter("-")
                 .somethingElse("-")
-                .welshDetails("-")
                 .build();
 
             assertThat(caseSubmission.getHearingPreferences()).isEqualTo(expectedDefaultHearingPreference);
@@ -1367,30 +1521,16 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisRisks expectedDefaultRisk = DocmosisRisks.builder()
-                .emotionalHarmDetails("-")
-                .neglectDetails("-")
-                .physicalHarmDetails("-")
-                .sexualAbuseDetails("-")
+                .physicalHarm("-")
+                .emotionalHarm("-")
+                .sexualAbuse("-")
+                .neglect("-")
+                .alcoholDrugAbuse("-")
+                .domesticAbuse("-")
+                .anythingElse("-")
                 .build();
 
             assertThat(caseSubmission.getRisks()).isEqualTo(expectedDefaultRisk);
-        }
-
-        @Test
-        void shouldReturnDefaultFactorsAffectingParentingWhenInfoNotGiven() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .factorsParenting(null)
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
-
-            DocmosisFactorsParenting expectedFactorsParenting = DocmosisFactorsParenting.builder()
-                .alcoholDrugAbuseDetails("-")
-                .anythingElse("-")
-                .domesticViolenceDetails("-")
-                .build();
-
-            assertThat(caseSubmission.getFactorsParenting()).isEqualTo(expectedFactorsParenting);
         }
 
         @Test
@@ -1402,11 +1542,9 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisInternationalElement expectedInternationalElement = DocmosisInternationalElement.builder()
-                .internationalAuthorityInvolvement("-")
-                .issues("-")
-                .possibleCarer("-")
-                .proceedings("-")
-                .significantEvents("-")
+                .whichCountriesInvolved("-")
+                .outsideHagueConvention("-")
+                .importantDetails("-")
                 .build();
 
             assertThat(caseSubmission.getInternationalElement()).isEqualTo(expectedInternationalElement);
@@ -1446,6 +1584,10 @@ class CaseSubmissionGenerationServiceTest {
                     .postcode("AB 100")
                     .build())
                 .colleagues(wrapElements(solicitor, mainContact))
+                .representingDetails(RepresentingDetails.builder()
+                    .lastName("Last")
+                    .firstName("First")
+                    .build())
                 .build();
 
             final CaseData updatedCaseData = givenCaseData.toBuilder()
@@ -1469,17 +1611,17 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName(localAuthority.getName())
-                .jobTitle(mainContact.getTitle())
                 .mobileNumber(mainContact.getPhone())
                 .telephoneNumber(localAuthority.getPhone())
                 .pbaNumber(localAuthority.getPbaNumber())
                 .email(localAuthority.getEmail())
-                .contactName(mainContact.getFullName())
+                .contactName(mainContact.buildFullName())
                 .solicitorDx(solicitor.getDx())
                 .solicitorEmail(solicitor.getEmail())
                 .solicitorMobile(solicitor.getPhone())
-                .solicitorName(solicitor.getFullName())
+                .solicitorName(solicitor.buildFullName())
                 .solicitorReference(solicitor.getReference())
+                .representingName(localAuthority.getRepresentingDetails().getFullName())
                 .solicitorTelephone(solicitor.getPhone())
                 .address("L1\nAB 100")
                 .build();
@@ -1526,7 +1668,6 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("-")
-                .jobTitle("-")
                 .mobileNumber("-")
                 .telephoneNumber("-")
                 .pbaNumber("-")
@@ -1537,6 +1678,7 @@ class CaseSubmissionGenerationServiceTest {
                 .solicitorMobile("-")
                 .solicitorName("-")
                 .solicitorReference("-")
+                .representingName("-")
                 .solicitorTelephone("-")
                 .address("-")
                 .build();
@@ -1572,7 +1714,6 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("-")
-                .jobTitle("-")
                 .mobileNumber("-")
                 .telephoneNumber("-")
                 .pbaNumber("-")
@@ -1583,6 +1724,7 @@ class CaseSubmissionGenerationServiceTest {
                 .solicitorMobile("-")
                 .solicitorName("-")
                 .solicitorReference("-")
+                .representingName("-")
                 .solicitorTelephone("-")
                 .address("-")
                 .build();
@@ -1614,7 +1756,6 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("Applicant organisation")
-                .jobTitle("-")
                 .mobileNumber("-")
                 .pbaNumber("-")
                 .address("-")
@@ -1663,6 +1804,10 @@ class CaseSubmissionGenerationServiceTest {
                     .postcode("AB 100")
                     .build())
                 .colleagues(wrapElements(solicitor, mainContact))
+                .representingDetails(RepresentingDetails.builder()
+                    .lastName("Last")
+                    .firstName("First")
+                    .build())
                 .build();
 
             final CaseData updatedCaseData = givenCaseData.toBuilder()
@@ -1686,17 +1831,17 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName(localAuthority.getName())
-                .jobTitle(mainContact.getTitle())
                 .mobileNumber(mainContact.getPhone())
                 .telephoneNumber(localAuthority.getPhone())
                 .pbaNumber(localAuthority.getPbaNumber())
                 .email(localAuthority.getEmail())
-                .contactName(mainContact.getFullName())
+                .contactName(mainContact.buildFullName())
                 .solicitorDx(solicitor.getDx())
                 .solicitorEmail(solicitor.getEmail())
                 .solicitorMobile(solicitor.getPhone())
-                .solicitorName(solicitor.getFullName())
+                .solicitorName(solicitor.buildFullName())
                 .solicitorReference(solicitor.getReference())
+                .representingName(localAuthority.getRepresentingDetails().getFullName())
                 .solicitorTelephone(solicitor.getPhone())
                 .address("L1\nAB 100")
                 .build();

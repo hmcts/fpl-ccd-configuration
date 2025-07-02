@@ -2,86 +2,34 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
-    "ListElementCode": "possibleCarer",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Are there any suitable carers outside of the UK?",
+    "ListElementCode": "internationalElementNotice",
+    "FieldType": "Label",
+    "ElementLabel": "<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete this section if there is an international element to this application.</div>",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
-    "ListElementCode": "possibleCarerReason",
+    "ListElementCode": "whichCountriesInvolved",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "possibleCarer=\"Yes\"",
+    "ElementLabel": "Which other countries are involved?",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
-    "ListElementCode": "significantEvents",
+    "ListElementCode": "outsideHagueConvention",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Are you aware of any significant events that have happened outside the UK?",
+    "ElementLabel": "Are any of these countries outside of the Hague Convention?",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
-    "ListElementCode": "significantEventsReason",
+    "ListElementCode": "importantDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "significantEvents=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "InternationalElement",
-    "ListElementCode": "issues",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Are you aware of any issues with the jurisdiction of this case - for example under the Brussels 2 regulation?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "InternationalElement",
-    "ListElementCode": "issuesReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "issues=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "InternationalElement",
-    "ListElementCode": "proceedings",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Are you aware of any proceedings outside the UK?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "InternationalElement",
-    "ListElementCode": "proceedingsReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "proceedings=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "InternationalElement",
-    "ListElementCode": "internationalAuthorityInvolvement",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Has, or should, a government or central authority in another country been involved in this case?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "InternationalElement",
-    "ListElementCode": "internationalAuthorityInvolvementDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "internationalAuthorityInvolvement = \"Yes\"",
+    "ElementLabel": "Provide all important details",
+    "HintText": "Including any carers, events, proceedings or authorities outside the UK, or issues with jurisdiction.",
     "SecurityClassification": "Public"
   }
 ]

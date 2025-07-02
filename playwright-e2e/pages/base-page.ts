@@ -58,11 +58,11 @@ export class BasePage {
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByRole('tab', { name: tabName,exact: true }).click();
+    await this.page.getByRole('tab', { name: tabName }).click();
   }
 
   async clickContinue() {
-    await this.continueButton.click();
+    await this.continueButton.click({});
   }
 
   async waitForAllUploadsToBeCompleted() {
@@ -102,20 +102,35 @@ export class BasePage {
   async clickSubmit() {
     await this.submit.click();
   }
-
+  async clickSaveAndContinue() {
+      await this.saveAndContinue.click();
+  }
   async enterPostCode(postcode:string){
       await this.postCode.fill(postcode);
       await this.findAddress.click();
       await this.page.getByLabel('Select an address').selectOption('1: Object');
 
   }
-    getCurrentDate():string {
-        let date = new Date();
-        let year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
-        let month = new Intl.DateTimeFormat('en', { month: 'short' }).format(date);
-        let day = new Intl.DateTimeFormat('en', { day: 'numeric'}).format(date);
-        let todayDate = `${day} ${month} ${year}`;
-        return todayDate;
+  getCurrentDate():string {
+    let date = new Date();
+    let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
+    let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
+    let day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
+    let todayDate = `${day} ${month} ${year}`;
+    return todayDate;
+    }
+
+    async fillDateInputs(page: Page, date: Date) {
+      await page.getByRole('textbox', {name: 'Day'}).fill(new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date))
+      await page.getByRole('textbox', {name: 'Month'}).fill(new Intl.DateTimeFormat('en', {month: 'numeric'}).format(date));
+      await page.getByRole('textbox', {name: 'Year'}).fill(new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date));
+
+    }
+
+    async fillTimeInputs(page: Page, hour = '10', min = '00', sec = '00') {
+      await page.getByRole('spinbutton', {name: 'Hour'}).fill(hour);
+      await page.locator('#hearingStartDate-minute').fill(min);
+      await page.getByRole('spinbutton', {name: 'Second'}).fill(sec);
     }
     async enterDate(date: Date){
       await this.dateOfHearing.getByText('Day').fill(date.getDay().toString());

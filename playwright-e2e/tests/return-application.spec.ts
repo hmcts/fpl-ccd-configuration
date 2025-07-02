@@ -29,13 +29,14 @@ test.describe('Return application', () => {
       await returnApplication.ReturnApplication();
 
      // complete task
-      await returnApplication.tabNavigation('History');
+      //await returnApplication.tabNavigation('History');
+       await returnApplication.page.getByRole('tab', { name: 'History',exact:true }).click();
       await expect(page.getByText('Returned')).toBeVisible();
       await signInPage.logout();
 
     });
 
-  test('LA submit application',
+  test('LA submit application @xbrowser',
     async ({ page, signInPage, returnApplication }) => {
       caseName = 'LA submit application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, returnedCase);
@@ -44,6 +45,6 @@ test.describe('Return application', () => {
       await signInPage.navigateTOCaseDetails(caseNumber);
       await page.getByRole('link', { name: 'Make changes to the respondents\' details' }).click();
       await returnApplication.UpdateRespondent();
-      
+
    });
 })

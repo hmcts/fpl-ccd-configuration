@@ -44,7 +44,7 @@
     "ID": "AllocationDecision",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "allocationDecision",
-    "ListElementCode": "proposal",
+    "ListElementCode": "proposalV2",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"No\" OR allocationDecision.judgeLevelRadio=\"No\""

@@ -24,7 +24,7 @@ public class AllocationProposalChecker extends PropertiesChecker {
     public boolean isStarted(CaseData caseData) {
         final Allocation allocationProposal = caseData.getAllocationProposal();
         return isNotEmpty(allocationProposal)
-            && anyNonEmpty(allocationProposal.getProposal(), allocationProposal.getProposalReason());
+            && anyNonEmpty(allocationProposal.getProposalV2(), allocationProposal.getProposalReason());
     }
 
     @Override
@@ -33,7 +33,7 @@ public class AllocationProposalChecker extends PropertiesChecker {
 
         return allocationProposal != null
             && allNonEmpty(
-                allocationProposal.getProposal(),
+                allocationProposal.getProposalV2(),
                 allocationProposal.getProposalReason()
             );
     }

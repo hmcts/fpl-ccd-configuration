@@ -88,7 +88,7 @@
     "ID": "Orders",
     "ListElementCode": "otherOrderLabel",
     "FieldType": "Label",
-    "ElementLabel": "## Variation or discharge of care or supervision order",
+    "ElementLabel": "## Variation of supervision order or discharge of care order",
     "FieldShowCondition": "orderType CONTAINS \"OTHER\"",
     "SecurityClassification": "Public"
   },
@@ -142,7 +142,7 @@
     "ID": "Orders",
     "ListElementCode": "educationSupervisionOrderDirectionsAppliedFor",
     "FieldType": "TextArea",
-    "ElementLabel": "*The order and direction(s) applied for",
+    "ElementLabel": "The orders and directions applied for",
     "SecurityClassification": "Public",
     "FieldShowCondition": "orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\""
   },
@@ -151,7 +151,7 @@
     "ID": "Orders",
     "ListElementCode": "educationSupervisionOrderPriorConsultationOtherLA",
     "FieldType": "Text",
-    "ElementLabel": "State the name of any other local authority which has been consulted:",
+    "ElementLabel": "State the name of any other local authority which has been consulted",
     "SecurityClassification": "Public",
     "FieldShowCondition": "orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\""
   },
@@ -171,7 +171,8 @@
     "ListElementCode": "directionLabel",
     "FieldType": "Label",
     "ElementLabel": "## Directions",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderType = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -205,7 +206,7 @@
     "ListElementCode": "secureAccommodationOrderSection",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "SecureAccommodationOrderSections",
-    "ElementLabel": "*Under which section are you applying?",
+    "ElementLabel": "Under which section are you applying?",
     "FieldShowCondition": "orderType CONTAINS \"SECURE_ACCOMMODATION_ORDER\"",
     "SecurityClassification": "Public"
   },
@@ -224,15 +225,6 @@
     "ListElementCode": "childRecoveryOrderDirectionsAppliedFor",
     "FieldType": "TextArea",
     "ElementLabel": "The orders and directions applied for",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Orders",
-    "ListElementCode": "particularsOfChildrenHeader",
-    "FieldType": "Label",
-    "ElementLabel": "## Particulars of the child(ren)",
     "SecurityClassification": "Public",
     "FieldShowCondition": "orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
   },

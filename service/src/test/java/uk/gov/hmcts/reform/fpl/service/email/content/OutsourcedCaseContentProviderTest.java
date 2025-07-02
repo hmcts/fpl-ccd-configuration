@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
@@ -56,7 +57,7 @@ class OutsourcedCaseContentProviderTest extends AbstractEmailContentProviderTest
                 .build()))
             .children1(wrapElements(mock(Child.class)))
             .hearing(Hearing.builder()
-                .timeFrame("Same day")
+                .hearingUrgencyType(HearingUrgencyType.SAME_DAY)
                 .build())
             .orders(Orders.builder()
                 .orderType(List.of(CARE_ORDER, EMERGENCY_PROTECTION_ORDER))

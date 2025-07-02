@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -17,7 +18,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 @WebMvcTest(AddCaseNumberController.class)
@@ -37,6 +39,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
     final CaseData caseData = CaseData.builder()
         .id(10L)
         .state(State.OPEN)
+        .isLocalAuthority(YES)
         .build();
 
     @BeforeEach
@@ -49,27 +52,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldUpdateTaskListWithAdditionalContactsToggledOff() {
-        final CaseData caseData = CaseData.builder()
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .id(10L)
-            .state(State.OPEN)
-            .build();
-
-        when(featureToggleService.isApplicantAdditionalContactsEnabled()).thenReturn(false);
-
-        postSubmittedEvent(caseData);
-
-        String expectedTaskList = readString("fixtures/taskList-legacyApplicant.md").trim();
-
-        verify(concurrencyHelper).submitEvent(any(),
-            eq(caseData.getId()),
-            eq(Map.of("taskList", expectedTaskList)));
-    }
-
-    @Test
-    void shouldUpdateTaskListWithAdditionalContactsToggledOn() {
-        when(featureToggleService.isApplicantAdditionalContactsEnabled()).thenReturn(true);
+    void shouldUpdateTaskListWithIfLocalAuthority() {
         when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(false);
 
         postSubmittedEvent(caseData);
@@ -92,6 +75,29 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(concurrencyHelper).submitEvent(any(),
             eq(caseData.getId()),
+            eq(Map.of("taskList", expectedTaskList)));
+    }
+
+    @Test
+    void shouldUpdateTaskListWithIfNotLocalAuthority() {
+        final CaseData caseDataSolicitor = caseData.toBuilder()
+            .isLocalAuthority(NO)
+            .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+            .build();
+
+        when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(false);
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseDataSolicitor))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(caseDataSolicitor);
+
+        String expectedTaskList = readString("fixtures/taskList-solicitor.md").trim();
+
+        verify(concurrencyHelper).submitEvent(any(),
+            eq(caseDataSolicitor.getId()),
             eq(Map.of("taskList", expectedTaskList)));
     }
 }

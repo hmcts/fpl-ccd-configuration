@@ -5,7 +5,7 @@
     "CaseEventID": "amendInternationalElement",
     "CaseFieldID": "internationalElement",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1

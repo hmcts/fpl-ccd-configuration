@@ -331,13 +331,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documentsSentToParties",
-    "UserRole": "[BARRISTER]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sealedCMOs",
     "UserRole": "[BARRISTER]",
     "CRUD": "R"
@@ -1298,8 +1291,29 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "latestQueryID",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftOrderUrgency",
     "UserRole": "[BARRISTER]",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "lastGenuineUpdateTime",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guardians",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "R"
   }
 ]

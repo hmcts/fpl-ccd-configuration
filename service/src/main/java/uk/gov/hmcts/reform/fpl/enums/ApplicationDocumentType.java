@@ -16,6 +16,7 @@ public enum ApplicationDocumentType {
     GENOGRAM("Genogram", "Genogram"),
     CHECKLIST_DOCUMENT("Checklist document", "Dogfen wirio"),
     BIRTH_CERTIFICATE("Birth certificate", "Tystysgrif geni"),
+    STATEMENT("Statement", "Datganiad"),
     OTHER("Other", "Arall");
 
     private final String label;

@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.util.List;
 
@@ -19,9 +18,7 @@ public class LocalAuthorityEventData {
     @Temp
     private LocalAuthority localAuthority;
     @Temp
-    private String localAuthorityMainContactShown;
+    private Colleague applicantContact;
     @Temp
-    private DynamicList localAuthorityColleaguesList;
-    @Temp
-    private List<Element<Colleague>> localAuthorityColleagues;
+    private List<Element<Colleague>> applicantContactOthers;
 }

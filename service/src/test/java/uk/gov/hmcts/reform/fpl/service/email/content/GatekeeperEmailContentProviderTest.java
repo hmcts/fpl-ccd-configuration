@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
@@ -70,7 +71,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
                 .build()))
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .hearing(Hearing.builder()
-                .timeFrame("Same day")
+                .hearingUrgencyType(HearingUrgencyType.SAME_DAY)
                 .build())
             .build();
 
@@ -85,7 +86,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
             .fullStop(NO.getValue())
             .ordersAndDirections(List.of("Care order"))
             .timeFramePresent(YES.getValue())
-            .timeFrameValue("two days")
+            .timeFrameValue("urgent (not same day)")
             .urgentHearing(NO.getValue())
             .nonUrgentHearing(YES.getValue())
             .firstRespondentName(RESPONDENT_LAST_NAME)
@@ -103,7 +104,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
                 .build()))
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .hearing(Hearing.builder()
-                .timeFrame("Two days")
+                .hearingUrgencyType(HearingUrgencyType.URGENT)
                 .build())
             .build();
 
@@ -118,7 +119,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
             .fullStop(NO.getValue())
             .ordersAndDirections(List.of("Care order"))
             .timeFramePresent(YES.getValue())
-            .timeFrameValue("two days")
+            .timeFrameValue("urgent (not same day)")
             .urgentHearing(NO.getValue())
             .nonUrgentHearing(YES.getValue())
             .firstRespondentName(RESPONDENT_LAST_NAME)
@@ -138,7 +139,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
                 .build()))
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .hearing(Hearing.builder()
-                .timeFrame("Two days")
+                .hearingUrgencyType(HearingUrgencyType.URGENT)
                 .build())
             .build();
 

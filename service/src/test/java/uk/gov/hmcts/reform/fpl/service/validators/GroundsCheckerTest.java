@@ -56,8 +56,7 @@ class GroundsCheckerTest {
         final boolean isCompleted = groundsChecker.isCompleted(caseData);
 
         assertThat(errors).containsExactlyInAnyOrder(
-                "Select at least one option for how this case meets the threshold criteria",
-                "Enter details of how the case meets the threshold criteria"
+                "Select at least one option for how this case meets the threshold criteria"
         );
         assertThat(isCompleted).isFalse();
     }
@@ -66,7 +65,25 @@ class GroundsCheckerTest {
     void shouldReturnEmptyErrorsWhenGroundsForApplicationAreProvided() {
         final Grounds grounds = Grounds.builder()
                 .thresholdReason(List.of("Beyond parental control"))
+                .hasThresholdDocument("NO")
                 .thresholdDetails("Custom details")
+                .build();
+        final CaseData caseData = CaseData.builder()
+                .grounds(grounds)
+                .build();
+
+        final List<String> errors = groundsChecker.validate(caseData);
+        final boolean isCompleted = groundsChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isTrue();
+    }
+
+    @Test
+    void shouldReturnEmptyErrorsWhenGroundsForApplicationAreProvidedWithNoThresholdDetails() {
+        final Grounds grounds = Grounds.builder()
+                .thresholdReason(List.of("Beyond parental control"))
+                .hasThresholdDocument("YES")
                 .build();
         final CaseData caseData = CaseData.builder()
                 .grounds(grounds)
@@ -103,6 +120,7 @@ class GroundsCheckerTest {
     void shouldReturnEmptyErrorsWhenGroundsProvidedForRequestedEpoOrder() {
         final Grounds grounds = Grounds.builder()
                 .thresholdReason(List.of("Beyond parental control"))
+                .hasThresholdDocument("NO")
                 .thresholdDetails("Custom details")
                 .build();
         final GroundsForEPO groundsForEPO = GroundsForEPO.builder()

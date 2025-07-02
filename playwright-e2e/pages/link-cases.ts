@@ -1,4 +1,4 @@
-import {type Locator, type Page} from "@playwright/test";
+import {expect, type Locator, type Page} from "@playwright/test";
 import {BasePage} from "./base-page";
 
 export class CaseLink extends BasePage {
@@ -32,7 +32,6 @@ export class CaseLink extends BasePage {
     hypenateCaseNumber(caseNumber: string) {
         let hypenatedCaseNumber: string;
         hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);
-        console.log(hypenatedCaseNumber);
         return hypenatedCaseNumber
     }
     async submitCaseLink() {
@@ -49,5 +48,15 @@ export class CaseLink extends BasePage {
     }
     async selectCaseToUnlink(caseNumber: string) {
         await this.page.locator(`#case-reference-${caseNumber}`).check();
+    }
+    async gotoCaseLinkNextStep(eventName: string) {
+        await expect(async () => {
+            await this.nextStep.selectOption(eventName);
+            await this.goButton.click({clickCount:2,delay:300});
+            await this.page.waitForTimeout(300);
+            await expect(this.page.getByRole('button', { name: 'Submit' })).toBeAttached();
+            await expect.soft(this.page.getByRole('heading', {name: 'Before you start'})).toBeVisible();
+            await this.page.reload();
+        }).toPass();
     }
 }

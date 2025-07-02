@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.am.model;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -21,5 +21,5 @@ public class QueryRequest {
     private List<String> roleCategory;
     private List<String> roleName;
     private List<String> roleType;
-    private ZonedDateTime validAt;
+    private LocalDateTime validAt;
 }

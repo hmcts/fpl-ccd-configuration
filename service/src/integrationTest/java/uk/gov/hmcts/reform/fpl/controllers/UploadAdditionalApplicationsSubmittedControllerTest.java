@@ -217,6 +217,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         doNothing().when(sendDocumentService).sendDocuments(any());
         doNothing().when(cafcassNotificationService).sendEmail(any(), any(), any());
         when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
     }
 
 
@@ -469,6 +470,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
         given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
             .willReturn(List.of(ApplicationType.C2_APPLICATION, ApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN));
 
@@ -501,6 +503,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
+
         given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
             .willReturn(List.of(C2_APPLICATION));
 

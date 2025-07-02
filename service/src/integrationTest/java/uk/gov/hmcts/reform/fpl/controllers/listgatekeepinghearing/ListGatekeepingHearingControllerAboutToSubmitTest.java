@@ -354,7 +354,7 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
 
     private Allocation createAllocation(String proposal, String judgeLevelRadio) {
         return Allocation.builder()
-            .proposal(proposal)
+            .proposalV2(proposal)
             .judgeLevelRadio(judgeLevelRadio)
             .build();
     }

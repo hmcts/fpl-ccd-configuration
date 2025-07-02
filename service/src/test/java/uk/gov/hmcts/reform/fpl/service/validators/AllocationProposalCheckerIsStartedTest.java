@@ -46,11 +46,11 @@ class AllocationProposalCheckerIsStartedTest {
                 Allocation.builder()
                         .build(),
                 Allocation.builder()
-                        .proposal(null)
+                        .proposalV2(null)
                         .proposalReason(null)
                         .build(),
                 Allocation.builder()
-                        .proposal("")
+                        .proposalV2("")
                         .proposalReason("")
                         .build())
                 .map(Arguments::of);
@@ -59,13 +59,13 @@ class AllocationProposalCheckerIsStartedTest {
     private static Stream<Arguments> nonEmptyAllocationProposal() {
         return Stream.of(
                 Allocation.builder()
-                        .proposal("Circuit Judge")
+                        .proposalV2("Circuit Judge")
                         .build(),
                 Allocation.builder()
                         .proposalReason("Test reason")
                         .build(),
                 Allocation.builder()
-                        .proposal("Circuit Judge")
+                        .proposalV2("Circuit Judge")
                         .proposalReason("Test reason")
                         .build())
                 .map(Arguments::of);

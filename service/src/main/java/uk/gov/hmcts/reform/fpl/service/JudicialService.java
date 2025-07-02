@@ -14,13 +14,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
@@ -28,22 +30,31 @@ import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
-import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_HIGH_COURT_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.RECORDER;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
 
 @Slf4j
@@ -54,6 +65,19 @@ public class JudicialService {
     private static final int HEARING_EXPIRY_OFFSET_MINS = 5;
 
     public static final int JUDICIAL_PAGE_SIZE = 3000;
+
+    private static final List<String> ALLOCATED_ROLES = List.of(
+        ALLOCATED_JUDGE.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()
+    );
+
+    private static final List<String> HEARING_ROLES = List.of(
+        HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()
+    );
+
+    public static final List<JudgeOrMagistrateTitle> FEE_PAID_JUDGE_TITLES =
+        List.of(DEPUTY_HIGH_COURT_JUDGE, RECORDER, DEPUTY_DISTRICT_JUDGE, DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT);
+    public static final List<JudgeOrMagistrateTitle> LEGAL_ADVISOR_TITLES =
+        List.of(JudgeOrMagistrateTitle.MAGISTRATES, JudgeOrMagistrateTitle.LEGAL_ADVISOR);
 
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
@@ -71,17 +95,27 @@ public class JudicialService {
      * @param caseId the case to delete allocated-[users] on
      */
     public void removeExistingAllocatedJudgesAndLegalAdvisers(Long caseId) {
-        List<String> allocatedRoles = List.of(ALLOCATED_JUDGE.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName());
-
-        List<RoleAssignment> currentAllocatedJudges = roleAssignmentService
-            .getCaseRolesAtTime(caseId,
-                allocatedRoles,
-                ZonedDateTime.now());
-
-        currentAllocatedJudges
-            .stream()
-            .filter(role -> allocatedRoles.contains(role.getRoleName()))
+        getAllocatedJudgeAndLegalAdvisorRoleAssignments(caseId).stream()
+            .filter(role -> ALLOCATED_ROLES.contains(role.getRoleName()))
             .forEach(roleAssignmentService::deleteRoleAssignment);
+    }
+
+    /**
+     * Returns true or false if the case has any allocated judge/legal advisors on it.
+     *
+     * @param caseId the case to verify whether there are allocated judge/legal advisors present.
+     */
+    public boolean caseHasAllocatedJudgeOrLegalAdvisor(Long caseId) {
+        return !getAllocatedJudgeAndLegalAdvisorRoleAssignments(caseId).isEmpty();
+    }
+
+    /**
+     * Returns true or false if the case has any hearing judge/legal advisors on it.
+     *
+     * @param caseId the case to verify whether there are hearing judge/legal advisors present.
+     */
+    public boolean caseHasHearingJudgeOrLegalAdvisor(Long caseId) {
+        return !getHearingJudgeAndLegalAdviserRoleAssignments(caseId, currentTimeUK()).isEmpty();
     }
 
     /**
@@ -92,19 +126,17 @@ public class JudicialService {
      * @param endTime the time which we don't want any existing hearing-users to have roles at
      */
     public void setExistingHearingJudgesAndLegalAdvisersToExpire(Long caseId, ZonedDateTime endTime) {
-        List<String> hearingRoles = List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName());
-        List<RoleAssignment> judgesAndLegalAdvisers = roleAssignmentService.getCaseRolesAtTime(caseId,
-            hearingRoles, endTime);
+        List<RoleAssignment> judgesAndLegalAdvisers = getHearingJudgeAndLegalAdviserRoleAssignments(caseId, endTime);
 
         // delete these role assignments in AM
         judgesAndLegalAdvisers
             .stream()
-            .filter(role -> hearingRoles.contains(role.getRoleName()))
+            .filter(role -> HEARING_ROLES.contains(role.getRoleName()))
             .forEach(roleAssignmentService::deleteRoleAssignment);
 
         // loop through all role assignments, and recreate them in AM with the new endTime
         List<RoleAssignment> newRoleAssignments = judgesAndLegalAdvisers.stream()
-            .filter(role -> hearingRoles.contains(role.getRoleName()))
+            .filter(role -> HEARING_ROLES.contains(role.getRoleName()))
             .map(ra -> buildRoleAssignment(
                 caseId,
                 ra.getActorId(),
@@ -130,9 +162,9 @@ public class JudicialService {
         // add new allocated judge
         if (isLegalAdviser) {
             roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), ALLOCATED_LEGAL_ADVISER,
-                ZonedDateTime.now(), null);
+                currentTimeUK(), null);
         } else {
-            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, ZonedDateTime.now(),
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, currentTimeUK(),
                 null);
         }
     }
@@ -159,13 +191,15 @@ public class JudicialService {
     public void assignHearingJudge(Long caseId, HearingBooking hearing, Optional<HearingBooking> nextHearing,
                                    boolean startNow) {
         Optional<String> judgeId = getJudgeIdFromHearing(hearing);
+
+        // end this new role at the start of the next hearing (if present) MINUS 5 minutes to avoid overlapping roles
         ZonedDateTime possibleEndDate = nextHearing.map(HearingBooking::getStartDate)
-            .map(ld -> ld.atZone(ZoneId.systemDefault()))
+            .map(ld -> ld.minusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(LONDON_TIMEZONE))
             .orElse(null);
 
         judgeId.ifPresentOrElse(s -> assignHearingJudgeRole(caseId,
                 s,
-                startNow ? ZonedDateTime.now() : hearing.getStartDate().atZone(ZoneId.systemDefault()),
+                startNow ? currentTimeUK() : hearing.getStartDate().atZone(LONDON_TIMEZONE),
                 possibleEndDate,
                 JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearing.getJudgeAndLegalAdvisor().getJudgeTitle())),
             () -> log.error("No judge details on hearing starting at {} on case {} to assign roles to",
@@ -304,6 +338,11 @@ public class JudicialService {
         }
     }
 
+    public Optional<JudgeAndLegalAdvisor> getCurrentHearingJudge(CaseData caseData) {
+        return caseData.getLastHearingBefore(LocalDateTime.now())
+            .map(HearingBooking::getJudgeAndLegalAdvisor);
+    }
+
     /**
      * Gets the set of all hearing judges on the case, and checks each for a valid email address.
      *
@@ -318,42 +357,14 @@ public class JudicialService {
             .collect(Collectors.toSet());
     }
 
-    // TODO - see if these can be combined/parameterised somehow
-    public Optional<String> validateAllocatedJudge(CaseData caseData) {
+    public Optional<String> validateAllocatedJudge(AllocateJudgeEventData eventData) {
         Optional<String> error;
-        if (caseData.getEnterManually().equals(YesNo.NO)) {
+        if (isJudgeDetailsFromJUP(eventData)) {
             // validate judge
-            error = this.validateJudicialUserField(caseData.getJudicialUser());
+            error = this.validateJudicialUserField(eventData.getJudicialUser());
         } else {
             // validate manual judge details
-            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
-            error = validateEmailService.validate(email);
-        }
-        return error;
-    }
-
-    public Optional<String> validateTempAllocatedJudge(CaseData caseData) {
-        Optional<String> error;
-        if (caseData.getEnterManually().equals(YesNo.NO)) {
-            // validate judge
-            error = this.validateJudicialUserField(caseData.getJudicialUser());
-        } else {
-            // validate manual judge details
-            String email = caseData.getTempAllocatedJudge().getJudgeEmailAddress();
-            error = validateEmailService.validate(email);
-        }
-        return error;
-    }
-
-
-    public Optional<String> validateHearingJudge(CaseData caseData) {
-        Optional<String> error;
-        if (caseData.getEnterManuallyHearingJudge().equals(YesNo.NO)) {
-            // validate judge
-            error = this.validateJudicialUserField(caseData.getJudicialUserHearingJudge());
-        } else {
-            // validate manual judge details
-            String email = caseData.getHearingJudge().getJudgeEmailAddress();
+            String email = eventData.getManualJudgeDetails().getJudgeEmailAddress();
             error = validateEmailService.validate(email);
         }
         return error;
@@ -378,18 +389,18 @@ public class JudicialService {
             HearingJudgeTime.HearingJudgeTimeBuilder judgeTime = HearingJudgeTime.builder()
                 .emailAddress(booking.getJudgeAndLegalAdvisor().getJudgeEmailAddress())
                 .judgeId(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())
-                .startTime(booking.getStartDate().atZone(ZoneId.systemDefault()))
+                .startTime(booking.getStartDate().atZone(LONDON_TIMEZONE))
                 .judgeType(booking.getJudgeAndLegalAdvisor().getJudgeTitle());
 
             if (!isEmpty(after) && !isEmpty(after.getStartDate())) {
-                judgeTime.endTime(after.getStartDate().atZone(ZoneId.systemDefault()));
+                judgeTime.endTime(after.getStartDate().atZone(LONDON_TIMEZONE));
             }
 
             judgeTimes.add(judgeTime.build());
         }
 
         return judgeTimes.stream()
-            .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(ZonedDateTime.now()))
+            .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(currentTimeUK()))
             .map(time -> {
                 Optional<RoleCategory> userRoleCategory = this.getUserRoleCategory(time.getEmailAddress());
 
@@ -423,8 +434,10 @@ public class JudicialService {
             && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser())
             && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
 
+            // delete the role for this hearing + offset by 5 minutes into the future, so we don't hit the old (bugged)
+            // hearing role assignments that may have ended at exactly this hearing time
             roleAssignmentService.deleteRoleAssignmentOnCaseAtTime(caseId,
-                hearing.getStartDate().atZone(ZoneId.systemDefault()),
+                hearing.getStartDate().plusMinutes(HEARING_EXPIRY_OFFSET_MINS).atZone(LONDON_TIMEZONE),
                 hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId(),
                 List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()));
         }
@@ -434,50 +447,106 @@ public class JudicialService {
         roleAssignmentService.deleteAllRolesOnCase(caseId);
     }
 
-    public List<String> validateHearingJudgeEmail(CaseDetails caseDetails, CaseData caseData) {
-        JudgeAndLegalAdvisor hearingJudge;
+    public void cleanupHearingRoles(Long caseId) {
+        roleAssignmentService.deleteAllHearingRolesOnCase(caseId);
+    }
 
-        final Optional<String> error = this.validateHearingJudge(caseData);
+    public List<String> validateHearingJudgeEmail(CaseDetails caseDetails, CaseData caseData) {
+        AllocateJudgeEventData eventData = caseData.getHearingJudgeEventData();
+
+        final Optional<String> error = this.validateAllocatedJudge(eventData);
 
         if (error.isPresent()) {
             return List.of(error.get());
         }
 
-        if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
-            // not entering manually - lookup the personal_code in JRD
-            Optional<JudicialUserProfile> jup = this
-                .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
+        JudgeAndLegalAdvisor hearingJudge = this.buildAllocatedJudgeFromEventData(eventData)
+            .toJudgeAndLegalAdvisor().toBuilder()
+            .legalAdvisorName(caseData.getLegalAdvisorName())
+            .build();
 
-            if (jup.isPresent()) {
-                // we have managed to search the user from the personal code
-                hearingJudge = JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
-                    .legalAdvisorName(caseData.getLegalAdvisorName())
-                    .build();
-            } else {
-                return List.of("No Judge could be found, please retry your search or enter their"
-                    + " details manually.");
+        caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
+        return List.of();
+    }
+
+    private ZonedDateTime currentTimeUK() {
+        return ZonedDateTime.now(LONDON_TIMEZONE);
+    }
+
+    public Judge buildAllocatedJudgeFromEventData(AllocateJudgeEventData eventData) {
+        if (isJudgeDetailsFromJUP(eventData)) {
+            if (isEmpty(eventData.getJudicialUser()) || isEmpty(eventData.getJudicialUser().getPersonalCode())) {
+                return null;
             }
-        } else {
-            // entered the judge manually - lookup in our mappings and add UUID manually
-            Optional<String> possibleId = this
-                .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
 
+            return this.getJudge(eventData.getJudicialUser().getPersonalCode())
+                .map(judicialUserProfile -> Judge.fromJudicialUserProfile(judicialUserProfile,
+                        (FEE_PAID_JUDGE.equals(eventData.getJudgeType())) ? eventData.getFeePaidJudgeTitle() : null)
+                    .toBuilder()
+                    .judgeType(eventData.getJudgeType())
+                    .build()
+                )
+                .orElse(null);
+        } else {
+            Judge manualJudgeDetails = eventData.getManualJudgeDetails()
+                .toBuilder()
+                .judgeType(eventData.getJudgeType())
+                .build();
+
+            // entering manually, check against our lookup tables, they may be a legal adviser
+            Optional<String> possibleId = this.getJudgeUserIdFromEmail(manualJudgeDetails.getJudgeEmailAddress());
+
+            // if they are in our maps - add their UUID extra info to the case
             if (possibleId.isPresent()) {
-                // we can manually assign the role again based on our knowledge of JRD/SRD
-                hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                return manualJudgeDetails.toBuilder()
                     .judgeJudicialUser(JudicialUser.builder()
                         .idamId(possibleId.get())
                         .build())
-                    .legalAdvisorName(caseData.getLegalAdvisorName())
                     .build();
             } else {
-                // We cannot assign manually, just have to leave the judge as is.
-                hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
-                    .legalAdvisorName(caseData.getLegalAdvisorName())
-                    .build();
+                if (MAGISTRATES.equals(manualJudgeDetails.getJudgeTitle())) {
+                    return manualJudgeDetails.toBuilder().judgeLastName(null).build();
+                } else {
+                    return manualJudgeDetails.toBuilder().judgeFullName(null).build();
+                }
             }
         }
-        caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
-        return List.of();
+    }
+
+    private boolean isJudgeDetailsFromJUP(AllocateJudgeEventData eventData) {
+        return !LEGAL_ADVISOR.equals(eventData.getJudgeType());
+    }
+
+    public Map<String, Object> populateEventDataMapFromJudge(AbstractJudge judge) {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        if (judge != null) {
+            resultMap.put("judgeType", judge.getJudgeType());
+            resultMap.put("judicialUser", judge.getJudgeJudicialUser());
+
+            if (judge.isDetailsEnterManually()) {
+                Map<String, Object> manualJudgeDetails = new HashMap<>();
+                manualJudgeDetails.put("judgeFullName", judge.getJudgeFullName());
+                manualJudgeDetails.put("judgeLastName", judge.getJudgeLastName());
+                manualJudgeDetails.put("judgeEmailAddress", judge.getJudgeEmailAddress());
+                if (LEGAL_ADVISOR_TITLES.contains(judge.getJudgeTitle())) {
+                    manualJudgeDetails.put("judgeTitle", judge.getJudgeTitle());
+                }
+                resultMap.put("manualJudgeDetails", manualJudgeDetails);
+            } else if (JudgeType.FEE_PAID_JUDGE.equals(judge.getJudgeType())
+                       && FEE_PAID_JUDGE_TITLES.contains(judge.getJudgeTitle())) {
+                resultMap.put("feePaidJudgeTitle", judge.getJudgeTitle());
+            }
+        }
+
+        return resultMap;
+    }
+
+    private List<RoleAssignment> getAllocatedJudgeAndLegalAdvisorRoleAssignments(Long caseId) {
+        return roleAssignmentService.getCaseRolesAtTime(caseId, ALLOCATED_ROLES, currentTimeUK());
+    }
+
+    private List<RoleAssignment> getHearingJudgeAndLegalAdviserRoleAssignments(Long caseId, ZonedDateTime endTime) {
+        return roleAssignmentService.getCaseRolesAtTime(caseId, HEARING_ROLES, endTime);
     }
 }

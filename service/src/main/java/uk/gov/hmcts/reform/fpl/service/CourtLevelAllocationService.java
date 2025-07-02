@@ -20,8 +20,8 @@ public class CourtLevelAllocationService {
 
         if (hasAllocationPresent(caseData.getAllocationProposal())) {
             if (hasAllocationPresent(caseData.getAllocationDecision())) {
-                if (caseData.getAllocationProposal().getProposal()
-                    .equals(caseData.getAllocationDecision().getProposal())) {
+                if (caseData.getAllocationProposal().getProposalV2()
+                    .equals(caseData.getAllocationDecision().getProposalV2())) {
                     decisionBuilder.judgeLevelRadio(YES.getValue());
                 } else {
                     decisionBuilder.judgeLevelRadio(NO.getValue());
@@ -41,8 +41,8 @@ public class CourtLevelAllocationService {
     public Allocation createAllocationDecisionIfNull(CaseData caseData, Allocation allocationDecision) {
         Allocation.AllocationBuilder decisionBuilder = populateDecision(allocationDecision);
 
-        if (allocationDecision.getProposal() == null) {
-            decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
+        if (allocationDecision.getProposalV2() == null) {
+            decisionBuilder.proposalV2(caseData.getAllocationProposal().getProposalV2());
             decisionBuilder.proposalReason(caseData.getAllocationProposal().getProposalReason());
         }
 
@@ -53,7 +53,7 @@ public class CourtLevelAllocationService {
     }
 
     private boolean hasAllocationPresent(Allocation data) {
-        return data != null && isNotEmpty(data.getProposal());
+        return data != null && isNotEmpty(data.getProposalV2());
     }
 
     private Allocation.AllocationBuilder populateDecision(Allocation allocationDecision) {

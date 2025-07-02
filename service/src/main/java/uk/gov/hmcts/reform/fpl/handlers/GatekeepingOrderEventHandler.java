@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
@@ -24,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeepingOrderEventHandler {
@@ -34,6 +37,7 @@ public class GatekeepingOrderEventHandler {
     private final SDOIssuedCafcassContentProvider cafcassContentProvider;
     private final SDOIssuedContentProvider standardContentProvider;
     private final TranslationRequestService translationRequestService;
+    private final FeatureToggleService featureToggleService;
 
     @Async
     @EventListener
@@ -73,15 +77,19 @@ public class GatekeepingOrderEventHandler {
     @Async
     @EventListener
     public void notifyCTSC(GatekeepingOrderEvent event) {
-        CaseData caseData = event.getCaseData();
+        if (featureToggleService.isWATaskEmailsEnabled()) {
+            CaseData caseData = event.getCaseData();
 
-        NotifyData notifyData = standardContentProvider.buildNotificationParameters(
-            caseData,
-            event.getDirectionsOrderType());
-        String recipient = ctscEmailLookupConfiguration.getEmail();
+            NotifyData notifyData = standardContentProvider.buildNotificationParameters(
+                caseData,
+                event.getDirectionsOrderType());
+            String recipient = ctscEmailLookupConfiguration.getEmail();
 
-        notificationService
-            .sendEmail(event.getNotificationGroup().getCtscTemplate(), recipient, notifyData, caseData.getId());
+            notificationService
+                .sendEmail(event.getNotificationGroup().getCtscTemplate(), recipient, notifyData, caseData.getId());
+        } else {
+            log.info("WA EMAIL SKIPPED - gatekeeping completed - {}", event.getCaseData().getId());
+        }
     }
 
     @Async

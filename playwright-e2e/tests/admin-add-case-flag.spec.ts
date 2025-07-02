@@ -28,7 +28,7 @@ test.describe('Add a case flag', () => {
             await runTest(signInPage, addAdminCaseFlag, page);
         });
 
-    test('Add and remove a case flag as judicial user',
+    test('Add and remove a case flag as judicial user @xbrowser',
         async ({page, signInPage, addAdminCaseFlag}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
@@ -45,7 +45,4 @@ test.describe('Add a case flag', () => {
         await  addAdminCaseFlag.runRemoveCaseFlagTest();
         await expect(page.getByText('Potentially violent person',{exact: true})).toBeHidden();
     }
-
-
 });
-

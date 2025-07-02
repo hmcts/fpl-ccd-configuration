@@ -156,7 +156,7 @@ def deployWADmns() {
 
   def waStandaloneBranch = "master"
   // For testing DMNs, change this to the branch on the DMN repo, but ensure it is changed back to master before merging
-  def dmnBranch = "DFPL-2439-v2"
+  def dmnBranch = "master"
 
   echo "Checking if we should use WA"
   if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
@@ -174,6 +174,18 @@ def deployWADmns() {
   } else {
     env.ENABLE_WA = false
   }
+}
+
+def archiveApiTestResult() {
+  publishHTML([
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "test-results/functional",
+          reportFiles          : 'index.html',
+          reportName           : 'API Test Report'
+  ])
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
 }
 
 // Vars for Kubernetes
@@ -247,6 +259,7 @@ withPipeline(type, product, component) {
 
   }
   afterAlways('fullFunctionalTest:preview') {
+    archiveApiTestResult()
     stage('UIFunctionalTests') {
       try {
           yarnBuilder.yarn('test:functional-nightly-preview')
@@ -322,14 +335,32 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
   }
 
+  before('functionalTest:preview') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.TEST_RETRIES = 3
+  }
+
   before('functionalTest:aat') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.CASE_SERVICE_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
+    env.TEST_RETRIES = 3
   }
 
   before('functionalTest:demo') {
     env.SKIP_API_TESTS = 'true'
   }
 
+  afterAlways('functionalTest:preview') {
+    archiveApiTestResult()
+  }
+
   afterAlways('functionalTest:aat') {
+    archiveApiTestResult()
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
@@ -359,8 +390,6 @@ withPipeline(type, product, component) {
   }
 
   //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment demo migration for DFPL-1855 completed
-//    def branchesToSync = ['perftest','ithc'] TODO: uncomment perftest for Cafcass API perf test completed
-//    def branchesToSync = ['ithc'] TODO: uncomment ithc for Cafcass API ithc test completed
-  def branchesToSync = []
+  def branchesToSync = ['perftest','ithc']
   syncBranchesWithMaster(branchesToSync)
 }

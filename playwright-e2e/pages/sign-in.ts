@@ -58,7 +58,6 @@ export class SignInPage extends BasePage {
             await this.hideMessage.nth(0).click();
         }
 
-
     }
 
     async isSignedIn() {
@@ -74,4 +73,3 @@ export class SignInPage extends BasePage {
         await expect(this.page.getByRole('heading', { name: 'Organisation', exact: true })).toBeVisible();
     }
 }
-

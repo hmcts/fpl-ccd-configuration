@@ -28,7 +28,7 @@ import { OtherProceedings } from "../pages/other-proceedings";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
 import { CaseLink } from "../pages/link-cases"
-import { CourtServicesNeeded } from "../pages/court-services-needed";
+import { CourtServices } from "../pages/court-services";
 import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
 import { Organisation } from "../pages/manage-organisation";
@@ -42,6 +42,11 @@ import { ChangeCaseName } from "../pages/change-case-name";
 import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
 import {QueryManagement} from "../pages/query-management";
+import {ManageTTL} from "../pages/manage-t-t-l";
+import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
+import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
+
+
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -73,7 +78,7 @@ type CreateFixtures = {
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
   caseLink : CaseLink ;
-  courtServicesNeeded: CourtServicesNeeded;
+  courtServices: CourtServices;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
   organisation: Organisation;
@@ -87,6 +92,9 @@ type CreateFixtures = {
   manageLaTransferToCourts: ManageLaTransferToCourts
   manageRepresentatives: ManageRepresentatives;
   queryManagement: QueryManagement;
+  manageTTL: ManageTTL;
+  othersToBeGivenNotice: OthersToBeGivenNotice;
+  changeOtherToRespondent: ChangeOtherToRespondent;
 
 };
 
@@ -201,8 +209,8 @@ export const test = base.extend<CreateFixtures>({
     caseLink: async ({ page }, use) => {
         await use(new CaseLink(page));
     },
-  courtServicesNeeded: async ({ page }, use) => {
-    await use(new CourtServicesNeeded(page));
+  courtServices: async ({ page }, use) => {
+    await use(new CourtServices(page));
   },
 
   addAdminCaseFlag: async ({ page }, use) => {
@@ -253,12 +261,29 @@ export const test = base.extend<CreateFixtures>({
     await use(new ManageLaTransferToCourts(page));
 },
 
+
+othersToBeGivenNotice: async ({ page }, use) => {
+  await use(new OthersToBeGivenNotice(page));
+},
+      
+
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
 
   },
+
     queryManagement: async ({ page }, use) => {
         await use(new QueryManagement(page));
 
   },
+
+    manageTTL: async ({ page }, use) => {
+        await use(new ManageTTL(page));
+    },
+
+  changeOtherToRespondent: async ({ page }, use) => {
+    await use(new ChangeOtherToRespondent(page));
+
+  },
+
 });

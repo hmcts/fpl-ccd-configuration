@@ -1,0 +1,87 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "evidenceQuestion",
+    "FieldType": "Label",
+    "ElementLabel": "## Is there evidence of any of the following?",
+    "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "physicalHarm",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Physical harm including non-accidental injury",
+    "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "physicalHarmOccurrences",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PastOrFutureHarmSelect",
+    "ElementLabel": "Select all that apply",
+    "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "emotionalHarm",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Emotional harm",
+    "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "emotionalHarmOccurrences",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PastOrFutureHarmSelect",
+    "ElementLabel": "Select all that apply",
+    "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "sexualAbuse",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Sexual abuse",
+    "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "sexualAbuseOccurrences",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PastOrFutureHarmSelect",
+    "ElementLabel": "Select all that apply",
+    "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "neglect",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Neglect",
+    "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "neglectOccurrences",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PastOrFutureHarmSelect",
+    "ElementLabel": "Select all that apply",
+    "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  }
+]

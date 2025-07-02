@@ -36,7 +36,6 @@ class CaseSubmissionControllerMidEventTest extends AbstractCallbackTest {
             "• Add the respondents' details",
             "In the applicant's details section:",
             "• Add applicant's details",
-            "• Add the applicant's solicitor's details",
             "In the grounds for the application section:",
             "• Add the grounds for the application",
             "In the hearing urgency section:",

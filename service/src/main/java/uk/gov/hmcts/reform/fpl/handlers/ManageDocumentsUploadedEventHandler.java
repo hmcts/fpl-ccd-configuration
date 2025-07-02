@@ -361,7 +361,7 @@ public class ManageDocumentsUploadedEventHandler {
     public void createWorkAllocationTask(ManageDocumentsUploadedEvent event) {
         CaseData caseData = event.getCaseData();
 
-        if (!userService.isHmctsAdminUser()
+        if (!userService.isCtscUser()
             && (isNotEmpty(event.getNewDocuments().get(COURT_CORRESPONDENCE))
                 || isNotEmpty(event.getNewDocumentsLA().get(COURT_CORRESPONDENCE))
                 || isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE)))) {

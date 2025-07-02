@@ -34,7 +34,7 @@ public class SampleRoboticsTestDataHelper {
                 .build())
             .harmAlleged(true)
             .internationalElement(true)
-            .allocation("Section 9 circuit judge")
+            .allocation("Circuit judge")
             .issueDate(formatLocalDateToString(NOW, "dd-MM-yyyy"))
             .applicant(expectedApplicant())
             .owningCourt(11)

@@ -25,7 +25,7 @@ public class DynamicListElement {
 
     static final int MAX_DYNAMIC_LIST_LABEL_LENGTH = 250;
 
-    private DynamicListElement(String code, String label) {
+    public DynamicListElement(String code, String label) {
         this.code = code;
         this.label = abbreviate(label, MAX_DYNAMIC_LIST_LABEL_LENGTH);
     }

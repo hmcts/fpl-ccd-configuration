@@ -10,10 +10,8 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisHearing {
-    private final String typeAndReason;
     private final String timeFrame;
     private final String withoutNoticeDetails;
-    private final String reducedNoticeDetails;
     private final String respondentsAware;
     private final String respondentsAwareReason;
 }

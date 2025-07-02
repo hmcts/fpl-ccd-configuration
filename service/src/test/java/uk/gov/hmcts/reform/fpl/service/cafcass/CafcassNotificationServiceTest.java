@@ -46,6 +46,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -156,6 +157,7 @@ class CafcassNotificationServiceTest {
                 entry("newApplication", "APPLICATION")
 
             ));
+        when(featureToggleService.isCafcassAPIEnabledForCourt(any())).thenReturn(false);
     }
 
     @ParameterizedTest
@@ -753,6 +755,26 @@ class CafcassNotificationServiceTest {
                         tuple(RECIPIENT_EMAIL,
                                 "Court Ref. FM1234.- new large document added - Expert reports",
                                 largeDocMessage));
+    }
+
+    @Test
+    void shouldNotNotifyIfAPIEnabled() {
+        when(featureToggleService.isCafcassAPIEnabledForCourt(any())).thenReturn(true);
+
+        underTest.sendEmail(caseData,
+            of(getDocumentReference()),
+            COURT_BUNDLE,
+            CourtBundleData.builder()
+                .hearingDetails(TITLE)
+                .build()
+        );
+
+        underTest.sendEmail(caseData,
+            CHANGE_OF_ADDRESS,
+            ChangeOfAddressData.builder().children(true).build()
+        );
+
+        verifyNoInteractions(emailService);
     }
 
     private DocumentReference getDocumentReference() {

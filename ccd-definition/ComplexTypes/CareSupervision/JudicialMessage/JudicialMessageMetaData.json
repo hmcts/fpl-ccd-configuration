@@ -28,6 +28,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessageMetaData",
+    "ListElementCode": "recipientDynamicList",
+    "FieldType": "DynamicList",
+    "ElementLabel": "Recipient",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
     "ListElementCode": "recipient",
     "FieldType": "Email",
     "ElementLabel": "Recipient's email address",
@@ -40,6 +48,15 @@
     "FieldType": "Text",
     "ElementLabel": "Message subject",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
+    "ListElementCode": "otherJudgeWarningLabel",
+    "FieldType": "Label",
+    "ElementLabel": "<div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Using this option will not auto-assign a task as they are not the hearing/allocated judge. After the task has been created, you must assign it manually on the Tasks tab to ensure it isn't missed.</strong></div>",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "otherJudgeWarningLabel=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

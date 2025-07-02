@@ -1,0 +1,10 @@
+MOCKCASEID
+${id}
+Discharge of care order
+Section 39(1) Children Act 1989
+Ordered on ${issueDate} by Her Honour Judge Moley
+Family Court sitting at Swansea
+Child in the case
+Timothy Jones Male Born 1 August 2015
+The Court discharges the care order made by Aberdeen Tribunal Hearing Centre made on ${dateSuffix}.
+some text

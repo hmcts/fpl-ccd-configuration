@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -147,6 +148,9 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
     private CafcassNotificationService cafcassNotificationService;
 
     @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @MockBean
     private WorkAllocationTaskService workAllocationTaskService;
 
     @MockBean
@@ -169,6 +173,7 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         when(coreCaseDataService.performPostSubmitCallback(any(), any(), any(), anyBoolean()))
             .thenReturn(CaseDetails.builder().build());
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
         givenFplService();
         givenSystemUser();
     }

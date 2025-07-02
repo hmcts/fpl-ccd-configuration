@@ -1,0 +1,112 @@
+[
+  { 
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "hearingPreferencesLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Is any of the following needed to help someone take part in a hearing?",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "interpreter",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Interpreter",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "HintText": "Including sign language",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "welsh",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Spoken or written Welsh",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "welshDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "intermediary",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Intermediary",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "disabilityAssistance",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Facilities or assistance for a disability",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "extraSecurityMeasures",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Separate waiting room or other security measures",
+    "HintText": "For example, mother and father need to be in separate waiting rooms as history of domestic violence",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "somethingElse",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Something else",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "litigation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Litigation capacity issues",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "litigationDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "learningDisability",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Learning disability issues",
+    "HintText": "For example, Respondent has learning disability",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "learningDisabilityDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "whichCourtServices=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  }
+]

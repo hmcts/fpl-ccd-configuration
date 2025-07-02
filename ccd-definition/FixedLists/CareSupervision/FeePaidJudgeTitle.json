@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FeePaidJudgeTitle",
+    "ListElementCode": "DEPUTY_HIGH_COURT_JUDGE",
+    "ListElement": "Deputy High Court Judge",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FeePaidJudgeTitle",
+    "ListElementCode": "RECORDER",
+    "ListElement": "Recorder",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FeePaidJudgeTitle",
+    "ListElementCode": "DEPUTY_DISTRICT_JUDGE",
+    "ListElement": "Deputy District Judge",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FeePaidJudgeTitle",
+    "ListElementCode": "DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT",
+    "ListElement": "Deputy District Judge (Magistrates)",
+    "DisplayOrder": 4
+  }
+]

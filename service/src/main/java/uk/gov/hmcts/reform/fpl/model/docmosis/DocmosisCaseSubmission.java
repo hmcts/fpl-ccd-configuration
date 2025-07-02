@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model.docmosis;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.model.Allocation;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final String ordersNeeded;
     private final String directionsNeeded;
     private final DocmosisHearing hearing;
-    private final Allocation allocation;
+    private final DocmosisAllocation allocation;
     private final DocmosisHearingPreferences hearingPreferences;
     private final DocmosisInternationalElement internationalElement;
     private final String userFullName;
