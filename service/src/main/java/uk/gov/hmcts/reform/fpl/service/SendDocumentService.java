@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -106,12 +107,24 @@ public class SendDocumentService {
                 .filter(respondent -> ObjectUtils.isEmpty(respondent.getValue().getRepresentedBy())
                     && hasNoLegalRepresentation(respondent.getValue()))
                 .filter(respondent -> !respondent.getValue().isDeceasedOrNFA())
+                .filter(respondent -> isRespondentAddressKnown(respondent, caseData))
                 .map(respondent -> respondent.getValue().getParty().toBuilder()
                         .address(getPartyAddress(respondent, caseData)).build())
                 .collect(toList());
         }
 
         return emptyList();
+    }
+
+    private boolean isRespondentAddressKnown(Element<Respondent> respondent, CaseData caseData) {
+        if (respondent.getValue().containsConfidentialDetails()) {
+            IsAddressKnowType isAddressKnown = ElementUtils.getElement(respondent.getId(),
+                caseData.getConfidentialRespondents()).getValue().getParty().getAddressKnow();
+
+            return isAddressKnown == null || !isAddressKnown.equals(IsAddressKnowType.NO);
+        }
+
+        return true;
     }
 
     private Address getPartyAddress(Element<Respondent> respondent, CaseData caseData) {
@@ -126,5 +139,4 @@ public class SendDocumentService {
     private boolean hasNoLegalRepresentation(Respondent respondent) {
         return !YES.getValue().equals(respondent.getLegalRepresentation());
     }
-
 }
