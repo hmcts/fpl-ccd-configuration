@@ -26,13 +26,12 @@ public class RespondQueryEventHandler {
     @EventListener
     @Async
     public void notifyUser(final RespondQueryEvent event) {
-        CaseData caseData = event.getCaseData();
         UserDetails userDetails = userService.getUserDetailsById(event.getUserId());
         String recipient = userDetails.getEmail();
         String queryDate = event.getQueryDate();
+        CaseData caseData = event.getCaseData();
 
         log.info("TESING: about to send QM response notification email.");
-
         log.info("RECIPIENT is {}", recipient);
         log.info("QUERYDATE is {}", queryDate);
 
