@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
+import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
-import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.model.payment.Payments;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
@@ -67,7 +67,7 @@ public class TestingSupportController {
     private final RequestData requestData;
     private final AuthTokenGenerator authToken;
 
-    private final CaseAccessDataStoreApi caseAccess;
+    private final CaseAssignmentApi caseAssignmentApi;
     private final CoreCaseDataApi coreCaseDataApi;
     private final CoreCaseDataApiV2 coreCaseDataApiV2;
     private final CoreCaseDataService coreCaseDataService;
@@ -140,7 +140,8 @@ public class TestingSupportController {
     @PostMapping("/testing-support/user")
     public UserDetails getUser(@RequestBody Map<String, String> requestBody) {
         final String token = idamClient.getAccessToken(requestBody.get(EMAIL), requestBody.get("password"));
-        return idamClient.getUserDetails(token);
+        final String userId = idamClient.getUserInfo(token).getUid();
+        return idamClient.getUserByUserId(token, userId);
     }
 
     @GetMapping("/testing-support/document")
@@ -177,17 +178,17 @@ public class TestingSupportController {
         log.info("About to grant {} to user {} to case {}", role, email, caseId);
 
         final String token = idamClient.getAccessToken(email, password);
-        final String userId = idamClient.getUserDetails(token).getId();
+        final String userId = idamClient.getUserInfo(token).getUid();
 
-        final AddCaseAssignedUserRolesRequest accessRequest = AddCaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(CaseAssignedUserRoleWithOrganisation.builder()
+        final CaseAssignmentUserRolesRequest accessRequest = CaseAssignmentUserRolesRequest.builder()
+            .caseAssignmentUserRolesWithOrganisation(List.of(CaseAssignmentUserRoleWithOrganisation.builder()
                 .caseDataId(caseId.toString())
                 .userId(userId)
                 .caseRole(role)
                 .build()))
             .build();
 
-        caseAccess.addCaseUserRoles(userToken, authToken.generate(), accessRequest);
+        caseAssignmentApi.addCaseUserRoles(userToken, authToken.generate(), accessRequest);
 
         log.info("Role {} granted to user {} to case {}", role, email, caseId);
     }

@@ -12,7 +12,7 @@ test.describe('Upload draft orders', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('LA upload CMO draft orders',
+    test('LA upload CMO draft orders @xbrowser',
         async ({ page, signInPage, uploadDraftOrders }) => {
             casename = 'LA upload CMO draft orders ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseData);
@@ -27,7 +27,7 @@ test.describe('Upload draft orders', () => {
             await expect(page.getByLabel('Draft orders').getByRole('link')).toContainText('draftOrder.docx');
         });
 
-    test('LA upload Additional Draft Order',
+    test('LA upload Additional Draft Order @xbrowser',
         async ({ page, signInPage, uploadDraftOrders }) => {
 
             casename = 'LA upload Additional Draft Order ' + dateTime.slice(0, 10);

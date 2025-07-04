@@ -20,7 +20,7 @@ test.describe('Gatekeeping Listing', () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
-  test('Review Standard Direction Order High Court WA Task',
+  test('Review Standard Direction Order High Court WA Task @xbrowser',
     async ({ page, signInPage, gateKeepingListing,
       caseFileView }) => {
       caseName = 'Review Standard Direction Order High Court WA Task ' + dateTime.slice(0, 10);
@@ -65,7 +65,7 @@ test.describe('Gatekeeping Listing', () => {
         await expect(page.getByText('Review Standard Direction Order (High Court)')).toHaveCount(0);
       }
     });
-    test('List Urgent Direction Order - CTS User',
+    test('List Urgent Direction Order - CTS User @xbrowser',
         async ({page, signInPage, gateKeepingListing}) => {
 
             caseName = 'List urgent direction order by CTSC user ' + dateTime.slice(0, 10);

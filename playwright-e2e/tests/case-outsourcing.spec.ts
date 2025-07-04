@@ -9,7 +9,7 @@ import {
 
 test.describe('Case outsourced another Localauthority or Solicitor Organisation', () => {
     const dateTime = new Date().toISOString();
-    test(' Managing LA creates case for their own organisation',
+    test(' Managing LA creates case for their own organisation @xbrowser',
         async ({page, signInPage, createCase, organisation}) => {
             await signInPage.visit();
             await signInPage.login(wiltshireCountyUserOne.email, wiltshireCountyUserOne.password,);
@@ -74,7 +74,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
         })
 
-    test('Managing LA share case with a  one user within Org',
+    test('Managing LA share case with a  one user within Org @xbrowser',
         async ({page, signInPage, createCase, organisation, shareCase}) =>
         {
         await signInPage.visit();
@@ -101,7 +101,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
     })
 
-    test('EPS create case for LA',
+    test('EPS create case for LA @xbrowser',
         async ({page,signInPage,createCase,organisation}) =>
         {
             await signInPage.visit();
