@@ -14,7 +14,6 @@ export class CaseFileView extends BasePage {
     }
 
     async openFolder(name: string) {
-
         await this.page.getByRole('button', { name: 'toggle ' + name }).click();
     }
 
