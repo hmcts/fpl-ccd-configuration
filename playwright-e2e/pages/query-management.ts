@@ -1,64 +1,73 @@
-import { type Page, type Locator, expect } from "@playwright/test";
-import { BasePage } from "./base-page";
+import {type Page, type Locator, expect} from "@playwright/test";
+import {BasePage} from "./base-page";
 import config from "../settings/test-docs/config";
 
 export class QueryManagement extends BasePage {
-    newQuery :Locator;
+    newQuery: Locator;
     querySubjectText: Locator;
     queryDetailText: Locator;
     relatedToHearingRadio: Locator;
     newDocument: Locator;
     documentCollection: Locator;
+    respondDetail: Locator;
+    addDocument: Locator;
+    documentInput: Locator;
+    backToCaseDetails: Locator;
 
 
-
-  public constructor(page: Page) {
-    super(page);
-     this.newQuery = page.getByLabel('Raise a new query');
-     this.querySubjectText = page.getByLabel('Query subject');
-     this.queryDetailText = page.getByLabel('Query detail');
-     this.relatedToHearingRadio = page.getByRole('group', {name:'Is the query hearing related?'});
-     this.newDocument = page.getByRole('button', { name: 'Add new' });
-     this.documentCollection =page.locator('#documentCollection_value');
-
-
-
-  }
-
-  async selectNewQuery(){
-      await this.newQuery.click();
-  }
-async enterQueryDetails(){
-    await this.querySubjectText.fill('Birth certificate format');
-
-     await expect.soft(this.page.getByText('The subject should be a')).toBeVisible();
-     await expect.soft(this.page.getByLabel('Query detail')).toBeVisible();
-    await this.queryDetailText.fill('Have birth certificate issued in aboard');
-    await this.relatedToHearingRadio.getByLabel('Yes').click();
-    await this.enterDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
-    await this.newDocument.click();
-
-    await this.documentCollection.setInputFiles(config.testWordFile);
-    // await page.getByRole('button', { name: 'Add new' }).nth(1).click();
-    // await page.locator('#documentCollection_1 #documentCollection_value').click();
-    // await page.locator('#documentCollection_1 #documentCollection_value').setInputFiles('Doc document.doc');
-    // await page.getByRole('button', { name: 'Continue' }).click();
-    // // await expect(page.getByRole('heading', { name: 'Review query details' })).toBeVisible();
-    // await page.getByRole('button', { name: 'Submit' }).click();
-    // await page.getByRole('link', { name: 'Go back to the case' }).click();
+    public constructor(page: Page) {
+        super(page);
+        this.newQuery = page.getByLabel('Raise a new query');
+        this.querySubjectText = page.getByLabel('Query subject');
+        this.queryDetailText = page.getByLabel('Query detail');
+        this.relatedToHearingRadio = page.getByRole('group', {name: 'Is the query hearing related?'});
+        this.newDocument = page.getByRole('button', {name: 'Add new'});
+        this.documentCollection = page.locator('#documentCollection_value');
+        this.respondDetail = page.getByRole('textbox', {name: 'Response detail'});
+        this.addDocument = page.getByRole('button', {name: 'Add new'});
+        this.documentInput = page.locator('#documentCollection_value');
+        this.backToCaseDetails = page.getByRole('link', {name: 'Go back to the case'});
 
 
-    // await page.getByLabel('Yes').check();
-   //  await page.getByLabel('Day').click();
-   //  await page.getByLabel('Day').fill('12');
-   //  await page.getByLabel('Month').click();
-   //  await page.getByLabel('Month').fill('4');
-   //  await page.locator('[id="formControlName\\ \\+\\ \\\'-year\\\'"]').click();
-   //  await page.locator('[id="formControlName\\ \\+\\ \\\'-year\\\'"]').fill('2025');
-   //await page.getByRole('button', { name: 'Add new' }).click();
-    //await page.getByLabel('', { exact: true }).click();
-    // await this.newDocument.click();
-    // await this.page.getByLabel('', { exact: true }).setInputFiles(config.testPdfFile2);
-    await this.waitForAllUploadsToBeCompleted();
-}
+    }
+
+    async selectNewQuery() {
+        await this.newQuery.click();
+    }
+
+    async enterQueryDetails() {
+        await this.querySubjectText.fill('Birth certificate format');
+
+        await expect.soft(this.page.getByText('The subject should be a summary of your query')).toBeVisible();
+        await expect.soft(this.page.getByText('Include as many details as possible so case workers can respond to your query')).toBeVisible();
+        await this.queryDetailText.fill('Have birth certificate issued in aboard');
+        await this.relatedToHearingRadio.getByLabel('Yes').click();
+        await this.enterDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
+        await this.newDocument.click();
+        await expect(this.page.getByText('Only attach documents related to your query. For all other documents use your case management document upload function.')).toBeVisible();
+        await this.documentCollection.setInputFiles(config.testWordFile);
+        await this.waitForAllUploadsToBeCompleted();
+    }
+
+    async assignToMe() {
+        await this.page.getByText('Assign to me').click();
+    }
+
+    async respondToQuery() {
+
+        await this.page.getByRole('link', {name: 'Respond to a query'}).click();
+        // await expect(page.getByRole('caption').getByText('Query details')).toBeVisible();
+        await this.respondDetail.fill('Respond sent to the query by CTSC user');
+        await this.addDocument.click();
+        await expect.soft(this.page.getByText('Only attach documents related')).toBeVisible();
+        await this.documentInput.setInputFiles(config.testWordFile);
+        await this.clickContinue();
+        await this.clickSubmit();
+        await expect(this.page.getByRole('heading', {name: 'Query response submitted'})).toBeVisible();
+        await expect(this.page.getByText('This query response has been added to the case')).toBeVisible();
+
+
+        await this.backToCaseDetails.click();
+
+    }
 }

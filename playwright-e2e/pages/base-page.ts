@@ -38,10 +38,10 @@ export class BasePage {
 
   async gotoNextStep(eventName: string) {
       await expect(async () => {
-          await this.page.reload();
+          await this.page.reload({waitUntil: 'domcontentloaded'});
           await this.nextStep.selectOption(eventName);
-          await this.goButton.click({clickCount:2,delay:300});
-          await expect(this.page.getByRole('button', { name: 'Previous' })).toBeVisible();
+          await this.goButton.click();
+          await expect(this.page.getByRole('button', { name: 'Previous',exact:true })).toBeVisible();
       }).toPass();
   }
 
