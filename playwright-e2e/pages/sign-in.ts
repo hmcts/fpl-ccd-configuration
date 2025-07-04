@@ -36,8 +36,17 @@ export class SignInPage extends BasePage {
     }
 
     async navigateTOCaseDetails(caseNumber: string) {
-        await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+        const caseDetailsUrl = `${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`;
+        await Promise.all([
+            this.page.waitForResponse(response =>
+                response.url().includes(`/case-details/${caseNumber}`) && response.status() === 200
+            ),
+            this.page.goto(caseDetailsUrl, { waitUntil: 'commit' }),
+        ]);
+        await this.tabNavigation('Case File View');
     }
+
+
 
     async login(email: string, password: string) {
         await this.emailInputLocator.fill(email);
