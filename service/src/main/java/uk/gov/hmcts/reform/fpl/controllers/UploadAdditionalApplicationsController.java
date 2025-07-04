@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
@@ -135,6 +136,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         }
 
         if (!skipPayment) {
+            caseDetails.getData().putAll(uploadAdditionalApplicationsService.populateTempPbaPayment(caseData));
             caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
             caseDetails.getData().put(SKIP_PAYMENT_PAGE, NO.getValue());
         } else {
@@ -150,10 +152,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        PBAPayment updatedPbaPayment = pbaNumberService.updatePBAPayment(caseData.getTemporaryPbaPayment());
-        caseDetails.getData().put("temporaryPbaPayment", updatedPbaPayment);
-
-        return respond(caseDetails, pbaNumberService.validate(updatedPbaPayment));
+        return respond(caseDetails, pbaNumberService.validate(caseData.getTemporaryPbaPayment()));
     }
 
     @PostMapping("/about-to-submit")

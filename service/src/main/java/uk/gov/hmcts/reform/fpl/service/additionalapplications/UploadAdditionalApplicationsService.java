@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -33,7 +36,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -65,6 +70,7 @@ public class UploadAdditionalApplicationsService {
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
     private final DocumentConversionService documentConversionService;
+    private final PbaService pbaService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -90,7 +96,7 @@ public class UploadAdditionalApplicationsService {
         List<Element<Respondent>> respondentsInCase = caseData.getAllRespondents();
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
-            .pbaPayment(caseData.getTemporaryPbaPayment())
+            .pbaPayment(updatePBAPayment(caseData.getTemporaryPbaPayment()))
             .amountToPay(caseData.getAmountToPay())
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now, DATE_TIME))
@@ -314,5 +320,27 @@ public class UploadAdditionalApplicationsService {
     public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
+    }
+
+    public Map<String, Object> populateTempPbaPayment(CaseData caseData) {
+        final String TEMP_PBA = "temporaryPbaPayment";
+        Map<String, Object> data = new HashMap<>();
+        PBAPayment tempPbaPayment = PBAPayment.builder()
+            .pbaNumberDynamicList(pbaService.populatePbaDynamicList(""))
+            .build();
+
+        data.put(TEMP_PBA, tempPbaPayment);
+
+        return data;
+    }
+
+    public PBAPayment updatePBAPayment(PBAPayment pbaPayment) {
+        if (pbaPayment != null && !StringUtils.isEmpty(pbaPayment.getPbaNumberDynamicList().getValueCode())) {
+            return pbaPayment.toBuilder()
+                .pbaNumber(pbaPayment.getPbaNumberDynamicList().getValueCode())
+                .pbaNumberDynamicList(null)
+                .build();
+        }
+        return null;
     }
 }

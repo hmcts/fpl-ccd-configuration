@@ -16,7 +16,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryPbaPayment",
     "DisplayContext": "MANDATORY",
-    "ListElementCode": "pbaNumber",
+    "ListElementCode": "pbaNumberDynamicList",
     "FieldDisplayOrder": "2",
     "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\""
   },
