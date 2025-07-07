@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
-import uk.gov.hmcts.reform.rd.client.PbaApi;
 
 import java.util.List;
 

@@ -322,7 +322,7 @@ public class UploadAdditionalApplicationsService {
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
     }
 
-    public Map<String, Object> populateTempPbaPayment(CaseData caseData) {
+    public Map<String, Object> populateTempPbaPayment() {
         final String TEMP_PBA = "temporaryPbaPayment";
         Map<String, Object> data = new HashMap<>();
         PBAPayment tempPbaPayment = PBAPayment.builder()
