@@ -72,13 +72,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "idam:caseworker-publiclaw-rparobot",
-    "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-rparobot"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "[LASOLICITOR]",
     "ReadOnly": "N",
     "AccessProfiles": "[LASOLICITOR]"
