@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.rd.client.PbaApi;
 import uk.gov.hmcts.reform.rd.model.PbaOrganisationResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -31,26 +32,27 @@ public class PbaService {
     private final DynamicListService dynamicListService;
 
     public DynamicList populatePbaDynamicList(String selectedCode) {
-        return dynamicListService.asDynamicList(retrievePbaNumbers(),
+        Optional<List<String>> pbaNumbers = retrievePbaNumbers();
+
+        return dynamicListService.asDynamicList(pbaNumbers.orElseGet(() -> List.of("")),
             defaultIfNull(selectedCode, ""),pba -> pba, pba -> pba);
     }
 
-    private List<String> retrievePbaNumbers() {
+    public Optional<List<String>> retrievePbaNumbers() {
         String userAuthToken = httpServletRequest.getHeader(AUTHORIZATION);
         String userEmail = userService.getUserEmail();
 
         try {
-            /*ResponseEntity<PbaOrganisationResponse> responseEntity =
-                pbaRefDataClient.retrievePbaNumbers(userAuthToken, authTokenGenerator.generate(), userEmail);
-
-            PbaOrganisationResponse pbaOrganisationResponse = Objects.requireNonNull(responseEntity.getBody());*/
             PbaOrganisationResponse pbaOrganisationResponse =
                 pbaRefDataClient.retrievePbaNumbers(userAuthToken, authTokenGenerator.generate(), userEmail);
 
-            return pbaOrganisationResponse.getOrganisationEntityResponse().getPaymentAccount();
+            return Optional.of(pbaOrganisationResponse.getOrganisationEntityResponse().getPaymentAccount());
         } catch (FeignException.NotFound | FeignException.Forbidden ex) {
             log.error("Error retrieving PBA numbers from PBA Ref Data for user {}", userEmail);
-            return List.of();
+            return Optional.empty();
+        } catch (NullPointerException ex) {
+            log.error("No PBA number found for user {} org may not have PBa number assigned", userEmail);
+            return Optional.empty();
         }
     }
 }
