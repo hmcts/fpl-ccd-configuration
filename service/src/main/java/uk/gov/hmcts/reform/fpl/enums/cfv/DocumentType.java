@@ -381,6 +381,7 @@ public enum DocumentType {
             case SECONDARY_LOCAL_AUTHORITY:
                 return isConfidential ? LA : NON_CONFIDENTIAL;
             case HMCTS:
+            case ROBOTICS:
                 return isConfidential ? CTSC : NON_CONFIDENTIAL;
             case SOLICITOR:
             case BARRISTER:
