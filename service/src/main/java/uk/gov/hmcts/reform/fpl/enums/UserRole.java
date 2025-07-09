@@ -9,7 +9,6 @@ public enum UserRole {
     HMCTS_ADMIN("caseworker-publiclaw-courtadmin"),
     CAFCASS("caseworker-publiclaw-cafcass"),
     CAFCASS_SYSTEM_UPDATE("caseworker-publiclaw-cafcasssystemupdate"),
-    ROBOTICS("caseworker-publiclaw-rparobot"),
     GATEKEEPER("caseworker-publiclaw-gatekeeper"),
     JUDICIARY("caseworker-publiclaw-judiciary"),
     HMCTS_SUPERUSER("caseworker-publiclaw-superuser");

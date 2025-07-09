@@ -34,11 +34,5 @@
     "ID": "DocumentUploaderType",
     "ListElementCode": "CAFCASS",
     "ListElement": "CAFCASS"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "DocumentUploaderType",
-    "ListElementCode": "ROBOTICS",
-    "ListElement": "ROBOTICS"
   }
 ]
