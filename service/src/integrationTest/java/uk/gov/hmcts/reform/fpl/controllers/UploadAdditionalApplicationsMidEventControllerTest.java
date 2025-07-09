@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -33,13 +32,10 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
-import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,7 +70,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
     }
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         DynamicList pbaDynamicList = DynamicList.builder()
             .value(DynamicListElement.builder()
                     .code("PBA1234567")

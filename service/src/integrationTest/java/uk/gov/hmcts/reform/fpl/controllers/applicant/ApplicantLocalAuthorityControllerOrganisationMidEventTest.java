@@ -12,8 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WebMvcTest(ApplicantLocalAuthorityController.class)

@@ -112,7 +112,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     @Test
     void shouldCreateAdditionalApplicationsBundleWithC2DocumentWhenC2OrderIsSelectedAndSupplementsIncluded() {
-        PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
+        final PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
         PBAPayment temporaryPbaPayment = createPbaPayment();
         Element<Representative> representativeElement = element(
             Representative.builder().servingPreferences(EMAIL).email("test@test.com").build()
@@ -147,7 +147,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     @Test
     void shouldCreateAdditionalApplicationsBundleWithOtherApplicationsBundleWhenOtherOrderIsSelected() {
-        PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
+        final PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
         PBAPayment temporaryPbaPayment = createPbaPayment();
         Element<Representative> representative = element(
             Representative.builder().servingPreferences(EMAIL).email("rep@test.com").build()
@@ -191,7 +191,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     @Test
     void shouldCreateAdditionalApplicationsBundleWhenC2OrderAndOtherOrderAreSelected() {
-        PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
+        final PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
         PBAPayment temporaryPbaPayment = createPbaPayment();
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(
