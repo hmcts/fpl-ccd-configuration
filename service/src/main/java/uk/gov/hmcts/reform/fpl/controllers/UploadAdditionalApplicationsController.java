@@ -26,8 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
-import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
-import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -72,11 +70,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
     private final PaymentService paymentService;
-    private final PbaNumberService pbaNumberService;
     private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
     private final ApplicantsListGenerator applicantsListGenerator;
-    private final PeopleInCaseService peopleInCaseService;
     private final CoreCaseDataService coreCaseDataService;
     private final ManageDocumentService manageDocumentService;
 
@@ -144,14 +140,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         }
 
         return respond(caseDetails);
-    }
-
-    @PostMapping("/validate/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidateMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        return respond(caseDetails, pbaNumberService.validate(caseData.getTemporaryPbaPayment()));
     }
 
     @PostMapping("/about-to-submit")

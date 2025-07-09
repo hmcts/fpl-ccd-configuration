@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -29,6 +30,10 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -61,8 +66,22 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
     @MockBean
     private FeeService feeService;
 
+    @MockBean
+    private PbaService pbaService;
+
     UploadAdditionalApplicationsMidEventControllerTest() {
         super("upload-additional-applications");
+    }
+
+    @BeforeEach
+    void beforeEach(){
+        DynamicList pbaDynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                    .code("PBA1234567")
+                    .build())
+            .build();
+
+        given(pbaService.populatePbaDynamicList("")).willReturn(pbaDynamicList);
     }
 
     @Test
@@ -111,7 +130,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getData())
             .containsKeys("temporaryC2Document", "personSelector")
             .containsEntry("amountToPay", "1000")
-            .containsEntry("displayAmountToPay", YES.getValue());
+            .containsEntry("displayAmountToPay", YES.getValue())
+            .containsKey("temporaryPbaPayment");
     }
 
     @Test
@@ -137,7 +157,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getData())
             .containsEntry("temporaryC2Document", null)
             .containsEntry("amountToPay", "100")
-            .containsEntry("displayAmountToPay", YES.getValue());
+            .containsEntry("displayAmountToPay", YES.getValue())
+            .containsKey("temporaryPbaPayment");
     }
 
     @Test
@@ -153,36 +174,6 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
 
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
-    }
-
-    @Test
-    void shouldDisplayErrorForInvalidPbaNumber() {
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("temporaryPbaPayment", Map.of("pbaNumber", "12345")))
-            .build(), "validate");
-
-        assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
-        assertThat(response.getData().get("temporaryPbaPayment"))
-            .extracting("pbaNumber").isEqualTo("PBA12345");
-    }
-
-    @Test
-    void shouldNotDisplayErrorForValidPbaNumber() {
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("temporaryPbaPayment", Map.of("pbaNumber", "1234567")))
-            .build(), "validate");
-
-        assertThat(response.getErrors()).isEmpty();
-        assertThat(response.getData().get("temporaryPbaPayment")).extracting("pbaNumber")
-            .isEqualTo("PBA1234567");
-    }
-
-    @Test
-    void shouldNotValidatePbaNumberWhenPBAPaymentIsNull() {
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-            CaseDetails.builder().data(Collections.emptyMap()).build(), "validate");
-
-        assertThat(response.getErrors()).isEmpty();
     }
 
     @Nested

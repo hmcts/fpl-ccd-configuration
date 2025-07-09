@@ -8,7 +8,11 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,13 +24,19 @@ class ApplicantLocalAuthorityControllerOrganisationMidEventTest extends Abstract
         super("enter-local-authority");
     }
 
+    private final DynamicList pbaNumberDynamicList = DynamicList.builder()
+        .value(DynamicListElement.builder()
+            .code("1234567")
+            .build())
+        .build();
+
     @Test
     void shouldValidateEmailAndPbaNumberIfPresent() {
 
         final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
             .localAuthority(LocalAuthority.builder()
                 .email("test")
-                .pbaNumber("123")
+                .pbaNumberDynamicList(pbaNumberDynamicList)
                 .build())
             .build();
 
@@ -40,27 +50,5 @@ class ApplicantLocalAuthorityControllerOrganisationMidEventTest extends Abstract
             "Payment by account (PBA) number must include 7 numbers",
             "Enter an email address in the correct format, for example name@example.com"
         );
-    }
-
-    @Test
-    void shouldNormaliseValidPbaNumber() {
-
-        final String pbaNumber = "1234567";
-        final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
-            .localAuthority(LocalAuthority.builder()
-                .pbaNumber(pbaNumber)
-                .build())
-            .build();
-
-        final CaseData caseData = CaseData.builder()
-            .localAuthorityEventData(eventData)
-            .build();
-
-        final CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "organisation"));
-
-        final String expectedPbaNumber = "PBA" + pbaNumber;
-
-        assertThat(updatedCaseData.getLocalAuthorityEventData().getLocalAuthority().getPbaNumber())
-            .isEqualTo(expectedPbaNumber);
     }
 }
