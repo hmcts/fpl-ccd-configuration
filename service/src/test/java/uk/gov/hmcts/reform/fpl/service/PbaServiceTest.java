@@ -102,7 +102,8 @@ class PbaServiceTest {
     void shouldRethrowExceptionOtherThanNotFound() {
         Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
 
-        when(pbaRefDataClient.retrievePbaNumbers(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_EMAIL)).thenThrow(expectedException);
+        when(pbaRefDataClient.retrievePbaNumbers(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_EMAIL))
+            .thenThrow(expectedException);
 
         Exception actualException = assertThrows(Exception.class, pbaService::retrievePbaNumbers);
 
