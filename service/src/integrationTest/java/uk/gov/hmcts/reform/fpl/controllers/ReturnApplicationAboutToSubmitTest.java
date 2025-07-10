@@ -50,6 +50,8 @@ class ReturnApplicationAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getC110A().getSubmittedForm()).isNull();
         assertThat(extractedCaseData.getReturnApplication()).isEqualTo(expectedReturnApplication);
+        assertThat(extractedCaseData.getDateSubmitted()).isNull();
+        assertThat(extractedCaseData.getLastSubmittedDate()).isEqualTo(LocalDate.of(2050, 5, 19));
     }
 
     @Test
@@ -80,6 +82,8 @@ class ReturnApplicationAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getC110A().getSubmittedForm()).isNull();
         assertThat(extractedCaseData.getReturnApplication()).isEqualTo(expectedReturnApplication);
+        assertThat(extractedCaseData.getDateSubmitted()).isNull();
+        assertThat(extractedCaseData.getLastSubmittedDate()).isEqualTo(LocalDate.of(2050, 5, 19));
     }
 
     private String getFormattedDate() {

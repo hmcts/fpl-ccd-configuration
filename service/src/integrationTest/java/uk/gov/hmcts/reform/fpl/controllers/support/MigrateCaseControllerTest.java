@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -79,5 +80,76 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             ;
         }
 
+    }
+
+    @Nested
+    class Dfpl2677 {
+        private static final LocalDate NOW = LocalDate.now();
+
+        @Test
+        void shouldMigrateCase() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .dateSubmitted(NOW)
+                .build();
+
+            CaseData after = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData,
+                "DFPL-2677")));
+
+            assertThat(after.getDateSubmitted()).isNull();
+            assertThat(after.getLastSubmittedDate()).isEqualTo(NOW);
+        }
+
+        @Test
+        void shouldNotMigrateCaseIfInvalid() {
+            assertThatThrownBy(() ->
+                postAboutToSubmitEvent(buildCaseDetails(CaseData.builder()
+                    .id(1L)
+                    .build(),
+                "DFPL-2677")))
+                .hasMessageContaining("[Case 1], dateSubmitted is null or lastSubmittedDate is not null");
+
+            assertThatThrownBy(() ->
+                postAboutToSubmitEvent(buildCaseDetails(CaseData.builder()
+                        .id(1L)
+                        .dateSubmitted(NOW)
+                        .lastSubmittedDate(NOW)
+                        .build(),
+                    "DFPL-2677")))
+                .hasMessageContaining("[Case 1], dateSubmitted is null or lastSubmittedDate is not null");
+        }
+
+        @Test
+        void shouldRollbackCase() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .lastSubmittedDate(NOW)
+                .build();
+
+            CaseData after = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData,
+                "DFPL-2677-rollback")));
+
+            assertThat(after.getLastSubmittedDate()).isNull();
+            assertThat(after.getDateSubmitted()).isEqualTo(NOW);
+        }
+
+        @Test
+        void shouldNotRollbackCaseIfInvalid() {
+            assertThatThrownBy(() ->
+                postAboutToSubmitEvent(buildCaseDetails(CaseData.builder()
+                        .id(1L)
+                        .build(),
+                    "DFPL-2677-rollback")))
+                .hasMessageContaining("[Case 1], lastSubmittedDate is null or dateSubmitted is not null");
+
+            assertThatThrownBy(() ->
+                postAboutToSubmitEvent(buildCaseDetails(CaseData.builder()
+                        .id(1L)
+                        .dateSubmitted(NOW)
+                        .lastSubmittedDate(NOW)
+                        .build(),
+                    "DFPL-2677-rollback")))
+                .hasMessageContaining("[Case 1], lastSubmittedDate is null or dateSubmitted is not null");
+        }
     }
 }
