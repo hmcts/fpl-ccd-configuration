@@ -78,11 +78,13 @@ test.describe('Smoke Test @xbrowser', () => {
         await startApplication.tabNavigation('View application');
 
         // Child details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
-        await startApplication.childDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+         await startApplication.tabNavigation('Start application');
+         await startApplication.childDetails();
+         await childDetails.addChildDetailsForC110AApplication();
+         await startApplication.childDetailsHasBeenUpdated();
+         await startApplication.tabNavigation('Confidential Information');
+         await childDetails.assertChildConfidentialInformation();
+         await startApplication.tabNavigation('View application');
 
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
@@ -175,7 +177,8 @@ test.describe('Smoke Test @xbrowser', () => {
         // Child details
         await startApplication.tabNavigation('Start application');
         await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
+        await childDetails.addChildDetailsForC110AApplication();
+        await startApplication.tabNavigation('Start application');
         await startApplication.childDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
@@ -192,7 +195,7 @@ test.describe('Smoke Test @xbrowser', () => {
         await startApplication.tabNavigation('View application');
 
 
-        // Submit the case
+       // Submit the case
         await startApplication.tabNavigation('Start application');
         await startApplication.submitCase();
         await submitCase.submitCaseSmokeTest('£263.00');
