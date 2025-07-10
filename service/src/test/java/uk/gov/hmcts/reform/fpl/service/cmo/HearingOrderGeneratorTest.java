@@ -106,6 +106,7 @@ class HearingOrderGeneratorTest {
             element(ORDER_ID, hearingOrder), changesRequested);
 
         assertThat(actual).isEqualTo(element(ORDER_ID, hearingOrder.toBuilder()
-            .status(CMOStatus.RETURNED).requestedChanges(changesRequested).build()));
+            .status(CMOStatus.RETURNED).requestedChanges(changesRequested)
+            .refusedOrder(hearingOrder.getOrder()).order(null).build()));
     }
 }
