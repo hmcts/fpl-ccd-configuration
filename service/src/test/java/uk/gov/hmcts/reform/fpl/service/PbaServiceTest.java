@@ -1,51 +1,31 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
-import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.client.PbaApi;
-import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
-import uk.gov.hmcts.reform.rd.model.OrganisationUser;
-import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
 import uk.gov.hmcts.reform.rd.model.PbaOrganisationResponse;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
-import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_GATEWAY_TIMEOUT;
-import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
-import static uk.gov.hmcts.reform.rd.model.Status.ACTIVE;
 
 @ExtendWith(MockitoExtension.class)
 class PbaServiceTest {
@@ -65,18 +45,9 @@ class PbaServiceTest {
     @Mock
     private DynamicListService dynamicListService;
 
-    @Mock(lenient = true)
-    private RequestData requestData;
-
-    @Spy
-    private final LocalAuthorityUserLookupConfiguration lookupSpy = new LocalAuthorityUserLookupConfiguration(
-        "SA=>1|2|3"
-    );
-
     @InjectMocks
     private PbaService pbaService;
 
-    private static final String AUTH_TOKEN = "Bearer authorisedBearer";
     protected static final String USER_AUTH_TOKEN = "Bearer token";
     private static final String SERVICE_AUTH_TOKEN = "Bearer authorised service";
     private static final String USER_EMAIL = "test@test.com";
@@ -97,12 +68,12 @@ class PbaServiceTest {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(USER_AUTH_TOKEN);
         when(userService.getUserEmail()).thenReturn(USER_EMAIL);
-        when(dynamicListService.asDynamicList(eq(PAYMENT_ACCOUNTS), eq(""), any(), any()))
-            .thenReturn(PBA_NUMBER_DYNAMIC_LIST);
     }
 
     @Test
     void shouldFindPbaNumbersIfUserRegisteredToOrganisation() {
+        when(dynamicListService.asDynamicList(eq(PAYMENT_ACCOUNTS), eq(""), any(), any()))
+            .thenReturn(PBA_NUMBER_DYNAMIC_LIST);
         when(pbaRefDataClient.retrievePbaNumbers(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_EMAIL))
             .thenReturn(POPULATED_ORGANISATION_RESPONSE);
 
@@ -129,15 +100,13 @@ class PbaServiceTest {
 
     @Test
     void shouldRethrowExceptionOtherThanNotFound() {
-        String email = "test@test.com";
+        Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
 
-        when(pbaRefDataClient.retrievePbaNumbers(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, email))
-            .thenThrow(feignException(SC_INTERNAL_SERVER_ERROR, email));
+        when(pbaRefDataClient.retrievePbaNumbers(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_EMAIL)).thenThrow(expectedException);
 
-        FeignException.FeignClientException actualException = assertThrows(FeignException.FeignClientException.class,
-            () -> pbaService.retrievePbaNumbers());
+        Exception actualException = assertThrows(Exception.class, pbaService::retrievePbaNumbers);
 
-        assertThat(actualException).hasMessageContaining("Error retrieving PBA numbers from PBA Ref Data for user test@test.com");
+        assertThat(actualException).isEqualTo(expectedException);
     }
 
     private static PbaOrganisationResponse buildOrganisation() {
