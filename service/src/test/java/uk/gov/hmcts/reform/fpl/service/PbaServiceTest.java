@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.rd.client.PbaApi;
+import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.PbaOrganisationResponse;
 
@@ -37,7 +37,7 @@ class PbaServiceTest {
     private UserService userService;
 
     @Mock
-    private PbaApi pbaRefDataClient;
+    private OrganisationApi pbaRefDataClient;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;

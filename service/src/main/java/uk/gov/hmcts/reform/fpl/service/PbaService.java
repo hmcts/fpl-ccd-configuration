@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.rd.client.PbaApi;
+import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.PbaOrganisationResponse;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class PbaService {
 
     private final UserService userService;
 
-    private final PbaApi pbaRefDataClient;
+    private final OrganisationApi pbaRefDataClient;
 
     private final AuthTokenGenerator authTokenGenerator;
 

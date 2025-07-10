@@ -93,10 +93,6 @@ payment:
   api:
     url: ${PAYMENT_API_URL:http://localhost:8765}
 
-pba:
-  api:
-      url: ${RD_PROFESSIONAL_API_URL:http://localhost:8765}
-
 manage-case:
   ui:
     base:

@@ -404,7 +404,3 @@ rd_staff:
 rd_judicial:
   api:
     enabled: ${RD_JUDICIAL_API_ENABLED:false}
-
-pba:
-  api:
-    url: ${RD_PROFESSIONAL_API_URL:http://localhost:8765}
