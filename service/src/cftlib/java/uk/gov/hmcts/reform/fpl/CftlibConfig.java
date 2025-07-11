@@ -19,6 +19,7 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-publiclaw-judiciary",
             "caseworker-publiclaw-bulkscan",
             "caseworker-publiclaw-bulkscansystemupdate",
+            "caseworker-publiclaw-rparobot",
             "caseworker-publiclaw-solicitor",
             "caseworker-publiclaw-superuser",
             "caseworker-publiclaw-magistrate",
