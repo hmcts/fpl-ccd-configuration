@@ -46,8 +46,8 @@ export class Placement extends BasePage {
     await this.page.getByRole('textbox', { name: 'Day' }).fill('10');
     await this.page.getByRole('textbox', { name: 'Month' }).fill('10');
     await this.page.getByRole('textbox', { name: 'Year' }).fill('2024');
-    await this.page.getByRole('spinbutton', { name: 'Hour', exact: true }).fill('10');
-    await this.page.getByRole('spinbutton', { name: 'Hearing duration (hours)' }).fill('1');
+    await this.page.getByRole('textbox', { name: 'Hour', exact: true }).fill('10');
+    await this.page.getByRole('textbox', { name: 'Hearing duration (hours)' }).fill('1');
     await this.page.getByLabel('Hearing venue').selectOption('2: -1');
     await this.page.getByRole('button', { name: 'Continue' }).click();
     await this.page.getByRole('button', { name: 'Continue' }).click();
