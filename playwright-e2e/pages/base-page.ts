@@ -128,9 +128,9 @@ export class BasePage {
     }
 
     async fillTimeInputs(page: Page, hour = '10', min = '00', sec = '00') {
-      await page.getByRole('spinbutton', {name: 'Hour'}).fill(hour);
+      await page.getByRole('textbox', {name: 'Hour'}).fill(hour);
       await page.locator('#hearingStartDate-minute').fill(min);
-      await page.getByRole('spinbutton', {name: 'Second'}).fill(sec);
+      await page.getByRole('textbox', {name: 'Second'}).fill(sec);
     }
     async enterDate(date: Date){
       await this.dateOfHearing.getByText('Day').fill(date.getDay().toString());
