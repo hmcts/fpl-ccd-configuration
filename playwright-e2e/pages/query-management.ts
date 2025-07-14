@@ -59,6 +59,23 @@ export class QueryManagement extends BasePage {
         // await expect(page.getByRole('caption').getByText('Query details')).toBeVisible();
         await this.respondDetail.fill('Respond sent to the query by CTSC user');
         await this.addDocument.click();
+
+        await page.getByRole('textbox', { name: 'Response detail' }).click();
+        await page.getByRole('textbox', { name: 'Response detail' }).fill('tytyty');
+        // await expect(page.getByRole('checkbox', { name: 'I want to close this query' })).toBeVisible();
+        await page.getByRole('checkbox', { name: 'I want to close this query' }).check();
+        // await expect(page.getByText('Closing the query means the')).toBeVisible();
+        // await expect(page.locator('ccd-close-query')).toContainText('Closing the query means the parties can no longer send message in this thread.');
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await page.getByRole('button', { name: 'Submit' }).click();
+        await page.getByRole('link', { name: 'return to tasks' }).click();
+        await page.locator('button').nth(3).click();
+        await page.locator('button').nth(3).click();
+        await page.locator('button').nth(3).click();
+        await page.getByText('Queries').click();
+        // await expect(page.getByRole('cell', { name: 'Closed' })).toBeVisible();
+
+
         await expect.soft(this.page.getByText('Only attach documents related')).toBeVisible();
         await this.documentInput.setInputFiles(config.testWordFile);
         await this.clickContinue();

@@ -20,7 +20,8 @@ test.describe('Query management', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('LA raise query',
+    test.only
+    ('LA raise query',
         async ({
                    page, signInPage, queryManagement, caseFileView
 
