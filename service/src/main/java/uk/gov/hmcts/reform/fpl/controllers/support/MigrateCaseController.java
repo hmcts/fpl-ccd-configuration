@@ -41,7 +41,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
         "DFPL-2360", this::run2360,
-        "DFPL-2572", this::run2572,
+        "DFPL-2572", this::run2772,
         "DFPL-2487", this::run2487,
         "DFPL-2740", this::run2740,
         "DFPL-2744", this::run2744,
@@ -75,8 +75,14 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2572(CaseDetails caseDetails) {
-        //Required to run migration for TTL
+    private void run2772(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2772";
+        final long expectedCaseId = 1737718225023162L;
+        final UUID caseNoteId = UUID.fromString("90542dbb-75d4-4694-9bee-39884bfcb173");
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeCaseNote(caseData, migrationId, caseNoteId));
     }
 
     private void run2756(CaseDetails caseDetails) {
