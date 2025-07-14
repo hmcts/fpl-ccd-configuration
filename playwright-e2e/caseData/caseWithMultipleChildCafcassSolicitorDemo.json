@@ -40,6 +40,48 @@
       "hearingUrgencyType": "SAME_DAY",
       "respondentsAware": "Yes"
     },
+    "latestQueryID": "71062591-4e63-4530-bfcf-1d88a2fbf783",
+    "caseMessages": [
+      {
+        "id": "41b064a3-2cef-4e67-a4c9-f769d434e9d2",
+        "value": {
+          "attachments": [],
+          "createdBy": "174752c1-b79d-4ad8-b373-1c777a7c5b6d",
+          "subject": "query by LA",
+          "isHearingRelated": "No",
+          "hearingDate": null,
+          "name": "Local Authority 1",
+          "id": "a1887a4c-9905-47a5-b459-9536c2da3ecd",
+          "body": "query raised by the local authority ",
+          "createdOn": "2025-07-01T13:35:55.871Z"
+        }
+      },
+      {
+        "id": "51d40e00-e282-44de-99c1-ae01fe32b9c9",
+        "value": {
+          "attachments": [
+            {
+              "id": "fffb1528-e299-40e8-ad80-4fae090cca54",
+              "value": {
+                "upload_timestamp": "2025-07-02T08:24:33.359355255",
+                "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+                "document_filename": "QueryDoc.pdf",
+                "document_url": "${TEST_DOCUMENT_URL}"
+              }
+            }
+          ],
+          "createdBy": "d6ad2ea6-891b-4fef-beaa-6b41a7c024ca",
+          "subject": "query by LA",
+          "isHearingRelated": "No",
+          "hearingDate": null,
+          "name": "Brad Pitt",
+          "id": "e61e091c-1e2f-42f4-a5c6-23327a95dc71",
+          "body": "response give",
+          "createdOn": "2025-07-02T08:24:32.796Z",
+          "parentId": "a1887a4c-9905-47a5-b459-9536c2da3ecd"
+        }
+      }
+    ],
     "children1": [
       {
         "id": "f2d78d5b-cbab-414c-9fb4-c85dabf90dd8",

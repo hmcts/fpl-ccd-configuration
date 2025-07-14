@@ -89,13 +89,14 @@ test.describe('Query management', () => {
             await queryManagement.waitForTask('Respond to a Query');
             await queryManagement.assignToMe();
             await page.pause();
-            await queryManagement.respondToQuery();
+            await queryManagement.respondToQuery(false);
             await queryManagement.tabNavigation('Queries');
 
             await expect(page.getByText('Responded')).toBeVisible();
             await queryManagement.page.getByRole('link', {name: 'Birth certificate format'}).click();
             await expect(page.getByText('Response', {exact: true})).toBeVisible();
-            await expect(page.getByText('Respond sent to the query by CTSC user')).toBeVisible();
+            await expect(page.getByText('Answering to the query raised')).toBeVisible();
+            await expect(page.getByRole('cell', { name: 'Closed' })).toBeVisible();
 
         });
 })

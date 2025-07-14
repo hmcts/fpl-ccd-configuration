@@ -53,27 +53,20 @@ export class QueryManagement extends BasePage {
         await this.page.getByText('Assign to me').click();
     }
 
-    async respondToQuery() {
+    async respondToQuery(closeTheQuery: boolean = true) {
 
         await this.page.getByRole('link', {name: 'Respond to a query'}).click();
         // await expect(page.getByRole('caption').getByText('Query details')).toBeVisible();
-        await this.respondDetail.fill('Respond sent to the query by CTSC user');
+        await this.respondDetail.fill('Answering to the query raised');
         await this.addDocument.click();
+        await expect.soft(this.page.getByRole('checkbox', { name: 'I want to close this query' })).toBeVisible();
 
-        await page.getByRole('textbox', { name: 'Response detail' }).click();
-        await page.getByRole('textbox', { name: 'Response detail' }).fill('tytyty');
-        // await expect(page.getByRole('checkbox', { name: 'I want to close this query' })).toBeVisible();
-        await page.getByRole('checkbox', { name: 'I want to close this query' }).check();
-        // await expect(page.getByText('Closing the query means the')).toBeVisible();
-        // await expect(page.locator('ccd-close-query')).toContainText('Closing the query means the parties can no longer send message in this thread.');
-        await page.getByRole('button', { name: 'Continue' }).click();
-        await page.getByRole('button', { name: 'Submit' }).click();
-        await page.getByRole('link', { name: 'return to tasks' }).click();
-        await page.locator('button').nth(3).click();
-        await page.locator('button').nth(3).click();
-        await page.locator('button').nth(3).click();
-        await page.getByText('Queries').click();
-        // await expect(page.getByRole('cell', { name: 'Closed' })).toBeVisible();
+if (closeTheQuery) {
+    //
+    await this.page.getByRole('checkbox', {name: 'I want to close this query'}).check();
+}
+         await expect.soft(this.page.getByText('Closing the query means the parties can no longer send message in this thread.')).toBeVisible();
+
 
 
         await expect.soft(this.page.getByText('Only attach documents related')).toBeVisible();
