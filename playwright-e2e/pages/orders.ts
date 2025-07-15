@@ -404,7 +404,7 @@ export class Orders extends BasePage {
         await this.whoAppliedForOrder.selectOption('Joe Bloggs');
         await this.uponHearingParty1.selectOption('Swansea City Council, Applicant');
         await this.uponHearingParty2.selectOption('Joe Bloggs');
-        await this.personApplying.selectOption('Joe Bloggs');
+        await this.personApplying.selectOption('Joe Bloggs, Respondent 1');
         await this.action.selectOption('is');
     }
 
@@ -422,8 +422,8 @@ export class Orders extends BasePage {
         await this.finalOrder.getByLabel('Yes').check();
         await this.whoAppliedForOrder.selectOption('Swansea City Council, Applicant');
         await this.uponHearingParty1.selectOption('Swansea City Council, Applicant');
-        await this.uponHearingParty2.selectOption('Joe Bloggs');
-        await this.personApplying.selectOption('Joe Bloggs');
+        await this.uponHearingParty2.selectOption('Joe Bloggs, Respondent 1');
+        await this.personApplying.selectOption('Joe Bloggs, Respondent 1');
         await this.action.selectOption('is');
     }
 };
