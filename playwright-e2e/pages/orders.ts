@@ -402,10 +402,10 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.finalOrder.getByRole('radio', { name: finalOrderYesNo }).check();
         await this.whoAppliedForOrder.selectOption('Joe Bloggs');
-        await this.uponHearingParty1.selectOption('1: Swansea City Council');
-        await this.uponHearingParty2.selectOption('2: Joe Bloggs');
-        await this.personApplying.selectOption('1: Joe Bloggs');
-        await this.action.selectOption('1: IS');
+        await this.uponHearingParty1.selectOption('Swansea City Council, Applicant');
+        await this.uponHearingParty2.selectOption('Joe Bloggs');
+        await this.personApplying.selectOption('Joe Bloggs');
+        await this.action.selectOption('is');
     }
 
     async judgeUploadsDeclarationOfPercentageApplicationOrder(option: string) {
@@ -420,10 +420,10 @@ export class Orders extends BasePage {
         await this.childAccomadation.selectOption('John Black');
         await this.clickContinue();
         await this.finalOrder.getByLabel('Yes').check();
-        await this.whoAppliedForOrder.selectOption('Swansea City Council');
-        await this.uponHearingParty1.selectOption('1: Swansea City Council');
-        await this.uponHearingParty2.selectOption('2: Joe Bloggs');
-        await this.personApplying.selectOption('1: Joe Bloggs');
-        await this.action.selectOption('1: IS');
+        await this.whoAppliedForOrder.selectOption('Swansea City Council, Applicant');
+        await this.uponHearingParty1.selectOption('Swansea City Council, Applicant');
+        await this.uponHearingParty2.selectOption('Joe Bloggs');
+        await this.personApplying.selectOption('Joe Bloggs');
+        await this.action.selectOption('is');
     }
 };
