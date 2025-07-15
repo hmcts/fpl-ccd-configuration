@@ -7,6 +7,63 @@
         "CARE_ORDER"
       ]
     },
+    "latestQueryID": "bddae776-d76f-4b8c-ad4b-067a520a05a7",
+    "qmCaseQueriesCollectionLASol": {
+      "roleOnCase": "",
+      "partyName": "Local Authority 1",
+      "caseMessages": [
+        {
+          "id": "66ac745b-aabd-4b72-b714-281136d8acba",
+          "value": {
+            "attachments": [
+              {
+                "id": "9922da50-90e3-49e1-bfb6-e662be1f5675",
+                "value": {
+                  "upload_timestamp": "2025-07-14T16:24:14.228764179",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+                  "document_filename": "Query.pdf",
+                  "document_url": "${TEST_DOCUMENT_URL}"
+                }
+              }
+            ],
+            "createdBy": "174752c1-b79d-4ad8-b373-1c777a7c5b6d",
+            "subject": "query by LA",
+            "hearingDate": "2026-03-12",
+            "isHearingRelated": "Yes",
+            "name": "Local Authority 1",
+            "id": "bddae776-d76f-4b8c-ad4b-067a520a05a7",
+            "body": "Does the hearing center has accessibility facilicty",
+            "createdOn": "2025-07-14T16:24:12.723Z"
+          }
+        },
+        {
+          "id": "815c0f30-bf57-4a20-beb4-7b48f1c7d05b",
+          "value": {
+            "attachments": [
+              {
+                "id": "9228cb0b-ceec-4314-a1fa-e60b5828e09a",
+                "value": {
+                  "upload_timestamp": "2025-07-14T16:27:46.391211135",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+                  "document_filename": "resppnse.pdf",
+                  "document_url": "${TEST_DOCUMENT_URL}"
+                }
+              }
+            ],
+            "isClosed": "No",
+            "createdBy": "d6ad2ea6-891b-4fef-beaa-6b41a7c024ca",
+            "subject": "query by LA",
+            "hearingDate": "2026-03-12",
+            "isHearingRelated": "Yes",
+            "name": "Brad Pitt",
+            "id": "ad7053ee-5b1f-47ac-a84a-29d6264f5353",
+            "body": "Yes, the venue of the hearing on 12/5/2026, the center has access to wheelchairs chair access",
+            "createdOn": "2025-07-14T16:27:45.227Z",
+            "parentId": "bddae776-d76f-4b8c-ad4b-067a520a05a7"
+          }
+        }
+      ]
+    },
     "changeOfRepresentatives": [
       {
         "id": "525aeb0d-79d8-4b60-808a-14ab4f92a421",
@@ -17,7 +74,7 @@
             "firstName": "ChilKenny",
             "lastName": "Solicitor",
             "organisation": {
-              "OrganisationID": "M1YPZ85",
+              "OrganisationID": "D25VR7V",
               "OrganisationName": "Private solicitors"
             },
             "email": "fr_applicant_sol@sharklasers.com"
@@ -53,7 +110,7 @@
             },
             "colleaguesToBeNotified": [],
             "organisation": {
-              "OrganisationID": "M1YPZ85",
+              "OrganisationID": "D25VR7V",
               "OrganisationName": "Private solicitors"
             },
             "unregisteredOrganisation": {},
