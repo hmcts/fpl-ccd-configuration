@@ -475,8 +475,7 @@ test.describe('manage orders', () => {
         await orders.selectOrder('Declaration of parentage (C63A)');
         await orders.clickContinue()
 
-        await orders.ctscUploadsDeclarationOfPercentageOrderApproved('Yes');
-        await orders.ctscUploadsDeclarationOfPercentageApplicationOrder('No');
+        await orders.ctscUploadsDeclarationOfPercentageOrderApproved('No');
         await orders.clickContinue();
 
         await orders.clickContinue();
@@ -500,9 +499,7 @@ test.describe('manage orders', () => {
         await orders.selectOrder('Declaration of parentage (C63A)');
         await orders.clickContinue()
 
-        await orders.judgeUploadsDeclarationOfPercentageOrderApproved('Yes');
         await orders.judgeUploadsDeclarationOfPercentageApplicationOrder('No');
-
         await orders.clickContinue();
 
         await orders.clickContinue();

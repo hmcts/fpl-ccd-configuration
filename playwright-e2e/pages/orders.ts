@@ -392,39 +392,35 @@ export class Orders extends BasePage {
         await this.endOfProceedings.check();
     }
 
-    async ctscUploadsDeclarationOfPercentageOrderApproved(option: string) {
-        await this.orderApproved.getByLabel(option).check();
-        await this.approvedHearing.selectOption('1: f2be08a2-4daf-4aa3-b7ba-95843b4bcb88');
-        await this.orderApplication.getByLabel(option).check();
-    }
-
-    async ctscUploadsDeclarationOfPercentageApplicationOrder(option: string) {
+    async ctscUploadsDeclarationOfPercentageOrderApproved(finalOrderYesNo: string) {
+        await this.orderApproved.getByLabel('Yes').check();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.orderApplication.getByLabel('Yes').check();
         await this.clickContinue();
         await this.clickContinue();// checkbox not clicking had to work around it
         await this.childAccomadation.selectOption('Timothy Jones');
         await this.clickContinue();
-        await this.finalOrder.getByRole('radio', { name: option }).check();
-        await this.whoAppliedForOrder.selectOption('1: 048aa1fd-e3a5-4651-99b0-53776bd03773');
+        await this.finalOrder.getByRole('radio', { name: finalOrderYesNo }).check();
+        await this.whoAppliedForOrder.selectOption('Joe Bloggs');
         await this.uponHearingParty1.selectOption('1: Swansea City Council');
         await this.uponHearingParty2.selectOption('2: Joe Bloggs');
         await this.personApplying.selectOption('1: Joe Bloggs');
         await this.action.selectOption('1: IS');
     }
 
-    async judgeUploadsDeclarationOfPercentageOrderApproved(option: string) {
-        await this.orderApproved.getByLabel(option).check();
-        await this.approvedHearing.selectOption('1: f2be08a2-4daf-4aa3-b7ba-95843b4bcb88');
-        await this.orderApplication.getByLabel(option).check();
-    }
-
     async judgeUploadsDeclarationOfPercentageApplicationOrder(option: string) {
-        await this.applications.selectOption('1: 2c3d7329-8206-44a1-b1b4-7502ab253b0f');
+        await this.orderApproved.getByLabel('No').check();
+        await this.orderApplication.getByLabel('No').check();
         await this.clickContinue();
-        await this.clickContinue();// checkbox not clicking had to work around it
-        await this.childAccomadation.selectOption('Timothy Jones');
+        await this.issuingJudge.getByLabel('No').check();
+        await this.judgemagistrateTitle.getByLabel('Mr Justice').click();
         await this.clickContinue();
-        await this.finalOrder.getByRole('radio', { name: option }).check();
-        await this.whoAppliedForOrder.selectOption('1: 048aa1fd-e3a5-4651-99b0-53776bd03773');
+        await this.issuingJudge.getByRole('radio', { name: 'No' }).check();
+        await this.clickContinue();
+        await this.childAccomadation.selectOption('John Black');
+        await this.clickContinue();
+        await this.finalOrder.getByLabel('Yes').check();
+        await this.whoAppliedForOrder.selectOption('Swansea City Council');
         await this.uponHearingParty1.selectOption('1: Swansea City Council');
         await this.uponHearingParty2.selectOption('2: Joe Bloggs');
         await this.personApplying.selectOption('1: Joe Bloggs');
