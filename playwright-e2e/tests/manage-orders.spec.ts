@@ -507,7 +507,7 @@ test.describe('manage orders', () => {
         await orders.selectOrder('Supervision order (C35A)');
         await orders.clickContinue();
 
-        await orders.uploadsSupervisionOrder('No');
+        await orders.uploadsSupervisionOrder('Yes');
         await orders.clickContinue();
 
         await orders.checkYourAnsAndSubmit();
