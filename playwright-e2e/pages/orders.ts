@@ -66,6 +66,7 @@ export class Orders extends BasePage {
     readonly addExclusionDetails: Locator;
     readonly endOfProceedings: Locator;
     readonly endDate: Locator;
+    readonly applications: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -132,6 +133,7 @@ export class Orders extends BasePage {
         this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
         this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
         this.endDate = page.getByRole('group', { name: 'End Date' });
+        this.applications = page.getByLabel('Applications');
 
     }
 
@@ -381,5 +383,22 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.radioButton.check();
         await this.endOfProceedings.check();
+    }
+
+    async uploadsSupervisionOrder(_supervisionOrder: string) {
+        await this.orderApproved.getByLabel('Yes').click();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.applicationOrder.getByLabel('Yes').check();
+        await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.childInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderFurtherDirectionDetails.fill('test');
+        await this.clickContinue();
+        await this.orderEndsOn.getByLabel('In a set number of months').check();
+        await this.orderLength.fill('2');
+        await this.clickContinue();
+        await this.closeOrder.getByLabel('No').check();
     }
 };

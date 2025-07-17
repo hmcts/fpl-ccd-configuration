@@ -418,7 +418,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('c42_family_assistance_order.pdf', { exact: true })).toBeVisible();
 
-    })
+    });
 
     test('CTSC uploads Interim care order (C33)', async ({ page, signInPage, orders }) => {
         caseName = 'Interim care order (C33) ' + dateTime.slice(0, 10);
@@ -468,5 +468,51 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
+    })
+
+    test('CTSC uploads Supervision order (C35A)', async ({ page, signInPage, orders }) => {
+        caseName = 'Supervision order (C35A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Supervision order (C35A)');
+        await orders.clickContinue();
+
+        await orders.uploadsSupervisionOrder('Yes');
+        await orders.clickContinue();
+
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c35a_supervision_order.pdf', exact: true })).toBeVisible();
+    })
+
+    test('Judge uploads Supervision order (C35A)', async ({ page, signInPage, orders }) => {
+        caseName = 'Supervision order (C35A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Supervision order (C35A)');
+        await orders.clickContinue();
+
+        await orders.uploadsSupervisionOrder('No');
+        await orders.clickContinue();
+
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c35a_supervision_order.pdf', exact: true })).toBeVisible();
     })
 })
