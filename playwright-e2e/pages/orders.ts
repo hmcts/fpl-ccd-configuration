@@ -66,6 +66,12 @@ export class Orders extends BasePage {
     readonly addExclusionDetails: Locator;
     readonly endOfProceedings: Locator;
     readonly endDate: Locator;
+    readonly whoAppliedForOrder: Locator;
+    readonly uponHearingParty1: Locator;
+    readonly uponHearingParty2: Locator;
+    readonly personApplying: Locator;
+    readonly action: Locator;
+    readonly applications: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -132,6 +138,12 @@ export class Orders extends BasePage {
         this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
         this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
         this.endDate = page.getByRole('group', { name: 'End Date' });
+        this.whoAppliedForOrder = page.getByLabel('Who applied for the order on');
+        this.uponHearingParty1 = page.getByLabel('Upon hearing party 1 (');
+        this.uponHearingParty2 = page.getByLabel('Upon hearing party 2 (');
+        this.personApplying = page.getByLabel('Person applying for');
+        this.action = page.getByLabel('Action');
+        this.applications = page.getByLabel('Applications');
 
     }
 
@@ -245,6 +257,7 @@ export class Orders extends BasePage {
         await this.finalOrder.getByLabel('No').check();
     }
 
+
     async addC39childAssessment() {
         await expect(this.page.getByText('Child assessment order (C39)')).toBeVisible();
         await this.finalOrder.getByLabel('Yes').check();
@@ -317,15 +330,12 @@ export class Orders extends BasePage {
         await this.permissionReport.getByLabel('Day').fill('10');
         await this.permissionReport.getByLabel('Month').fill('08');
         await this.permissionReport.getByLabel('Year').fill('2020');
-
     }
 
     async ctscFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
-        await this.page.pause();
         await this.childInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
@@ -343,7 +353,6 @@ export class Orders extends BasePage {
     async judgeUploadsFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
         await this.childInvolved.getByLabel('Yes').check();
         await this.clickContinue();
@@ -381,5 +390,40 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.radioButton.check();
         await this.endOfProceedings.check();
+    }
+
+    async ctscUploadsDeclarationOfPercentageOrderApproved(finalOrderYesNo: string) {
+        await this.orderApproved.getByLabel('Yes').check();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.orderApplication.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.clickContinue();// checkbox not clicking had to work around it
+        await this.childAccomadation.selectOption('Timothy Jones');
+        await this.clickContinue();
+        await this.finalOrder.getByRole('radio', { name: finalOrderYesNo }).check();
+        await this.whoAppliedForOrder.selectOption('Joe Bloggs');
+        await this.uponHearingParty1.selectOption('Swansea City Council, Applicant');
+        await this.uponHearingParty2.selectOption('Joe Bloggs, Respondent 1');
+        await this.personApplying.selectOption('Joe Bloggs, Respondent 1');
+        await this.action.selectOption('is');
+    }
+
+    async judgeUploadsDeclarationOfPercentageApplicationOrder(option: string) {
+        await this.orderApproved.getByLabel('No').check();
+        await this.orderApplication.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('No').check();
+        await this.judgemagistrateTitle.getByLabel('Mr Justice').click();
+        await this.clickContinue();
+        await this.issuingJudge.getByRole('radio', { name: 'No' }).check();
+        await this.clickContinue();
+        await this.childAccomadation.selectOption('John Black');
+        await this.clickContinue();
+        await this.finalOrder.getByLabel('Yes').check();
+        await this.whoAppliedForOrder.selectOption('Joe Bloggs');
+        await this.uponHearingParty1.selectOption('Joe Bloggs, Respondent 1');
+        await this.uponHearingParty2.selectOption('Swansea City Council, Applicant');
+        await this.personApplying.selectOption('Joe Bloggs, Respondent 1');
+        await this.action.selectOption('is');
     }
 };
