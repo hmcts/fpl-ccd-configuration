@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -118,10 +120,14 @@ public class SendDocumentService {
 
     private boolean isRespondentAddressKnown(Element<Respondent> respondent, CaseData caseData) {
         if (respondent.getValue().containsConfidentialDetails()) {
-            IsAddressKnowType isAddressKnown = ElementUtils.getElement(respondent.getId(),
-                caseData.getConfidentialRespondents()).getValue().getParty().getAddressKnow();
 
-            return isAddressKnown == null || !isAddressKnown.equals(IsAddressKnowType.NO);
+            return Optional.ofNullable(ElementUtils.getElement(respondent.getId(),
+                    caseData.getConfidentialRespondents()))
+                .map(Element::getValue)
+                .map(Respondent::getParty)
+                .map(RespondentParty::getAddressKnow)
+                .map(val -> val != IsAddressKnowType.NO)
+                .orElse(true);
         }
 
         return true;
