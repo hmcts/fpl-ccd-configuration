@@ -28,6 +28,9 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.DATE_SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.LAST_SUBMITTED_DATE;
+
 @Slf4j
 @RestController
 @RequestMapping("/callback/migrate-case")
@@ -46,7 +49,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2740", this::run2740,
         "DFPL-2744", this::run2744,
         "DFPL-2739", this::run2739,
-        "DFPL-2756", this::run2756
+        "DFPL-2756", this::run2756,
+        "DFPL-2677", this::run2677,
+        "DFPL-2677-rollback", this::rollback2677
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -156,5 +161,25 @@ public class MigrateCaseController extends CallbackController {
             "DFPL-2739",
             UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
             UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
+    }
+
+    private void run2677(CaseDetails caseDetails) {
+        if (caseDetails.getData().get(DATE_SUBMITTED) == null
+            || caseDetails.getData().get(LAST_SUBMITTED_DATE) != null) {
+            throw new AssertionError("[Case %s], dateSubmitted is null or lastSubmittedDate is not null"
+                .formatted(caseDetails.getId()));
+        }
+        caseDetails.getData().put(LAST_SUBMITTED_DATE, caseDetails.getData().get(DATE_SUBMITTED));
+        caseDetails.getData().put(DATE_SUBMITTED, null);
+    }
+
+    private void rollback2677(CaseDetails caseDetails) {
+        if (caseDetails.getData().get(LAST_SUBMITTED_DATE) == null
+            || caseDetails.getData().get(DATE_SUBMITTED) != null) {
+            throw new AssertionError("[Case %s], lastSubmittedDate is null or dateSubmitted is not null"
+                .formatted(caseDetails.getId()));
+        }
+        caseDetails.getData().put(DATE_SUBMITTED, caseDetails.getData().get(LAST_SUBMITTED_DATE));
+        caseDetails.getData().remove(LAST_SUBMITTED_DATE);
     }
 }
