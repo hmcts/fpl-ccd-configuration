@@ -19,6 +19,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "PBAPayment",
+    "ListElementCode": "pbaNumberDynamicList",
+    "HintText": "For example, PBA1234567",
+    "FieldType": "DynamicList",
+    "ElementLabel": "Payment by account (PBA) number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PBAPayment",
     "ListElementCode": "clientCode",
     "FieldType": "Text",
     "ElementLabel": "Client code",
