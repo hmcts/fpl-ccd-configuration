@@ -80,6 +80,8 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
     private final String hearing = "Test hearing 21st August 2020";
     private final DocumentReference convertedDocument = DocumentReference.builder().filename("converted").build();
     private final DocumentReference sealedDocument = DocumentReference.builder().filename("sealed").build();
+    private final DocumentReference sealedDocumentWithCoverSheet =
+        DocumentReference.builder().filename("sealed").build();
 
     ApproveDraftOrdersControllerPostAboutToSubmitTest() {
         super("approve-draft-orders/post-submit-callback");
@@ -240,6 +242,8 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         if (SEND_TO_ALL_PARTIES.equals(reviewOutcome)) {
             given(documentSealingService.sealDocument(order, court, SealType.ENGLISH))
                     .willReturn(sealedDocument);
+            given(documentSealingService.sealDocument(sealedDocument, court, SealType.ENGLISH))
+                .willReturn(sealedDocumentWithCoverSheet);
         } else {
             given(documentSealingService.sealDocument(convertedDocument, court, SealType.ENGLISH))
                     .willReturn(sealedDocument);
