@@ -385,7 +385,7 @@ export class Orders extends BasePage {
         await this.endOfProceedings.check();
     }
 
-    async uploadsSupervisionOrder(_supervisionOrderYesNo: string) {
+    async uploadsSupervisionOrder() {
         await this.orderApproved.getByLabel('Yes').click();
         await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
         await this.applicationOrder.getByLabel('Yes').check();
