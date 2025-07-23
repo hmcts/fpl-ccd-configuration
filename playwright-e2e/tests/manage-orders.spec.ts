@@ -470,7 +470,7 @@ test.describe('manage orders', () => {
 
     })
 
-    test('CTSC uploaDS Recovery of Child (C29)', async ({ page, signInPage, orders }) => {
+    test('CTSC uploads Recovery of Child (C29)', async ({ page, signInPage, orders }) => {
         caseName = 'Recovery of Child (C29) ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
@@ -495,7 +495,7 @@ test.describe('manage orders', () => {
 
     })
 
-    test('Judge uploaDS Recovery of Child (C29)', async ({ page, signInPage, orders }) => {
+    test('Judge uploads Recovery of Child (C29)', async ({ page, signInPage, orders }) => {
         caseName = 'Recovery of Child (C29) ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
