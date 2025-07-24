@@ -33,5 +33,12 @@
     "ListElementCode": "JU2",
     "ListElement": "Insufficient time listed or to complete hearing",
     "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-HMCTS",
+    "ListElementCode": "JU3",
+    "ListElement": "Judge unavailable",
+    "DisplayOrder": 6
   }
 ]

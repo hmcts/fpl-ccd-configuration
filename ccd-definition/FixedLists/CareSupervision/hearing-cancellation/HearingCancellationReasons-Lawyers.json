@@ -26,5 +26,19 @@
     "ListElementCode": "OS1",
     "ListElement": "Official Solicitor not instructed/ready",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-Lawyers",
+    "ListElementCode": "LW4",
+    "ListElement": "Party unavailable",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-Lawyers",
+    "ListElementCode": "LW5",
+    "ListElement": "Intermediary unavailable",
+    "DisplayOrder": 6
   }
 ]
