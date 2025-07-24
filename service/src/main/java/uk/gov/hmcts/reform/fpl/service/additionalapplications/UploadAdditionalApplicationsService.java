@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
@@ -55,6 +54,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -106,7 +106,7 @@ public class UploadAdditionalApplicationsService {
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             C2DocumentBundle c2DocumentBundle = buildC2DocumentBundle(
                 caseData, applicantName, respondentsInCase, uploadedBy, now);
-            if (YesNo.YES.equals(caseData.getIsC2Confidential())) {
+            if (YES.equals(caseData.getIsC2Confidential())) {
                 additionalApplicationsBundleBuilder.c2DocumentBundleConfidential(c2DocumentBundle);
                 buildC2BundleByPolicy(caseData, c2DocumentBundle, additionalApplicationsBundleBuilder);
             } else {
@@ -335,7 +335,7 @@ public class UploadAdditionalApplicationsService {
     }
 
     public PBAPayment updatePBAPayment(PBAPayment pbaPayment) {
-        if (pbaPayment != null && !StringUtils.isEmpty(pbaPayment.getPbaNumberDynamicList().getValueCode())) {
+        if (pbaPayment != null && YES.getValue().equals(pbaPayment.getUsePbaPayment())) {
             return pbaPayment.toBuilder()
                 .pbaNumber(pbaPayment.getPbaNumberDynamicList().getValueCode())
                 .pbaNumberDynamicList(null)
