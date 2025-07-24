@@ -66,6 +66,10 @@ export class Orders extends BasePage {
     readonly addExclusionDetails: Locator;
     readonly endOfProceedings: Locator;
     readonly endDate: Locator;
+    readonly orderPlacedChildInCare: Locator;
+    readonly actionsPermitted: Locator;
+    readonly application: Locator;
+    readonly orderBeenMade: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -132,6 +136,10 @@ export class Orders extends BasePage {
         this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
         this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
         this.endDate = page.getByRole('group', { name: 'End Date' });
+        this.orderPlacedChildInCare = page.getByRole('radio', { name: 'Emergency protection order' });
+        this.actionsPermitted = page.getByRole('checkbox', { name: 'Inform' });
+        this.orderBeenMade =page.getByRole('group', { name: 'Has the order been made ex' });
+        this.application = page.getByLabel('Applications');
 
     }
 
@@ -381,5 +389,24 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.radioButton.check();
         await this.endOfProceedings.check();
+    }
+
+    async ctscUploadsRecoveryOfChild() {
+        await this.orderApproved.getByLabel('No').check();
+        await this.applicationOrder.getByLabel('Yes').check();
+        await this.application.getByLabel('C100, 25 March 2021, 3:16pm');
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.childInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.day.fill('22');
+        await this.month.fill('07');
+        await this.year.fill('2025');
+        await this.orderPlacedChildInCare.check();
+        await this.actionsPermitted.check();
+        await this.orderBeenMade.getByLabel('Yes').check();
+        await this.futherDirections.fill('Test');
+        await this.finalOrder.getByLabel('No').check();
     }
 };
