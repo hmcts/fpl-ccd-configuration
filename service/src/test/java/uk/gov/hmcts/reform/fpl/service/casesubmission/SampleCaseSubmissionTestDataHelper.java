@@ -139,40 +139,46 @@ public class SampleCaseSubmissionTestDataHelper {
                 .gender("Male")
                 .dateOfBirth("15 June 2018")
                 .livingSituation("Living with respondents\nConfidential\nDate this began: 8 November 2018")
-                .keyDates("child starting primary school or taking GCSEs")
-                .careAndContactPlan("Place baby in local authority foster care")
-                .adoption("Yes")
-                .placementOrderApplication("Yes")
-                .placementCourt("Central London County Court")
+                .keyDatesTemplate("child starting primary school or taking GCSEs")
+                .careAndContactPlanTemplate("Place baby in local authority foster care")
+                .adoptionTemplate("Yes")
+                .placementOrderApplicationTemplate("Yes")
+                .placementCourtTemplate("Central London County Court")
                 .mothersName("Isbella Reeves")
                 .fathersName("Rob Reeves")
-                .fathersResponsibility("Yes")
+                .socialWorkerDetailsHiddenReason("No")
                 .socialWorkerName("Helen Green")
                 .socialWorkerTelephoneNumber("0123456789")
+                .socialWorkerEmailAddress("test1@test.com")
                 .additionalNeeds("Yes\nAutism")
-                .litigationIssues("-")
-                .detailsHiddenReason("Yes\nHistory of domestic violence with relatives")
                 .build(),
             DocmosisChild.builder()
                 .name("Sarah Reeves")
                 .age(formatAgeDisplay(parse("2002-02-02"), LANGUAGE))
                 .gender("Female")
                 .dateOfBirth("2 February 2002")
-                .livingSituation("Living with respondents\nCarnegie House\nCentral Milton Keynes\nMilton Keynes"
-                    + "\nMK\nLondon\nMK10 1SA\nBT66 7RR\nDate this began: 2 February 2002")
-                .keyDates("test child two key date")
-                .careAndContactPlan("test child two care and contact plan")
-                .adoption("Yes")
-                .placementOrderApplication("Yes")
-                .placementCourt("test child two court")
+                .livingSituation("""
+                    Living with respondents
+                    Carnegie House
+                    Central Milton Keynes
+                    Milton Keynes
+                    MK
+                    London
+                    MK10 1SA
+                    BT66 7RR
+                    Date this began: 2 February 2002""")
+                .keyDatesTemplate("test child two key date")
+                .careAndContactPlanTemplate("test child two care and contact plan")
+                .adoptionTemplate("Yes")
+                .placementOrderApplicationTemplate("Yes")
+                .placementCourtTemplate("test child two court")
                 .mothersName("Sarah Simpson")
                 .fathersName("Scott Simpson")
-                .fathersResponsibility("Yes")
+                .socialWorkerDetailsHiddenReason("No")
                 .socialWorkerName("Paul Wilsdon")
                 .socialWorkerTelephoneNumber("07749972242")
+                .socialWorkerEmailAddress("test2@test.com")
                 .additionalNeeds("Yes\nlearning disabilities")
-                .litigationIssues("Yes\ntest child two ability to take part in proceedings")
-                .detailsHiddenReason("No\ntest child two contact details hidden reason")
                 .build());
     }
 
