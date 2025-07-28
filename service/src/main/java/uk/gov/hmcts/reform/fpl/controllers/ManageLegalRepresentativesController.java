@@ -9,17 +9,21 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.LegalRepresentativeService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.validators.ManageLegalRepresentativesValidator;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @RestController
@@ -29,6 +33,7 @@ public class ManageLegalRepresentativesController extends CallbackController {
     private final LegalRepresentativeService legalRepresentativeService;
     private final ManageLegalRepresentativesValidator manageLegalRepresentativesValidator;
     private final ValidateEmailService validateEmailService;
+    private final UserService userService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -57,6 +62,19 @@ public class ManageLegalRepresentativesController extends CallbackController {
             manageLegalRepresentativesValidator.validate(caseData.getLegalRepresentatives());
 
         errors.addAll(emailNotRegisteredErrors);
+
+        if (userService.getCaseRoles(caseDetails.getId()).contains(CaseRole.LABARRISTER)) {
+            String userEmail = userService.getUserEmail();
+            CaseData caseDataBefore = getCaseData(callbackRequest.getCaseDetailsBefore());
+            boolean laBarristerRemovedOtherEntry = caseDataBefore.getLegalRepresentatives().stream()
+                .anyMatch(legalRepBefore ->
+                    findElement(legalRepBefore.getId(), caseData.getLegalRepresentatives()).isEmpty()
+                        && !Objects.equals(legalRepBefore.getValue().getEmail(), userEmail));
+            if (laBarristerRemovedOtherEntry) {
+                errors.add("You cannot remove another legal representative from the case, "
+                    + "you can only remove yourself.");
+            }
+        }
 
         if (!errors.isEmpty()) {
             return respond(caseDetails, errors);
