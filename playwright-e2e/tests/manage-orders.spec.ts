@@ -16,7 +16,7 @@ test.describe('manage orders', () => {
     [{ user: CTSCUser, role: 'CTSC', EPOtype: 'Remove to accommodation' },
     { user: judgeUser, role: 'Legal', EPOtype: 'Prevent removal from an address' }].
         forEach(({ user, role, EPOtype }) => {
-            test(` EPO order created by ${role}`,
+            test(` @xbrowser EPO order created by ${role}`,
                 async ({ page, signInPage, orders }) => {
                     caseName = 'EPO order by ' + role + ' ' + dateTime.slice(0, 10);
                     await updateCase(caseName, caseNumber, caseData);

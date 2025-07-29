@@ -382,6 +382,7 @@ public enum DocumentType {
             case APPSOLICITOR:
                 return isConfidential ? LA : NON_CONFIDENTIAL;
             case HMCTS:
+            case ROBOTICS:
                 return isConfidential ? CTSC : NON_CONFIDENTIAL;
             case SOLICITOR:
             case BARRISTER:
