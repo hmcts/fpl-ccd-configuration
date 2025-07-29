@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,6 +69,8 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
             .thenReturn(Optional.of(Organisation.builder().name("Solicitors Ltd").build()));
         when(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(TEST_CASE_ID))
             .thenReturn(List.of(SolicitorRole.CHILDSOLICITORA));
+        when(caseRoleLookupService.getCaseSolicitorRolesByCaseRoles(any())).thenCallRealMethod();
+        when(caseAccessService.getUserCaseRoles(TEST_CASE_ID)).thenReturn(Set.of(CaseRole.CHILDSOLICITORA));
     }
 
     @Test
