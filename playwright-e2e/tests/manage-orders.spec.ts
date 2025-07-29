@@ -4,6 +4,7 @@ import caseData from '../caseData/caseWithHearingDetails.json' assert {type: 'js
 import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert {type: 'json'};
 import { expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
+import config from "../settings/test-docs/config";
 
 test.describe('manage orders', () => {
     let dateTime = new Date().toISOString();
@@ -94,6 +95,37 @@ test.describe('manage orders', () => {
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
     })
+    test('Upload Order' , async ({ page, signInPage, orders }) => {
+        caseName = 'Upload Order ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithOrderData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+        await orders.selectOrderOperation('Upload an order');
+        await orders.clickContinue();
+        await orders.assertuploadOrderType();
+        await orders.selectOrder('Other');
+        await orders.enterOrderName();
+        await orders.clickContinue();
+        await orders.addIssuingDetailsOfUploadedOrder(new Date());
+        await orders.clickContinue();
+        await orders.addChildDetails('Yes')
+        await orders.clickContinue();
+        await orders.uploadOrder('Yes');
+        await orders.clickContinue();
+        await expect.soft(page.getByRole('heading', { name: 'Check your order', exact: true })).toBeVisible();
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+        await orders.tabNavigation('Orders');
+        await expect(orders.page.getByRole('cell', { name: 'Other', exact: true })).toBeVisible();
+        await expect(orders.page.getByText('Uploaded Other Order')).toBeVisible();
+        await expect(orders.page.getByRole('link', { name: 'other_order.pdf' })).toBeVisible();
+        await orders.openOrderDoc('other_order.pdf');
+        await orders.assertOrderSealScreenshot(config.assertSealedUploadedOrder);
+
+    })
+
     test('C32 Care Order', async ({ page, signInPage, orders }) => {
         caseName = 'C32 Care Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
