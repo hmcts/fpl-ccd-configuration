@@ -102,7 +102,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "children1",
     "UserRole": "[BARRISTER]",
-    "CRUD": "RUD",
+    "CRUD": "CRUD",
     "Comment": "barrister can remove himself from the legalCounsellors list, but not allow to update anything else"
   },
   {
@@ -1310,6 +1310,6 @@
     "CaseFieldID": "legalCounsellors",
     "UserRole": "[BARRISTER]",
     "CRUD": "CRD",
-    "Comment": "barrister can update / remove himself from the legalCounsellors list, but not allow to add"
+    "Comment": "barrister can remove himself from the legalCounsellors list, but not allow to add / update"
   }
 ]
