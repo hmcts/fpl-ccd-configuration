@@ -337,7 +337,7 @@ public class UploadAdditionalApplicationsService {
     public PBAPayment updatePBAPayment(PBAPayment pbaPayment) {
         if (pbaPayment != null && YES.getValue().equals(pbaPayment.getUsePbaPayment())) {
             return pbaPayment.toBuilder()
-                .pbaNumber(pbaPayment.getPbaNumberDynamicList().getValueCode())
+                .pbaNumber(pbaPayment.getPbaNumber().isEmpty() ? pbaPayment.getPbaNumberDynamicList().getValueCode() : pbaPayment.getPbaNumber())
                 .pbaNumberDynamicList(null)
                 .build();
         }

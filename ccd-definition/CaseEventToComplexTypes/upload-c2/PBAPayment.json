@@ -16,9 +16,19 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryPbaPayment",
     "DisplayContext": "MANDATORY",
+    "ListElementCode": "pbaNumber",
+    "FieldDisplayOrder": "2",
+    "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\" AND isCTSCUser=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PBAPaymentComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryPbaPayment",
+    "DisplayContext": "MANDATORY",
     "ListElementCode": "pbaNumberDynamicList",
     "FieldDisplayOrder": "2",
-    "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\""
+    "FieldShowCondition": "displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\" AND isCTSCUser!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
