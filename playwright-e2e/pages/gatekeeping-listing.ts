@@ -36,7 +36,7 @@ export class GatekeepingListing extends HearingDetailsMixin()
     await this.clickContinue();
     await this.page.getByLabel('Upload a prepared gatekeeping order').check();
     await this.clickContinue();
-    await this.page.getByRole('textbox', { name: 'Attach prepared order' }).setInputFiles(config.testWordFile);
+    await this.page.getByRole('button', { name: 'Attach prepared order' }).setInputFiles(config.testWordFile);
     await this.waitForAllUploadsToBeCompleted();
     await this.clickContinue();
     await this.page.getByRole('radio', { name: 'Yes' }).check();
@@ -92,7 +92,7 @@ export class GatekeepingListing extends HearingDetailsMixin()
         await this.page.getByRole('textbox', {name: 'Description (Optional)'}).fill('To accomadate way from the parent home');
         await this.page.getByLabel('Party responsible').selectOption('Local authority');
         await this.page.getByRole('radio', {name: 'Number of working days before'}).check();
-        await this.page.getByRole('spinbutton', {name: 'Number of days'}).fill('6');
+        await this.page.getByRole('textbox', {name: 'Number of days'}).fill('6');
         await this.clickContinue();
         await this.page.getByRole('radio', {name: 'District Judge', exact: true}).check();
         await this.page.getByRole('textbox', {name: 'Last name'}).fill('Judge Damien');

@@ -17,7 +17,7 @@ test.describe('Approve Orders', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('Judge approves a confidential order uploaded by LA',
+    test('Judge approves a confidential order uploaded by LA @xbrowser',
         async ({ page, signInPage, approveOrders }) => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseDataByLa);
@@ -69,7 +69,7 @@ test.describe('Approve Orders', () => {
             await expect(page.getByText('Confidential order uploaded by CTSC')).toBeHidden();
         });
 
-    test('Review CMO (High Court) WA Task',
+    test('Review CMO (High Court) WA Task @xbrowser',
     async ({ page, signInPage, approveOrders, caseFileView }) => {
       casename = 'Review CMO (High Court) WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);

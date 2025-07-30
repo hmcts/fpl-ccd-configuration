@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
+import uk.gov.hmcts.reform.aac.client.NocApi;
 import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
@@ -90,7 +90,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
     private OrganisationApi organisationApi;
 
     @MockBean
-    private CaseAssignmentApi caseAssignmentApi;
+    private NocApi nocApi;
 
     @MockBean
     private DfjAreaLookUpService dfjAreaLookUpService;
@@ -176,7 +176,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
         assertThat(updatedCaseData.getSharedLocalAuthorityPolicy()).isEqualTo(expectedSharedOrganisationPolicy);
 
-        verifyNoInteractions(caseAssignmentApi);
+        verifyNoInteractions(nocApi);
     }
 
     @ParameterizedTest
@@ -220,7 +220,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             .organisationToRemove(caseData.getSharedLocalAuthorityPolicy().getOrganisation())
             .build();
 
-        when(caseAssignmentApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), assignment.capture()))
+        when(nocApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), assignment.capture()))
             .thenReturn(nocResponse);
 
         final AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
@@ -275,7 +275,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
         @BeforeEach
         void init() {
-            when(caseAssignmentApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), assignment.capture()))
+            when(nocApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), assignment.capture()))
                 .thenAnswer(invocationOnMock -> AboutToStartOrSubmitCallbackResponse.builder()
                     .data(invocationOnMock.getArgument(2, DecisionRequest.class)
                         .getCaseDetails()
