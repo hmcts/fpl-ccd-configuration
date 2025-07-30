@@ -103,7 +103,7 @@
     "CaseFieldID": "children1",
     "UserRole": "[BARRISTER]",
     "CRUD": "CRUD",
-    "Comment": "barrister can remove himself from the legalCounsellors list, but not allow to update anything else"
+    "Comment": "barrister can remove themselves from the legalCounsellors list, but not allow to update anything else"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -111,7 +111,7 @@
     "CaseFieldID": "respondents1",
     "UserRole": "[BARRISTER]",
     "CRUD": "CRUD",
-    "Comment": "barrister can remove himself from the legalCounsellors list, but not allow to update anything else"
+    "Comment": "barrister can remove themselves from the legalCounsellors list, but not allow to update anything else"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1310,6 +1310,6 @@
     "CaseFieldID": "legalCounsellors",
     "UserRole": "[BARRISTER]",
     "CRUD": "CRD",
-    "Comment": "barrister can remove himself from the legalCounsellors list, but not allow to add / update"
+    "Comment": "barrister can remove themselves from the legalCounsellors list, but not allow to add / update"
   }
 ]
