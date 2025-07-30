@@ -96,7 +96,7 @@ public class UploadAdditionalApplicationsService {
         List<Element<Respondent>> respondentsInCase = caseData.getAllRespondents();
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
-            .pbaPayment(updatePBAPayment(caseData.getTemporaryPbaPayment()))
+            .pbaPayment(updatePBAPayment(caseData.getTemporaryPbaPayment(), YES.equals(caseData.getIsCTSCUser())))
             .amountToPay(caseData.getAmountToPay())
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now, DATE_TIME))
@@ -334,11 +334,11 @@ public class UploadAdditionalApplicationsService {
         return data;
     }
 
-    public PBAPayment updatePBAPayment(PBAPayment pbaPayment) {
+    public PBAPayment updatePBAPayment(PBAPayment pbaPayment, boolean isCTSCUser) {
         if (pbaPayment != null && YES.getValue().equals(pbaPayment.getUsePbaPayment())) {
             return pbaPayment.toBuilder()
-                .pbaNumber(pbaPayment.getPbaNumber().isEmpty()
-                    ? pbaPayment.getPbaNumberDynamicList().getValueCode() : pbaPayment.getPbaNumber())
+                .pbaNumber(isCTSCUser
+                    ? pbaPayment.getPbaNumber() : pbaPayment.getPbaNumberDynamicList().getValueCode())
                 .pbaNumberDynamicList(null)
                 .build();
         }
