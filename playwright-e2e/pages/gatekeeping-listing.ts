@@ -105,16 +105,21 @@ export class GatekeepingListing extends HearingDetailsMixin()
     }
 
     async completeUDOListing() {
+        let today = new Date();
+        let threeMonthsLater = new Date(today);
+        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+        let fiveMonthsLater = new Date(today);
+        fiveMonthsLater.setMonth(fiveMonthsLater.getMonth() + 5);
         await this.page.getByRole('radio', {name: 'Emergency protection order'}).check();
         await this.page.locator('#hearingVenue').selectOption('8: 99');
         await this.page.getByRole('checkbox', {name: 'In person'}).check();
         await this.page.getByRole('textbox', {name: 'Add details (Optional)'}).fill('Details');
-        await this.fillDateInputs(this.page, new Date(new Date().setMonth(new Date().getMonth() + 3)));
+        await this.fillDateInputs(this.page,threeMonthsLater);
         await this.fillTimeInputs(this.page, '10', '00', '00');
         await this.page.getByText('Specific end date and time').click();
-        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Day').fill(new Date(new Date().setMonth(new Date().getMonth() + 5)).getDate().toString());
-        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Month').fill(new Date(new Date().setMonth(new Date().getMonth() + 5)).getMonth().toString());
-        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Year').fill(new Date(new Date().setMonth(new Date().getMonth() + 5)).getFullYear().toString());
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Day').fill(fiveMonthsLater.getDate().toString());
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Month').fill((fiveMonthsLater.getMonth()+1).toString());// Months are 0-indexed in JS
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Year').fill(fiveMonthsLater.getFullYear().toString());
         await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Hour').fill('10');
         await this.clickContinue();
 
