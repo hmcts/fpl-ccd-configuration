@@ -20,7 +20,7 @@ public enum HearingCancellationReason {
     HM3("Interpreter not available"),
     JU1("Lack of judicial continuity"),
     JU2("Insufficient time listed or to complete hearing"),
-    JU3("Judge unavailable"),
+    JU3("No Judge available"),
     LW1("Lawyers not instructed, present or ready, party or witness fail to attend"),
     LW2("No key issue analysis"),
     LW3("No/poor parental evidence"),

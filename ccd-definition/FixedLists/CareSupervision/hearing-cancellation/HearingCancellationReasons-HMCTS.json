@@ -38,7 +38,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingCancellationReasons-HMCTS",
     "ListElementCode": "JU3",
-    "ListElement": "Judge unavailable",
+    "ListElement": "No Judge available",
     "DisplayOrder": 6
   }
 ]
