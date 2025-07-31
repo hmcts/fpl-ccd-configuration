@@ -154,7 +154,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         if (YesNo.YES.equals(caseData.getIsCTSCUser())) {
-            PBAPayment updatedPbaPayment = pbaNumberService.updatePBAPayment(caseData.getTemporaryPbaPayment());
+            PBAPayment tempPbaPayment = caseData.getTemporaryPbaPayment();
+            PBAPayment updatedPbaPayment = pbaNumberService.updatePBAPayment(tempPbaPayment);
+            caseDetails.getData().put("temporaryPbaPayment", updatedPbaPayment);
+
             return respond(caseDetails, pbaNumberService.validate(updatedPbaPayment));
         } else {
             return respond(caseDetails);

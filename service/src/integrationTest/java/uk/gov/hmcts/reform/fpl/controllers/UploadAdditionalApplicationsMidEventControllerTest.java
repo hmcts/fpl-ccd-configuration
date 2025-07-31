@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -67,6 +68,9 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
     @MockBean
     private PbaService pbaService;
 
+    @MockBean
+    private UserService userService;
+
     UploadAdditionalApplicationsMidEventControllerTest() {
         super("upload-additional-applications");
     }
@@ -84,6 +88,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @Test
     void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField() {
+        given(userService.isCtscUser()).willReturn(true);
+
         C2DocumentBundle temporaryC2Document = C2DocumentBundle.builder()
             .supplementsBundle(wrapElements(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()))
             .build();
@@ -134,6 +140,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @Test
     void shouldNotSetC2DocumentBundleWhenOnlyOtherApplicationIsSelected() {
+        given(userService.isCtscUser()).willReturn(true);
+
         OtherApplicationsBundle temporaryOtherDocument = OtherApplicationsBundle.builder()
             .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
             .document(DocumentReference.builder().build())
@@ -161,6 +169,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @Test
     void shouldDisplayErrorForInvalidPbaNumber() {
+
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryPbaPayment", Map.of("pbaNumber", "12345"),
                 "isCTSCUser", "Yes"))
@@ -184,9 +193,9 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
     }
 
     @Test
-    void shouldNotValidatePbaNumberWhenPBAPaymentIsNull() {
+    void shouldNotValidatePbaNumberWhenPBAPaymentIsNullAndUserIsCtsc() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-            CaseDetails.builder().data(Collections.emptyMap()).build(), "validate");
+            CaseDetails.builder().data(Map.of("isCTSCUser", "Yes")).build(), "validate");
 
         assertThat(response.getErrors()).isEmpty();
     }
