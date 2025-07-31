@@ -142,7 +142,7 @@ export class Orders extends BasePage {
     }
 
     async selectOrder(orderType: string) {
-        await this.orderTypeRadio.getByLabel(`${orderType}`).check();
+        await this.orderTypeRadio.getByLabel(`${orderType}`,{exact:true}).check();
 
     }
 
