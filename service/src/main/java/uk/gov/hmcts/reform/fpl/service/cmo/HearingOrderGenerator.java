@@ -62,7 +62,7 @@ public class HearingOrderGenerator {
 
         if (addCoverSheet) {
             // add a sealed cover sheet to the order
-            sealedOrder = documentSealingService.sealDocument(addCoverSheet(caseData, sealedOrder, hearingOrderElement),
+            sealedOrder = documentSealingService.sealDocument(addCoverSheet(caseData, sealedOrder),
                 caseData.getCourt(), caseData.getSealType());
         }
 
@@ -81,11 +81,10 @@ public class HearingOrderGenerator {
             .build());
     }
 
-    public DocumentReference addCoverSheet(CaseData caseData, DocumentReference orderDoc,
-                                           Element<HearingOrder> hearingOrderElement) {
+    public DocumentReference addCoverSheet(CaseData caseData, DocumentReference orderDoc) {
         try {
             DocmosisDocument orderWithCoverSheet = docmosisApprovedOrderCoverSheetService
-                .addCoverSheetToApprovedOrder(caseData, orderDoc, hearingOrderElement);
+                .addCoverSheetToApprovedOrder(caseData, orderDoc);
 
             return buildFromDocument(uploadDocumentService
                 .uploadPDF(orderWithCoverSheet.getBytes(), orderDoc.getFilename()));

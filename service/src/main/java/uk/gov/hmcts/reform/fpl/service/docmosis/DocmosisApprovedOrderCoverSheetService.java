@@ -10,13 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApprovedOrderCoverSheet;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -24,18 +21,13 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.APPROVED_ORDER_COVER;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -48,10 +40,10 @@ public class DocmosisApprovedOrderCoverSheetService {
     private final DocumentMerger documentMerger;
     private final Time time;
 
-    public DocmosisDocument addCoverSheetToApprovedOrder(CaseData caseData, DocumentReference order,
-                                                         Element<HearingOrder> hearingOrderElement) throws IOException {
+    public DocmosisDocument addCoverSheetToApprovedOrder(CaseData caseData,
+                                                         DocumentReference order) throws IOException {
         // Create
-        DocmosisDocument coverSheet = createCoverSheet(caseData, hearingOrderElement);
+        DocmosisDocument coverSheet = createCoverSheet(caseData);
 
         // Add cover sheet to the order
         DocmosisDocument orderWithCoverSheet = documentMerger.mergeDocuments(coverSheet, List.of(order));
@@ -94,17 +86,15 @@ public class DocmosisApprovedOrderCoverSheetService {
         }
     }
 
-    public DocmosisDocument createCoverSheet(CaseData caseData, Element<HearingOrder> hearingOrder) {
-        DocmosisApprovedOrderCoverSheet coverDocumentData = buildCoverDocumentsData(caseData, hearingOrder);
+    public DocmosisDocument createCoverSheet(CaseData caseData) {
+        DocmosisApprovedOrderCoverSheet coverDocumentData = buildCoverDocumentsData(caseData);
         return docmosisDocumentGeneratorService.generateDocmosisDocument(coverDocumentData,
             APPROVED_ORDER_COVER,
             RenderFormat.PDF,
             getCaseLanguage(caseData));
     }
 
-    public DocmosisApprovedOrderCoverSheet buildCoverDocumentsData(CaseData caseData,
-                                                                   Element<HearingOrder> hearingOrder) {
-
+    public DocmosisApprovedOrderCoverSheet buildCoverDocumentsData(CaseData caseData) {
         return DocmosisApprovedOrderCoverSheet.builder()
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .courtName(caseDataExtractionService.getCourtName(caseData))
@@ -112,7 +102,6 @@ public class DocmosisApprovedOrderCoverSheetService {
             .judgeTitleAndName(caseData.getReviewDraftOrdersData().getJudgeTitleAndName())
             .dateOfApproval(formatLocalDateToString(time.now().toLocalDate(), DATE, getCaseLanguage(caseData)))
             .crest(CREST.getValue())
-            .orderByConsent(isC2OrderByConsent(caseData, hearingOrder) ? YES.getValue() : null)
             .build();
     }
 
@@ -122,23 +111,5 @@ public class DocmosisApprovedOrderCoverSheetService {
 
     private Language getCaseLanguage(CaseData caseData) {
         return Optional.ofNullable(caseData.getC110A().getLanguageRequirementApplication()).orElse(Language.ENGLISH);
-    }
-
-    private boolean isC2OrderByConsent(CaseData caseData, Element<HearingOrder> hearingOrder) {
-        // 1. filter out all additional applications bundles by consent
-        // 2. check if the hearing order id is present in any of the bundle
-        return unwrapElements(caseData.getAdditionalApplicationsBundle()).stream()
-            .anyMatch(additionalApplicationsBundle ->
-                Stream.of(additionalApplicationsBundle.getC2DocumentBundle(),
-                        additionalApplicationsBundle.getC2DocumentBundleConfidential())
-                    .filter(Objects::nonNull)
-                    .filter(documentBundle -> WITHOUT_NOTICE.equals(documentBundle.getType()))
-                    .map(C2DocumentBundle::getDraftOrdersBundle)
-                    .filter(Objects::nonNull)
-                    .flatMap(List::stream)
-                    .anyMatch(draftOrderElement ->
-                        draftOrderElement.getValue().getDocument().getUrl()
-                            .equals(hearingOrder.getValue().getOrderOrOrderConfidential().getUrl()))
-            );
     }
 }

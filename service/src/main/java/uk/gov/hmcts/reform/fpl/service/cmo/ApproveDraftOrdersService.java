@@ -424,7 +424,7 @@ public class ApproveDraftOrdersService {
 
                 data.put("previewApprovedOrder" + labelCounter,
                     hearingOrderGenerator.addCoverSheet(caseData, (approvedOrder.isConfidentialOrder()
-                        ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder()), orderElement));
+                        ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder())));
                 data.put("previewApprovedOrderTitle" + labelCounter,
                     String.format("Order %d %s", (i + 1), approvedOrder.getTitle()));
                 labelCounter++;

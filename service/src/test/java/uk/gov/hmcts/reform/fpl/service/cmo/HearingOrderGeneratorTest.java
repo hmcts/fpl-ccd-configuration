@@ -86,8 +86,7 @@ class HearingOrderGeneratorTest {
             .build();
 
         when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
-        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder,
-            element(ORDER_ID, hearingOrder)))
+        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder))
             .thenReturn(DOCMOSIS_DOCUMENT_ORDER_WITH_COVER_SHEET);
         when(uploadDocumentService.uploadPDF(eq(ORDER_WITH_COVER_SHEET_BYTES), any()))
             .thenReturn(ORDER_WITH_COVER_SHEET_DOCUMENT);
@@ -122,8 +121,7 @@ class HearingOrderGeneratorTest {
             .reviewCMODecision(reviewDecision)
             .build();
         when(documentSealingService.sealDocument(amendedOrder, court, SealType.ENGLISH)).thenReturn(sealedOrder);
-        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder,
-            element(ORDER_ID, hearingOrder)))
+        when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder))
             .thenReturn(DOCMOSIS_DOCUMENT_ORDER_WITH_COVER_SHEET);
         when(uploadDocumentService.uploadPDF(eq(ORDER_WITH_COVER_SHEET_BYTES), any()))
             .thenReturn(ORDER_WITH_COVER_SHEET_DOCUMENT);

@@ -1239,7 +1239,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "previewOrderLabel",
-    "Label": "Cover sheets will be automatically added to the following C21 orders. If the content is incorrect, please return to the previous step and upload a revised document.",
+    "Label": "If you click 'Continue', the draft order will be approved without any changes. A coversheet will be added showing your name and the date of approval, and a court seal will also be applied to the final version.<br/><br/>Please note that the preview shown below will not display the court seal, but it reflects the content that will be issued.<br/><br/>If you wish to make any amendments, please return to the previous screen and select either 'No, I need to make changes' or 'No, the applicant needs to make changes'.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"

@@ -15,6 +15,5 @@ public class DocmosisApprovedOrderCoverSheet implements DocmosisData {
     private final List<DocmosisChild> children;
     private final String judgeTitleAndName;
     private final String dateOfApproval;
-    private final String orderByConsent;
     private final String crest;
 }

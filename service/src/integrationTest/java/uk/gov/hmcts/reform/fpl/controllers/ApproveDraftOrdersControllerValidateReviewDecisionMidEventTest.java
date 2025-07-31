@@ -156,7 +156,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .reviewDraftOrdersData(reviewDraftOrdersData).build();
 
         when(judicialService.isCurrentUserFeePaidJudge()).thenReturn(Boolean.FALSE);
-        when(hearingOrderGenerator.addCoverSheet(caseData, order, draftOrder1)).thenReturn(orderWithCoverSheet);
+        when(hearingOrderGenerator.addCoverSheet(caseData, order)).thenReturn(orderWithCoverSheet);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).isEmpty();

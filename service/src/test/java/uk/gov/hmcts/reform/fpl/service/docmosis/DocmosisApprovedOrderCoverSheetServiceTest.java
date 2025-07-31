@@ -37,7 +37,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.APPROVED_ORDER_COVER;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -131,7 +130,7 @@ class DocmosisApprovedOrderCoverSheetServiceTest {
                 RenderFormat.PDF, LANGUAGE))
             .willReturn(COVER_SHEET);
 
-        DocmosisDocument result = underTest.createCoverSheet(caseData, HEARING_ORDER);
+        DocmosisDocument result = underTest.createCoverSheet(caseData);
 
         assertThat(result).isEqualTo(COVER_SHEET);
     }
@@ -172,50 +171,10 @@ class DocmosisApprovedOrderCoverSheetServiceTest {
         DocmosisDocument mergedOrder = new DocmosisDocument("merged_order.pdf", mergedOrderBytes);
         given(documentMerger.mergeDocuments(any(), any())).willReturn(mergedOrder);
 
-        DocmosisDocument result = underTest.addCoverSheetToApprovedOrder(caseData, testDocumentReference(),
-            HEARING_ORDER);
+        DocmosisDocument result = underTest.addCoverSheetToApprovedOrder(caseData, testDocumentReference());
 
         String resultText = (new DocmosisHelper()).extractPdfContent(result.getBytes());
 
         assertThat(resultText).isEqualToNormalizingWhitespace("First page Second page ANNEX A: ");
-    }
-
-    @Test
-    void shouldAddCoverSheetWithConsentWording() {
-        CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .familyManCaseNumber(FAMILY_MAN_NUMBER)
-            .court(COURT)
-            .c110A(C110A.builder()
-                .languageRequirementApplication(LANGUAGE)
-                .build())
-            .children1(List.of(CHILD))
-            .confidentialChildren(List.of(CONFIDENTIAL_CHILD))
-            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().judgeTitleAndName(JUDGE_NAME).build())
-            .additionalApplicationsBundle(List.of(C2_BUNDLE_WITH_CONSENT))
-            .build();
-
-        given(caseDataExtractionService.getCourtName(caseData)).willReturn(COURT_NAME);
-        given(caseDataExtractionService.getChildrenDetails(caseData.getAllChildren())).willReturn(DOCMOSIS_CHILDREN);
-        given(time.now()).willReturn(TEST_TIME);
-
-        DocmosisApprovedOrderCoverSheet expectedDocmosisData = DocmosisApprovedOrderCoverSheet.builder()
-            .familyManCaseNumber(FAMILY_MAN_NUMBER)
-            .courtName(COURT_NAME)
-            .children(DOCMOSIS_CHILDREN)
-            .judgeTitleAndName(JUDGE_NAME)
-            .dateOfApproval(formatLocalDateToString(TEST_TIME.toLocalDate(), DATE, Language.ENGLISH))
-            .crest(CREST.getValue())
-            .orderByConsent(YES.getValue())
-            .build();
-
-
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(expectedDocmosisData, APPROVED_ORDER_COVER,
-            RenderFormat.PDF, LANGUAGE))
-            .willReturn(COVER_SHEET);
-
-        DocmosisDocument result = underTest.createCoverSheet(caseData, HEARING_ORDER_WITH_CONSENT);
-
-        assertThat(result).isEqualTo(COVER_SHEET);
     }
 }
