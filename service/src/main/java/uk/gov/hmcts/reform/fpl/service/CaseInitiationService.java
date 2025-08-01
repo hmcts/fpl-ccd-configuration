@@ -239,7 +239,7 @@ public class CaseInitiationService {
 
             if (isRespondentSolicitor || isChildSolicitor) {
                 CaseData updatedCaseData = caseData.toBuilder()
-                    .applicantSolicitorPolicy(organisationPolicy(
+                    .appSolicitorPolicy(organisationPolicy(
                         currentUserOrganisationId,
                         currentUserOrganisationName,
                         APPSOLICITOR))
@@ -306,9 +306,9 @@ public class CaseInitiationService {
                 // EPSMANAGING do not share OR LAMANAGING doesn't want to share
                 caseAccessService.grantCaseRoleToUser(caseId, creatorId, caseRole);
             }
-        } else if (nonNull(caseData.getApplicantSolicitorPolicy())) {
+        } else if (nonNull(caseData.getAppSolicitorPolicy())) {
             caseAccessService.grantCaseRoleToUser(caseId, creatorId,
-                getCaseRole(caseData.getApplicantSolicitorPolicy()));
+                getCaseRole(caseData.getAppSolicitorPolicy()));
         } else {
             final CaseRole caseRole = getCaseRole(caseData.getLocalAuthorityPolicy());
             // LASOLICITOR share with all sols in org

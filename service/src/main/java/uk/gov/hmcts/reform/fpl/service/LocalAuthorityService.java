@@ -78,7 +78,7 @@ public class LocalAuthorityService {
     }
 
     public Map<String, Object> updateLocalAuthorityFromNoC(CaseData oldCaseData, ChangeOrganisationRequest nocRequest) {
-        String oldOrgId = oldCaseData.getApplicantSolicitorPolicy().getOrganisation().getOrganisationID();
+        String oldOrgId = oldCaseData.getAppSolicitorPolicy().getOrganisation().getOrganisationID();
         LocalAuthority oldLocalAuthority = oldCaseData.getLocalAuthorities().stream()
             .map(Element::getValue)
             .filter(la -> la.getId().equals(oldOrgId))

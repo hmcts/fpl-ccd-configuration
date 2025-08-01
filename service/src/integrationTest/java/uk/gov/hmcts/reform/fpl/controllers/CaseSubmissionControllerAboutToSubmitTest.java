@@ -231,7 +231,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
             "respondents1", respondents,
             "applicants", List.of(element(buildApplicant())),
-            "applicantSolicitorPolicy", OrganisationPolicy.builder()
+            "appSolicitorPolicy", OrganisationPolicy.builder()
                 .organisation(Organisation.builder().organisationID("ABC123").build())
                 .orgPolicyCaseAssignedRole(APPSOLICITOR.formattedName())
                 .build(),

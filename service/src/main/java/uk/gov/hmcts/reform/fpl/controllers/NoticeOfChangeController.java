@@ -83,8 +83,8 @@ public class NoticeOfChangeController extends CallbackController {
     }
 
     private void publishEventsForThirdPartyOutsourcingNoC(CaseData oldData, CaseData newData) {
-        String newOrgId = newData.getApplicantSolicitorPolicy().getOrganisation().getOrganisationID();
-        String previousOrgId = oldData.getApplicantSolicitorPolicy().getOrganisation().getOrganisationID();
+        String newOrgId = newData.getAppSolicitorPolicy().getOrganisation().getOrganisationID();
+        String previousOrgId = oldData.getAppSolicitorPolicy().getOrganisation().getOrganisationID();
 
         LocalAuthority oldThirdPartyOrg = oldData.getLocalAuthorities().stream().filter(la ->
             la.getValue().getId().equals(previousOrgId)).findFirst().orElseThrow().getValue();

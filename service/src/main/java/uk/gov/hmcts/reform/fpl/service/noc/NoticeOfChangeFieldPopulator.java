@@ -71,14 +71,14 @@ public class NoticeOfChangeFieldPopulator {
         Map<String, Object> data = new HashMap<>();
         NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder().build();
 
-        data.put("applicantSolicitorPolicy", Optional.ofNullable(caseData.getApplicantSolicitorPolicy())
+        data.put("appSolicitorPolicy", Optional.ofNullable(caseData.getAppSolicitorPolicy())
             .orElseGet(() -> OrganisationPolicy.builder().organisation(Organisation.builder().build())
                 .orgPolicyCaseAssignedRole(APPSOLICITOR.formattedName()).build()));
 
         if (caseData.isThirdPartyApplicant()) {
             Optional<LocalAuthority> localAuthority = caseData.getLocalAuthorities().stream()
                 .map(Element::getValue)
-                .filter(la -> la.getId().equals(caseData.getApplicantSolicitorPolicy()
+                .filter(la -> la.getId().equals(caseData.getAppSolicitorPolicy()
                     .getOrganisation().getOrganisationID()))
                 .findFirst();
 

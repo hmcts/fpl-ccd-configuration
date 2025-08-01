@@ -26,7 +26,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "applicantSolicitorPolicy",
+    "CaseFieldID": "appSolicitorPolicy",
     "UserRoles": [
       "caseworker-caa",
       "caseworker-approver"

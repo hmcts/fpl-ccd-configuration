@@ -2109,7 +2109,7 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "applicantSolicitorPolicy",
+    "ID": "appSolicitorPolicy",
     "Label": "Applicant solicitor policy",
     "FieldType": "OrganisationPolicy",
     "SecurityClassification": "Public",

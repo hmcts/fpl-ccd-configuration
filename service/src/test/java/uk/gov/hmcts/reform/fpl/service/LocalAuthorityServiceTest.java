@@ -254,7 +254,7 @@ class LocalAuthorityServiceTest {
                 .build());
 
         CaseData caseData = CaseData.builder()
-            .applicantSolicitorPolicy(OrganisationPolicy.builder()
+            .appSolicitorPolicy(OrganisationPolicy.builder()
                 .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
                     .organisationID("ORG123")
                     .build())
