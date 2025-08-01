@@ -16,5 +16,4 @@ public class A81PlacementBlankOrderDocmosisParameters extends DocmosisParameters
     String furtherDirections;
     String localAuthorityName;
     String recitalsOrPreamble;
-    String respondentNames;
 }

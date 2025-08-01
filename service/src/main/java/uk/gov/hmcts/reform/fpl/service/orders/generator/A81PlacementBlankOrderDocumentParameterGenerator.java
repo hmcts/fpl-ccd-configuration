@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -36,10 +34,6 @@ public class A81PlacementBlankOrderDocumentParameterGenerator implements Docmosi
         String localAuthorityName = isEmpty(localAuthorityCode) ? null : laNameLookup
             .getLocalAuthorityName(localAuthorityCode);
 
-        String respondentNames = caseData.getRespondents1().stream()
-            .map(element -> element.getValue().getParty().getFullName())
-            .collect(Collectors.joining(", "));
-
         return A81PlacementBlankOrderDocmosisParameters.builder()
             .orderTitle(A81_PLACEMENT_BLANK_ORDER.getTitle())
             .orderType(GeneratedOrderType.BLANK_ORDER)
@@ -48,7 +42,6 @@ public class A81PlacementBlankOrderDocumentParameterGenerator implements Docmosi
             .orderDetails("THE COURT ORDERS THAT:\n\n" + eventData.getManageOrdersParagraphs()
                 + (isEmpty(eventData.getManageOrdersCostOrders())
                 ? "" : ("\n\n" + eventData.getManageOrdersCostOrders())))
-            .respondentNames(respondentNames)
             .build();
     }
 
