@@ -2,6 +2,7 @@
 import { expect, Page } from "@playwright/test";
 import { HearingDetailsMixin } from "./mixins/hearing-details-mixin";
 import config from "../settings/test-docs/config";
+import {addMonthsToDate} from "../utils/document-format-helper";
 
 export class GatekeepingListing extends HearingDetailsMixin()
 {
@@ -105,11 +106,8 @@ export class GatekeepingListing extends HearingDetailsMixin()
     }
 
     async completeUDOListing() {
-        let today = new Date();
-        let threeMonthsLater = new Date(today);
-        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-        let fiveMonthsLater = new Date(today);
-        fiveMonthsLater.setMonth(fiveMonthsLater.getMonth() + 5);
+        let threeMonthsLater = addMonthsToDate(new Date(), 3);
+        let fiveMonthsLater = addMonthsToDate(new Date(), 5);
         await this.page.getByRole('radio', {name: 'Emergency protection order'}).check();
         await this.page.locator('#hearingVenue').selectOption('8: 99');
         await this.page.getByRole('checkbox', {name: 'In person'}).check();
