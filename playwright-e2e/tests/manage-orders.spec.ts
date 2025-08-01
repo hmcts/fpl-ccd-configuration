@@ -95,7 +95,7 @@ test.describe('manage orders', () => {
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
     })
-    test('Upload Order' , async ({ page, signInPage, orders }) => {
+    test('Upload Order @xbrowser' , async ({ page, signInPage, orders }) => {
         caseName = 'Upload Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
@@ -122,7 +122,7 @@ test.describe('manage orders', () => {
         await expect(orders.page.getByText('Uploaded Other Order')).toBeVisible();
         await expect(orders.page.getByRole('link', { name: 'other_order.pdf' })).toBeVisible();
         await orders.openOrderDoc('other_order.pdf');
-        await orders.assertOrderSealScreenshot(config.assertSealedUploadedOrder);
+        await orders.assertOrderSealScreenshot('sealedUploadedOrder.png');
 
     })
 

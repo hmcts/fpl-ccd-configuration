@@ -35,10 +35,7 @@ const config: Config = {
     __dirname,
     "../test-docs/testTextFile.txt",
   ),
-    assertSealedUploadedOrder: join(
-        __dirname,
-        "../test-docs/sealedOrderUploaded.png",
-    ),
+
 };
 
 export default config as {
@@ -48,5 +45,4 @@ export default config as {
   testPdfFile4: string;
   testWordFile: string;
   testTextFile: string;
-  assertSealedUploadedOrder: string;
 };
