@@ -35,7 +35,6 @@ const config: Config = {
     __dirname,
     "../test-docs/testTextFile.txt",
   ),
-
 };
 
 export default config as {
