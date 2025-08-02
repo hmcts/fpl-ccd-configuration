@@ -469,4 +469,54 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
     })
+
+    test('CTSC uploads Recovery of Child (C29)', async ({ page, signInPage, orders }) => {
+        caseName = 'Recovery of Child (C29) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Recovery of Child (C29)');
+        await orders.clickContinue();
+
+        await orders.ctscUploadsRecoveryOfChild();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c29_recovery_of_a_child.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('Judge uploads Recovery of Child (C29)', async ({ page, signInPage, orders }) => {
+        caseName = 'Recovery of Child (C29) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Recovery of Child (C29)');
+        await orders.clickContinue();
+
+        await orders.ctscUploadsRecoveryOfChild();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c29_recovery_of_a_child.pdf', exact: true })).toBeVisible();
+
+    })
 })
