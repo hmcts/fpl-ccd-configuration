@@ -136,7 +136,6 @@ test.describe('manage orders', () => {
         // await orders.tabNavigation('History'); EXUI issue with tab lables having the hint text . it has to rollback when the issue fixed
         await orders.page.getByRole('tab', { name: 'History', exact: true }).click();
         await expect(page.getByText('Closed', { exact: true })).toBeVisible();
-
     })
 
     test('C32B Discharge of Care Order', async ({ page, signInPage, orders }) => {
@@ -206,7 +205,6 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('cell', { name: 'Appointment of a children\'s guardian (C47A)', exact: true })).toBeVisible();
         await expect(page.locator('ccd-read-document-field')).toContainText('c47a_appointment_of_a_childrens_guardian.pdf');
-
     })
 
     test('C26 Authority to keep a child in secure accommodation ', async ({ page, signInPage, orders }) => {
@@ -244,7 +242,6 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Authority to keep a child in')).toBeVisible();
         await expect(page.getByRole('link', { name: 'c26_secure_accommodation_order.pdf' })).toBeVisible();
-
     })
 
     test('C36 Child assessment order ', async ({ page, signInPage, orders }) => {
@@ -279,7 +276,6 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Child assessment order (C39)')).toBeVisible();
         await expect(page.getByRole('link', { name: 'c39_child_assessment_order.pdf' })).toBeVisible();
-
     })
 
     test('C21 blank order ', async ({ page, signInPage, orders }) => {
@@ -317,7 +313,6 @@ test.describe('manage orders', () => {
         await expect(page.getByText('Blank order (C21)')).toBeVisible();
         await expect(page.getByText('Prohibited Steps Order')).toBeVisible();
         await expect(page.getByRole('link', { name: 'c21_blank_order.pdf' })).toBeVisible();
-
     })
 
     test('CTSC uploads Transparency Order', async ({ page, signInPage, orders }) => {
@@ -391,7 +386,6 @@ test.describe('manage orders', () => {
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
-
     })
 
     test('Judge uploads Family assistance order ', async ({ page, signInPage, orders }) => {
@@ -417,7 +411,6 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByText('c42_family_assistance_order.pdf', { exact: true })).toBeVisible();
-
     })
 
     test('CTSC uploads Interim care order (C33)', async ({ page, signInPage, orders }) => {
@@ -442,7 +435,6 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
-
     })
 
     test('Judge uploads Interim care order (C33)', async ({ page, signInPage, orders }) => {
@@ -467,6 +459,53 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
+    })
 
+    test('CTSC uploads Declaration of percentage (C63A)', async ({ page, signInPage, orders }) => {
+        caseName = 'Declaration of Percentage (C63A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Declaration of parentage (C63A)');
+        await orders.clickContinue()
+
+        await orders.ctscUploadsDeclarationOfPercentageOrderApproved('No');
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c63a_declaration_of_parentage.pdf', exact: true })).toBeVisible();
+    })
+
+    test('Judge uploads Declaration of percentage (C63A)', async ({ page, signInPage, orders }) => {
+        caseName = 'Declaration of Percentage (C63A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Declaration of parentage (C63A)');
+        await orders.clickContinue()
+
+        await orders.judgeUploadsDeclarationOfPercentageApplicationOrder('No');
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c63a_declaration_of_parentage.pdf', exact: true })).toBeVisible();
     })
 })
