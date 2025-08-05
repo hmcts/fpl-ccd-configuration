@@ -433,7 +433,7 @@ export class Orders extends BasePage {
         console.log('file' + sealedOrderScreenshot);
         await this.orderPage.waitForLoadState('domcontentloaded');
         await this.orderPage.waitForTimeout(1000);
-        await expect(this.orderPage).toHaveScreenshot(`${sealedOrderScreenshot}`, {
+        await expect(this.orderPage).toHaveScreenshot( {
             fullPage: true,
             threshold: 0.2, // Allow small differences
             maxDiffPixels: 1500, // Allow up to 1500 different pixels
