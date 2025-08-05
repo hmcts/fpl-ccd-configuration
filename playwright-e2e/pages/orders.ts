@@ -430,7 +430,9 @@ export class Orders extends BasePage {
     }
 
     async assertOrderSealScreenshot(file: string) {
-        await expect(this.orderPage).toHaveScreenshot(file,{fullPage: true,
+      console.log('file' + file);
+
+        await expect(this.orderPage).toHaveScreenshot('sealedUploadedOrder.png',{fullPage: true,
             threshold: 0.2, // Allow small differences
             maxDiffPixels: 1500, // Allow up to 1500 different pixels
             animations: 'disabled'});
