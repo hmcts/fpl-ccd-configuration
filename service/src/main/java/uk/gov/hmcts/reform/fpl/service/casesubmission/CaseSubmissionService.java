@@ -102,8 +102,8 @@ public class CaseSubmissionService {
 
         String respondentNames = String.join(", ", caseData.getRespondents1().stream()
             .map(respondent ->
-                Objects.equals(respondent.getValue().getParty().getRelationshipToChild(), "Local Authority") ?
-                    respondent.getValue().getParty().getFirstName() : respondent.getValue().getParty().getLastName())
+                Objects.equals(respondent.getValue().getParty().getRelationshipToChild(), "Local Authority")
+                    ? respondent.getValue().getParty().getFirstName() : respondent.getValue().getParty().getLastName())
             .filter(Objects::nonNull)
             .distinct()
             .toList());
