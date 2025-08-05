@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C1;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
@@ -102,7 +103,7 @@ public class CaseSubmissionService {
 
         String respondentNames = String.join(", ", caseData.getRespondents1().stream()
             .map(respondent ->
-                respondent.getValue().getParty().getLastName().isEmpty()
+                isEmpty(respondent.getValue().getParty().getLastName())
                     ? respondent.getValue().getParty().getFirstName() : respondent.getValue().getParty().getLastName())
             .filter(Objects::nonNull)
             .distinct()
