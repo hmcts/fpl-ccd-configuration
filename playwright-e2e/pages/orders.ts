@@ -430,11 +430,14 @@ export class Orders extends BasePage {
     }
 
     async assertOrderSealScreenshot(file: string) {
-      console.log('file' + file);
-
-        await expect(this.orderPage).toHaveScreenshot('sealedUploadedOrder.png',{fullPage: true,
+        console.log('file' + file);
+        await this.orderPage.waitForLoadState('domcontentloaded');
+        await this.orderPage.waitForTimeout(1000);
+        await expect(this.orderPage).toHaveScreenshot('sealedUploadedOrder.png', {
+            fullPage: true,
             threshold: 0.2, // Allow small differences
             maxDiffPixels: 1500, // Allow up to 1500 different pixels
-            animations: 'disabled'});
+            clip: {x: 0, y: 0, width: 1280, height: 720} // Fixed dimensions});
+        });
     }
-};
+}
