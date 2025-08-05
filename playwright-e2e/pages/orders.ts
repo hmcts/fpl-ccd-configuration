@@ -429,11 +429,11 @@ export class Orders extends BasePage {
         await this.page.getByRole('radio', {name: `${isSealed}`}).check();
     }
 
-    async assertOrderSealScreenshot(file: string) {
-        console.log('file' + file);
+    async assertOrderSealScreenshot(sealedOrderScreenshot: string) {
+        console.log('file' + sealedOrderScreenshot);
         await this.orderPage.waitForLoadState('domcontentloaded');
         await this.orderPage.waitForTimeout(1000);
-        await expect(this.orderPage).toHaveScreenshot('sealedUploadedOrder.png', {
+        await expect(this.orderPage).toHaveScreenshot(`${sealedOrderScreenshot}.png`, {
             fullPage: true,
             threshold: 0.2, // Allow small differences
             maxDiffPixels: 1500, // Allow up to 1500 different pixels

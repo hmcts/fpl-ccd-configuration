@@ -122,7 +122,7 @@ test.describe('manage orders', () => {
         await expect(orders.page.getByText('Uploaded Other Order')).toBeVisible();
         await expect(orders.page.getByRole('link', { name: 'other_order.pdf' })).toBeVisible();
         await orders.openOrderDoc('other_order.pdf');
-        await orders.assertOrderSealScreenshot('sealedUploadedOrder.png');
+        await orders.assertOrderSealScreenshot('sealedUploadedOrder');
 
     })
 
