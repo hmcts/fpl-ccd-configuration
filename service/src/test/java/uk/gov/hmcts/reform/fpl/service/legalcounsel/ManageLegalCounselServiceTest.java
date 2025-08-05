@@ -145,7 +145,7 @@ class ManageLegalCounselServiceTest {
         @BeforeEach
         void setUp() {
             when(caseAccessService.getUserCaseRoles(TEST_CASE_ID)).thenReturn(Set.of(BARRISTER));
-            when(userService.getUserEmail()).thenReturn(BARRISTER_EMAIL);
+            when(userService.getUserEmail()).thenReturn(BARRISTER_EMAIL.toUpperCase());
         }
 
         @Test
@@ -245,8 +245,7 @@ class ManageLegalCounselServiceTest {
                     .data(caseConverter.toMap(caseData))
                     .build();
 
-            when(organisationService.findUserByEmail(TEST_LEGAL_COUNSELLOR.getValue().getEmail()))
-                    .thenReturn(Optional.of(USER_ID));
+            when(organisationService.findUserByEmail(BARRISTER_EMAIL)).thenReturn(Optional.of(USER_ID));
 
             underTest.updateLegalCounsel(caseDetails);
 

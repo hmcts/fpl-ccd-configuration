@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.legalcounsel;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
@@ -107,7 +108,7 @@ public class ManageLegalCounselService {
             .filter(ObjectUtils::isNotEmpty)
             .flatMap(List::stream)
             .filter(leagalCounsellorElement ->
-                Objects.equals(leagalCounsellorElement.getValue().getEmail(), currentUserEmail))
+                StringUtils.equalsIgnoreCase(leagalCounsellorElement.getValue().getEmail(), currentUserEmail))
             .findFirst().stream()
             .toList();
     }
@@ -186,8 +187,8 @@ public class ManageLegalCounselService {
                     // update the existing elements if exists in the updated list
                     findElement(legalCounsellorElement.getId(), legalCounsellors)
                         // remove the element if not exists in the updated list and the email is same as current user
-                        .orElse(Objects.equals(legalCounsellorElement.getValue().getEmail(), currentUserEmail)
-                            ? null : legalCounsellorElement))
+                        .orElse(StringUtils.equalsIgnoreCase(legalCounsellorElement.getValue().getEmail(),
+                            currentUserEmail) ? null : legalCounsellorElement))
                 .filter(Objects::nonNull)
                 .toList();
             withSolicitor.setLegalCounsellors(updatedLegalCounsellors.isEmpty()
