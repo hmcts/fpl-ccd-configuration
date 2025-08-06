@@ -469,4 +469,66 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
     })
+
+    test('Judge uploads Child arrangements order (C43)', async ({
+                                                                    page,
+                                                                    signInPage,
+                                                                    orders,
+                                                                    manageOrdersManageOrdersOperations,
+                                                                manageOrdersOrderSelection,
+                                                                manageOrderHearingDetails,
+                                                                manageOrdersIssuingDetails,
+                                                                manageOrdersChildrenDetails,
+                                                                manageOrdersOrderDetails,
+                                                                manageOrdersReview,
+                                                                submit}) =>  {
+        const lowerBounds = 0, upperBounds = 10;
+        caseName = 'Child arrangements order (C43) ' + dateTime.slice(lowerBounds, upperBounds);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+
+        await orders.gotoNextStep('Manage orders');
+
+        await manageOrdersManageOrdersOperations.checkCreateAnOrder();
+        await manageOrdersManageOrdersOperations.clickContinue();
+
+        await manageOrdersOrderSelection.checkC43RadioButton();
+        await manageOrdersOrderSelection.clickContinue();
+
+        await manageOrderHearingDetails.checkApprovedHearingNo();
+        await manageOrderHearingDetails.checkApplicationOnOrderNo();
+        await manageOrderHearingDetails.clickContinue();
+
+        await manageOrdersIssuingDetails.checkNo();
+        await manageOrdersIssuingDetails.checkHerHonourJudge();
+        await manageOrdersIssuingDetails.fillLastName('testLastName');
+        await manageOrdersIssuingDetails.fillEmailAddress('test@justice.gov.uk');
+        await manageOrdersIssuingDetails.fillLegalAdviser('Testing');
+        await manageOrdersIssuingDetails.fillDate('01', '07', '2025');
+        await manageOrdersIssuingDetails.clickContinue();
+
+        await manageOrdersChildrenDetails.checkOrderAboutAllChildrenYes();
+        await manageOrdersChildrenDetails.clickContinue();
+
+        await manageOrdersOrderDetails.checkChildArrangementsOrder();
+        await manageOrdersOrderDetails.checkChildToLiveWith();
+        await manageOrdersOrderDetails.checkOrderByConsentYes();
+        await manageOrdersOrderDetails.fillDetailsForChildToLiveWithOrder('test')
+        await manageOrdersOrderDetails.fillRecitalsOrPreamble('test');
+        await manageOrdersOrderDetails.checkFinalOrderYes();
+        await manageOrdersOrderDetails.clickContinue();
+
+        await expect(manageOrdersReview.orderPdfLabel).toBeVisible();
+        await expect(manageOrdersReview.orderPdfLabel).toBeEnabled();
+        await manageOrdersReview.checkCloseCaseNo();
+        await manageOrdersReview.clickContinue();
+
+        await submit.clickSaveAndContinue();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c43_child_arrangements.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('link', { name: 'c43_child_arrangements.pdf', exact: true })).toBeEnabled();
+    });
 })
