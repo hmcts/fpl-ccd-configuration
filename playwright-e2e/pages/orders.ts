@@ -19,7 +19,7 @@ export class Orders extends BasePage {
     readonly isExclusion: Locator;
     readonly excluded: Locator;
     readonly powerOfExclusionStart: Locator;
-    readonly judgemagistrateTitle: Locator;
+    readonly judgeMagistrateTitle: Locator;
     readonly judgeLastName: Locator;
     readonly judgeEmail: Locator;
     readonly legalAdvisorName: Locator;
@@ -27,14 +27,14 @@ export class Orders extends BasePage {
     readonly closeOrder: Locator;
     readonly careOrderIssuedDate: Locator;
     readonly careOrderIssuedCourt: Locator;
-    readonly juridiction: Locator;
-    readonly juridictionRegion: Locator;
+    readonly jurisdiction: Locator;
+    readonly jurisdictionRegion: Locator;
     readonly approvalDate: Locator;
-    readonly childAccomadation: Locator;
+    readonly childAccommodation: Locator;
     readonly orderConsent: Locator;
     readonly orderReason: Locator;
     readonly childLegalAid: Locator;
-    readonly juridictionRadio: Locator;
+    readonly jurisdictionRadio: Locator;
     readonly orderEndsOn: Locator;
     readonly orderLength: Locator;
     readonly assessmentStartDate: Locator;
@@ -74,13 +74,13 @@ export class Orders extends BasePage {
         this.orderApproved = page.getByRole('group', { name: 'Was the order approved at a' });
         this.orderApplication = page.getByRole('group', { name: 'Is there an application for' });
         this.approvedHearing = page.getByLabel('Which hearing?');
-        this.issuingJudge = page.getByRole('group', {name: 'Is this judge issuing the'});
-        this.judgemagistrateTitle = page.getByRole('group', {name: 'Judge or magistrate\'s title'});
-        this.allChildInvolved = page.getByRole('group', {name: 'Is the order about all the children?'})
-        this.EPOrderType = page.getByRole('group', {name: 'Type of emergency protection'});
-        this.EPOEndDate = page.getByRole('group', {name: 'When does it end?'});
-        this.finalOrder = page.getByRole('group', {name: 'Is this a final order?'});
-        this.orderPreviewLink = page.getByRole('link', {name: 'Preview order.pdf'});
+        this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });
+        this.judgeMagistrateTitle = page.getByRole('group', { name: 'Judge or magistrate\'s title' });
+        this.childInvolved = page.getByRole('group', { name: 'Is the order about all the children?' })
+        this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
+        this.EPOEndDate = page.getByRole('group', { name: 'When does it end?' });
+        this.finalOrder = page.getByRole('group', { name: 'Is this a final order?' });
+        this.orderPreviewLink = page.getByRole('link', { name: 'Preview order.pdf' });
         this.orderPage = page;
         this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
         this.excluded = page.getByLabel('Who\'s excluded');
@@ -94,14 +94,14 @@ export class Orders extends BasePage {
         this.closeOrder = page.getByRole('group', { name: 'Does this order close the case?' });
         this.careOrderIssuedDate = page.getByRole('group', { name: 'When was the care order issued?' });
         this.careOrderIssuedCourt = page.getByLabel('Which court issued the order?');
-        this.juridiction = page.getByRole('group', { name: 'Select jurisdiction' });
-        this.juridictionRegion = page.locator('#manageOrdersCafcassOfficesWales');
+        this.jurisdiction = page.getByRole('group', { name: 'Select jurisdiction' });
+        this.jurisdictionRegion = page.locator('#manageOrdersCafcassOfficesWales');
         this.approvalDate = page.getByRole('group', { name: 'Approval Date' });
-        this.childAccomadation = page.getByLabel('Which child is the order for?');
+        this.childAccommodation = page.getByLabel('Which child is the order for?');
         this.orderConsent = page.getByRole('group', { name: 'Is order by consent?' });
         this.orderReason = page.getByRole('group', { name: 'Order given because the child is likely to' });
         this.childLegalAid = page.getByRole('group', { name: 'Does the child have a Legal' });
-        this.juridictionRadio = page.getByRole('group', { name: 'Jurisdiction' });
+        this.jurisdictionRadio = page.getByRole('group', { name: 'Jurisdiction' });
         this.orderEndsOn = page.getByRole('group', { name: 'When does the order end?' });
         this.orderLength = page.getByLabel('Order length, in months');
         this.assessmentStartDate = page.getByRole('group', { name: 'Assessment Start Date' });
@@ -167,7 +167,7 @@ export class Orders extends BasePage {
         await this.issuingJudge.getByRole('radio', { name: `${hearingJudge}` }).check();
         await this.legalAdvisorName.fill('LA Marien Wester');
         if (hearingJudge == 'No') {
-            await this.judgemagistrateTitle.getByLabel('His Honour Judge').check();
+            await this.judgeMagistrateTitle.getByLabel('His Honour Judge').check();
             await this.judgeLastName.fill('John');
             await this.judgeEmail.fill('email@email.comLegal');
             await this.legalAdvisorName.fill('LA Jonathan');
@@ -182,7 +182,7 @@ export class Orders extends BasePage {
     }
 
     async selectChildInvolved() {
-        await this.childAccomadation.selectOption('Timothy Jones');
+        await this.childAccommodation.selectOption('Timothy Jones');
     }
 
     async addChildDetails(isAllChild: string) {
@@ -231,8 +231,8 @@ export class Orders extends BasePage {
     }
 
     async addC47AppointOfGuardianOrder() {
-        await this.juridiction.getByRole('radio', { name: 'Wales' }).check();
-        await this.juridictionRegion.selectOption('Swansea');
+        await this.jurisdiction.getByRole('radio', { name: 'Wales' }).check();
+        await this.jurisdictionRegion.selectOption('Swansea');
         await this.orderFurtherDirectionDetails.fill('Remove the child from the social care and appointing Aunty as guardian');
     }
 
@@ -240,7 +240,7 @@ export class Orders extends BasePage {
         await this.orderConsent.getByLabel('No').check();
         await this.orderReason.getByLabel('abscond and suffer harm').check();
         await this.childLegalAid.getByLabel('Yes').check();
-        await this.juridictionRadio.getByRole('radio', { name: 'Wales' }).check();
+        await this.jurisdictionRadio.getByRole('radio', { name: 'Wales' }).check();
         await this.orderFurtherDirectionDetails.fill('Further Direction for give secure accommodation');
         await this.orderEndsOn.getByLabel('In a set number of months').check();
         await this.orderLength.fill('12');
