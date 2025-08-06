@@ -429,8 +429,7 @@ export class Orders extends BasePage {
         await this.page.getByRole('radio', {name: `${isSealed}`}).check();
     }
 
-    async assertOrderSealScreenshot(sealedOrderScreenshot: string) {
-        console.log('file' + sealedOrderScreenshot);
+    async assertOrderSealScreenshot() {
         await this.orderPage.waitForLoadState('domcontentloaded');
         await this.orderPage.waitForTimeout(1000);
         await expect(this.orderPage).toHaveScreenshot( {
