@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -56,6 +57,9 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
     @MockBean
     private CaseRoleLookupService caseRoleLookupService;
 
+    @MockBean
+    private UserService userService;
+
     @Captor
     private ArgumentCaptor<Map<String, Object>> emailVariablesCaptor;
 
@@ -71,6 +75,7 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
             .thenReturn(List.of(SolicitorRole.CHILDSOLICITORA));
         when(caseRoleLookupService.getCaseSolicitorRolesByCaseRoles(any())).thenCallRealMethod();
         when(caseAccessService.getUserCaseRoles(TEST_CASE_ID)).thenReturn(Set.of(CaseRole.CHILDSOLICITORA));
+        when(userService.getUserEmail()).thenReturn("solicitor@test.com");
     }
 
     @Test
