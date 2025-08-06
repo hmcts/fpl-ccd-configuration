@@ -54,7 +54,9 @@
     "prepare": "husky install",
     "yarn-update": "yarn set version 3.x",
     "install-dependencies": "/usr/bin/yarn install --silent",
-    "lint-ui-tests": "/usr/bin/yarn lint"
+    "lint-ui-tests": "/usr/bin/yarn lint",
+    "build-container": "docker build -t playwright-container .",
+    "start-container": "docker run --rm -it --network host --ipc=host -v \"$(pwd)\":/playwright -w /playwright playwright-container /bin/bash"
   },
   "peerDependencies": {
     "debug": "4.4.0",
