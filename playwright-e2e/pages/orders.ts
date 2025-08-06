@@ -1,5 +1,5 @@
-import { BasePage } from "./base-page";
-import { expect, Locator, Page } from "@playwright/test";
+import {BasePage} from "./base-page";
+import {expect, Locator, Page} from "@playwright/test";
 import config from "../settings/test-docs/config";
 
 export class Orders extends BasePage {
@@ -12,7 +12,7 @@ export class Orders extends BasePage {
     readonly orderApplication: Locator;
     readonly approvedHearing: Locator;
     readonly issuingJudge: Locator;
-    readonly childInvolved: Locator;
+    readonly allChildInvolved: Locator;
     readonly EPOrderType: Locator;
     readonly finalOrder: Locator;
     readonly orderPreviewLink: Locator;
@@ -53,7 +53,7 @@ export class Orders extends BasePage {
     readonly costOrder: Locator;
     readonly orderTitle: Locator;
     readonly orderDirectionDetails: Locator
-    readonly radioButton: Locator;
+    readonly radioNoButton: Locator;
     readonly firstFamilyBefriended: Locator;
     readonly secondFamilyBefriended: Locator;
     readonly thirdFamilyBefriended: Locator;
@@ -66,6 +66,7 @@ export class Orders extends BasePage {
     readonly addExclusionDetails: Locator;
     readonly endOfProceedings: Locator;
     readonly endDate: Locator;
+    childInOrder: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -118,7 +119,7 @@ export class Orders extends BasePage {
         this.costOrderDetails = page.getByLabel('Cost order details');
         this.orderTitle = page.getByLabel('Add order title (Optional)');
         this.orderDirectionDetails = page.getByLabel('Add order directions');
-        this.radioButton = page.getByRole('radio', { name: 'No' });
+        this.radioNoButton = page.getByRole('radio', { name: 'No' });
         this.dateChosen = page.getByRole('radio', { name: 'Date to be chosen' });
         this.permissionReport = page.getByRole('group', { name: 'Permission to report is not' });
         this.firstFamilyBefriended = page.getByLabel('First party to be befriended');
@@ -132,6 +133,7 @@ export class Orders extends BasePage {
         this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
         this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
         this.endDate = page.getByRole('group', { name: 'End Date' });
+        this.childInOrder = page.getByRole('group', {name: 'Who’s included in the order?'});
 
     }
 
@@ -140,7 +142,7 @@ export class Orders extends BasePage {
     }
 
     async selectOrder(orderType: string) {
-        await this.orderTypeRadio.getByLabel(`${orderType}`).check();
+        await this.orderTypeRadio.getByLabel(`${orderType}`,{exact:true}).check();
 
     }
 
@@ -184,7 +186,7 @@ export class Orders extends BasePage {
     }
 
     async addChildDetails(isAllChild: string) {
-        await this.childInvolved.getByRole('radio', { name: `${isAllChild}` }).click();
+        await this.allChildInvolved.getByRole('radio', { name: `${isAllChild}` }).click();
         if (isAllChild == 'No') {
             await this.page.getByRole('group', { name: 'Child 1 (Optional)' }).getByLabel('Yes').check();
             await this.page.getByRole('group', { name: 'Child 2 (Optional)' }).getByLabel('Yes').check();
@@ -326,7 +328,7 @@ export class Orders extends BasePage {
         await this.page.pause();
         await this.clickContinue();
         await this.page.pause();
-        await this.childInvolved.getByLabel('Yes').check();
+        await this.allChildInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
         await this.secondFamilyBefriended.selectOption('Joe Bloggs');
@@ -345,7 +347,7 @@ export class Orders extends BasePage {
         await this.issuingJudge.getByLabel('Yes').check();
         await this.page.pause();
         await this.clickContinue();
-        await this.childInvolved.getByLabel('Yes').check();
+        await this.allChildInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
         await this.secondFamilyBefriended.selectOption('Sarah Black');
@@ -365,9 +367,9 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.childInvolved.getByLabel('Yes').check();
+        await this.allChildInvolved.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.radioButton.click();
+        await this.radioNoButton.click();
         await this.endOfProceedings.check();
     }
 
@@ -377,9 +379,64 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.childInvolved.getByLabel('Yes').check();
+        await this.allChildInvolved.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.radioButton.check();
+        await this.radioNoButton.check();
         await this.endOfProceedings.check();
+    }
+
+    async assertuploadOrderType() {
+        await expect.soft(this.page.getByText('Appointment of a guardian (C46A)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Appointment of a solicitor (C48A)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Authority to search for a child (C31)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Authority to search for another child (C27)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Discharge education supervision order (C38A)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Discharge of parental responsibility (C45B)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Extension of an education supervision order (C38B)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Leave to remove a child from the UK (C44B)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Power of arrest (FL406)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal of appointment of a children\'s guardian (C47B)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal of appointment of a solicitor (C48B)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal of contact with a child in care (C34B)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal to transfer proceedings (C50)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Termination of appointment of a children\'s guardian (C47C)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Termination of appointment of a solicitor (C48C)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Termination of guardian\'s appointment (C46B)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('To disclose information about the whereabouts of a missing child (C30)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Transfer out Children Act (C49)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Variation of Emergency protection order (C24)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Warrant to assist (C28)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Warrant to assist EPO (C25)', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Other', {exact: true})).toBeVisible();
+    }
+
+    async addIssuingDetailsOfUploadedOrder(approvalDate: Date) {
+        await this.fillDateInputs(this.page, new Date(new Date().setMonth(new Date().getMonth() + 3)));
+        await this.clickContinue();
+        await expect(this.page.getByText('Errors', {exact: true})).toBeVisible();
+        await expect(this.page.getByText('Approval date cannot not be in the future')).toBeVisible();
+        await this.fillDateInputs(this.page, approvalDate);
+    }
+
+    async enterOrderName() {
+        await this.page.locator('#manageOrdersUploadTypeOtherTitle').fill('Uploaded Other Order');
+    }
+
+    async uploadOrder(isSealed: string) {
+
+        await this.page.setInputFiles('#manageOrdersUploadOrderFile', config.testPdfFile);
+        await this.waitForAllUploadsToBeCompleted();
+        await this.page.getByRole('radio', {name: `${isSealed}`}).check();
+    }
+
+    async assertOrderSealScreenshot() {
+        await this.orderPage.waitForLoadState('domcontentloaded');
+        await this.orderPage.waitForTimeout(1000);
+        await expect(this.orderPage).toHaveScreenshot( {
+            fullPage: true,
+            threshold: 0.2, // Allow small differences
+            maxDiffPixels: 1500, // Allow up to 1500 different pixels
+            clip: {x: 0, y: 0, width: 1280, height: 720} // Fixed dimensions});
+        });
     }
 }
