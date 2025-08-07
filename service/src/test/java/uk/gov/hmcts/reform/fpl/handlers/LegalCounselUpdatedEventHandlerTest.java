@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.notify.legalcounsel.LegalCounsellorAddedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.legalcounsel.LegalCounsellorRemovedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LegalCounsellorEmailContentProvider;
 
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +47,9 @@ class LegalCounselUpdatedEventHandlerTest {
 
     @Mock
     private LegalCounsellorEmailContentProvider contentProvider;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private LegalCounselUpdatedEventHandler underTest;
@@ -76,6 +81,7 @@ class LegalCounselUpdatedEventHandlerTest {
         LegalCounsellorRemovedNotifyTemplate expectedTemplate = mock(LegalCounsellorRemovedNotifyTemplate.class);
         LegalCounsellorRemoved event = new LegalCounsellorRemoved(caseData, "Test Solicitors", TEST_LEGAL_COUNCILLOR);
 
+        when(userService.getUserEmail()).thenReturn("solicitor@test.com");
         when(contentProvider.buildLegalCounsellorRemovedNotificationTemplate(caseData, event))
             .thenReturn(expectedTemplate);
 
@@ -84,6 +90,24 @@ class LegalCounselUpdatedEventHandlerTest {
         verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
         verify(notificationService).sendEmail(
             LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE, TEST_COUNSELLOR_EMAIL_ADDRESS,
+            expectedTemplate, TEST_CASE_ID
+        );
+    }
+
+    @Test
+    void shouldRevokeAccessFromUserAndNotifyThemIfBarrister() {
+        LegalCounsellorRemovedNotifyTemplate expectedTemplate = mock(LegalCounsellorRemovedNotifyTemplate.class);
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(caseData, "Test Solicitors", TEST_LEGAL_COUNCILLOR);
+
+        when(userService.getUserEmail()).thenReturn(TEST_COUNSELLOR_EMAIL_ADDRESS);
+        when(contentProvider.buildLegalCounsellorRemovedNotificationTemplate(caseData, event))
+            .thenReturn(expectedTemplate);
+
+        underTest.handleLegalCounsellorRemovedEvent(event);
+
+        verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
+        verify(notificationService).sendEmail(
+            LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE, TEST_COUNSELLOR_EMAIL_ADDRESS,
             expectedTemplate, TEST_CASE_ID
         );
     }

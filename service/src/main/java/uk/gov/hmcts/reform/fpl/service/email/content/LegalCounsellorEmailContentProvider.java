@@ -42,5 +42,4 @@ public class LegalCounsellorEmailContentProvider extends AbstractEmailContentPro
             .ccdNumber(formatCCDCaseNumber(caseData.getId()))
             .build();
     }
-
 }

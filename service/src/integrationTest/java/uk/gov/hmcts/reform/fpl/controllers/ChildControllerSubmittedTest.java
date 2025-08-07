@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.service.notify.NotificationClient;
@@ -101,6 +102,8 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
     private NotificationClient notificationClient;
     @MockBean
     private OrganisationApi orgApi;
+    @MockBean
+    private UserService userService;
 
     ChildControllerSubmittedTest() {
         super("enter-children");
