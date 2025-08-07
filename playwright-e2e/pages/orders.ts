@@ -66,6 +66,7 @@ export class Orders extends BasePage {
     readonly addExclusionDetails: Locator;
     readonly endOfProceedings: Locator;
     readonly endDate: Locator;
+    readonly applications: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -132,6 +133,7 @@ export class Orders extends BasePage {
         this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
         this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
         this.endDate = page.getByRole('group', { name: 'End Date' });
+        this.applications = page.getByLabel('Applications');
 
     }
 
@@ -380,6 +382,20 @@ export class Orders extends BasePage {
         await this.childInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.radioButton.check();
+        await this.endOfProceedings.check();
+    }
+
+    async uploadsInterimSupervisionOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('Yes').check();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.orderApplication.getByLabel('Yes').check();
+        await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.childInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderFurtherDirectionDetails.fill('Test');
         await this.endOfProceedings.check();
     }
 }
