@@ -57,7 +57,7 @@ class LegalRepresentativesUpdatedHandlerEmailTemplateTest extends EmailTemplateT
 
         CaseData before = CaseData.builder().build();
 
-        underTest.sendEmailToLegalRepresentativesAddedToCase(new LegalRepresentativesUpdated(caseData, before));
+        underTest.sendEmailToLegalRepresentativesUpdated(new LegalRepresentativesUpdated(caseData, before));
 
         assertThat(response())
             .hasSubject("You’ve been added to a case, " + CHILD_LAST_NAME)
