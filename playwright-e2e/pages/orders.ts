@@ -76,7 +76,7 @@ export class Orders extends BasePage {
         this.approvedHearing = page.getByLabel('Which hearing?');
         this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });
         this.judgeMagistrateTitle = page.getByRole('group', { name: 'Judge or magistrate\'s title' });
-        this.childInvolved = page.getByRole('group', { name: 'Is the order about all the children?' })
+        this.allChildInvolved = page.getByRole('group', { name: 'Is the order about all the children?' })
         this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
         this.EPOEndDate = page.getByRole('group', { name: 'When does it end?' });
         this.finalOrder = page.getByRole('group', { name: 'Is this a final order?' });
