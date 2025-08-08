@@ -70,7 +70,6 @@ public class LegalRepresentativesUpdatedHandler {
                             legalCounsellorEmailContentProvider
                                 .buildLegalCounsellorRemovedThemselvesNotificationTemplate(caseData,
                                     legalRepresentative.getFullName()),
-                            caseData.getId()))
-            );
+                            caseData.getId())));
     }
 }
