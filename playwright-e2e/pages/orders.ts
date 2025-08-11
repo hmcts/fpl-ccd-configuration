@@ -12,7 +12,7 @@ export class Orders extends BasePage {
     readonly orderApplication: Locator;
     readonly approvedHearing: Locator;
     readonly issuingJudge: Locator;
-    readonly allChildInvolved: Locator;
+    readonly isAllChildrenInvolved: Locator;
     readonly EPOrderType: Locator;
     readonly finalOrder: Locator;
     readonly orderPreviewLink: Locator;
@@ -76,7 +76,7 @@ export class Orders extends BasePage {
         this.approvedHearing = page.getByLabel('Which hearing?');
         this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });
         this.judgeMagistrateTitle = page.getByRole('group', { name: 'Judge or magistrate\'s title' });
-        this.allChildInvolved = page.getByRole('group', { name: 'Is the order about all the children?' })
+        this.isAllChildrenInvolved = page.getByRole('group', { name: 'Is the order about all the children?' })
         this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
         this.EPOEndDate = page.getByRole('group', { name: 'When does it end?' });
         this.finalOrder = page.getByRole('group', { name: 'Is this a final order?' });
@@ -185,9 +185,9 @@ export class Orders extends BasePage {
         await this.childAccommodation.selectOption('Timothy Jones');
     }
 
-    async addChildDetails(isAllChild: string) {
-        await this.allChildInvolved.getByRole('radio', { name: `${isAllChild}` }).click();
-        if (isAllChild == 'No') {
+    async addChildDetails(isAllChildrenInvolved: string) {
+        await this.isAllChildrenInvolved.getByRole('radio', { name: `${isAllChildrenInvolved}` }).click();
+        if (isAllChildrenInvolved == 'No') {
             await this.page.getByRole('group', { name: 'Child 1 (Optional)' }).getByLabel('Yes').check();
             await this.page.getByRole('group', { name: 'Child 2 (Optional)' }).getByLabel('Yes').check();
             await this.page.getByRole('group', { name: 'Child 4 (Optional)' }).getByLabel('Yes').check();
@@ -328,7 +328,7 @@ export class Orders extends BasePage {
         await this.page.pause();
         await this.clickContinue();
         await this.page.pause();
-        await this.allChildInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
         await this.secondFamilyBefriended.selectOption('Joe Bloggs');
@@ -347,7 +347,7 @@ export class Orders extends BasePage {
         await this.issuingJudge.getByLabel('Yes').check();
         await this.page.pause();
         await this.clickContinue();
-        await this.allChildInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
         await this.secondFamilyBefriended.selectOption('Sarah Black');
@@ -367,7 +367,7 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.allChildInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.radioNoButton.click();
         await this.endOfProceedings.check();
@@ -379,7 +379,7 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.allChildInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.radioNoButton.check();
         await this.endOfProceedings.check();
