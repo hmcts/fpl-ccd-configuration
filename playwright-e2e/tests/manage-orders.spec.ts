@@ -4,6 +4,7 @@ import caseData from '../caseData/caseWithHearingDetails.json' assert {type: 'js
 import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert {type: 'json'};
 import { expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
+import config from "../settings/test-docs/config";
 
 test.describe('manage orders', () => {
     let dateTime = new Date().toISOString();
@@ -94,6 +95,37 @@ test.describe('manage orders', () => {
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
     })
+    test('Upload Order @xbrowser ' , async ({ page, signInPage, orders }) => {
+        caseName = 'Upload Order ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithOrderData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+        await orders.selectOrderOperation('Upload an order');
+        await orders.clickContinue();
+        await orders.assertuploadOrderType();
+        await orders.selectOrder('Other');
+        await orders.enterOrderName();
+        await orders.clickContinue();
+        await orders.addIssuingDetailsOfUploadedOrder(new Date());
+        await orders.clickContinue();
+        await orders.addChildDetails('Yes')
+        await orders.clickContinue();
+        await orders.uploadOrder('Yes');
+        await orders.clickContinue();
+        await expect.soft(page.getByRole('heading', { name: 'Check your order', exact: true })).toBeVisible();
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+        await orders.tabNavigation('Orders');
+        await expect(orders.page.getByRole('cell', { name: 'Other', exact: true })).toBeVisible();
+        await expect(orders.page.getByText('Uploaded Other Order')).toBeVisible();
+        await expect(orders.page.getByRole('link', { name: 'other_order.pdf' })).toBeVisible();
+        await orders.openOrderDoc('other_order.pdf');
+        await orders.assertOrderSealScreenshot();
+
+    })
+
     test('C32 Care Order', async ({ page, signInPage, orders }) => {
         caseName = 'C32 Care Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
@@ -469,4 +501,66 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
     })
+
+    test('Judge uploads Child arrangements order (C43)', async ({
+                                                                    page,
+                                                                    signInPage,
+                                                                    orders,
+                                                                    manageOrdersManageOrdersOperations,
+                                                                manageOrdersOrderSelection,
+                                                                manageOrderHearingDetails,
+                                                                manageOrdersIssuingDetails,
+                                                                manageOrdersChildrenDetails,
+                                                                manageOrdersOrderDetails,
+                                                                manageOrdersReview,
+                                                                submit}) =>  {
+        const lowerBounds = 0, upperBounds = 10;
+        caseName = 'Child arrangements order (C43) ' + dateTime.slice(lowerBounds, upperBounds);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+
+        await orders.gotoNextStep('Manage orders');
+
+        await manageOrdersManageOrdersOperations.checkCreateAnOrder();
+        await manageOrdersManageOrdersOperations.clickContinue();
+
+        await manageOrdersOrderSelection.checkC43RadioButton();
+        await manageOrdersOrderSelection.clickContinue();
+
+        await manageOrderHearingDetails.checkApprovedHearingNo();
+        await manageOrderHearingDetails.checkApplicationOnOrderNo();
+        await manageOrderHearingDetails.clickContinue();
+
+        await manageOrdersIssuingDetails.checkNo();
+        await manageOrdersIssuingDetails.checkHerHonourJudge();
+        await manageOrdersIssuingDetails.fillLastName('testLastName');
+        await manageOrdersIssuingDetails.fillEmailAddress('test@justice.gov.uk');
+        await manageOrdersIssuingDetails.fillLegalAdviser('Testing');
+        await manageOrdersIssuingDetails.fillDate('01', '07', '2025');
+        await manageOrdersIssuingDetails.clickContinue();
+
+        await manageOrdersChildrenDetails.checkOrderAboutAllChildrenYes();
+        await manageOrdersChildrenDetails.clickContinue();
+
+        await manageOrdersOrderDetails.checkChildArrangementsOrder();
+        await manageOrdersOrderDetails.checkChildToLiveWith();
+        await manageOrdersOrderDetails.checkOrderByConsentYes();
+        await manageOrdersOrderDetails.fillDetailsForChildToLiveWithOrder('test')
+        await manageOrdersOrderDetails.fillRecitalsOrPreamble('test');
+        await manageOrdersOrderDetails.checkFinalOrderYes();
+        await manageOrdersOrderDetails.clickContinue();
+
+        await expect(manageOrdersReview.orderPdfLabel).toBeVisible();
+        await expect(manageOrdersReview.orderPdfLabel).toBeEnabled();
+        await manageOrdersReview.checkCloseCaseNo();
+        await manageOrdersReview.clickContinue();
+
+        await submit.clickSaveAndContinue();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c43_child_arrangements.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('link', { name: 'c43_child_arrangements.pdf', exact: true })).toBeEnabled();
+    });
 })
