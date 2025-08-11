@@ -10,8 +10,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentativesChange;
 import uk.gov.hmcts.reform.fpl.model.notify.LegalRepresentativeAddedTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.legalcounsel.LegalCounsellorRemovedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.service.LegalRepresentativesDifferenceCalculator;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.content.LegalCounsellorEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LegalRepresentativeAddedContentProvider;
 
 import java.util.List;
@@ -22,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_THEMSELVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -53,20 +59,27 @@ class LegalRepresentativesUpdatedHandlerTest {
     private LegalRepresentativesDifferenceCalculator diffCalculator;
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private UserService userService;
+    @Mock
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
+    @Mock
+    private LegalCounsellorEmailContentProvider legalCounsellorEmailContentProvider;
 
     @InjectMocks
     private LegalRepresentativesUpdatedHandler underTest;
 
     @Test
-    void sendEmailToLegalRepresentativesAddedToCase() {
+    void sendEmailToLegalRepresentativesUpdated() {
         when(diffCalculator.calculate(LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW))
-            .thenReturn(LegalRepresentativesChange.builder().added(Set.of(LEGAL_REPRESENTATIVE)).build());
+            .thenReturn(LegalRepresentativesChange.builder().added(Set.of(LEGAL_REPRESENTATIVE))
+                .removed(Set.of()).build());
 
         LegalRepresentativeAddedTemplate notifyData = mock(LegalRepresentativeAddedTemplate.class);
         when(contentProvider.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA))
             .thenReturn(notifyData);
 
-        underTest.sendEmailToLegalRepresentativesAddedToCase(
+        underTest.sendEmailToLegalRepresentativesUpdated(
             new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
         );
 
@@ -76,10 +89,11 @@ class LegalRepresentativesUpdatedHandlerTest {
     }
 
     @Test
-    void sendEmailToLegalRepresentativesAddedToCaseMultiple() {
+    void sendEmailToLegalRepresentativesUpdatedMultiple() {
         when(diffCalculator.calculate(LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW))
             .thenReturn(LegalRepresentativesChange.builder()
                 .added(Set.of(LEGAL_REPRESENTATIVE, LEGAL_REPRESENTATIVE_2))
+                .removed(Set.of())
                 .build()
             );
 
@@ -89,7 +103,7 @@ class LegalRepresentativesUpdatedHandlerTest {
         when(contentProvider.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA)).thenReturn(notifyData1);
         when(contentProvider.getNotifyData(LEGAL_REPRESENTATIVE_2, CASE_DATA)).thenReturn(notifyData2);
 
-        underTest.sendEmailToLegalRepresentativesAddedToCase(
+        underTest.sendEmailToLegalRepresentativesUpdated(
             new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
         );
 
@@ -102,14 +116,39 @@ class LegalRepresentativesUpdatedHandlerTest {
     }
 
     @Test
-    void sendEmailToLegalRepresentativesAddedToCaseNone() {
+    void sendEmailToLegalRepresentativesUpdatedNone() {
         when(diffCalculator.calculate(LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW))
-            .thenReturn(LegalRepresentativesChange.builder().added(emptySet()).build());
+            .thenReturn(LegalRepresentativesChange.builder().added(emptySet()).removed(Set.of()).build());
 
-        underTest.sendEmailToLegalRepresentativesAddedToCase(
+        underTest.sendEmailToLegalRepresentativesUpdated(
             new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
         );
 
         verifyNoInteractions(contentProvider, notificationService);
+    }
+
+    @Test
+    void sendEmailToLegalRepresentativesAndLaWheLegalRepRemoveThemselves() {
+        when(diffCalculator.calculate(LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW))
+            .thenReturn(LegalRepresentativesChange.builder().added(Set.of()).removed(Set.of(LEGAL_REPRESENTATIVE))
+                .build());
+
+        LegalCounsellorRemovedNotifyTemplate notifyData = mock(LegalCounsellorRemovedNotifyTemplate.class);
+        when(legalCounsellorEmailContentProvider
+            .buildLegalCounsellorRemovedThemselvesNotificationTemplate(CASE_DATA, LEGAL_REPRESENTATIVE.getFullName()))
+            .thenReturn(notifyData);
+        when(userService.getUserEmail()).thenReturn(REPRESENTATIVE_EMAIL);
+        when(localAuthorityRecipients.getRecipients(RecipientsRequest.builder()
+            .legalRepresentativesExcluded(true).caseData(CASE_DATA).build()))
+            .thenReturn(Set.of("la1@test.com", "la2@test.com"));
+
+        underTest.sendEmailToLegalRepresentativesUpdated(
+            new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
+        );
+
+        verify(notificationService).sendEmail(LEGAL_COUNSELLOR_REMOVED_THEMSELVES,
+            "la1@test.com", notifyData, CASE_ID);
+        verify(notificationService).sendEmail(LEGAL_COUNSELLOR_REMOVED_THEMSELVES,
+            "la2@test.com", notifyData, CASE_ID);
     }
 }
