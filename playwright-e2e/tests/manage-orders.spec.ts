@@ -503,17 +503,17 @@ test.describe('manage orders', () => {
     })
 
     test('Judge uploads Child arrangements order (C43)', async ({
-                                                                    page,
-                                                                    signInPage,
-                                                                    orders,
-                                                                    manageOrdersManageOrdersOperations,
-                                                                manageOrdersOrderSelection,
-                                                                manageOrderHearingDetails,
-                                                                manageOrdersIssuingDetails,
-                                                                manageOrdersChildrenDetails,
-                                                                manageOrdersOrderDetails,
-                                                                manageOrdersReview,
-                                                                submit}) =>  {
+        page,
+        signInPage,
+        orders,
+        manageOrdersManageOrdersOperations,
+        manageOrdersOrderSelection,
+        manageOrderHearingDetails,
+        manageOrdersIssuingDetails,
+        manageOrdersChildrenDetails,
+        manageOrdersOrderDetails,
+        manageOrdersReview,
+        submit }) => {
         const lowerBounds = 0, upperBounds = 10;
         caseName = 'Child arrangements order (C43) ' + dateTime.slice(lowerBounds, upperBounds);
         await updateCase(caseName, caseNumber, caseData);
@@ -562,5 +562,54 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('link', { name: 'c43_child_arrangements.pdf', exact: true })).toBeVisible();
         await expect(page.getByRole('link', { name: 'c43_child_arrangements.pdf', exact: true })).toBeEnabled();
+    })
+
+    test('CTSC uploads Interim supervision order (C35B)', async ({ page, signInPage, orders }) => {
+        caseName = 'Interim supervision order (C35B) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Interim supervision order (C35B)');
+        await orders.clickContinue();
+
+        await orders.uploadsInterimSupervisionOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c35b_interim_supervision_order.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('Judge uploads Interim supervision order (C35B)', async ({ page, signInPage, orders }) => {
+        caseName = 'Interim supervision order (C35B) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Interim supervision order (C35B)');
+        await orders.clickContinue();
+
+        await orders.uploadsInterimSupervisionOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c35b_interim_supervision_order.pdf', exact: true })).toBeVisible();
     });
 })
