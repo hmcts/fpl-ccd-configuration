@@ -395,7 +395,7 @@ export class Orders extends BasePage {
         await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
         await this.clickContinue();
         await this.clickContinue();
-        await this.allChildInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.orderFurtherDirectionDetails.fill('Test');
         await this.endOfProceedings.check();
