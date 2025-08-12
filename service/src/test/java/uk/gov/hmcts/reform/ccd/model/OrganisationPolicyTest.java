@@ -14,7 +14,7 @@ class OrganisationPolicyTest {
 
         final OrganisationPolicy expectedOrgPolicy = OrganisationPolicy.builder()
             .orgPolicyCaseAssignedRole("[CREATOR]")
-            .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+            .organisation(Organisation.builder()
                 .organisationID("ORG1")
                 .organisationName("Private solicitor")
                 .build())
