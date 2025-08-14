@@ -12,7 +12,7 @@ export class Orders extends BasePage {
     readonly orderApplication: Locator;
     readonly approvedHearing: Locator;
     readonly issuingJudge: Locator;
-    readonly allChildInvolved: Locator;
+    readonly isAllChildrenInvolved: Locator;
     readonly EPOrderType: Locator;
     readonly finalOrder: Locator;
     readonly orderPreviewLink: Locator;
@@ -66,9 +66,10 @@ export class Orders extends BasePage {
     readonly addExclusionDetails: Locator;
     readonly endOfProceedings: Locator;
     readonly endDate: Locator;
+    readonly applications: Locator;
     childInOrder: Locator;
 
-    constructor(page: Page) {
+   constructor(page: Page) {
         super(page);
         this.orderTypeRadio = page.getByRole('group', { name: 'Select order' });
         this.orderApproved = page.getByRole('group', { name: 'Was the order approved at a' });
@@ -76,7 +77,7 @@ export class Orders extends BasePage {
         this.approvedHearing = page.getByLabel('Which hearing?');
         this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });
         this.judgeMagistrateTitle = page.getByRole('group', { name: 'Judge or magistrate\'s title' });
-        this.childInvolved = page.getByRole('group', { name: 'Is the order about all the children?' })
+        this.isAllChildrenInvolved = page.getByRole('group', { name: 'Is the order about all the children?' })
         this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
         this.EPOEndDate = page.getByRole('group', { name: 'When does it end?' });
         this.finalOrder = page.getByRole('group', { name: 'Is this a final order?' });
@@ -133,6 +134,7 @@ export class Orders extends BasePage {
         this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
         this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
         this.endDate = page.getByRole('group', { name: 'End Date' });
+        this.applications = page.getByLabel('Applications');
         this.childInOrder = page.getByRole('group', {name: 'Who’s included in the order?'});
 
     }
@@ -185,9 +187,9 @@ export class Orders extends BasePage {
         await this.childAccommodation.selectOption('Timothy Jones');
     }
 
-    async addChildDetails(isAllChild: string) {
-        await this.allChildInvolved.getByRole('radio', { name: `${isAllChild}` }).click();
-        if (isAllChild == 'No') {
+    async addChildDetails(isAllChildrenInvolved: string) {
+        await this.isAllChildrenInvolved.getByRole('radio', { name: `${isAllChildrenInvolved}` }).click();
+        if (isAllChildrenInvolved == 'No') {
             await this.page.getByRole('group', { name: 'Child 1 (Optional)' }).getByLabel('Yes').check();
             await this.page.getByRole('group', { name: 'Child 2 (Optional)' }).getByLabel('Yes').check();
             await this.page.getByRole('group', { name: 'Child 4 (Optional)' }).getByLabel('Yes').check();
@@ -328,7 +330,7 @@ export class Orders extends BasePage {
         await this.page.pause();
         await this.clickContinue();
         await this.page.pause();
-        await this.allChildInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
         await this.secondFamilyBefriended.selectOption('Joe Bloggs');
@@ -347,7 +349,7 @@ export class Orders extends BasePage {
         await this.issuingJudge.getByLabel('Yes').check();
         await this.page.pause();
         await this.clickContinue();
-        await this.allChildInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
         await this.secondFamilyBefriended.selectOption('Sarah Black');
@@ -367,7 +369,7 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.allChildInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.radioNoButton.click();
         await this.endOfProceedings.check();
@@ -379,9 +381,23 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.allChildInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.radioNoButton.check();
+        await this.endOfProceedings.check();
+    }
+
+    async uploadsInterimSupervisionOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('Yes').check();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.orderApplication.getByLabel('Yes').check();
+        await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderFurtherDirectionDetails.fill('Test');
         await this.endOfProceedings.check();
     }
 
@@ -438,5 +454,7 @@ export class Orders extends BasePage {
             maxDiffPixels: 1500, // Allow up to 1500 different pixels
             clip: {x: 0, y: 0, width: 1280, height: 720} // Fixed dimensions});
         });
+
     }
 }
+
