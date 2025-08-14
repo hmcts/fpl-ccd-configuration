@@ -25,6 +25,8 @@ import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
@@ -546,16 +548,19 @@ class ApplicantLocalAuthorityServiceTest {
     class PbaNumber {
 
         @Test
-        void shouldNormalisePbaNumber() {
+        void shouldUpdateAndSetPbaNumber() {
             final LocalAuthority localAuthority = LocalAuthority.builder()
-                .pbaNumber("1234567")
+                .pbaNumberDynamicList(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("PBA7654321")
+                        .build())
+                    .build())
                 .build();
 
-            when(pbaNumberService.update("1234567")).thenReturn("PBA1234567");
+            underTest.updatePbaNumber(localAuthority);
 
-            underTest.normalisePba(localAuthority);
-
-            assertThat(localAuthority.getPbaNumber()).isEqualTo("PBA1234567");
+            assertThat(localAuthority.getPbaNumber()).isEqualTo("PBA7654321");
+            assertThat(localAuthority.getPbaNumberDynamicList()).isNull();
         }
     }
 
@@ -563,7 +568,11 @@ class ApplicantLocalAuthorityServiceTest {
     class LocalAuthorityValidation {
 
         final LocalAuthority localAuthority = LocalAuthority.builder()
-            .pbaNumber("pba")
+            .pbaNumberDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code("pba")
+                    .build())
+                .build())
             .email("email")
             .build();
 
@@ -768,6 +777,11 @@ class ApplicantLocalAuthorityServiceTest {
                 .id("ORG1")
                 .name("LA")
                 .email("la@test.com")
+                .pbaNumberDynamicList(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("PBA7654321")
+                        .build())
+                    .build())
                 .build();
 
             final Colleague colleague = Colleague.builder()
@@ -805,6 +819,11 @@ class ApplicantLocalAuthorityServiceTest {
             final LocalAuthority newLocalAuthority = LocalAuthority.builder()
                 .id("ORGNEW")
                 .name("LA NEW")
+                .pbaNumberDynamicList(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("PBA7654321")
+                        .build())
+                    .build())
                 .build();
 
             final LocalAuthority existingLocalAuthority1 = LocalAuthority.builder()
@@ -860,6 +879,11 @@ class ApplicantLocalAuthorityServiceTest {
             final LocalAuthority updatedLocalAuthority = LocalAuthority.builder()
                 .id("ORG2")
                 .name("LA new")
+                .pbaNumberDynamicList(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("PBA7654321")
+                        .build())
+                    .build())
                 .email("new@test.com")
                 .build();
 
@@ -891,6 +915,11 @@ class ApplicantLocalAuthorityServiceTest {
                 .id("ORG1")
                 .name("LA")
                 .email("la@test.com")
+                .pbaNumberDynamicList(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("PBA7654321")
+                        .build())
+                    .build())
                 .build();
 
             final Colleague mainContact = Colleague.builder().fullName("Main Contact").build();

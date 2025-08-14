@@ -112,6 +112,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     @Test
     void shouldCreateAdditionalApplicationsBundleWithC2DocumentWhenC2OrderIsSelectedAndSupplementsIncluded() {
+        final PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
         PBAPayment temporaryPbaPayment = createPbaPayment();
         Element<Representative> representativeElement = element(
             Representative.builder().servingPreferences(EMAIL).email("test@test.com").build()
@@ -139,13 +140,14 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         assertC2DocumentBundle(uploadedC2DocumentBundle);
         assertThat(uploadedC2DocumentBundle.getApplicantName()).isEqualTo(LOCAL_AUTHORITY_NAME);
-        assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
+        assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(expectedPbaPayment);
 
         assertTemporaryFieldsAreRemoved(updatedCaseData);
     }
 
     @Test
     void shouldCreateAdditionalApplicationsBundleWithOtherApplicationsBundleWhenOtherOrderIsSelected() {
+        final PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
         PBAPayment temporaryPbaPayment = createPbaPayment();
         Element<Representative> representative = element(
             Representative.builder().servingPreferences(EMAIL).email("rep@test.com").build()
@@ -183,12 +185,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .hasSize(1)
             .containsExactly(respondentElement);
 
-        assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
+        assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(expectedPbaPayment);
         assertTemporaryFieldsAreRemoved(updatedCaseData);
     }
 
     @Test
     void shouldCreateAdditionalApplicationsBundleWhenC2OrderAndOtherOrderAreSelected() {
+        final PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
         PBAPayment temporaryPbaPayment = createPbaPayment();
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(
@@ -207,7 +210,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         assertC2DocumentBundle(additionalApplicationsBundle.getC2DocumentBundle());
         assertOtherApplicationsBundle(additionalApplicationsBundle.getOtherApplicationsBundle());
-        assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
+        assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(expectedPbaPayment);
 
         assertThat(additionalApplicationsBundle.getC2DocumentBundle().getApplicantName())
             .isEqualTo(LOCAL_AUTHORITY_NAME);
@@ -436,7 +439,14 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     }
 
     private PBAPayment createPbaPayment() {
-        return PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
+        return PBAPayment.builder()
+            .pbaNumberDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code("PBA1234567")
+                    .build())
+                .build())
+            .usePbaPayment("Yes")
+            .build();
     }
 
     private C2DocumentBundle createTemporaryC2Document() {

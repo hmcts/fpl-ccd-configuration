@@ -24,7 +24,7 @@
     "ID": "EnterApplicantLa",
     "CaseEventID": "enterApplicantDetailsLA",
     "CaseFieldID": "localAuthority",
-    "ListElementCode": "pbaNumber",
+    "ListElementCode": "pbaNumberDynamicList",
     "EventElementLabel": "PBA number",
     "EventHintText": "For example, PBA1234567",
     "DisplayContext": "MANDATORY",
