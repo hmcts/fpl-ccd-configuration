@@ -45,16 +45,18 @@
     "test:functional-chromium": "yarn playwright install chromium  && yarn playwright test  --project=chromium",
     "test:functional-webkit": "yarn playwright install webkit && yarn playwright test  --project=webkit",
     "test:functional-firefox": "yarn playwright install firefox  && yarn playwright test --project=firefox",
-    "test:functional-ipadPro11": " yarn playwright install webkit  && yarn playwright test --project=ipadPro11 ",
-    "test:functional-galaxyS4": "  yarn playwright install chromium  && yarn playwright test --project=GalaxyS4 ",
+    "test:functional-ipadPro11": " yarn playwright install webkit  && yarn playwright test --project=ipadPro11",
+    "test:functional-galaxyS4": "  yarn playwright install chromium  && yarn playwright test --project=GalaxyS4",
     "test:functional-nightly-preview": "yarn playwright install firefox && yarn playwright test --project=preview",
     "test:smoke": "yarn npm audit --recursive --environment production && MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
-    "test:local": "yarn playwright test --project=chromium  --headed --repeat-each=1",
+    "test:local": "yarn playwright test  --project=chromium --headed ",
     "test:api-test": "yarn playwright test --config=playwright.api.config.ts",
     "prepare": "husky install",
     "yarn-update": "yarn set version 3.x",
     "install-dependencies": "/usr/bin/yarn install --silent",
-    "lint-ui-tests": "/usr/bin/yarn lint"
+    "lint-ui-tests": "/usr/bin/yarn lint",
+    "build-container": "docker build -t playwright-container .",
+    "start-container": "docker run --rm -it --network host --ipc=host -v \"$(pwd)\":/playwright -w /playwright playwright-container /bin/bash"
   },
   "peerDependencies": {
     "debug": "4.4.0",
