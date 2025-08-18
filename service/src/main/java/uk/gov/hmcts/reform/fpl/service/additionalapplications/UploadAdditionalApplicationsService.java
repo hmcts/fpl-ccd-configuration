@@ -54,6 +54,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -335,13 +336,13 @@ public class UploadAdditionalApplicationsService {
     }
 
     public PBAPayment updatePBAPayment(PBAPayment pbaPayment, boolean isCTSCUser) {
-        if (pbaPayment != null && YES.getValue().equals(pbaPayment.getUsePbaPayment())) {
+        if (pbaPayment != null && !NO.getValue().equals(pbaPayment.getUsePbaPayment())) {
             return pbaPayment.toBuilder()
                 .pbaNumber(isCTSCUser
                     ? pbaPayment.getPbaNumber() : pbaPayment.getPbaNumberDynamicList().getValueCode())
                 .pbaNumberDynamicList(null)
                 .build();
         }
-        return null;
+        return pbaPayment;
     }
 }
