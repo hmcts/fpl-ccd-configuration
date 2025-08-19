@@ -44,6 +44,7 @@ import { ManageRepresentatives } from "../pages/manage-representatives";
 import {ManageTTL} from "../pages/manage-t-t-l";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
+import {NoticeOfChange} from "../pages/notice-of-change";
 
 
 type CreateFixtures = {
@@ -92,7 +93,7 @@ type CreateFixtures = {
   manageTTL: ManageTTL;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
-
+  noticeOfChange: NoticeOfChange;
 
 };
 
@@ -262,7 +263,7 @@ export const test = base.extend<CreateFixtures>({
 othersToBeGivenNotice: async ({ page }, use) => {
   await use(new OthersToBeGivenNotice(page));
 },
-      
+
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
 
@@ -275,5 +276,8 @@ othersToBeGivenNotice: async ({ page }, use) => {
     await use(new ChangeOtherToRespondent(page));
 
   },
+    noticeOfChange: async ({ page }, use) => {
+        await use(new NoticeOfChange(page));
+    },
 
 });
