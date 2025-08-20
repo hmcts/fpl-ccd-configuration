@@ -154,13 +154,13 @@ export class AdditionalApplications extends BasePage {
     await this.clickContinue();
   }
 
-  public async payForApplications() {  // delibrate s for LA
+  public async LAPayForApplications() { 
     await this.paymentPbaNumber.selectOption('1: PBA0076191');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }
 
-  public async payForApplicationss() {  // delibrate ss for ctsc
+  public async ctscPayForApplication() {  
     await this.paymentPbaNumber.fill('PBA0076191');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
