@@ -1807,12 +1807,7 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[LAMANAGING]",
-          "[EPSMANAGING]"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
+          "[EPSMANAGING]",
           "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
@@ -1827,12 +1822,7 @@
       {
         "UserRoles": [
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
+          "[CHILDSOLICITORA]",
           "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
