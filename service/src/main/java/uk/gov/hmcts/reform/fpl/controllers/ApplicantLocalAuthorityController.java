@@ -50,8 +50,8 @@ public class ApplicantLocalAuthorityController extends CallbackController {
             // Only do these checks when not in open/returned states
             if (!List.of(OPEN, RETURNED).contains(caseData.getState())
                 && !applicantLocalAuthorityService.isApplicantOrOnBehalfOfOrgId(localAuthority.getId(), caseData)) {
-                // user is not operating on behalf of the applicant - it's likely a respondent solicitor on a 3rd party
-                // case (both actual applicant + respondent get [SOLICITORA] roles so can't do this via event permissions
+                // user is not operating on behalf of the applicant (likely a respondent solicitor on a 3rd party case)
+                // Both actual applicant + respondent get [SOLICITORA] roles so can't control via event permissions.
                 return respond(caseDetails,
                     List.of("You must be the applicant or acting on behalf of the applicant to modify these details."));
             }
