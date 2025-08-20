@@ -39,7 +39,8 @@ export class AdditionalApplications extends BasePage {
     this.selectApplicant = page.getByLabel('Select applicant');
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
-    this.paymentPbaNumber = page.getByLabel('Payment by account (PBA) number');
+    this.paymentPbaNumber = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
+    this.paymentPbaNumber = page.getByRole('textbox', { name: 'Payment by account (PBA)' });
     this.typeOfC2Application = page.getByLabel('Application with notice.');
   }
 
@@ -148,10 +149,23 @@ export class AdditionalApplications extends BasePage {
   }
 
   public async payForApplication() {
-    await this.paymentPbaNumber.fill('PBA1234567');
+    await this.paymentPbaNumber.selectOption('3: PBA0090842');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }
+
+  public async payForApplications() {  // delibrate s for LA
+    await this.paymentPbaNumber.selectOption('1: PBA0076191');
+    await this.page.getByLabel('Customer reference').fill('Customer reference');
+    await this.clickContinue();
+  }
+
+  public async payForApplicationss() {  // delibrate ss for ctsc
+    await this.paymentPbaNumber.fill('PBA0076191');
+    await this.page.getByLabel('Customer reference').fill('Customer reference');
+    await this.clickContinue();
+  }
+
 
   public async uploadBasicC2Application(uploadDraftOrder: boolean = true) {
     await this.gotoNextStep('Upload additional applications');
