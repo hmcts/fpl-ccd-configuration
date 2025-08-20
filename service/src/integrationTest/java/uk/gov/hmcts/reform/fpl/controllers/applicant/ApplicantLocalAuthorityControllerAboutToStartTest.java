@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -43,6 +44,9 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
     @MockBean
     private OrganisationApi organisationApi;
+
+    @MockBean
+    private UserService userService;
 
     private final Organisation organisation = Organisation.builder()
         .organisationIdentifier("ORG1")
@@ -67,6 +71,8 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldThrowErrorIfNotInApplicantOrgAndInCaseManagementState() {
+        given(userService.isCtscUser()).willReturn(false);
+
         final CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
             .localAuthorityPolicy(createPolicy("ORG2"))
@@ -83,6 +89,8 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
     @ParameterizedTest
     @ValueSource(strings = {"OPEN", "RETURNED"})
     void shouldNotThrowErrorIfNotInApplicantOrgAndInOpenOrReturnedStates(String state) {
+        given(userService.isCtscUser()).willReturn(false);
+
         final CaseData caseData = CaseData.builder()
             .state(State.fromValue(state))
             .localAuthorityPolicy(createPolicy("ORG2"))
@@ -97,6 +105,8 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldPrePopulateLocalAuthorityDetailsFromReferenceData() {
+        given(userService.isCtscUser()).willReturn(false);
+
         CaseData caseData = CaseData.builder()
             .state(State.OPEN)
             .build();
@@ -124,6 +134,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldPopulateLocalAuthorityWithDataFromLegacyApplicant() {
+        given(userService.isCtscUser()).willReturn(false);
 
         final ApplicantParty legacyApplicant = ApplicantParty.builder()
             .organisationName("Applicant")
@@ -169,8 +180,12 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
     }
 
-    @Test
-    void shouldGetExistingLocalAuthorityDetails() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldGetExistingLocalAuthorityDetails(boolean isCtscUser) {
+        given(userService.isCtscUser()).willReturn(isCtscUser);
+        given(userService.isCtscUser()).willReturn(false);
+
         final Element<Colleague> colleague = element(Colleague.builder()
             .role(SOLICITOR)
             .fullName("Alex Smith")
