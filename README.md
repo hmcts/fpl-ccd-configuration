@@ -99,7 +99,9 @@ Create the file in this location `service/src/integrationTest/resources/applicat
 (it's already included in .gitignore)
 ```
 spring:
-  profiles: email-template-test
+  config:
+    activate:
+      on-profile: email-template-test
 
 integration-test:
   notify-service:
