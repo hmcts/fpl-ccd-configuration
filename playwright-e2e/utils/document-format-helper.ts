@@ -78,3 +78,11 @@ export function addMonthsToDate(date: Date, months: number): Date {
     newDate.setMonth(newDate.getMonth() + months);
     return newDate;
 }
+
+export function getDateWeekBeforeToday(): Date {
+    const weekBeforeToday = new Date();
+    weekBeforeToday.setDate(weekBeforeToday.getDate() - 3);
+    weekBeforeToday.setHours(0, 0, 0, 0);
+    console.log('valideAt date', weekBeforeToday);
+    return weekBeforeToday;
+}
