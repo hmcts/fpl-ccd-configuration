@@ -1815,7 +1815,7 @@
         "UserRoles": [
           "caseworker-publiclaw-superuser"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       }
     ]
   },
@@ -1835,7 +1835,7 @@
         "UserRoles": [
           "caseworker-publiclaw-superuser"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       }
     ]
   },
