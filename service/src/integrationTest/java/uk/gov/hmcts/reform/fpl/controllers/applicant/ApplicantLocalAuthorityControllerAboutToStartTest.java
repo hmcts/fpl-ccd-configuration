@@ -184,7 +184,6 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
     @ValueSource(booleans = {true, false})
     void shouldGetExistingLocalAuthorityDetails(boolean isCtscUser) {
         given(userService.isCtscUser()).willReturn(isCtscUser);
-        given(userService.isCtscUser()).willReturn(false);
 
         final Element<Colleague> colleague = element(Colleague.builder()
             .role(SOLICITOR)
