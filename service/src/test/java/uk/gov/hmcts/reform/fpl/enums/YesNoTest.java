@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -16,6 +17,18 @@ class YesNoTest {
         assertThat(YesNo.from(false)).isEqualTo(NO);
     }
 
+    @Test
+    void shouldCheckIfValueIsYesNo() {
+        assertThat(YesNo.isYesOrNo("Yes")).isTrue();
+        assertThat(YesNo.isYesOrNo("Nop")).isFalse();
+    }
+
+    @Test
+    void shouldReturnLanguageValueIfValid() {
+        assertThat(NO.getValue(Language.ENGLISH)).isEqualTo("No");
+        assertThat(NO.getValue(Language.WELSH)).isEqualTo("Na");
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"Yes", "YES", "yes"})
     void shouldCompareYesString(String yesString) {
@@ -27,5 +40,4 @@ class YesNoTest {
     void shouldCompareNoString(String noString) {
         assertThat(NO.equalsString(noString)).isTrue();
     }
-
 }
