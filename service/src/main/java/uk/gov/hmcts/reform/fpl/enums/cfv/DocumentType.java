@@ -152,7 +152,7 @@ public enum DocumentType {
         false, false, false,
         null,
         null, 210, null, "parent_respondentsStatements"),
-    RESPONDENTS_STATEMENTS("└─ Respondent own statements", standardResolver("respStmtList"),
+    RESPONDENTS_STATEMENTS("└─ Respondents own statements", standardResolver("respStmtList"),
         false, false, false,
         (bundle) -> RespondentStatementV2.builder()
             .document(bundle.getDocument())
@@ -161,8 +161,8 @@ public enum DocumentType {
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .translationRequirements(bundle.getTranslationRequirement())
             .build(),
-        AA_PARENT_RESPONDENTS_STATEMENTS, 220, DEFAULT_NOTIFICATION_CONFIG, "parent_respondentsStatements"),
-    RESPONDENTS_WITNESS_STATEMENTS("└─ Respondent witness statements", standardResolver("respWitnessStmtList"),
+        AA_PARENT_RESPONDENTS_STATEMENTS, 220, DEFAULT_NOTIFICATION_CONFIG, "respondentOwnStatements"),
+    RESPONDENTS_WITNESS_STATEMENTS("└─ Respondents witness statements", standardResolver("respWitnessStmtList"),
         false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_RESPONDENTS_STATEMENTS, 230, DEFAULT_NOTIFICATION_CONFIG, "respondentWitnessStatements"),
@@ -177,7 +177,7 @@ public enum DocumentType {
     AA_PARENT_EXPERT_REPORTS("Expert Reports", null,
         false, false, false,
         null,
-        null, 260, null, "parent_expertReports"),
+        null, 260, null, "expertReports"),
     ADULT_PSYCHIATRIC_REPORT_ON_PARENTS("└─ Adult Psychiatric Report On Parent(s)", standardResolver(
         "adultPsychRepParentsList"),
         false, false, false,
