@@ -1,16 +1,16 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "GuardianReportConfidential",
+    "ID": "AdvocateMeetingMinuteConfidential",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public",
-    "CategoryID": "guardiansEvidenceConfidential"
+    "CategoryID": "advocateMeetingMinuteConfidential"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "GuardianReportConfidential",
+    "ID": "AdvocateMeetingMinuteConfidential",
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
@@ -18,7 +18,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "GuardianReportConfidential",
+    "ID": "AdvocateMeetingMinuteConfidential",
     "ListElementCode": "uploaderType",
     "FieldType": "FixedList",
     "FieldTypeParameter": "DocumentUploaderType",
@@ -27,7 +27,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "GuardianReportConfidential",
+    "ID": "AdvocateMeetingMinuteConfidential",
     "ListElementCode": "uploaderCaseRoles",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CaseRole",
@@ -36,7 +36,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "GuardianReportConfidential",
+    "ID": "AdvocateMeetingMinuteConfidential",
     "ListElementCode": "markAsConfidential",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is confidential?",
@@ -44,7 +44,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "GuardianReportConfidential",
+    "ID": "AdvocateMeetingMinuteConfidential",
     "ListElementCode": "translationRequirements",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LanguageTranslationRequirement",
