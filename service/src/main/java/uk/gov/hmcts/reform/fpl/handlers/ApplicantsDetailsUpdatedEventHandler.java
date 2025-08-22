@@ -29,8 +29,6 @@ public class ApplicantsDetailsUpdatedEventHandler {
         final CaseData caseData = event.getCaseData();
         final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
             .caseData(caseData)
-            .secondaryLocalAuthorityExcluded(true) //???
-            .legalRepresentativesExcluded(true) //???
             .build();
 
         final Set<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
