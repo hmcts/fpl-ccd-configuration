@@ -49,7 +49,7 @@ export class UploadAdditionalApplications extends BasePage {
     }
 
     async selectApplicantValue(index: number): Promise<void> {
-        const options = await this.applicantDropdown.all();
+        const options: Locator[] = await this.applicantDropdown.all();
         if(index < 0 || index >= options.length) {
             throw new Error(`Index ${index} is out of bounds for dropdown with ${options.length} options.`);
         }

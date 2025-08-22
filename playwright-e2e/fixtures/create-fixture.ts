@@ -52,6 +52,13 @@ import {ManageOrdersIssuingDetails} from "../pages/manage-orders/manage-orders-i
 import {ManageOrdersReview} from "../pages/manage-orders/manage-orders-review";
 import {Submit} from "../pages/manage-orders/submit";
 import {ManageOrdersOrderSelection} from "../pages/manage-orders/manage-orders-order-selection";
+import {UploadAdditionalApplications} from "../pages/applications/upload-additional/upload-additional-applications";
+import {
+    UploadAdditionalApplicationsApplicationFee
+} from "../pages/applications/upload-additional/upload-additional-applications-application-fee";
+import {
+    UploadAdditionalApplicationsSuppliedDocuments
+} from "../pages/applications/upload-additional/upload-additional-applications-supplied-documents";
 
 
 type CreateFixtures = {
@@ -107,6 +114,9 @@ type CreateFixtures = {
   manageOrdersIssuingDetails: ManageOrdersIssuingDetails;
   manageOrdersOrderSelection: ManageOrdersOrderSelection
   manageOrdersReview: ManageOrdersReview;
+  uploadAdditionalApplications: UploadAdditionalApplications;
+  uploadAdditionalApplicationsApplicationFee: UploadAdditionalApplicationsApplicationFee;
+  uploadAdditionalApplicationsSuppliedDocuments: UploadAdditionalApplicationsSuppliedDocuments;
   submit: Submit;
 
 
@@ -317,6 +327,18 @@ othersToBeGivenNotice: async ({ page }, use) => {
 
     manageOrdersReview: async ({ page }, use) => {
       await use(new ManageOrdersReview(page));
+    },
+
+    uploadAdditionalApplications: async ({ page }, use) => {
+      await use(new UploadAdditionalApplications(page));
+    },
+
+    uploadAdditionalApplicationsApplicationFee: async ({ page }, use) => {
+      await use(new UploadAdditionalApplicationsApplicationFee(page));
+    },
+
+    uploadAdditionalApplicationsSuppliedDocuments: async ({ page }, use) => {
+      await use(new UploadAdditionalApplicationsSuppliedDocuments(page));
     },
 
     submit: async ({ page }, use) => {
