@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -91,6 +92,8 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
     private NotificationClient notificationClient;
     @MockBean
     private OrganisationApi orgApi;
+    @MockBean
+    private UserService userService;
 
     NoticeOfChangeControllerSubmittedTest() {
         super("noc-decision");
