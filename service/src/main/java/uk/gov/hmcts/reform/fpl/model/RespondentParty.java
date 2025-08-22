@@ -126,4 +126,9 @@ public final class RespondentParty extends Party {
         return YesNo.from(YesNo.YES.equalsString(contactDetailsHidden)).getValue();
     }
 
+    public String getFullName() {
+        return String.format("%s %s", getFirstName(), getLastName());
+    }
+
 }
+
