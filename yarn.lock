@@ -1923,12 +1923,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.1.0, @types/node@npm:^20.10.7":
+"@types/node@npm:^20.1.0":
   version: 20.17.46
   resolution: "@types/node@npm:20.17.46"
   dependencies:
     undici-types: ~6.19.2
   checksum: dbc6eb5a28d4237892cbd9de7b014970a9edcb5beb4339660d71e80d8ab9b6cd77f9523c4a37c5e2e28b91761339a02d6dc30466b60d89e71e4e87bbeec6770f
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^22.0.0":
+  version: 22.17.2
+  resolution: "@types/node@npm:22.17.2"
+  dependencies:
+    undici-types: ~6.21.0
+  checksum: 2a82f96abcf25104efa6e9b8231616e039e5e0854f07e9ce4fdf821d30eaac30a80ec3cafefb36d2af8bd7c9594cfda337887bd85bb5c2031ba0f7e23a3d588d
   languageName: node
   linkType: hard
 
@@ -4896,7 +4905,7 @@ __metadata:
     "@eslint/js": ^9.0.0
     "@playwright/test": ^1.43.1
     "@types/lodash": ^4.14.202
-    "@types/node": ^20.10.7
+    "@types/node": ^22.0.0
     "@types/qs": ^6.9.11
     axios: ^1.6.7
     codeceptjs: 3.7.3
