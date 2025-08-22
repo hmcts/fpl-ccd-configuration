@@ -8,7 +8,7 @@ export class UploadAdditionalApplicationsApplicationFee extends BasePage {
 
     constructor(page: Page) {
         super(page);
-        this.paidWithPBAGroup = page.getByRole('group', { name: 'Paid with PBA' });
+        this.paidWithPBAGroup = page.getByRole('group', { name: 'Do you want to enter PBA details?' });
         this.paidWithPBAYesRadioButton = this.paidWithPBAGroup.getByRole('radio', { name: 'Yes' });
         this.paidWithPBANoRadioButton = this.paidWithPBAGroup.getByRole('radio', { name: 'No' });
     }

@@ -14,6 +14,7 @@ export class UploadAdditionalApplications extends BasePage {
     readonly confidentialApplicationNoRadioButton: Locator;
 
     readonly applicantDropdown: Locator;
+    readonly applicantDropdownOptions: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -29,7 +30,8 @@ export class UploadAdditionalApplications extends BasePage {
         this.confidentialApplicationYesRadioButton = this.confidentialApplicationGroup.getByRole('radio', { name: 'Yes' });
         this.confidentialApplicationNoRadioButton = this.confidentialApplicationGroup.getByRole('radio', { name: 'No' });
 
-        this.applicantDropdown = page.getByLabel('Select applicant');
+        this.applicantDropdown = page.locator('#applicantsList');
+        this.applicantDropdownOptions = page.locator('#applicantsList > option');
     }
 
     async chekcOtherSpecificOrder(): Promise<void> {
@@ -49,11 +51,17 @@ export class UploadAdditionalApplications extends BasePage {
     }
 
     async selectApplicantValue(index: number): Promise<void> {
-        const options: Locator[] = await this.applicantDropdown.all();
-        if(index < 0 || index >= options.length) {
-            throw new Error(`Index ${index} is out of bounds for dropdown with ${options.length} options.`);
+        const count: number = await this.applicantDropdownOptions.count();
+
+        if (index < 0 || index >= count) {
+            throw new Error(`Index ${index} is out of bounds for dropdown with ${count} options.`);
         }
-        const value = await options[index].getAttribute('value');
+
+        const value: string|null = await this.applicantDropdownOptions.nth(index).getAttribute('value');
+        if (!value) {
+            throw new Error(`Option at index ${index} has no value.`);
+        }
+
         await this.applicantDropdown.selectOption(value);
     }
 }

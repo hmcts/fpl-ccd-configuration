@@ -213,13 +213,15 @@ test.describe('Upload additional applications', () => {
       await uploadAdditionalApplications.checkC2Order();
       await uploadAdditionalApplications.checkApplicationWithNotice();
       await uploadAdditionalApplications.checkConfidentialApplicationYes();
-      await uploadAdditionalApplications.selectApplicantValue(0);
+      await uploadAdditionalApplications.selectApplicantValue(1);
       await uploadAdditionalApplications.clickContinue();
 
       await uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile);
+      await page.waitForTimeout(3000);
       await uploadAdditionalApplicationsSuppliedDocuments.checkDocumentRelatedToCaseYes();
       await uploadAdditionalApplicationsSuppliedDocuments.clickContinue();
 
+      await page.pause()
       await uploadAdditionalApplicationsApplicationFee.checkPaidWithPBANo()
       await uploadAdditionalApplicationsApplicationFee.clickContinue();
 
@@ -228,7 +230,7 @@ test.describe('Upload additional applications', () => {
       // Search for C2 application in "Other applications tab"
       await additionalApplications.tabNavigation('Other applications');
       await expect.soft(page.getByText('C2 application').first()).toBeVisible();
-      await expect.soft(page.getByRole('cell', { name: 'test.pdf', exact: true }).first()).toBeVisible();
+      await expect.soft(page.getByRole('cell', { name: 'testPdf.pdf', exact: true }).locator('div').nth(1)).toBeVisible();
 
   });
 
