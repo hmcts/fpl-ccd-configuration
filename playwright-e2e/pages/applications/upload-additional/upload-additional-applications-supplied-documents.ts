@@ -20,7 +20,7 @@ export class UploadAdditionalApplicationsSuppliedDocuments extends BasePage {
         try {
             await this.uploadC2ApplicationButton.setInputFiles(document);
         } catch(exception) {
-            // throw playwright exception in relation to document format
+            throw new Error(`Failed to upload C2 document: "${document}". Ensure the file exists and is in a supported format.\nOriginal error: ${exception}`);
         }
     }
 
