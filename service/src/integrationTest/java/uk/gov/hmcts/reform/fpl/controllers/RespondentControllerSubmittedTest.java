@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.service.notify.NotificationClient;
@@ -119,6 +120,9 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private UserService userService;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseCaptor;
