@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
+import uk.gov.hmcts.reform.fpl.events.ApplicantsDetailsUpdatedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
@@ -125,6 +126,10 @@ public class ApplicantLocalAuthorityController extends CallbackController {
             publishEvent(new CaseDataChanged(caseData));
         } else {
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
+        }
+
+        if (applicantLocalAuthorityService.isCurrentUserCtscUser()) {
+            publishEvent(new ApplicantsDetailsUpdatedEvent(caseData));
         }
     }
 }
