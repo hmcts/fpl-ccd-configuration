@@ -19,8 +19,10 @@ export class AdditionalApplications extends BasePage {
   readonly selectApplicant: Locator;
   readonly selectApplication: Locator;
   readonly checkbox: Locator;
-  readonly paymentPbaNumber: Locator;
+  readonly paymentPbaNumberOption: Locator;
+  readonly paymentPbaNumberTextBox: Locator;
   readonly typeOfC2Application: Locator;
+  readonly paymentPbaNumberSolicitor: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -39,11 +41,13 @@ export class AdditionalApplications extends BasePage {
     this.selectApplicant = page.getByLabel('Select applicant');
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
-    this.paymentPbaNumber = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
-    this.paymentPbaNumber = page.getByRole('textbox', { name: 'Payment by account (PBA)' });
+   // this.paymentPbaNumberOption = page.getByText('Payment by account (PBA) numberFor example, PBA1234567--Select a value--');
+    this.paymentPbaNumberOption = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
+    this.paymentPbaNumberTextBox= page.getByRole('textbox', { name: 'Payment by account (PBA)' });
+    this.paymentPbaNumberSolicitor = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
     this.typeOfC2Application = page.getByLabel('Application with notice.');
   }
-
+//
   public async chooseOtherApplicationType() {
     await this.otherSpecificOrder.click();
     await this.selectApplicant.selectOption('1: applicant');
@@ -148,20 +152,20 @@ export class AdditionalApplications extends BasePage {
     await this.expectAllUploadsCompleted();
   }
 
-  public async payForApplication() {
-    await this.paymentPbaNumber.selectOption('3: PBA0090842');
+  public async payForApplication(pbaNumber: string) {
+    await this.paymentPbaNumberSolicitor.selectOption(pbaNumber);
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }
 
-  public async LAPayForApplications() { 
-    await this.paymentPbaNumber.selectOption('1: PBA0076191');
+  public async LAPayForApplications(_pbaNumber:string) {
+    await this.paymentPbaNumberOption.selectOption(_pbaNumber);
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }
 
-  public async ctscPayForApplication() {  
-    await this.paymentPbaNumber.fill('PBA0076191');
+  public async ctscPayForApplication() {
+    await this.paymentPbaNumberTextBox.fill('PBA0076191');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }
@@ -171,7 +175,7 @@ export class AdditionalApplications extends BasePage {
     await this.gotoNextStep('Upload additional applications');
     await this.chooseC2ApplicationType();
     await this.fillC2ApplicationDetails(uploadDraftOrder);
-    await this.payForApplication();
+    await this.payForApplication('');
     await this.checkYourAnsAndSubmit();
   }
 }
