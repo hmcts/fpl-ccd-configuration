@@ -12,7 +12,7 @@ public class RespondentNameFormatter {
         if (names.size() == 2) {
             return names.get(0) + " and " + names.get(1) + " are";
         }
-        return String.join(", ", names.subList(0, names.size() - 1) + " and "
-            + names.get(names.size() - 1) + " are");
+        return String.join(", ", names.subList(0, names.size() - 1)) + " and "
+            + names.get(names.size() - 1) + " are";
     }
 }
