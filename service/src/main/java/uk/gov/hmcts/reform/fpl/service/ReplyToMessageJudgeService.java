@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,6 +78,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .recipientDynamicList(buildRecipientDynamicList(
                 caseData, senderRole, Optional.of(selectedJudicialMessage.getSenderType().toString())))
             .urgency(selectedJudicialMessage.getUrgency())
+            .judicialMessageReplies(selectedJudicialMessage.getJudicialMessageReplies())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage(EMPTY)
             .replyFrom(getSenderEmailAddressByRoleType(senderRole))
@@ -162,6 +164,9 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
                     String recipientEmail = resolveRecipientEmailAddress(
                         recipientType, judicialMessageReply.getReplyTo(), caseData);
 
+                    String fromLabel = formatLabel(judicialMessageReply.getSenderType(), sender);
+                    String toLabel = formatLabel(recipientType, recipientEmail);
+
                     JudicialMessage updatedMessage = judicialMessage.toBuilder()
                         .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
                         .updatedTime(time.now())
@@ -169,11 +174,12 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
                         .sender(sender)
                         .recipientType(recipientType)
                         .recipient(recipientEmail)
-                        .fromLabel(formatLabel(judicialMessageReply.getSenderType(), sender))
-                        .toLabel(formatLabel(recipientType, recipientEmail))
+                        .fromLabel(fromLabel)
+                        .toLabel(toLabel)
                         .recipientDynamicList(null)
+                        .judicialMessageReplies(buildMessageReplyList(judicialMessageReply.getLatestMessage(), judicialMessage, fromLabel, toLabel))
                         .messageHistory(buildMessageHistory(judicialMessageReply, judicialMessage,
-                            formatLabel(judicialMessageReply.getSenderType(), sender)))
+                            fromLabel))
                         .closureNote(judicialMessageReply.getClosureNote())
                         .latestMessage(judicialMessageReply.getLatestMessage())
                         .build();
@@ -187,6 +193,10 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
 
     private String buildMessageHistory(JudicialMessage reply, JudicialMessage previousMessage, String sender) {
         return buildMessageHistory(reply.getLatestMessage(), previousMessage.getMessageHistory(), sender);
+    }
+
+    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, JudicialMessage message, String from, String to) {
+        return buildMessageReplies(latestMessage, Optional.of(message), from, to);
     }
 
     private DynamicList rebuildJudicialMessageDynamicList(CaseData caseData, UUID selectedC2Id) {
