@@ -55,7 +55,7 @@ export class ApplicantDetails extends BasePage {
 
   async applicantDetailsNeeded() {
     await expect.soft(this.applicantDetailsHeading).toBeVisible();
-    await this.pbaNumber.selectOption('1: PBA0076191');
+    await this.pbaNumber.selectOption('PBA0076191');
     await this.customerReference.fill('1234567');
     await this.nameOfApplicantToSign.fill('Tom Jones');
     await this.country.fill('United Kingdom');
@@ -82,7 +82,7 @@ export class ApplicantDetails extends BasePage {
       await this.representingPersonDetails.getByLabel('First name').fill('John');
       await this.representingPersonDetails.getByLabel('Last name').fill('Somuy');
       await this.page.getByLabel('Group email address (Optional)').fill('privatesol@gmail.com');
-      await this.pbaNumber.selectOption('2: PBA0096471');
+      await this.pbaNumber.selectOption('PBA0096471');
       await this.customerReference.fill('Customer reference 1000');
       await this.clickContinue();
 

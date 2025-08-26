@@ -41,7 +41,6 @@ export class AdditionalApplications extends BasePage {
     this.selectApplicant = page.getByLabel('Select applicant');
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
-   // this.paymentPbaNumberOption = page.getByText('Payment by account (PBA) numberFor example, PBA1234567--Select a value--');
     this.paymentPbaNumberOption = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
     this.paymentPbaNumberTextBox= page.getByRole('textbox', { name: 'Payment by account (PBA)' });
     this.paymentPbaNumberSolicitor = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
@@ -154,19 +153,19 @@ export class AdditionalApplications extends BasePage {
 
   public async payForApplication(pbaNumber: string) {
     await this.paymentPbaNumberSolicitor.selectOption(pbaNumber);
-    await this.page.getByLabel('Customer reference').fill('Customer reference');
+    await this.page.getByLabel('Customer reference').fill('Test');
     await this.clickContinue();
   }
 
   public async LAPayForApplications(_pbaNumber:string) {
     await this.paymentPbaNumberOption.selectOption(_pbaNumber);
-    await this.page.getByLabel('Customer reference').fill('Customer reference');
+    await this.page.getByLabel('Customer reference').fill('Payment details');
     await this.clickContinue();
   }
 
   public async ctscPayForApplication() {
     await this.paymentPbaNumberTextBox.fill('PBA0076191');
-    await this.page.getByLabel('Customer reference').fill('Customer reference');
+    await this.page.getByLabel('Customer reference').fill('payments');
     await this.clickContinue();
   }
 
