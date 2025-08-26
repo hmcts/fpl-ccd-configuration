@@ -217,17 +217,18 @@ test.describe('Upload additional applications', () => {
       await uploadAdditionalApplications.clickContinue();
 
       await uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile);
-      await page.waitForTimeout(3000);
+      await page.waitForTimeout(3000); // wait for document upload
       await uploadAdditionalApplicationsSuppliedDocuments.checkDocumentRelatedToCaseYes();
       await uploadAdditionalApplicationsSuppliedDocuments.clickContinue();
 
-      await page.pause()
       await uploadAdditionalApplicationsApplicationFee.checkPaidWithPBANo()
+      await page.waitForTimeout(500); // waits for page to register with service
       await uploadAdditionalApplicationsApplicationFee.clickContinue();
 
-      await submit.clickContinue();
+      await submit.clickSaveAndContinue();
 
       // Search for C2 application in "Other applications tab"
+      await page.waitForTimeout(200); // wait for page to register with service
       await additionalApplications.tabNavigation('Other applications');
       await expect.soft(page.getByText('C2 application').first()).toBeVisible();
       await expect.soft(page.getByRole('cell', { name: 'testPdf.pdf', exact: true }).locator('div').nth(1)).toBeVisible();
