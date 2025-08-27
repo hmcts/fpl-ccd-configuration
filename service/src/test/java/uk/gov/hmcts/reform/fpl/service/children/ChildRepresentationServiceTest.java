@@ -233,7 +233,33 @@ class ChildRepresentationServiceTest {
                     .party(ChildParty.builder()
                         .livingSituation(ChildLivingSituation.LIVE_IN_REFUGE.getValue())
                         .address(Address.builder().addressLine1("Refugee address").build())
-                        .detailsHidden(YES.getValue())
+                        .isAddressConfidential(YES.getValue())
+                        .build())
+                    .build()))
+            ));
+        }
+
+        @Test
+        void shouldMarkAsConfidentialIfAddressIsMarkedAsConfidential() {
+            Map<String, Object> actual = underTest.finaliseChildrenAndRepresentationDetails(CaseData.builder()
+                .children1(List.of(element(CHILD_UUID_1, Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(ChildLivingSituation.NOT_SPECIFIED.getValue())
+                        .address(Address.builder().addressLine1("N/A address").build())
+                        .isAddressConfidential(YES.getValue())
+                        .build())
+                    .build())))
+                .childrenEventData(ChildrenEventData.builder()
+                    .childrenHaveRepresentation(NO.getValue())
+                    .build())
+                .build());
+
+            assertThat(actual).isEqualTo(Map.of(
+                "children1", List.of(element(CHILD_UUID_1, Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(ChildLivingSituation.NOT_SPECIFIED.getValue())
+                        .address(Address.builder().addressLine1("N/A address").build())
+                        .isAddressConfidential(YES.getValue())
                         .build())
                     .build()))
             ));
