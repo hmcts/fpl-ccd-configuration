@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.fpl.utils;
 import java.util.List;
 
 public class RespondentNameFormatter {
-    private RespondentNameFormatter() {}
+    private RespondentNameFormatter() {
+
+    }
 
     public static String formatRespondentNames(List<String> names) {
         if (names.size() == 1) {

@@ -125,7 +125,8 @@ class A81PlacementBlankOrderDocumentParameterGeneratorTest {
             .respondents1(List.of(element(respondent)))
             .build();
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-        A81PlacementBlankOrderDocmosisParameters params = (A81PlacementBlankOrderDocmosisParameters) underTest.generate(caseData);
+        A81PlacementBlankOrderDocmosisParameters params =
+            (A81PlacementBlankOrderDocmosisParameters) underTest.generate(caseData);
         assertThat(params.getRespondentNames()).isEqualTo("John Ross is");
     }
 
@@ -145,7 +146,8 @@ class A81PlacementBlankOrderDocumentParameterGeneratorTest {
             .respondents1(List.of(element(respondent1), element(respondent2)))
             .build();
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-        A81PlacementBlankOrderDocmosisParameters params = (A81PlacementBlankOrderDocmosisParameters) underTest.generate(caseData);
+        A81PlacementBlankOrderDocmosisParameters params =
+            (A81PlacementBlankOrderDocmosisParameters) underTest.generate(caseData);
         assertThat(params.getRespondentNames()).isEqualTo("John Ross and Julie Ross are");
     }
 
@@ -170,7 +172,8 @@ class A81PlacementBlankOrderDocumentParameterGeneratorTest {
             .respondents1(List.of(element(respondent1), element(respondent2), element(respondent3)))
             .build();
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-        A81PlacementBlankOrderDocmosisParameters params = (A81PlacementBlankOrderDocmosisParameters) underTest.generate(caseData);
+        A81PlacementBlankOrderDocmosisParameters params =
+            (A81PlacementBlankOrderDocmosisParameters) underTest.generate(caseData);
         assertThat(params.getRespondentNames()).isEqualTo("John Ross, Julie Ross and Karen Donalds are");
     }
 }
