@@ -124,4 +124,35 @@ class ChildrenCheckerTest {
                 .containsExactly("Date of birth is in the future. You cannot send this application until that date");
         assertThat(isCompleted).isFalse();
     }
+
+    @Test
+    void shouldReturnFalseWhenChildPartyEmpty() {
+        final Child child = Child.builder()
+            .finalDecisionReason("Test")
+            .party(ChildParty.builder().build())
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .children1(ElementUtils.wrapElements(child))
+            .build();
+
+        final boolean isCompleted = childrenChecker.isStarted(caseData);
+
+        assertThat(isCompleted).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenChildEmpty() {
+        final Child child = Child.builder()
+            .party(ChildParty.builder().build())
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .children1(ElementUtils.wrapElements(child))
+            .build();
+
+        final boolean isCompleted = childrenChecker.isStarted(caseData);
+
+        assertThat(isCompleted).isFalse();
+    }
 }

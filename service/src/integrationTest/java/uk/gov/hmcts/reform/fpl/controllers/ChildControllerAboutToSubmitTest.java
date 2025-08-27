@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -100,6 +101,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .party(ChildParty.builder()
                     .firstName(CHILD_FIRST_NAME)
                     .lastName(CHILD_LAST_NAME)
+                    .isAddressConfidential(YesNo.NO.getValue())
                     .dateOfBirth(LocalDate.now())
                     .build())
             .build();
@@ -150,7 +152,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
-            Child.builder().party(ChildParty.builder().build()).build()
+            Child.builder().party(ChildParty.builder().isAddressConfidential(YesNo.NO.getValue()).build()).build()
         );
 
         assertThat(responseData.getChildrenEventData()).isEqualTo(ChildrenEventData.builder()
@@ -170,7 +172,11 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .localAuthorities(LOCAL_AUTHORITIES)
             .children1(wrapElements(
                 Child.builder()
-                    .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                    .party(ChildParty.builder()
+                        .firstName(CHILD_NAME_1)
+                        .lastName(CHILD_SURNAME_1)
+                        .isAddressConfidential(YesNo.NO.getValue())
+                        .build())
                     .build()
             ))
             .build();
@@ -187,7 +193,11 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
             Child.builder()
-                .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                .party(ChildParty.builder()
+                    .firstName(CHILD_NAME_1)
+                    .lastName(CHILD_SURNAME_1)
+                    .isAddressConfidential(YesNo.NO.getValue())
+                    .build())
                 .solicitor(MAIN_REPRESENTATIVE)
                 .legalCounsellors(List.of())
                 .build()
@@ -261,12 +271,20 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
             Child.builder()
-                .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                .party(ChildParty.builder()
+                    .firstName(CHILD_NAME_1)
+                    .lastName(CHILD_SURNAME_1)
+                    .isAddressConfidential(YesNo.NO.getValue())
+                    .build())
                 .solicitor(MAIN_REPRESENTATIVE)
                 .legalCounsellors(List.of())
                 .build(),
             Child.builder()
-                .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
+                .party(ChildParty.builder()
+                    .firstName(CHILD_NAME_2)
+                    .lastName(CHILD_SURNAME_2)
+                    .isAddressConfidential(YesNo.NO.getValue())
+                    .build())
                 .solicitor(MAIN_REPRESENTATIVE)
                 .legalCounsellors(List.of())
                 .build()
@@ -365,12 +383,20 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
             Child.builder()
-                .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                .party(ChildParty.builder()
+                    .firstName(CHILD_NAME_1)
+                    .lastName(CHILD_SURNAME_1)
+                    .isAddressConfidential(YesNo.NO.getValue())
+                    .build())
                 .solicitor(ANOTHER_REPRESENTATIVE)
                 .legalCounsellors(List.of())
                 .build(),
             Child.builder()
-                .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
+                .party(ChildParty.builder()
+                    .firstName(CHILD_NAME_2)
+                    .lastName(CHILD_SURNAME_2)
+                    .isAddressConfidential(YesNo.NO.getValue())
+                    .build())
                 .solicitor(ANOTHER_REPRESENTATIVE)
                 .legalCounsellors(List.of())
                 .build()
@@ -457,8 +483,8 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .state(NON_RESTRICTED_STATE)
             .localAuthorities(LOCAL_AUTHORITIES)
             .children1(wrapElements(
-                Child.builder().party(ChildParty.builder().build()).build(),
-                Child.builder().party(ChildParty.builder().build()).build()
+                Child.builder().party(ChildParty.builder().isAddressConfidential(YesNo.NO.getValue()).build()).build(),
+                Child.builder().party(ChildParty.builder().isAddressConfidential(YesNo.NO.getValue()).build()).build()
             ))
             .childrenEventData(eventData)
             .build();
@@ -466,8 +492,10 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
-            Child.builder().party(ChildParty.builder().build()).solicitor(MAIN_REPRESENTATIVE).build(),
-            Child.builder().party(ChildParty.builder().build()).solicitor(ANOTHER_REPRESENTATIVE).build()
+            Child.builder().party(ChildParty.builder()
+                .isAddressConfidential(YesNo.NO.getValue()).build()).solicitor(MAIN_REPRESENTATIVE).build(),
+            Child.builder().party(ChildParty.builder()
+                .isAddressConfidential(YesNo.NO.getValue()).build()).solicitor(ANOTHER_REPRESENTATIVE).build()
         );
     }
 
@@ -476,6 +504,9 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         ChildParty confidentialParty = ChildParty.builder()
             .firstName("Phil")
             .lastName("Lynott")
+            .livingSituation("Living with other family or friends")
+            .livingWithDetails("Uncle Test")
+            .addressChangeDate(dateNow())
             .address(Address.builder()
                 .addressLine1("Horsell Common")
                 .addressLine2("Shores Road")
@@ -483,10 +514,10 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .postTown("GU21 4XB")
                 .build())
             .telephoneNumber(Telephone.builder().telephoneNumber("12345").build())
-            .detailsHidden("Yes")
+            .isAddressConfidential("Yes")
             .build();
 
-        ChildParty nonConfidentialParty = confidentialParty.toBuilder().detailsHidden("No").build();
+        ChildParty nonConfidentialParty = confidentialParty.toBuilder().isAddressConfidential("No").build();
 
         UUID confidentialChildID = UUID.randomUUID();
         CaseData initialCaseData = CaseData.builder()
@@ -501,16 +532,59 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         CaseData caseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
-        ChildParty updatedConfidentialParty = confidentialParty.toBuilder()
-            .showAddressInConfidentialTab("Yes")
-            .detailsHidden(null)
+        assertThat(caseData.getChildren1()).extracting(child -> child.getValue().getParty()).containsExactly(
+            confidentialParty.toBuilder()
+                .address(null)
+                .livingSituation(null)
+                .addressChangeDate(null)
+                .livingWithDetails(null)
+                .telephoneNumber(null).build(),
+            nonConfidentialParty
+        );
+    }
+
+    @Test
+    void shouldAddConfidentialChildrenSocialWorkerToCaseDataWhenConfidentialChildrenExist() {
+        Address nonConfidentialAddress = Address.builder()
+            .addressLine1("Horsell Common")
+            .addressLine2("Shores Road")
+            .addressLine3("Woking")
+            .postTown("GU21 4XB")
             .build();
 
-        assertThat(caseData.getConfidentialChildren())
-            .containsOnly(element(confidentialChildID, Child.builder().party(updatedConfidentialParty).build()));
+        ChildParty confidentialChild = ChildParty.builder()
+            .firstName("Phil")
+            .lastName("Lynott")
+            .address(nonConfidentialAddress)
+            .livingSituation("Living with other family or friends")
+            .livingWithDetails("Uncle Test")
+            .socialWorkerEmail("test@test.com")
+            .socialWorkerTelephoneNumber(Telephone.builder().telephoneNumber("12345").build())
+            .socialWorkerName("Jim Test")
+            .socialWorkerDetailsHidden("Yes")
+            .socialWorkerDetailsHiddenReason("Please hide")
+            .build();
 
-        assertThat(caseData.getChildren1()).extracting(child -> child.getValue().getParty()).containsExactly(
-            confidentialParty.toBuilder().address(null).telephoneNumber(null).build(),
+        ChildParty nonConfidentialParty = confidentialChild.toBuilder().socialWorkerDetailsHidden("No").build();
+
+        UUID confidentialChildID = UUID.randomUUID();
+        CaseData initialCaseData = CaseData.builder()
+            .state(NON_RESTRICTED_STATE)
+            .localAuthorities(LOCAL_AUTHORITIES)
+            .children1(List.of(
+                element(confidentialChildID, Child.builder().party(confidentialChild).build()),
+                element(Child.builder().party(nonConfidentialParty).build())
+            ))
+            .build();
+
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+
+        assertThat(caseData.getChildren1()).extracting(child -> child.getValue().getParty())
+            .containsExactly(confidentialChild.toBuilder()
+                .socialWorkerName(null)
+                .socialWorkerEmail(null)
+                .socialWorkerTelephoneNumber(null)
+                .build(),
             nonConfidentialParty
         );
     }
