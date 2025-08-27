@@ -21,7 +21,7 @@ export class AdditionalApplications extends BasePage {
   readonly checkbox: Locator;
   readonly paymentPbaNumberTextBox: Locator;
   readonly typeOfC2Application: Locator;
-  readonly paymentPbaNumberSolicitor: Locator;
+  readonly paymentPbaNumberOption: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -41,7 +41,7 @@ export class AdditionalApplications extends BasePage {
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
     this.paymentPbaNumberTextBox = page.getByRole('textbox', { name: 'Payment by account (PBA)' });
-    this.paymentPbaNumberSolicitor = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
+    this.paymentPbaNumberOption = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
     this.typeOfC2Application = page.getByLabel('Application with notice.');
   }
   //
@@ -150,7 +150,7 @@ export class AdditionalApplications extends BasePage {
   }
 
   public async payForApplication(pbaNumber: string) {
-    await this.paymentPbaNumberSolicitor.selectOption(pbaNumber);
+    await this.paymentPbaNumberOption.selectOption(pbaNumber);
     await this.page.getByLabel('Customer reference').fill('Test');
     await this.clickContinue();
   }
