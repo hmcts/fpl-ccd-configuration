@@ -1590,6 +1590,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isCTSCUser",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Used to show the manual PBANumber entry to CTSC only in upload additional applications"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "scannedDocuments",
     "Label": "Scanned Documents",
     "FieldType": "Collection",
