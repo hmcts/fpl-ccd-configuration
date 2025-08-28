@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -30,6 +31,9 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 public abstract class MessageJudgeService {
@@ -68,6 +72,13 @@ public abstract class MessageJudgeService {
         return judicialMessages;
     }
 
+    public List<Element<JudicialMessageReply>> sortedJudicialMessageReplies(List<Element<JudicialMessageReply>> judicialMessageReplies) {
+        judicialMessageReplies.sort(Comparator.comparing(judicialMessageReplyElement
+            -> judicialMessageReplyElement.getValue().getUpdatedTime(), Comparator.nullsLast(Comparator.reverseOrder())));
+
+        return judicialMessageReplies;
+    }
+
     protected String buildMessageHistory(String message, String history, String sender) {
         String formattedLatestMessage = String.format("%s - %s", sender, message);
 
@@ -76,6 +87,26 @@ public abstract class MessageJudgeService {
         }
 
         return join("\n \n", history, formattedLatestMessage);
+    }
+
+    protected List<Element<JudicialMessageReply>> buildMessageReplies(String latestMessage, Optional<JudicialMessage> message, String from, String to) {
+        JudicialMessageReply messageReply = JudicialMessageReply.builder()
+            .message(latestMessage)
+            .replyFrom(from)
+            .replyTo(to)
+            .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
+            .updatedTime(time.now())
+            .build();
+
+        //If this is a new message the object will be empty
+        if (message.isEmpty()) {
+            return List.of(element(messageReply));
+        } else {
+            List<Element<JudicialMessageReply>> updatedHistory = message.get().getJudicialMessageReplies();
+            updatedHistory.add(element(messageReply));
+
+            return sortedJudicialMessageReplies(updatedHistory);
+        }
     }
 
     protected String getSenderEmailAddressByRoleType(JudicialMessageRoleType roleType) {
