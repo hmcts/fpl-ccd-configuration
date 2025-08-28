@@ -55,6 +55,7 @@ public class ApplicantLocalAuthorityService {
     private final ValidateEmailService validateEmailService;
     private final LocalAuthorityIdLookupConfiguration localAuthorityIds;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmails;
+    private final UserService userService;
 
     public LocalAuthority getUserLocalAuthority(CaseData caseData) {
 
@@ -341,5 +342,9 @@ public class ApplicantLocalAuthorityService {
         return isOrgIdInPolicy(orgId, caseData.getLocalAuthorityPolicy())
             || isOrgIdInPolicy(orgId, caseData.getOutsourcingPolicy())
             || isOrgIdInPolicy(orgId, caseData.getSharedLocalAuthorityPolicy());
+    }
+
+    public boolean isCurrentUserCtscUser() {
+        return userService.isCtscUser();
     }
 }

@@ -10,11 +10,13 @@ import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -30,6 +32,9 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
+    @MockBean
+    private UserService userService;
+
     ApplicantLocalAuthorityControllerSubmittedTest() {
         super("enter-local-authority");
     }
@@ -38,6 +43,7 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
     void setup() {
         givenSystemUser();
         givenFplService();
+        given(userService.isCtscUser()).willReturn(false);
     }
 
     @Test
