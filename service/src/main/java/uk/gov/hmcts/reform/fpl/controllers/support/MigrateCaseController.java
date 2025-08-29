@@ -157,6 +157,4 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
             UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
     }
-
-
 }
