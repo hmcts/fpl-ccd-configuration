@@ -34,12 +34,12 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication('PBA0076191');
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
       // can see some basic properties of the application
-      await expect(page.getByText('PBA1234567')).toBeVisible();
+      await expect(page.getByText('PBA0076191')).toBeVisible();
       await expect(page.getByText('C1 - Change surname or remove from jurisdiction')).toBeVisible();
       await expect(page.getByText('On the same day')).toBeVisible();
 
@@ -79,7 +79,7 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication('PBA0076191');
       await additionalApplications.checkYourAnsAndSubmit();
     });
 
@@ -97,12 +97,12 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillOtherApplicationDetails();
 
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication('PBA0076191');
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
       // can see some basic properties of the application
-      await expect(page.getByText('PBA1234567')).toBeVisible();
+      await expect(page.getByText('PBA0076191')).toBeVisible();
       await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
       await expect(page.getByText('On the same day')).toBeVisible(); // Other application
       await expect(page.getByText('Within 2 days')).toBeVisible(); // C2 application
@@ -126,13 +126,12 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication('PBA0076191');
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
       // can see some basic properties of the application
-      await expect(page.getByText('PBA1234567')).toBeVisible();
-      await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
+      await expect(page.getByText('PBA0076191')).toBeVisible();
       await expect(page.getByText('Within 2 days')).toBeVisible();
 
       // can see the draft order to be approved
@@ -146,8 +145,7 @@ test.describe('Upload additional applications', () => {
 
       // CTSC can see some basic properties of the application
       await additionalApplications.tabNavigation('Other applications');
-      await expect(page.getByText('PBA1234567')).toBeVisible();
-      await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
+      await expect(page.getByText('PBA0076191')).toBeVisible();
       await expect(page.getByText('Within 2 days')).toBeVisible();
 
       // CTSC can see the draft order to be approved
@@ -169,13 +167,12 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.ctscPayForApplication();
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
       // can see some basic properties of the application
-      await expect(page.getByText('PBA1234567')).toBeVisible();
-      await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
+      await expect(page.getByText('PBA0076191')).toBeVisible();
       await expect(page.getByText('Within 2 days')).toBeVisible();
 
       // can see the draft order to be approved
@@ -211,7 +208,7 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication('PBA0090842');
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
