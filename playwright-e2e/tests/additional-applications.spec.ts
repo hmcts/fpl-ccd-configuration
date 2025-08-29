@@ -1,6 +1,4 @@
 import { test } from '../fixtures/create-fixture';
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, HighCourtAdminUser, privateSolicitorOrgUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
@@ -8,6 +6,7 @@ import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert { type: "json" };
 import { setHighCourt } from '../utils/update-case-details';
 import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
+import config from "../settings/test-docs/config";
 
 test.describe('Upload additional applications', () => {
   const dateTime = new Date().toISOString();
@@ -192,6 +191,46 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.tabNavigation('Draft orders');
       await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
     });
+
+  test('CTSC uploads standard C2 application with no PBA', async ({ page,
+                                                          signInPage,
+                                                          additionalApplications,
+                                                          uploadAdditionalApplications,
+                                                          uploadAdditionalApplicationsApplicationFee,
+                                                          uploadAdditionalApplicationsSuppliedDocuments,
+                                                          submit    }) => {
+      caseName = 'CTSC standard C2 application ' + dateTime.slice(0, 10);
+      await updateCase(caseName, caseNumber, caseData);
+      await signInPage.visit();
+      await signInPage.login(CTSCUser.email, CTSCUser.password);
+      await signInPage.navigateTOCaseDetails(caseNumber);
+
+      // complete C2 application
+      await additionalApplications.gotoNextStep('Upload additional applications');
+      await uploadAdditionalApplications.checkC2Order();
+      await uploadAdditionalApplications.checkApplicationWithNotice();
+      await uploadAdditionalApplications.checkConfidentialApplicationYes();
+      await uploadAdditionalApplications.selectApplicantValue(1);
+      await uploadAdditionalApplications.clickContinue();
+
+      await uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile);
+      await page.waitForTimeout(3000); // wait for document upload
+      await uploadAdditionalApplicationsSuppliedDocuments.checkDocumentRelatedToCaseYes();
+      await uploadAdditionalApplicationsSuppliedDocuments.clickContinue();
+
+      await uploadAdditionalApplicationsApplicationFee.checkPaidWithPBANo()
+      await page.waitForTimeout(500); // waits for page to register with service
+      await uploadAdditionalApplicationsApplicationFee.clickContinue();
+
+      await submit.clickSaveAndContinue();
+
+      // Search for C2 application in "Other applications tab"
+      await page.waitForTimeout(200); // wait for page to register with service
+      await additionalApplications.tabNavigation('Other applications');
+      await expect.soft(page.getByText('C2 application').first()).toBeVisible();
+      await expect.soft(page.getByRole('cell', { name: 'testPdf.pdf', exact: true }).locator('div').nth(1)).toBeVisible();
+
+  });
 
   test('Respondent Solicitor Uploads additional applications',
     async ({ page, signInPage, additionalApplications }) => {
