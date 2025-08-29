@@ -46,7 +46,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2740", this::run2740,
         "DFPL-2744", this::run2744,
         "DFPL-2739", this::run2739,
-        "DFPL-2756", this::run2756
+        "DFPL-2846", this::run2846
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -85,10 +85,10 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(caseData, migrationId, cmoId, false));
     }
 
-    private void run2756(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2756";
-        final long expectedCaseId = 1725874146484241L;
-        final String orgId = "FLXFDT7";
+    private void run2846(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2846";
+        final long expectedCaseId = 1754386343078159L;
+        final String orgId = "";
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
@@ -157,4 +157,6 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
             UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
     }
+
+
 }
