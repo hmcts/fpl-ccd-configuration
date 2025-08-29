@@ -39,7 +39,7 @@ export class AdditionalApplications extends BasePage {
     this.selectApplicant = page.getByLabel('Select applicant');
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
-    this.paymentPbaNumber = page.getByLabel('Payment by account (PBA) number');
+    this.paymentPbaNumber = page.getByRole('textbox', { name: 'Payment by account (PBA) number' });
     this.typeOfC2Application = page.getByLabel('Application with notice.');
   }
 
