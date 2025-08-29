@@ -32,7 +32,7 @@ export class Placement extends BasePage {
 
   public async payForApplication() {
     await expect(this.page.getByText('£556.00')).toBeVisible();
-    await this.page.getByRole('textbox', { name: 'Payment by account (PBA)' }).fill('PBA1234567');
+    await this.page.getByLabel('Payment by account (PBA) number').fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }
