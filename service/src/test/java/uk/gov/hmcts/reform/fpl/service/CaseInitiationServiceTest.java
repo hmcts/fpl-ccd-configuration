@@ -264,7 +264,7 @@ class CaseInitiationServiceTest {
 
             CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
 
-            assertThat(updatedCaseData.getApplicantSolicitorPolicy())
+            assertThat(updatedCaseData.getAppSolicitorPolicy())
                 .isEqualTo(organisationPolicy(RS1.orgId, RS1.name, APPSOLICITOR));
             assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo("SA");
             assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo("Swansea");
@@ -283,7 +283,7 @@ class CaseInitiationServiceTest {
 
             CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
 
-            assertThat(updatedCaseData.getApplicantSolicitorPolicy())
+            assertThat(updatedCaseData.getAppSolicitorPolicy())
                 .isEqualTo(organisationPolicy(CS1.orgId, CS1.name, APPSOLICITOR));
             assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo("SA");
             assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo("Swansea");

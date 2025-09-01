@@ -2,6 +2,7 @@
 import { expect, Page } from "@playwright/test";
 import { HearingDetailsMixin } from "./mixins/hearing-details-mixin";
 import config from "../settings/test-docs/config";
+import {addMonthsToDate} from "../utils/document-format-helper";
 
 export class GatekeepingListing extends HearingDetailsMixin()
 {
@@ -92,7 +93,7 @@ export class GatekeepingListing extends HearingDetailsMixin()
         await this.page.getByRole('textbox', {name: 'Description (Optional)'}).fill('To accomadate way from the parent home');
         await this.page.getByLabel('Party responsible').selectOption('Local authority');
         await this.page.getByRole('radio', {name: 'Number of working days before'}).check();
-        await this.page.getByRole('spinbutton', {name: 'Number of days'}).fill('6');
+        await this.page.getByRole('textbox', {name: 'Number of days'}).fill('6');
         await this.clickContinue();
         await this.page.getByRole('radio', {name: 'District Judge', exact: true}).check();
         await this.page.getByRole('textbox', {name: 'Last name'}).fill('Judge Damien');
@@ -105,16 +106,18 @@ export class GatekeepingListing extends HearingDetailsMixin()
     }
 
     async completeUDOListing() {
+        let threeMonthsLater = addMonthsToDate(new Date(), 3);
+        let fiveMonthsLater = addMonthsToDate(new Date(), 5);
         await this.page.getByRole('radio', {name: 'Emergency protection order'}).check();
         await this.page.locator('#hearingVenue').selectOption('8: 99');
         await this.page.getByRole('checkbox', {name: 'In person'}).check();
         await this.page.getByRole('textbox', {name: 'Add details (Optional)'}).fill('Details');
-        await this.fillDateInputs(this.page, new Date(new Date().setMonth(new Date().getMonth() + 3)));
+        await this.fillDateInputs(this.page,threeMonthsLater);
         await this.fillTimeInputs(this.page, '10', '00', '00');
         await this.page.getByText('Specific end date and time').click();
-        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Day').fill(new Date(new Date().setMonth(new Date().getMonth() + 5)).getDate().toString());
-        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Month').fill(new Date(new Date().setMonth(new Date().getMonth() + 5)).getMonth().toString());
-        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Year').fill(new Date(new Date().setMonth(new Date().getMonth() + 5)).getFullYear().toString());
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Day').fill(fiveMonthsLater.getDate().toString());
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Month').fill((fiveMonthsLater.getMonth()+1).toString());// Months are 0-indexed in JS
+        await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Year').fill(fiveMonthsLater.getFullYear().toString());
         await this.page.getByRole('group', {name: 'End date and time'}).getByLabel('Hour').fill('10');
         await this.clickContinue();
 

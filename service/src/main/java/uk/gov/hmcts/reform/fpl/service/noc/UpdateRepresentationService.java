@@ -80,7 +80,7 @@ public class UpdateRepresentationService {
         final ChangeOrganisationRequest change = getChangeOrganisationRequest(caseData);
 
         RespondentSolicitor removedSolicitor = RespondentSolicitor.builder()
-            .organisation(caseData.getApplicantSolicitorPolicy().getOrganisation())
+            .organisation(caseData.getAppSolicitorPolicy().getOrganisation())
             .build();
 
         RespondentSolicitor addedSolicitor = generateRespondentSolicitor(solicitor, change);

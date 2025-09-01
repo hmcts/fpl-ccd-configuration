@@ -7,7 +7,7 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
+import uk.gov.hmcts.reform.aac.client.NocApi;
 import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
@@ -94,7 +94,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
     private ArgumentCaptor<DecisionRequest> requestCaptor;
 
     @MockBean
-    private CaseAssignmentApi caseAssignmentApi;
+    private NocApi nocApi;
 
     @MockBean
     private OrganisationService organisationService;
@@ -111,7 +111,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
             .thenReturn(AUDIT_EVENTS);
         when(idamClient.getUserByUserId(USER_AUTH_TOKEN, SOLICITOR_ID))
             .thenReturn(SOLICITOR_USER);
-        when(caseAssignmentApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), requestCaptor.capture()))
+        when(nocApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), requestCaptor.capture()))
             .thenReturn(ASSIGNMENT_RESPONSE);
         when(identityService.generateId()).thenReturn(NEW_CHANGE_UUID);
         when(time.now()).thenReturn(TODAY.atStartOfDay());
@@ -270,7 +270,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .changeOrganisationRequestField(changeRequest)
-            .applicantSolicitorPolicy(OrganisationPolicy.builder()
+            .appSolicitorPolicy(OrganisationPolicy.builder()
                 .organisation(OLD_ORGANISATION)
                 .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
                 .build())

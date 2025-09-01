@@ -171,7 +171,7 @@ public class CaseData extends CaseDataParent {
     private String caseLocalAuthorityName;
     private OrganisationPolicy localAuthorityPolicy;
     private OrganisationPolicy outsourcingPolicy;
-    private OrganisationPolicy applicantSolicitorPolicy;
+    private OrganisationPolicy appSolicitorPolicy;
     private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
     private RepresentativeType representativeType;
@@ -1131,7 +1131,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public boolean isThirdPartyApplicant() {
-        return Optional.ofNullable(applicantSolicitorPolicy)
+        return Optional.ofNullable(appSolicitorPolicy)
             .map(OrganisationPolicy::getOrganisation)
             .map(Organisation::getOrganisationID)
             .filter(StringUtils::isNotEmpty)

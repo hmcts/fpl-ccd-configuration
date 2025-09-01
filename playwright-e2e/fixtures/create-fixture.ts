@@ -45,6 +45,14 @@ import {ManageTTL} from "../pages/manage-t-t-l";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
 import {NoticeOfChange} from "../pages/notice-of-change";
+import {ManageOrdersChildrenDetails} from "../pages/manage-orders/manage-orders-children-details";
+import {ManageOrdersHearingDetails} from "../pages/manage-orders/manage-orders-hearing-details";
+import {ManageOrdersManageOrdersOperations} from "../pages/manage-orders/manage-orders-manage-orders-operations";
+import {ManageOrdersOrderDetails} from "../pages/manage-orders/manage-orders-order-details";
+import {ManageOrdersIssuingDetails} from "../pages/manage-orders/manage-orders-issuing-details";
+import {ManageOrdersReview} from "../pages/manage-orders/manage-orders-review";
+import {Submit} from "../pages/manage-orders/submit";
+import {ManageOrdersOrderSelection} from "../pages/manage-orders/manage-orders-order-selection";
 
 
 type CreateFixtures = {
@@ -94,6 +102,14 @@ type CreateFixtures = {
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
   noticeOfChange: NoticeOfChange;
+  manageOrdersChildrenDetails: ManageOrdersChildrenDetails;
+  manageOrderHearingDetails: ManageOrdersHearingDetails;
+  manageOrdersManageOrdersOperations: ManageOrdersManageOrdersOperations;
+  manageOrdersOrderDetails: ManageOrdersOrderDetails;
+  manageOrdersIssuingDetails: ManageOrdersIssuingDetails;
+  manageOrdersOrderSelection: ManageOrdersOrderSelection
+  manageOrdersReview: ManageOrdersReview;
+  submit: Submit;
 
 };
 
@@ -274,10 +290,40 @@ othersToBeGivenNotice: async ({ page }, use) => {
 
   changeOtherToRespondent: async ({ page }, use) => {
     await use(new ChangeOtherToRespondent(page));
-
   },
     noticeOfChange: async ({ page }, use) => {
         await use(new NoticeOfChange(page));
     },
 
+    manageOrdersChildrenDetails: async ({ page }, use) => {
+      await use(new ManageOrdersChildrenDetails(page));
+    },
+
+    manageOrderHearingDetails: async ({ page }, use) => {
+      await use(new ManageOrdersHearingDetails(page));
+    },
+
+    manageOrdersManageOrdersOperations: async ({ page }, use) => {
+      await use(new ManageOrdersManageOrdersOperations(page));
+    },
+
+    manageOrdersOrderDetails: async ({ page }, use) => {
+      await use(new ManageOrdersOrderDetails(page));
+    },
+
+    manageOrdersIssuingDetails: async ({ page }, use) => {
+      await use(new ManageOrdersIssuingDetails(page));
+    },
+
+    manageOrdersOrderSelection: async ({ page }, use) => {
+      await use(new ManageOrdersOrderSelection(page));
+    },
+
+    manageOrdersReview: async ({ page }, use) => {
+      await use(new ManageOrdersReview(page));
+    },
+
+    submit: async ({ page }, use) => {
+      await use(new Submit(page));
+    }
 });

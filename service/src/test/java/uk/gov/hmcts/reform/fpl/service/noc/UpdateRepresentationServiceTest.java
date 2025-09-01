@@ -311,7 +311,7 @@ class UpdateRepresentationServiceTest {
             .build();
 
         final CaseData caseData = CaseData.builder()
-            .applicantSolicitorPolicy(OrganisationPolicy.builder()
+            .appSolicitorPolicy(OrganisationPolicy.builder()
                 .organisation(oldOrg)
                 .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
                 .build())

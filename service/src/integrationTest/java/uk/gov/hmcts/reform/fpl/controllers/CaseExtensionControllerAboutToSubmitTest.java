@@ -232,7 +232,9 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
                         "firstName", firstName,
                         "lastName", lastName,
                         "completionDate", completionDate,
-                        "extensionReason", "InternationalAspect")));
+                        "extensionReason", "InternationalAspect",
+                        "isAddressConfidential", NO.getValue(),
+                        "socialWorkerDetailsHidden", NO.getValue())));
         return child1;
     }
 
@@ -244,6 +246,8 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .extensionReason(INTERNATIONAL_ASPECT)
                 .firstName(firstName)
                 .lastName(lastName)
+                .isAddressConfidential(NO.getValue())
+                .socialWorkerDetailsHidden(NO.getValue())
                 .build();
         return Child.builder()
                 .party(childParty)

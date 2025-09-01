@@ -762,6 +762,7 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-rparobot",
           "[EPSMANAGING]",
           "[APPSOLICITOR]",
           "[LABARRISTER]",
@@ -815,7 +816,8 @@
           "[EPSMANAGING]",
           "[APPSOLICITOR]",
           "[LAMANAGING]",
-          "[LASHARED]"
+          "[LASHARED]",
+          "[LABARRISTER]"
         ],
         "CRUD": "CR"
       }
@@ -1471,7 +1473,7 @@
           "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
           "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
           "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]", "[BARRISTER]"
         ],
         "CRUD": "CR"
       },
