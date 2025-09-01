@@ -11,8 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 
 import java.util.List;
@@ -34,18 +32,6 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
         super("enter-local-authority");
     }
 
-    private final DynamicList pbaNumberDynamicList = DynamicList.builder()
-        .value(DynamicListElement.builder()
-            .code("PBA1234567")
-            .build())
-        .listItems(List.of(DynamicListElement.builder()
-                .code("PBA1234567")
-                .build(),
-            DynamicListElement.builder()
-                .code("PBA7654321")
-                .build()))
-        .build();
-
     @BeforeEach
     void setup() {
         givenFplService();
@@ -61,7 +47,6 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
         final LocalAuthority newLocalAuthority = LocalAuthority.builder()
             .name("ORG")
             .email("org@test.com")
-            .pbaNumberDynamicList(pbaNumberDynamicList)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -84,7 +69,6 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
             .name("ORG")
             .email("org@test.com")
             .designated("Yes")
-            .pbaNumber("PBA1234567")
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorities().size()).isEqualTo(1);
@@ -114,8 +98,6 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
             .id("ORG")
             .name("ORG name")
             .email("org@test.com")
-            .pbaNumberDynamicList(pbaNumberDynamicList)
-            .pbaNumber("PBA1234567")
             .colleagues(existingColleagues)
             .build();
 
@@ -142,7 +124,6 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
             .id("ORG")
             .name("ORG name")
             .email("org@test.com")
-            .pbaNumber("PBA1234567")
             .designated(YES.getValue())
             .colleagues(List.of(element(existingMainContactUUID, updatedContact)))
             .build();
@@ -167,7 +148,6 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
             .id("ORG")
             .name("ORG name")
             .email("org@test.com")
-            .pbaNumberDynamicList(pbaNumberDynamicList)
             .colleagues(List.of(existingMainContactElement))
             .build();
 
@@ -195,7 +175,6 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
             .name("ORG name")
             .email("org@test.com")
             .designated(YES.getValue())
-            .pbaNumber("PBA1234567")
             .colleagues(List.of(existingMainContactElement, newOtherContact))
             .build();
 

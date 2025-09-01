@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -23,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -35,9 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -54,8 +50,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -71,7 +65,6 @@ public class UploadAdditionalApplicationsService {
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
     private final DocumentConversionService documentConversionService;
-    private final PbaService pbaService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -97,7 +90,7 @@ public class UploadAdditionalApplicationsService {
         List<Element<Respondent>> respondentsInCase = caseData.getAllRespondents();
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
-            .pbaPayment(updatePBAPayment(caseData.getTemporaryPbaPayment(), YES.equals(caseData.getIsCTSCUser())))
+            .pbaPayment(caseData.getTemporaryPbaPayment())
             .amountToPay(caseData.getAmountToPay())
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now, DATE_TIME))
@@ -107,7 +100,7 @@ public class UploadAdditionalApplicationsService {
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             C2DocumentBundle c2DocumentBundle = buildC2DocumentBundle(
                 caseData, applicantName, respondentsInCase, uploadedBy, now);
-            if (YES.equals(caseData.getIsC2Confidential())) {
+            if (YesNo.YES.equals(caseData.getIsC2Confidential())) {
                 additionalApplicationsBundleBuilder.c2DocumentBundleConfidential(c2DocumentBundle);
                 buildC2BundleByPolicy(caseData, c2DocumentBundle, additionalApplicationsBundleBuilder);
             } else {
@@ -321,28 +314,5 @@ public class UploadAdditionalApplicationsService {
     public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
-    }
-
-    public Map<String, Object> populateTempPbaPayment() {
-        final String TEMP_PBA = "temporaryPbaPayment";
-        Map<String, Object> data = new HashMap<>();
-        PBAPayment tempPbaPayment = PBAPayment.builder()
-            .pbaNumberDynamicList(pbaService.populatePbaDynamicList(""))
-            .build();
-
-        data.put(TEMP_PBA, tempPbaPayment);
-
-        return data;
-    }
-
-    public PBAPayment updatePBAPayment(PBAPayment pbaPayment, boolean isCTSCUser) {
-        if (pbaPayment != null && !NO.getValue().equals(pbaPayment.getUsePbaPayment())) {
-            return pbaPayment.toBuilder()
-                .pbaNumber(isCTSCUser
-                    ? pbaPayment.getPbaNumber() : pbaPayment.getPbaNumberDynamicList().getValueCode())
-                .pbaNumberDynamicList(null)
-                .build();
-        }
-        return pbaPayment;
     }
 }
