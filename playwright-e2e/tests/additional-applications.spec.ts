@@ -195,45 +195,55 @@ test.describe('Upload additional applications', () => {
       await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
     });
 
-  test('CTSC uploads standard C2 application with no PBA', async ({ page,
-                                                          signInPage,
-                                                          additionalApplications,
-                                                          uploadAdditionalApplications,
-                                                          uploadAdditionalApplicationsApplicationFee,
-                                                          uploadAdditionalApplicationsSuppliedDocuments,
-                                                          submit    }) => {
-      caseName = 'CTSC standard C2 application ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
-      await signInPage.visit();
-      await signInPage.login(CTSCUser.email, CTSCUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+    test('CTSC uploads standard C2 application with no PBA', async ({ page,
+                                                                        signInPage,
+                                                                        additionalApplications,
+                                                                        uploadAdditionalApplications,
+                                                                        uploadAdditionalApplicationsApplicationFee,
+                                                                        uploadAdditionalApplicationsSuppliedDocuments,
+                                                                        submit    }) => {
+        caseName = 'CTSC standard C2 application ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
 
-      // complete C2 application
-      await additionalApplications.gotoNextStep('Upload additional applications');
-      await uploadAdditionalApplications.checkC2Order();
-      await uploadAdditionalApplications.checkApplicationWithNotice();
-      await uploadAdditionalApplications.checkConfidentialApplicationYes();
-      await uploadAdditionalApplications.selectApplicantValue(1);
-      await uploadAdditionalApplications.clickContinue();
+        await test.step('Login and Navigate to Case', async () => {
+            await signInPage.visit();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateTOCaseDetails(caseNumber);
+        });
 
-      await uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile);
-      await page.waitForTimeout(3000); // wait for document upload
-      await uploadAdditionalApplicationsSuppliedDocuments.checkDocumentRelatedToCaseYes();
-      await uploadAdditionalApplicationsSuppliedDocuments.clickContinue();
+        await test.step('Complete C2 Application', async () => {
+            await additionalApplications.gotoNextStep('Upload additional applications');
+            await uploadAdditionalApplications.checkC2Order();
+            await uploadAdditionalApplications.checkApplicationWithNotice();
+            await uploadAdditionalApplications.checkConfidentialApplicationYes();
+            await uploadAdditionalApplications.selectApplicantValue(1);
+            await uploadAdditionalApplications.clickContinue();
+        });
 
-      await uploadAdditionalApplicationsApplicationFee.checkPaidWithPBANo()
-      await page.waitForTimeout(500); // waits for page to register with service
-      await uploadAdditionalApplicationsApplicationFee.clickContinue();
+        await test.step('Upload C2 Document', async () => {
+            await uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile);
+            await page.waitForTimeout(3000); // wait for document upload
+            await uploadAdditionalApplicationsSuppliedDocuments.checkDocumentRelatedToCaseYes();
+            await uploadAdditionalApplicationsSuppliedDocuments.clickContinue();
+        });
 
-      await submit.clickSaveAndContinue();
+        await test.step('Handle Application Fee', async () => {
+            await uploadAdditionalApplicationsApplicationFee.checkPaidWithPBANo()
+            await page.waitForTimeout(500); // waits for page to register with service
+            await uploadAdditionalApplicationsApplicationFee.clickContinue();
+        });
 
-      // Search for C2 application in "Other applications tab"
-      await page.waitForTimeout(200); // wait for page to register with service
-      await additionalApplications.tabNavigation('Other applications');
-      await expect.soft(page.getByText('C2 application').first()).toBeVisible();
-      await expect.soft(page.getByRole('cell', { name: 'testPdf.pdf', exact: true }).locator('div').nth(1)).toBeVisible();
+        await test.step('Submit Application', async () => {
+            await submit.clickSaveAndContinue();
+        });
 
-  });
+        await test.step("Verify C2 Application in 'Other applications' Tab", async () => {
+            await page.waitForTimeout(200); // wait for page to register with service
+            await additionalApplications.tabNavigation('Other applications');
+            await expect.soft(page.getByText('C2 application').first()).toBeVisible();
+            await expect.soft(page.getByRole('cell', { name: 'testPdf.pdf', exact: true }).locator('div').nth(1)).toBeVisible();
+        });
+    });
 
   test('Respondent Solicitor Uploads additional applications',
     async ({ page, signInPage, additionalApplications }) => {
