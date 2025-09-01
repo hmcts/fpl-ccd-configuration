@@ -1,7 +1,7 @@
 import { Locator, Page } from "@playwright/test";
 import { BasePage } from "../../base-page";
 
-export class UploadAdditionalApplicationsSuppliedDocuments extends BasePage {
+export class SuppliedDocuments extends BasePage {
     readonly uploadC2ApplicationButton: Locator;
 
     readonly documentRelatedToCaseGroup: Locator;

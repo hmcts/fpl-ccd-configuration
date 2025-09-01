@@ -52,13 +52,13 @@ import {ManageOrdersIssuingDetails} from "../pages/manage-orders/manage-orders-i
 import {ManageOrdersReview} from "../pages/manage-orders/manage-orders-review";
 import {Submit} from "../pages/manage-orders/submit";
 import {ManageOrdersOrderSelection} from "../pages/manage-orders/manage-orders-order-selection";
-import {UploadAdditionalApplications} from "../pages/applications/upload-additional/upload-additional-applications";
+import {Applications} from "../pages/applications/upload-additional/applications";
 import {
-    UploadAdditionalApplicationsApplicationFee
-} from "../pages/applications/upload-additional/upload-additional-applications-application-fee";
+    ApplicationFee
+} from "../pages/applications/upload-additional/application-fee";
 import {
-    UploadAdditionalApplicationsSuppliedDocuments
-} from "../pages/applications/upload-additional/upload-additional-applications-supplied-documents";
+    SuppliedDocuments
+} from "../pages/applications/upload-additional/supplied-documents";
 
 
 type CreateFixtures = {
@@ -114,9 +114,9 @@ type CreateFixtures = {
   manageOrdersIssuingDetails: ManageOrdersIssuingDetails;
   manageOrdersOrderSelection: ManageOrdersOrderSelection
   manageOrdersReview: ManageOrdersReview;
-  uploadAdditionalApplications: UploadAdditionalApplications;
-  uploadAdditionalApplicationsApplicationFee: UploadAdditionalApplicationsApplicationFee;
-  uploadAdditionalApplicationsSuppliedDocuments: UploadAdditionalApplicationsSuppliedDocuments;
+  uploadAdditionalApplications: Applications;
+  uploadAdditionalApplicationsApplicationFee: ApplicationFee;
+  uploadAdditionalApplicationsSuppliedDocuments: SuppliedDocuments;
   submit: Submit;
 
 
@@ -330,15 +330,15 @@ othersToBeGivenNotice: async ({ page }, use) => {
     },
 
     uploadAdditionalApplications: async ({ page }, use) => {
-      await use(new UploadAdditionalApplications(page));
+      await use(new Applications(page));
     },
 
     uploadAdditionalApplicationsApplicationFee: async ({ page }, use) => {
-      await use(new UploadAdditionalApplicationsApplicationFee(page));
+      await use(new ApplicationFee(page));
     },
 
     uploadAdditionalApplicationsSuppliedDocuments: async ({ page }, use) => {
-      await use(new UploadAdditionalApplicationsSuppliedDocuments(page));
+      await use(new SuppliedDocuments(page));
     },
 
     submit: async ({ page }, use) => {

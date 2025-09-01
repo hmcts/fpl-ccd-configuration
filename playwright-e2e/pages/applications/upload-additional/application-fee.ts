@@ -1,7 +1,7 @@
 import {BasePage} from "../../base-page";
 import {Locator, Page} from "@playwright/test";
 
-export class UploadAdditionalApplicationsApplicationFee extends BasePage {
+export class ApplicationFee extends BasePage {
     readonly paidWithPBAGroup: Locator;
     readonly paidWithPBAYesRadioButton: Locator;
     readonly paidWithPBANoRadioButton: Locator

@@ -1,6 +1,6 @@
 import { Locator, Page } from "@playwright/test"
 import { BasePage } from "../../base-page";
-export class UploadAdditionalApplications extends BasePage {
+export class Applications extends BasePage {
     readonly applyingForGroup: Locator;
     readonly otherSpecificOrderCheckbox: Locator;
     readonly c2OrderCheckbox: Locator;
