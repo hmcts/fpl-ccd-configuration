@@ -31,7 +31,7 @@ export class ApplicantDetails extends BasePage {
     super(page);
     this.applicantDetailsHeading = page.getByRole('heading', { name: 'Applicant details' });
     this.groupEmailAddress = page.getByLabel('Legal team manager\'s name and');
-    this.pbaNumber = page.getByLabel('PBA number');
+    this.pbaNumber = page.getByRole('textbox', { name: 'PBA number' });
     this.customerReference = page.getByLabel('Customer reference');
     this.nameOfApplicantToSign = page.getByLabel('Name of the person who will');
     this.clientCode = page.getByLabel('Client code (Optional)');
@@ -82,7 +82,7 @@ export class ApplicantDetails extends BasePage {
       await this.representingPersonDetails.getByLabel('First name').fill('John');
       await this.representingPersonDetails.getByLabel('Last name').fill('Somuy');
       await this.page.getByLabel('Group email address (Optional)').fill('privatesol@gmail.com');
-      await this.pbaNumber.fill('PBA1234567');
+      await this.pbaNumber.fill('PBA0096471');
       await this.customerReference.fill('Customer reference 1000');
       await this.clickContinue();
 
