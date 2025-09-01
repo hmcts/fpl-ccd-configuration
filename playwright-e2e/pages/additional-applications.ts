@@ -19,9 +19,8 @@ export class AdditionalApplications extends BasePage {
   readonly selectApplicant: Locator;
   readonly selectApplication: Locator;
   readonly checkbox: Locator;
-  readonly paymentPbaNumberTextBox: Locator;
+  readonly paymentPbaNumber: Locator;
   readonly typeOfC2Application: Locator;
-  readonly paymentPbaNumberOption: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -40,11 +39,10 @@ export class AdditionalApplications extends BasePage {
     this.selectApplicant = page.getByLabel('Select applicant');
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
-    this.paymentPbaNumberTextBox = page.getByRole('textbox', { name: 'Payment by account (PBA)' });
-    this.paymentPbaNumberOption = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
+    this.paymentPbaNumber = page.getByRole('textbox', { name: 'Payment by account (PBA) number' });
     this.typeOfC2Application = page.getByLabel('Application with notice.');
   }
-  //
+
   public async chooseOtherApplicationType() {
     await this.otherSpecificOrder.click();
     await this.selectApplicant.selectOption('1: applicant');
@@ -149,15 +147,9 @@ export class AdditionalApplications extends BasePage {
     await this.expectAllUploadsCompleted();
   }
 
-  public async payForApplication(pbaNumber: string) {
-    await this.paymentPbaNumberOption.selectOption(pbaNumber);
-    await this.page.getByLabel('Customer reference').fill('Test');
-    await this.clickContinue();
-  }
-
-  public async ctscPayForApplication() {
-    await this.paymentPbaNumberTextBox.fill('PBA0076191');
-    await this.page.getByLabel('Customer reference').fill('payments');
+  public async payForApplication() {
+    await this.paymentPbaNumber.fill('PBA1234567');
+    await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }
 
@@ -165,7 +157,7 @@ export class AdditionalApplications extends BasePage {
     await this.gotoNextStep('Upload additional applications');
     await this.chooseC2ApplicationType();
     await this.fillC2ApplicationDetails(uploadDraftOrder);
-    await this.payForApplication('');
+    await this.payForApplication();
     await this.checkYourAnsAndSubmit();
   }
 }

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -28,7 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
-import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -73,13 +72,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
     private final PaymentService paymentService;
+    private final PbaNumberService pbaNumberService;
     private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
     private final ApplicantsListGenerator applicantsListGenerator;
+    private final PeopleInCaseService peopleInCaseService;
     private final CoreCaseDataService coreCaseDataService;
-    private final UserService userService;
     private final ManageDocumentService manageDocumentService;
-    private final PbaNumberService pbaNumberService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -136,9 +135,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         }
 
         if (!skipPayment) {
-            caseDetails.getData().putAll(uploadAdditionalApplicationsService.populateTempPbaPayment());
             caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
-            caseDetails.getData().put("isCTSCUser", userService.isCtscUser() ? YES.getValue() : NO.getValue());
             caseDetails.getData().put(SKIP_PAYMENT_PAGE, NO.getValue());
         } else {
             caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
@@ -153,15 +150,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (YesNo.YES.equals(caseData.getIsCTSCUser())) {
-            PBAPayment tempPbaPayment = caseData.getTemporaryPbaPayment();
-            PBAPayment updatedPbaPayment = pbaNumberService.updatePBAPayment(tempPbaPayment);
-            caseDetails.getData().put("temporaryPbaPayment", updatedPbaPayment);
+        PBAPayment updatedPbaPayment = pbaNumberService.updatePBAPayment(caseData.getTemporaryPbaPayment());
+        caseDetails.getData().put("temporaryPbaPayment", updatedPbaPayment);
 
-            return respond(caseDetails, pbaNumberService.validate(updatedPbaPayment));
-        } else {
-            return respond(caseDetails);
-        }
+        return respond(caseDetails, pbaNumberService.validate(updatedPbaPayment));
     }
 
     @PostMapping("/about-to-submit")
@@ -223,7 +215,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
             "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
             TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE,
-            IS_C2_CONFIDENTIAL, "isCTSCUser");
+            IS_C2_CONFIDENTIAL);
 
         return respond(caseDetails);
     }

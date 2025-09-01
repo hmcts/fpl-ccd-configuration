@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Data
 @Jacksonized
 @Builder(toBuilder = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LocalAuthority {
 
     private final String id;
@@ -31,8 +28,6 @@ public class LocalAuthority {
     private String phone;
     private Address address;
     private String legalTeamManager;
-    @Temp
-    private DynamicList pbaNumberDynamicList;
     private String pbaNumber;
     private String clientCode;
     private String customerReference;
