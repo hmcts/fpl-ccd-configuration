@@ -52,13 +52,13 @@ export class Applications extends BasePage {
     }
 
     async selectApplicantValue(index: number): Promise<void> {
-        const count: number = await this.applicantDropdownOptions.count();
+        const dropdownTotal: number = await this.applicantDropdownOptions.count();
 
-        if (index < 0 || index >= count) {
-            throw new Error(`Index ${index} is out of bounds for dropdown with ${count} options.`);
+        if (index < 0 || index >= dropdownTotal) {
+            throw new Error(`Index exceeds numbers of items in dropdown.`);
         }
 
-        const value: string|null = await this.applicantDropdownOptions.nth(index).getAttribute('value');
+        const value: string | null = await this.applicantDropdownOptions.nth(index).getAttribute('value');
         if (!value) {
             throw new Error(`Option at index ${index} has no value.`);
         }
