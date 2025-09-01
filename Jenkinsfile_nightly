@@ -75,11 +75,18 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = params.CASE_SERVICE_URL
     env.SECURITY_RULES = params.SECURITY_RULES
     env.ORG_ID = params.ORG_ID
+    env.ENVIRONMENT = params.ENVIRONMENT
+    env.S2S_URL = "http://rpe-service-auth-provider-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/testing-support/lease"
+    env.MANAGE_ORG_SERVICE_URL = "http://rd-professional-api-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/"
+    env.ACCESS_MANAGEMENT_URL ="http://am-role-assignment-service-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/am/role-assignments"
+    env.IDAM_WEB_URL = "https://idam-web-public.${env.ENVIRONMENT}.platform.hmcts.net"
+
 
     loadVaultSecrets(integrationTestSecrets)
 
    // enableMutationTest()
-   // enableFortifyScan('fpl-aat')
+
+    //enableFortifyScan('fpl-aat')
     enableFullFunctionalTest(240)
 
     before('mutationTest') {
@@ -118,74 +125,76 @@ withNightlyPipeline(type, product, component) {
                 steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
             }
         }
-      // stage('Functional UI tests firefox') {
-      //   try {
-      //     yarnBuilder.yarn('test:functional-firefox')
-      //   } catch (Error) {
-      //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      //   } finally {
-      //     publishHTML([
-      //       allowMissing: true,
-      //       alwaysLinkToLastBuild: true,
-      //       keepAll: true,
-      //       reportDir: 'playwright-report',
-      //       reportFiles: 'index.html',
-      //       reportName: 'UITestFirefoxReport'
-      //     ])
-      //     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-      //   }
-      // }
-      // stage('Functional UI tests webkit ') {
-      //  try {
-        //   yarnBuilder.yarn('test:functional-webkit')
-        // } catch (Error) {
-        //   unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-        // } finally {
-        //   publishHTML([
-        //     allowMissing: true,
-        //     alwaysLinkToLastBuild: true,
-        //     keepAll: true,
-        //     reportDir: 'playwright-report',
-        //     reportFiles: 'index.html',
-        //     reportName: 'UITestWebkitReport'
-        //   ])
-        //   steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-        // }
-      // }
-      // stage('Functional UI tests ipadPro11 ') {
-      //   try {
-      //     yarnBuilder.yarn('test:functional-ipadPro11')
-      //   } catch (Error) {
-      //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      //   } finally {
-      //     publishHTML([
-      //       allowMissing: true,
-      //       alwaysLinkToLastBuild: true,
-      //       keepAll: true,
-      //       reportDir: 'playwright-report',
-      //       reportFiles: 'index.html',
-      //       reportName: 'UITestipadPro11Report'
-      //     ])
-      //     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-      //   }
-      //}
-      // stage('Functional UI tests galaxyS4 ') {
-      //   try {
-      //     yarnBuilder.yarn('test:functional-galaxyS4')
-      //   } catch (Error) {
-      //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      //   } finally {
-      //     publishHTML([
-      //       allowMissing: true,
-      //       alwaysLinkToLastBuild: true,
-      //       keepAll: true,
-      //       reportDir: 'playwright-report',
-      //       reportFiles: 'index.html',
-      //       reportName: 'UITestGalaxyS4Report'
-      //     ])
-      //     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-      //   }
-     // }
+     Archive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+//      stage('Functional UI tests firefox') {
+//        try {
+//          yarnBuilder.yarn('test:functional-firefox')
+//        } catch (Error) {
+//          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+//        } finally {
+//          publishHTML([
+//            allowMissing: true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll: true,
+//            reportDir: 'playwright-report',
+//            reportFiles: 'index.html',
+//            reportName: 'UITestFirefoxReport'
+//          ])
+//          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+//        }
+//      }
+//      stage('Functional UI tests webkit ') {
+//        try {
+//          yarnBuilder.yarn('test:functional-webkit')
+//        } catch (Error) {
+//          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+//        } finally {
+//          publishHTML([
+//            allowMissing: true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll: true,
+//            reportDir: 'playwright-report',
+//            reportFiles: 'index.html',
+//            reportName: 'UITestWebkitReport'
+//          ])
+//          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+//        }
+//      }
+//      stage('Functional UI tests ipadPro11 ') {
+//        try {
+//          yarnBuilder.yarn('test:functional-ipadPro11')
+//        } catch (Error) {
+//          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+//        } finally {
+//          publishHTML([
+//            allowMissing: true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll: true,
+//            reportDir: 'playwright-report',
+//            reportFiles: 'index.html',
+//            reportName: 'UITestipadPro11Report'
+//          ])
+//          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+//        }
+//      }
+//      stage('Functional UI tests galaxyS4 ') {
+//        try {
+//          yarnBuilder.yarn('test:functional-galaxyS4')
+//        } catch (Error) {
+//          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+//        } finally {
+//          publishHTML([
+//            allowMissing: true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll: true,
+//            reportDir: 'playwright-report',
+//            reportFiles: 'index.html',
+//            reportName: 'UITestGalaxyS4Report'
+//          ])
+//          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+//        }
+//      }
+ ef6ec315f0f577436a880ffc0b3d53e84d49801a
     }
 
     afterAlways('fortify-scan') {

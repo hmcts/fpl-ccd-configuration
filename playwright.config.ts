@@ -37,8 +37,9 @@ export default defineConfig({
     trace: 'on-first-retry'
 
   },
+  globalTeardown: './playwright-e2e/settings/global-teardown',
 
-  /* Configure projects for major browsers */
+    /* Configure projects for major browsers */
   projects: [
     {
       name: "chromium",
@@ -75,7 +76,6 @@ export default defineConfig({
       use: { ...devices["Galaxy Tab S4 landscape"] },
       grep: /@xbrowser/,
     },
-
 
     /* Test against branded browsers. */
     // {
