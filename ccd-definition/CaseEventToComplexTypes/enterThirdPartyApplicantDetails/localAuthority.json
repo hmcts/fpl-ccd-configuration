@@ -63,7 +63,7 @@
     "ID": "enterThirdPartyApplicant",
     "CaseEventID": "enterThirdPartyApplicantDetails",
     "CaseFieldID": "localAuthority",
-    "ListElementCode": "pbaNumberDynamicList",
+    "ListElementCode": "pbaNumber",
     "EventElementLabel": "PBA number",
     "EventHintText": "For example, PBA1234567",
     "DisplayContext": "MANDATORY",
