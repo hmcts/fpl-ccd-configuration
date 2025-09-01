@@ -125,7 +125,6 @@ withNightlyPipeline(type, product, component) {
                 steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
             }
         }
-     Archive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
 //      stage('Functional UI tests firefox') {
 //        try {
 //          yarnBuilder.yarn('test:functional-firefox')
