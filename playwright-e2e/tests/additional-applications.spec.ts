@@ -7,6 +7,7 @@ import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' 
 import { setHighCourt } from '../utils/update-case-details';
 import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
 import config from "../settings/test-docs/config";
+import {urlConfig} from "../settings/urls";
 
 test.describe('Upload additional applications', () => {
   const dateTime = new Date().toISOString();
@@ -221,16 +222,32 @@ test.describe('Upload additional applications', () => {
         });
 
         await test.step('Upload C2 Document', async () => {
-            await uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile);
-            await page.waitForTimeout(3000); // wait for document upload
+           await Promise.all([
+                page.waitForResponse(response =>
+                    response.url().includes(`${urlConfig.frontEndBaseURL}/documents`) &&
+                    response.request().method() === 'POST'
+                ),
+                uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile)
+            ]);
+            await expect(uploadAdditionalApplicationsSuppliedDocuments.cancelUploadButton).toBeDisabled({ timeout: 10000 });
             await uploadAdditionalApplicationsSuppliedDocuments.checkDocumentRelatedToCaseYes();
             await uploadAdditionalApplicationsSuppliedDocuments.clickContinue();
         });
 
         await test.step('Handle Application Fee', async () => {
             await uploadAdditionalApplicationsApplicationFee.checkPaidWithPBANo()
-            await page.waitForTimeout(500); // waits for page to register with service
-            await uploadAdditionalApplicationsApplicationFee.clickContinue();
+            await expect(uploadAdditionalApplicationsApplicationFee.paymentByPbaTextbox).toBeHidden({ timeout: 200 });
+
+            const [response] = await Promise.all([
+                page.waitForResponse(response =>
+                    response.url().includes('/data/case-types/CARE_SUPERVISION_EPO/validate') &&
+                    response.request().method() === 'POST'
+                ),
+                uploadAdditionalApplicationsApplicationFee.clickContinue()
+            ]);
+
+            expect(response.status()).toBe(200);
+
         });
 
         await test.step('Submit Application', async () => {
@@ -238,8 +255,14 @@ test.describe('Upload additional applications', () => {
         });
 
         await test.step("Verify C2 Application in 'Other applications' Tab", async () => {
-            await page.waitForTimeout(200); // wait for page to register with service
-            await additionalApplications.tabNavigation('Other applications');
+            const [response] = await Promise.all([
+                page.waitForResponse(response =>
+                    response.url().includes('/api/wa-supported-jurisdiction/get') &&
+                    response.request().method() === 'GET'
+                ),
+                await additionalApplications.tabNavigation('Other applications')
+            ]);
+            expect(response.status()).toBe(200);
             await expect.soft(page.getByText('C2 application').first()).toBeVisible();
             await expect.soft(page.getByRole('cell', { name: 'testPdf.pdf', exact: true }).locator('div').nth(1)).toBeVisible();
         });

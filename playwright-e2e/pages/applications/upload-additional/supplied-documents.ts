@@ -3,6 +3,7 @@ import { Locator, Page } from "@playwright/test";
 
 export class SuppliedDocuments extends BasePage {
     readonly uploadC2ApplicationButton: Locator;
+    readonly cancelUploadButton: Locator;
 
     readonly documentRelatedToCaseGroup: Locator;
     readonly documentRelatedToCaseYesCheckbox: Locator;
@@ -10,6 +11,7 @@ export class SuppliedDocuments extends BasePage {
     constructor(page: Page) {
         super(page);
         this.uploadC2ApplicationButton = page.getByRole('button', { name: 'Upload C2 application' });
+        this.cancelUploadButton = page.getByRole('button', { name: 'Cancel upload' });
 
         this.documentRelatedToCaseGroup = page.getByRole('group', { name: 'Tick to confirm this document is related to this case'});
         this.documentRelatedToCaseYesCheckbox = this.documentRelatedToCaseGroup.getByRole('checkbox', { name: 'Yes' });
