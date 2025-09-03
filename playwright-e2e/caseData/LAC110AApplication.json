@@ -52,6 +52,11 @@
     "thresholdDetails": "Test",
     "hasThresholdDocument": "NO"
   },
+    "appSolicitorPolicy": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[APPSOLICITOR]"
+    },
   "hearing": {
     "type": null,
     "reason": null,
@@ -401,10 +406,6 @@
   "noticeOfChangeAnswers1": {
     "respondentLastName": "Jordan",
     "respondentFirstName": "Thierry"
-  },
-  "applicantSolicitorPolicy": {
-    "Organisation": {},
-    "OrgPolicyCaseAssignedRole": "[APPSOLICITOR]"
   },
   "caseSummaryCaseFlagNotes": null,
   "caseSummaryHighCourtCase": "No",
