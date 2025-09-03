@@ -53,12 +53,8 @@ import {ManageOrdersReview} from "../pages/manage-orders/manage-orders-review";
 import {Submit} from "../pages/manage-orders/submit";
 import {ManageOrdersOrderSelection} from "../pages/manage-orders/manage-orders-order-selection";
 import {Applications} from "../pages/applications/upload-additional/applications";
-import {
-    ApplicationFee
-} from "../pages/applications/upload-additional/application-fee";
-import {
-    SuppliedDocuments
-} from "../pages/applications/upload-additional/supplied-documents";
+import {ApplicationFee} from "../pages/applications/upload-additional/application-fee";
+import {SuppliedDocuments} from "../pages/applications/upload-additional/supplied-documents";
 
 
 type CreateFixtures = {
