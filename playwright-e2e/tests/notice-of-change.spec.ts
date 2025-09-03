@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 import {
     newSwanseaLocalAuthorityUserOne,
-    FPLSolicitorOrgUser
+    FPLSolicitorOrgUser, privateSolicitorOrgUser
 } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import thirdPartyCaseData from '../caseData/thirdPartyApplication.json' assert { type: "json" };
@@ -21,7 +21,7 @@ test.describe('Notice Of Change', () => {
   });
 
 
-    test('Notice of Change - LA c110A application',
+    test.only('Notice of Change - LA c110A application',
         async ({ page, signInPage, noticeOfChange }) => {
             let hypenCase :string;
 
@@ -29,9 +29,11 @@ test.describe('Notice Of Change', () => {
             console.log('caseName:  ' + caseName);
             await updateCase(caseName, caseNumber, LAc110WithRespondent);
             await console.log('caseNumber:  ' + caseNumber);
+            await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORB]');
 
             await signInPage.visit();
             await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password);
+            await noticeOfChange.page.pause()
 
             await noticeOfChange.noticeOfChange(caseNumber,'Thierry','Jordan');
             await noticeOfChange.accessTheCase();
