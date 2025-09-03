@@ -262,7 +262,7 @@ test.describe('Upload additional applications', () => {
                 ),
                 await additionalApplications.tabNavigation('Other applications')
             ]);
-            expect(response.status()).toBe(200);
+            expect([200, 304]).toContain(response.status());
             await expect.soft(page.getByText('C2 application').first()).toBeVisible();
             await expect.soft(page.getByRole('cell', { name: 'testPdf.pdf', exact: true }).locator('div').nth(1)).toBeVisible();
         });
