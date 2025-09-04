@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICANTS_DETAILS_UPDATED;
 
-public class ApplicantsDetailsUpdatedEventHandlerTest {
+class ApplicantsDetailsUpdatedEventHandlerTest {
     private static final CaseData CASE_DATA = CaseData.builder().id(1L).build();
     private static final ApplicantsDetailsUpdatedEvent EVENT = new ApplicantsDetailsUpdatedEvent(CASE_DATA);
     private static final ApplicantsDetailsUpdatedNotifyData NOTIFY_DATA = ApplicantsDetailsUpdatedNotifyData.builder()
