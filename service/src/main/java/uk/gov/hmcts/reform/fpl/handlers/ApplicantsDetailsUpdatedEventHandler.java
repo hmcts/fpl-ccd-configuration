@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICANTS_DETAILS_UPDATED;
 
+@Slf4j //TODO remove
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicantsDetailsUpdatedEventHandler {
@@ -32,6 +34,9 @@ public class ApplicantsDetailsUpdatedEventHandler {
             .build();
 
         final Set<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
+
+        //TODO remove
+        log.info("Recipients for ApplicantsDetailsUpdatedEvent: {}", recipients.toString());
 
         notificationService.sendEmail(APPLICANTS_DETAILS_UPDATED, recipients,
             contentProvider.getApplicantsDetailsUpdatedNotifyData(caseData), caseData.getId());
