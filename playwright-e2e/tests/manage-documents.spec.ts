@@ -94,7 +94,7 @@ test.describe('Manage Documents', () => {
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadDocuments('Position Statements','Yes');
+        await manageDocuments.uploadDocuments('Position Statements', 'Yes');
 
         // position is visible under CFV
         await caseFileView.goToCFVTab();
@@ -124,7 +124,7 @@ test.describe('Manage Documents', () => {
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadDocuments('Position Statements','Yes');
+        await manageDocuments.uploadDocuments('Position Statements', 'Yes');
 
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
@@ -160,6 +160,65 @@ test.describe('Manage Documents', () => {
         await caseFileView.openFolder('Confidential');
         await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
 
+    });
+
+    test('CTSC add New Folders Advocate Meeting Minutes ', async ({ signInPage, manageDocuments, caseFileView, page }) => {
+        caseName = 'CTSC adds Folder Advocate Meeting Minutes' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithResSolicitor);
+        await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await manageDocuments.gotoNextStep('Manage documents');
+        await manageDocuments.uploadDocuments('Advocate Meeting Minute', 'Yes');
+
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Advocate Meeting Minute');
+        await caseFileView.openFolder('Confidential');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await signInPage.logout();
+
+          //Login as respondence solicitor
+        await signInPage.visit();
+        await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
+        await signInPage.isSignedIn();
+        await signInPage.navigateTOCaseDetails(caseNumber);
+
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Advocate Meeting Minute');
+        await caseFileView.openFolder('Confidential');
+        await signInPage.logout();
+
+    });
+
+    test('CTSC uploads new folder Respondent own statements ', async ({ signInPage, manageDocuments, caseFileView, page }) => {
+        caseName = 'CTSC adds Respondent own statements' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithResSolicitor);
+        await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await manageDocuments.gotoNextStep('Manage documents');
+        await manageDocuments.uploadDocuments('└─ Respondents own statements', 'Yes');
+
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Respondents');
+        await caseFileView.openFolder('Respondents own statements');
+        await caseFileView.openFolder('Confidential');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await signInPage.logout();
+
+         //Login as respondence solicitor
+        await signInPage.visit();
+        await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
+        await signInPage.isSignedIn();
+        await signInPage.navigateTOCaseDetails(caseNumber);
+
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Respondents');
+        await caseFileView.openFolder('Respondents own statements');
+        await caseFileView.openFolder('Confidential');
+        await signInPage.logout();
 
     });
 
@@ -194,40 +253,39 @@ test.describe('Manage Documents', () => {
     });
 
     test('High Court Review Correspondence WA task @xbrowser', async ({ page, signInPage, manageDocuments, caseFileView }) => {
-    caseName = 'High Court Review Correspondence WA task ' + dateTime.slice(0, 10);
-    setHighCourt(caseData);
-    await updateCase(caseName, caseNumber, caseData);
-    await signInPage.visit();
-    await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-    await signInPage.navigateTOCaseDetails(caseNumber);
-    await manageDocuments.gotoNextStep('Manage documents');
-    await manageDocuments.uploadDocuments('Court correspondence');
+        caseName = 'High Court Review Correspondence WA task ' + dateTime.slice(0, 10);
+        setHighCourt(caseData);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await manageDocuments.gotoNextStep('Manage documents');
+        await manageDocuments.uploadDocuments('Court correspondence');
 
-    // Check CFV
-    await caseFileView.goToCFVTab();
-    await caseFileView.openFolder('Court Correspondence');
-    await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        // Check CFV
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Court Correspondence');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
 
-    // If WA is enabled
-    if (testConfig.waEnabled) {
-      console.log('WA testing');
-      await manageDocuments.clickSignOut();
-      await signInPage.visit();
-      await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
+        // If WA is enabled
+        if (testConfig.waEnabled) {
+            console.log('WA testing');
+            await manageDocuments.clickSignOut();
+            await signInPage.visit();
+            await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
 
-      await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateTOCaseDetails(caseNumber);
 
-      await manageDocuments.tabNavigation('Tasks');
-      await manageDocuments.waitForTask('Review Correspondence (High Court)');
+            await manageDocuments.tabNavigation('Tasks');
+            await manageDocuments.waitForTask('Review Correspondence (High Court)');
 
-      // Assign and complete the task
-      await page.getByText('Assign to me').click();
-      await page.getByText('Mark as done').click();
-      await page.getByRole('button', { name: "Mark as done" }).click();
+            // Assign and complete the task
+            await page.getByText('Assign to me').click();
+            await page.getByText('Mark as done').click();
+            await page.getByRole('button', { name: "Mark as done" }).click();
 
-      // Should be no more tasks on the page
-      await expect(page.getByText('Review Correspondence (High Court)')).toHaveCount(0);
-    }
-  });
-
+            // Should be no more tasks on the page
+            await expect(page.getByText('Review Correspondence (High Court)')).toHaveCount(0);
+        }
+    });
 });

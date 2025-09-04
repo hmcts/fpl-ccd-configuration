@@ -242,6 +242,16 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> c2ApplicationDocListCTSC;
     protected final List<Element<ManagedDocument>> c2ApplicationDocListRemoved;
 
+    protected final List<Element<ManagedDocument>> advocateMeetingMinuteList;
+    protected final List<Element<ManagedDocument>> advocateMeetingMinuteListLA;
+    protected final List<Element<ManagedDocument>> advocateMeetingMinuteListCTSC;
+    protected final List<Element<ManagedDocument>> advocateMeetingMinuteListRemoved;
+
+    protected final List<Element<ManagedDocument>> witnessTemplateList;
+    protected final List<Element<ManagedDocument>> witnessTemplateListLA;
+    protected final List<Element<ManagedDocument>> witnessTemplateListCTSC;
+    protected final List<Element<ManagedDocument>> witnessTemplateListRemoved;
+
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid
     protected final GroundsForSecureAccommodationOrder groundsForSecureAccommodationOrder;
