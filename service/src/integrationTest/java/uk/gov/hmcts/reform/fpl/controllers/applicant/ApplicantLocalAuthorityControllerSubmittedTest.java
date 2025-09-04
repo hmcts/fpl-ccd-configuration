@@ -12,15 +12,19 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICANTS_DETAILS_UPDATED;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -34,6 +38,9 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private NotificationService notificationService;
 
     ApplicantLocalAuthorityControllerSubmittedTest() {
         super("enter-local-authority");
@@ -89,6 +96,32 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
             eq(caseData.getId()),
             eq("internal-update-case-summary"),
             any());
+    }
+
+    @Test
+    void shouldNotifyApplicantsWhenUpdatedByCtsc() {
+        final CaseData caseDataBefore = CaseData.builder()
+            .id(nextLong())
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .state(CASE_MANAGEMENT)
+            .build();
+
+        final CaseData caseData = caseDataBefore.toBuilder()
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .designated("Yes")
+                .colleagues(wrapElements(solicitor()))
+                .build()))
+            .build();
+
+        given(userService.isCtscUser()).willReturn(true);
+
+        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
+
+        verify(notificationService).sendEmail(
+            eq(APPLICANTS_DETAILS_UPDATED),
+            anyCollection(),
+            any(),
+            eq(caseData.getId()));
     }
 
     private static Colleague solicitor() {
