@@ -71,6 +71,7 @@
   "license": "MIT",
   "dependencies": {
     "@axe-core/playwright": "^4.8.5",
+    "@hmcts/playwright-common": "^1.0.34",
     "@types/lodash": "^4.14.202",
     "dotenv": "^16.4.1"
   }
