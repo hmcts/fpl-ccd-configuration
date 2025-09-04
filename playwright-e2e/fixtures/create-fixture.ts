@@ -44,6 +44,7 @@ import { ManageRepresentatives } from "../pages/manage-representatives";
 import {ManageTTL} from "../pages/manage-t-t-l";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
+import {NoticeOfChange} from "../pages/notice-of-change";
 import {ManageOrdersChildrenDetails} from "../pages/manage-orders/manage-orders-children-details";
 import {ManageOrdersHearingDetails} from "../pages/manage-orders/manage-orders-hearing-details";
 import {ManageOrdersManageOrdersOperations} from "../pages/manage-orders/manage-orders-manage-orders-operations";
@@ -100,6 +101,7 @@ type CreateFixtures = {
   manageTTL: ManageTTL;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
+  noticeOfChange: NoticeOfChange;
   manageOrdersChildrenDetails: ManageOrdersChildrenDetails;
   manageOrderHearingDetails: ManageOrdersHearingDetails;
   manageOrdersManageOrdersOperations: ManageOrdersManageOrdersOperations;
@@ -108,7 +110,6 @@ type CreateFixtures = {
   manageOrdersOrderSelection: ManageOrdersOrderSelection
   manageOrdersReview: ManageOrdersReview;
   submit: Submit;
-
 
 };
 
@@ -290,6 +291,9 @@ othersToBeGivenNotice: async ({ page }, use) => {
   changeOtherToRespondent: async ({ page }, use) => {
     await use(new ChangeOtherToRespondent(page));
   },
+    noticeOfChange: async ({ page }, use) => {
+        await use(new NoticeOfChange(page));
+    },
 
     manageOrdersChildrenDetails: async ({ page }, use) => {
       await use(new ManageOrdersChildrenDetails(page));
