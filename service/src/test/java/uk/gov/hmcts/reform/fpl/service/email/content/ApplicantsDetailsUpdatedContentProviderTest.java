@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {ApplicantsDetailsUpdatedContentProvider.class})
-public class ApplicantsDetailsUpdatedContentProviderTest extends AbstractEmailContentProviderTest {
+class ApplicantsDetailsUpdatedContentProviderTest extends AbstractEmailContentProviderTest {
     private static final String RESPONDENT_LAST_NAME = "Respondent";
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(Long.valueOf(CASE_REFERENCE))

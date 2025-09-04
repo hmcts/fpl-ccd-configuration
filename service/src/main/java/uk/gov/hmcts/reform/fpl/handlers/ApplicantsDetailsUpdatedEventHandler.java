@@ -25,7 +25,7 @@ public class ApplicantsDetailsUpdatedEventHandler {
 
     @Async
     @EventListener
-    public void notifyLocalAuthorities(final ApplicantsDetailsUpdatedEvent event) {
+    void notifyLocalAuthorities(final ApplicantsDetailsUpdatedEvent event) {
         final CaseData caseData = event.getCaseData();
         final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
             .caseData(caseData)
