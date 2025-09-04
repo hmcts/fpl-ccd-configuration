@@ -29,10 +29,13 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,12 +64,31 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
     @MockBean
     private FeeService feeService;
 
+    @MockBean
+    private PbaService pbaService;
+
+    @MockBean
+    private UserService userService;
+
     UploadAdditionalApplicationsMidEventControllerTest() {
         super("upload-additional-applications");
     }
 
+    @BeforeEach
+    void beforeEach() {
+        DynamicList pbaDynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                    .code("PBA1234567")
+                    .build())
+            .build();
+
+        given(pbaService.populatePbaDynamicList("")).willReturn(pbaDynamicList);
+    }
+
     @Test
     void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField() {
+        given(userService.isCtscUser()).willReturn(true);
+
         C2DocumentBundle temporaryC2Document = C2DocumentBundle.builder()
             .supplementsBundle(wrapElements(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()))
             .build();
@@ -111,11 +133,14 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getData())
             .containsKeys("temporaryC2Document", "personSelector")
             .containsEntry("amountToPay", "1000")
-            .containsEntry("displayAmountToPay", YES.getValue());
+            .containsEntry("displayAmountToPay", YES.getValue())
+            .containsKey("temporaryPbaPayment");
     }
 
     @Test
     void shouldNotSetC2DocumentBundleWhenOnlyOtherApplicationIsSelected() {
+        given(userService.isCtscUser()).willReturn(true);
+
         OtherApplicationsBundle temporaryOtherDocument = OtherApplicationsBundle.builder()
             .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
             .document(DocumentReference.builder().build())
@@ -137,7 +162,41 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getData())
             .containsEntry("temporaryC2Document", null)
             .containsEntry("amountToPay", "100")
-            .containsEntry("displayAmountToPay", YES.getValue());
+            .containsEntry("displayAmountToPay", YES.getValue())
+            .containsKey("temporaryPbaPayment");
+    }
+
+    @Test
+    void shouldDisplayErrorForInvalidPbaNumber() {
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
+            .data(Map.of("temporaryPbaPayment", Map.of("pbaNumber", "12345"),
+                "isCTSCUser", "Yes"))
+            .build(), "validate");
+
+        assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
+        assertThat(response.getData().get("temporaryPbaPayment"))
+            .extracting("pbaNumber").isEqualTo("PBA12345");
+    }
+
+    @Test
+    void shouldNotDisplayErrorForValidPbaNumber() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
+            .data(Map.of("temporaryPbaPayment", Map.of("pbaNumber", "1234567"),
+                "isCTSCUser", "Yes"))
+            .build(), "validate");
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData().get("temporaryPbaPayment")).extracting("pbaNumber")
+            .isEqualTo("PBA1234567");
+    }
+
+    @Test
+    void shouldNotValidatePbaNumberWhenPBAPaymentIsNullAndUserIsCtsc() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+            CaseDetails.builder().data(Map.of("isCTSCUser", "Yes")).build(), "validate");
+
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
@@ -153,36 +212,6 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
 
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
-    }
-
-    @Test
-    void shouldDisplayErrorForInvalidPbaNumber() {
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("temporaryPbaPayment", Map.of("pbaNumber", "12345")))
-            .build(), "validate");
-
-        assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
-        assertThat(response.getData().get("temporaryPbaPayment"))
-            .extracting("pbaNumber").isEqualTo("PBA12345");
-    }
-
-    @Test
-    void shouldNotDisplayErrorForValidPbaNumber() {
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("temporaryPbaPayment", Map.of("pbaNumber", "1234567")))
-            .build(), "validate");
-
-        assertThat(response.getErrors()).isEmpty();
-        assertThat(response.getData().get("temporaryPbaPayment")).extracting("pbaNumber")
-            .isEqualTo("PBA1234567");
-    }
-
-    @Test
-    void shouldNotValidatePbaNumberWhenPBAPaymentIsNull() {
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-            CaseDetails.builder().data(Collections.emptyMap()).build(), "validate");
-
-        assertThat(response.getErrors()).isEmpty();
     }
 
     @Nested

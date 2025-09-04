@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -110,6 +111,7 @@ class UploadAdditionalApplicationsServiceTest {
     private final DocumentConversionService conversionService = mock(DocumentConversionService.class);
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
     private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);
+    private final PbaService pbaService = mock(PbaService.class);
 
     private UploadAdditionalApplicationsService underTest;
 
@@ -125,7 +127,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(documentSealingService.sealDocument(DOCUMENT, COURT_1, SealType.ENGLISH))
             .willReturn(SEALED_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(time, user, manageDocumentService, uploadHelper,
-            documentSealingService, conversionService);
+            documentSealingService, conversionService, pbaService);
         given(user.isHmctsUser()).willReturn(true);
         given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.HMCTS);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
@@ -137,6 +139,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
+        PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA12345").usePbaPayment("Yes").build();
 
         DynamicList applicantsList = DynamicList.builder()
             .value(DYNAMIC_LIST_ELEMENTS.get(0))
@@ -154,7 +157,7 @@ class UploadAdditionalApplicationsServiceTest {
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
-        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getPbaPayment()).isEqualTo(expectedPbaPayment);
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getApplicationReviewed()).isEqualTo(YesNo.NO);
 
@@ -208,6 +211,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
+        PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA12345").usePbaPayment("Yes").build();
 
         // select "Someone else"
         DynamicList applicantsList = DynamicList.builder()
@@ -229,7 +233,7 @@ class UploadAdditionalApplicationsServiceTest {
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
-        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getPbaPayment()).isEqualTo(expectedPbaPayment);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo("some other name");
         assertThat(actual.getOtherApplicationsBundle().getRespondents()).isEmpty();
 
@@ -267,6 +271,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement otherSupplement = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
         SupportingEvidenceBundle otherSupportingDocument = createSupportingEvidenceBundle("other document");
         PBAPayment pbaPayment = buildPBAPayment();
+        PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA12345").usePbaPayment("Yes").build();
 
         DynamicList applicantsList = DynamicList.builder()
             .value(DYNAMIC_LIST_ELEMENTS.get(0))
@@ -292,7 +297,7 @@ class UploadAdditionalApplicationsServiceTest {
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
-        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getPbaPayment()).isEqualTo(expectedPbaPayment);
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
@@ -311,6 +316,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
+        PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA12345").usePbaPayment("Yes").build();
 
         DynamicList applicantsList = DynamicList.builder()
             .value(DYNAMIC_LIST_ELEMENTS.get(0))
@@ -338,7 +344,7 @@ class UploadAdditionalApplicationsServiceTest {
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
-        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getPbaPayment()).isEqualTo(expectedPbaPayment);
         assertThat(actual.getC2DocumentBundle()).isNull();
         assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getC2DocumentBundleLA().getApplicantName()).isEqualTo(APPLICANT_NAME);
@@ -352,6 +358,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
+        PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA12345").usePbaPayment("Yes").build();
 
         DynamicList applicantsList = DynamicList.builder()
             .value(DYNAMIC_LIST_ELEMENTS.get(0))
@@ -380,7 +387,7 @@ class UploadAdditionalApplicationsServiceTest {
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
-        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getPbaPayment()).isEqualTo(expectedPbaPayment);
         assertThat(actual.getC2DocumentBundle()).isNull();
         assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getC2DocumentBundleResp0().getApplicantName()).isEqualTo(APPLICANT_NAME);
@@ -720,7 +727,14 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     private PBAPayment buildPBAPayment() {
-        return PBAPayment.builder().usePbaPayment("Yes").usePbaPayment("PBA12345").build();
+        return PBAPayment.builder()
+            .usePbaPayment("Yes")
+            .pbaNumberDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code("PBA12345")
+                    .build())
+                .build())
+            .build();
     }
 
     private OtherApplicationsBundle createOtherApplicationsBundle(

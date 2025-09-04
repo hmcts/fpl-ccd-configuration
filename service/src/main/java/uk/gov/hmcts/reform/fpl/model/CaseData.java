@@ -379,6 +379,7 @@ public class CaseData extends CaseDataParent {
     private final C2DocumentBundle temporaryC2Document;
     private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
     private final PBAPayment temporaryPbaPayment;
+    private final YesNo isCTSCUser;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
     private final DynamicList applicantsList;
