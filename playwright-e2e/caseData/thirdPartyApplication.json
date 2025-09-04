@@ -401,7 +401,7 @@
       "respondentLastName": "Yaks",
       "respondentFirstName": "Moniks"
     },
-    "applicantSolicitorPolicy": {
+    "appSolicitorPolicy": {
       "Organisation": {
         "OrganisationID": "D25VR7V",
         "OrganisationName": "Private solicitors"
