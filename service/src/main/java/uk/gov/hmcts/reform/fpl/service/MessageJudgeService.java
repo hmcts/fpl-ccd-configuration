@@ -6,12 +6,14 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,6 +39,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 public abstract class MessageJudgeService {
+    public static final String SAME_DAY_URGENCY = "Same Day";
+
     @Autowired
     protected Time time;
 
@@ -234,5 +239,16 @@ public abstract class MessageJudgeService {
             formatJudgeTitleAndName(judge),
             judge.getJudgeEmailAddress()
         );
+    }
+
+    public Map<String, Object> populateCYAPageFields(CaseData caseData) {
+        MessageJudgeEventData eventData = caseData.getMessageJudgeEventData();
+        return Map.of("judicialMessageMetaData",
+            eventData.getJudicialMessageMetaData().toBuilder().urgency(getMessageUrgency(eventData)).build());
+    }
+
+    protected String getMessageUrgency(MessageJudgeEventData eventData) {
+        return YesNo.YES.equals(eventData.getJudicialMessageMetaData().getIsJudicialMessageUrgent())
+            ? SAME_DAY_URGENCY : null;
     }
 }

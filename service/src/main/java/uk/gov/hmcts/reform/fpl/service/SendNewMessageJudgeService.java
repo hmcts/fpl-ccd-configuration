@@ -48,7 +48,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.from;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -173,6 +172,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(judicialMessageMetaData.getUrgency())
+            .isJudicialMessageUrgent(judicialMessageMetaData.getIsJudicialMessageUrgent())
             .status(OPEN);
 
         if (hasSelectedAdditionalApplication(caseData)) {
