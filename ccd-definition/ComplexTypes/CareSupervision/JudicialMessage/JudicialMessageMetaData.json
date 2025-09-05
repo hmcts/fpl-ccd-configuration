@@ -66,5 +66,13 @@
     "ElementLabel": "Urgency",
     "HintText": "Add if it's urgent, or if a response is requested within a specified time.",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
+    "ListElementCode": "isJudicialMessageUrgent",
+    "ElementLabel": "Urgency",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
   }
 ]

@@ -49,7 +49,7 @@
     "TabLabel": "Judicial messages",
     "TabDisplayOrder": 11,
     "CaseFieldID": "judicialMessages",
-    "DisplayContextParameter": "#TABLE(dateSent, senderType, recipientType, status, requestedBy)",
+    "DisplayContextParameter": "#TABLE(dateSent, senderType, recipientType, isJudicialMessageUrgent, status, requestedBy)",
     "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "judicialMessages!=\"\""
   },
