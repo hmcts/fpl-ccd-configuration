@@ -168,6 +168,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(judicialMessageMetaData.getUrgency())
+            .isJudicialMessageUrgent(judicialMessageMetaData.getIsJudicialMessageUrgent())
             .status(OPEN);
 
         if (hasSelectedAdditionalApplication(caseData)) {

@@ -66,6 +66,17 @@ public class MessageJudgeController extends CallbackController {
         return respond(caseDetailsMap);
     }
 
+    @PostMapping("/populate-cya-page-fields/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleBeforeCya(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+
+        caseDetailsMap.putAll(messageJudgeService.populateCYAPageFields(caseData));
+
+        return respond(caseDetailsMap);
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();

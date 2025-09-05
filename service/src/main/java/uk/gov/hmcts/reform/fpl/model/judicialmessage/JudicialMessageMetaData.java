@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.deserializer.DynamicListDeserializer;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -25,6 +26,7 @@ public class JudicialMessageMetaData {
     @JsonProperty("requestedBy")
     private final String subject;
     private final String urgency;
+    private final YesNo isJudicialMessageUrgent;
     private final String applicationType;
 
     // For display on the tab
