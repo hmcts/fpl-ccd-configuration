@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
@@ -1050,6 +1051,7 @@ public class CaseData extends CaseDataParent {
     private final List<Element<JudicialMessage>> judicialMessages;
     private final List<Element<JudicialMessage>> closedJudicialMessages;
     private JudicialMessageRoleType latestRoleSent;
+    private WorkAllocationTaskUrgency waTaskUrgency;
 
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {

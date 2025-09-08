@@ -11,12 +11,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.SendNewMessageJudgeService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
@@ -31,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MessageJudgeController extends CallbackController {
     private final SendNewMessageJudgeService messageJudgeService;
+    private final WorkAllocationTaskService workAllocationTaskService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -88,6 +91,9 @@ public class MessageJudgeController extends CallbackController {
         caseDetailsMap.put("judicialMessages", messageJudgeService.sortJudicialMessages(updatedMessages));
         caseDetailsMap.put("latestRoleSent", JudicialMessageRoleType.valueOf(
             caseData.getMessageJudgeEventData().getJudicialMessageMetaData().getRecipientDynamicList().getValueCode()));
+
+        caseDetailsMap.putAll(workAllocationTaskService.setTaskUrgency(messageJudgeService.isMessageUrgent(caseData)
+            ? WorkAllocationTaskUrgency.URGENT : null));
 
         removeTemporaryFields(caseDetailsMap, transientFields());
         return respond(caseDetailsMap);

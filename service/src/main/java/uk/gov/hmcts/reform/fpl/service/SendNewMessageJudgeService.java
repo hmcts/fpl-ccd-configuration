@@ -207,6 +207,11 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return judicialMessages;
     }
 
+    public boolean isMessageUrgent(CaseData caseData) {
+        return YES.equals(caseData.getMessageJudgeEventData().getJudicialMessageMetaData()
+            .getIsJudicialMessageUrgent());
+    }
+
     private List<Element<SelectableItem>> getApplications(CaseData caseData) {
 
         final List<Element<SelectableItem>> applications = new ArrayList<>();
