@@ -55,12 +55,14 @@ export default defineConfig({
             grep: /@xbrowser/
         },
         {
-            ...ProjectsConfig.tabletChrome,
-            grep: /@xbrowser/
+            name: "ipadPro11",
+            use: { ...devices["iPad Pro 11 landscape"] },
+            grep: /@xbrowser/,
         },
         {
-            ...ProjectsConfig.tabletWebkit,
-            grep: /@xbrowser/
+            name: "GalaxyS4",
+            use: { ...devices["Galaxy Tab S4 landscape"] },
+            grep: /@xbrowser/,
         },
 
 
