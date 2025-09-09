@@ -80,6 +80,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .urgency(selectedJudicialMessage.getUrgency())
             .judicialMessageReplies(selectedJudicialMessage.getJudicialMessageReplies())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
+            .messageHistoryTemp(buildTempMessageHistory(selectedJudicialMessage))
             .latestMessage(EMPTY)
             .replyFrom(getSenderEmailAddressByRoleType(senderRole))
             .replyTo(selectedJudicialMessage.getSender())
@@ -177,9 +178,9 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
                         .fromLabel(fromLabel)
                         .toLabel(toLabel)
                         .recipientDynamicList(null)
-                        .judicialMessageReplies(buildMessageReplyList(judicialMessageReply.getLatestMessage(), judicialMessage, fromLabel, toLabel))
-                        .messageHistory(buildMessageHistory(judicialMessageReply, judicialMessage,
-                            fromLabel))
+                        .judicialMessageReplies(buildMessageReplyList(judicialMessageReply.getLatestMessage(),
+                            judicialMessage, fromLabel, toLabel))
+                        .messageHistory(judicialMessage.getMessageHistory())
                         .closureNote(judicialMessageReply.getClosureNote())
                         .latestMessage(judicialMessageReply.getLatestMessage())
                         .build();
@@ -189,10 +190,6 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
 
                 return judicialMessageElement;
             }).collect(toList());
-    }
-
-    private String buildMessageHistory(JudicialMessage reply, JudicialMessage previousMessage, String sender) {
-        return buildMessageHistory(reply.getLatestMessage(), previousMessage.getMessageHistory(), sender);
     }
 
     private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, JudicialMessage message, String from, String to) {

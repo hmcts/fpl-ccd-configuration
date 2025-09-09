@@ -218,6 +218,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
+    "ListElementCode": "messageHistoryTemp",
+    "FieldType": "TextArea",
+    "ElementLabel": "Message history",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
     "ListElementCode": "closeMessageLabel",
     "FieldType": "Label",
     "ElementLabel": "This message will now be marked as closed",

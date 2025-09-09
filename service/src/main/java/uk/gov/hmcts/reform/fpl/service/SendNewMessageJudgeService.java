@@ -170,7 +170,6 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
             .judicialMessageReplies(buildMessageReplyList(latestMessage, fromLabel, toLabel))
-            .messageHistory(buildMessageHistory(latestMessage, fromLabel))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(judicialMessageMetaData.getUrgency())
@@ -235,10 +234,6 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
                 .forEach(application -> applications.add(element(application.getId(), application.getValue()))));
 
         return applications;
-    }
-
-    private String buildMessageHistory(String message, String sender) {
-        return buildMessageHistory(message, "", sender);
     }
 
     private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, String from, String to) {

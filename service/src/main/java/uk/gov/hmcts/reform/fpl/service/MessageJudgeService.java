@@ -79,14 +79,26 @@ public abstract class MessageJudgeService {
         return judicialMessageReplies;
     }
 
-    protected String buildMessageHistory(String message, String history, String sender) {
-        String formattedLatestMessage = String.format("%s - %s", sender, message);
+    protected String buildTempMessageHistory(JudicialMessage message) {
+        List<String> messageHistory = new ArrayList<>(List.of());
 
-        if (history.isBlank()) {
-            return formattedLatestMessage;
+        message.getJudicialMessageReplies().forEach(history -> {
+            JudicialMessageReply reply = history.getValue();
+            messageHistory.add(String.format("%s - %s - %s (end of message)", reply.getReplyFrom(),
+                reply.getDateSent(), reply.getMessage()));
+        });
+
+        if (messageHistory.isEmpty()) {
+            return "";
         }
 
-        return join("\n \n", history, formattedLatestMessage);
+        String tempMessageHistory = String.join("\n \n", messageHistory);
+
+        if (!message.getMessageHistory().isEmpty()) {
+            tempMessageHistory = String.format("%s \n \n%s",tempMessageHistory, message.getMessageHistory());
+        }
+
+        return tempMessageHistory;
     }
 
     protected List<Element<JudicialMessageReply>> buildMessageReplies(String latestMessage, Optional<JudicialMessage> message, String from, String to) {
