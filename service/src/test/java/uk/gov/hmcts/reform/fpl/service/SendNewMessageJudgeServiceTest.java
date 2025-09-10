@@ -71,6 +71,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.service.MessageJudgeService.SAME_DAY_URGENCY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -381,7 +382,7 @@ class SendNewMessageJudgeServiceTest {
                     "Allocated Judge - District Judge Smith (%s)".formatted(MESSAGE_RECIPIENT)))
                 .build()
             )
-            .urgency("High urgency")
+            .isJudicialMessageUrgent(YesNo.YES)
             .build();
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
@@ -409,7 +410,8 @@ class SendNewMessageJudgeServiceTest {
             .recipientType(JudicialMessageRoleType.ALLOCATED_JUDGE)
             .toLabel("Allocated Judge/Legal Adviser (%s)".formatted(MESSAGE_RECIPIENT))
             .subject(MESSAGE_REQUESTED_BY)
-            .urgency("High urgency")
+            .urgency(SAME_DAY_URGENCY)
+            .isJudicialMessageUrgent(YesNo.YES)
             .messageHistory(format("%s (%s) - %s",
                 JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER, MESSAGE_NOTE))
             .build());
@@ -869,6 +871,16 @@ class SendNewMessageJudgeServiceTest {
         List<String> expectedError = List.of("No documents available of type: Skeleton arguments");
 
         assertThat(sendNewMessageJudgeService.validateDynamicLists(caseData)).isEqualTo(expectedError);
+    }
+
+    @Test
+    void shouldPopulateCYAPageFields() {
+        MessageJudgeEventData eventData = (MessageJudgeEventData.builder()
+                .judicialMessageMetaData(JudicialMessageMetaData.builder()
+                    .isJudicialMessageUrgent(YesNo.YES)
+                    .build())
+                .build());
+        assertThat(sendNewMessageJudgeService.getMessageUrgency(eventData)).isEqualTo(SAME_DAY_URGENCY);
     }
 
     private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime, JudicialMessageStatus status) {

@@ -167,7 +167,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             .messageHistory(buildMessageHistory(latestMessage, formatLabel(senderRoleType, senderEmail)))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
-            .urgency(judicialMessageMetaData.getUrgency())
+            .urgency(getMessageUrgency(messageJudgeEventData))
             .isJudicialMessageUrgent(judicialMessageMetaData.getIsJudicialMessageUrgent())
             .status(OPEN);
 

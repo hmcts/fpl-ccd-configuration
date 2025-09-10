@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -193,12 +192,6 @@ public abstract class MessageJudgeService {
             formatJudgeTitleAndName(judge),
             judge.getJudgeEmailAddress()
         );
-    }
-
-    public Map<String, Object> populateCYAPageFields(CaseData caseData) {
-        MessageJudgeEventData eventData = caseData.getMessageJudgeEventData();
-        return Map.of("judicialMessageMetaData",
-            eventData.getJudicialMessageMetaData().toBuilder().urgency(getMessageUrgency(eventData)).build());
     }
 
     protected String getMessageUrgency(MessageJudgeEventData eventData) {
