@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.lang.String.join;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
@@ -72,9 +71,11 @@ public abstract class MessageJudgeService {
         return judicialMessages;
     }
 
-    public List<Element<JudicialMessageReply>> sortedJudicialMessageReplies(List<Element<JudicialMessageReply>> judicialMessageReplies) {
+    public List<Element<JudicialMessageReply>> sortedJudicialMessageReplies(
+        List<Element<JudicialMessageReply>> judicialMessageReplies) {
         judicialMessageReplies.sort(Comparator.comparing(judicialMessageReplyElement
-            -> judicialMessageReplyElement.getValue().getUpdatedTime(), Comparator.nullsLast(Comparator.reverseOrder())));
+            -> judicialMessageReplyElement.getValue().getUpdatedTime(),
+            Comparator.nullsLast(Comparator.reverseOrder())));
 
         return judicialMessageReplies;
     }
@@ -94,14 +95,16 @@ public abstract class MessageJudgeService {
 
         String tempMessageHistory = String.join("\n \n", messageHistory);
 
-        if (!message.getMessageHistory().isEmpty()) {
+        if (message.getMessageHistory() != null) {
             tempMessageHistory = String.format("%s \n \n%s",tempMessageHistory, message.getMessageHistory());
         }
 
         return tempMessageHistory;
     }
 
-    protected List<Element<JudicialMessageReply>> buildMessageReplies(String latestMessage, Optional<JudicialMessage> message, String from, String to) {
+    protected List<Element<JudicialMessageReply>> buildMessageReplies(String latestMessage,
+                                                                      Optional<JudicialMessage> message,
+                                                                      String from, String to) {
         JudicialMessageReply messageReply = JudicialMessageReply.builder()
             .message(latestMessage)
             .replyFrom(from)

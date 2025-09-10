@@ -192,7 +192,8 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             }).collect(toList());
     }
 
-    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, JudicialMessage message, String from, String to) {
+    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, JudicialMessage message,
+                                                                      String from, String to) {
         return buildMessageReplies(latestMessage, Optional.of(message), from, to);
     }
 
