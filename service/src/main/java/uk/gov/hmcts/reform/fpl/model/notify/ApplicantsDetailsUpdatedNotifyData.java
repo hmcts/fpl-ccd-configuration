@@ -8,7 +8,7 @@ import lombok.Getter;
 @Builder
 @EqualsAndHashCode
 public class ApplicantsDetailsUpdatedNotifyData implements NotifyData {
-    private final String firstRespondentLastName;
+    private final String firstRespondentLastNameOrLaName;
     private final String familyManCaseNumber;
     private final String caseUrl;
 }

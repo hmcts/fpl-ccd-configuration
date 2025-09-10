@@ -14,19 +14,19 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class ApplicantsDetailsUpdatedContentProvider extends AbstractEmailContentProvider {
 
     public ApplicantsDetailsUpdatedNotifyData getApplicantsDetailsUpdatedNotifyData(CaseData caseData) {
-        String respondentName;
-
-        if (caseData.getRepresentativeType() == RepresentativeType.LOCAL_AUTHORITY) {
-            respondentName = getFirstRespondentLastName(caseData);
-        } else {
-            //Respondent is an LA
-            respondentName = getFirstRespondentFullName(caseData.getAllRespondents());
-        }
-
         return ApplicantsDetailsUpdatedNotifyData.builder()
-            .firstRespondentLastName(respondentName)
+            .firstRespondentLastNameOrLaName(getFirstRespondentLastNameOrLaName(caseData))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .caseUrl(getCaseUrl(caseData.getId()))
             .build();
+    }
+
+    private String getFirstRespondentLastNameOrLaName(CaseData caseData) {
+        if (caseData.getRepresentativeType() == RepresentativeType.LOCAL_AUTHORITY) {
+            return getFirstRespondentLastName(caseData);
+        } else {
+            //Applicant is a Third Party & Respondent is an LA
+            return getFirstRespondentFullName(caseData.getAllRespondents());
+        }
     }
 }

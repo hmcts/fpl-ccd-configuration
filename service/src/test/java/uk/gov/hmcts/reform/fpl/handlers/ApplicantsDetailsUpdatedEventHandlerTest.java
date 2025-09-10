@@ -22,7 +22,7 @@ class ApplicantsDetailsUpdatedEventHandlerTest {
     private static final CaseData CASE_DATA = CaseData.builder().id(1L).build();
     private static final ApplicantsDetailsUpdatedEvent EVENT = new ApplicantsDetailsUpdatedEvent(CASE_DATA);
     private static final ApplicantsDetailsUpdatedNotifyData NOTIFY_DATA = ApplicantsDetailsUpdatedNotifyData.builder()
-        .firstRespondentLastName("firstRespondentLastName")
+        .firstRespondentLastNameOrLaName("firstRespondentLastName")
         .caseUrl("caseUrl")
         .familyManCaseNumber("familyManCaseNumber")
         .build();
