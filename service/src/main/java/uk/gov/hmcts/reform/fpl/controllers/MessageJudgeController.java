@@ -92,8 +92,8 @@ public class MessageJudgeController extends CallbackController {
         caseDetailsMap.put("latestRoleSent", JudicialMessageRoleType.valueOf(
             caseData.getMessageJudgeEventData().getJudicialMessageMetaData().getRecipientDynamicList().getValueCode()));
 
-        caseDetailsMap.putAll(workAllocationTaskService.setTaskUrgency(messageJudgeService.isMessageUrgent(caseData)
-            ? WorkAllocationTaskUrgency.URGENT : null));
+        workAllocationTaskService.setTaskUrgency(caseDetailsMap,
+            messageJudgeService.isMessageUrgent(caseData) ? WorkAllocationTaskUrgency.URGENT : null);
 
         removeTemporaryFields(caseDetailsMap, transientFields());
         return respond(caseDetailsMap);

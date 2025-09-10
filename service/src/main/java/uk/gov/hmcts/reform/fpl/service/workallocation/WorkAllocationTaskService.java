@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.Map;
 
@@ -27,8 +28,8 @@ public class WorkAllocationTaskService {
             caseDetails -> Map.of(WORK_ALLOCATION_DUMMY_CASE_FIELD, taskType));
     }
 
-    public Map<String, Object> setTaskUrgency(WorkAllocationTaskUrgency taskUrgency) {
-        return Map.of("waTaskUrgency", taskUrgency);
+    public void setTaskUrgency(CaseDetailsMap caseDetailsMap, WorkAllocationTaskUrgency taskUrgency) {
+        caseDetailsMap.put("waTaskUrgency", taskUrgency);
     }
 
 }
