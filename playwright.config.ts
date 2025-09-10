@@ -43,6 +43,7 @@ export default defineConfig({
     projects: [
         {
             ...ProjectsConfig.edge,
+            grep: /@xbrowser1/
         },
         {
             ...ProjectsConfig.chrome,
