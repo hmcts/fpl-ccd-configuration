@@ -16,7 +16,7 @@ public class ApplicantsDetailsUpdatedContentProvider extends AbstractEmailConten
     public ApplicantsDetailsUpdatedNotifyData getApplicantsDetailsUpdatedNotifyData(CaseData caseData) {
         String respondentName;
 
-        if(caseData.getRepresentativeType() == RepresentativeType.LOCAL_AUTHORITY) {
+        if (caseData.getRepresentativeType() == RepresentativeType.LOCAL_AUTHORITY) {
             respondentName = getFirstRespondentLastName(caseData);
         } else {
             //Respondent is an LA
