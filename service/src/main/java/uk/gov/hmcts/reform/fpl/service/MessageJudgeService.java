@@ -104,7 +104,8 @@ public abstract class MessageJudgeService {
 
     protected List<Element<JudicialMessageReply>> buildMessageReplies(String latestMessage,
                                                                       Optional<JudicialMessage> message,
-                                                                      String from, String to) {
+                                                                      String from,
+                                                                      String to) {
         JudicialMessageReply messageReply = JudicialMessageReply.builder()
             .message(latestMessage)
             .replyFrom(from)
@@ -117,7 +118,8 @@ public abstract class MessageJudgeService {
         if (message.isEmpty()) {
             return List.of(element(messageReply));
         } else {
-            List<Element<JudicialMessageReply>> updatedHistory = message.get().getJudicialMessageReplies();
+            List<Element<JudicialMessageReply>> updatedHistory = new ArrayList<>(message.get()
+                .getJudicialMessageReplies().stream().toList());
             updatedHistory.add(element(messageReply));
 
             return sortedJudicialMessageReplies(updatedHistory);
