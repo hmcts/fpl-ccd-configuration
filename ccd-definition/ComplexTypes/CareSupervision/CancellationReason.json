@@ -74,7 +74,7 @@
     "ListElementCode": "reason-Other",
     "FieldType": "FixedList",
     "ElementLabel": "Why was the hearing postponed?",
-    "FieldTypeParameter": "HearingCancellationReasons-Other",
+    "FieldTypeParameter": "HearingCancellationReasons-OtherV2",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type=\"Other\""
   },
