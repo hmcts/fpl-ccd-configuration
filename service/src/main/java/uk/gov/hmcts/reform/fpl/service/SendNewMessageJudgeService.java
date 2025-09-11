@@ -167,7 +167,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             .messageHistory(buildMessageHistory(latestMessage, formatLabel(senderRoleType, senderEmail)))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
-            .urgency(getMessageUrgency(messageJudgeEventData))
+            .urgency(getMessageUrgency(messageJudgeEventData.getJudicialMessageMetaData()))
             .isJudicialMessageUrgent(judicialMessageMetaData.getIsJudicialMessageUrgent())
             .status(OPEN);
 
@@ -205,11 +205,6 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
 
         judicialMessages.add(element(identityService.generateId(), judicialMessageBuilder.build()));
         return judicialMessages;
-    }
-
-    public boolean isMessageUrgent(CaseData caseData) {
-        return YES.equals(caseData.getMessageJudgeEventData().getJudicialMessageMetaData()
-            .getIsJudicialMessageUrgent());
     }
 
     private List<Element<SelectableItem>> getApplications(CaseData caseData) {
@@ -401,4 +396,9 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return fileNamesBuilder.toString();
     }
 
+    @Override
+    public boolean isMessageUrgent(CaseData caseData) {
+        return YES.equals(caseData.getMessageJudgeEventData().getJudicialMessageMetaData()
+            .getIsJudicialMessageUrgent());
+    }
 }

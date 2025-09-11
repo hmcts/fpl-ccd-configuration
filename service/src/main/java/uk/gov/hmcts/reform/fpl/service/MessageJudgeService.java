@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -194,8 +194,10 @@ public abstract class MessageJudgeService {
         );
     }
 
-    protected String getMessageUrgency(MessageJudgeEventData eventData) {
-        return YesNo.YES.equals(eventData.getJudicialMessageMetaData().getIsJudicialMessageUrgent())
+    protected String getMessageUrgency(JudicialMessageMetaData metaData) {
+        return YesNo.YES.equals(metaData.getIsJudicialMessageUrgent())
             ? SAME_DAY_URGENCY : null;
     }
+
+    public abstract boolean isMessageUrgent(CaseData caseData);
 }

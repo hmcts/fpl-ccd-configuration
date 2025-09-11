@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency.STANDARD;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -82,7 +83,7 @@ public class MessageJudgeController extends CallbackController {
             caseData.getMessageJudgeEventData().getJudicialMessageMetaData().getRecipientDynamicList().getValueCode()));
 
         workAllocationTaskService.setTaskUrgency(caseDetailsMap,
-            messageJudgeService.isMessageUrgent(caseData) ? WorkAllocationTaskUrgency.URGENT : null);
+            messageJudgeService.isMessageUrgent(caseData) ? WorkAllocationTaskUrgency.URGENT : STANDARD);
 
         removeTemporaryFields(caseDetailsMap, transientFields());
         return respond(caseDetailsMap);

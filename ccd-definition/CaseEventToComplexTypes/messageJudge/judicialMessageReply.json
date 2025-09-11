@@ -153,8 +153,19 @@
     "ID": "JudicialMessageReply",
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
-    "ListElementCode": "latestMessage",
+    "ListElementCode": "isJudicialMessageUrgent",
+    "EventElementLabel": "Is this urgent? (is there any action that needs to be taken within 24 hours?)",
     "FieldDisplayOrder": 13,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "latestMessage",
+    "FieldDisplayOrder": 14,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Reply",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""

@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.fpl.model.judicialmessage;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.deserializer.DynamicListDeserializer;
+import uk.gov.hmcts.reform.fpl.json.serializer.YesNoSerializer;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 @Data
@@ -26,6 +28,7 @@ public class JudicialMessageMetaData {
     @JsonProperty("requestedBy")
     private final String subject;
     private final String urgency;
+    @JsonSerialize(using = YesNoSerializer.class)
     private final YesNo isJudicialMessageUrgent;
     private final String applicationType;
 

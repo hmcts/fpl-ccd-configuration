@@ -874,13 +874,14 @@ class SendNewMessageJudgeServiceTest {
     }
 
     @Test
-    void shouldPopulateCYAPageFields() {
+    void shouldPopulateMessageUrgency() {
         MessageJudgeEventData eventData = (MessageJudgeEventData.builder()
                 .judicialMessageMetaData(JudicialMessageMetaData.builder()
                     .isJudicialMessageUrgent(YesNo.YES)
                     .build())
                 .build());
-        assertThat(sendNewMessageJudgeService.getMessageUrgency(eventData)).isEqualTo(SAME_DAY_URGENCY);
+        assertThat(sendNewMessageJudgeService.getMessageUrgency(eventData.getJudicialMessageMetaData()))
+            .isEqualTo(SAME_DAY_URGENCY);
     }
 
     private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime, JudicialMessageStatus status) {
