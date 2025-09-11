@@ -418,7 +418,8 @@ class SendNewMessageJudgeServiceTest {
                     .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
                     .updatedTime(updatedMessages.get(0).getValue().getUpdatedTime())
                     .message(MESSAGE_NOTE)
-                    .replyFrom("%s (%s)".formatted(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER))
+                    .replyFrom("%s (%s)".formatted(
+                        JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER))
                     .replyTo("%s (%s)".formatted(JudicialMessageRoleType.ALLOCATED_JUDGE.getLabel(), MESSAGE_RECIPIENT))
                     .build())))
             .build());
