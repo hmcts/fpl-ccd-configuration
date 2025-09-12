@@ -23,6 +23,7 @@ public class JudicialMessageMetaData {
     private final JudicialMessageRoleType recipientType;
     @JsonDeserialize(using = DynamicListDeserializer.class)
     private final DynamicList recipientDynamicList;
+    private final String messageHistoryTemp;
     private final String recipient;
     private final String recipientLabel;
     @JsonProperty("requestedBy")

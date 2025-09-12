@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,8 +78,9 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .recipientDynamicList(buildRecipientDynamicList(
                 caseData, senderRole, Optional.of(selectedJudicialMessage.getSenderType().toString())))
             .urgency(selectedJudicialMessage.getUrgency())
-            .isJudicialMessageUrgent(selectedJudicialMessage.getIsJudicialMessageUrgent())
+            .judicialMessageReplies(selectedJudicialMessage.getJudicialMessageReplies())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
+            .messageHistoryTemp(buildTempMessageHistory(selectedJudicialMessage))
             .latestMessage(EMPTY)
             .replyFrom(getSenderEmailAddressByRoleType(senderRole))
             .replyTo(selectedJudicialMessage.getSender())
@@ -163,6 +165,9 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
                     String recipientEmail = resolveRecipientEmailAddress(
                         recipientType, judicialMessageReply.getReplyTo(), caseData);
 
+                    String fromLabel = formatLabel(judicialMessageReply.getSenderType(), sender);
+                    String toLabel = formatLabel(recipientType, recipientEmail);
+
                     JudicialMessage updatedMessage = judicialMessage.toBuilder()
                         .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
                         .updatedTime(time.now())
@@ -170,15 +175,14 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
                         .sender(sender)
                         .recipientType(recipientType)
                         .recipient(recipientEmail)
-                        .fromLabel(formatLabel(judicialMessageReply.getSenderType(), sender))
-                        .toLabel(formatLabel(recipientType, recipientEmail))
+                        .fromLabel(fromLabel)
+                        .toLabel(toLabel)
                         .recipientDynamicList(null)
-                        .messageHistory(buildMessageHistory(judicialMessageReply, judicialMessage,
-                            formatLabel(judicialMessageReply.getSenderType(), sender)))
+                        .judicialMessageReplies(buildMessageReplyList(judicialMessageReply.getLatestMessage(),
+                            judicialMessage, fromLabel, toLabel, getMessageUrgency(judicialMessageReply)))
+                        .messageHistory(judicialMessage.getMessageHistory())
                         .closureNote(judicialMessageReply.getClosureNote())
                         .latestMessage(judicialMessageReply.getLatestMessage())
-                        .urgency(getMessageUrgency(judicialMessageReply))
-                        .isJudicialMessageUrgent(judicialMessageReply.getIsJudicialMessageUrgent())
                         .build();
 
                     return element(judicialMessageElement.getId(), updatedMessage);
@@ -188,8 +192,9 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             }).collect(toList());
     }
 
-    private String buildMessageHistory(JudicialMessage reply, JudicialMessage previousMessage, String sender) {
-        return buildMessageHistory(reply.getLatestMessage(), previousMessage.getMessageHistory(), sender);
+    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, JudicialMessage message,
+                                                                      String from, String to, String urgency) {
+        return buildMessageReplies(latestMessage, Optional.of(message), from, to, urgency);
     }
 
     private DynamicList rebuildJudicialMessageDynamicList(CaseData caseData, UUID selectedC2Id) {

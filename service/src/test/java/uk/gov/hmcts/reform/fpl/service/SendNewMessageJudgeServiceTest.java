@@ -49,6 +49,7 @@ import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -62,6 +63,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.time.LocalDateTime.now;
 import static java.util.Map.entry;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -144,7 +146,7 @@ class SendNewMessageJudgeServiceTest {
         when(judicialService.getCurrentHearingJudge(any())).thenReturn(Optional.of(HEARING_JUDGE_FIELD));
         when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(ctscEmailLookupConfiguration.getEmail()).thenReturn(COURT_EMAIL);
-        when(time.now()).thenReturn(LocalDateTime.now());
+        when(time.now()).thenReturn(now());
         when(manageDocumentService.buildExistingDocumentTypeDynamicList(any()))
             .thenReturn(buildBasicDocumentTypeDynamicList());
         when(manageDocumentService.buildAvailableDocumentsDynamicList(any()))
@@ -412,8 +414,16 @@ class SendNewMessageJudgeServiceTest {
             .subject(MESSAGE_REQUESTED_BY)
             .urgency(SAME_DAY_URGENCY)
             .isJudicialMessageUrgent(YesNo.YES)
-            .messageHistory(format("%s (%s) - %s",
-                JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER, MESSAGE_NOTE))
+            .judicialMessageReplies(List.of(element(updatedMessages.get(0).getValue()
+                    .getJudicialMessageReplies().get(0).getId(),
+                JudicialMessageReply.builder()
+                    .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
+                    .updatedTime(updatedMessages.get(0).getValue().getUpdatedTime())
+                    .message(MESSAGE_NOTE)
+                    .replyFrom("%s (%s)".formatted(
+                        JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER))
+                    .replyTo("%s (%s)".formatted(JudicialMessageRoleType.ALLOCATED_JUDGE.getLabel(), MESSAGE_RECIPIENT))
+                    .build())))
             .build());
 
         assertThat(updatedMessages).hasSize(1).first().isEqualTo(expectedJudicialMessageElement);
@@ -783,6 +793,10 @@ class SendNewMessageJudgeServiceTest {
             ? "CTSC"
             : "%s (%s)".formatted(recipientRole.getLabel(), expectedRecipient);
 
+        when(identityService.generateId()).thenReturn(NEW_ELEMENT_ID);
+
+        List<Element<JudicialMessage>> updatedMessages = sendNewMessageJudgeService.addNewJudicialMessage(caseData);
+
         JudicialMessage expectedNewJudicialMessage = JudicialMessage.builder()
             .senderType(senderRole)
             .sender(expectedSender)
@@ -794,13 +808,17 @@ class SendNewMessageJudgeServiceTest {
             .status(OPEN)
             .subject(MESSAGE_REQUESTED_BY)
             .latestMessage(MESSAGE_NOTE)
-            .messageHistory(format("%s - %s", expectedSenderLabel, MESSAGE_NOTE))
+            .judicialMessageReplies(List.of(element(updatedMessages.get(1).getValue()
+                    .getJudicialMessageReplies().get(0).getId(),
+                JudicialMessageReply.builder()
+                    .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
+                    .updatedTime(updatedMessages.get(1).getValue().getUpdatedTime())
+                    .message(MESSAGE_NOTE)
+                    .replyFrom(expectedSenderLabel)
+                    .replyTo(expectedRecipientLabel)
+                    .build())))
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .build();
-
-        when(identityService.generateId()).thenReturn(NEW_ELEMENT_ID);
-
-        List<Element<JudicialMessage>> updatedMessages = sendNewMessageJudgeService.addNewJudicialMessage(caseData);
 
         assertThat(updatedMessages.size()).isEqualTo(2);
         assertThat(updatedMessages).isEqualTo(List.of(
@@ -830,7 +848,7 @@ class SendNewMessageJudgeServiceTest {
     @Test
     void shouldPopulateFirstHearingLabelWhenHearingExists() {
         HearingType hearingType = CASE_MANAGEMENT;
-        LocalDateTime hearingStartDate = LocalDateTime.now();
+        LocalDateTime hearingStartDate = now();
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(HearingBooking.builder()

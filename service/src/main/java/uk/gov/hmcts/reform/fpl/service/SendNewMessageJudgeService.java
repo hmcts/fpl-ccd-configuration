@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.SelectableItem;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.from;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -155,16 +157,19 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         String recipientEmail = resolveRecipientEmailAddress(recipientRoleType,
             judicialMessageMetaData.getRecipient(), caseData);
 
+        String fromLabel = formatLabel(senderRoleType, senderEmail);
+        String toLabel = formatLabel(recipientRoleType, recipientEmail);
+
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(senderEmail)
             .senderType(senderRoleType)
             .recipient(recipientEmail)
             .recipientType(recipientRoleType)
-            .fromLabel(formatLabel(senderRoleType, senderEmail))
-            .toLabel(formatLabel(recipientRoleType, recipientEmail))
+            .fromLabel(fromLabel)
+            .toLabel(toLabel)
             .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
-            .messageHistory(buildMessageHistory(latestMessage, formatLabel(senderRoleType, senderEmail)))
+            .judicialMessageReplies(buildMessageReplyList(latestMessage, fromLabel, toLabel))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(getMessageUrgency(messageJudgeEventData.getJudicialMessageMetaData()))
@@ -232,8 +237,8 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return applications;
     }
 
-    private String buildMessageHistory(String message, String sender) {
-        return buildMessageHistory(message, "", sender);
+    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, String from, String to) {
+        return buildMessageReplies(latestMessage, Optional.empty(), from, to);
     }
 
     private boolean hasC2s(CaseData caseData) {
