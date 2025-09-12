@@ -20,9 +20,12 @@ public enum HearingCancellationReason {
     HM3("Interpreter not available"),
     JU1("Lack of judicial continuity"),
     JU2("Insufficient time listed or to complete hearing"),
+    JU3("No Judge available"),
     LW1("Lawyers not instructed, present or ready, party or witness fail to attend"),
     LW2("No key issue analysis"),
     LW3("No/poor parental evidence"),
+    LW4("Party unavailable"),
+    LW5("Intermediary unavailable"),
     OS1("Official Solicitor not instructed/ready"),
     LS1("Prior authority from LSC not available"),
     LS2("Other legal aid"),
@@ -47,7 +50,11 @@ public enum HearingCancellationReason {
     IN1("Immigration and international difficulties"),
     OT8("Severe weather"),
     OT9("Industrial action"),
-    OT10("Covid 19");
+    @Deprecated OT10("Covid 19"),
+    OT11("Party has complied with the directions"),
+    OT12("Case settled at an earlier hearing"),
+    OT13("Consent Order Filed"),
+    OT14("Case concluded");
 
     private final String label;
 
