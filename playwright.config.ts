@@ -70,7 +70,7 @@ export default defineConfig({
 
         {
             name: "preview",
-            use: {...devices["desktop edge"], viewport: {width: 1280, height: 1024}},
+            use: { ...devices['Desktop Edge'], channel: 'msedge' },
             retries: 2,
             timeout: 5 * 60 * 1000,
             expect: {timeout: 1 * 60 * 1000},
