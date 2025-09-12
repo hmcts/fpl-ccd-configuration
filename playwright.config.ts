@@ -70,7 +70,7 @@ export default defineConfig({
 
         {
             name: "preview",
-            use: {...devices["Desktop Firefox"]},
+            use: {...devices["desktop edge"], viewport: {width: 1280, height: 1024}},
             retries: 3,
             timeout: 3 * 60 * 1000,
             expect: {timeout: 1 * 60 * 1000},
