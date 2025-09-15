@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.model.judicialmessage;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDateTime;
