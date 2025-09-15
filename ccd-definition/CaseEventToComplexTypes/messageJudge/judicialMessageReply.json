@@ -69,7 +69,7 @@
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "messageHistoryTemp",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "EventElementLabel": "Message history",
     "FieldShowCondition": "messageHistory!=\"ALWAYS_SHOW\""
