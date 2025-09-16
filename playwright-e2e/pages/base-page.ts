@@ -58,7 +58,8 @@ export class BasePage {
   }
 
   async clickContinue() {
-    await this.continueButton.click({});
+    await this.continueButton.waitFor({ state: 'attached'});
+      await this.continueButton.click({});
   }
 
   async clickPreviousButton() {

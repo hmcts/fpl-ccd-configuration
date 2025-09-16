@@ -55,6 +55,8 @@ import {ManageOrdersOrderSelection} from "../pages/manage-orders/manage-orders-o
 import {Applications} from "../pages/applications/upload-additional/applications";
 import {ApplicationFee} from "../pages/applications/upload-additional/application-fee";
 import {SuppliedDocuments} from "../pages/applications/upload-additional/supplied-documents";
+import {CaseNote} from "../pages/case-note";
+import {ExpertReport} from "../pages/expert-report";
 
 
 type CreateFixtures = {
@@ -114,6 +116,8 @@ type CreateFixtures = {
   uploadAdditionalApplicationsApplicationFee: ApplicationFee;
   uploadAdditionalApplicationsSuppliedDocuments: SuppliedDocuments;
   submit: Submit;
+  caseNote: CaseNote;
+  expertReport: ExpertReport;
 
 
 };
@@ -339,5 +343,11 @@ othersToBeGivenNotice: async ({ page }, use) => {
 
     submit: async ({ page }, use) => {
       await use(new Submit(page));
-    }
+    },
+    caseNote: async ({ page }, use) => {
+      await use(new CaseNote(page));
+    },
+    expertReport: async ({ page }, use) => {
+      await use(new ExpertReport(page));
+    },
 });

@@ -1,15 +1,11 @@
 import { test } from '../fixtures/create-fixture';
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, HighCourtAdminUser, privateSolicitorOrgUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
-import { testConfig } from '../settings/test-config';
-import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json' assert { type: "json" };
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert { type: "json" };
-import { setHighCourt } from '../utils/update-case-details';
 import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
-import config from "../settings/test-docs/config";
-import {urlConfig} from "../settings/urls";
+import { subtractMonthDate} from "../utils/util-helper";
 
-test.describe('Upload additional applications', () => {
+test.describe('Admin application management', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
@@ -18,17 +14,76 @@ test.describe('Upload additional applications', () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
   //mark test as slow to give extra timeout
-  test.slow();
 
-
-
-
-
-  test('application welsh language translation requirement',
-    async ({ page, signInPage, additionalApplications }) => {
-      caseName = 'CTSC add welsh translation request for documents ' + dateTime.slice(0, 10);
+  test('CTSC admin request welsh language translation',
+    async ({ page, signInPage, welshLangRequirements }) => {
+      caseName = 'CTSC request for welsh translation of documents/orders ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseWithResSolicitor);
-         });
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await welshLangRequirements.gotoNextStep('Welsh language requirements');
+        await welshLangRequirements.CTSCRequestWelshTranslation('Yes');
+        await welshLangRequirements.clickContinue();
+        await welshLangRequirements.checkYourAnsAndSubmit();
+        await welshLangRequirements.tabNavigation('Summary');
+        await welshLangRequirements.page.reload();
+        await expect(page.getByText('WELSH CASE')).toBeVisible();
 
 
-})
+    });
+
+
+    test('CTSC admin add case note to the application',
+        async ({ page, signInPage, caseNote }) => {
+            caseName = 'CTSC admin add case note' + dateTime.slice(0, 10);
+            await updateCase(caseName, caseNumber, caseWithResSolicitor);
+            await signInPage.visit();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateTOCaseDetails(caseNumber);
+            await caseNote.gotoNextStep('Add a case note');
+            await expect.soft(page.getByText('Add note detail, including relevant dates and people involved')).toBeVisible();
+
+            await caseNote.enterCaseNote('This application is classified as priority due to the vulnerability of the child involved.');
+            await caseNote.clickSubmit();
+            await caseNote.clickSaveAndContinue();
+            await caseNote.tabNavigation('Notes');
+            await expect(page.getByText('This application is classified as priority due to the vulnerability of the child involved.')).toBeVisible();
+
+        });
+
+    test.only('CTSC log expert report to the application',
+        async ({ page, signInPage, expertReport }) => {
+            caseName = 'CTSC log expert report' + dateTime.slice(0, 10);
+            await updateCase(caseName, caseNumber, caseWithResSolicitor);
+            await signInPage.visit();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateTOCaseDetails(caseNumber);
+            await expertReport.gotoNextStep('Log expert report');
+
+            await expertReport.addNewReport(0);;
+
+            await expertReport.selectExpertReportType('Pediatric',0);
+            await expertReport.enterRequestedDate(await subtractMonthDate(2),0);
+            await expertReport.orderApprovedNo(0);
+
+
+            await expertReport.addNewReport(1);
+            await expertReport.selectExpertReportType('Adult Psychiatric Report on Parents(s)',1);
+            await expertReport.enterRequestedDate(await subtractMonthDate(2),1);
+            await expertReport.orderApprovedYes(1)
+            await expertReport.enterApprovedDate(await subtractMonthDate(1),0);
+            await expertReport.clickSubmit();
+            await expertReport.clickSaveAndContinue();
+            await expertReport.tabNavigation('Expert reports');
+
+            await expect(expertReport.page.getByText('Report 1')).toBeVisible();
+            await expect(expertReport.page.getByText('Pediatric')).toBeVisible();
+            await expect(expertReport.page.getByText('Report 2')).toBeVisible();
+            await expect(expertReport.page.getByText('Adult Psychiatric Report on')).toBeVisible();
+        });
+
+
+
+
+});

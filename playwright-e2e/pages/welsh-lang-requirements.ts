@@ -10,6 +10,7 @@ export class WelshLangRequirements extends BasePage {
     readonly englishLangRadio: Locator;
     readonly needToBeTranslatedQuestion: Locator;
     readonly needToBeInWelshYesRadio: Locator;
+    private adminWelshTransalationRquired: any;
 
     constructor(page: Page) {
         super(page);
@@ -20,6 +21,8 @@ export class WelshLangRequirements extends BasePage {
         this.englishLangRadio = page.getByLabel('English');
         this.needToBeTranslatedQuestion = page.getByText('Does this application need to be translated into Welsh?');
         this.needToBeInWelshYesRadio = page.getByRole('group', { name: 'Does this application need to be translated into Welsh?' }).getByLabel('Yes');
+        this.adminWelshTransalationRquired = page.getByRole('group',{name:'Does any respondent, child or other person on this case need orders or court documents in Welsh?'});
+
     }
     async welshLanguageSmokeTest() {
         await expect(this.welshLangHeading).toBeVisible();
@@ -32,6 +35,10 @@ export class WelshLangRequirements extends BasePage {
         await this.clickContinue();
         await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.checkYourAnsAndSubmit();
+    }
+    async CTSCRequestWelshTranslation(YesNo='Yes') {
+        await this.adminWelshTransalationRquired.getByLabel(`${YesNo}`).click();
+
     }
 }
 
