@@ -35,6 +35,7 @@ test.describe('Manage the Retain and Dispose Config', () => {
             await manageTTL.gotoNextStep('Manage Case TTL')
             await manageTTL.overrideSystemTTL();
             await manageTTL.clickContinue();
+            await manageTTL.clickContinue();//click action in not working, It is work around to until the issue resolved
             await manageTTL.clickSaveAndContinue();
         });
 });

@@ -9,7 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorAdded;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.legalcounsel.LegalCounsellorAddedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.legalcounsel.LegalCounsellorRemovedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
@@ -21,8 +24,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_THEMSELVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class LegalCounselUpdatedEventHandlerTest {
@@ -109,6 +114,96 @@ class LegalCounselUpdatedEventHandlerTest {
         verify(notificationService).sendEmail(
             LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE, TEST_COUNSELLOR_EMAIL_ADDRESS,
             expectedTemplate, TEST_CASE_ID
+        );
+    }
+
+    @Test
+    void shouldNotifyAllRespondentSolicitorTheyAreActingForIfBarristerRemovedThemselves() {
+        CaseData caseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .respondents1(wrapElements(
+                Respondent.builder()
+                    .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
+                    .solicitor(RespondentSolicitor.builder().email("respondent.solicitor@test.com").build())
+                    .build(),
+                Respondent.builder()
+                    .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
+                    .solicitor(RespondentSolicitor.builder().email("respondent.solicitor2@test.com").build())
+                    .build()))
+            .build();
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(caseData, "Test Solicitors", TEST_LEGAL_COUNCILLOR);
+
+        LegalCounsellorRemovedNotifyTemplate expectedTemplateToBarrister =
+            mock(LegalCounsellorRemovedNotifyTemplate.class);
+        LegalCounsellorRemovedNotifyTemplate expectedTemplateToSolicitor =
+            mock(LegalCounsellorRemovedNotifyTemplate.class);
+
+        when(userService.getUserEmail()).thenReturn(TEST_COUNSELLOR_EMAIL_ADDRESS);
+        when(contentProvider.buildLegalCounsellorRemovedNotificationTemplate(caseData, event))
+            .thenReturn(expectedTemplateToBarrister);
+        when(contentProvider.buildLegalCounsellorRemovedThemselvesNotificationTemplate(caseData,
+            TEST_LEGAL_COUNCILLOR.getFullName())).thenReturn(expectedTemplateToSolicitor);
+
+        underTest.handleLegalCounsellorRemovedEvent(event);
+
+        verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
+        verify(notificationService).sendEmail(
+            LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE, TEST_COUNSELLOR_EMAIL_ADDRESS,
+            expectedTemplateToBarrister, TEST_CASE_ID
+        );
+
+        verify(notificationService).sendEmail(
+            LEGAL_COUNSELLOR_REMOVED_THEMSELVES, "respondent.solicitor@test.com",
+            expectedTemplateToSolicitor, TEST_CASE_ID
+        );
+        verify(notificationService).sendEmail(
+            LEGAL_COUNSELLOR_REMOVED_THEMSELVES, "respondent.solicitor2@test.com",
+            expectedTemplateToSolicitor, TEST_CASE_ID
+        );
+    }
+
+    @Test
+    void shouldNotifyAllChildSolicitorTheyAreActingForIfBarristerRemovedThemselves() {
+        CaseData caseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .children1(wrapElements(
+                Child.builder()
+                    .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
+                    .solicitor(RespondentSolicitor.builder().email("child.solicitor@test.com").build())
+                    .build(),
+                Child.builder()
+                    .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
+                    .solicitor(RespondentSolicitor.builder().email("child.solicitor2@test.com").build())
+                    .build()))
+            .build();
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(caseData, "Test Solicitors", TEST_LEGAL_COUNCILLOR);
+
+        LegalCounsellorRemovedNotifyTemplate expectedTemplateToBarrister =
+            mock(LegalCounsellorRemovedNotifyTemplate.class);
+        LegalCounsellorRemovedNotifyTemplate expectedTemplateToSolicitor =
+            mock(LegalCounsellorRemovedNotifyTemplate.class);
+
+        when(userService.getUserEmail()).thenReturn(TEST_COUNSELLOR_EMAIL_ADDRESS);
+        when(contentProvider.buildLegalCounsellorRemovedNotificationTemplate(caseData, event))
+            .thenReturn(expectedTemplateToBarrister);
+        when(contentProvider.buildLegalCounsellorRemovedThemselvesNotificationTemplate(caseData,
+            TEST_LEGAL_COUNCILLOR.getFullName())).thenReturn(expectedTemplateToSolicitor);
+
+        underTest.handleLegalCounsellorRemovedEvent(event);
+
+        verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
+        verify(notificationService).sendEmail(
+            LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE, TEST_COUNSELLOR_EMAIL_ADDRESS,
+            expectedTemplateToBarrister, TEST_CASE_ID
+        );
+
+        verify(notificationService).sendEmail(
+            LEGAL_COUNSELLOR_REMOVED_THEMSELVES, "child.solicitor@test.com",
+            expectedTemplateToSolicitor, TEST_CASE_ID
+        );
+        verify(notificationService).sendEmail(
+            LEGAL_COUNSELLOR_REMOVED_THEMSELVES, "child.solicitor2@test.com",
+            expectedTemplateToSolicitor, TEST_CASE_ID
         );
     }
 

@@ -19,5 +19,4 @@ export const urlConfig: UrlConfig = {
   idamwebURL: process.env.IDAM_WEB_URL ||`https://idam-web-public.${env}.platform.hmcts.net`
 
 
-  // You can add other URLs as needed
 };
