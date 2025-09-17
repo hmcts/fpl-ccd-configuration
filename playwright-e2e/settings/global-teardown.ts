@@ -20,11 +20,8 @@ export default async () => {
     const userBearerToken = await getAccessToken({user: systemUpdateUser});
 
     userIds = await fetchOrganisationUsers('W9V61CP', fplServiceAuthToken);
-    // console.log('Global teardown: userids fetched', userIds);
 
     recordsFetched = await queryRoleAssignments(userIds, roleAssignments, validAt, userBearerToken?.data.access_token, CCDServiceAuthToken);
-    //  console.log('Global teardown: role assignments fetched', recordsFetched);
-
 
     if (recordsFetched != '0') {
         deleted = await deleteRoleAssignments(userIds, roleAssignments, validAt, userBearerToken?.data.access_token, CCDServiceAuthToken);
@@ -32,7 +29,7 @@ export default async () => {
         console.log('There are no role assignments to delete');
     }
     if (recordsFetched === deleted) {
-        console.log('Global teardown: role assignments deleted : ' + deleted + 'successfully');
+        console.log('Global teardown: role assignments deleted : ' + deleted + ' successfully');
     }
 
 };
