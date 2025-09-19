@@ -4,9 +4,10 @@ import {getDateBeforeToday} from "../utils/document-format-helper";
 import {ServiceAuthUtils} from "@hmcts/playwright-common";
 import {ServiceTokenParams} from "@hmcts/playwright-common/dist/utils/service-auth.utils";
 import {testConfig} from "./test-config";
+import { test as teardown } from '@playwright/test';
 
-export default async () => {
-
+teardown('delete AM Role', async ({ }) => {
+    console.log('deleting test database...');
     let userIds: any[] = [];
     const roleAssignments: string[] = testConfig.teardownAMRoleAssignments;
     const validAt = getDateBeforeToday( Number(testConfig.daysOlderThan) ).toISOString();
@@ -31,5 +32,4 @@ export default async () => {
     if (recordsFetched === deleted) {
         console.log('Global teardown: role assignments deleted : ' + deleted + ' successfully');
     }
-
-};
+});

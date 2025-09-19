@@ -42,12 +42,12 @@ export default defineConfig({
     /* Configure projects for major browsers */
     projects: [
         {
-            name: 'AM role cleanup',
-            testMatch: /global-teardown\.ts/,
+            name: 'AMRoleCleanup',
+           testMatch: '/settings/global-teardown.ts',
         },
         {
             ...ProjectsConfig.edge,
-            teardown: 'AM role cleanup'
+            teardown: 'AMRoleCleanup'
 
         },
         {
