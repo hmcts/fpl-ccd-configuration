@@ -7,7 +7,7 @@ import {testConfig} from "./test-config";
 import { test as teardown } from '@playwright/test';
 
 teardown('delete AM Role', async ({ }) => {
-    console.log('deleting test database...');
+    console.log('deleting AM Role...');
     let userIds: any[] = [];
     const roleAssignments: string[] = testConfig.teardownAMRoleAssignments;
     const validAt = getDateBeforeToday( Number(testConfig.daysOlderThan) ).toISOString();
