@@ -26,10 +26,13 @@ Create the following two files (they are already included in .gitignore)
 `service/src/main/resources/application-user-mappings.yaml`:
 ```
 spring:
-  profiles: user-mappings
+  config:
+    activate:
+      on-profile: user-mappings
+
 fpl:
   local_authority_user:
-    mapping: <get from key vault>
+    mapping:  '<get from aat key vault: local-authority-user-mapping-local>'
 ```
 and `service/src/main/resources/application-feature-toggle.yaml`:
 ```
@@ -67,6 +70,12 @@ or from IntelliJ: right-click the bootWithCCD Gradle task and select 'Run...'
 then you can access XUI on [http://localhost:3000](http://localhost:3000)
 
 (You may be prompted to run `az login` to set up account.)
+
+On first run you may need to log in in with the hmctspublic subscription in order to download cftlib during bootWithCCD:
+```
+az acr login --name hmctspublic --subscription [SUBSCRIPTION ID]
+```
+(Get the DND-CNP-Prod subscription ID from Azure portal under Subscriptions.)
 
 ### Code Style
 To run code linting enter `yarn lint` in the command line.
