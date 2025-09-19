@@ -65,14 +65,16 @@ test.describe('Admin application management', () => {
 
             await expertReport.selectExpertReportType('Pediatric',0);
             await expertReport.enterRequestedDate(await subtractMonthDate(2),0);
-            await expertReport.orderApprovedNo(0);
+            await expertReport.orderApprovedYes(0)
+            await expertReport.enterApprovedDate(await subtractMonthDate(1),0);
+          //  await expertReport.page.pause();
 
 
             await expertReport.addNewReport(1);
             await expertReport.selectExpertReportType('Adult Psychiatric Report on Parents(s)',1);
             await expertReport.enterRequestedDate(await subtractMonthDate(2),1);
             await expertReport.orderApprovedYes(1)
-            await expertReport.enterApprovedDate(await subtractMonthDate(1),0);
+            await expertReport.enterApprovedDate(await subtractMonthDate(1),1);
             await expertReport.clickSubmit();
             await expertReport.clickSaveAndContinue();
             await expertReport.tabNavigation('Expert reports');

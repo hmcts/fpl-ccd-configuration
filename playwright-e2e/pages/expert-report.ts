@@ -50,6 +50,7 @@ export class ExpertReport extends BasePage {
 
 
     async addNewReport(reportNumber:number){
+        await this.addNewButton.nth(reportNumber).focus();
         await this.addNewButton.nth(reportNumber).click();
         await expect(this.addNewButton.nth(1)).toBeVisible();
 
