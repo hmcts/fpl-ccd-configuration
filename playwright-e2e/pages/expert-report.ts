@@ -59,6 +59,10 @@ async waitForLoadReportDetails(){
     await expect(this.addNewButton.nth(1)).toBeVisible();
 }
 
+async checkDateValidationPass(reportNumber:number=0){
+   await this.page.press('body', 'Tab');
+    await expect (this.page.getByText(' The data entered is not valid for Date requested ')).toBeHidden()
+}
 
     async enterRequestedDate(requestDate:Date,reportNumber:number=0) {
         await this.dateRequested.getByLabel('Day').nth(reportNumber).fill(requestDate.getDate().toString());
@@ -79,8 +83,8 @@ async waitForLoadReportDetails(){
     }
     async orderApprovedNo(reportNumber:number=0){
         await this.reportApprovedNo.nth(reportNumber).click();
-        await this.reportApprovedNo.nth(reportNumber).click();
-
+        // await this.reportApprovedNo.nth(reportNumber).click();
+    //
     }
     // async addReportTwo(){
     //     await this.reportTwo.click();

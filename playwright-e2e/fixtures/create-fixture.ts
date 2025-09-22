@@ -57,6 +57,7 @@ import {ApplicationFee} from "../pages/applications/upload-additional/applicatio
 import {SuppliedDocuments} from "../pages/applications/upload-additional/supplied-documents";
 import {CaseNote} from "../pages/case-note";
 import {ExpertReport} from "../pages/expert-report";
+import {Extend26WeekTimeline} from "../pages/extend-26week-timeline";
 
 
 type CreateFixtures = {
@@ -118,6 +119,7 @@ type CreateFixtures = {
   submit: Submit;
   caseNote: CaseNote;
   expertReport: ExpertReport;
+    extend26WeekTimeline: Extend26WeekTimeline;
 
 
 };
@@ -350,4 +352,7 @@ othersToBeGivenNotice: async ({ page }, use) => {
     expertReport: async ({ page }, use) => {
       await use(new ExpertReport(page));
     },
+    extend26WeekTimeline: async ({ page }, use) => {
+      await use(new Extend26WeekTimeline(page));
+    }
 });

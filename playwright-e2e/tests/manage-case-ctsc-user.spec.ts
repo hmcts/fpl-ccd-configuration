@@ -2,6 +2,7 @@ import { test } from '../fixtures/create-fixture';
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, HighCourtAdminUser, privateSolicitorOrgUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert { type: "json" };
+import caseWithHearing from '../caseData/caseWithHearingDetails.json' assert { type: "json" };
 import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
 import { subtractMonthDate} from "../utils/util-helper";
 
@@ -65,16 +66,18 @@ test.describe('Admin application management', () => {
 
             await expertReport.selectExpertReportType('Pediatric',0);
             await expertReport.enterRequestedDate(await subtractMonthDate(2),0);
+            await expertReport.checkDateValidationPass();
             await expertReport.orderApprovedYes(0)
             await expertReport.enterApprovedDate(await subtractMonthDate(1),0);
-          //  await expertReport.page.pause();
-
+            await expertReport.checkDateValidationPass();
 
             await expertReport.addNewReport(1);
             await expertReport.selectExpertReportType('Adult Psychiatric Report on Parents(s)',1);
             await expertReport.enterRequestedDate(await subtractMonthDate(2),1);
-            await expertReport.orderApprovedYes(1)
+            await expertReport.checkDateValidationPass();
+            await expertReport.orderApprovedYes(1);
             await expertReport.enterApprovedDate(await subtractMonthDate(1),1);
+            await expertReport.checkDateValidationPass();
             await expertReport.clickSubmit();
             await expertReport.clickSaveAndContinue();
             await expertReport.tabNavigation('Expert reports');
@@ -86,6 +89,34 @@ test.describe('Admin application management', () => {
         });
 
 
-
+test.only('CTSC request for 26 week Case extension',async({ page, signInPage, extend26WeekTimeline})=>{
+    caseName = 'CTSC request 26 week case extension' + dateTime.slice(0, 10);
+    await updateCase(caseName, caseNumber, caseWithHearing);
+    await signInPage.visit();
+    await signInPage.login(CTSCUser.email, CTSCUser.password);
+    await signInPage.navigateTOCaseDetails(caseNumber);
+   // await page.pause();
+    await extend26WeekTimeline.gotoNextStep('Extend 26-week timeline');
+    await extend26WeekTimeline.isExtensionApprovedAtHearing('yes');
+    await extend26WeekTimeline.selectHearing('Case management hearing, 3 November 2012');
+    await extend26WeekTimeline.clickContinue();
+    await extend26WeekTimeline.isAboutAllChildren('Yes');
+    await extend26WeekTimeline.clickContinue();
+    await extend26WeekTimeline.sameExtensionDateForAllChildren('Yes');
+    await extend26WeekTimeline.enterExtendsionDetails();
+    await extend26WeekTimeline.clickContinue();
+    await extend26WeekTimeline.checkYourAnsAndSubmit();
+    await expect(page.getByText('Extended timeline date')).toBeVisible();
+    await expect(page.getByText('Extended timeline:')).toBeVisible();
+})
+    test('Close the case',async({signInPage,page,})=>{
+        caseName = 'CTSC request 26 week case extension' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithHearing);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        // await page.pause();
+        //await closeCase.gotoNextStep('Extend 26-week timeline');
+    })
 
 });
