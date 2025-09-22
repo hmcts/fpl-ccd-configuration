@@ -75,6 +75,12 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = params.CASE_SERVICE_URL
     env.SECURITY_RULES = params.SECURITY_RULES
     env.ORG_ID = params.ORG_ID
+    env.ENVIRONMENT = params.ENVIRONMENT
+    env.S2S_URL = "http://rpe-service-auth-provider-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/testing-support/lease"
+    env.MANAGE_ORG_SERVICE_URL = "http://rd-professional-api-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/"
+    env.ACCESS_MANAGEMENT_URL ="http://am-role-assignment-service-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/am/role-assignments"
+    env.IDAM_WEB_URL = "https://idam-web-public.${env.ENVIRONMENT}.platform.hmcts.net"
+
 
     loadVaultSecrets(integrationTestSecrets)
 
