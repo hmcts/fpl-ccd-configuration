@@ -4,7 +4,7 @@ import { expect } from "@playwright/test";
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert { type: "json" };
 import caseWithHearing from '../caseData/caseWithHearingDetails.json' assert { type: "json" };
 import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
-import { subtractMonthDate} from "../utils/util-helper";
+import {getCurrentdate, subtractMonthDate} from "../utils/util-helper";
 
 test.describe('Admin application management', () => {
   const dateTime = new Date().toISOString();
@@ -53,7 +53,7 @@ test.describe('Admin application management', () => {
 
         });
 
-    test.only('CTSC log expert report to the application',
+    test('CTSC log expert report to the application',
         async ({ page, signInPage, expertReport }) => {
             caseName = 'CTSC log expert report' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseWithResSolicitor);
@@ -89,7 +89,7 @@ test.describe('Admin application management', () => {
         });
 
 
-test.only('CTSC request for 26 week Case extension',async({ page, signInPage, extend26WeekTimeline})=>{
+test('CTSC request for 26 week Case extension',async({ page, signInPage, extend26WeekTimeline})=>{
     caseName = 'CTSC request 26 week case extension' + dateTime.slice(0, 10);
     await updateCase(caseName, caseNumber, caseWithHearing);
     await signInPage.visit();
@@ -109,14 +109,36 @@ test.only('CTSC request for 26 week Case extension',async({ page, signInPage, ex
     await expect(page.getByText('Extended timeline date')).toBeVisible();
     await expect(page.getByText('Extended timeline:')).toBeVisible();
 })
-    test('Close the case',async({signInPage,page,})=>{
-        caseName = 'CTSC request 26 week case extension' + dateTime.slice(0, 10);
+    test('Close the case',async({signInPage,page,recordFinalDecision})=>{
+        caseName = 'CTSC make final decision' + dateTime.slice(0, 10);
+        let decisionDate = await subtractMonthDate(1);
         await updateCase(caseName, caseNumber, caseWithHearing);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
-        // await page.pause();
-        //await closeCase.gotoNextStep('Extend 26-week timeline');
+
+        await recordFinalDecision.gotoNextStep('Record final decisions');
+
+        await expect(recordFinalDecision.page.getByText('In a closed case, you can still:')).toBeVisible();
+        await expect(recordFinalDecision.page.getByText(' add a case note')).toBeVisible();
+        await expect(recordFinalDecision.page.getByText(' upload a document')).toBeVisible();
+        await expect(recordFinalDecision.page.getByText(' issue a C21 (blank order)')).toBeVisible();
+        await expect(recordFinalDecision.page.getByText(' submit a C2 application')).toBeVisible();
+        await expect(recordFinalDecision.page.getByText('Appeals can still be made up to 21 days after a close is marked as closed/resolved.')).toBeVisible();
+
+        await recordFinalDecision.selectFinalDecisionForAllChildren('Yes');
+        await recordFinalDecision.clickContinue();
+        await recordFinalDecision.enterDecisionDate(decisionDate);
+        await recordFinalDecision.dateValidationPass();
+
+        await recordFinalDecision.enterFinalOutCome();
+         await recordFinalDecision.clickSubmit();
+         await recordFinalDecision.clickSubmit();
+
+        await recordFinalDecision.tabNavigation('Summary');
+        await expect(page.getByText('Close the case')).toBeVisible();
+        await expect(page.getByText(new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(decisionDate))).toBeVisible();
+
     })
 
 });

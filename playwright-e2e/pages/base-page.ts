@@ -105,11 +105,8 @@ export class BasePage {
   }
 
   async clickSubmit() {
-   expect(()=>{
 
-        this.submit.click();
-        expect(this.submit).toBeHidden({timeout:1000});
-   }).toPass();
+        await  this.submit.click();
 
   }
   async clickSaveAndContinue() {

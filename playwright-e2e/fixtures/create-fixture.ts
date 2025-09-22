@@ -58,6 +58,7 @@ import {SuppliedDocuments} from "../pages/applications/upload-additional/supplie
 import {CaseNote} from "../pages/case-note";
 import {ExpertReport} from "../pages/expert-report";
 import {Extend26WeekTimeline} from "../pages/extend-26week-timeline";
+import { RecordFinalDecision} from "../pages/record-final-decision";
 
 
 type CreateFixtures = {
@@ -120,6 +121,7 @@ type CreateFixtures = {
   caseNote: CaseNote;
   expertReport: ExpertReport;
     extend26WeekTimeline: Extend26WeekTimeline;
+    recordFinalDecision: RecordFinalDecision;
 
 
 };
@@ -354,5 +356,8 @@ othersToBeGivenNotice: async ({ page }, use) => {
     },
     extend26WeekTimeline: async ({ page }, use) => {
       await use(new Extend26WeekTimeline(page));
+    },
+    recordFinalDecision: async ({ page }, use) => {
+      await use(new RecordFinalDecision(page));
     }
 });
