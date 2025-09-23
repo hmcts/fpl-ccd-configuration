@@ -205,8 +205,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
-    "Label": "Case name",
-    "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "Label": "Enter draft case name",
+    "HintText": "It will be standardised when you submit the application",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "Y",
@@ -760,6 +760,24 @@
     "ID": "submissionConsentLabel",
     "Label": " ",
     "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseNameHintLabel",
+    "Label": "**Case name has been updated based on the answers you have given.** <br><span class=\"text-16\">The case will be submitted to the system with the name <strong>${caseName}</strong> <br>If there is an error in the case name such as misspelling, you can go back to the applicant and respondent section to change your answer. This will update the case name.</span>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "updatedCaseNameLabel",
+    "Label": "**Updated case name**<br> <span class=\"text-16\">Case name will be updated to: <strong>${caseName}</strong> <br> based on the current applicant and respondent's details.</span>",
+    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -1568,6 +1586,16 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Used to hide the amountToPay field, mainly in the event of an error with the Fee Register"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isCTSCUser",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Used to show the manual PBANumber entry to CTSC only in upload additional applications"
   },
   {
     "LiveFrom": "01/01/2017",

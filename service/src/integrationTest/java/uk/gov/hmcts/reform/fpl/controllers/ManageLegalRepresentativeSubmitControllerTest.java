@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -48,6 +49,9 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractCallbackTest
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private UserService userService;
 
     ManageLegalRepresentativeSubmitControllerTest() {
         super("manage-legal-representatives");
