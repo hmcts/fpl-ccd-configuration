@@ -125,7 +125,7 @@ export class ChildDetails extends BasePage{
         await expect(this.page.getByRole('cell', {name: 'Child\'s current living situation', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Living with respondents', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Building and Street', exact: true})).toBeVisible();
-        await expect(this.page.getByRole('cell', {name: '2 Sussex Way', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: '4 Sussex Way', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Address Line 3', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Cockfosters', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Town or City', exact: true})).toBeVisible();
