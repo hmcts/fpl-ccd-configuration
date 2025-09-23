@@ -110,7 +110,6 @@ export class BasePage {
       await this.saveAndContinue.click();
   }
   async enterPostCode(postcode:string){
- //   await this.page.pause();
       await this.postCode.fill(postcode);
       await this.findAddress.click();
       await this.page.getByLabel('Select an address').selectOption('3: Object');
