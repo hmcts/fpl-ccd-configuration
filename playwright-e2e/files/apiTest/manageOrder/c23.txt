@@ -10,9 +10,17 @@ Warning
 It’s a criminal offence to intentionally obstruct a person who’s authorised under
 section 44(4)(b) Children Act 1989 either to remove a child or to prevent the removal
 of a child (section 44(15) Children Act 1989).
+During the proceedings and after they have concluded no person shall publish information related to the
+proceedings including accounts of what has gone on in front of the judge, documents filed in the proceedings,
+transcripts or notes of evidence and submissions, and transcripts and notes of judgments (including extracts,
+quotations, or summaries of such documents). Any person who does so may be in contempt of court. Until the conclusion
+of the proceedings no person shall publish to the public at large or any section of the public without the court’s
+permission any material which is intended or likely to identify the children as being involved in these proceedings or
+an address or school as being that of the children. Any person who does so may be guilty of an offence. The exceptions
+to this are in Rules 12.73 or 12.75 or Practice Direction 12G of the Family Procedure Rules 2010.
 An Emergency Protection Order is granted to the applicant, Swansea City Council.
 The order gives the applicant parental responsibility for the child.
-The Court authorises the applicant to remove the child to accommodation provided by or on behalf of the applicant. 
+The Court authorises the applicant to remove the child to accommodation provided by or on behalf of the applicant.
 This order directs that any person who can produce the child to the applicant must do so. some text
 This order starts on ${dateTimeAt}.
 This order ends on ${dateTimeAt}.
