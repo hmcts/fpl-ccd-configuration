@@ -480,7 +480,11 @@ public class ManageHearingsService {
             "useAllocatedJudge",
             "hearingHousekeepOption",
             "hearingHousekeepReason",
-            "hearingHousekeepReasonOther"
+            "hearingHousekeepReasonOther",
+            "hearingJudgeType",
+            "hearingFeePaidJudgeTitle",
+            "hearingJudicialUser",
+            "hearingManualJudgeDetails"
         );
     }
 

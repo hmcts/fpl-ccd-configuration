@@ -5,8 +5,8 @@ import {CTSCUser, newSwanseaLocalAuthorityUserOne} from '../settings/user-creden
 import {expect} from '@playwright/test';
 import {createCase, updateCase} from "../utils/api-helper";
 
-
-test.describe('Manage case linking', () => {
+//test is skipped until the issue with linked case retrieve  is resolved by EXUI team
+test.describe.skip('Manage case linking', () => {
     test.setTimeout(600_000);
     const dateTime = new Date().toISOString();
     let caseNumber: string;
@@ -25,7 +25,7 @@ test.describe('Manage case linking', () => {
         //  await updateCase('linkedCase3',linkedCase3,caseData);
     });
 
-    test('CTSC user  link cases ',
+    test('CTSC user  link cases @xbrowser ',
         async ({page, signInPage, caseLink}) => {
             test.slow();
 

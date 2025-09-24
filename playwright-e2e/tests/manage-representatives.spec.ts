@@ -13,7 +13,7 @@ test.describe('Manage representatives', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('Manage representatives',
+    test('Manage representatives @xbrowser',
         async ({ page, signInPage, manageRepresentatives }) => {
             caseName = 'CTSC Manage representatives ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
@@ -28,4 +28,4 @@ test.describe('Manage representatives', () => {
             await expect(page.getByText('Charlie Chaplin')).toBeVisible();
         })
     })
-    
+

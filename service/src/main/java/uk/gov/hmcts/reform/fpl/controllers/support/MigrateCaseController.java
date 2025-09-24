@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
@@ -39,7 +40,8 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2572", this::run2572,
+        "DFPL-2360", this::run2360,
+        "DFPL-2805", this::run2805,
         "DFPL-2487", this::run2487,
         "DFPL-2740", this::run2740,
         "DFPL-2744", this::run2744,
@@ -73,8 +75,14 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2572(CaseDetails caseDetails) {
-        //Required to run migration for TTL
+    private void run2805(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2805";
+        final long expectedCaseId = 1744119100087342L;
+        final UUID cmoId = UUID.fromString("f80defe3-9481-4454-8692-b7bb73cd9cb4");
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(caseData, migrationId, cmoId, false));
     }
 
     private void run2756(CaseDetails caseDetails) {
@@ -86,6 +94,12 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
             orgId, null));
+    }
+
+    private void run2360(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2360";
+        // all existing cases need this field now, new cases will be populated in case initiation
+        caseDetails.getData().put("hasRespondentLA", YesNo.NO);
     }
 
     private void run2487(CaseDetails caseDetails) {

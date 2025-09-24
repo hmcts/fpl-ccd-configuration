@@ -9,15 +9,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LegalRepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +48,8 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
 
     @MockBean
     private OrganisationApi organisationApi;
+    @MockBean
+    private UserService userService;
 
     ManageLegalRepresentativeMidEventControllerTest() {
         super("manage-legal-representatives");
@@ -52,13 +57,13 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
 
     @Test
     void shouldReturnValidationErrorForNonExistingUser() {
-
-        CaseDetails caseDetailsBefore = buildCaseData(emptyList());
-        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
-
         givenFplService();
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, REPRESENTATIVE_EMAIL)).willThrow(
             mock(FeignException.NotFound.class));
+        given(userService.getCaseRoles(CASE_ID)).willReturn(Set.of(CaseRole.CHILDSOLICITORA));
+
+        CaseDetails caseDetailsBefore = buildCaseData(emptyList());
+        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
 
@@ -73,13 +78,13 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
 
     @Test
     void shouldValidateAnExistingUser() {
-
-        CaseDetails caseDetailsBefore = buildCaseData(emptyList());
-        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
-
         givenFplService();
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, REPRESENTATIVE_EMAIL))
             .willReturn(USER);
+        given(userService.getCaseRoles(CASE_ID)).willReturn(Set.of(CaseRole.CHILDSOLICITORA));
+
+        CaseDetails caseDetailsBefore = buildCaseData(emptyList());
+        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
 
@@ -105,6 +110,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
             .willReturn(USER);
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, "test@test.com"))
             .willReturn(USER);
+        given(userService.getCaseRoles(CASE_ID)).willReturn(Set.of(CaseRole.CHILDSOLICITORA));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
@@ -115,11 +121,12 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
 
     @Test
     void shouldNotReturnErrorsWhenLALegalRepresentativeEmailIsValid() {
-        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
-
         givenFplService();
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, REPRESENTATIVE_EMAIL))
             .willReturn(USER);
+        given(userService.getCaseRoles(CASE_ID)).willReturn(Set.of(CaseRole.CHILDSOLICITORA));
+
+        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
 
         AboutToStartOrSubmitCallbackResponse actual = postMidEvent(caseDetails);
 

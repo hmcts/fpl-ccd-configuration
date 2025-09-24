@@ -43,4 +43,15 @@ public class LegalCounsellorEmailContentProvider extends AbstractEmailContentPro
             .build();
     }
 
+    public LegalCounsellorRemovedNotifyTemplate buildLegalCounsellorRemovedThemselvesNotificationTemplate(
+        CaseData caseData, String legalCounsellorName) {
+
+        return LegalCounsellorRemovedNotifyTemplate.builder()
+            .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
+            .caseName(caseData.getCaseName())
+            .clientFullName(legalCounsellorName)
+            .ccdNumber(formatCCDCaseNumber(caseData.getId()))
+            .build();
+    }
+
 }

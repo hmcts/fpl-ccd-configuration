@@ -295,6 +295,8 @@ class SendNewMessageJudgeServiceTest {
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
         when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.JUDGE));
         when(userService.getJudicialCaseRoles(any())).thenReturn(Set.of(ALLOCATED_JUDGE.getRoleName()));
+        when(judicialService.caseHasAllocatedJudgeOrLegalAdvisor(any())).thenReturn(true);
+        when(judicialService.caseHasHearingJudgeOrLegalAdvisor(any())).thenReturn(true);
 
         CaseData caseData = CaseData.builder().build();
 
@@ -312,6 +314,8 @@ class SendNewMessageJudgeServiceTest {
     @Test
     void shouldNotPrePopulateSenderAndRecipientEmailsWhenNewMessageIsInitiatedNotByJudge() {
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
+        when(judicialService.caseHasAllocatedJudgeOrLegalAdvisor(any())).thenReturn(true);
+        when(judicialService.caseHasHearingJudgeOrLegalAdvisor(any())).thenReturn(true);
 
         CaseData caseData = CaseData.builder().build();
 
