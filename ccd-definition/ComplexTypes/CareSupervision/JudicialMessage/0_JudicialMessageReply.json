@@ -1,0 +1,52 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "ListElementCode": "dateSent",
+    "FieldType": "Text",
+    "ElementLabel": "Date sent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "ListElementCode": "updatedTime",
+    "FieldType": "DateTime",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dateSent=\"DO_NOT_SHOW\"",
+    "Comment": "Used to sort messages by date (latest first)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "ListElementCode": "replyFrom",
+    "FieldType": "Text",
+    "ElementLabel": "Sender's email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "ListElementCode": "replyTo",
+    "FieldType": "Text",
+    "ElementLabel": "Recipient's email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "ListElementCode": "message",
+    "FieldType": "Text",
+    "ElementLabel": "Message",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "ListElementCode": "urgency",
+    "FieldType": "Text",
+    "ElementLabel": "Urgency",
+    "SecurityClassification": "Public"
+  }
+]
