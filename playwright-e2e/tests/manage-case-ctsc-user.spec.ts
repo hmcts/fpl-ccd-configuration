@@ -1,17 +1,14 @@
 import {test} from '../fixtures/create-fixture';
 import {
     newSwanseaLocalAuthorityUserOne,
-    judgeWalesUser,
     CTSCUser,
-    HighCourtAdminUser,
-    privateSolicitorOrgUser
 } from '../settings/user-credentials';
 import {expect} from "@playwright/test";
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert {type: "json"};
 import caseWithHearing from '../caseData/caseWithHearingDetails.json' assert {type: "json"};
-import {createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
-import {getCurrentdate, subtractMonthDate} from "../utils/util-helper";
-import CaseWithOrderDetails from '../caseData/caseWithAllTypesOfOrders.json' assert {type: "json"};
+import {createCase, updateCase} from "../utils/api-helper";
+import { subtractMonthDate} from "../utils/util-helper";
+
 
 test.describe('Admin application management', () => {
     const dateTime = new Date().toISOString();
@@ -60,7 +57,7 @@ test.describe('Admin application management', () => {
         });
 
     test('CTSC log expert report to the application',
-        async ({page, signInPage, expertReport}) => {
+        async ({ signInPage, expertReport}) => {
             caseName = 'CTSC log expert report' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseWithResSolicitor);
             await signInPage.visit();
