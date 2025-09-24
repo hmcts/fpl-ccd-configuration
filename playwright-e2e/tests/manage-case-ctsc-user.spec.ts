@@ -1,17 +1,14 @@
 import {test} from '../fixtures/create-fixture';
 import {
     newSwanseaLocalAuthorityUserOne,
-    judgeWalesUser,
     CTSCUser,
-    HighCourtAdminUser,
-    privateSolicitorOrgUser
 } from '../settings/user-credentials';
 import {expect} from "@playwright/test";
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert {type: "json"};
 import caseWithHearing from '../caseData/caseWithHearingDetails.json' assert {type: "json"};
-import {createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
-import {getCurrentdate, subtractMonthDate} from "../utils/util-helper";
-import CaseWithOrderDetails from '../caseData/caseWithAllTypesOfOrders.json' assert {type: "json"};
+import {createCase, updateCase} from "../utils/api-helper";
+import { subtractMonthDate} from "../utils/util-helper";
+
 
 test.describe('Admin application management', () => {
     const dateTime = new Date().toISOString();
@@ -21,7 +18,6 @@ test.describe('Admin application management', () => {
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
-    //mark test as slow to give extra timeout
 
     test('CTSC admin request welsh language translation',
         async ({page, signInPage, welshLangRequirements}) => {
@@ -34,10 +30,10 @@ test.describe('Admin application management', () => {
             await welshLangRequirements.CTSCRequestWelshTranslation('Yes');
             await welshLangRequirements.clickContinue();
             await welshLangRequirements.checkYourAnsAndSubmit();
+
             await welshLangRequirements.tabNavigation('Summary');
             await welshLangRequirements.page.reload();
             await expect(page.getByText('WELSH CASE')).toBeVisible();
-
 
         });
 
@@ -61,7 +57,7 @@ test.describe('Admin application management', () => {
         });
 
     test('CTSC log expert report to the application',
-        async ({page, signInPage, expertReport}) => {
+        async ({ signInPage, expertReport}) => {
             caseName = 'CTSC log expert report' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseWithResSolicitor);
             await signInPage.visit();
@@ -70,8 +66,6 @@ test.describe('Admin application management', () => {
             await expertReport.gotoNextStep('Log expert report');
 
             await expertReport.addNewReport(0);
-
-
             await expertReport.selectExpertReportType('Pediatric', 0);
             await expertReport.enterRequestedDate(await subtractMonthDate(2), 0);
             await expertReport.checkDateValidationPass();
@@ -103,7 +97,6 @@ test.describe('Admin application management', () => {
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
-        // await page.pause();
         await extend26WeekTimeline.gotoNextStep('Extend 26-week timeline');
         await extend26WeekTimeline.isExtensionApprovedAtHearing('yes');
         await extend26WeekTimeline.selectHearing('Case management hearing, 3 November 2012');
