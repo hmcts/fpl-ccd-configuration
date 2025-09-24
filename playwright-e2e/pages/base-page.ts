@@ -117,6 +117,7 @@ export class BasePage {
   }
   async enterPostCode(postcode:string): Promise<void> {
       await this.postCode.fill(postcode);
+
       await Promise.all([
           this.page.waitForResponse(response =>
               response.url().includes('addresses') &&

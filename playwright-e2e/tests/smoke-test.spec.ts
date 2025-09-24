@@ -235,6 +235,7 @@ test.describe('Smoke Test @xbrowser', () => {
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsNeeded();
+        await startApplication.tabNavigation('View application');
 
         // Allocation Proposal
         await startApplication.tabNavigation('Start application');
@@ -331,6 +332,7 @@ test.describe('Smoke Test @xbrowser', () => {
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsPrivateSolicitor();
+        await startApplication.tabNavigation('View application');
 
         // Allocation Proposal
         await startApplication.tabNavigation('Start application');
