@@ -98,8 +98,9 @@ public class CaseSubmissionService {
     public String generateCaseName(CaseData caseData) {
 
         String applicantNames = String.join(", ", caseData.getLocalAuthorities().stream()
-            .map(localAuthority -> caseData.checkIfCaseIsSubmittedByLA() ?
-                localAuthority.getValue().getName() : localAuthority.getValue().getRepresentingDetails().getLastName())
+            .map(localAuthority -> caseData.checkIfCaseIsSubmittedByLA()
+                ? localAuthority.getValue().getName() :
+                localAuthority.getValue().getRepresentingDetails().getLastName())
             .filter(Objects::nonNull)
             .toList());
 
