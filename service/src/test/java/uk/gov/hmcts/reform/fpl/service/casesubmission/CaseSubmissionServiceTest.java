@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -335,6 +336,7 @@ class CaseSubmissionServiceTest {
         CaseData caseData = givenCaseData.toBuilder()
             .respondents1(wrapElements(respondent1, respondent2, respondent3))
             .localAuthorities(wrapElements(localAuthority))
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .caseName("Draft case name")
             .build();
 
@@ -375,7 +377,6 @@ class CaseSubmissionServiceTest {
         CaseData caseData = givenCaseData.toBuilder()
             .respondents1(wrapElements(respondent1, respondent2, respondent3))
             .localAuthorities(wrapElements(localAuthority))
-            .isLocalAuthority(YesNo.NO)
             .caseName("Draft case name")
             .build();
 
