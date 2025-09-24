@@ -23,8 +23,8 @@ public enum DocmosisTemplates {
     SDO("FL-PLW-STD-ENG-00099-v3.doc", null, "standard-directions-order"),
     UDO("FL-PLW-STD-ENG-00099-v3.doc", null, "urgent-directions-order"),
     ORDER_V2("FL-PLW-GOR-ENG-00728V3.doc", null, "order"),
-    EPO("FL-PLW-GOR-ENG-00228-v2.doc", null, "emergency_protection_order"),
-    EPO_V2("FL-PLW-GOR-ENG-00744.doc", null, "emergency_protection_order"),
+    EPO("FL-PLW-GOR-ENG-00228.doc", null, "emergency_protection_order"),
+    EPO_V2("FL-PLW-GOR-ENG-00744-v2.doc", null, "emergency_protection_order"),
     COVER_DOCS("FL-PLW-LET-ENG-COVER-SHEET.doc", "FL-PLW-LET-WEL-COVER-SHEET.doc", "cover_documents"),
     TRANSLATION_REQUEST("FL-PLW-LET-ENG-00748.doc", null, "translation_request"),
     A70("FL-PLW-GOR-ENG-00763V4.doc", null, "placement_order_a70"),
@@ -32,7 +32,7 @@ public enum DocmosisTemplates {
     A206("FL-PLW-LET-ENG-00768.doc", null, "placement_order_notification_a206"),
     A92("FL-PLW-HNO-ENG-notice-of-placement.doc", null, "notice_of_hearing_placement"),
     HIGH_COURT_SEAL("FL-PLW-ASS-ENG-HIGH-COURT-SEAL.docx", null, "high_court_seal"),
-    NON_MOLESTATION_ORDER("FL-PLW-GOR-ENG-non-molestation-order.doc", null, "non_molestation_order"),
+    NON_MOLESTATION_ORDER("FL-PLW-GOR-ENG-non-molestation-orderV2.doc", null, "non_molestation_order"),
     TRANSPARENCY_ORDER("FL-PLW-GOR-ENG-TRANSPARENCY-ORDER-TEMPLATE.doc", null, "transparency_order");
 
     private final String template;
