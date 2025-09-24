@@ -10,6 +10,7 @@ Warning
 It’s a criminal offence to intentionally obstruct a person who’s authorised under
 section 44(4)(b) Children Act 1989 either to remove a child or to prevent the removal
 of a child (section 44(15) Children Act 1989).
+Confidentiality
 During the proceedings and after they have concluded no person shall publish information related to the
 proceedings including accounts of what has gone on in front of the judge, documents filed in the proceedings,
 transcripts or notes of evidence and submissions, and transcripts and notes of judgments (including extracts,
