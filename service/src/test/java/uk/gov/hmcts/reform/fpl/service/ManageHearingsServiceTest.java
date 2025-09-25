@@ -2004,7 +2004,11 @@ class ManageHearingsServiceTest {
             "judicialUserHearingJudge",
             "hearingHousekeepReasonOther",
             "hearingHousekeepOption",
-            "hearingHousekeepReason"
+            "hearingHousekeepReason",
+            "hearingJudgeType",
+            "hearingFeePaidJudgeTitle",
+            "hearingJudicialUser",
+            "hearingManualJudgeDetails"
         );
     }
 

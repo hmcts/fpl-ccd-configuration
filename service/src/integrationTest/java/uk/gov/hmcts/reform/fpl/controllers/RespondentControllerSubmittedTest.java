@@ -12,10 +12,10 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.service.notify.NotificationClient;
@@ -119,6 +120,9 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private UserService userService;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseCaptor;
@@ -313,9 +317,9 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        CaseAssignedUserRolesRequest revokeRequestPayload = CaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(
-                CaseAssignedUserRoleWithOrganisation.builder()
+        CaseAssignmentUserRolesRequest revokeRequestPayload = CaseAssignmentUserRolesRequest.builder()
+            .caseAssignmentUserRolesWithOrganisation(List.of(
+                CaseAssignmentUserRoleWithOrganisation.builder()
                     .userId(legalCounsellorId)
                     .caseRole("[BARRISTER]")
                     .caseDataId(CASE_ID)
@@ -323,7 +327,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             ))
             .build();
 
-        verify(caseAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, revokeRequestPayload);
+        verify(caseAssignmentApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, revokeRequestPayload);
 
         Map<String, Object> notifyData = Map.of(
             "caseName", CASE_NAME,

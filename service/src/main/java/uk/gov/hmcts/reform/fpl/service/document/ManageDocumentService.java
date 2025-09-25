@@ -79,6 +79,7 @@ import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.BA
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.ROBOTICS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -167,6 +168,10 @@ public class ManageDocumentService {
         if (Optional.ofNullable(userService.getIdamRoles())
             .orElse(Set.of()).contains(UserRole.CAFCASS_SYSTEM_UPDATE.getRoleName())) {
             return CAFCASS;
+        }
+        if (Optional.ofNullable(userService.getIdamRoles())
+            .orElse(Set.of()).contains(UserRole.ROBOTICS.getRoleName())) {
+            return ROBOTICS;
         }
 
         throw new IllegalStateException("Unable to determine document uploader type");
@@ -624,6 +629,7 @@ public class ManageDocumentService {
             case SOLICITOR:
             case CAFCASS:
             case BARRISTER:
+            case ROBOTICS:
                 return documentType.isHiddenFromSolicitorUpload();
             case DESIGNATED_LOCAL_AUTHORITY:
             case SECONDARY_LOCAL_AUTHORITY:

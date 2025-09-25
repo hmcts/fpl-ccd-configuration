@@ -13,7 +13,7 @@ test.describe('Change other to respondent', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('Change other to respondent',
+    test('Change other to respondent @xbrowser',
         async ({ page, signInPage, changeOtherToRespondent }) => {
             casename = 'CTSC changes other to respondent ' + dateTime.slice(0, 10);
             await updateCase(casename, caseNumber, caseData);
