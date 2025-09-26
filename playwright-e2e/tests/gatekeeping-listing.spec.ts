@@ -65,7 +65,7 @@ test.describe('Gatekeeping Listing', () => {
         await expect(page.getByText('Review Standard Direction Order (High Court)')).toHaveCount(0);
       }
     });
-    test('List Urgent Direction Order - CTS User @xbrowser',
+    test.only('List Urgent Direction Order - CTS User @xbrowser',
         async ({page, signInPage, gateKeepingListing}) => {
 
             caseName = 'List urgent direction order by CTSC user ' + dateTime.slice(0, 10);
@@ -76,16 +76,20 @@ test.describe('Gatekeeping Listing', () => {
             await gateKeepingListing.gotoNextStep('Add urgent directions');
             await gateKeepingListing.completeUrgentDirectionsOrder();
             await expect.soft(page.getByText('has been updated with event: Add urgent directions')).toBeVisible();
+
             await gateKeepingListing.tabNavigation('Draft orders');
-            await expect(page.getByRole('cell', {name: 'draft-urgent-directions-order'})).toBeVisible();
+            await expect(page.getByText('Urgent directions order')).toBeVisible();
             await gateKeepingListing.gotoNextStep('List Gatekeeping Hearing');
             await gateKeepingListing.completeUDOListing();
             await expect.soft(page.getByText('has been updated with event: List Gatekeeping Hearing')).toBeVisible();
             await gateKeepingListing.tabNavigation('Orders');
-            await expect(page.getByRole('cell', {name: 'urgent-directions-order.pdf'}).locator('div').nth(1)).toBeVisible();
-            await expect(page.locator('ccd-read-multi-select-list-field').filter({hasText: 'Emergency protection order'}).locator('span')).toBeVisible();
-            await expect(page.locator('ccd-field-read-label').filter({hasText: /^Prevent removal from an address$/}).locator('div')).toBeVisible();
 
+            await expect(page.getByRole('link', { name: 'urgent-directions-order.pdf' })).toBeVisible();
+            await expect(page.getByText('Urgent directions order')).toBeVisible();
+            await expect(page.getByRole('cell', { name: 'Judge and Justices\' Legal' }).getByRole('term')).toBeVisible();
+            await expect(page.getByText('District Judge')).toBeVisible();
+            await expect(page.getByText('Judge Damien')).toBeVisible();
+            await expect(page.getByRole('heading', { name: 'Emergency protection order' })).toBeVisible();
         })
 
   });

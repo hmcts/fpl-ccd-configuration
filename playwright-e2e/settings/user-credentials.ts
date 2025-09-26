@@ -93,4 +93,4 @@ export const WiltshireOrgCAAUser = {
 export const authToken={
     cafcassAuth:process.env.CAFCASSAUTH || '',
     systemAuth:process.env.SYSUSERAUTH || ''
-}
+};

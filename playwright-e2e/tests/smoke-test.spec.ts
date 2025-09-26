@@ -37,7 +37,7 @@ test.describe('Smoke Test @xbrowser', () => {
         // Start new case, get case id and assert case id is created
         await createCase.caseName();
         await createCase.createCase();
-        await createCase.submitCase(createCase.generatedCaseName);
+        await createCase.submitCase('ACCESS MANAGEMENT TEST CASE');
         await startApplication.tabNavigation('View application');
         //this has to be refracted to new test as the test execution time exceed 8m
         //await createCase.checkCaseIsCreated(createCase.generatedCaseName);

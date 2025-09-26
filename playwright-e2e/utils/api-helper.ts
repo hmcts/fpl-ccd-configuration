@@ -1,4 +1,4 @@
-import {systemUpdateUser,privateSolicitorOrgUser} from '../settings/user-credentials';
+import {systemUpdateUser} from '../settings/user-credentials';
 import {urlConfig} from '../settings/urls';
 import {ServiceAuthUtils} from "@hmcts/playwright-common";
 import {APIRequestContext, request} from "@playwright/test";
@@ -6,7 +6,6 @@ import axios from 'axios';
 import * as qs from 'qs';
 import lodash from 'lodash';
 import {ServiceTokenParams} from "@hmcts/playwright-common/dist/utils/service-auth.utils";
-import {APIRequestContext} from '@playwright/test';
 import config from "../settings/test-docs/config";
 import * as fs from "fs";
 

@@ -1,4 +1,5 @@
-import { defineConfig, devices } from "@playwright/test";
+import {defineConfig, devices} from "@playwright/test"
+import {ProjectsConfig} from "@hmcts/playwright-common";
 
 /**
  * Read environment variables from file.
@@ -41,13 +42,19 @@ export default defineConfig({
     /* Configure projects for major browsers */
     projects: [
         {
+            name: 'GlobalSetup',
+            testMatch: '/settings/global-setup.ts',
+
+        },
+        {
             name: 'AMRoleCleanup',
            testMatch: '/settings/global-teardown.ts',
+
         },
         {
             ...ProjectsConfig.edge,
-            teardown: 'AMRoleCleanup'
-
+            teardown: 'AMRoleCleanup',
+            dependencies: ['GlobalSetup']
         },
         {
             ...ProjectsConfig.chrome,

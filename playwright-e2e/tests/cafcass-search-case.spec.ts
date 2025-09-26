@@ -11,8 +11,9 @@ test.describe('CafcassAPI search cases', () => {
     let intervalEndTime: string;
     let intervalStartTime: string;
     const ajv = new Ajv();
-    let caseNumber: string
+    let caseNumber1: string
     let caseNumber2: string;
+    const TEST_DATA_SETUP_TIMEOUT_MS = 2000;
 
     test.beforeAll(async () => {
         let currentTime = new Date();
@@ -20,8 +21,8 @@ test.describe('CafcassAPI search cases', () => {
 
         // set up the test data
         // return case, case with minimum data , case with all data
-        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        await updateCase('Cafcass search case1' + startTime.slice(0, 10), caseNumber, submitCase);
+        caseNumber1 = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        await updateCase('Cafcass search case1' + startTime.slice(0, 10), caseNumber1, submitCase);
         caseNumber2 = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
         await updateCase('Cafcass search case2' + startTime.slice(0, 10), caseNumber2, cafcassCase);
         let interval = currentTime.setMinutes(currentTime.getMinutes() + 5);
@@ -31,7 +32,8 @@ test.describe('CafcassAPI search cases', () => {
     });
     test(' Cafcass user search cases for given time frame',
         async ({request, page}) => {
-            await page.waitForTimeout(2000) // wait for the test data to be set up
+
+            await page.waitForTimeout(TEST_DATA_SETUP_TIMEOUT_MS) // wait for the test data to be set up
             let response = await cafcassAPICaseSearch(request, authToken.cafcassAuth, intervalStartTime, intervalEndTime);
 
             //assert the response
@@ -42,7 +44,7 @@ test.describe('CafcassAPI search cases', () => {
             if (!validJson) console.log(ajv.errors)
             expect(validJson).toBe(true);
             expect(await body.total).toBeGreaterThanOrEqual(2);
-            expect(JSON.stringify(await body.cases)).toContain(caseNumber);
+            expect(JSON.stringify(await body.cases)).toContain(caseNumber1);
             expect(JSON.stringify(await body.cases)).toContain(caseNumber2);
         })
     test('search case by user without cafcass role', async ({request}) => {
