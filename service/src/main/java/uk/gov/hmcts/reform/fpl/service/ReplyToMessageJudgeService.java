@@ -78,6 +78,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .recipientDynamicList(buildRecipientDynamicList(
                 caseData, senderRole, Optional.of(selectedJudicialMessage.getSenderType().toString())))
             .urgency(selectedJudicialMessage.getUrgency())
+            .isJudicialMessageUrgent(NO) // default to no
             .judicialMessageReplies(selectedJudicialMessage.getJudicialMessageReplies())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .messageHistoryTemp(buildTempMessageHistory(selectedJudicialMessage))

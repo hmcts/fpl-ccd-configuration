@@ -308,6 +308,7 @@ class SendNewMessageJudgeServiceTest {
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
                     .recipientDynamicList(buildRecipientList(
                         List.of(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())))
+                    .isJudicialMessageUrgent(YesNo.NO)
                     .build()),
                 entry("isSendingEmailsInCourt", YesNo.YES),
                 entry("documentTypesDynamicList",
@@ -327,6 +328,7 @@ class SendNewMessageJudgeServiceTest {
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
                     .recipientDynamicList(buildRecipientList(
                         List.of(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString())))
+                    .isJudicialMessageUrgent(YesNo.NO)
                     .build()),
                 entry("isSendingEmailsInCourt", YesNo.YES),
                 entry("documentTypesDynamicList",
