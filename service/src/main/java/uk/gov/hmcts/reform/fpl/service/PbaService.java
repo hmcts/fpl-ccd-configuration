@@ -41,7 +41,6 @@ public class PbaService {
     public Optional<List<String>> retrievePbaNumbers() {
         String userAuthToken = httpServletRequest.getHeader(AUTHORIZATION);
         String userEmail = userService.getUserEmail();
-        String userId = userService.getUserDetails().getId();
 
         try {
             PbaOrganisationResponse pbaOrganisationResponse =
@@ -49,10 +48,10 @@ public class PbaService {
 
             return Optional.of(pbaOrganisationResponse.getOrganisationEntityResponse().getPaymentAccount());
         } catch (FeignException.NotFound | FeignException.Forbidden ex) {
-            log.error("Error retrieving PBA numbers from PBA Ref Data for user {}", userId);
+            log.error("Error retrieving PBA numbers from PBA Ref Data for current user");
             return Optional.empty();
         } catch (NullPointerException ex) {
-            log.error("No PBA number found for user {} org may not have PBa number assigned", userId);
+            log.error("No PBA number found for current user, org may not have PBA number assigned");
             return Optional.empty();
         }
     }

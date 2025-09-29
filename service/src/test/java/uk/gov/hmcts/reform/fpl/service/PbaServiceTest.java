@@ -51,6 +51,7 @@ class PbaServiceTest {
     protected static final String USER_AUTH_TOKEN = "Bearer token";
     private static final String SERVICE_AUTH_TOKEN = "Bearer authorised service";
     private static final String USER_EMAIL = "test@test.com";
+    private static final String USER_ID = "12345678";
     private static final PbaOrganisationResponse POPULATED_ORGANISATION_RESPONSE = buildOrganisation();
     private static final List<String> PAYMENT_ACCOUNTS = List.of("PBA1234567", "PBA7654321");
     private static final DynamicList PBA_NUMBER_DYNAMIC_LIST = DynamicList.builder()
