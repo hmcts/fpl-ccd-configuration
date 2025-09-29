@@ -643,7 +643,7 @@ test.describe('manage orders', () => {
         caseName = 'Parental responsibility order (C45A) ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
-        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.login(judgeUser.email, judgeUser.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
