@@ -475,4 +475,16 @@ export class Orders extends BasePage {
         await this.orderFurtherDirectionDetails.fill('Test');
         await this.finalOrder.getByLabel('No').check();
     }
+
+    async uploadsSpecialGuardianshipOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.clickContinue();
+    }
 }
