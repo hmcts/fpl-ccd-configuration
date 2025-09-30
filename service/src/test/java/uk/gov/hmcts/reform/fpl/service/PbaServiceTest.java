@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.PbaOrganisationResponse;
@@ -94,6 +95,7 @@ class PbaServiceTest {
 
         when(pbaRefDataClient.retrievePbaNumbers(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_EMAIL))
             .thenReturn(pbaOrganisationResponse);
+        when(userService.getUserInfo()).thenReturn(UserInfo.builder().uid(USER_ID).build());
 
         Optional<List<String>> pbaNumbers = pbaService.retrievePbaNumbers();
         assertThat(pbaNumbers).isEmpty();

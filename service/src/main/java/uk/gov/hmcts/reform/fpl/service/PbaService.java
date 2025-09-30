@@ -48,10 +48,12 @@ public class PbaService {
 
             return Optional.of(pbaOrganisationResponse.getOrganisationEntityResponse().getPaymentAccount());
         } catch (FeignException.NotFound | FeignException.Forbidden ex) {
-            log.error("Error retrieving PBA numbers from PBA Ref Data for current user");
+            log.error("Error retrieving PBA numbers from PBA Ref Data for user: {}",
+                userService.getUserInfo().getUid());
             return Optional.empty();
         } catch (NullPointerException ex) {
-            log.error("No PBA number found for current user, org may not have PBA number assigned");
+            log.error("No PBA number found for user: {}, org may not have PBA number assigned",
+                userService.getUserInfo().getUid());
             return Optional.empty();
         }
     }
