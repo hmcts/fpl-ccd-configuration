@@ -46,7 +46,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2740", this::run2740,
         "DFPL-2744", this::run2744,
         "DFPL-2739", this::run2739,
-        "DFPL-2756", this::run2756
+        "DFPL-2756", this::run2756,
+        "DFPL-2837", this::run2837
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -156,5 +157,17 @@ public class MigrateCaseController extends CallbackController {
             "DFPL-2739",
             UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
             UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
+    }
+
+    private void run2837(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1732700347667956L, "DFPL-2837");
+
+        caseDetails.getData().putAll(migrateCaseService.removeSupportingEvidenceBundleFromAdditionalApplication(
+            caseData,
+            "DFPL-2837",
+            UUID.fromString("bef6a7d7-0ee1-4984-b6a2-1cda165b5b92"),
+            UUID.fromString("4628b139-e483-4918-b809-ca5f065e7131")));
     }
 }
