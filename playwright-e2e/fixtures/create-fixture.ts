@@ -105,6 +105,17 @@ type CreateFixtures = {
   manageTTL: ManageTTL;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
+  manageOrdersChildrenDetails: ManageOrdersChildrenDetails;
+  manageOrderHearingDetails: ManageOrdersHearingDetails;
+  manageOrdersManageOrdersOperations: ManageOrdersManageOrdersOperations;
+  manageOrdersOrderDetails: ManageOrdersOrderDetails;
+  manageOrdersIssuingDetails: ManageOrdersIssuingDetails;
+  manageOrdersOrderSelection: ManageOrdersOrderSelection
+  manageOrdersReview: ManageOrdersReview;
+  uploadAdditionalApplications: Applications;
+  uploadAdditionalApplicationsApplicationFee: ApplicationFee;
+  uploadAdditionalApplicationsSuppliedDocuments: SuppliedDocuments;
+  submit: Submit;
 
 
 };
