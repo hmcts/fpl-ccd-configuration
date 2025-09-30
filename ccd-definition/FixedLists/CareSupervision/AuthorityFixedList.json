@@ -576,15 +576,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "LEW",
-    "ListElement": "London Borough of Lewisham",
-    "DisplayOrder": 190
-  },
-    {
-    "LiveFrom": "01/01/2017",
-    "ID": "AuthorityFixedList",
     "ListElementCode": "LAM",
     "ListElement": "London Borough of Lambeth",
+    "DisplayOrder": 190
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LEW",
+    "ListElement": "London Borough of Lewisham",
     "DisplayOrder": 191
   },
   {
