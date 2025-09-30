@@ -43,7 +43,8 @@ public class DraftOrdersRejectedEventHandler {
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
     private static final Predicate<HearingOrder> DESIGNATED_LA_SOLICITOR_FILTER =
-        f -> f.getUploaderCaseRoles() == null || isEmpty(f.getUploaderCaseRoles())
+        f -> f.getUploaderCaseRoles() == null
+            || (isEmpty(f.getUploaderCaseRoles()) && !f.isConfidentialOrder())
             || CollectionUtils.containsAny(f.getUploaderCaseRoles(), CaseRole.designatedLASolicitors());
     private static final Predicate<HearingOrder> SECONDARY_LA_SOLICITOR_FILTER =
         f -> CollectionUtils.containsAny(f.getUploaderCaseRoles(), CaseRole.secondaryLASolicitors());

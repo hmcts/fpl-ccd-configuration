@@ -45,7 +45,17 @@ import {QueryManagement} from "../pages/query-management";
 import {ManageTTL} from "../pages/manage-t-t-l";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
-
+import {ManageOrdersChildrenDetails} from "../pages/manage-orders/manage-orders-children-details";
+import {ManageOrdersHearingDetails} from "../pages/manage-orders/manage-orders-hearing-details";
+import {ManageOrdersManageOrdersOperations} from "../pages/manage-orders/manage-orders-manage-orders-operations";
+import {ManageOrdersOrderDetails} from "../pages/manage-orders/manage-orders-order-details";
+import {ManageOrdersIssuingDetails} from "../pages/manage-orders/manage-orders-issuing-details";
+import {ManageOrdersReview} from "../pages/manage-orders/manage-orders-review";
+import {Submit} from "../pages/manage-orders/submit";
+import {ManageOrdersOrderSelection} from "../pages/manage-orders/manage-orders-order-selection";
+import {Applications} from "../pages/applications/upload-additional/applications";
+import {ApplicationFee} from "../pages/applications/upload-additional/application-fee";
+import {SuppliedDocuments} from "../pages/applications/upload-additional/supplied-documents";
 
 
 type CreateFixtures = {
@@ -95,6 +105,7 @@ type CreateFixtures = {
   manageTTL: ManageTTL;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
+
 
 };
 
@@ -265,7 +276,6 @@ export const test = base.extend<CreateFixtures>({
 othersToBeGivenNotice: async ({ page }, use) => {
   await use(new OthersToBeGivenNotice(page));
 },
-      
 
   manageRepresentatives: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
@@ -283,7 +293,49 @@ othersToBeGivenNotice: async ({ page }, use) => {
 
   changeOtherToRespondent: async ({ page }, use) => {
     await use(new ChangeOtherToRespondent(page));
-
   },
 
+    manageOrdersChildrenDetails: async ({ page }, use) => {
+      await use(new ManageOrdersChildrenDetails(page));
+    },
+
+    manageOrderHearingDetails: async ({ page }, use) => {
+      await use(new ManageOrdersHearingDetails(page));
+    },
+
+    manageOrdersManageOrdersOperations: async ({ page }, use) => {
+      await use(new ManageOrdersManageOrdersOperations(page));
+    },
+
+    manageOrdersOrderDetails: async ({ page }, use) => {
+      await use(new ManageOrdersOrderDetails(page));
+    },
+
+    manageOrdersIssuingDetails: async ({ page }, use) => {
+      await use(new ManageOrdersIssuingDetails(page));
+    },
+
+    manageOrdersOrderSelection: async ({ page }, use) => {
+      await use(new ManageOrdersOrderSelection(page));
+    },
+
+    manageOrdersReview: async ({ page }, use) => {
+      await use(new ManageOrdersReview(page));
+    },
+
+    uploadAdditionalApplications: async ({ page }, use) => {
+      await use(new Applications(page));
+    },
+
+    uploadAdditionalApplicationsApplicationFee: async ({ page }, use) => {
+      await use(new ApplicationFee(page));
+    },
+
+    uploadAdditionalApplicationsSuppliedDocuments: async ({ page }, use) => {
+      await use(new SuppliedDocuments(page));
+    },
+
+    submit: async ({ page }, use) => {
+      await use(new Submit(page));
+    }
 });

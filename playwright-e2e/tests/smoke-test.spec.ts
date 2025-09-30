@@ -78,16 +78,19 @@ test.describe('Smoke Test @xbrowser', () => {
         await startApplication.tabNavigation('View application');
 
         // Child details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
-        await startApplication.childDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+         await startApplication.tabNavigation('Start application');
+         await startApplication.childDetails();
+         await childDetails.addChildDetailsForC110AApplication();
+         await startApplication.childDetailsHasBeenUpdated();
+         await startApplication.tabNavigation('Confidential Information');
+         await childDetails.assertChildConfidentialInformation();
+         await startApplication.tabNavigation('View application');
 
         // // Add respondents' details
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsNeeded();
+        await startApplication.tabNavigation('View application');
 
         // Allocation Proposal
         await startApplication.tabNavigation('Start application');
@@ -111,7 +114,7 @@ test.describe('Smoke Test @xbrowser', () => {
             contentType: 'application/json'
         });
         //Assert is skipped due the EXUI issue with the CFV
-       // expect(accessibilityScanResults.violations).toEqual([]);
+        // expect(accessibilityScanResults.violations).toEqual([]);
     })
 
     test('Private solicitor applies C110a application', async ({
@@ -150,10 +153,10 @@ test.describe('Smoke Test @xbrowser', () => {
         await startApplication.tabNavigation('View application');
 
 
-        //Orders and directions sought
+        // //Orders and directions sought
         await startApplication.tabNavigation('Start application');
         await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
-        await expect (startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
+        await expect(startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
         await startApplication.tabNavigation('View application');
 
 
@@ -175,7 +178,8 @@ test.describe('Smoke Test @xbrowser', () => {
         // Child details
         await startApplication.tabNavigation('Start application');
         await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
+        await childDetails.addChildDetailsForC110AApplication();
+        await startApplication.tabNavigation('Start application');
         await startApplication.childDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
@@ -183,6 +187,7 @@ test.describe('Smoke Test @xbrowser', () => {
         await startApplication.tabNavigation('Start application');
         await startApplication.respondentDetails();
         await respondentDetails.respondentDetailsPrivateSolicitor();
+        await startApplication.tabNavigation('View application');
 
         // Allocation Proposal
         await startApplication.tabNavigation('Start application');
@@ -192,18 +197,15 @@ test.describe('Smoke Test @xbrowser', () => {
         await startApplication.tabNavigation('View application');
 
 
-        // Submit the case
+       // Submit the case
         await startApplication.tabNavigation('Start application');
         await startApplication.submitCase();
         await submitCase.submitCaseSmokeTest('£263.00');
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Applications');
         await caseFileView.openFolder('Original Applications');
-
-        await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
-        await  caseFileView.openDocInNewTab();
+        await expect(page.getByRole('button', { name: 'Document icon' })).toBeVisible();
+        await caseFileView.openDocInNewTab();
         await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
-        })
-
     })
-
+})

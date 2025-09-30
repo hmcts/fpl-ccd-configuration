@@ -5,6 +5,8 @@ export class BasePage {
   readonly goButton: Locator;
   readonly page: Page;
   readonly continueButton: Locator;
+  readonly previousButton: Locator;
+  readonly cancelLink: Locator;
   readonly signOut: Locator;
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
@@ -23,6 +25,8 @@ export class BasePage {
     this.nextStep = page.getByLabel('Next step');
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
     this.continueButton = page.getByRole("button", { name: 'Continue' });
+    this.previousButton = page.getByRole("button", { name: 'Previous' });
+    this.cancelLink = page.getByRole("link", { name: 'Cancel' });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: 'Save and Continue'});
@@ -63,6 +67,14 @@ export class BasePage {
 
   async clickContinue() {
     await this.continueButton.click({});
+  }
+
+  async clickPreviousButton() {
+      await this.previousButton.click();
+  }
+
+  async clickCancelLink() {
+      await this.cancelLink.click();
   }
 
   async waitForAllUploadsToBeCompleted() {
@@ -108,7 +120,7 @@ export class BasePage {
   async enterPostCode(postcode:string){
       await this.postCode.fill(postcode);
       await this.findAddress.click();
-      await this.page.getByLabel('Select an address').selectOption('1: Object');
+      await this.page.getByLabel('Select an address').selectOption('3: Object');
 
   }
   getCurrentDate():string {
