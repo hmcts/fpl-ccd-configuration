@@ -46,6 +46,8 @@ class ApplicantsDetailsUpdatedEventHandlerTest {
     void shouldNotifyLocalAuthorities() {
         when(localAuthorityRecipients.getRecipients(RecipientsRequest.builder()
             .caseData(CASE_DATA)
+            .secondaryLocalAuthorityExcluded(true)
+            .legalRepresentativesExcluded(true)
             .build()))
             .thenReturn(RECIPIENTS);
 
