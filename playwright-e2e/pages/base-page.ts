@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import {expect, type Locator, type Page} from "@playwright/test";
 
 export class BasePage {
   readonly nextStep: Locator;
@@ -66,7 +66,8 @@ export class BasePage {
   }
 
   async clickContinue() {
-    await this.continueButton.click({});
+    await this.continueButton.waitFor({ state: 'attached'});
+      await this.continueButton.click({});
   }
 
   async clickPreviousButton() {
@@ -112,7 +113,9 @@ export class BasePage {
   }
 
   async clickSubmit() {
-    await this.submit.click();
+
+        await  this.submit.click();
+
   }
   async clickSaveAndContinue() {
       await this.saveAndContinue.click();
@@ -128,8 +131,7 @@ export class BasePage {
     let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
     let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
     let day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
-    let todayDate = `${day} ${month} ${year}`;
-    return todayDate;
+      return `${day} ${month} ${year}`;
     }
 
     async fillDateInputs(page: Page, date: Date) {
