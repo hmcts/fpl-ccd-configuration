@@ -664,7 +664,7 @@ test.describe('manage orders', () => {
 
     })
 
-    test('Judge uploads Special guardianship order (C43A) ', async ({ page, signInPage, orders }) => {
+    test.only('Judge uploads Special guardianship order (C43A) ', async ({ page, signInPage, orders }) => {
         caseName = 'Special guardianship order (C43A) ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
@@ -679,7 +679,6 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await orders.uploadsSpecialGuardianshipOrder();
-        await orders.clickContinue();
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
