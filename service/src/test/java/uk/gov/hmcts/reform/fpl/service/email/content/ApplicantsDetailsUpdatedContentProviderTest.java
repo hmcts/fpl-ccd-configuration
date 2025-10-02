@@ -39,7 +39,7 @@ class ApplicantsDetailsUpdatedContentProviderTest extends AbstractEmailContentPr
     }
 
     @Test
-    void shouldReturnNotifyData_forThirdPary() {
+    void shouldReturnNotifyData_forThirdParty() {
         String respondentFirstName = "Example Local Authority";
 
         CaseData caseData = CaseData.builder()
