@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
-import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -190,6 +189,14 @@ class UserServiceTest {
         when(requestData.userRoles()).thenReturn(userRoles);
 
         assertThat(underTest.hasAnyIdamRolesFrom(List.of(HMCTS_SUPERUSER, JUDICIARY))).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserRoleDoesNotExistInIdamRoles() {
+        Set<String> userRoles = Set.of("caseworker", "caseworker-publiclaw", HMCTS_ADMIN.getRoleName(), "payments");
+        when(requestData.userRoles()).thenReturn(userRoles);
+
+        assertThat(underTest.hasAnyIdamRolesFrom(List.of(HMCTS_SUPERUSER, JUDICIARY))).isFalse();
     }
 
 }
