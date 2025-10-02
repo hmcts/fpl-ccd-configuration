@@ -72,14 +72,16 @@ export class QueryManagement extends BasePage {
     async respondToQuery(closeTheQuery: boolean = false) {
         await this.page.getByRole('link', {name: 'Respond to a query'}).click();
         await this.respondDetail.fill('Answering to the query raised');
-        await this.addDocument.click();
+     //   await this.page.pause();
+        await expect.soft(this.page.getByText('Closing this query means the parties can no longer send messages in this thread. ')).toBeVisible();
         await expect.soft(this.page.getByRole('checkbox', {name: 'I want to close this query'})).toBeVisible();
 
         if (closeTheQuery) {
-            await this.page.getByRole('checkbox', {name: 'I want to close this query'}).check();
+            await this.page.getByRole('checkbox', { name: 'I want to close this query' }).check();
         }
-        await expect.soft(this.page.getByText('Closing the query means the parties can no longer send message in this thread.')).toBeVisible();
-        await expect.soft(this.page.getByText('Only attach documents related')).toBeVisible();
+
+        await expect.soft(this.page.getByText('Only attach documents related to your query. For all other documents use your case management document upload function.')).toBeVisible();
+        await this.addDocument.click();
         await this.documentInput.setInputFiles(config.testWordFile);
         await this.clickContinue();
         await this.clickSubmit();
