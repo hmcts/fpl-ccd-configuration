@@ -7,12 +7,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+
+import java.util.List;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +53,8 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
     void setup() {
         givenSystemUser();
         givenFplService();
-        given(userService.isCtscUser()).willReturn(false);
+        given(userService.hasAnyIdamRolesFrom(List.of(UserRole.HMCTS_SUPERUSER)))
+            .willReturn(false);
     }
 
     @Test
@@ -99,7 +103,7 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
     }
 
     @Test
-    void shouldNotifyApplicantsWhenUpdatedByCtsc() {
+    void shouldNotifyApplicantsWhenUpdatedBySuperuser() {
         final CaseData caseDataBefore = CaseData.builder()
             .id(nextLong())
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
@@ -113,7 +117,8 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
                 .build()))
             .build();
 
-        given(userService.isCtscUser()).willReturn(true);
+        given(userService.hasAnyIdamRolesFrom(List.of(UserRole.HMCTS_SUPERUSER)))
+            .willReturn(true);
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 

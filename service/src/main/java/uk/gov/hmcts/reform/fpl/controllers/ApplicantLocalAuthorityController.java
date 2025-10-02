@@ -43,7 +43,7 @@ public class ApplicantLocalAuthorityController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
         final LocalAuthority localAuthority;
 
-        if (applicantLocalAuthorityService.isCurrentUserCtscUser()) {
+        if (applicantLocalAuthorityService.isCurrentUserHmctsSuperuser()) {
             localAuthority = caseData.getLocalAuthorities().get(0).getValue();
         } else {
             localAuthority = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
@@ -128,7 +128,7 @@ public class ApplicantLocalAuthorityController extends CallbackController {
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
 
-        if (applicantLocalAuthorityService.isCurrentUserCtscUser()) {
+        if (applicantLocalAuthorityService.isCurrentUserHmctsSuperuser()) {
             publishEvent(new ApplicantsDetailsUpdatedEvent(caseData));
         }
     }
