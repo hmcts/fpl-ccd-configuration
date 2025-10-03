@@ -72,7 +72,6 @@ export class QueryManagement extends BasePage {
     async respondToQuery(closeTheQuery: boolean = false) {
         await this.page.getByRole('link', {name: 'Respond to a query'}).click();
         await this.respondDetail.fill('Answering to the query raised');
-     //   await this.page.pause();
         await expect.soft(this.page.getByText('Closing this query means the parties can no longer send messages in this thread. ')).toBeVisible();
         await expect.soft(this.page.getByRole('checkbox', {name: 'I want to close this query'})).toBeVisible();
 
