@@ -21,7 +21,7 @@ test.describe('Query management', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test.only
+    test
     ('LA raise query',
         async ({
                    page, signInPage, queryManagement, caseFileView
@@ -46,6 +46,12 @@ test.describe('Query management', () => {
             await expect.soft(queryManagement.page.getByText('Follow-up on an existing query')).toBeVisible();
             await expect.soft(queryManagement.page.getByLabel('Raise a new query')).toBeVisible();
             await queryManagement.selectNewQuery();
+            await queryManagement.clickContinue();
+
+            // assert the warning text
+            await expect.soft(queryManagement.page.locator('ccd-query-write-raise-query')).toContainText('Any documents uploaded to the Query Service will not be visible to the Judge or served on the other party/ parties.');
+            await expect.soft(queryManagement.page.locator('ccd-query-write-raise-query')).toContainText('If a communication relates to a matter of substance or procedure, do not use the Query Service. It is your responsibility to upload such a communication to the case file using Manage Documents and to serve it on the other party/ parties as required by Family Procedure Rule 5.7');
+            await expect.soft(queryManagement.page.locator('ccd-query-write-raise-query')).toContainText('The Query Service should only be used for a communication that is purely routine, uncontentious or administrative.');
             await queryManagement.clickContinue();
             await queryManagement.enterQueryDetails();
             await queryManagement.clickContinue();
@@ -90,7 +96,6 @@ test.describe('Query management', () => {
             await queryManagement.assignToMe();
 
             await queryManagement.respondToQuery(false);
-           // await queryManagement.page.pause();
             await queryManagement.tabNavigation('Queries');
 
 
@@ -98,7 +103,6 @@ test.describe('Query management', () => {
             await queryManagement.page.getByRole('link', {name: 'Birth certificate format'}).click();
             await expect(page.getByText('Response', {exact: true})).toBeVisible();
             await expect(page.getByText('Answering to the query raised')).toBeVisible();
-           // await expect(page.getByRole('cell', {name: 'Closed'})).toBeVisible();
 
         });
     test('LA raise follow up query',
@@ -130,22 +134,19 @@ test.describe('Query management', () => {
             await queryManagement.tabNavigation('Queries');
             await expect(page.getByRole('link', {name: 'Birth certificate format'})).toBeHidden();
 
-
             await queryManagement.clickSignOut();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
             await queryManagement.tabNavigation('Tasks');
             await queryManagement.waitForTask('Respond to a Query');
             await queryManagement.assignToMe();
-            await page.pause();
-            await queryManagement.respondToQuery(true);
+            await queryManagement.respondToQuery(false);
             await queryManagement.tabNavigation('Queries');
 
             await expect(page.getByText('Responded')).toBeVisible();
-            await queryManagement.page.getByRole('link', {name: 'Birth certificate format'}).click();
-            await expect(page.getByText('Response', {exact: true})).toBeVisible();
+            await queryManagement.page.getByRole('link', {name: 'query by LA'}).click();
+            await expect(page.getByText('Response', {exact: true})).toHaveCount(2);
             await expect(page.getByText('Answering to the query raised')).toBeVisible();
-            await expect(page.getByRole('cell', {name: 'Closed'})).toBeVisible();
 
         });
 
