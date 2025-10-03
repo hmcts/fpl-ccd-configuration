@@ -142,7 +142,7 @@ test.describe('Admin application management', () => {
             day: 'numeric',
             month: 'short',
             year: 'numeric'
-        }).format(decisionDate))).toBeVisible();
+        }).format(decisionDate).replace('Sept','Sep'))).toBeVisible();
 
     })
     test('CTSC admin send order remainder', async ({signInPage, page, sendOrderRemainder}) => {
