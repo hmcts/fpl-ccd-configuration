@@ -679,7 +679,6 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await orders.uploadsSpecialGuardianshipOrder();
-        await orders.clickContinue();
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
