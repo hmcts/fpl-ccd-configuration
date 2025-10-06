@@ -20,7 +20,7 @@ public class CallbackResponseLogger implements ResponseBodyAdvice<AboutToStartOr
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return returnType.getGenericParameterType().equals(AboutToStartOrSubmitCallbackResponse.class);
+        return returnType.getParameterType().equals(AboutToStartOrSubmitCallbackResponse.class);
     }
 
     @Override

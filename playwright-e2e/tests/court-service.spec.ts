@@ -11,7 +11,7 @@ test.describe('Court Service', () => {
     test.beforeEach(async () => {
         caseNumber = await createCase('Court service', newSwanseaLocalAuthorityUserOne);
     });
-    test('LA add court service',
+    test('LA add court service @xbrowser',
         async ({startApplication, signInPage, courtServices, makeAxeBuilder}, testInfo) => {
 
             // 1. Sign in as local-authority user
@@ -23,6 +23,8 @@ test.describe('Court Service', () => {
             //sign in page
             await signInPage.isSignedIn();
             await signInPage.navigateTOCaseDetails(caseNumber);
+            await courtServices.tabNavigation('View application');
+            await courtServices.tabNavigation('Start application');
 
             // Court Services Needed
             await startApplication.courtServicesReqUpdated();
@@ -64,7 +66,7 @@ test.describe('Court Service', () => {
 
         });
 
-    test('CTSC user update court service',
+    test('CTSC user update court service @xbrowser',
         async ({ signInPage, courtServices}) => {
             let casename = 'Amend Court service  ' + dateTime.slice(0, 10);
 

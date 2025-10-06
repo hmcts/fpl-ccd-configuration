@@ -123,6 +123,8 @@ public class CaseSubmissionGenerationService
         TranslationSection.REASON, LanguagePair.of("Reason:", "Rheswm:"),
         TranslationSection.CONFIDENTIAL, LanguagePair.of("Confidential", "Cyfrinachol")
     );
+    private static final String DATE_SITUATION_BEGAN = "Date this began: ";
+    private static final String DATE_SITUATION_BEGAN_WEL = "Dyddiad y bu i hyn gychwyn: ";
 
     private final Time time;
     private final UserService userService;
@@ -706,7 +708,9 @@ public class CaseSubmissionGenerationService
 
     private DocmosisChild buildChild(final ChildParty child,
                                      Language applicationLanguage) {
-        final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
+        final boolean isAddressConfidential = equalsIgnoreCase(child.getIsAddressConfidential(), YES.getValue());
+        final boolean isSocialWorkerDetailsHidden = equalsIgnoreCase(child.getSocialWorkerDetailsHidden(),
+            YES.getValue());
         return DocmosisChild.builder()
             .name(child.getFullName())
             .age(formatAge(child.getDateOfBirth(), applicationLanguage))
@@ -715,33 +719,34 @@ public class CaseSubmissionGenerationService
                     .map(gender -> gender.getLabel(applicationLanguage)).orElse(null),
                 child.getGenderIdentification()))
             .dateOfBirth(formatDateDisplay(child.getDateOfBirth(), applicationLanguage))
-            .livingSituation(getChildLivingSituation(child, isConfidential, applicationLanguage))
-            .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
-            .careAndContactPlan(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
-            .adoption(getValidAnswerOrDefaultValue(child.getAdoption(), applicationLanguage))
-            .placementOrderApplication(getValidAnswerOrDefaultValue(child.getPlacementOrderApplication(),
+            .livingSituation(getChildLivingSituation(child, isAddressConfidential, applicationLanguage))
+            .keyDatesTemplate(getDefaultIfNullOrEmpty(child.getKeyDates()))
+            .careAndContactPlanTemplate(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
+            .adoptionTemplate(getValidAnswerOrDefaultValue(child.getAdoption(), applicationLanguage))
+            .placementOrderApplicationTemplate(getValidAnswerOrDefaultValue(child.getPlacementOrderApplication(),
                 applicationLanguage))
-            .placementCourt(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
+            .placementCourtTemplate(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
             .mothersName(getDefaultIfNullOrEmpty(child.getMothersName()))
             .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
-            .fathersResponsibility(getValidAnswerOrDefaultValue(child.getFathersResponsibility(), applicationLanguage))
-            .socialWorkerName(getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
-            .socialWorkerTelephoneNumber(getTelephoneNumber(child.getSocialWorkerTelephoneNumber()))
+            .socialWorkerName(isSocialWorkerDetailsHidden
+                ? DEFAULT_STRING : getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
+            .socialWorkerTelephoneNumber(isSocialWorkerDetailsHidden
+                ? DEFAULT_STRING : getTelephoneNumber(child.getSocialWorkerTelephoneNumber()))
+            .socialWorkerEmailAddress(isSocialWorkerDetailsHidden
+                ? DEFAULT_STRING : getDefaultIfNullOrEmpty(child.getSocialWorkerEmail()))
+            .socialWorkerDetailsHiddenReason(
+                concatenateYesOrNoKeyAndValue(child.getSocialWorkerDetailsHidden(),
+                    child.getSocialWorkerDetailsHiddenReason(),
+                    applicationLanguage))
             .additionalNeeds(
                 concatenateYesOrNoKeyAndValue(child.getAdditionalNeeds(),
                     child.getAdditionalNeedsDetails(),
                     applicationLanguage))
-            .litigationIssues(
-                concatenateYesOrNoKeyAndValue(child.getLitigationIssues(), child.getLitigationIssuesDetails(),
-                    applicationLanguage))
-            .detailsHiddenReason(
-                concatenateKeyAndValue(child.getDetailsHidden(), child.getDetailsHiddenReason()))
             .build();
     }
 
     private DocmosisRespondent buildRespondent(final RespondentParty respondent,
                                                Language applicationLanguage) {
-        final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
             .age(formatAge(respondent.getDateOfBirth(), applicationLanguage))
@@ -750,11 +755,11 @@ public class CaseSubmissionGenerationService
             .dateOfBirth(formatDateDisplay(respondent.getDateOfBirth(), applicationLanguage))
             .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
             .address(
-                isConfidential
+                YES.equalsString(respondent.getHideAddress())
                 ? getConfidential(applicationLanguage)
                 : formatAddress(respondent.getAddress()))
             .telephoneNumber(
-                isConfidential
+                YES.equalsString(respondent.getHideTelephone())
                 ? getConfidential(applicationLanguage)
                 : getDefaultIfNullOrEmpty(getTelephoneNumber(respondent.getTelephoneNumber())))
             .contactDetailsHidden(getValidAnswerOrDefaultValue(respondent.getContactDetailsHidden(),
@@ -903,25 +908,37 @@ public class CaseSubmissionGenerationService
                     }
                 }
                 break;
-            case VOLUNTARILY_SECTION_CARE_ORDER:
+            case VOLUNTARILY_SECTION_CARE_ORDER, UNDER_CARE_OF_LA:
                 if (child.getCareStartDate() != null) {
                     if (applicationLanguage.equals(Language.ENGLISH)) {
-                        sb.append("Date this began: ")
+                        sb.append(DATE_SITUATION_BEGAN)
                             .append(formatDateDisplay(child.getCareStartDate(), applicationLanguage));
                     } else {
-                        sb.append("Dyddiad y bu i hyn gychwyn: ")
+                        sb.append(DATE_SITUATION_BEGAN_WEL)
                             .append(formatDateDisplay(child.getCareStartDate(), applicationLanguage));
+                    }
+                }
+                break;
+            case LIVE_WITH_FAMILY_OR_FRIENDS:
+                if (child.getAddressChangeDate() != null) {
+                    if (applicationLanguage.equals(Language.ENGLISH)) {
+                        sb.append("Who are they living with: ").append(child.getLivingWithDetails());
+                        sb.append(NEW_LINE).append(DATE_SITUATION_BEGAN)
+                            .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
+                    } else {
+                        sb.append("Gyda phwy maen nhw'n byw: ").append(child.getLivingWithDetails());
+                        sb.append(NEW_LINE).append(DATE_SITUATION_BEGAN_WEL)
+                            .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
                     }
                 }
                 break;
             default:
                 if (child.getAddressChangeDate() != null) {
-
                     if (applicationLanguage.equals(Language.ENGLISH)) {
-                        sb.append("Date this began: ")
+                        sb.append(DATE_SITUATION_BEGAN)
                             .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
                     } else {
-                        sb.append("Dyddiad y bu i hyn gychwyn: ")
+                        sb.append(DATE_SITUATION_BEGAN_WEL)
                             .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
                     }
                 }

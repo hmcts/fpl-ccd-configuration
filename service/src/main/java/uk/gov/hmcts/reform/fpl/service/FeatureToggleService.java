@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Service
 public class FeatureToggleService {
@@ -135,6 +136,11 @@ public class FeatureToggleService {
                     .collect(Collectors.toList())
                 : null)
             .build();
+    }
+
+    public boolean isCafcassApiToggledOn() {
+        CafcassApiFeatureFlag featureFlag = getCafcassAPIFlag();
+        return isNotEmpty(featureFlag) && featureFlag.isEnableApi();
     }
 
     private LDContext createLDContext() {

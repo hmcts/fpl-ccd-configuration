@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiFeatureFlag;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -191,6 +193,33 @@ class FeatureToggleServiceTest {
 
             assertThat(service.getCafcassAPIFlag())
                 .isEqualTo(CafcassApiFeatureFlag.builder().enableApi(false).build());
+
+            verify(ldClient).jsonValueVariation(
+                eq("cafcass-api-court"),
+                argThat(ldUser(ENVIRONMENT).build()),
+                eq(LDValue.ofNull()));
+        }
+
+
+        @Test
+        void shouldReturnTrueIfCafcassApiFeatureFlagEnabled() {
+            when(ldClient.jsonValueVariation(any(), any(), any()))
+                .thenReturn(CAFCASS_API_ENABLED);
+
+            assertTrue(service.isCafcassApiToggledOn());
+
+            verify(ldClient).jsonValueVariation(
+                eq("cafcass-api-court"),
+                argThat(ldUser(ENVIRONMENT).build()),
+                eq(LDValue.ofNull()));
+        }
+
+        @Test
+        void shouldReturnFalseIfCafcassApiFeatureFlagDisabled() {
+            when(ldClient.jsonValueVariation(any(), any(), any()))
+                .thenReturn(CAFCASS_API_DISABLED);
+
+            assertFalse(service.isCafcassApiToggledOn());
 
             verify(ldClient).jsonValueVariation(
                 eq("cafcass-api-court"),
