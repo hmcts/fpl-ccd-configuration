@@ -3623,4 +3623,93 @@ class MigrateCaseServiceTest {
                 .hasMessageContaining("additional application bundle not found");
         }
     }
+
+    @Nested
+    class RemoveSupportingEvidenceBundleFromAdditionalApplication {
+        @Test
+        void shouldRemoveSupportingEvidenceBundleFromAdditionalApplication() {
+            UUID bundleId = UUID.randomUUID();
+            UUID evidenceToRemoveId = UUID.randomUUID();
+            UUID evidenceToRetainId = UUID.randomUUID();
+
+            Element<SupportingEvidenceBundle> evidenceToRemove = element(evidenceToRemoveId,
+                SupportingEvidenceBundle.builder().name("evidence to remove").build());
+
+            Element<SupportingEvidenceBundle> evidenceToRetain = element(evidenceToRetainId,
+                SupportingEvidenceBundle.builder().name("evidence to retain").build());
+
+            Element<AdditionalApplicationsBundle> applicationBundle = element(bundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .supportingEvidenceBundle(List.of(evidenceToRemove, evidenceToRetain))
+                        .build())
+                    .build());
+
+            Element<AdditionalApplicationsBundle> otherBundle = element(UUID.randomUUID(),
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .supportingEvidenceBundle(List.of(evidenceToRemove, evidenceToRetain))
+                        .build())
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .additionalApplicationsBundle(List.of(applicationBundle, otherBundle))
+                .build();
+
+            Map<String, Object> result = underTest.removeSupportingEvidenceBundleFromAdditionalApplication(caseData,
+                MIGRATION_ID, bundleId, evidenceToRemoveId);
+
+
+            Element<AdditionalApplicationsBundle> expectedBundle = element(bundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .supportingEvidenceBundle(List.of(evidenceToRetain))
+                        .build())
+                    .build());
+
+            assertThat(result).containsEntry("additionalApplicationsBundle", List.of(expectedBundle, otherBundle));
+        }
+
+        @Test
+        void shouldThrowExceptionIfBundleNotFound() {
+            UUID nonExistentBundleId = UUID.randomUUID();
+            UUID evidenceToRemoveId = UUID.randomUUID();
+
+            Stream.of(
+                CaseData.builder().id(1L).additionalApplicationsBundle(new ArrayList<>()).build(),
+                CaseData.builder().id(1L).additionalApplicationsBundle(null).build()
+            ).forEach(caseData ->
+                assertThatThrownBy(() -> underTest.removeSupportingEvidenceBundleFromAdditionalApplication(caseData,
+                    MIGRATION_ID, nonExistentBundleId, evidenceToRemoveId))
+                    .isInstanceOf(AssertionError.class)
+                    .hasMessageContaining("additional application bundle not found")
+            );
+        }
+
+        @Test
+        void shouldThrowExceptionIfC2OrEvidenceNotFound() {
+            UUID bundleId = UUID.randomUUID();
+            UUID evidenceToRemoveId = UUID.randomUUID();
+
+            Stream.of(
+                CaseData.builder()
+                    .id(1L)
+                    .additionalApplicationsBundle(List.of(
+                        element(bundleId, AdditionalApplicationsBundle.builder().build())))
+                    .build(),
+                CaseData.builder()
+                    .id(1L)
+                    .additionalApplicationsBundle(List.of(
+                        element(bundleId, AdditionalApplicationsBundle.builder()
+                            .c2DocumentBundle(C2DocumentBundle.builder().build()).build())))
+                    .build()
+            ).forEach(caseData ->
+                assertThatThrownBy(() -> underTest.removeSupportingEvidenceBundleFromAdditionalApplication(caseData,
+                    MIGRATION_ID, bundleId, evidenceToRemoveId))
+                    .isInstanceOf(AssertionError.class)
+                    .hasMessageContaining("C2DocumentBundle or SupportingEvidenceBundle is null"));
+;
+        }
+    }
 }
