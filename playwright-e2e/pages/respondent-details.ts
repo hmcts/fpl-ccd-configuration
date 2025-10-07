@@ -100,35 +100,14 @@ export class RespondentDetails extends BasePage {
       await this.dobYear.fill('1990')
       await this.gender.selectOption('1: Male');
       await this.currentAddress.getByRole('radio', { name: 'No' }).click();
+      await this.currentAddress.getByRole('radio', { name: 'No' }).click();
+      await this.addressUnknown.getByRole('radio', { name: 'Whereabouts unknown' }).click();
       await this.addressUnknown.getByRole('radio', { name: 'Whereabouts unknown' }).click();
       await this.giveMoreDetails.fill('test');
       await this.relationToChild.fill('uncle');
       await this.difficultyCapacity.getByRole('radio', { name: 'Yes' }).click();
       await this.difficultyCapacityReason.fill('test');
       await this.legalRepresentation.getByRole('radio', { name: 'No' }).click();
-
-      await Promise.all([
-          this.page.waitForResponse(response =>
-              response.url().includes('orgs') &&
-              response.request().method() === 'GET' &&
-              response.status() === 200
-          ),
-          await this.addNew.nth(1).click()
-      ]);
-      await this.respondentFirstName.fill('test2');
-      await this.respondentLastName.fill('test2');
-      await this.respondentdobDay.fill('01');
-      await this.respondentdobMonth.fill('01');
-      await this.respondentdobYear.fill('1990');
-      await this.respondent2Gender.selectOption('1: Male');
-      await this.respondent2CurrentAddressKnown.click();
-      await this.respondent2CurrentAddressKnown.click();
-      await this.respondent2AddressUnknown.click();
-      await this.respondent2AddressUnknown.click();
-      await this.respondent2HiddenNumber.click();
-      await this.respondet2RelationshipToChild.fill('uncle');
-      await this.respondent2DifficultyUnderstandingCapacity.click();
-      await this.respondent2DificultyCapacityReason.click();
 
       await Promise.all([
           this.page.waitForResponse(response =>
