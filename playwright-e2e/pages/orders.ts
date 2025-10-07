@@ -86,7 +86,7 @@ export class Orders extends BasePage {
         this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
         this.excluded = page.getByLabel('Who\'s excluded');
         this.powerOfExclusionStart = page.getByRole('group', { name: 'Date power of exclusion starts' });
-        this.orderToAmend = page.getByLabel('Select order to amend'); 
+        this.orderToAmend = page.getByLabel('Select order to amend');
         this.uploadAmendOrder = page.getByRole('textbox', { name: 'Upload the amended order. It will then be dated and stamped as amended.' });
         this.uploadAmendOrder = page.getByRole('button', { name: 'Upload the amended order. It will then be dated and stamped as amended.' }); master
         this.judgeLastName = page.getByLabel('Last name');
@@ -186,8 +186,8 @@ export class Orders extends BasePage {
         await this.addIssuingJudgeDetails('No');
     }
 
-    async selectChildInvolved() { 
-        await this.childAccomadation.selectOption('Timothy Jones');
+    async selectChildInvolved() {
+        await this.childAccommodation.selectOption('Timothy Jones');
     }
 
     async addChildDetails(isAllChild: string) {
