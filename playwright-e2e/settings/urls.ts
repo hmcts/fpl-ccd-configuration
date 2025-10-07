@@ -1,8 +1,5 @@
 // aat, demo, perftest, ithc
 const env = process.env.ENVIRONMENT || "aat";
-const e2ePw: string = process.env.E2E_TEST_PASSWORD || "";
-const defaultPwd: string = process.env.SYSTEM_UPDATE_USER_PASSWORD || "";
-const judgePwd: string = process.env.E2E_TEST_JUDGE_PASSWORD || "";
 
 interface UrlConfig {
   [key: string]: string;
