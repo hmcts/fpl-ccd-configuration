@@ -15,7 +15,7 @@ test.describe('send and reply message',()=>{
       caseNumber =  await createCase('e2e case',newSwanseaLocalAuthorityUserOne);
   });
 
-  test('CTSC admin send message to Judge with application',
+  test('CTSC admin send message to Judge with application @xbrowser',
     async ({page,signInPage,judicialMessages}) => {
         casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
         await updateCase(casename,caseNumber,caseData);
@@ -27,11 +27,11 @@ test.describe('send and reply message',()=>{
         await judicialMessages.checkYourAnsAndSubmit();
         await judicialMessages.tabNavigation('Judicial messages');
         await expect(page.getByText('Message 1',{exact:true})).toBeVisible();
-        await expect(page.getByText('Allocated Judge/Legal Adviser')).toBeVisible();
-        await expect(page.getByRole('cell', { name: 'CTSC - message send to allocated Judge', exact: true })).toBeVisible();
+        await expect(page.getByText('Other Judge/Legal Adviser')).toBeVisible();
+        await expect(page.getByRole('cell', { name: 'CTSC - message send to legal adviser', exact: true })).toBeVisible();
   });
 
-    test('CTSC admin send message to Judge with document',
+    test('CTSC admin send message to Judge with document @xbrowser',
     async ({page,signInPage,judicialMessages}) => {
         casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
         await updateCase(casename,caseNumber,caseData);
@@ -43,11 +43,11 @@ test.describe('send and reply message',()=>{
         await judicialMessages.checkYourAnsAndSubmit();
         await judicialMessages.tabNavigation('Judicial messages');
         await expect(page.getByText('Message 1',{exact:true})).toBeVisible();
-        await expect(page.getByText('Allocated Judge/Legal Adviser')).toBeVisible();
-        await expect(page.getByRole('cell', { name: 'CTSC - message send to allocated Judge', exact: true })).toBeVisible();
+        await expect(page.getByText('Other Judge/Legal Adviser')).toBeVisible();
+        await expect(page.getByRole('cell', { name: 'CTSC - message send to legal adviser', exact: true })).toBeVisible();
     });
 
-    test('Judge reply CTCS message',async({page,signInPage,judicialMessages})=>{
+    test('Judge reply CTCS message @xbrowser ',async({page,signInPage,judicialMessages})=>{
         casename = 'Judge Reply ' + dateTime.slice(0, 10);
         await updateCase(casename,caseNumber,caseDataJudgeMessage);
         await  signInPage.visit();

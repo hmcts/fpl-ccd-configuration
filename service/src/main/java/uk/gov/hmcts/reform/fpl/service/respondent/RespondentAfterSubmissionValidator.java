@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -24,6 +25,7 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority.DUMMY_UUID;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Component
@@ -43,7 +45,10 @@ public class RespondentAfterSubmissionValidator {
 
         for (int i = 0; i < respondents.size(); i++) {
             Respondent respondent = respondents.get(i).getValue();
-            errors.addAll(legalRepresentationErrors(respondent, hideRespondentIndex ? -1 : (i + 1)));
+            // Validate all 'people' respondents, not respondent LAs
+            if (YesNo.NO.equals(respondent.getIsLocalAuthority())) {
+                errors.addAll(legalRepresentationErrors(respondent, hideRespondentIndex ? -1 : (i + 1)));
+            }
         }
 
         return errors;
@@ -57,7 +62,11 @@ public class RespondentAfterSubmissionValidator {
         List<String> errors = new ArrayList<>();
 
         Set<UUID> currentRespondentIds = getIds(caseData.getAllRespondents());
-        Set<UUID> previousRespondentIds = getIds(caseDataBefore.getAllRespondents());
+
+        // get all previous respondents, discounting the Respondent Local Authority
+        Set<UUID> previousRespondentIds = getIds(caseDataBefore.getAllRespondents()).stream()
+            .filter(el -> !DUMMY_UUID.equals(el))
+            .collect(Collectors.toSet());
 
         if (!currentRespondentIds.containsAll(previousRespondentIds)) {
             errors.add("You cannot remove a respondent from the case");

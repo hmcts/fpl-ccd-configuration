@@ -12,14 +12,14 @@ export class Orders extends BasePage {
     readonly orderApplication: Locator;
     readonly approvedHearing: Locator;
     readonly issuingJudge: Locator;
-    readonly childInvolved: Locator;
+    readonly isAllChildrenInvolved: Locator;
     readonly EPOrderType: Locator;
     readonly finalOrder: Locator;
     readonly orderPreviewLink: Locator;
     readonly isExclusion: Locator;
     readonly excluded: Locator;
     readonly powerOfExclusionStart: Locator;
-    readonly judgemagistrateTitle: Locator;
+    readonly judgeMagistrateTitle: Locator;
     readonly judgeLastName: Locator;
     readonly judgeEmail: Locator;
     readonly legalAdvisorName: Locator;
@@ -27,14 +27,14 @@ export class Orders extends BasePage {
     readonly closeOrder: Locator;
     readonly careOrderIssuedDate: Locator;
     readonly careOrderIssuedCourt: Locator;
-    readonly juridiction: Locator;
-    readonly juridictionRegion: Locator;
+    readonly jurisdiction: Locator;
+    readonly jurisdictionRegion: Locator;
     readonly approvalDate: Locator;
-    readonly childAccomadation: Locator;
+    readonly childAccommodation: Locator;
     readonly orderConsent: Locator;
     readonly orderReason: Locator;
     readonly childLegalAid: Locator;
-    readonly juridictionRadio: Locator;
+    readonly jurisdictionRadio: Locator;
     readonly orderEndsOn: Locator;
     readonly orderLength: Locator;
     readonly assessmentStartDate: Locator;
@@ -45,6 +45,7 @@ export class Orders extends BasePage {
     readonly awayFromHome: Locator;
     readonly awayfromDate: Locator;
     readonly awayToDate: Locator;
+    readonly permissionReport: Locator;
     readonly childFirstContact: Locator;
     readonly childSecondContact: Locator;
     readonly childThirdContact: Locator;
@@ -52,6 +53,24 @@ export class Orders extends BasePage {
     readonly costOrder: Locator;
     readonly orderTitle: Locator;
     readonly orderDirectionDetails: Locator
+    readonly radioNoButton: Locator;
+    readonly firstFamilyBefriended: Locator;
+    readonly secondFamilyBefriended: Locator;
+    readonly thirdFamilyBefriended: Locator;
+    readonly dateChosen: Locator;
+    readonly day: Locator;
+    readonly month: Locator;
+    readonly year: Locator;
+    readonly futherDirections: Locator;
+    readonly applicationOrder: Locator;
+    readonly addExclusionDetails: Locator;
+    readonly endOfProceedings: Locator;
+    readonly endDate: Locator;
+    readonly applications: Locator;
+    readonly childInOrder: Locator;
+    readonly parentalResponsibilty: Locator;
+    readonly relationToChild: Locator;
+    readonly specialGuardianOne: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -59,10 +78,7 @@ export class Orders extends BasePage {
         this.orderApproved = page.getByRole('group', { name: 'Was the order approved at a' });
         this.orderApplication = page.getByRole('group', { name: 'Is there an application for' });
         this.approvedHearing = page.getByLabel('Which hearing?');
-        this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });
-        this.judgemagistrateTitle = page.getByRole('group', { name: 'Judge or magistrate\'s title' });
-        this.childInvolved = page.getByRole('group', { name: 'Is the order about all the children?' })
-        this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
+        this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
         this.EPOEndDate = page.getByRole('group', { name: 'When does it end?' });
         this.finalOrder = page.getByRole('group', { name: 'Is this a final order?' });
         this.orderPreviewLink = page.getByRole('link', { name: 'Preview order.pdf' });
@@ -70,8 +86,9 @@ export class Orders extends BasePage {
         this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
         this.excluded = page.getByLabel('Who\'s excluded');
         this.powerOfExclusionStart = page.getByRole('group', { name: 'Date power of exclusion starts' });
-        this.orderToAmend = page.getByLabel('Select order to amend');
+        this.orderToAmend = page.getByLabel('Select order to amend'); 
         this.uploadAmendOrder = page.getByRole('textbox', { name: 'Upload the amended order. It will then be dated and stamped as amended.' });
+        this.uploadAmendOrder = page.getByRole('button', { name: 'Upload the amended order. It will then be dated and stamped as amended.' }); master
         this.judgeLastName = page.getByLabel('Last name');
         this.judgeEmail = page.getByLabel('Email Address');
         this.legalAdvisorName = page.getByLabel('Justices\' Legal Adviser\'s');
@@ -79,14 +96,14 @@ export class Orders extends BasePage {
         this.closeOrder = page.getByRole('group', { name: 'Does this order close the case?' });
         this.careOrderIssuedDate = page.getByRole('group', { name: 'When was the care order issued?' });
         this.careOrderIssuedCourt = page.getByLabel('Which court issued the order?');
-        this.juridiction = page.getByRole('group', { name: 'Select jurisdiction' });
-        this.juridictionRegion = page.locator('#manageOrdersCafcassOfficesWales');
+        this.jurisdiction = page.getByRole('group', { name: 'Select jurisdiction' });
+        this.jurisdictionRegion = page.locator('#manageOrdersCafcassOfficesWales');
         this.approvalDate = page.getByRole('group', { name: 'Approval Date' });
-        this.childAccomadation = page.getByLabel('Which child is the order for?');
+        this.childAccommodation = page.getByLabel('Which child is the order for?');
         this.orderConsent = page.getByRole('group', { name: 'Is order by consent?' });
         this.orderReason = page.getByRole('group', { name: 'Order given because the child is likely to' });
         this.childLegalAid = page.getByRole('group', { name: 'Does the child have a Legal' });
-        this.juridictionRadio = page.getByRole('group', { name: 'Jurisdiction' });
+        this.jurisdictionRadio = page.getByRole('group', { name: 'Jurisdiction' });
         this.orderEndsOn = page.getByRole('group', { name: 'When does the order end?' });
         this.orderLength = page.getByLabel('Order length, in months');
         this.assessmentStartDate = page.getByRole('group', { name: 'Assessment Start Date' });
@@ -104,7 +121,25 @@ export class Orders extends BasePage {
         this.costOrderDetails = page.getByLabel('Cost order details');
         this.orderTitle = page.getByLabel('Add order title (Optional)');
         this.orderDirectionDetails = page.getByLabel('Add order directions');
-
+        this.radioNoButton = page.getByRole('radio', { name: 'No' });
+        this.dateChosen = page.getByRole('radio', { name: 'Date to be chosen' });
+        this.permissionReport = page.getByRole('group', { name: 'Permission to report is not' });
+        this.firstFamilyBefriended = page.getByLabel('First party to be befriended');
+        this.secondFamilyBefriended = page.getByLabel('Second party to be befriended');
+        this.thirdFamilyBefriended = page.getByLabel('Third party to be befriended');
+        this.day = page.getByRole('textbox', { name: 'Day' });
+        this.month = page.getByRole('textbox', { name: 'Month' });
+        this.year = page.getByRole('textbox', { name: 'Year' });
+        this.futherDirections = page.getByRole('textbox', { name: 'Add further directions, if' });
+        this.applicationOrder = page.getByRole('group', { name: 'Is there an application for' });
+        this.addExclusionDetails = page.getByRole('textbox', { name: 'Add exclusion details' });
+        this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
+        this.endDate = page.getByRole('group', { name: 'End Date' });
+        this.applications = page.getByLabel('Applications');
+        this.childInOrder = page.getByRole('group', { name: 'Who’s included in the order?' });
+        this.parentalResponsibilty = page.getByRole('textbox', { name: 'Who\'s been given parental' });
+        this.relationToChild = page.getByRole('radio', { name: 'Father' });
+        this.specialGuardianOne = page.getByRole('group', { name: 'Person 1 (Optional)' });
 
     }
 
@@ -113,7 +148,8 @@ export class Orders extends BasePage {
     }
 
     async selectOrder(orderType: string) {
-        await this.orderTypeRadio.getByLabel(`${orderType}`).check();
+        await this.orderTypeRadio.getByLabel(`${orderType}`, { exact: true }).check();
+
     }
 
     async addIssuingDetailsOfApprovedOrder(approvalDate: string) {
@@ -137,7 +173,6 @@ export class Orders extends BasePage {
         await this.issuingJudge.getByRole('radio', { name: `${hearingJudge}` }).check();
         await this.legalAdvisorName.fill('LA Marien Wester');
         if (hearingJudge == 'No') {
-            await this.judgemagistrateTitle.getByLabel('His Honour Judge').check();
             await this.judgeLastName.fill('John');
             await this.judgeEmail.fill('email@email.comLegal');
             await this.legalAdvisorName.fill('LA Jonathan');
@@ -151,13 +186,19 @@ export class Orders extends BasePage {
         await this.addIssuingJudgeDetails('No');
     }
 
-    async selectChildInvolved() {
+    async selectChildInvolved() { 
         await this.childAccomadation.selectOption('Timothy Jones');
     }
 
     async addChildDetails(isAllChild: string) {
         await this.childInvolved.getByRole('radio', { name: `${isAllChild}` }).click();
         if (isAllChild == 'No') {
+        await this.childAccommodation.selectOption('Timothy Jones');
+    }
+
+    async addChildDetails(isAllChildrenInvolved: string) {
+        await this.isAllChildrenInvolved.getByRole('radio', { name: `${isAllChildrenInvolved}` }).click();
+        if (isAllChildrenInvolved == 'No') {
             await this.page.getByRole('group', { name: 'Child 1 (Optional)' }).getByLabel('Yes').check();
             await this.page.getByRole('group', { name: 'Child 2 (Optional)' }).getByLabel('Yes').check();
             await this.page.getByRole('group', { name: 'Child 4 (Optional)' }).getByLabel('Yes').check();
@@ -183,6 +224,7 @@ export class Orders extends BasePage {
         await this.EPOEndDate.getByRole('textbox', { name: 'Month' }).fill('10');
         await this.EPOEndDate.getByRole('textbox', { name: 'Year' }).fill('2013');
         await this.EPOEndDate.getByRole('spinbutton', { name: 'Hour' }).fill('10');
+        await this.EPOEndDate.getByRole('textbox', { name: 'Hour' }).fill('10');
         await this.finalOrder.getByLabel('Yes').click();
     }
     async addC32CareOrder() {
@@ -200,8 +242,8 @@ export class Orders extends BasePage {
     }
 
     async addC47AppointOfGuardianOrder() {
-        await this.juridiction.getByRole('radio', { name: 'Wales' }).check();
-        await this.juridictionRegion.selectOption('Swansea');
+        await this.jurisdiction.getByRole('radio', { name: 'Wales' }).check();
+        await this.jurisdictionRegion.selectOption('Swansea');
         await this.orderFurtherDirectionDetails.fill('Remove the child from the social care and appointing Aunty as guardian');
     }
 
@@ -209,7 +251,7 @@ export class Orders extends BasePage {
         await this.orderConsent.getByLabel('No').check();
         await this.orderReason.getByLabel('abscond and suffer harm').check();
         await this.childLegalAid.getByLabel('Yes').check();
-        await this.juridictionRadio.getByRole('radio', { name: 'Wales' }).check();
+        await this.jurisdictionRadio.getByRole('radio', { name: 'Wales' }).check();
         await this.orderFurtherDirectionDetails.fill('Further Direction for give secure accommodation');
         await this.orderEndsOn.getByLabel('In a set number of months').check();
         await this.orderLength.fill('12');
@@ -275,5 +317,196 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.orderConsent.getByLabel('Yes').check();
         await this.finalOrder.getByText('No').click();
+    }
+
+    async ctscUploadsTransparencyOrder() {
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.finalOrder.getByLabel('No').check();
+        await this.dateChosen.check();
+        await this.endDate.getByLabel('Day').fill('11');
+        await this.endDate.getByLabel('Month').fill('11');
+        await this.endDate.getByLabel('Year').fill('2030');
+        await this.permissionReport.getByLabel('Day').fill('12');
+        await this.permissionReport.getByLabel('Month').fill('12');
+        await this.permissionReport.getByLabel('Year').fill('2031');
+    }
+
+    async judgeUploadsTransparencyOrder() {
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.finalOrder.getByLabel('No').check();
+        await this.dateChosen.check();
+        await this.endDate.getByLabel('Day').fill('11');
+        await this.endDate.getByLabel('Month').fill('07');
+        await this.endDate.getByLabel('Year').fill('2030');
+        await this.permissionReport.getByLabel('Day').fill('10');
+        await this.permissionReport.getByLabel('Month').fill('08');
+        await this.permissionReport.getByLabel('Year').fill('2020');
+
+    }
+
+    async ctscFamilyAssistanceOrder() {
+        await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.page.pause();
+        await this.clickContinue();
+        await this.page.pause();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.firstFamilyBefriended.selectOption('John Black');
+        await this.secondFamilyBefriended.selectOption('Joe Bloggs');
+        await this.thirdFamilyBefriended.selectOption('Sarah Black');
+        await this.day.fill('07');
+        await this.month.fill('08');
+        await this.year.fill('2025');
+        await this.orderConsent.getByLabel('Yes').click();
+        await this.orderConsent.getByLabel('Yes').click(); // checkbox not clicking had to work around it
+        await this.futherDirections.fill('test');
+        await this.finalOrder.getByLabel('No').check();
+    }
+
+    async judgeUploadsFamilyAssistanceOrder() {
+        await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.page.pause();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.firstFamilyBefriended.selectOption('John Black');
+        await this.secondFamilyBefriended.selectOption('Sarah Black');
+        await this.thirdFamilyBefriended.selectOption('Joe Bloggs');
+        await this.day.fill('07');
+        await this.month.fill('08');
+        await this.year.fill('2025');
+        await this.orderConsent.getByLabel('Yes').click();
+        await this.orderConsent.getByLabel('Yes').click();
+        await this.futherDirections.fill('test');
+        await this.finalOrder.getByLabel('No').check();
+    }
+
+    async ctscUploadsInterimCareOrder() {
+        await this.orderApproved.getByLabel('No').check();
+        await this.applicationOrder.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.radioNoButton.click();
+        await this.endOfProceedings.check();
+    }
+
+    async judgeUploadsInterimCareOrder() {
+        await this.orderApproved.getByLabel('No').check();
+        await this.applicationOrder.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.radioNoButton.check();
+        await this.endOfProceedings.check();
+    }
+
+    async uploadsInterimSupervisionOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('Yes').check();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.orderApplication.getByLabel('Yes').check();
+        await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderFurtherDirectionDetails.fill('Test');
+        await this.endOfProceedings.check();
+    }
+
+    async assertuploadOrderType() {
+        await expect.soft(this.page.getByText('Appointment of a guardian (C46A)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Appointment of a solicitor (C48A)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Authority to search for a child (C31)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Authority to search for another child (C27)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Discharge education supervision order (C38A)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Discharge of parental responsibility (C45B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Extension of an education supervision order (C38B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Leave to remove a child from the UK (C44B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Power of arrest (FL406)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal of appointment of a children\'s guardian (C47B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal of appointment of a solicitor (C48B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal of contact with a child in care (C34B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal to transfer proceedings (C50)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Termination of appointment of a children\'s guardian (C47C)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Termination of appointment of a solicitor (C48C)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Termination of guardian\'s appointment (C46B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('To disclose information about the whereabouts of a missing child (C30)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Transfer out Children Act (C49)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Variation of Emergency protection order (C24)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Warrant to assist (C28)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Warrant to assist EPO (C25)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Other', { exact: true })).toBeVisible();
+    }
+
+    async addIssuingDetailsOfUploadedOrder(approvalDate: Date) {
+        await this.fillDateInputs(this.page, new Date(new Date().setMonth(new Date().getMonth() + 3)));
+        await this.clickContinue();
+        await expect(this.page.getByText('Errors', { exact: true })).toBeVisible();
+        await expect(this.page.getByText('Approval date cannot not be in the future')).toBeVisible();
+        await this.fillDateInputs(this.page, approvalDate);
+    }
+
+    async enterOrderName() {
+        await this.page.locator('#manageOrdersUploadTypeOtherTitle').fill('Uploaded Other Order');
+    }
+
+    async uploadOrder(isSealed: string) {
+
+        await this.page.setInputFiles('#manageOrdersUploadOrderFile', config.testPdfFile);
+        await this.waitForAllUploadsToBeCompleted();
+        await this.page.getByRole('radio', { name: `${isSealed}` }).check();
+    }
+
+    async assertOrderSealScreenshot() {
+        await this.orderPage.waitForLoadState('domcontentloaded');
+        await this.orderPage.waitForTimeout(1000);
+        await expect(this.orderPage).toHaveScreenshot({
+            fullPage: true,
+            threshold: 0.2, // Allow small differences
+            maxDiffPixels: 1500, // Allow up to 1500 different pixels
+            clip: { x: 0, y: 0, width: 1280, height: 720 } // Fixed dimensions});
+        });
+
+    }
+
+    async uploadsParentalResponsibiltyOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.parentalResponsibilty.fill('Ross Tray');
+        await this.relationToChild.check();
+        await this.orderFurtherDirectionDetails.fill('Test');
+        await this.finalOrder.getByLabel('No').check();
+    }
+
+    async uploadsSpecialGuardianshipOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.specialGuardianOne.getByRole('checkbox', { name: 'Yes' }).click()
+        await this.finalOrder.getByLabel('No').check();
+        await this.clickContinue();
     }
 }
