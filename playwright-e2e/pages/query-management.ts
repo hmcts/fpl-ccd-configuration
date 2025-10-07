@@ -40,6 +40,7 @@ export class QueryManagement extends BasePage {
 
         await expect.soft(this.page.getByText('The subject should be a summary of your query')).toBeVisible();
         await expect.soft(this.page.getByText('Include as many details as possible so case workers can respond to your query')).toBeVisible();
+
         await this.queryDetailText.fill('Have birth certificate issued in aboard');
         await this.relatedToHearingRadio.getByLabel('Yes').click();
         await this.enterDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
@@ -67,6 +68,25 @@ export class QueryManagement extends BasePage {
         await expect.soft(this.page.locator('ccd-query-details')).toContainText('Yes, the venue of the hearing on 12/5/2026, the center has access to wheelchairs chair access');
         await this.page.getByRole('textbox', {name: 'Query Body'}).fill('Needed translater  for German language for the next hearing');
 
+    }
+    async assertQueryQuestion(){
+        await expect.soft(this.page.getByText('Access issues or adding a new user')).toBeVisible();
+        await expect.soft(this.page.getByText('Make a change of representation on a case (notice of change)')).toBeVisible();
+        await expect.soft(this.page.getByText('I have a query in relation to a hearing')).toBeVisible();
+        await expect.soft(this.page.getByText('Add counsel to a case')).toBeVisible();
+        await expect.soft(this.page.getByText('Follow-up on an existing query')).toBeVisible();
+        await expect.soft(this.page.getByLabel('Raise a new query')).toBeVisible();
+    }
+    async  assertQueryTable() {
+        await expect(this.page.getByRole('columnheader', {name: 'Query subject'})).toBeVisible();
+        await expect(this.page.getByRole('columnheader', {name: 'Last submitted by'})).toBeVisible();
+        await expect(this.page.getByRole('columnheader', {name: 'Last submission date'})).toBeVisible();
+        await expect(this.page.getByRole('columnheader', {name: 'Last response date'})).toBeVisible();
+        await expect(this.page.getByRole('columnheader', {name: 'Response status'})).toBeVisible();
+        await expect(this.page.getByRole('link', {name: 'Birth certificate format'})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Local Authority '})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Awaiting Response'})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: `${this.getCurrentDate()}`})).toBeVisible();
     }
 
     async respondToQuery(closeTheQuery: boolean = false) {

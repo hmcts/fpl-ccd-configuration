@@ -21,8 +21,7 @@ test.describe('Query management', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test
-    ('LA raise query',
+    test('LA raise query',
         async ({
                    page, signInPage, queryManagement, caseFileView
 
@@ -39,12 +38,8 @@ test.describe('Query management', () => {
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
             await queryManagement.gotoNextStep('Raise a new query');
-            await expect.soft(queryManagement.page.getByText('Access issues or adding a new user')).toBeVisible();
-            await expect.soft(queryManagement.page.getByText('Make a change of representation on a case (notice of change)')).toBeVisible();
-            await expect.soft(queryManagement.page.getByText('I have a query in relation to a hearing')).toBeVisible();
-            await expect.soft(queryManagement.page.getByText('Add counsel to a case')).toBeVisible();
-            await expect.soft(queryManagement.page.getByText('Follow-up on an existing query')).toBeVisible();
-            await expect.soft(queryManagement.page.getByLabel('Raise a new query')).toBeVisible();
+            await queryManagement.assertQueryQuestion();
+
             await queryManagement.selectNewQuery();
             await queryManagement.clickContinue();
 
@@ -52,10 +47,12 @@ test.describe('Query management', () => {
             await expect.soft(queryManagement.page.locator('ccd-query-write-raise-query')).toContainText('Any documents uploaded to the Query Service will not be visible to the Judge or served on the other party/ parties.');
             await expect.soft(queryManagement.page.locator('ccd-query-write-raise-query')).toContainText('If a communication relates to a matter of substance or procedure, do not use the Query Service. It is your responsibility to upload such a communication to the case file using Manage Documents and to serve it on the other party/ parties as required by Family Procedure Rule 5.7');
             await expect.soft(queryManagement.page.locator('ccd-query-write-raise-query')).toContainText('The Query Service should only be used for a communication that is purely routine, uncontentious or administrative.');
+
             await queryManagement.clickContinue();
             await queryManagement.enterQueryDetails();
             await queryManagement.clickContinue();
             await queryManagement.clickSubmit();
+
             await expect(page.getByRole('heading', {name: 'Query submitted'})).toBeVisible();
             await expect(page.getByText('Your query has been sent to HMCTS')).toBeVisible();
             await expect.soft(page.getByText('Our team will read your query and respond.')).toBeVisible();
@@ -64,15 +61,7 @@ test.describe('Query management', () => {
             await queryManagement.goBackToCaseDetails();
             await queryManagement.tabNavigation('Queries');
 
-            await expect(page.getByRole('columnheader', {name: 'Query subject'})).toBeVisible();
-            await expect(page.getByRole('columnheader', {name: 'Last submitted by'})).toBeVisible();
-            await expect(page.getByRole('columnheader', {name: 'Last submission date'})).toBeVisible();
-            await expect(page.getByRole('columnheader', {name: 'Last response date'})).toBeVisible();
-            await expect(page.getByRole('columnheader', {name: 'Response status'})).toBeVisible();
-            await expect(page.getByRole('link', {name: 'Birth certificate format'})).toBeVisible();
-            await expect(page.getByRole('cell', {name: 'Local Authority '})).toBeVisible();
-            await expect(page.getByRole('cell', {name: 'Awaiting Response'})).toBeVisible();
-            await expect(page.getByRole('cell', {name: `${queryManagement.getCurrentDate()}`})).toBeVisible();
+            await queryManagement.assertQueryTable();
 
             await queryManagement.tabNavigation('Case File View');
             await caseFileView.openFolder('Uncategorised');
@@ -121,8 +110,10 @@ test.describe('Query management', () => {
             await queryManagement.askFollowupQuery();
             await queryManagement.clickContinue();
             await queryManagement.clickSubmit();
+
             await expect(page.getByRole('heading', {name: 'Query submitted'})).toBeVisible();
             await expect(page.getByText('Your query has been sent to HMCTS')).toBeVisible();
+
             await queryManagement.goBackToCaseDetails();
             await queryManagement.tabNavigation('Queries');
             await expect(page.getByText('Awaiting Response')).toBeVisible();
