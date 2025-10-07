@@ -19,7 +19,7 @@ export function formatDateToString(date: Date): string {
 export function formatDateToStringWithOrdinalSuffix(date: Date): string {
     let dateString = formatDateToString(date);
     let dateStringSplit = dateString.split(" ");
-    
+
     return `${dateStringSplit[0]}${getDayOfMonthSuffix(date.getDate())} ${dateStringSplit[1]} ${dateStringSplit[2]}`;
 }
 
@@ -72,4 +72,17 @@ export function formatCCDCaseNumber(caseNumber: string | number) {
     const ccdCaseNumber = String(caseNumber);
     let matchedArray = ccdCaseNumber.match(/.{1,4}/g);
     return (matchedArray) ? matchedArray.join("-") :"";
+}
+export function addMonthsToDate(date: Date, months: number): Date {
+    const newDate = new Date(date);
+    newDate.setMonth(newDate.getMonth() + months);
+    return newDate;
+}
+
+export function getDateBeforeToday(numberOfDays:  number): Date {
+    const daysBeforeToday = new Date();
+    daysBeforeToday.setDate(daysBeforeToday.getDate() - numberOfDays);
+    daysBeforeToday.setHours(0, 0, 0, 0);
+    console.log('valideAt date', daysBeforeToday);
+    return daysBeforeToday;
 }
