@@ -7,7 +7,7 @@ import { createCase, updateCase } from "../utils/api-helper";
 import config from "../settings/test-docs/config";
 
 test.describe('manage orders', () => {
-    let dateTime = new Date().toISOString();
+    const dateTime = new Date().toISOString();
     new Date().toTimeString()
     let caseNumber: string;
     let caseName: string;
@@ -95,7 +95,7 @@ test.describe('manage orders', () => {
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
     })
-    test('Upload Order @xbrowser ' , async ({ page, signInPage, orders }) => {
+    test('Upload Order @xbrowser ', async ({ page, signInPage, orders }) => {
         caseName = 'Upload Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
@@ -611,5 +611,79 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('link', { name: 'c35b_interim_supervision_order.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('CTSC uploads Parental responsibility order (C45A) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Parental responsibility order (C45A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithOrderData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Parental responsibility order (C45A)');
+        await orders.clickContinue();
+
+        await orders.uploadsParentalResponsibiltyOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c45a_parental_responsibility_order.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('Judge uploads Parental responsibility order (C45A)', async ({ page, signInPage, orders }) => {
+        caseName = 'Parental responsibility order (C45A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithOrderData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Parental responsibility order (C45A)');
+        await orders.clickContinue();
+
+        await orders.uploadsParentalResponsibiltyOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c45a_parental_responsibility_order.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('Judge uploads Special guardianship order (C43A) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Special guardianship order (C43A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithOrderData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Special guardianship order (C43A)');
+        await orders.clickContinue();
+
+        await orders.uploadsSpecialGuardianshipOrder();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c43a_special_guardianship_order.pdf', exact: true })).toBeVisible();
     });
 })
