@@ -67,7 +67,7 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public",
-    "CategoryID": "respondentsStatementsConfidential"
+    "CategoryID": "respondentsOwnStatementsConfidential"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -76,7 +76,7 @@
     "FieldType": "Document",
     "ElementLabel": "Translated document",
     "SecurityClassification": "Public",
-    "CategoryID": "respondentsStatementsConfidential"
+    "CategoryID": "respondentsOwnStatementsConfidential"
   },
   {
     "LiveFrom": "01/01/2017",
