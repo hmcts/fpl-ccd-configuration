@@ -896,10 +896,10 @@ class SendNewMessageJudgeServiceTest {
     @Test
     void shouldPopulateMessageUrgency() {
         MessageJudgeEventData eventData = (MessageJudgeEventData.builder()
-                .judicialMessageMetaData(JudicialMessageMetaData.builder()
-                    .isJudicialMessageUrgent(YesNo.YES)
-                    .build())
-                .build());
+            .judicialMessageMetaData(JudicialMessageMetaData.builder()
+                .isJudicialMessageUrgent(YesNo.YES)
+                .build())
+            .build());
         assertThat(sendNewMessageJudgeService.getMessageUrgency(eventData.getJudicialMessageMetaData()))
             .isEqualTo(SAME_DAY_URGENCY);
     }
