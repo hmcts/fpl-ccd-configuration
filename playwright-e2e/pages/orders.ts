@@ -19,7 +19,7 @@ export class Orders extends BasePage {
     readonly isExclusion: Locator;
     readonly excluded: Locator;
     readonly powerOfExclusionStart: Locator;
-    readonly judgeMagistrateTitle: Locator;
+    readonly judgeMagistrateRadioButton: Locator;
     readonly judgeLastName: Locator;
     readonly judgeEmail: Locator;
     readonly legalAdvisorName: Locator;
@@ -78,7 +78,9 @@ export class Orders extends BasePage {
         this.orderApproved = page.getByRole('group', { name: 'Was the order approved at a' });
         this.orderApplication = page.getByRole('group', { name: 'Is there an application for' });
         this.approvedHearing = page.getByLabel('Which hearing?');
-        this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
+        this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });
+        this.isAllChildrenInvolved = page.getByRole('group', { name: 'Is the order about all the children?'});
+        this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
         this.EPOEndDate = page.getByRole('group', { name: 'When does it end?' });
         this.finalOrder = page.getByRole('group', { name: 'Is this a final order?' });
         this.orderPreviewLink = page.getByRole('link', { name: 'Preview order.pdf' });
@@ -86,9 +88,10 @@ export class Orders extends BasePage {
         this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
         this.excluded = page.getByLabel('Who\'s excluded');
         this.powerOfExclusionStart = page.getByRole('group', { name: 'Date power of exclusion starts' });
+        this.judgeMagistrateRadioButton = page.getByRole('radio', { name: 'His Honour Judge' });
         this.orderToAmend = page.getByLabel('Select order to amend');
         this.uploadAmendOrder = page.getByRole('textbox', { name: 'Upload the amended order. It will then be dated and stamped as amended.' });
-        this.uploadAmendOrder = page.getByRole('button', { name: 'Upload the amended order. It will then be dated and stamped as amended.' }); master
+        this.uploadAmendOrder = page.getByRole('button', { name: 'Upload the amended order. It will then be dated and stamped as amended.' });
         this.judgeLastName = page.getByLabel('Last name');
         this.judgeEmail = page.getByLabel('Email Address');
         this.legalAdvisorName = page.getByLabel('Justices\' Legal Adviser\'s');
@@ -187,12 +190,6 @@ export class Orders extends BasePage {
     }
 
     async selectChildInvolved() {
-        await this.childAccommodation.selectOption('Timothy Jones');
-    }
-
-    async addChildDetails(isAllChild: string) {
-        await this.childInvolved.getByRole('radio', { name: `${isAllChild}` }).click();
-        if (isAllChild == 'No') {
         await this.childAccommodation.selectOption('Timothy Jones');
     }
 
@@ -307,16 +304,16 @@ export class Orders extends BasePage {
 
     async addAuthorityToRefuseContactWithAChildInCareDetails() {
         await this.clickContinue();
-        await this.judgemagistrateTitle.getByLabel('His Honour Judge').check();
+        await this.judgeMagistrateRadioButton.check();
         await this.judgeLastName.getByText('Dean');
         await this.approvalDate.getByLabel('Day').fill('2');
         await this.approvalDate.getByLabel('Month').fill('2');
         await this.approvalDate.getByLabel('Year').fill('2024');
         await this.clickContinue();
-        await this.childInvolved.getByLabel('Yes').check();
+        await this.isAllChildrenInvolved.getByRole('radio', { name: 'Yes' }).check();
         await this.clickContinue();
-        await this.orderConsent.getByLabel('Yes').check();
-        await this.finalOrder.getByText('No').click();
+        await this.orderConsent.getByRole('radio', { name: 'Yes' }).check();
+        await this.finalOrder.getByRole('radio', { name: 'No' }).check();
     }
 
     async ctscUploadsTransparencyOrder() {

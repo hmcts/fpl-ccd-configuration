@@ -97,7 +97,7 @@ test.describe('manage orders', () => {
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
     })
-  
+
     test('Upload Order @xbrowser ', async ({ page, signInPage, orders }) => {
         caseName = 'Upload Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
@@ -355,9 +355,8 @@ test.describe('manage orders', () => {
 
     })
 
-    test('CTSC uploads Authority to refuse contact with a child in care (C34B)', async ({ signInPage, orders,page }) => {
+    test('CTSC uploads Authority to refuse contact with a child in care (C34B)', async ({ signInPage, orders ,page }) => {
         caseName = 'Authority to refuse contact with a child in care (C34B)' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithOrderData);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
@@ -371,15 +370,14 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await orders.addAuthorityToRefuseContactWithAChildInCareDetails();
-      
+
        await orders.clickContinue();
 
-        await orders.clickContinue();
-        await orders.checkYourAnsAndSubmit();
+        await orders.clickSaveAndContinue();
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('link', { name: 'c34b_authority_to_refuse_contact.pdf', exact: true })).toBeVisible();
-      
+
     })
 
     test('CTSC uploads Transparency Order', async ({ page, signInPage, orders }) => {
