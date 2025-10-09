@@ -41,11 +41,7 @@ export default defineConfig({
 
     /* Configure projects for major browsers */
     projects: [
-        {
-            name: 'GlobalSetup',
-            testMatch: '/settings/global-setup.ts',
 
-        },
         {
             name: 'AMRoleCleanup',
            testMatch: '/settings/global-teardown.ts',
@@ -54,7 +50,6 @@ export default defineConfig({
         {
             ...ProjectsConfig.edge,
             teardown: 'AMRoleCleanup',
-            dependencies: ['GlobalSetup']
         },
         {
             ...ProjectsConfig.chrome,

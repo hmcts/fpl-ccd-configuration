@@ -6,8 +6,6 @@ import axios from 'axios';
 import * as qs from 'qs';
 import lodash from 'lodash';
 import {ServiceTokenParams} from "@hmcts/playwright-common/dist/utils/service-auth.utils";
-import config from "../settings/test-docs/config";
-import * as fs from "fs";
 
 export const  getAccessToken = async ({user}: { user: { email: string; password: string } }) => {
     try {
@@ -137,83 +135,6 @@ export async function fetchOrganisationUsers(orgId:string,serviceAuthToken :stri
     }
 
 
-}
-
-export const cafcassAPICaseSearch = async (request: APIRequestContext, AuthToken: string, startTime: string, endTime: string) => {
-
-    let response = await request.get(`${urlConfig.serviceUrl}/cases`,
-        {
-            headers: {
-                'Authorization': `Bearer ${AuthToken}`,
-                'Content-Type': 'application/json'
-            }
-            , params: {
-                'startDate': `${startTime}`,
-                'endDate': `${endTime}`
-            }
-        })
-    return response;
-}
-
-export const cafcassAPIDocSearch = async (request: APIRequestContext, AuthToken: string,docId:string) => {
-    let response = await request.get(`${urlConfig.serviceUrl}/cases/documents/${docId}/binary`,
-        {
-            headers: {
-                'Authorization': `Bearer ${AuthToken}`,
-
-            }
-        })
-    return await response;
-}
-export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, AuthToken: string, caseID: string, data: {
-    guardianName: string;
-    telephoneNumber: string;
-    email: string;
-    children: string[];
-}[] | undefined) => {
-    let url = `${urlConfig.serviceUrl}/cases/${caseID}/guardians`
-    let response = await request.post(url,
-        {
-            headers: {
-                'Authorization': `Bearer ${AuthToken}`,
-                'Content-Type': 'application/json',
-            },
-            data: data,
-
-        })
-    return response;
-}
-export const cafcassAPICaseDocSearch = async (request: APIRequestContext, AuthToken: string, documentId: string) => {
-    let url = `${urlConfig.serviceUrl}/cases/documents/{documentId}/binary`
-
-    let response = await request.get(`${urlConfig.serviceUrl}/cases`,
-        {
-            headers: {
-                'Authorization': `Bearer ${AuthToken}`,
-                'Content-Type': 'application/json'
-            }
-        })
-    return response;
-}
-export const cafcassAPIUploadDoc = async (request: APIRequestContext,AuthToken:string, caseID:string,docType:string,fileType:string='pdf') => {
-    let url = `${urlConfig.serviceUrl}/cases/${caseID}/document`;
-    let docUpload = fs.readFileSync(config.testPdfFile);
-
-    let response = await request.post(url,
-        {
-            headers: {
-                'Authorization': `Bearer ${AuthToken}`,
-            },
-            multipart: {
-                file: {
-                    name: config.testPdfFile,
-                    mimeType: `application/${fileType}`,
-                    buffer: docUpload,
-                },
-                typeOfDocument: docType
-            }
-        });
-    return response;
 }
 
 

@@ -97,7 +97,7 @@
         "gender": "FEMALE",
         "genderIdentification": null,
         "addressKnown": true,
-        "addressUnknownReason": null,
+        "addressUnknownReason": ,
         "address": {
           "addressLine1": "20",
           "addressLine2": "Dashwood Court",
@@ -122,7 +122,7 @@
         "gender": "OTHER",
         "genderIdentification": "Dad",
         "addressKnown": true,
-        "addressUnknownReason": null,
+        "addressUnknownReason": "No fixed abode",
         "address": {
           "addressLine1": "26",
           "addressLine2": "Dashwood Court",
@@ -261,7 +261,7 @@
         "genderIdentification": null,
         "birthPlace": "Spain",
         "addressKnown": true,
-        "addressUnknownReason": null,
+        "addressUnknownReason": "No fixed abode",
         "address": {
           "addressLine1": "13",
           "addressLine2": "Dashwood Court",

@@ -1,8 +1,9 @@
-import {expect, test} from "../fixtures/fixtures";
-import {cafcassAPIUploadDoc, createCase, updateCase} from "../utils/api-helper";
-import {authToken, CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
-import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
-import {CreateCaseName} from "../utils/create-case-name";
+import {expect, test} from "../../fixtures/fixtures";
+import {createCase, updateCase} from "../../utils/api-helper";
+import {authToken, CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne} from "../../settings/user-credentials";
+import submitCase from '../../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
+import {CreateCaseName} from "../../utils/create-case-name";
+import {cafcassAPIUploadDoc} from "../../utils/cafcass-api-test-helper";
 
 test.describe('Cafcass upload guardian report ', () => {
     let startTime = new Date().toISOString();

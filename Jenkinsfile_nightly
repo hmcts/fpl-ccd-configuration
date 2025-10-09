@@ -107,6 +107,23 @@ withNightlyPipeline(type, product, component) {
     }
 
     afterAlways('fullFunctionalTest') {
+      stage('Cafcass API tests') {
+        try {
+          yarnBuilder.yarn('test:functional-cafcassAPI')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'cafcassAPITest'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+        }
+      }
       stage('Functional UI tests Edge') {
         try {
           yarnBuilder.yarn('test:functional-Edge')

@@ -1,11 +1,12 @@
-import {expect, test} from "../fixtures/fixtures";
-import {cafcassUpdateGuardianDetails, createCase, updateCase} from "../utils/api-helper";
+import {expect, test} from "../../fixtures/fixtures";
+import {createCase, updateCase} from "../../utils/api-helper";
 import {
     authToken,
     CTSCTeamLeadUser,
     newSwanseaLocalAuthorityUserOne
-} from "../settings/user-credentials";
-import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
+} from "../../settings/user-credentials";
+import submitCase from '../../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
+import {cafcassUpdateGuardianDetails} from "../../utils/cafcass-api-test-helper";
 
 test.describe('CafcassAPI Update Gaurdian Details', () => {
     let startTime = new Date().toISOString();

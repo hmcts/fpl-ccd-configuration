@@ -1,14 +1,14 @@
-import {expect, test} from "../fixtures/fixtures";
+import {expect, test} from "../../fixtures/fixtures";
 import {
-    cafcassAPICaseSearch, cafcassAPIDocSearch,
     createCase,
     updateCase
-} from "../utils/api-helper";
+} from "../../utils/api-helper";
 import {
     authToken,
     newSwanseaLocalAuthorityUserOne,
-} from "../settings/user-credentials";
-import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
+} from "../../settings/user-credentials";
+import submitCase from '../../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
+import {cafcassAPICaseSearch, cafcassAPIDocSearch} from "../../utils/cafcass-api-test-helper";
 
 test.describe('@new CafcassAPI Document Search', () => {
     let startTime = new Date().toISOString();

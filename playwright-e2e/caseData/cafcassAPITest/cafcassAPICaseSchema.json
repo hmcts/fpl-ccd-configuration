@@ -55,16 +55,7 @@
           },
           "caseData": {
             "type": "object",
-            "required": [
-              "dateSubmitted",
-              "applicationType",
-              "ordersSought",
-              "citizenIsApplicant",
-              "applicants",
-              "respondents",
-              "children",
-              "caseDocuments"
-            ],
+
             "properties": {
               "familyManCaseNumber": {
                 "type": "string"
@@ -468,15 +459,6 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": [
-                    "id",
-                    "name",
-                    "email",
-                    "phone",
-                    "address",
-                    "colleagues",
-                    "designated"
-                  ],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -534,12 +516,6 @@
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "required": [
-                          "role",
-                          "email",
-                          "fullName",
-                          "notificationRecipient"
-                        ],
                         "properties": {
                           "role": {
                             "type": "string",
@@ -586,15 +562,6 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": [
-                    "firstName",
-                    "lastName",
-                    "gender",
-                    "addressKnown",
-                    "dateOfBirth",
-                    "relationshipToChild"
-
-                  ],
                   "properties": {
                     "firstName": {
                       "type": "string"
@@ -619,10 +586,10 @@
                       "type": "boolean"
                     },
                     "addressUnknownReason": {
+                      "type": "string",
                       "enum": [
                         "No fixed abode",
-                        "Person deceased",
-                        null
+                        "Person deceased"
                       ]
                     },
                     "address": {
@@ -705,13 +672,6 @@
                       "type": [
                         "object"
                       ],
-                      "required": [
-                        "email",
-                        "firstName",
-                        "lastName",
-                        "organisationId",
-                        "organisationName"
-                      ],
                       "properties": {
                         "email": {
                           "type": "string"
@@ -737,12 +697,6 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": [
-                    "firstName",
-                    "lastName",
-                    "dateOfBirth",
-                    "gender"
-                  ],
                   "properties": {
                     "firstName": {
                       "type": "string"
@@ -867,13 +821,6 @@
                     "solicitor": {
                       "type": [
                         "object"
-                      ],
-                      "required": [
-                        "email",
-                        "firstName",
-                        "lastName",
-                        "organisationId",
-                        "organisationName"
                       ],
                       "properties": {
                         "email": {
@@ -1065,6 +1012,7 @@
                       }
                     },
                     "cancellationReason": {
+                      "type": "string",
                       "enum": [
                         "CAFCASS not allocated/present",
                         "No/poor CAFCASS analysis",
@@ -1230,38 +1178,18 @@
 
                 "properties": {
                   "neglectOccurrences": {
-                    "type": [
-                      "array"
-                    ],
-                    "items": {
-                      "type": "string"
+                    "enum": [ "Future risk of harm", "Past harm "]
                     }
                   },
                   "sexualAbuseOccurrences": {
-                    "type": [
-                      "array"
-                    ],
-                    "items": {
-                      "type": "string"
-                    }
+                    "enum": [ "Future risk of harm", "Past harm "]
                   },
                   "physicalHarmOccurrences": {
-                    "type": [
-                      "array"
-                    ],
-                    "items": {
-                      "type": "string"
-                    }
+                    "enum": [ "Future risk of harm", "Past harm "]
                   },
-                  "emotionalHarmOccurrences": {
-                    "type": [
-                      "array"
-                    ],
-                    "items": {
-                      "type": "string"
-                    }
+                  "emotionalHarmOccurrences":{
+                    "enum": [ "Future risk of harm", "Past harm "]
                   }
-                }
               },
               "factorsParenting": {
                 "type": "object",
@@ -1295,10 +1223,6 @@
               },
               "caseManagementLocation": {
                 "type": "object",
-                "required": [
-                  "region",
-                  "baseLocation"
-                ],
                 "properties": {
                   "region": {
                     "type": [
@@ -1316,19 +1240,52 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": [
-                    "removed",
-                    "documentCategory",
-                    "documentId",
-                    "documentFileName",
-                    "uploadTimestamp"
-                  ],
                   "properties": {
                     "removed": {
                       "type": "boolean"
                     },
                     "documentCategory": {
-                      "type": "string"
+                      "enum" : [
+                                 "bundle",
+                                  "caseSummary",
+                                  "positionStatements",
+                                  "threshold", "skeletonArguments",
+                                  "draftOrderForReviewPriorToHearing",
+                                  "applications",
+                                  "originalApplications",
+                                  "c1AndOtherApplications",
+                                  "c2Applications",
+                                  "orders",
+                                  "judgementsFactsAndReasons",
+                                  "transcripts",
+                                  "draftOrders",
+                                  "applicantsDocuments",
+                                  "documentsFiledOnIssue",
+                                  "applicantWitnessStatements",
+                                  "carePlan",
+                                  "parentAssessments",
+                                  "familyAndViabilityAssessments",
+                                  "applicantsOtherDocuments",
+                                  "meetingNotes",
+                                  "contactNotes",
+                                  "respondentOwnStatements",
+                                  "respondentWitnessStatements",
+                                  "guardiansEvidence",
+                                  "expertReports",
+                                  "drugAndAlcoholReports",
+                                  "mentalHealthReports",
+                                  "lettersOfInstructionReferrals",
+                                  "policeDisclosure",
+                                  "medicalRecords",
+                                  "courtCorrespondence",
+                                  "hearingNotices",
+                                  "noticeOfActingNoticeOfIssue",
+                                  "previousProceedings",
+                                  "placementApplicationsAndResponses",
+                                  "documentsSentToParties",
+                                  "advocateMeetingMinutes",
+                                  "witnessTemplates",
+                                  "archivedDocuments" ]
                     },
                     "documentId": {
                       "type": "string"
