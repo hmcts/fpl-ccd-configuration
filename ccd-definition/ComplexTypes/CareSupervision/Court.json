@@ -12,7 +12,7 @@
     "ID": "Court",
     "ListElementCode": "email",
     "ElementLabel": "Email",
-    "FieldType": "Text",
+    "FieldType": "Email",
     "SecurityClassification": "Public"
   },
   {

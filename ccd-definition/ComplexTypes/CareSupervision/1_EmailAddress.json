@@ -3,9 +3,10 @@
     "LiveFrom": "01/01/2017",
     "ID": "EmailAddress",
     "ListElementCode": "email",
-    "FieldType": "Text",
+    "FieldType": "Email",
     "ElementLabel": "Email",
     "HintText": "Case notifications will not go to this email address",
     "SecurityClassification": "Public"
   }
 ]
+
