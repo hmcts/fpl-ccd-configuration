@@ -140,7 +140,7 @@ ccd:
       ingressIP: ${INGRESS_IP}
 
   ccd-data-store-api:
-    image: hmctspublic.azurecr.io/ccd/data-store-api:pr-2652-ba8a723-20251002165757
+    image: hmctspublic.azurecr.io/ccd/data-store-api:pr-2652
     java:
       disableKeyVaults: true
       imagePullPolicy: Always
