@@ -17,7 +17,9 @@ test.describe('manage orders', () => {
     [{ user: CTSCUser, role: 'CTSC', EPOtype: 'Remove to accommodation' },
     { user: judgeUser, role: 'Legal', EPOtype: 'Prevent removal from an address' }].
         forEach(({ user, role, EPOtype }) => {
+
             test(` @xbrowser EPO order created by ${role}`,
+
                 async ({ page, signInPage, orders }) => {
                     caseName = 'EPO order by ' + role + ' ' + dateTime.slice(0, 10);
                     await updateCase(caseName, caseNumber, caseData);
@@ -95,6 +97,7 @@ test.describe('manage orders', () => {
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
     })
+
     test('Upload Order @xbrowser ', async ({ page, signInPage, orders }) => {
         caseName = 'Upload Order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
@@ -349,6 +352,31 @@ test.describe('manage orders', () => {
         await expect(page.getByText('Blank order (C21)')).toBeVisible();
         await expect(page.getByText('Prohibited Steps Order')).toBeVisible();
         await expect(page.getByRole('link', { name: 'c21_blank_order.pdf' })).toBeVisible();
+
+    })
+
+    test('CTSC uploads Authority to refuse contact with a child in care (C34B)', async ({ signInPage, orders ,page }) => {
+        caseName = 'Authority to refuse contact with a child in care (C34B)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithOrderData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Authority to refuse contact with a child in care (C34B)');
+        await orders.clickContinue();
+
+        await orders.addAuthorityToRefuseContactWithAChildInCareDetails();
+
+       await orders.clickContinue();
+
+        await orders.clickSaveAndContinue();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('link', { name: 'c34b_authority_to_refuse_contact.pdf', exact: true })).toBeVisible();
 
     })
 
@@ -635,26 +663,6 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c45a_parental_responsibility_order.pdf', exact: true })).toBeVisible();
-
-    })
-
-    test('Judge uploads Parental responsibility order (C45A)', async ({ page, signInPage, orders }) => {
-        caseName = 'Parental responsibility order (C45A) ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithOrderData);
-        await signInPage.visit();
-        await signInPage.login(judgeUser.email, judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
-        await orders.gotoNextStep('Manage orders');
-
-        await orders.selectOrderOperation('Create an order');
-        await orders.clickContinue();
-
-        await orders.selectOrder('Parental responsibility order (C45A)');
-        await orders.clickContinue();
-
-        await orders.uploadsParentalResponsibiltyOrder();
-        await orders.clickContinue();
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
