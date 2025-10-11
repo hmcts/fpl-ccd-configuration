@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class ApplicantLocalAuthorityController extends CallbackController {
     private static final String OTHER_CONTACT = "applicantContactOthers";
 
     private final ApplicantLocalAuthorityService applicantLocalAuthorityService;
+    private final PbaService pbaService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -51,6 +53,8 @@ public class ApplicantLocalAuthorityController extends CallbackController {
                 List.of("You must be the applicant or acting on behalf of the applicant to modify these details."));
         }
 
+        localAuthority.setPbaNumberDynamicList(pbaService.populatePbaDynamicList(localAuthority.getPbaNumber()));
+
         caseDetails.getData().put(LOCAL_AUTHORITY, localAuthority);
         caseDetails.getData().put(MAIN_CONTACT, applicantLocalAuthorityService.getMainContact(localAuthority));
         caseDetails.getData().put(OTHER_CONTACT, applicantLocalAuthorityService.getOtherContact(localAuthority));
@@ -64,8 +68,6 @@ public class ApplicantLocalAuthorityController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
         final LocalAuthority localAuthority = caseData.getLocalAuthorityEventData().getLocalAuthority();
-
-        applicantLocalAuthorityService.normalisePba(localAuthority);
 
         final List<String> errors = applicantLocalAuthorityService.validateLocalAuthority(localAuthority);
 
@@ -101,7 +103,6 @@ public class ApplicantLocalAuthorityController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
         final LocalAuthorityEventData eventData = caseData.getLocalAuthorityEventData();
-
         caseDetails.getData().put(LOCAL_AUTHORITIES, applicantLocalAuthorityService.save(caseData, eventData));
 
         removeTemporaryFields(caseDetails, LocalAuthorityEventData.class);

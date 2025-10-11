@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -74,6 +75,10 @@ public class UserService {
 
     public UserDetails getUserDetails() {
         return idam.getUserDetails(requestData.authorisation());
+    }
+
+    public UserInfo getUserInfo() {
+        return idam.getUserInfo(requestData.authorisation());
     }
 
     public Set<String> getIdamRoles() {
