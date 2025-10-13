@@ -3,7 +3,7 @@ import caseData from '../caseData/mandatorySubmissionFields.json' assert {type: 
 import {CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne} from '../settings/user-credentials';
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe('Manage the Retain and Dispose Config', () => {
+test.describe('Manage the Retain and Dispose Config @CCDtest', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;

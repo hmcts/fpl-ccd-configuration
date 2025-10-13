@@ -10,7 +10,7 @@ import {createCase, updateCase} from "../utils/api-helper";
 import { subtractMonthDate} from "../utils/util-helper";
 
 
-test.describe('Admin application management', () => {
+test.describe('Admin application management @CCDtest', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
