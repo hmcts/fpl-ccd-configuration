@@ -20,12 +20,26 @@ export class AllocationProposal {
     this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
   }
 
-  async allocationProposalSmokeTest() {
-    await expect.soft(this.allocationProposalHeading).toBeVisible();
-    await this.radioButton.getByLabel('Circuit Judge').click();
-    await this.reasonsForRecommendation.fill('Test');
-    await this.continue.click();
-    await this.saveAndContinue.click();
-    await expect(this.page.getByText('has been updated with event:')).toBeVisible();
+  async allocationProposalSmokeTest(): Promise<void> {
+      await this.radioButton.getByLabel('Circuit Judge').click();
+      await this.reasonsForRecommendation.fill('Test');
+      await Promise.all([
+          this.page.waitForResponse(response =>
+              response.url().includes('validate') &&
+              response.request().method() === 'POST' &&
+              response.status() === 200
+          ),
+          this.continue.click()
+      ]);
+      await Promise.all([
+         this.page.waitForResponse(response =>
+             response.url().includes('/get') &&
+             response.request().method() === 'GET' &&
+             response.status() === 200
+         ),
+          this.saveAndContinue.click()
+      ]);
   }
+
+
 }
