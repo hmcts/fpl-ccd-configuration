@@ -3,6 +3,16 @@ import {urlConfig} from "../settings/urls";
 import fs from "fs";
 import config from "../settings/test-docs/config";
 
+
+const DOCUMENT_DATE_TIME_FORMATTER = new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric'
+});
+
+
 export const cafcassAPICaseSearch = async (request: APIRequestContext, AuthToken: string, startTime: string, endTime: string) => {
     try {
         let response = await request.get(`${urlConfig.serviceUrl}/cases`,
@@ -104,4 +114,8 @@ export const cafcassAPIUploadDoc = async (request: APIRequestContext, AuthToken:
         throw error;
     }
 
+}
+
+export const getDateTimePram = (dateTime: Date, interval: number) => {
+    return new Date(dateTime.setMinutes(dateTime.getMinutes() + interval)).toISOString()
 }

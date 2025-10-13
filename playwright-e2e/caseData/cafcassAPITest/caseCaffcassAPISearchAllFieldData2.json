@@ -4,6 +4,7 @@
   "caseData": {
     "familyManCaseNumber": "Famil1234",
     "dateSubmitted": "2024-09-04",
+    "lastGenuineUpdateTime": "TO BE FILLED WITH VALID DATA",
     "applicationType": "C110A",
     "ordersSought": [
       "CARE_ORDER"
@@ -97,7 +98,7 @@
         "gender": "FEMALE",
         "genderIdentification": null,
         "addressKnown": true,
-        "addressUnknownReason": ,
+        "addressUnknownReason":"No fixed abode",
         "address": {
           "addressLine1": "20",
           "addressLine2": "Dashwood Court",
@@ -290,7 +291,7 @@
         "attendance": [
           "IN_PERSON"
         ],
-        "cancellationReason": null,
+        "cancellationReason": "CAFCASS not allocated/present",
         "preAttendanceDetails": "1 hour before the hearing",
         "attendanceDetails": "fdsg"
       },
@@ -305,7 +306,7 @@
         "attendance": [
           "IN_PERSON"
         ],
-        "cancellationReason": null,
+        "cancellationReason": "New expert report/assessment required following a change in circumstances",
         "preAttendanceDetails": "1 hour before the hearing",
         "attendanceDetails": "Add Details"
       },
@@ -320,7 +321,7 @@
         "attendance": [
           "IN_PERSON"
         ],
-        "cancellationReason": null,
+        "cancellationReason": "No special measures",
         "preAttendanceDetails": "1 hour before the hearing",
         "attendanceDetails": "add details"
       },
@@ -335,7 +336,7 @@
         "attendance": [
           "IN_PERSON"
         ],
-        "cancellationReason": null,
+        "cancellationReason": "Police disclosure/documents incomplete/not available",
         "preAttendanceDetails": "1 hour before the hearing",
         "attendanceDetails": "dsa"
       },
@@ -352,7 +353,7 @@
           "PHONE",
           "IN_PERSON"
         ],
-        "cancellationReason": null,
+        "cancellationReason": "No courtroom available",
         "preAttendanceDetails": "1 hour before the hearing",
         "attendanceDetails": "dfg"
       },
@@ -367,7 +368,7 @@
         "attendance": [
           "VIDEO"
         ],
-        "cancellationReason": null,
+        "cancellationReason": "No/poor medical records etc from other agency",
         "preAttendanceDetails": "1 hour before the hearing",
         "attendanceDetails": "add"
       },
@@ -382,7 +383,7 @@
         "attendance": [
           "IN_PERSON"
         ],
-        "cancellationReason": null,
+        "cancellationReason": "Late expert report/assessment/ Poor expert report/assessment",
         "preAttendanceDetails": "1 hour before the hearing",
         "attendanceDetails": null
       },
@@ -397,7 +398,7 @@
         "attendance": [
           "IN_PERSON"
         ],
-        "cancellationReason": null,
+        "cancellationReason": "No/poor CAFCASS analysis",
         "preAttendanceDetails": "2 hour before the hearing",
         "attendanceDetails": "sdff"
       }

@@ -17,7 +17,7 @@ export const systemUpdateUser = {
 };
 
 export const cafcassAPIUser={
-    email: 'chakshing.lo@justice.gov.uk',
+    email: 'cafcass-system-update-user@example.com',
     password: defaultPwd,
 };
 

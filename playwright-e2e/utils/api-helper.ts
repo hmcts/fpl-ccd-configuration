@@ -46,7 +46,7 @@ export const createCase = async (caseName = 'e2e UI Test', user: { email: string
     }
 }
 
-export const updateCase = async (caseName = 'e2e Test', caseID: string, caseDataJson: any) => {
+export const updateCase = async (caseName = 'e2e Test', caseID: number, caseDataJson: any) => {
     //This can be moved to before test hook to as same document URL will be used for all test data
     //replace the documents placeholder with document url
     let docDetail = await apiRequest(urlConfig.serviceUrl + '/testing-support/test-document', systemUpdateUser);
@@ -59,6 +59,7 @@ export const updateCase = async (caseName = 'e2e Test', caseID: string, caseData
     caseDataJson.caseData.caseName = caseName;
 
     caseDataJson.caseData.dateSubmitted = dateTime.slice(0, 10);
+    caseDataJson.caseData.lastGenuineUpdateTime = dateTime
 
     caseDataJson.caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
     let data = lodash.template(JSON.stringify(caseDataJson))(docParameter);

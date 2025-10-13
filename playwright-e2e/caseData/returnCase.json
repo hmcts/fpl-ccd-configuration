@@ -168,6 +168,7 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "lastGenuineUpdateTime": "TO BE FILLED WITH VALID DATA",
     "submittedForm": {
       "document_url": "${TEST_DOCUMENT_URL}",
       "document_filename": "c110a.pdf",

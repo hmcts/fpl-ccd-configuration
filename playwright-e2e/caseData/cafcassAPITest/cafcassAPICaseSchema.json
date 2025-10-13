@@ -877,6 +877,7 @@
                       "type": "boolean"
                     },
                     "addressUnknownReason": {
+                      "type": "string",
                       "enum": [
                         "No fixed abode",
                         "Person deceased"
