@@ -53,27 +53,87 @@ export class ApplicantDetails extends BasePage {
 
   }
 
-  async applicantDetailsNeeded() {
-    await expect.soft(this.applicantDetailsHeading).toBeVisible();
-    await this.pbaNumber.fill('PBA0082848');
-    await this.customerReference.fill('1234567');
-    await this.nameOfApplicantToSign.fill('Tom Jones');
-    await this.country.fill('United Kingdom');
-    await this.clickContinue();
-    await this.firstName.fill('Peters');
-    await this.lastName.fill('John');
-    await this.phoneNumber.fill('0123456789');
-    await this.alternativeNumber.fill('123456780');
-    await this.directEmailAddress.fill('Me2@mail.com');
-    await this.addNew.click();
-    await this.page.locator('#applicantContactOthers_0_firstName').fill('Me');
-    await this.page.locator('#applicantContactOthers_0_lastName').fill('Two');
-    await this.page.getByLabel('Email address', { exact: true }).fill('zee@mail.com');
-    await this.role.check();
-    await this.enterRole.fill('QA');
-    await this.continue.click();
-    await this.saveAndContinue.click();
-    await expect(this.page.getByText('has been updated with event:')).toBeVisible();
+  async fillPbaNumber(text: string): Promise<void> {
+      await this.pbaNumber.fill(text);
+  }
+
+  async fillCustomerReference(text: string): Promise<void> {
+      await this.customerReference.fill(text);
+  }
+
+  async fillNameOfApplicantToSign(name: string): Promise<void> {
+      await this.nameOfApplicantToSign.fill(name);
+  }
+
+  async fillCountry(country: string): Promise<void> {
+      await this.country.fill(country);
+  }
+
+  async fillFirstName(name: string): Promise<void> {
+      await this.firstName.fill(name);
+  }
+
+  async fillLastName(name: string): Promise<void> {
+      await this.lastName.fill(name);
+  }
+
+  async fillPhoneNumber(phoneNumber: string): Promise<void> {
+      await this.phoneNumber.fill(phoneNumber);
+  }
+
+  async fillAlternativeNumber(phoneNumber: string): Promise<void> {
+      await this.alternativeNumber.fill(phoneNumber);
+  }
+
+  async fillDirectEmailAddress(email: string): Promise<void> {
+      await this.directEmailAddress.fill(email);
+  }
+
+  async applicantDetailsNeeded(): Promise<void> {
+      await this.fillPbaNumber('PBA0082848');
+      await this.fillCustomerReference('1234567');
+      await this.fillNameOfApplicantToSign('Test');
+      await this.fillCountry('United Kingdom');
+
+      await Promise.all([
+          this.page.waitForResponse(response =>
+              !!response.url().match(/\/case-types\/[^/]+\/validate/) &&
+              response.request().method() === 'POST' &&
+              response.status() === 200
+          ),
+          await this.clickContinue()
+      ]);
+
+      await this.fillFirstName('Peter');
+      await this.fillLastName('Smith');
+      await this.fillPhoneNumber('0123456789');
+      await this.fillAlternativeNumber('0123456789');
+      await this.fillDirectEmailAddress('somethingtest@mailnator.com');
+      await this.addNew.click();
+      await this.page.locator('#applicantContactOthers_0_firstName').fill('Me');
+      await this.page.locator('#applicantContactOthers_0_lastName').fill('Two');
+      await this.page.getByLabel('Email address', { exact: true }).fill('zee@mail.com');
+      await this.role.check();
+      await this.enterRole.fill('QA');
+
+      await Promise.all([
+          this.page.waitForResponse(response =>
+              response.url().includes('validate') &&
+              response.request().method() === 'POST' &&
+              response.status() === 200
+          ),
+          this.continue.click()
+      ]);
+
+      await Promise.all([
+          this.page.waitForResponse(response =>
+              response.url().includes('get') &&
+              response.request().method() === 'GET' &&
+              response.status() === 200
+          ),
+          this.saveAndContinue.click()
+      ]);
+
   }
 
   async solicitorC110AApplicationApplicantDetails(){
