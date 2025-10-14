@@ -832,7 +832,7 @@
     "Name": "Upload draft orders",
     "Description": "Upload draft orders",
     "DisplayOrder": 2,
-    "PreConditionState(s)": "GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PreConditionState(s)": "GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
