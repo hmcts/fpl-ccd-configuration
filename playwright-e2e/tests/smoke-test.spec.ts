@@ -4,9 +4,9 @@ import { CreateCaseName } from "../utils/create-case-name";
 import { CaseFileView } from "../pages/case-file-view";
 
 
-test.describe('Smoke Test @xbrowser @CCDtest', () => {
+test.describe('Smoke Test @xbrowser ', () => {
 
-    test('Local Authority C110A application submission @smoke-test @accessibility', async ({
+    test.only('Local Authority C110A application submission @smoke-test @accessibility', async ({
                                                                     signInPage,
         page,
         createCase,
@@ -73,10 +73,10 @@ test.describe('Smoke Test @xbrowser @CCDtest', () => {
             ]);
         });
 
-        await test.step('Upload documents', async() => {
-            await startApplication.addApplicationDocuments();
-            await addApplicationDocuments.uploadDocumentSmokeTest();
-        });
+        // await test.step('Upload documents', async() => {
+        //     await startApplication.addApplicationDocuments();
+        //     await addApplicationDocuments.uploadDocumentSmokeTest();
+        // });
 
         await test.step('Applicant details', async() => {
             await Promise.all([

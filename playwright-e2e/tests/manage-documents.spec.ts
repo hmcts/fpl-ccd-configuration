@@ -9,7 +9,7 @@ import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
 import { setHighCourt } from '../utils/update-case-details';
 
 
-test.describe('Manage Documents @CCDtest', () => {
+test.describe('Manage Documents ', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;

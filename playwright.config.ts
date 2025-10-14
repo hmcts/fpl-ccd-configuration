@@ -48,7 +48,6 @@ export default defineConfig({
         {
             ...ProjectsConfig.edge,
             teardown: 'AMRoleCleanup',
-            grep:/@CCDtest/
 
         },
         {

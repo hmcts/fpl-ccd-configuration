@@ -20,7 +20,7 @@ test.describe('Gatekeeping Listing', () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
-  test('Review Standard Direction Order High Court WA Task @xbrowser @CCDtest',
+  test('Review Standard Direction Order High Court WA Task @xbrowser ',
     async ({ page, signInPage, gateKeepingListing,
       caseFileView }) => {
       caseName = 'Review Standard Direction Order High Court WA Task ' + dateTime.slice(0, 10);

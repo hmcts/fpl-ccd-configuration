@@ -9,7 +9,7 @@ import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
 import config from "../settings/test-docs/config";
 import {urlConfig} from "../settings/urls";
 
-test.describe('Upload additional applications @CCDtest', () => {
+test.describe('Upload additional applications ', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
