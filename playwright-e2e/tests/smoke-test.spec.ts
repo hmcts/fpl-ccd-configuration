@@ -6,7 +6,7 @@ import { CaseFileView } from "../pages/case-file-view";
 
 test.describe('Smoke Test @xbrowser ', () => {
 
-    test.only('Local Authority C110A application submission @smoke-test @accessibility', async ({
+    test('Local Authority C110A application submission @smoke-test @accessibility', async ({
                                                                     signInPage,
         page,
         createCase,
