@@ -12,11 +12,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
@@ -112,7 +110,7 @@ public class MigrateCaseController extends CallbackController {
         List<Element<JudicialMessage>> updatedMessages = judicialMessages.stream()
             .map(element -> {
                 return element(element.getId(),formatMessageHistory(element.getValue()));
-        }).toList();
+            }).toList();
 
         caseDetails.getData().put("judicialMessages", updatedMessages);
 
@@ -121,7 +119,7 @@ public class MigrateCaseController extends CallbackController {
         List<Element<JudicialMessage>> updatedClosedMessages = closedJudicialMessages.stream()
             .map(element -> {
                 return element(element.getId(),formatMessageHistory(element.getValue()));
-        }).toList();
+            }).toList();
 
         caseDetails.getData().put("closedJudicialMessages", updatedClosedMessages);
         caseDetails.getData().remove("waTaskUrgency");
