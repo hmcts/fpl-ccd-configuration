@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -36,7 +35,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -63,11 +61,7 @@ class ReplyToMessageJudgeServiceTest {
     private static final String MESSAGE_SENDER = "sender@fpla.com";
     private static final String MESSAGE_REQUESTED_BY = "request review from some court";
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
-    private static final String MESSAGE = "Some message";
-    private static final UUID ORIGINAL_MESSAGE_ID = UUID.randomUUID();
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = randomUUID();
-    private static final JudicialMessageRoleType RECIPIENT_TYPE = JudicialMessageRoleType.OTHER;
-    private static final JudicialMessageRoleType SENDER_TYPE = JudicialMessageRoleType.CTSC;
 
     @Mock
     private Time time;
@@ -94,7 +88,7 @@ class ReplyToMessageJudgeServiceTest {
         when(ctscEmailLookupConfiguration.getEmail()).thenReturn(COURT_EMAIL);
         when(roleAssignmentService.getJudicialCaseRolesAtTime(any(), any())).thenReturn(List.of());
 
-        when(time.now()).thenReturn(now());
+        when(time.now()).thenReturn(LocalDateTime.now());
     }
 
     @Test
@@ -160,7 +154,6 @@ class ReplyToMessageJudgeServiceTest {
 
     @Test
     void shouldBuildRelatedDocumentsLabelAndRebuildJudicialMessagesDynamicListWhenReplyingToAMessage() {
-        LocalDateTime now = LocalDateTime.now();
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
 
         JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
@@ -174,17 +167,7 @@ class ReplyToMessageJudgeServiceTest {
                         .build()
                 )
             ))
-            .messageHistory("message history old")
-            .judicialMessageReplies(List.of(element(
-                ORIGINAL_MESSAGE_ID,
-                JudicialMessageReply.builder()
-                    .dateSent(formatLocalDateTimeBaseUsingFormat(now.minusDays(2), DATE_TIME_AT))
-                    .updatedTime(now.minusDays(2))
-                    .message(MESSAGE)
-                    .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
-                    .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                    .build()
-            )))
+            .messageHistory("message history")
             .latestMessage("Some note")
             .subject("Test subject")
             .dateSent("12 January 2021")
@@ -218,21 +201,7 @@ class ReplyToMessageJudgeServiceTest {
             .relatedDocuments(selectedJudicialMessage.getRelatedDocuments())
             .subject(selectedJudicialMessage.getSubject())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
-            .messageHistoryTemp(format(
-                "CTSC (sender@fpla.com) - %s - Some message (end of message) \n \nmessage history old",
-                formatLocalDateTimeBaseUsingFormat(now.minusDays(2), DATE_TIME_AT)))
-            .judicialMessageReplies(List.of(element(
-                ORIGINAL_MESSAGE_ID,
-                JudicialMessageReply.builder()
-                    .dateSent(formatLocalDateTimeBaseUsingFormat(now.minusDays(2), DATE_TIME_AT))
-                    .updatedTime(now.minusDays(2))
-                    .message(MESSAGE)
-                    .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
-                    .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                    .build()
-            )))
             .urgency(selectedJudicialMessage.getUrgency())
-            .isJudicialMessageUrgent(NO)
             .replyFrom(MESSAGE_RECIPIENT)
             .replyTo(MESSAGE_SENDER)
             .latestMessage("")
@@ -251,8 +220,6 @@ class ReplyToMessageJudgeServiceTest {
 
     @Test
     void shouldPopulateReplyFromWithJudgeEmailAddressWhenJudgeIsReplyingToAMessage() {
-        LocalDateTime now = LocalDateTime.now();
-
         JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
             .senderType(JudicialMessageRoleType.LOCAL_COURT_ADMIN)
             .sender(MESSAGE_SENDER)
@@ -264,17 +231,7 @@ class ReplyToMessageJudgeServiceTest {
                         .build()
                 )
             ))
-            .messageHistory("message history old")
-            .judicialMessageReplies(List.of(element(
-                ORIGINAL_MESSAGE_ID,
-                JudicialMessageReply.builder()
-                    .dateSent(formatLocalDateTimeBaseUsingFormat(now.minusDays(2), DATE_TIME_AT))
-                    .updatedTime(now.minusDays(2))
-                    .message(MESSAGE)
-                    .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
-                    .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                    .build()
-            )))
+            .messageHistory("message history")
             .latestMessage("Some note")
             .subject("Test subject")
             .dateSent("12 January 2021")
@@ -312,21 +269,7 @@ class ReplyToMessageJudgeServiceTest {
             .relatedDocuments(selectedJudicialMessage.getRelatedDocuments())
             .subject(selectedJudicialMessage.getSubject())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
-            .messageHistoryTemp(format(
-                "CTSC (sender@fpla.com) - %s - Some message (end of message) \n \nmessage history old",
-                formatLocalDateTimeBaseUsingFormat(now.minusDays(2), DATE_TIME_AT)))
-            .judicialMessageReplies(List.of(element(
-                ORIGINAL_MESSAGE_ID,
-                JudicialMessageReply.builder()
-                    .dateSent(formatLocalDateTimeBaseUsingFormat(now.minusDays(2), DATE_TIME_AT))
-                    .updatedTime(now.minusDays(2))
-                    .message(MESSAGE)
-                    .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
-                    .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                    .build()
-            )))
             .urgency(selectedJudicialMessage.getUrgency())
-            .isJudicialMessageUrgent(NO)
             .replyFrom(MESSAGE_RECIPIENT)
             .replyTo(MESSAGE_SENDER)
             .latestMessage("")
@@ -376,8 +319,7 @@ class ReplyToMessageJudgeServiceTest {
     @SuppressWarnings("unchecked")
     void shouldUpdateExistingJudicialMessageWhenReplying() {
         String messageReply = "Reply to message";
-        LocalDateTime originalSentDate = time.now().minusDays(2);
-        String formattedSentDate = formatLocalDateTimeBaseUsingFormat(originalSentDate, DATE_TIME_AT);
+        String originalSentDate = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
 
         MessageJudgeEventData messageJudgeEventData
             = buildMessageEventData(messageReply, originalSentDate, true);
@@ -394,11 +336,12 @@ class ReplyToMessageJudgeServiceTest {
             (List<Element<JudicialMessage>>) updatedData.get("judicialMessages");
 
         String formattedMessageHistory = String.format("%s (%s) - %s",
-            JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER, MESSAGE_NOTE);
+            JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER, MESSAGE_NOTE)
+            + "\n \n"
+            + String.format("%s (%s) - %s", JudicialMessageRoleType.OTHER.getLabel(), MESSAGE_RECIPIENT, messageReply);
 
         // The sender and recipient are not the wrong way round, the sender of the previous message has be made the
         // recipient of this one and the recipient has "responded" and become the sender.
-        Element<JudicialMessageReply> newReply = updatedMessages.get(0).getValue().getJudicialMessageReplies().get(0);
         Element<JudicialMessage> expectedUpdatedJudicialMessage = element(SELECTED_DYNAMIC_LIST_ITEM_ID,
             JudicialMessage.builder()
                 .sender(MESSAGE_RECIPIENT)
@@ -412,27 +355,6 @@ class ReplyToMessageJudgeServiceTest {
                 .toLabel("%s (%s)".formatted(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER))
                 .latestMessage(messageReply)
                 .messageHistory(formattedMessageHistory)
-                .judicialMessageReplies(List.of(element(
-                        newReply.getId(),
-                    JudicialMessageReply.builder()
-                        .dateSent(newReply.getValue().getDateSent())
-                        .updatedTime(newReply.getValue().getUpdatedTime())
-                        .message(messageReply)
-                        .replyFrom("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                        .replyTo("%s (%s)".formatted(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(),
-                            MESSAGE_SENDER))
-                        .build()
-                    ),
-                    element(
-                    ORIGINAL_MESSAGE_ID,
-                    JudicialMessageReply.builder()
-                        .dateSent(formattedSentDate)
-                        .updatedTime(originalSentDate)
-                        .message(MESSAGE)
-                        .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
-                        .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                        .build()
-                )))
                 .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
                 .build()
         );
@@ -462,7 +384,7 @@ class ReplyToMessageJudgeServiceTest {
     @Test
     void shouldPopulateFirstHearingLabelWhenHearingExists() {
         HearingType hearingType = CASE_MANAGEMENT;
-        LocalDateTime hearingStartDate = now();
+        LocalDateTime hearingStartDate = LocalDateTime.now();
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(HearingBooking.builder()
@@ -486,7 +408,7 @@ class ReplyToMessageJudgeServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void shouldCloseJudicialMessageWhenIsReplyingToJudicialMessageIsSelectedAsNo() {
-        LocalDateTime dateSent = time.now().minusDays(1);
+        String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
 
         MessageJudgeEventData messageJudgeEventData = buildMessageEventData(null, dateSent, false);
 
@@ -543,8 +465,7 @@ class ReplyToMessageJudgeServiceTest {
             .hasMessage(format("Judicial message with id %s not found", SELECTED_DYNAMIC_LIST_ITEM_ID));
     }
 
-    private MessageJudgeEventData buildMessageEventData(String messageReply, LocalDateTime dateSent,
-                                                        boolean isReplying) {
+    private MessageJudgeEventData buildMessageEventData(String messageReply, String dateSent, boolean isReplying) {
         if (isReplying) {
             return buildMessageEventData(messageReply, dateSent, true, MESSAGE_RECIPIENT, MESSAGE_SENDER);
         } else {
@@ -553,10 +474,10 @@ class ReplyToMessageJudgeServiceTest {
     }
 
     private MessageJudgeEventData buildMessageEventData(
-        String messageReply, LocalDateTime dateSent, boolean isReplying, String sender, String recipient) {
-        String formattedDateSent = formatLocalDateTimeBaseUsingFormat(dateSent, DATE_TIME_AT);
+        String messageReply, String dateSent, boolean isReplying, String sender, String recipient) {
+
         return MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, formattedDateSent)))
+            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
             .judicialMessageReply(JudicialMessage.builder()
                 .isReplying(isReplying ? YES.getValue() : NO.getValue())
                 .latestMessage(isReplying ? messageReply : null)
@@ -574,7 +495,7 @@ class ReplyToMessageJudgeServiceTest {
         return element(JudicialMessage.builder().updatedTime(dateTime).status(status).build());
     }
 
-    private JudicialMessage buildJudicialMessage(LocalDateTime dateSent) {
+    private JudicialMessage buildJudicialMessage(String dateSent) {
         return JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
             .senderType(JudicialMessageRoleType.LOCAL_COURT_ADMIN)
@@ -585,17 +506,7 @@ class ReplyToMessageJudgeServiceTest {
             .latestMessage(MESSAGE_NOTE)
             .messageHistory(String.format("%s (%s) - %s",
                 JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER, MESSAGE_NOTE))
-            .judicialMessageReplies(List.of(element(
-                ORIGINAL_MESSAGE_ID,
-                JudicialMessageReply.builder()
-                    .dateSent(formatLocalDateTimeBaseUsingFormat(dateSent, DATE_TIME_AT))
-                    .updatedTime(dateSent)
-                    .message(MESSAGE)
-                    .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
-                    .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                    .build()
-            )))
-            .dateSent(formatLocalDateTimeBaseUsingFormat(dateSent, DATE_TIME_AT))
+            .dateSent(dateSent)
             .build();
     }
 
