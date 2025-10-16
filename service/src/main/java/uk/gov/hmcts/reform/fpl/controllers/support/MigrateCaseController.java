@@ -15,11 +15,14 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
+import uk.gov.hmcts.reform.fpl.service.SendNewMessageJudgeService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.List;
@@ -27,6 +30,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static java.lang.String.join;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
 @RestController
@@ -40,7 +46,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2360", this::run2360,
+        "DFPL-2914", this::run2914,
         "DFPL-2805", this::run2805,
         "DFPL-2487", this::run2487,
         "DFPL-2740", this::run2740,
@@ -51,6 +57,7 @@ public class MigrateCaseController extends CallbackController {
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
+    private final SendNewMessageJudgeService sendNewMessageJudgeService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -97,10 +104,45 @@ public class MigrateCaseController extends CallbackController {
             orgId, null));
     }
 
-    private void run2360(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2360";
-        // all existing cases need this field now, new cases will be populated in case initiation
-        caseDetails.getData().put("hasRespondentLA", YesNo.NO);
+    private void run2914(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2914";
+        CaseData caseData = getCaseData(caseDetails);
+        List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
+
+        List<Element<JudicialMessage>> updatedMessages = judicialMessages.stream()
+            .map(element -> {
+                return element(element.getId(),formatMessageHistory(element.getValue()));
+        }).toList();
+
+        caseDetails.getData().put("judicialMessages", updatedMessages);
+
+        List<Element<JudicialMessage>> closedJudicialMessages = caseData.getClosedJudicialMessages();
+
+        List<Element<JudicialMessage>> updatedClosedMessages = closedJudicialMessages.stream()
+            .map(element -> {
+                return element(element.getId(),formatMessageHistory(element.getValue()));
+        }).toList();
+
+        caseDetails.getData().put("closedJudicialMessages", updatedClosedMessages);
+    }
+
+    private JudicialMessage formatMessageHistory(JudicialMessage judicialMessage) {
+        if (!judicialMessage.getJudicialMessageReplies().isEmpty()) {
+            String messageHistory = judicialMessage.getJudicialMessageReplies().stream().map(reply -> {
+                String sender = reply.getValue().getReplyFrom();
+                String message = reply.getValue().getMessage();
+
+                return String.format("%s - %s", sender, message);
+            }).reduce((history, historyToAdd) -> join("\n \n")).get();
+
+            log.info("Message history: {} for migration", messageHistory);
+
+            return judicialMessage.toBuilder()
+                .messageHistory(messageHistory)
+                .build();
+        }
+
+        return judicialMessage;
     }
 
     private void run2487(CaseDetails caseDetails) {
