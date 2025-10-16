@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -78,8 +79,10 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .recipientDynamicList(buildRecipientDynamicList(
                 caseData, senderRole, Optional.of(selectedJudicialMessage.getSenderType().toString())))
             .urgency(selectedJudicialMessage.getUrgency())
-            .judicialMessageReplies(selectedJudicialMessage.getJudicialMessageReplies())
-            .messageHistory(selectedJudicialMessage.getMessageHistory())
+            .judicialMessageReplies(!isEmpty(selectedJudicialMessage.getJudicialMessageReplies())
+                    ? selectedJudicialMessage.getJudicialMessageReplies() : List.of())
+            .messageHistory(!isEmpty(selectedJudicialMessage.getMessageHistory())
+                ? selectedJudicialMessage.getMessageHistory() : "")
             .messageHistoryTemp(buildTempMessageHistory(selectedJudicialMessage))
             .latestMessage(EMPTY)
             .replyFrom(getSenderEmailAddressByRoleType(senderRole))
