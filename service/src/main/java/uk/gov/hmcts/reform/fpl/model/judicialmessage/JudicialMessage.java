@@ -36,7 +36,6 @@ public class JudicialMessage extends JudicialMessageMetaData {
     private final String isReplying;
     private final String latestMessage;
     private final String messageHistory;
-    private final List<Element<JudicialMessageReply>> judicialMessageReplies;
     private final String closureNote;
     private final String replyFrom;
     private final String replyTo;
