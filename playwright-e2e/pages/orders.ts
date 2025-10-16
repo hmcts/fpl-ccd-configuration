@@ -333,7 +333,6 @@ export class Orders extends BasePage {
     async ctscFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
         await this.page.pause();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
@@ -353,7 +352,6 @@ export class Orders extends BasePage {
     async judgeUploadsFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
