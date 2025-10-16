@@ -12,11 +12,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
@@ -32,6 +30,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.join;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
@@ -109,37 +108,44 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
 
-        List<Element<JudicialMessage>> updatedMessages = judicialMessages.stream()
-            .map(element -> {
-                return element(element.getId(),formatMessageHistory(element.getValue()));
-        }).toList();
+        if (!isEmpty(judicialMessages)) {
+            List<Element<JudicialMessage>> updatedMessages = judicialMessages.stream()
+                .map(element -> {
+                    return element(element.getId(), formatMessageHistory(element.getValue()));
+                }).toList();
 
-        caseDetails.getData().put("judicialMessages", updatedMessages);
+            caseDetails.getData().put("judicialMessages", updatedMessages);
+        }
 
         List<Element<JudicialMessage>> closedJudicialMessages = caseData.getClosedJudicialMessages();
 
-        List<Element<JudicialMessage>> updatedClosedMessages = closedJudicialMessages.stream()
-            .map(element -> {
-                return element(element.getId(),formatMessageHistory(element.getValue()));
-        }).toList();
+        if (!isEmpty(closedJudicialMessages)) {
+            List<Element<JudicialMessage>> updatedClosedMessages = closedJudicialMessages.stream()
+                .map(element -> {
+                    return element(element.getId(), formatMessageHistory(element.getValue()));
+                }).toList();
 
-        caseDetails.getData().put("closedJudicialMessages", updatedClosedMessages);
+            caseDetails.getData().put("closedJudicialMessages", updatedClosedMessages);
+        }
         caseDetails.getData().remove("waTaskUrgency");
     }
 
     private JudicialMessage formatMessageHistory(JudicialMessage judicialMessage) {
-        if (!judicialMessage.getJudicialMessageReplies().isEmpty()) {
-            String messageHistory = judicialMessage.getJudicialMessageReplies().stream().map(reply -> {
-                String sender = reply.getValue().getReplyFrom();
-                String message = reply.getValue().getMessage();
+        if (!isEmpty(judicialMessage.getJudicialMessageReplies())) {
+            String messageHistory = judicialMessage.getJudicialMessageReplies().stream()
+                .map(reply -> {
+                    String sender = reply.getValue().getReplyFrom();
+                    String message = reply.getValue().getMessage();
 
-                return String.format("%s - %s", sender, message);
-            }).reduce((history, historyToAdd) -> join("\n \n")).get();
+                    return String.format("%s - %s", sender, message);
+                })
+                .reduce((history, historyToAdd) -> join("\n \n", history, historyToAdd)).get();
 
             log.info("Message history: {} for migration", messageHistory);
 
             return judicialMessage.toBuilder()
                 .messageHistory(messageHistory)
+                .judicialMessageReplies(null)
                 .build();
         }
 
