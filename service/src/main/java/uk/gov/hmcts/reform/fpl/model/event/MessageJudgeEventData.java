@@ -30,7 +30,8 @@ public class MessageJudgeEventData {
             "hasAdditionalApplications", "isMessageRegardingDocuments", "additionalApplicationsDynamicList",
             "documentTypesDynamicList", "documentDynamicList", "relatedDocumentsLabel","attachDocumentLabel",
             "nextHearingLabel", "judicialMessageMetaData", "judicialMessageNote", "judicialMessageDynamicList",
-            "judicialMessageReply", "replyToMessageJudgeNextHearingLabel", "isJudiciary", "isSendingEmailsInCourt"
+            "judicialMessageReply", "replyToMessageJudgeNextHearingLabel", "isJudiciary", "isSendingEmailsInCourt",
+            "messageHistoryTemp"
         };
     }
 }

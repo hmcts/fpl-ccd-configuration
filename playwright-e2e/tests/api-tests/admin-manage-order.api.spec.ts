@@ -11,7 +11,7 @@ test.describe('Admin manage order API test @apiTest', () => {
         await manageOrderTestService.testManageOrderContentSame(caseDetailsBefore, 'c32a');
     });
 
-    test('C32b', async ({ manageOrderTestService }) => {
+    test.only('C32b', async ({ manageOrderTestService }) => {
         await manageOrderTestService.testManageOrderContentSame(caseDetailsBefore, 'c32b');
     });
 
