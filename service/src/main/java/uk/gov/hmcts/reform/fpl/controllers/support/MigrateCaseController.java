@@ -124,6 +124,7 @@ public class MigrateCaseController extends CallbackController {
         }).toList();
 
         caseDetails.getData().put("closedJudicialMessages", updatedClosedMessages);
+        caseDetails.getData().remove("waTaskUrgency");
     }
 
     private JudicialMessage formatMessageHistory(JudicialMessage judicialMessage) {
