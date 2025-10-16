@@ -291,7 +291,7 @@ export class Orders extends BasePage {
 
     async openOrderDoc(docLink: string) {
         const newPagePromise = this.page.context().waitForEvent('page');
-        await this.page.getByRole('link', { name: `${docLink}` }).click();
+        await this.page.getByRole('button', { name: `${docLink}` }).click();
         this.orderPage = await newPagePromise;
         await this.orderPage.waitForLoadState();
     }

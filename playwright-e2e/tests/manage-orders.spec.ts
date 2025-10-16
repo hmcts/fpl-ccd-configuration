@@ -120,7 +120,7 @@ test.describe('manage orders ', () => {
         await orders.tabNavigation('Orders');
         await expect(orders.page.getByRole('cell', { name: 'Other', exact: true })).toBeVisible();
         await expect(orders.page.getByText('Uploaded Other Order')).toBeVisible();
-        await expect(orders.page.getByRole('link', { name: 'other_order.pdf' })).toBeVisible();
+        await expect(orders.page.getByRole('button', { name: 'other_order.pdf' })).toBeVisible();
         await orders.openOrderDoc('other_order.pdf');
         await orders.assertOrderSealScreenshot();
 
