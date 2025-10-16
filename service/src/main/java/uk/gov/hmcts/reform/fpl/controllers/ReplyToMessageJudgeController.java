@@ -10,19 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.ReplyToMessageJudgeService;
-import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
-import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency.STANDARD;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -32,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReplyToMessageJudgeController extends CallbackController {
     private final ReplyToMessageJudgeService replyToMessageJudgeService;
-    private final WorkAllocationTaskService workAllocationTaskService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -66,9 +62,6 @@ public class ReplyToMessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         caseDetailsMap.putAll(replyToMessageJudgeService.updateJudicialMessages(caseData));
-
-        workAllocationTaskService.setTaskUrgency(caseDetailsMap,
-            replyToMessageJudgeService.isMessageUrgent(caseData) ? WorkAllocationTaskUrgency.URGENT : STANDARD);
 
         removeTemporaryFields(caseDetailsMap, transientFields());
 

@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
@@ -27,14 +25,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
@@ -42,18 +37,17 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 @OverrideAutoConfiguration(enabled = true)
 class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAbstractTest {
     private static final UUID DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
-    private static final UUID ORIGINAL_MESSAGE_ID = UUID.randomUUID();
     private static final String SENDER = "sender@gmail.com";
     private static final JudicialMessageRoleType SENDER_TYPE = JudicialMessageRoleType.CTSC;
     private static final String CURRENT_USER = "current@gmail.com";
+    private static final JudicialMessageRoleType CURRENT_USER_TYPE = JudicialMessageRoleType.LOCAL_COURT_ADMIN;
     private static final String RELATED_FILE_NAME = "file1.doc";
     private static final DocumentReference RELATED_FILE = DocumentReference.builder()
             .filename(RELATED_FILE_NAME)
             .build();
+    private static final String MESSAGE_HISTORY = "message history";
     private static final String LATEST_MESSAGE = "Some note";
-    private static final JudicialMessageRoleType RECIPIENT_TYPE = JudicialMessageRoleType.OTHER;
-    private static final String MESSAGE = "Some message";
-    private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
+    private static final String DATE_SENT = "16 December 2020";
 
     @SpyBean
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
@@ -105,7 +99,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAb
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
 
         assertThat(response.getData().get("replyToMessageJudgeNextHearingLabel")).isEqualTo(
-            format("Next hearing in the case: %s", expectedNextHearing.toLabel()));
+            String.format("Next hearing in the case: %s", expectedNextHearing.toLabel()));
     }
 
     @Test
@@ -138,20 +132,8 @@ class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAb
             .replyFrom(CURRENT_USER)
             .replyTo(SENDER)
             .subject(selectedJudicialMessage.getSubject())
-            .messageHistoryTemp(format("CTSC (sender@gmail.com) - %s - Some message (end of message)",
-                formatLocalDateTimeBaseUsingFormat(now().minusDays(2), DATE_TIME_AT)))
-            .judicialMessageReplies(List.of(
-            element(ORIGINAL_MESSAGE_ID,
-                JudicialMessageReply.builder()
-                    .dateSent(formatLocalDateTimeBaseUsingFormat(now().minusDays(2), DATE_TIME_AT))
-                    .updatedTime(now().minusDays(2))
-                    .message(MESSAGE)
-                    .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
-                    .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                    .build())
-        ))
+            .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage("")
-            .isJudicialMessageUrgent(YesNo.NO)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
@@ -165,8 +147,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAb
         );
 
         DynamicList expectedJudicialMessageDynamicList = buildDynamicList(
-            0, Pair.of(DYNAMIC_LIST_ITEM_ID,
-                formatLocalDateTimeBaseUsingFormat(now().minusDays(2), DATE_TIME_AT))
+            0, Pair.of(DYNAMIC_LIST_ITEM_ID, "16 December 2020")
         );
 
         assertThat(judicialMessageReply).isEqualTo(expectedJudicialMessage);
@@ -179,16 +160,9 @@ class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAb
             .senderType(SENDER_TYPE)
             .relatedDocumentFileNames(RELATED_FILE_NAME)
             .relatedDocuments(List.of(element(RELATED_FILE)))
-            .judicialMessageReplies(List.of(element(ORIGINAL_MESSAGE_ID,
-                JudicialMessageReply.builder()
-                    .dateSent(formatLocalDateTimeBaseUsingFormat(now().minusDays(2), DATE_TIME_AT))
-                    .updatedTime(now().minusDays(2))
-                    .message(MESSAGE)
-                    .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
-                    .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                    .build())))
+            .messageHistory(MESSAGE_HISTORY)
             .latestMessage(LATEST_MESSAGE)
-            .dateSent(formatLocalDateTimeBaseUsingFormat(now().minusDays(2), DATE_TIME_AT))
+            .dateSent(DATE_SENT)
             .build();
     }
 }
