@@ -121,7 +121,7 @@
         "roleCategory": "JUDICIAL",
         "classification": "PUBLIC",
         "readOnly": false,
-        "attributes": { "caseType": "CIVIL", "jurisdiction": "CIVIL", "primaryLocation": "373584", "region": "1" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584", "region": "1" },
         "authorisations": ["316"]
       },
       {
@@ -131,7 +131,7 @@
         "roleCategory": "JUDICIAL",
         "classification": "PRIVATE",
         "readOnly": false,
-        "attributes": { "caseType": "CIVIL", "jurisdiction": "CIVIL", "primaryLocation": "373584", "region": "1" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584", "region": "1" },
         "authorisations": []
       }
     ],
