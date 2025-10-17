@@ -73,9 +73,9 @@ test.describe('Smoke Test @xbrowser', () => {
             ]);
         });
 
-         await test.step('Upload documents', async() => {
-             await startApplication.addApplicationDocuments();
-             await addApplicationDocuments.uploadDocumentSmokeTest();
+        await test.step('Upload documents', async() => {
+            await startApplication.addApplicationDocuments();
+            await addApplicationDocuments.uploadDocumentSmokeTest();
          });
 
         await test.step('Applicant details', async() => {
