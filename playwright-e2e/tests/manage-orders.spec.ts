@@ -6,7 +6,7 @@ import { expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
 import config from "../settings/test-docs/config";
 
-test.describe('manage orders ', () => {
+test.describe('manage orders', () => {
     const dateTime = new Date().toISOString();
     new Date().toTimeString()
     let caseNumber: string;

@@ -26,7 +26,6 @@ test.describe('Court Service', () => {
             await courtServices.tabNavigation('View application');
             await courtServices.tabNavigation('Start application');
 
-
             // Court Services Needed
             await startApplication.courtServicesReqUpdated();
             await courtServices.CourtServicesSmoketest();
@@ -90,7 +89,6 @@ test.describe('Court Service', () => {
             await expect(courtServices.page.getByRole('cell', {name: 'Choose which court services you need to be considered before first hearing'})).toBeVisible();
             await expect(courtServices.page.getByRole('cell', {name: 'Interpreter', exact: true})).toBeVisible();
             await expect(courtServices.page.getByRole('cell', {name: 'Intermediary', exact: true})).toBeVisible();
-
             await expect(courtServices.page.getByRole('cell', {
                 name: 'Facilities or assistance for a disability',
                 exact: true
