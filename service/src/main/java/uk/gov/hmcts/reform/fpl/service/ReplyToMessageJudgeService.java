@@ -82,7 +82,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .judicialMessageReplies(!isEmpty(selectedJudicialMessage.getJudicialMessageReplies())
                     ? selectedJudicialMessage.getJudicialMessageReplies() : List.of())
             .messageHistory(!isEmpty(selectedJudicialMessage.getMessageHistory())
-                ? selectedJudicialMessage.getMessageHistory() : "")
+                ? selectedJudicialMessage.getMessageHistory() : null)
             .messageHistoryTemp(buildTempMessageHistory(selectedJudicialMessage))
             .latestMessage(EMPTY)
             .replyFrom(getSenderEmailAddressByRoleType(senderRole))
