@@ -104,15 +104,13 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run2914(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2914";
         CaseData caseData = getCaseData(caseDetails);
         List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
 
         if (!isEmpty(judicialMessages)) {
             List<Element<JudicialMessage>> updatedMessages = judicialMessages.stream()
-                .map(element -> {
-                    return element(element.getId(), formatMessageHistory(element.getValue()));
-                }).toList();
+                .map(element -> element(element.getId(),
+                    formatMessageHistory(element.getValue()))).toList();
 
             caseDetails.getData().put("judicialMessages", updatedMessages);
         }
@@ -121,9 +119,8 @@ public class MigrateCaseController extends CallbackController {
 
         if (!isEmpty(closedJudicialMessages)) {
             List<Element<JudicialMessage>> updatedClosedMessages = closedJudicialMessages.stream()
-                .map(element -> {
-                    return element(element.getId(), formatMessageHistory(element.getValue()));
-                }).toList();
+                .map(element -> element(element.getId(),
+                    formatMessageHistory(element.getValue()))).toList();
 
             caseDetails.getData().put("closedJudicialMessages", updatedClosedMessages);
         }
