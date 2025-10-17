@@ -47,7 +47,7 @@ export default defineConfig({
         },
         {
             ...ProjectsConfig.edge,
-            teardown: 'AMRoleCleanup',
+            teardown: 'AMRoleCleanup'
 
         },
         {
