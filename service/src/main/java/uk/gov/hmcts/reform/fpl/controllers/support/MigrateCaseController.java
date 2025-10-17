@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCal
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -129,15 +130,15 @@ public class MigrateCaseController extends CallbackController {
 
     private JudicialMessage formatMessageHistory(JudicialMessage judicialMessage) {
         if (!isEmpty(judicialMessage.getJudicialMessageReplies())) {
-            String messageHistory = judicialMessage.getJudicialMessageReplies().stream().map(reply -> {
+            Optional<String> messageHistory = judicialMessage.getJudicialMessageReplies().stream().map(reply -> {
                 String sender = reply.getValue().getReplyFrom();
                 String message = reply.getValue().getMessage();
 
                 return String.format("%s - %s", sender, message);
-            }).reduce((history, historyToAdd) -> join("\n \n", history, historyToAdd)).get();
+            }).reduce((history, historyToAdd) -> join("\n \n", history, historyToAdd));
 
             return judicialMessage.toBuilder()
-                .messageHistory(messageHistory)
+                .messageHistory(messageHistory.orElse(""))
                 .judicialMessageReplies(null)
                 .build();
         }
