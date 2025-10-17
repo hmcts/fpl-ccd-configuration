@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.SendNewMessageJudgeService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -130,7 +132,14 @@ public class MigrateCaseController extends CallbackController {
 
     private JudicialMessage formatMessageHistory(JudicialMessage judicialMessage) {
         if (!isEmpty(judicialMessage.getJudicialMessageReplies())) {
-            Optional<String> messageHistory = judicialMessage.getJudicialMessageReplies().stream().map(reply -> {
+
+            List<Element<JudicialMessageReply>> judicialMessageReplySorted = judicialMessage
+                .getJudicialMessageReplies().stream()
+                .sorted(Comparator.comparing(judicialMessageReplyElement ->
+                    judicialMessageReplyElement.getValue().getUpdatedTime()))
+                .toList();
+
+            Optional<String> messageHistory = judicialMessageReplySorted.stream().map(reply -> {
                 String sender = reply.getValue().getReplyFrom();
                 String message = reply.getValue().getMessage();
 
