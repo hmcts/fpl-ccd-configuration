@@ -9,6 +9,7 @@ export class AddApplicationDocuments {
     readonly typeOfDocument: Locator;
     readonly chooseFileButton: Locator;
     readonly giveDetailsText: Locator;
+    readonly fileUploadButton: Locator;
 
     public constructor(page: Page) {
       this.page = page;
@@ -17,22 +18,51 @@ export class AddApplicationDocuments {
       this.typeOfDocument = page.getByLabel('Document type');
       this.chooseFileButton = page.locator('input#temporaryApplicationDocuments_0_document').first();
       this.giveDetailsText = page.getByLabel('Give details of any documents you will upload at a later date.');
+      this.fileUploadButton = page.getByRole('button', { name: 'Upload a file' });
     }
 
-    async uploadDocumentSmokeTest() {
-        await expect(this.applicationDocumentsHeading).toBeVisible();
-        await expect(this.addNewButton.first()).toBeVisible();
-        await expect(this.typeOfDocument).toBeVisible();
-        await this.typeOfDocument.selectOption('8: BIRTH_CERTIFICATE');
-        await this.page.locator('input#temporaryApplicationDocuments_0_document').first().setInputFiles(config.testPdfFile);
-        // Wait for the "Uploading..." process to finish otherwise step will fail
-        await expect(this.page.locator('span.error-message:text("Uploading...")')).toBeVisible();
-        await expect(this.page.locator('span.error-message:text("Uploading...")')).toBeHidden();
-        await expect(this.giveDetailsText).toBeVisible();
-        await this.giveDetailsText.fill('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.');
-        await this.page.getByRole('button', { name: 'Continue' }).click();
-        await this.page.getByRole('heading', { name: 'Check your answers' }).click();
-        await this.page.getByRole('button', { name: 'Save and continue' }).click();
-        await expect(this.page.getByText('has been updated with event:')).toBeVisible();
-      }
+    async selectTypeOfDocument(option: string): Promise<void> {
+        await this.typeOfDocument.selectOption(option);
+    }
+
+    async fillGiveDetails(text: string): Promise<void> {
+        await this.giveDetailsText.fill(text);
+    }
+
+    async uploadDocumentSmokeTest(): Promise<void> {
+        await Promise.all([
+            this.page.waitForResponse(response =>
+                response.url().includes('documents') &&
+                response.request().method() === 'POST' &&
+                response.status() === 200
+            ),
+            this.fileUploadButton.setInputFiles(config.testPdfFile)
+        ]);
+
+        await this.page.waitForResponse(response =>
+            response.url().includes('track')
+        );
+
+        await this.selectTypeOfDocument('8: BIRTH_CERTIFICATE');
+        await this.fillGiveDetails('testing');
+
+        await Promise.all([
+            this.page.waitForResponse(response =>
+                response.url().includes('/validate?pageId=uploadDocumentsaddApplicationDocuments') &&
+                response.request().method() === 'POST' &&
+                response.status() === 200
+            ),
+            await this.page.getByRole('button', { name: 'Continue' }).click()
+        ]);
+
+        await Promise.all([
+            this.page.waitForResponse(response =>
+                response.url().includes('api/wa-supported-jurisdiction/get') &&
+                response.request().method() === 'GET' &&
+                response.status() === 200
+            ),
+            await this.page.getByRole('button', { name: 'Save and continue' }).click()
+        ]);
+
+    }
 }

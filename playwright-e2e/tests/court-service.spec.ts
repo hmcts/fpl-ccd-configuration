@@ -23,6 +23,8 @@ test.describe('Court Service', () => {
             //sign in page
             await signInPage.isSignedIn();
             await signInPage.navigateTOCaseDetails(caseNumber);
+            await courtServices.tabNavigation('View application');
+            await courtServices.tabNavigation('Start application');
 
             // Court Services Needed
             await startApplication.courtServicesReqUpdated();
