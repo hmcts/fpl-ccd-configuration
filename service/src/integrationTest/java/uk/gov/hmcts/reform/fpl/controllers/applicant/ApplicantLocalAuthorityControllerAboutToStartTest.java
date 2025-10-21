@@ -21,8 +21,11 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -48,6 +51,9 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
     @MockBean
     private UserService userService;
+  
+    @MockBean
+    private PbaService pbaService;
 
     private final Organisation organisation = Organisation.builder()
         .organisationIdentifier("ORG1")
@@ -70,6 +76,11 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
             .willReturn(organisation);
         given(userService.hasAnyIdamRolesFrom(List.of(UserRole.HMCTS_SUPERUSER)))
             .willReturn(false);
+        given(pbaService.populatePbaDynamicList("")).willReturn(DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code("PBA7654321")
+                .build())
+            .build());
     }
 
     @Test
