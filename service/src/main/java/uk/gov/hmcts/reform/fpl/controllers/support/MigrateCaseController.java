@@ -48,13 +48,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2914", this::run2914,
-        "DFPL-2805", this::run2805,
-        "DFPL-2487", this::run2487,
-        "DFPL-2740", this::run2740,
-        "DFPL-2744", this::run2744,
-        "DFPL-2739", this::run2739,
-        "DFPL-2818", this::run2818,
+        "DFPL-2818", this::run2818, // release 5/11/25
         "DFPL-2846", this::run2846,
         "DFPL-2920", this::run2920
     );
@@ -86,16 +80,6 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2805(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2805";
-        final long expectedCaseId = 1744119100087342L;
-        final UUID cmoId = UUID.fromString("f80defe3-9481-4454-8692-b7bb73cd9cb4");
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(caseData, migrationId, cmoId, false));
-    }
-
     private void run2846(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2846";
         final long expectedCaseId = 1754386343078159L;
@@ -116,111 +100,6 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
             orgId, null));
-    }
-
-    private void run2914(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
-
-        if (!isEmpty(judicialMessages)) {
-            List<Element<JudicialMessage>> updatedMessages = judicialMessages.stream()
-                .map(element -> element(element.getId(),
-                    formatMessageHistory(element.getValue()))).toList();
-
-            caseDetails.getData().put("judicialMessages", updatedMessages);
-        }
-
-        List<Element<JudicialMessage>> closedJudicialMessages = caseData.getClosedJudicialMessages();
-
-        if (!isEmpty(closedJudicialMessages)) {
-            List<Element<JudicialMessage>> updatedClosedMessages = closedJudicialMessages.stream()
-                .map(element -> element(element.getId(),
-                    formatMessageHistory(element.getValue()))).toList();
-
-            caseDetails.getData().put("closedJudicialMessages", updatedClosedMessages);
-        }
-        caseDetails.getData().remove("waTaskUrgency");
-    }
-
-    private JudicialMessage formatMessageHistory(JudicialMessage judicialMessage) {
-        if (!isEmpty(judicialMessage.getJudicialMessageReplies())) {
-
-            List<Element<JudicialMessageReply>> judicialMessageReplySorted = judicialMessage
-                .getJudicialMessageReplies().stream()
-                .sorted(Comparator.comparing(judicialMessageReplyElement ->
-                    judicialMessageReplyElement.getValue().getUpdatedTime()))
-                .toList();
-
-            Optional<String> messageHistory = judicialMessageReplySorted.stream().map(reply -> {
-                String sender = reply.getValue().getReplyFrom();
-                String message = reply.getValue().getMessage();
-
-                return String.format("%s - %s", sender, message);
-            }).reduce((history, historyToAdd) -> join("\n \n", history, historyToAdd));
-
-            return judicialMessage.toBuilder()
-                .messageHistory(messageHistory.orElse(""))
-                .judicialMessageReplies(null)
-                .build();
-        }
-
-        return judicialMessage;
-    }
-
-    private void run2487(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        judicialService.cleanupHearingRoles(caseData.getId());
-
-        List<RoleAssignment> rolesToAssign = judicialService.getHearingJudgeRolesForMigration(caseData);
-
-        log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
-        judicialService.migrateJudgeRoles(rolesToAssign);
-    }
-
-    private void run2740(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743167066103323L, "DFPL-2740");
-
-        List<Element<ChangeOfRepresentation>> changes = caseData.getChangeOfRepresentatives();
-        List<Element<ChangeOfRepresentation>> after = changes.stream().map(element -> {
-            ChangeOfRepresentation value = element.getValue();
-            if (element.getId().equals(UUID.fromString("625f113c-5673-4b35-bbf1-6507fcf9ec43"))) {
-                element.setValue(value.toBuilder()
-                    .child(value.getChild().substring(0, 5))
-                    .build());
-            }
-            return element;
-        }).toList();
-
-        caseDetails.getData().put("changeOfRepresentatives", after);
-        caseDetails.getData().remove("noticeOfProceedingsBundle");
-    }
-
-    private void run2744(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743174504422687L, "DFPL-2744");
-
-        if (caseData.getHearingOrdersBundlesDrafts().size() == 1
-            && caseData.getHearingOrdersBundlesDrafts().get(0).getId()
-                .equals(UUID.fromString("cff80b00-7300-4cd5-b0cb-f9f7a2ecd862"))) {
-            caseDetails.getData().remove("hearingOrdersBundlesDrafts");
-        } else {
-            throw new AssertionError("Different numbers of hearingOrdersBundlesDrafts or different UUID");
-        }
-    }
-
-    private void run2739(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1726944362364630L, "DFPL-2739");
-
-        caseDetails.getData().putAll(migrateCaseService.removeDraftOrderFromAdditionalApplication(caseData,
-            "DFPL-2739",
-            UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
-            UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
     }
 
     private void run2818(CaseDetails caseDetails) {
