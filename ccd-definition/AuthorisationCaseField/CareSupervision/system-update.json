@@ -4555,7 +4555,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionLASol",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"}
+    "CRUD": "CRU"
 
   }
 ]
