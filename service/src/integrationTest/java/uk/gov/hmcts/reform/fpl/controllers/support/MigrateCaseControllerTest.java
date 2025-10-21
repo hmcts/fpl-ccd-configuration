@@ -53,36 +53,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     @Nested
-    class Dfpl2740 {
-
-        @Test
-        void shouldRedactStrings() {
-            CaseData caseData = CaseData.builder()
-                .id(1743167066103323L)
-                .changeOfRepresentatives(List.of(
-                    element(UUID.randomUUID(), ChangeOfRepresentation.builder()
-                        .child("unchanged name")
-                        .build()),
-                    element(UUID.fromString("625f113c-5673-4b35-bbf1-6507fcf9ec43"),
-                        ChangeOfRepresentation.builder()
-                            .child("AAAAA BBBB")
-                            .build())
-                ))
-                .build();
-
-            CaseData after = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2740")));
-
-            assertThat(after.getChangeOfRepresentatives()).hasSize(2);
-            assertThat(after.getChangeOfRepresentatives().stream()
-                .map(Element::getValue)
-                .map(ChangeOfRepresentation::getChild))
-                .containsExactly("unchanged name", "AAAAA");
-            ;
-        }
-
-    }
-
-    @Nested
     class Dfpl2818 {
         @Test
         void shouldBlankLegacyDocumentViewFieldsIfPresent() {
