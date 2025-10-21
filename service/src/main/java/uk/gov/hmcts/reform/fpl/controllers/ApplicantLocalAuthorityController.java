@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
+import uk.gov.hmcts.reform.fpl.events.ApplicantsDetailsUpdatedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
@@ -42,15 +43,21 @@ public class ApplicantLocalAuthorityController extends CallbackController {
 
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
-        final LocalAuthority localAuthority = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
+        final LocalAuthority localAuthority;
 
-        // Only do these checks when not in open/returned states
-        if (!List.of(OPEN, RETURNED).contains(caseData.getState())
-            && !applicantLocalAuthorityService.isApplicantOrOnBehalfOfOrgId(localAuthority.getId(), caseData)) {
-            // user is not operating on behalf of the applicant - it's likely a respondent solicitor on a 3rd party
-            // case (both actual applicant + respondent get [SOLICITORA] roles so can't do this via event permissions
-            return respond(caseDetails,
-                List.of("You must be the applicant or acting on behalf of the applicant to modify these details."));
+        if (applicantLocalAuthorityService.isCurrentUserHmctsSuperuser()) {
+            localAuthority = caseData.getLocalAuthorities().get(0).getValue();
+        } else {
+            localAuthority = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
+
+            // Only do these checks when not in open/returned states
+            if (!List.of(OPEN, RETURNED).contains(caseData.getState())
+                && !applicantLocalAuthorityService.isApplicantOrOnBehalfOfOrgId(localAuthority.getId(), caseData)) {
+                // user is not operating on behalf of the applicant (likely a respondent solicitor on a 3rd party case)
+                // Both actual applicant + respondent get [SOLICITORA] roles so can't control via event permissions.
+                return respond(caseDetails,
+                    List.of("You must be the applicant or acting on behalf of the applicant to modify these details."));
+            }
         }
 
         localAuthority.setPbaNumberDynamicList(pbaService.populatePbaDynamicList(localAuthority.getPbaNumber()));
@@ -120,6 +127,10 @@ public class ApplicantLocalAuthorityController extends CallbackController {
             publishEvent(new CaseDataChanged(caseData));
         } else {
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
+        }
+
+        if (applicantLocalAuthorityService.isCurrentUserHmctsSuperuser()) {
+            publishEvent(new ApplicantsDetailsUpdatedEvent(caseData));
         }
     }
 }

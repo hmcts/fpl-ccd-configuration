@@ -99,6 +99,13 @@ public class UserService {
         return isNotEmpty(roles) && roles.stream().anyMatch(organisationalRoles::contains);
     }
 
+    public boolean hasAnyIdamRolesFrom(List<UserRole> userRoles) {
+        Set<String> roles = getIdamRoles();
+        return isNotEmpty(roles) && roles.stream().anyMatch(role -> userRoles.stream()
+            .map(UserRole::getRoleName)
+            .anyMatch(role::equals));
+    }
+
     public boolean isCtscUser() {
         return this.hasAnyOrgRoleFrom(List.of(OrganisationalRole.CTSC));
     }

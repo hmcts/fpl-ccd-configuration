@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -55,6 +56,7 @@ public class ApplicantLocalAuthorityService {
     private final ValidateEmailService validateEmailService;
     private final LocalAuthorityIdLookupConfiguration localAuthorityIds;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmails;
+    private final UserService userService;
 
     public LocalAuthority getUserLocalAuthority(CaseData caseData) {
 
@@ -342,5 +344,9 @@ public class ApplicantLocalAuthorityService {
         return isOrgIdInPolicy(orgId, caseData.getLocalAuthorityPolicy())
             || isOrgIdInPolicy(orgId, caseData.getOutsourcingPolicy())
             || isOrgIdInPolicy(orgId, caseData.getSharedLocalAuthorityPolicy());
+    }
+
+    public boolean isCurrentUserHmctsSuperuser() {
+        return userService.hasAnyIdamRolesFrom(List.of(UserRole.HMCTS_SUPERUSER));
     }
 }
