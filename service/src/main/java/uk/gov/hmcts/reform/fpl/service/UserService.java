@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 
@@ -41,6 +42,11 @@ public class UserService {
 
     public boolean isHmctsUser() {
         return getIdamRoles().stream().anyMatch(UserRole::isHmctsUser);
+    }
+
+    public boolean isCafcassUser() {
+        Set<String> roles = getIdamRoles();
+        return roles != null && roles.contains(CAFCASS.getRoleName());
     }
 
     /**
