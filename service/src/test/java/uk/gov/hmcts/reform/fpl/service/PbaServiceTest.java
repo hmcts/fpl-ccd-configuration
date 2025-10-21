@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.PbaOrganisationResponse;
@@ -51,6 +52,7 @@ class PbaServiceTest {
     protected static final String USER_AUTH_TOKEN = "Bearer token";
     private static final String SERVICE_AUTH_TOKEN = "Bearer authorised service";
     private static final String USER_EMAIL = "test@test.com";
+    private static final String USER_ID = "12345678";
     private static final PbaOrganisationResponse POPULATED_ORGANISATION_RESPONSE = buildOrganisation();
     private static final List<String> PAYMENT_ACCOUNTS = List.of("PBA1234567", "PBA7654321");
     private static final DynamicList PBA_NUMBER_DYNAMIC_LIST = DynamicList.builder()
@@ -93,6 +95,7 @@ class PbaServiceTest {
 
         when(pbaRefDataClient.retrievePbaNumbers(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_EMAIL))
             .thenReturn(pbaOrganisationResponse);
+        when(userService.getUserInfo()).thenReturn(UserInfo.builder().uid(USER_ID).build());
 
         Optional<List<String>> pbaNumbers = pbaService.retrievePbaNumbers();
         assertThat(pbaNumbers).isEmpty();

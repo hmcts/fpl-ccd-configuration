@@ -249,7 +249,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "changeCaseName-superuser",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "R"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -281,7 +281,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "changeState",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "R"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1833,7 +1833,8 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[LAMANAGING]",
-          "[EPSMANAGING]"
+          "[EPSMANAGING]",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
       }
@@ -1847,7 +1848,8 @@
       {
         "UserRoles": [
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
       }

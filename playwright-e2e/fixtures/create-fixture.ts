@@ -52,6 +52,14 @@ import {ManageOrdersIssuingDetails} from "../pages/manage-orders/manage-orders-i
 import {ManageOrdersReview} from "../pages/manage-orders/manage-orders-review";
 import {Submit} from "../pages/manage-orders/submit";
 import {ManageOrdersOrderSelection} from "../pages/manage-orders/manage-orders-order-selection";
+import {Applications} from "../pages/applications/upload-additional/applications";
+import {ApplicationFee} from "../pages/applications/upload-additional/application-fee";
+import {SuppliedDocuments} from "../pages/applications/upload-additional/supplied-documents";
+import {CaseNote} from "../pages/case-note";
+import {ExpertReport} from "../pages/expert-report";
+import {Extend26WeekTimeline} from "../pages/extend-26week-timeline";
+import { RecordFinalDecision} from "../pages/record-final-decision";
+import {SendOrderRemainder} from "../pages/send-order-remainder";
 
 
 type CreateFixtures = {
@@ -107,7 +115,15 @@ type CreateFixtures = {
   manageOrdersIssuingDetails: ManageOrdersIssuingDetails;
   manageOrdersOrderSelection: ManageOrdersOrderSelection
   manageOrdersReview: ManageOrdersReview;
+  uploadAdditionalApplications: Applications;
+  uploadAdditionalApplicationsApplicationFee: ApplicationFee;
+  uploadAdditionalApplicationsSuppliedDocuments: SuppliedDocuments;
   submit: Submit;
+  caseNote: CaseNote;
+  expertReport: ExpertReport;
+    extend26WeekTimeline: Extend26WeekTimeline;
+    recordFinalDecision: RecordFinalDecision;
+    sendOrderRemainder: SendOrderRemainder;
 
 
 };
@@ -319,7 +335,34 @@ othersToBeGivenNotice: async ({ page }, use) => {
       await use(new ManageOrdersReview(page));
     },
 
+    uploadAdditionalApplications: async ({ page }, use) => {
+      await use(new Applications(page));
+    },
+
+    uploadAdditionalApplicationsApplicationFee: async ({ page }, use) => {
+      await use(new ApplicationFee(page));
+    },
+
+    uploadAdditionalApplicationsSuppliedDocuments: async ({ page }, use) => {
+      await use(new SuppliedDocuments(page));
+    },
+
     submit: async ({ page }, use) => {
       await use(new Submit(page));
+    },
+    caseNote: async ({ page }, use) => {
+      await use(new CaseNote(page));
+    },
+    expertReport: async ({ page }, use) => {
+      await use(new ExpertReport(page));
+    },
+    extend26WeekTimeline: async ({ page }, use) => {
+      await use(new Extend26WeekTimeline(page));
+    },
+    recordFinalDecision: async ({ page }, use) => {
+      await use(new RecordFinalDecision(page));
+    },
+    sendOrderRemainder: async ({ page }, use) => {
+      await use(new SendOrderRemainder(page));
     }
 });
