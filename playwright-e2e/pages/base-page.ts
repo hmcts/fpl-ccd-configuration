@@ -17,7 +17,8 @@ export class BasePage {
   readonly year: Locator;
   readonly month: Locator;
   readonly day: Locator;
-    private dateOfHearing: Locator;
+  private dateOfHearing: Locator;
+  readonly startButton: Locator;
 
 
   constructor(page: Page) {
@@ -38,6 +39,7 @@ export class BasePage {
     this.month = this.page.getByLabel('Month');
     this.year = this.page.getByLabel(' Year ');
     this.dateOfHearing =  this.page.getByRole('group', { name: 'What is the date of the' });
+    this.startButton = page.getByRole('button', { name: 'Start' });
   }
 
   async gotoNextStep(eventName: string) {
@@ -68,6 +70,10 @@ export class BasePage {
   async clickContinue() {
     await this.continueButton.waitFor({ state: 'attached'});
       await this.continueButton.click({});
+  }
+
+  async clickStartButton() {
+      await this.startButton.click();
   }
 
   async clickPreviousButton() {
@@ -120,12 +126,33 @@ export class BasePage {
   async clickSaveAndContinue() {
       await this.saveAndContinue.click();
   }
-  async enterPostCode(postcode:string){
+  async enterPostCode(postcode:string): Promise<void> {
       await this.postCode.fill(postcode);
-      await this.findAddress.click();
-      await this.page.getByLabel('Select an address').selectOption('3: Object');
 
+      await Promise.all([
+          this.page.waitForResponse(response =>
+              response.url().includes('addresses') &&
+              response.request().method() === 'GET' &&
+              response.status() === 200
+          ),
+          this.findAddress.click()
+      ]);
+
+      const addressDropdown = this.page.locator('select[name="address"]');
+
+      const optionValues = await addressDropdown.locator('option').evaluateAll(options =>
+          options.map(option => (option as HTMLOptionElement).value)
+      );
+
+      const secondOptionValue = optionValues[1];
+
+      if (!secondOptionValue) {
+          throw new Error('No valid second option found in address dropdown');
+      }
+
+      await addressDropdown.selectOption(secondOptionValue);
   }
+
   getCurrentDate():string {
     let date = new Date();
     let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
