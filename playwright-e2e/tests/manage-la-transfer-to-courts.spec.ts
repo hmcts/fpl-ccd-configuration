@@ -19,18 +19,29 @@ test.describe('Manage LAs / Transfer to court', () => {
 
     test('CTSC transfer to a new court and submit case @xbrowser',
         async ({ page, signInPage, manageLaTransferToCourts }) => {
+        await test.step('Update Case Data', async() => {
             caseName = 'CTSC transfers case' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
+        });
+
+        await test.step('Team leader sign in and navigate to case details', async() => {
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
+        });
+
+        await test.step('LA update court case information', async() => {
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateManageLaTransferToCourts();
             await manageLaTransferToCourts.tabNavigation('Summary');
-            //reload to fix the flakiness of summary details are not updated until reload
+        });
+            //reload to fix the flakiness of summary details are not updated until reload TODO: Network Check
             await manageLaTransferToCourts.page.reload();
+
+        await test.step('Check court information is Central Family Court', async() => {
             await expect(page.getByText('Family Court sitting at Swansea')).toBeHidden();
             await expect(page.getByText('Family Court sitting at Central Family Court')).toBeVisible();
+        });
 
         })
     test('CTSC gives access to another local authority',
