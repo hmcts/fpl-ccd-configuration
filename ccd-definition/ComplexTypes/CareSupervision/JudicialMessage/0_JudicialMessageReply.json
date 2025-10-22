@@ -40,5 +40,13 @@
     "FieldType": "Text",
     "ElementLabel": "Message",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "ListElementCode": "urgency",
+    "FieldType": "Text",
+    "ElementLabel": "Urgency",
+    "SecurityClassification": "Public"
   }
 ]
