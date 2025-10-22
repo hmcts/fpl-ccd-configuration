@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
