@@ -33,7 +33,6 @@ export class SignInPage extends BasePage {
     }
 
     async navigateToCaseDetails(caseNumber: string) {
-        console.log(caseNumber)
         await this.page.goto(`${urlConfig.frontEndBaseURL}/cases/case-details/PUBLICLAW/CARE_SUPERVISION_EPO_QM_TEST1/${caseNumber}#Summary`);
     }
 
