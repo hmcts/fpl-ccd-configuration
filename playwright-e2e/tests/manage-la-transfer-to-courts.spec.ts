@@ -4,10 +4,10 @@ import caseData from '../caseData/mandatorySubmissionFields.json' assert { type:
 import caseDataDemo from '../caseData/mandatorySubmissionFieldsDemo.json' assert {type: "json"};
 import caseDataWithTwoLA from '../caseData/mandatorySubmissionWithTwoLAFields.json' assert { type: "json" };
 import caseDataWithTwoLADemo from'../caseData/mandatorySubmissionWithTwoLAFieldsDemo.json' assert {type: "json"};
-import { CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser, CTSCUser } from "../settings/user-credentials";
+import { CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
 import { expect } from "@playwright/test";
-import {testConfig} from "../settings/test-config";
 import {urlConfig} from "../settings/urls";
+import AxeBuilder from "@axe-core/playwright";
 
 test.describe('Manage LAs / Transfer to court', () => {
     const dateTime = new Date().toISOString();
@@ -18,7 +18,7 @@ test.describe('Manage LAs / Transfer to court', () => {
     });
 
     test('CTSC transfer to a new court and submit case @xbrowser',
-        async ({ page, signInPage, manageLaTransferToCourts }) => {
+        async ({ page, signInPage, manageLaTransferToCourts }, testInfo) => {
         await test.step('Update Case Data', async() => {
             caseName = 'CTSC transfers case' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
@@ -35,7 +35,7 @@ test.describe('Manage LAs / Transfer to court', () => {
             await manageLaTransferToCourts.updateManageLaTransferToCourts();
             await manageLaTransferToCourts.tabNavigation('Summary');
         });
-            //reload to fix the flakiness of summary details are not updated until reload TODO: Network Check
+
             await manageLaTransferToCourts.page.reload();
 
         await test.step('Check court information is Central Family Court', async() => {
@@ -43,9 +43,17 @@ test.describe('Manage LAs / Transfer to court', () => {
             await expect(page.getByText('Family Court sitting at Central Family Court')).toBeVisible();
         });
 
-        })
+        await test.step('Run accessibility audit', async() => {
+
+            const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+            await testInfo.attach('accessibility-scan-results', {
+                body: JSON.stringify(accessibilityScanResults, null, 2),
+                contentType: 'application/json'
+            });
+        });
+    });
     test('CTSC gives access to another local authority',
-        async ({ page, signInPage, manageLaTransferToCourts }) => {
+        async ({ page, signInPage, manageLaTransferToCourts }, testInfo) => {
 
             await test.step('Update Case Data', async () => {
                 caseName = 'CTSC gives access to another Local authority' + dateTime.slice(0, 10);
@@ -74,9 +82,18 @@ test.describe('Manage LAs / Transfer to court', () => {
                 await expect(page.getByText('London Borough Hillingdon')).toBeVisible();
             });
 
-        })
+            await test.step('Run accessibility audit', async() => {
+
+                const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+                await testInfo.attach('accessibility-scan-results', {
+                    body: JSON.stringify(accessibilityScanResults, null, 2),
+                    contentType: 'application/json'
+                });
+            });
+
+        });
     test('CTSC removes access',
-        async ({ page, signInPage, manageLaTransferToCourts }) => {
+        async ({ page, signInPage, manageLaTransferToCourts }, testInfo) => {
             await test.step('Update Case Data', async () => {
                 caseName = 'CTSC removed access' + dateTime.slice(0, 10);
                 if (urlConfig.env.toUpperCase() === 'DEMO') {
@@ -102,9 +119,18 @@ test.describe('Manage LAs / Transfer to court', () => {
                 await expect(page.getByText('Applicant 2')).toBeHidden();
                 await expect(page.getByText('London Borough Hillingdon')).toBeHidden();
             });
+
+            await test.step('Run accessibility audit', async() => {
+
+                const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+                await testInfo.attach('accessibility-scan-results', {
+                    body: JSON.stringify(accessibilityScanResults, null, 2),
+                    contentType: 'application/json'
+                });
+            });
         })
     test('CTSC tranfers to another local authority @xbrowser',
-        async ({ page, signInPage, manageLaTransferToCourts }) => {
+        async ({ page, signInPage, manageLaTransferToCourts }, testInfo) => {
             await test.step('Update Case Data', async () => {
                 caseName = 'CTSC transfers to another local authority' + dateTime.slice(0, 10);
                 if (urlConfig.env.toUpperCase() === 'DEMO') {
@@ -133,6 +159,15 @@ test.describe('Manage LAs / Transfer to court', () => {
                 await manageLaTransferToCourts.page.reload();
                 await expect(page.getByText('Family Court sitting at Swansea')).toBeHidden();
                 await expect(page.getByText('Family Court sitting at West London')).toBeVisible();
+            });
+
+            await test.step('Run accessibility audit', async() => {
+
+                const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+                await testInfo.attach('accessibility-scan-results', {
+                    body: JSON.stringify(accessibilityScanResults, null, 2),
+                    contentType: 'application/json'
+                });
             });
         })
 });
