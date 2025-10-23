@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -584,7 +585,7 @@ class ApplicantLocalAuthorityServiceTest {
             when(validateEmailService.validateIfPresent("email"))
                 .thenReturn(List.of("Email error 1", "Email error 2"));
 
-            final List<String> actualErrors = underTest.validateLocalAuthority(localAuthority);
+            final List<String> actualErrors = underTest.validateLocalAuthority(localAuthority, NO);
 
             assertThat(actualErrors).containsExactlyInAnyOrder(
                 "PBA error 1",
@@ -601,7 +602,7 @@ class ApplicantLocalAuthorityServiceTest {
             when(pbaNumberService.validate("pba")).thenReturn(emptyList());
             when(validateEmailService.validateIfPresent("email")).thenReturn(emptyList());
 
-            final List<String> actualErrors = underTest.validateLocalAuthority(localAuthority);
+            final List<String> actualErrors = underTest.validateLocalAuthority(localAuthority, NO);
 
             assertThat(actualErrors).isEmpty();
 
