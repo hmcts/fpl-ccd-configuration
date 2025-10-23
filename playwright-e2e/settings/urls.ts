@@ -3,6 +3,8 @@ const env = process.env.ENVIRONMENT || "aat";
 const e2ePw: string = process.env.E2E_TEST_PASSWORD || "";
 const defaultPwd: string = process.env.SYSTEM_UPDATE_USER_PASSWORD || "";
 const judgePwd: string = process.env.E2E_TEST_JUDGE_PASSWORD || "";
+const jurisdiction:string = process.env.JURISDICTIONS || "PUBLICLAW";
+const caseType:string = process.env.CASE_TYPE || "CARE_SUPERVISION_EPO";
 
 interface UrlConfig {
   [key: string]: string;
@@ -10,6 +12,8 @@ interface UrlConfig {
 
 export const urlConfig: UrlConfig = {
   env: env,
+  jurisdiction: process.env.JURIDICTION ||jurisdiction,
+  caseType: process.env.CASE_TYPE || caseType,
   idamUrl: process.env.IDAM_API_URL || `https://idam-api.${env}.platform.hmcts.net`,
   serviceUrl: process.env.CASE_SERVICE_URL || `http://fpl-case-service-${env}.service.core-compute-${env}.internal`,
   frontEndBaseURL: process.env.FE_BASE_URL || `https://manage-case.${env}.platform.hmcts.net`,
