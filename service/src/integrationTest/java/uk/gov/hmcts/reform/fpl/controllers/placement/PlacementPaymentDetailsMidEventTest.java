@@ -30,7 +30,8 @@ class PlacementPaymentDetailsMidEventTest extends AbstractPlacementControllerTes
 
         final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "payment-details");
 
-        assertThat(response.getErrors()).containsExactly("Payment by account (PBA) number must include 7 numbers");
+        assertThat(response.getErrors())
+            .containsExactly("Payment by account (PBA) number must include 7 numbers and the PBA prefix");
     }
 
     @Test

@@ -104,11 +104,13 @@ public class ApplicantLocalAuthorityService {
         localAuthority.setPbaNumberDynamicList(null);
     }
 
-    public List<String> validateLocalAuthority(LocalAuthority localAuthority) {
+    public List<String> validateLocalAuthority(LocalAuthority localAuthority, YesNo isCTSCUser) {
 
         final List<String> errors = new ArrayList<>();
 
-        errors.addAll(pbaNumberService.validate(localAuthority.getPbaNumberDynamicList().getValueCode()));
+        errors.addAll(pbaNumberService.validate(isCTSCUser.equals(YES) ? localAuthority.getPbaNumber()
+            : localAuthority.getPbaNumberDynamicList().getValueCode()));
+
         errors.addAll(validateEmailService.validateIfPresent(localAuthority.getEmail()));
 
         return errors;
@@ -147,7 +149,9 @@ public class ApplicantLocalAuthorityService {
 
         final LocalAuthority editedLocalAuthority = eventData.getLocalAuthority();
         final String userOrgId = editedLocalAuthority.getId();
-        updatePbaNumber(editedLocalAuthority);
+        if (YesNo.NO.equals(caseData.getIsCTSCUser())) {
+            updatePbaNumber(editedLocalAuthority);
+        }
         editedLocalAuthority.setColleagues(buildColleagueList(eventData));
 
         final List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
