@@ -47,7 +47,7 @@ class ApplicantLocalAuthorityControllerOrganisationMidEventTest extends Abstract
         final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "organisation");
 
         assertThat(response.getErrors()).containsExactly(
-            "Payment by account (PBA) number must include 7 numbers",
+            "Payment by account (PBA) number must include 7 numbers and the PBA prefix",
             "Enter an email address in the correct format, for example name@example.com"
         );
     }
@@ -70,7 +70,7 @@ class ApplicantLocalAuthorityControllerOrganisationMidEventTest extends Abstract
         final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "organisation");
 
         assertThat(response.getErrors()).containsExactly(
-            "Payment by account (PBA) number must include 7 numbers",
+            "Payment by account (PBA) number must include 7 numbers and the PBA prefix",
             "Enter an email address in the correct format, for example name@example.com"
         );
     }
