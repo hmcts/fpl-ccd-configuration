@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -40,6 +41,30 @@ class ApplicantLocalAuthorityControllerOrganisationMidEventTest extends Abstract
 
         final CaseData caseData = CaseData.builder()
             .localAuthorityEventData(eventData)
+            .isCTSCUser(YesNo.NO)
+            .build();
+
+        final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "organisation");
+
+        assertThat(response.getErrors()).containsExactly(
+            "Payment by account (PBA) number must include 7 numbers",
+            "Enter an email address in the correct format, for example name@example.com"
+        );
+    }
+
+    @Test
+    void shouldValidateManualPbaNumberForCTSCUser() {
+        final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
+            .localAuthority(LocalAuthority.builder()
+                .email("test")
+                .pbaNumber("1234567")
+                .pbaNumberDynamicList(null)
+                .build())
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .localAuthorityEventData(eventData)
+            .isCTSCUser(YesNo.YES)
             .build();
 
         final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "organisation");
