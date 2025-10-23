@@ -149,7 +149,7 @@ public class ApplicantLocalAuthorityService {
 
         final LocalAuthority editedLocalAuthority = eventData.getLocalAuthority();
         final String userOrgId = editedLocalAuthority.getId();
-        if(YesNo.NO.equals(caseData.getIsCTSCUser())) {
+        if (YesNo.NO.equals(caseData.getIsCTSCUser())) {
             updatePbaNumber(editedLocalAuthority);
         }
         editedLocalAuthority.setColleagues(buildColleagueList(eventData));
