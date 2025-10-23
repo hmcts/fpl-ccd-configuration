@@ -23,7 +23,7 @@ test.describe('Approve Orders', () => {
             await updateCase(casename, caseNumber, caseDataByLa);
             await signInPage.visit();
             await signInPage.login(judgeUser.email, judgeUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await approveOrders.navigateToPageViaNextStep();
             await approveOrders.approveOrders();
@@ -34,7 +34,7 @@ test.describe('Approve Orders', () => {
             // LA able to view the approved order
             await approveOrders.clickSignOut();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await approveOrders.tabNavigation('Orders');
             await expect(page.getByText('Confidential order uploaded by LA')).toBeVisible();
         });
@@ -46,7 +46,7 @@ test.describe('Approve Orders', () => {
             await updateCase(casename, caseNumber, caseDataByCtsc);
             await signInPage.visit();
             await signInPage.login(judgeUser.email, judgeUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await approveOrders.navigateToPageViaNextStep();
             await approveOrders.approveOrders();
@@ -57,14 +57,14 @@ test.describe('Approve Orders', () => {
             // CTSC able to view the approved order
             await approveOrders.clickSignOut();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await approveOrders.tabNavigation('Orders');
             await expect(page.getByText('Confidential order uploaded by CTSC')).toBeVisible();
 
             // LA cannot view the approved order
             await approveOrders.clickSignOut();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await approveOrders.tabNavigation('Orders');
             await expect(page.getByText('Confidential order uploaded by CTSC')).toBeHidden();
         });
@@ -76,7 +76,7 @@ test.describe('Approve Orders', () => {
       await updateCase(casename, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(judgeLondonUser.email, judgeLondonUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await approveOrders.gotoNextStep('Approve orders')
       await approveOrders.approveNonUrgentDraftCMO();
 
@@ -90,7 +90,7 @@ test.describe('Approve Orders', () => {
 
         await signInPage.visit();
         await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await approveOrders.tabNavigation('Tasks');
         await approveOrders.waitForTask('Review Order (High Court)');
 

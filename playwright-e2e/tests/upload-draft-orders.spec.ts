@@ -18,7 +18,7 @@ test.describe('Upload draft orders', () => {
             await updateCase(casename, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await uploadDraftOrders.gotoNextStep('Upload draft orders')
             await uploadDraftOrders.uploadCMODraftOrders();
 
@@ -34,7 +34,7 @@ test.describe('Upload draft orders', () => {
             await updateCase(casename, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await uploadDraftOrders.gotoNextStep('Upload draft orders')
             await uploadDraftOrders.uploadAdditionalDraftOrders();
 

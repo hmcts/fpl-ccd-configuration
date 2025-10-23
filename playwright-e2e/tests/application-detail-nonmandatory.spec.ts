@@ -20,7 +20,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             // Risk and harm to children
             await riskAndHarmToChildren.gotoNextStep('Risk and harm to children');
             await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
@@ -61,7 +61,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             // Welsh language requirements
             await welshLangRequirements.gotoNextStep('Welsh language requirements');
@@ -94,7 +94,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber)
+            await signInPage.navigateToCaseDetails(caseNumber)
 
             // International element
            await internationalElement.gotoNextStep('International element');
@@ -131,7 +131,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             // C1 With Supplement
             await c1WithSupplement.c1WithSupplementSmokeTest();
@@ -161,7 +161,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             //add other people in the case
             await otherPeopleInCase.gotoNextStep('Other people in the case');
             await otherPeopleInCase.addOtherPerson();
