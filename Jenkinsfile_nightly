@@ -80,6 +80,8 @@ withNightlyPipeline(type, product, component) {
     env.MANAGE_ORG_SERVICE_URL = "http://rd-professional-api-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/"
     env.ACCESS_MANAGEMENT_URL ="http://am-role-assignment-service-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/am/role-assignments"
     env.IDAM_WEB_URL = "https://idam-web-public.${env.ENVIRONMENT}.platform.hmcts.net"
+    env.JURISDICTIONS = "PUBLICLAW"
+    env.CASE_TYPE = "CARE_SUPERVISION_EPO"
 
 
     loadVaultSecrets(integrationTestSecrets)
