@@ -70,6 +70,7 @@ export class Orders extends BasePage {
     readonly childInOrder: Locator;
     readonly parentalResponsibilty: Locator;
     readonly relationToChild: Locator;
+    readonly specialGuardianOne: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -140,6 +141,7 @@ export class Orders extends BasePage {
         this.childInOrder = page.getByRole('group', { name: 'Who’s included in the order?' });
         this.parentalResponsibilty = page.getByRole('textbox', { name: 'Who\'s been given parental' });
         this.relationToChild = page.getByRole('radio', { name: 'Father' });
+        this.specialGuardianOne = page.getByRole('group', { name: 'Person 1 (Optional)' });
 
     }
 
@@ -474,5 +476,19 @@ export class Orders extends BasePage {
         await this.relationToChild.check();
         await this.orderFurtherDirectionDetails.fill('Test');
         await this.finalOrder.getByLabel('No').check();
+    }
+
+    async uploadsSpecialGuardianshipOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.specialGuardianOne.getByRole('checkbox', { name: 'Yes' }).click()
+        await this.finalOrder.getByLabel('No').check();
+        await this.clickContinue();
     }
 }
