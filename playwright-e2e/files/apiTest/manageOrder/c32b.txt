@@ -16,3 +16,6 @@ these proceedings or an address or school as being that of the children. Any per
 The exceptions to this are in Rules 12.73 or 12.75 or Practice Direction 12G of the Family Procedure Rules 2010.
 The Court discharges the care order made by Aberdeen Tribunal Hearing Centre made on ${dateSuffix}.
 some text
+Important Notice directed to keep the court and the local authority informed of their addresses and contact details.
+If they do not do so, service may be effected by post to their last known addresses.
+Such service may be deemed to be sufficient notice of any subsequent adoption proceedings and hearings within them.
