@@ -6,8 +6,8 @@ import caseDataWithTwoLA from '../caseData/mandatorySubmissionWithTwoLAFields.js
 import caseDataWithTwoLADemo from'../caseData/mandatorySubmissionWithTwoLAFieldsDemo.json' assert {type: "json"};
 import { CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
 import { expect } from "@playwright/test";
-import {urlConfig} from "../settings/urls";
-import AxeBuilder from "@axe-core/playwright";
+import { urlConfig } from "../settings/urls";
+import { runA11yCheck } from "../utils/accessibility";
 
 test.describe('Manage LAs / Transfer to court', () => {
     const dateTime = new Date().toISOString();
@@ -19,39 +19,36 @@ test.describe('Manage LAs / Transfer to court', () => {
 
     test('CTSC transfer to a new court and submit case @xbrowser',
         async ({ page, signInPage, manageLaTransferToCourts }, testInfo) => {
-        await test.step('Update Case Data', async() => {
-            caseName = 'CTSC transfers case' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseData);
-        });
 
-        await test.step('Team leader sign in and navigate to case details', async() => {
-            await signInPage.visit();
-            await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateToCaseDetails(caseNumber);
-        });
+            await test.step('Update Case Data', async() => {
+                caseName = 'CTSC transfers case' + dateTime.slice(0, 10);
+                await updateCase(caseName, caseNumber, caseData);
+            });
 
-        await test.step('LA update court case information', async() => {
-            await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
-            await manageLaTransferToCourts.updateManageLaTransferToCourts();
-            await manageLaTransferToCourts.tabNavigation('Summary');
-        });
+            await test.step('Sign in and navigate', async() => {
+                await signInPage.visit();
+                await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
+                await signInPage.navigateToCaseDetails(caseNumber);
+                await runA11yCheck(page, testInfo, 'case-details');
+            });
+
+            await test.step('Update court info', async() => {
+                await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
+                await runA11yCheck(page, testInfo, 'transfer-step');
+                await manageLaTransferToCourts.updateManageLaTransferToCourts();
+                await manageLaTransferToCourts.tabNavigation('Summary');
+                await runA11yCheck(page, testInfo, 'summary-tab');
+            });
 
             await manageLaTransferToCourts.page.reload();
+            await runA11yCheck(page, testInfo, 'after-reload');
 
-        await test.step('Check court information is Central Family Court', async() => {
-            await expect(page.getByText('Family Court sitting at Swansea')).toBeHidden();
-            await expect(page.getByText('Family Court sitting at Central Family Court')).toBeVisible();
-        });
-
-        await test.step('Run accessibility audit', async() => {
-
-            const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
-            await testInfo.attach('accessibility-scan-results', {
-                body: JSON.stringify(accessibilityScanResults, null, 2),
-                contentType: 'application/json'
+            await test.step('Validate court info', async() => {
+                await expect(page.getByText('Family Court sitting at Swansea')).toBeHidden();
+                await expect(page.getByText('Family Court sitting at Central Family Court')).toBeVisible();
             });
         });
-    });
+
     test('CTSC gives access to another local authority',
         async ({ page, signInPage, manageLaTransferToCourts }, testInfo) => {
 
@@ -69,29 +66,23 @@ test.describe('Manage LAs / Transfer to court', () => {
                 await signInPage.visit();
                 await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
                 await signInPage.navigateToCaseDetails(caseNumber);
+                await runA11yCheck(page, testInfo, 'case-details')
             });
 
             await test.step('CTSC gives access to another local authority', async () => {
                 await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
                 await manageLaTransferToCourts.updateCourtAccess();
                 await manageLaTransferToCourts.tabNavigation('People in the case');
+                await runA11yCheck(page, testInfo, 'people-in-case')
             });
 
             await test.step('Verify new authority has access', async () => {
                 await expect(page.getByText('Applicant 2')).toBeVisible();
                 await expect(page.getByText('London Borough Hillingdon')).toBeVisible();
+                await runA11yCheck(page, testInfo, 'applicant-details');
             });
-
-            await test.step('Run accessibility audit', async() => {
-
-                const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
-                await testInfo.attach('accessibility-scan-results', {
-                    body: JSON.stringify(accessibilityScanResults, null, 2),
-                    contentType: 'application/json'
-                });
-            });
-
         });
+
     test('CTSC removes access',
         async ({ page, signInPage, manageLaTransferToCourts }, testInfo) => {
             await test.step('Update Case Data', async () => {
@@ -107,28 +98,23 @@ test.describe('Manage LAs / Transfer to court', () => {
                 await signInPage.visit();
                 await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
                 await signInPage.navigateToCaseDetails(caseNumber);
+                await runA11yCheck(page, testInfo,  'case-details');
             });
 
             await test.step('CTSC removes access', async () => {
                 await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
                 await manageLaTransferToCourts.updateRemoveAccess();
                 await manageLaTransferToCourts.tabNavigation('People in the case');
+                await runA11yCheck(page, testInfo, 'people-in-case');
             });
 
             await test.step('Verify access has been removed', async () => {
                 await expect(page.getByText('Applicant 2')).toBeHidden();
                 await expect(page.getByText('London Borough Hillingdon')).toBeHidden();
+                await runA11yCheck(page, testInfo, 'applicant-details');
             });
+        });
 
-            await test.step('Run accessibility audit', async() => {
-
-                const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
-                await testInfo.attach('accessibility-scan-results', {
-                    body: JSON.stringify(accessibilityScanResults, null, 2),
-                    contentType: 'application/json'
-                });
-            });
-        })
     test('CTSC tranfers to another local authority @xbrowser',
         async ({ page, signInPage, manageLaTransferToCourts }, testInfo) => {
             await test.step('Update Case Data', async () => {
@@ -144,12 +130,14 @@ test.describe('Manage LAs / Transfer to court', () => {
                 await signInPage.visit();
                 await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
                 await signInPage.navigateToCaseDetails(caseNumber);
+                await runA11yCheck(page, testInfo, 'applicant-details');
             });
 
             await test.step('CTSC transfers case to another LA', async () => {
                 await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
                 await manageLaTransferToCourts.updateTranferToLa();
                 await manageLaTransferToCourts.tabNavigation('People in the case');
+                await runA11yCheck(page, testInfo, 'people-in-case');
             });
 
             await test.step('Verify transfer of LA access and court update', async () => {
@@ -159,15 +147,7 @@ test.describe('Manage LAs / Transfer to court', () => {
                 await manageLaTransferToCourts.page.reload();
                 await expect(page.getByText('Family Court sitting at Swansea')).toBeHidden();
                 await expect(page.getByText('Family Court sitting at West London')).toBeVisible();
+                await runA11yCheck(page, testInfo, 'applicant-details')
             });
-
-            await test.step('Run accessibility audit', async() => {
-
-                const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
-                await testInfo.attach('accessibility-scan-results', {
-                    body: JSON.stringify(accessibilityScanResults, null, 2),
-                    contentType: 'application/json'
-                });
-            });
-        })
+        });
 });
