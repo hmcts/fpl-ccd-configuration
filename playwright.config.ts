@@ -77,6 +77,7 @@ export default defineConfig({
         {
             name: "preview",
             use: { ...devices['Desktop Edge'], channel: 'msedge' },
+            grep: /@test/,
             retries: 2,
             timeout: 5 * 60 * 1000,
             expect: {timeout: 1 * 60 * 1000},

@@ -157,16 +157,15 @@ export class AdditionalApplications extends BasePage {
     await this.clickContinue();
   }
   public async ctscPayForApplication() {
-    await this.paymentPbaNumberTextBox.fill('PBA0076191');
+    await this.paymentPbaNumberTextBox.fill('PBA0096471');
     await this.page.getByLabel('Customer reference').fill('payments');
     await this.clickContinue();
   }
 
-  public async uploadBasicC2Application(uploadDraftOrder: boolean = true) {
-    await this.gotoNextStep('Upload additional applications');
+  public async uploadBasicC2Application(uploadDraftOrder: boolean = true,PBAnumber: string) {
     await this.chooseC2ApplicationType();
     await this.fillC2ApplicationDetails(uploadDraftOrder);
-    await this.payForApplication('PBA0076191');
+    await this.payForApplication(PBAnumber);
     await this.checkYourAnsAndSubmit();
   }
 }

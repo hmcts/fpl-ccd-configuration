@@ -164,7 +164,7 @@ export class CreateCase extends BasePage{
         await this.page.waitForURL('**/case-details/**');
         let url:string= await this.page.url();
         this.urlarry = url.split('/');
-        this.casenumber =  this.urlarry[5].slice(0,16);
+        this.casenumber =  this.urlarry[7].slice(0,16);
   }
 
     async findCase(casenumber:string){
