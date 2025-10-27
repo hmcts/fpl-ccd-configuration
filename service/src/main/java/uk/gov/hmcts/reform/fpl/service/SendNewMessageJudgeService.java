@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.SelectableItem;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments.DOCUMENT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -80,7 +78,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         data.put("isSendingEmailsInCourt",
             YesNo.from(featureToggleService.isCourtNotificationEnabledForWa(caseData.getCourt())));
 
-        data.putAll(prePopulateMessageFields(caseData));
+        data.putAll(prePopulateSenderAndRecipient(caseData));
         data.put("documentTypesDynamicList", manageDocumentService.buildExistingDocumentTypeDynamicList(caseData));
 
         String nextHearingLabel = getNextHearingLabel(caseData);
@@ -157,23 +155,19 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         String recipientEmail = resolveRecipientEmailAddress(recipientRoleType,
             judicialMessageMetaData.getRecipient(), caseData);
 
-        String fromLabel = formatLabel(senderRoleType, senderEmail);
-        String toLabel = formatLabel(recipientRoleType, recipientEmail);
-
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(senderEmail)
             .senderType(senderRoleType)
             .recipient(recipientEmail)
             .recipientType(recipientRoleType)
-            .fromLabel(fromLabel)
-            .toLabel(toLabel)
+            .fromLabel(formatLabel(senderRoleType, senderEmail))
+            .toLabel(formatLabel(recipientRoleType, recipientEmail))
             .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
-            .judicialMessageReplies(buildMessageReplyList(latestMessage, fromLabel, toLabel))
+            .messageHistory(buildMessageHistory(latestMessage, formatLabel(senderRoleType, senderEmail)))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
-            .urgency(getMessageUrgency(messageJudgeEventData.getJudicialMessageMetaData()))
-            .isJudicialMessageUrgent(judicialMessageMetaData.getIsJudicialMessageUrgent())
+            .urgency(judicialMessageMetaData.getUrgency())
             .status(OPEN);
 
         if (hasSelectedAdditionalApplication(caseData)) {
@@ -237,8 +231,8 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return applications;
     }
 
-    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, String from, String to) {
-        return buildMessageReplies(latestMessage, Optional.empty(), from, to);
+    private String buildMessageHistory(String message, String sender) {
+        return buildMessageHistory(message, "", sender);
     }
 
     private boolean hasC2s(CaseData caseData) {
@@ -271,14 +265,13 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return caseData.getMessageJudgeEventData().getIsMessageRegardingDocuments();
     }
 
-    private Map<String, Object> prePopulateMessageFields(CaseData caseData) {
+    private Map<String, Object> prePopulateSenderAndRecipient(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
         JudicialMessageRoleType senderRole = getSenderRole(caseData);
 
         data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
             .recipientDynamicList(buildRecipientDynamicList(caseData, senderRole, Optional.empty()))
-            .isJudicialMessageUrgent(NO) // default to No
             .build());
 
         return data;
@@ -402,9 +395,4 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return fileNamesBuilder.toString();
     }
 
-    @Override
-    public boolean isMessageUrgent(CaseData caseData) {
-        return YES.equals(caseData.getMessageJudgeEventData().getJudicialMessageMetaData()
-            .getIsJudicialMessageUrgent());
-    }
 }

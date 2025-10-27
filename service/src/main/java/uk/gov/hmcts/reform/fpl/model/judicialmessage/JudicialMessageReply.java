@@ -15,5 +15,4 @@ public class JudicialMessageReply {
     private final String message;
     private final String replyFrom;
     private final String replyTo;
-    private final String urgency;
 }

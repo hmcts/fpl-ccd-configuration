@@ -82,7 +82,7 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
         await expect(orders.page.getByRole('heading', { name: 'Download order' })).toBeVisible();
         await expect(orders.page.getByText('Open the attached order in PDF-Xchange Editor to make changes.', { exact: true })).toBeVisible();
-        await expect(orders.page.getByRole('link', { name: 'C23 - Emergency protection order' })).toBeVisible();
+        await expect(orders.page.getByRole('button', { name: 'C23 - Emergency protection order' })).toBeVisible();
         await orders.clickContinue();
 
         await expect(orders.page.getByRole('heading', { name: 'Replace old order' })).toBeVisible();
@@ -93,7 +93,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(orders.page.getByText('Amended', { exact: true })).toBeVisible();
         await expect(orders.page.locator('#case-viewer-field-read--orderCollection')).toContainText(orders.getCurrentDate());
-        await expect(orders.page.getByRole('link', { name: 'amended_C23 - Emergency' })).toBeVisible();
+        await expect(orders.page.getByRole('button', { name: 'amended_C23 - Emergency' })).toBeVisible();
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
     })
@@ -123,7 +123,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(orders.page.getByRole('cell', { name: 'Other', exact: true })).toBeVisible();
         await expect(orders.page.getByText('Uploaded Other Order')).toBeVisible();
-        await expect(orders.page.getByRole('link', { name: 'other_order.pdf' })).toBeVisible();
+        await expect(orders.page.getByRole('button', { name: 'other_order.pdf' })).toBeVisible();
         await orders.openOrderDoc('other_order.pdf');
         await orders.assertOrderSealScreenshot();
 
@@ -165,7 +165,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Order 1', { exact: true })).toBeVisible();
         await expect(page.getByText('Care order (C32A)')).toBeVisible();
-        await expect(page.getByRole('link', { name: 'c32a_care_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c32a_care_order.pdf' })).toBeVisible();
 
         //assert the state of the case
         // await orders.tabNavigation('History'); EXUI issue with tab lables having the hint text . it has to rollback when the issue fixed
@@ -278,7 +278,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Authority to keep a child in')).toBeVisible();
-        await expect(page.getByRole('link', { name: 'c26_secure_accommodation_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c26_secure_accommodation_order.pdf' })).toBeVisible();
 
     })
 
@@ -313,7 +313,7 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Child assessment order (C39)')).toBeVisible();
-        await expect(page.getByRole('link', { name: 'c39_child_assessment_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c39_child_assessment_order.pdf' })).toBeVisible();
 
     })
 
@@ -351,7 +351,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Blank order (C21)')).toBeVisible();
         await expect(page.getByText('Prohibited Steps Order')).toBeVisible();
-        await expect(page.getByRole('link', { name: 'c21_blank_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c21_blank_order.pdf' })).toBeVisible();
 
     })
 
@@ -403,7 +403,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'transparency_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
     })
 
     test('Judge uploads Transparency Order ', async ({ page, signInPage, orders }) => {
@@ -429,7 +429,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'transparency_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
     })
 
     test('CTSC uploads Family assistance order', async ({ page, signInPage, orders }) => {
@@ -501,7 +501,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
     })
 
@@ -526,7 +526,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
     })
 
@@ -588,8 +588,8 @@ test.describe('manage orders', () => {
         await submit.clickSaveAndContinue();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c43_child_arrangements.pdf', exact: true })).toBeVisible();
-        await expect(page.getByRole('link', { name: 'c43_child_arrangements.pdf', exact: true })).toBeEnabled();
+        await expect(page.getByRole('button', { name: 'c43_child_arrangements.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c43_child_arrangements.pdf', exact: true })).toBeEnabled();
     })
 
     test('CTSC uploads Interim supervision order (C35B)', async ({ page, signInPage, orders }) => {
@@ -613,7 +613,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c35b_interim_supervision_order.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c35b_interim_supervision_order.pdf', exact: true })).toBeVisible();
 
     })
 
@@ -638,7 +638,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c35b_interim_supervision_order.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c35b_interim_supervision_order.pdf', exact: true })).toBeVisible();
 
     })
 
@@ -663,16 +663,11 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-
-        await orders.clickContinue();
-        await orders.checkYourAnsAndSubmit();
-
-        await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c45a_parental_responsibility_order.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c45a_parental_responsibility_order.pdf', exact: true })).toBeVisible();
 
     })
 
-    test('Judge uploads Special guardianship order (C43A) ', async ({ page, signInPage, orders }) => {
+   test('Judge uploads Special guardianship order (C43A) ', async ({ page, signInPage, orders }) => {
         caseName = 'Special guardianship order (C43A) ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
@@ -692,6 +687,6 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c43a_special_guardianship_order.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c43a_special_guardianship_order.pdf', exact: true })).toBeVisible();
     });
 })

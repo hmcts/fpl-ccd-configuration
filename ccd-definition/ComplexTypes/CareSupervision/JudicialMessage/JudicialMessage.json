@@ -108,14 +108,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "isJudicialMessageUrgent",
-    "ElementLabel": "Urgency",
-    "FieldType": "YesOrNo",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessage",
     "ListElementCode": "requestedBy",
     "FieldType": "Text",
     "ElementLabel": "Message subject",
@@ -211,8 +203,17 @@
     "ID": "JudicialMessage",
     "ListElementCode": "messageHistory",
     "FieldType": "TextArea",
-    "ElementLabel": "Message history (old)",
+    "ElementLabel": "Message history",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "closeMessageLabel",
+    "FieldType": "Label",
+    "ElementLabel": "This message will now be marked as closed",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "closeMessageLabel=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -226,18 +227,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "messageHistoryTemp",
-    "FieldType": "TextArea",
-    "ElementLabel": "Message history",
+    "ListElementCode": "isJudicialMessageUrgent",
+    "ElementLabel": "Urgency",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessage",
-    "ListElementCode": "closeMessageLabel",
-    "FieldType": "Label",
-    "ElementLabel": "This message will now be marked as closed",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "closeMessageLabel=\"DO_NOT_SHOW\""
   }
 ]
