@@ -151,7 +151,7 @@ test.describe('Smoke Test @xbrowser @test', () => {
         });
     });
 
-    test.only('Private solicitor applies C110a application', async ({
+    test('Private solicitor applies C110a application', async ({
         signInPage,
         createCase,
         ordersAndDirectionSought,
