@@ -4,7 +4,7 @@ import { CreateCaseName } from "../utils/create-case-name";
 import { CaseFileView } from "../pages/case-file-view";
 
 
-test.describe('Smoke Test @xbrowser @test', () => {
+test.describe('Smoke Test @xbrowser', () => {
 
     test('Local Authority C110A application submission @smoke-test @accessibility', async ({
                                                                     signInPage,
