@@ -221,6 +221,7 @@ test.describe('Upload additional applications', () => {
         await test.step('Upload C2 Document', async () => {
             uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile);
             await expect(uploadAdditionalApplicationsSuppliedDocuments.cancelUploadButton).toBeDisabled({ timeout: 10000 });
+            await uploadAdditionalApplicationsSuppliedDocuments.page.waitForTimeout(6000);//wait for upload to complete restriction by EXUI for users
             await uploadAdditionalApplicationsSuppliedDocuments.checkDocumentRelatedToCaseYes();
             await uploadAdditionalApplicationsSuppliedDocuments.clickContinue();
         });
@@ -296,7 +297,6 @@ test.describe('Upload additional applications', () => {
     await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
     await signInPage.navigateTOCaseDetails(caseNumber);
     await signInPage.gotoNextStep('Upload additional applications');
-    await page.pause();
     await additionalApplications.uploadBasicC2Application(false,envDataConfig.swanseaOrgPBA);
 
     // Check CFV
