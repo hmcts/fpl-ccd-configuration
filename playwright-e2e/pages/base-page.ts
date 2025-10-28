@@ -5,6 +5,8 @@ export class BasePage {
   readonly goButton: Locator;
   readonly page: Page;
   readonly continueButton: Locator;
+  readonly previousButton: Locator;
+  readonly cancelLink: Locator;
   readonly signOut: Locator;
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
@@ -15,7 +17,8 @@ export class BasePage {
   readonly year: Locator;
   readonly month: Locator;
   readonly day: Locator;
-    private dateOfHearing: Locator;
+  private dateOfHearing: Locator;
+  readonly startButton: Locator;
 
 
   constructor(page: Page) {
@@ -23,6 +26,8 @@ export class BasePage {
     this.nextStep = page.getByLabel('Next step');
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
     this.continueButton = page.getByRole("button", { name: 'Continue' });
+    this.previousButton = page.getByRole("button", { name: 'Previous' });
+    this.cancelLink = page.getByRole("link", { name: 'Cancel' });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: 'Save and Continue'});
@@ -34,6 +39,7 @@ export class BasePage {
     this.month = this.page.getByLabel('Month');
     this.year = this.page.getByLabel(' Year ');
     this.dateOfHearing =  this.page.getByRole('group', { name: 'What is the date of the' });
+    this.startButton = page.getByRole('button', { name: 'Start' });
   }
 
   async gotoNextStep(eventName: string) {
@@ -62,7 +68,20 @@ export class BasePage {
   }
 
   async clickContinue() {
-    await this.continueButton.click({});
+    await this.continueButton.waitFor({ state: 'attached'});
+      await this.continueButton.click({});
+  }
+
+  async clickStartButton() {
+      await this.startButton.click();
+  }
+
+  async clickPreviousButton() {
+      await this.previousButton.click();
+  }
+
+  async clickCancelLink() {
+      await this.cancelLink.click();
   }
 
   async waitForAllUploadsToBeCompleted() {
@@ -100,24 +119,46 @@ export class BasePage {
   }
 
   async clickSubmit() {
-    await this.submit.click();
+
+        await  this.submit.click();
+
   }
   async clickSaveAndContinue() {
       await this.saveAndContinue.click();
   }
-  async enterPostCode(postcode:string){
+  async enterPostCode(postcode:string): Promise<void> {
       await this.postCode.fill(postcode);
-      await this.findAddress.click();
-      await this.page.getByLabel('Select an address').selectOption('1: Object');
 
+      await Promise.all([
+          this.page.waitForResponse(response =>
+              response.url().includes('addresses') &&
+              response.request().method() === 'GET' &&
+              response.status() === 200
+          ),
+          this.findAddress.click()
+      ]);
+
+      const addressDropdown = this.page.locator('select[name="address"]');
+
+      const optionValues = await addressDropdown.locator('option').evaluateAll(options =>
+          options.map(option => (option as HTMLOptionElement).value)
+      );
+
+      const secondOptionValue = optionValues[1];
+
+      if (!secondOptionValue) {
+          throw new Error('No valid second option found in address dropdown');
+      }
+
+      await addressDropdown.selectOption(secondOptionValue);
   }
+
   getCurrentDate():string {
     let date = new Date();
     let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
     let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
     let day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
-    let todayDate = `${day} ${month} ${year}`;
-    return todayDate;
+      return `${day} ${month} ${year}`;
     }
 
     async fillDateInputs(page: Page, date: Date) {

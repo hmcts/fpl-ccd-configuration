@@ -78,6 +78,28 @@ Once the environment variables are configured and dependencies are installed, yo
 yarn playwright test smoke-test.spec.ts
 ```
 
+## Running Tests in Local Environment
+To run tests in a local environment, you will need to have the following install onto your machine
+- Java 17
+- Docker
+
+It is important to note that Java 17 must be set as your JAVA_HOME env variable, not your local variable, otherwise when
+you build your local environment.
+
+Once the mandatory requirements have been met. Run the following command to build the environment.
+
+```
+./gradlew bootWithCCD
+```
+
+This will build and create the relevant dependencies and deploy it Docker in a localised environment.
+
+The application will then be accessible on `localhost:3000`, if there are any errors or debugging concerns, consult the
+documentation.
+
+Once the environment is running, note performance is subjective on hardware, point your the relevant environment variables
+to the localhost and follow the above steps to run the Playwright tests.
+
 ## 🎬 Debugging
 
 Playwright provides a couple of great debugging capabilities at all levels. The ones that you will probably find most useful are:

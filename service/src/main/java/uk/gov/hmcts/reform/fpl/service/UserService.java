@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -82,6 +83,10 @@ public class UserService {
         return idam.getUserDetails(requestData.authorisation());
     }
 
+    public UserInfo getUserInfo() {
+        return idam.getUserInfo(requestData.authorisation());
+    }
+
     public Set<String> getIdamRoles() {
         return requestData.userRoles();
     }
@@ -98,6 +103,13 @@ public class UserService {
     public boolean hasAnyOrgRoleFrom(List<OrganisationalRole> organisationalRoles) {
         Set<OrganisationalRole> roles = getOrgRoles();
         return isNotEmpty(roles) && roles.stream().anyMatch(organisationalRoles::contains);
+    }
+
+    public boolean hasAnyIdamRolesFrom(List<UserRole> userRoles) {
+        Set<String> roles = getIdamRoles();
+        return isNotEmpty(roles) && roles.stream().anyMatch(role -> userRoles.stream()
+            .map(UserRole::getRoleName)
+            .anyMatch(role::equals));
     }
 
     public boolean isCtscUser() {

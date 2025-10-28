@@ -68,18 +68,41 @@ export class QueryManagement extends BasePage {
         await this.page.getByRole('textbox', {name: 'Query Body'}).fill('Needed translater  for German language for the next hearing');
 
     }
+    async assertQueryQuestion(){
+        await expect.soft(this.page.getByText('Access issues or adding a new user')).toBeVisible();
+        await expect.soft(this.page.getByText('Make a change of representation on a case (notice of change)')).toBeVisible();
+        await expect.soft(this.page.getByText('I have a query in relation to a hearing')).toBeVisible();
+        await expect.soft(this.page.getByText('Add counsel to a case')).toBeVisible();
+        await expect.soft(this.page.getByText('Follow-up on an existing query')).toBeVisible();
+        await expect.soft(this.page.getByLabel('Raise a new query')).toBeVisible();
+    }
+    async  assertQueryTable() {
+        await expect(this.page.getByRole('columnheader', {name: 'Query subject'})).toBeVisible();
+        await expect(this.page.getByRole('columnheader', {name: 'Last submitted by'})).toBeVisible();
+        await expect(this.page.getByRole('columnheader', {name: 'Last submission date'})).toBeVisible();
+        await expect(this.page.getByRole('columnheader', {name: 'Last response date'})).toBeVisible();
+        await expect(this.page.getByRole('columnheader', {name: 'Response status'})).toBeVisible();
+        await expect(this.page.getByRole('link', {name: 'Birth certificate format'})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Local Authority '})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: 'Awaiting Response'})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: `${this.getCurrentDate()}`})).toBeVisible();
+    }
 
     async respondToQuery(closeTheQuery: boolean = false) {
         await this.page.getByRole('link', {name: 'Respond to a query'}).click();
         await this.respondDetail.fill('Answering to the query raised');
+        await expect.soft(this.page.getByText('Closing this query means the parties can no longer send messages in this thread. ')).toBeVisible();
         await this.addDocument.click();
         await expect.soft(this.page.getByRole('checkbox', {name: 'I want to close this query'})).toBeVisible();
 
         if (closeTheQuery) {
-            await this.page.getByRole('checkbox', {name: 'I want to close this query'}).check();
+            await this.page.getByRole('checkbox', { name: 'I want to close this query' }).check();
         }
         await expect.soft(this.page.getByText('Closing the query means the parties can no longer send message in this thread.')).toBeVisible();
         await expect.soft(this.page.getByText('Only attach documents related')).toBeVisible();
+
+        await expect.soft(this.page.getByText('Only attach documents related to your query. For all other documents use your case management document upload function.')).toBeVisible();
+        await this.addDocument.click();
         await this.documentInput.setInputFiles(config.testWordFile);
         await this.clickContinue();
         await this.clickSubmit();

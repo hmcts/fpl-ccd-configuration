@@ -102,14 +102,16 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "children1",
     "UserRole": "[BARRISTER]",
-    "CRUD": "R"
+    "CRUD": "CRUD",
+    "Comment": "barrister can remove themselves from the legalCounsellors list, but not allow to update anything else"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondents1",
     "UserRole": "[BARRISTER]",
-    "CRUD": "R"
+    "CRUD": "CRUD",
+    "Comment": "barrister can remove themselves from the legalCounsellors list, but not allow to update anything else"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -998,6 +1000,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isCTSCUser",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "familyManCaseNumber",
     "UserRole": "[BARRISTER]",
     "CRUD": "R"
@@ -1246,7 +1255,22 @@
     "CaseFieldID": "medicalRecordList",
     "UserRole": "[BARRISTER]",
     "CRUD": "R"
-  },  {
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "advocateMeetingMinuteList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "witnessTemplateList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "R"
+  },
+  {
   "LiveFrom": "01/01/2017",
   "CaseTypeID": "CARE_SUPERVISION_EPO",
   "CaseFieldID": "carePlanList",
@@ -1315,5 +1339,20 @@
     "CaseFieldID": "guardians",
     "UserRole": "[BARRISTER]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "addOrRemoveLegalCounselLabel",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "legalCounsellors",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRD",
+    "Comment": "barrister can remove themselves from the legalCounsellors list, but not allow to add / update"
   }
 ]

@@ -240,7 +240,7 @@
         "UserRoles": [
           "caseworker-publiclaw-solicitor"
         ],
-        "CRUD": "R"
+        "CRUD": "CR"
       }
     ]
   },
@@ -250,6 +250,31 @@
     "CaseEventID": "changeCaseName-superuser",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CR"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "updateCaseName",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]",
+          "ctsc"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor"
+        ],
+        "CRUD": "CR"
+      }
+    ]
   },
   {
     "LiveFrom": "01/01/2017",
@@ -799,7 +824,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[LASHARED]"
+          "[LASHARED]",
+          "[LABARRISTER]"
         ],
         "CRUD": "CR"
       }
@@ -1443,7 +1469,7 @@
           "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
           "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
           "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]", "[BARRISTER]"
         ],
         "CRUD": "CR"
       },
@@ -1807,7 +1833,8 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[LAMANAGING]",
-          "[EPSMANAGING]"
+          "[EPSMANAGING]",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
       }
@@ -1821,7 +1848,8 @@
       {
         "UserRoles": [
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
       }

@@ -21,8 +21,7 @@ test.describe('Query management', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test
-    ('LA raise query',
+    test('LA raise query',
         async ({
                    page, signInPage, queryManagement, caseFileView
 
@@ -50,6 +49,7 @@ test.describe('Query management', () => {
             await queryManagement.enterQueryDetails();
             await queryManagement.clickContinue();
             await queryManagement.clickSubmit();
+
             await expect(page.getByRole('heading', {name: 'Query submitted'})).toBeVisible();
             await expect(page.getByText('Your query has been sent to HMCTS')).toBeVisible();
             await expect.soft(page.getByText('Our team will read your query and respond.')).toBeVisible();
@@ -88,7 +88,7 @@ test.describe('Query management', () => {
             await queryManagement.tabNavigation('Tasks');
             await queryManagement.waitForTask('Respond to a Query');
             await queryManagement.assignToMe();
-            await page.pause();
+
             await queryManagement.respondToQuery(false);
             await queryManagement.tabNavigation('Queries');
 
@@ -115,8 +115,10 @@ test.describe('Query management', () => {
             await queryManagement.askFollowupQuery();
             await queryManagement.clickContinue();
             await queryManagement.clickSubmit();
+
             await expect(page.getByRole('heading', {name: 'Query submitted'})).toBeVisible();
             await expect(page.getByText('Your query has been sent to HMCTS')).toBeVisible();
+
             await queryManagement.goBackToCaseDetails();
             await queryManagement.tabNavigation('Queries');
             await expect(page.getByText('Awaiting Response')).toBeVisible();
@@ -127,7 +129,6 @@ test.describe('Query management', () => {
 
             await queryManagement.tabNavigation('Queries');
             await expect(page.getByRole('link', {name: 'Birth certificate format'})).toBeHidden();
-
 
             await queryManagement.clickSignOut();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
