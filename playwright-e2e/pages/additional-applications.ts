@@ -39,7 +39,7 @@ export class AdditionalApplications extends BasePage {
     this.selectApplicant = page.getByLabel('Select applicant');
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
-    this.paymentPbaDropdown = page.locator('#localAuthority_pbaNumberDynamicList');
+    this.paymentPbaDropdown = page.getByLabel('Payment by account (PBA)')
     this.typeOfC2Application = page.getByLabel('Application with notice.');
   }
 
@@ -148,7 +148,7 @@ export class AdditionalApplications extends BasePage {
   }
 
   public async payForApplication() {
-    await this.paymentPbaDropdown.selectOption({ index: 1 });
+    await this.paymentPbaDropdown.selectOption({ value: '1: PBA0076191' });
 
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
