@@ -4,7 +4,6 @@ import caseData from '../caseData/caseWithHearingDetails.json' assert {type: 'js
 import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert {type: 'json'};
 import { expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
-import config from "../settings/test-docs/config";
 
 test.describe('manage orders', () => {
     const dateTime = new Date().toISOString();
@@ -432,9 +431,10 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
     })
 
-    test('CTSC uploads Family assistance order', async ({ page, signInPage, orders }) => {
+     test('CTSC uploads Family assistance order ', async ({ page, signInPage, orders }) => {
         caseName = 'Family Assistance Order ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseData);
+
+         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
@@ -446,11 +446,14 @@ test.describe('manage orders', () => {
         await orders.selectOrder('Family assistance order (C42)');
         await orders.clickContinue();
 
-        await orders.ctscFamilyAssistanceOrder();
+        await orders.judgeUploadsFamilyAssistanceOrder();
         await orders.clickContinue();
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByText('c42_family_assistance_order.pdf', { exact: true })).toBeVisible();
 
     })
 

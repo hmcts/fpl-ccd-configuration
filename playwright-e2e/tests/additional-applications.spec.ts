@@ -167,7 +167,7 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.ctscPayForApplication();
+      await additionalApplications.payForApplication('PBA0076191');
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 

@@ -147,7 +147,7 @@ export class AdditionalApplications extends BasePage {
     await this.expectAllUploadsCompleted();
   }
 
-  public async payForApplication() {
+  public async payForApplication(p0: string) {
     await this.paymentPbaNumber.fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
