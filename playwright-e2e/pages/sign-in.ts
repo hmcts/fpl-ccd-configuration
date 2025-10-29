@@ -32,7 +32,7 @@ export class SignInPage extends BasePage {
         await this.page.goto(`${urlConfig.frontEndBaseURL}`);
     }
 
-    async navigateTOCaseDetails(caseNumber: string) {
+    async navigateToCaseDetails(caseNumber: string) {
         await this.page.goto(`${urlConfig.frontEndBaseURL}/cases/case-details/${urlConfig.jurisdiction}/${urlConfig.caseType}/${caseNumber}`);
         await this.page.waitForLoadState();
     }
