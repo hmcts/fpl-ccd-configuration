@@ -19,7 +19,7 @@ test.describe('Manage representatives', () => {
             await updateCase(caseName, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password,);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await manageRepresentatives.gotoNextStep('Manage representatives');
             await manageRepresentatives.updateRepresentatives();

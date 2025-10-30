@@ -25,7 +25,7 @@ test.describe('Change case name', () => {
             }
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email,CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await expect(changeCaseName.page.getByRole('heading', { name: 'CTSC Change case name' })).toBeVisible();
 
             await changeCaseName.gotoNextStep('Update case name');

@@ -21,7 +21,7 @@ test.describe('send and reply message',()=>{
         await updateCase(casename,caseNumber,caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email,CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await judicialMessages.gotoNextStep('Send messages');
         await judicialMessages.sendMessageToAllocatedJudgeWithApplication();
         await judicialMessages.checkYourAnsAndSubmit();
@@ -37,7 +37,7 @@ test.describe('send and reply message',()=>{
         await updateCase(casename,caseNumber,caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email,CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await judicialMessages.gotoNextStep('Send messages');
         await judicialMessages.sendMessageToAllocatedJudgeWithDocument();
         await judicialMessages.checkYourAnsAndSubmit();
@@ -52,7 +52,7 @@ test.describe('send and reply message',()=>{
         await updateCase(casename,caseNumber,caseDataJudgeMessage);
         await  signInPage.visit();
         await signInPage.login(judgeUser.email,judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await judicialMessages.gotoNextStep('Reply to messages');
         await judicialMessages.judgeReplyMessage();
         await judicialMessages.checkYourAnsAndSubmit();
@@ -66,7 +66,7 @@ test.describe('send and reply message',()=>{
       await updateCase(casename,caseNumber,caseDataCloseMessage);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email,CTSCUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await judicialMessages.gotoNextStep('Reply to messages');
       await judicialMessages.CTSCUserCloseMessage();
       await judicialMessages.checkYourAnsAndSubmit();

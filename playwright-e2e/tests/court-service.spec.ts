@@ -22,7 +22,7 @@ test.describe('Court Service', () => {
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await courtServices.tabNavigation('View application');
             await courtServices.tabNavigation('Start application');
 
@@ -80,7 +80,7 @@ test.describe('Court Service', () => {
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await courtServices.gotoNextStep('Court services');
             await courtServices.updateCourtServices();
 

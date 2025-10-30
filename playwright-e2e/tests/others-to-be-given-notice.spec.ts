@@ -19,7 +19,7 @@ test.describe('Others to be given notice', () => {
             await updateCase(casename, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await othersToBeGivenNotice.gotoNextStep('Others to be given notice');
             await othersToBeGivenNotice.othersToBeGivenNotice();

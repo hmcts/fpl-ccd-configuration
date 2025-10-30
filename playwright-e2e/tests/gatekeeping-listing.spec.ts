@@ -28,7 +28,7 @@ test.describe('Gatekeeping Listing', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(judgeLondonUser.email, judgeLondonUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await gateKeepingListing.gotoNextStep('Judicial Gatekeeping');
       await gateKeepingListing.completeJudicialGatekeepingWithUploadedOrder();
@@ -52,7 +52,7 @@ test.describe('Gatekeeping Listing', () => {
         //Test WA Task exists
         await signInPage.visit();
         await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await gateKeepingListing.tabNavigation('Tasks');
         await gateKeepingListing.waitForTask('Review Standard Direction Order (High Court)');
 
@@ -72,7 +72,7 @@ test.describe('Gatekeeping Listing', () => {
             await updateCase(caseName, caseNumber, caseWithEpo);
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await gateKeepingListing.gotoNextStep('Add urgent directions');
             await gateKeepingListing.completeUrgentDirectionsOrder();
             await expect.soft(page.getByText('has been updated with event: Add urgent directions')).toBeVisible();
