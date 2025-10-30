@@ -19,7 +19,7 @@ export class AdditionalApplications extends BasePage {
   readonly selectApplicant: Locator;
   readonly selectApplication: Locator;
   readonly checkbox: Locator;
-  readonly paymentPbaNumber: Locator;
+  readonly paymentPbaDropdown: Locator;
   readonly typeOfC2Application: Locator;
 
   public constructor(page: Page) {
@@ -39,7 +39,7 @@ export class AdditionalApplications extends BasePage {
     this.selectApplicant = page.getByLabel('Select applicant');
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
-    this.paymentPbaNumber = page.getByRole('textbox', { name: 'Payment by account (PBA) number' });
+    this.paymentPbaDropdown = page.getByLabel('Payment by account (PBA)')
     this.typeOfC2Application = page.getByLabel('Application with notice.');
   }
 
@@ -148,7 +148,8 @@ export class AdditionalApplications extends BasePage {
   }
 
   public async payForApplication() {
-    await this.paymentPbaNumber.fill('PBA1234567');
+    await this.paymentPbaDropdown.selectOption({ value: '1: PBA0076191' });
+
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }

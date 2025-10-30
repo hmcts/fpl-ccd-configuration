@@ -44,7 +44,7 @@ export class BasePage {
   }
 
   async expectAllUploadsCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
         await expect(locs[i]).toBeDisabled();
     }
@@ -146,10 +146,10 @@ export class BasePage {
   }
 
   getCurrentDate():string {
-    let date = new Date();
-    let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
-    let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
-    let day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
+    const date = new Date();
+    const year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
+    const month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
+    const day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
       return `${day} ${month} ${year}`;
     }
 
