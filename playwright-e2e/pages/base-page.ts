@@ -1,4 +1,4 @@
-import {expect, type Locator, type Page} from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 
 export class BasePage {
   readonly nextStep: Locator;

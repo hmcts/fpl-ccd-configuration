@@ -40,7 +40,6 @@ export class QueryManagement extends BasePage {
 
         await expect.soft(this.page.getByText('The subject should be a summary of your query')).toBeVisible();
         await expect.soft(this.page.getByText('Include as many details as possible so case workers can respond to your query')).toBeVisible();
-
         await this.queryDetailText.fill('Have birth certificate issued in aboard');
         await this.relatedToHearingRadio.getByLabel('Yes').click();
         await this.enterDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
@@ -93,11 +92,14 @@ export class QueryManagement extends BasePage {
         await this.page.getByRole('link', {name: 'Respond to a query'}).click();
         await this.respondDetail.fill('Answering to the query raised');
         await expect.soft(this.page.getByText('Closing this query means the parties can no longer send messages in this thread. ')).toBeVisible();
+        await this.addDocument.click();
         await expect.soft(this.page.getByRole('checkbox', {name: 'I want to close this query'})).toBeVisible();
 
         if (closeTheQuery) {
             await this.page.getByRole('checkbox', { name: 'I want to close this query' }).check();
         }
+        await expect.soft(this.page.getByText('Closing the query means the parties can no longer send message in this thread.')).toBeVisible();
+        await expect.soft(this.page.getByText('Only attach documents related')).toBeVisible();
 
         await expect.soft(this.page.getByText('Only attach documents related to your query. For all other documents use your case management document upload function.')).toBeVisible();
         await this.addDocument.click();
