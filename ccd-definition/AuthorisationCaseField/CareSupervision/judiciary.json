@@ -4671,6 +4671,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "submittedC1WithSupplement",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "RU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "changeOfRepresentatives",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
