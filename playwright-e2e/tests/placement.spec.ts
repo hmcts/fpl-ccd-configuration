@@ -22,7 +22,7 @@ test.describe('Placement', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await placement.gotoNextStep('Placement');
       await placement.submitPlacementOrder();
@@ -41,7 +41,7 @@ test.describe('Placement', () => {
         //Test WA Task exists
         await signInPage.visit();
         await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await placement.tabNavigation('Tasks');
         await placement.waitForTask('Check Placement Application (High Court)');
 
@@ -64,7 +64,7 @@ test.describe('Placement', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await placement.gotoNextStep('Placement');
       await placement.noticeOfPlacement();

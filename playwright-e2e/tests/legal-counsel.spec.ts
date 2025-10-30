@@ -27,7 +27,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
             await signInPage.visit();
             await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await legalCounsel.gotoNextStep('Add or remove counsel');
             await legalCounsel.clickContinue();
             await legalCounsel.toAddLegalCounsel();
@@ -39,7 +39,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await expect(page.locator('#case-viewer-field-read--respondents1')).toContainText('FPLSolicitorOrg');
             await legalCounsel.clickSignOut();
             await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await expect(page.getByRole('heading', {name: caseName})).toBeVisible();
             await expect(page.locator('h1')).toContainText(caseName);
         });
@@ -52,7 +52,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await giveAccessToCase(caseNumber, FPLSolicitorOrgUser, '[BARRISTER]');
             await signInPage.visit();
             await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await legalCounsel.gotoNextStep('Add or remove counsel');
             await legalCounsel.clickContinue();
             await legalCounsel.toRemoveLegalCounsel();
@@ -62,7 +62,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await expect(page.getByText('Counsel', {exact: true})).toBeHidden;
             await legalCounsel.clickSignOut();
             await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await expect(page.getByRole('heading', {name: caseName})).toBeHidden;
         });
 
@@ -79,7 +79,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await giveAccessToCase(caseNumber, FPLSolicitorOrgUser, '[BARRISTER]');
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await legalCounsel.gotoNextStep('Respondents');
             await legalCounsel.removeRepresentative();
             await legalCounsel.clickContinue();
@@ -91,7 +91,7 @@ test.describe('Respondent solicitor counsel ', () => {
             })).toBeVisible;
             await legalCounsel.clickSignOut();
             await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await expect(page.getByRole('heading', {name: caseName})).toBeHidden;
         });
 

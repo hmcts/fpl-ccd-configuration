@@ -24,7 +24,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
             //Other Users of managing LA have access to case
             await createCase.clickSignOut();
             await signInPage.login(wiltshireCountyUserTwo.email, wiltshireCountyUserTwo.password);
-            await signInPage.navigateTOCaseDetails(createCase.casenumber);
+            await signInPage.navigateToCaseDetails(createCase.casenumber);
             await expect(page.getByRole('heading', {name: `${caseName}`})).toBeVisible();
 
 
@@ -47,7 +47,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
             //Other Users of managing LA have access to case
             await createCase.clickSignOut();
             await signInPage.login(wiltshireCountyUserTwo.email, wiltshireCountyUserTwo.password);
-            await signInPage.navigateTOCaseDetails(createCase.casenumber);
+            await signInPage.navigateToCaseDetails(createCase.casenumber);
             await expect(page.getByRole('heading', {name: `${caseName}`})).toBeHidden();
 
         })
@@ -69,7 +69,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
             //Other Users of managing LA have access to case
             await createCase.clickSignOut();
             await signInPage.login(wiltshireCountyUserTwo.email, wiltshireCountyUserTwo.password);
-            await signInPage.navigateTOCaseDetails(createCase.casenumber);
+            await signInPage.navigateToCaseDetails(createCase.casenumber);
             await expect(page.getByRole('heading', {name: `${caseName}`})).toBeVisible();
 
         })
@@ -95,7 +95,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
         //login in as shared user and access the case
         await signInPage.login(wiltshireCountyUserTwo.email,wiltshireCountyUserTwo.password);
-        await signInPage.navigateTOCaseDetails(createCase.casenumber);
+        await signInPage.navigateToCaseDetails(createCase.casenumber);
         await expect(page.getByRole('heading', {name: `${caseName}`})).toBeVisible();
 
 
@@ -119,7 +119,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
             //other org user doesnot have access to case
             await signInPage.login(privateSolicitorOrgUserTwo.email,privateSolicitorOrgUserTwo.password);
-            await signInPage.navigateTOCaseDetails(createCase.casenumber);
+            await signInPage.navigateToCaseDetails(createCase.casenumber);
             await expect(page.getByRole('heading', {name: `${caseName}`})).toBeHidden();
 
         })

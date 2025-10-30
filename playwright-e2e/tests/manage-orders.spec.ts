@@ -23,7 +23,7 @@ test.describe('manage orders', () => {
                     await updateCase(caseName, caseNumber, caseData);
                     await signInPage.visit();
                     await signInPage.login(user.email, user.password);
-                    await signInPage.navigateTOCaseDetails(caseNumber);
+                    await signInPage.navigateToCaseDetails(caseNumber);
 
                     await orders.gotoNextStep('Manage orders');
                     await orders.selectOrderOperation('Create an order');
@@ -72,7 +72,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Amend order under the slip');
@@ -100,7 +100,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
         await orders.selectOrderOperation('Upload an order');
         await orders.clickContinue();
@@ -131,7 +131,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -176,7 +176,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -212,7 +212,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -246,7 +246,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -284,7 +284,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.gotoNextStep('Manage orders');
         await orders.selectOrderOperation('Create an order');
@@ -319,7 +319,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.gotoNextStep('Manage orders');
         await orders.selectOrderOperation('Create an order');
@@ -358,7 +358,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.gotoNextStep('Manage orders');
         await orders.selectOrderOperation('Create an order');
@@ -384,7 +384,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(judgeUser.email, judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.gotoNextStep('Manage orders');
         await orders.selectOrderOperation('Create an order');
@@ -409,7 +409,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.gotoNextStep('Manage orders');
         await orders.selectOrderOperation('Create an order');
@@ -432,7 +432,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(judgeUser.email, judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.gotoNextStep('Manage orders');
         await orders.selectOrderOperation('Create an order');
@@ -457,7 +457,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -482,7 +482,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(judgeUser.email, judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.gotoNextStep('Manage orders');
         await orders.selectOrderOperation('Create an order');
@@ -519,7 +519,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(judgeUser.email, judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.gotoNextStep('Manage orders');
 
@@ -569,7 +569,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -594,7 +594,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(judgeUser.email, judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -619,7 +619,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -644,7 +644,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
         await signInPage.login(judgeUser.email, judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -669,7 +669,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
         await signInPage.login(judgeUser.email, judgeUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');

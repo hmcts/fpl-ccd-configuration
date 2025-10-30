@@ -26,7 +26,7 @@ test.describe('Manage child representatives ', () => {
             await updateCase(casename, caseNumber, caseWithMultipleChild);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.addRegisteredSOlOrg();
@@ -46,7 +46,7 @@ test.describe('Manage child representatives ', () => {
             await updateCase(casename, caseNumber, caseWithMultipleChild);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.addRegisteredSOlOrg();
@@ -71,7 +71,7 @@ test.describe('Manage child representatives ', () => {
             await updateCase(casename, caseNumber, caseWithMultipleChild);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.addUnregisteredSolOrg();
@@ -97,7 +97,7 @@ test.describe('Manage child representatives ', () => {
             await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]');
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.removeSolicitor();

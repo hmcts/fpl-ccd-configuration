@@ -19,9 +19,9 @@ test.describe('Change other to respondent', () => {
             await updateCase(casename, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await changeOtherToRespondent.gotoNextStep('Change other to respondent');
             await changeOtherToRespondent.ChangeOtherToRespondent();
             await changeOtherToRespondent.tabNavigation('People in the case');

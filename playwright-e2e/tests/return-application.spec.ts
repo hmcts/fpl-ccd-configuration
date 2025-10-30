@@ -24,7 +24,7 @@ test.describe('Return application', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await returnApplication.gotoNextStep('Return application');
       await returnApplication.ReturnApplication();
 
@@ -42,7 +42,7 @@ test.describe('Return application', () => {
       await updateCase(caseName, caseNumber, returnedCase);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await page.getByRole('link', { name: 'Make changes to the respondents\' details' }).click();
       await returnApplication.UpdateRespondent();
 
