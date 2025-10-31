@@ -36,8 +36,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
         "DFPL-2818", this::run2818, // release 5/11/25
-        "DFPL-2846", this::run2846,
-        "DFPL-2920", this::run2920
+        "DFPL-2926", this::run2926
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -67,21 +66,10 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2846(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2846";
-        final long expectedCaseId = 1754386343078159L;
-        final String orgId = "0TIEL7U";
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, null));
-    }
-
-    private void run2920(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2920";
-        final long expectedCaseId = 1745483577456938L;
-        final String orgId = "TIPRU4K";
+    private void run2926(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2926";
+        final long expectedCaseId = 1733840267300656L;
+        final String orgId = "2ECEP1Z";
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 

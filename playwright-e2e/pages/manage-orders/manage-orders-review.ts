@@ -9,7 +9,7 @@ export class ManageOrdersReview extends BasePage {
 
     constructor(page: Page) {
         super(page);
-        this.orderPdfLabel = page.getByRole('link', { name: /\.pdf$/i });
+        this.orderPdfLabel = page.getByRole('button', { name: /\.pdf$/i });
         this.orderCloseCaseGroup = page.getByRole('group', { name: 'Does this order close the case?' });
         this.closeCaseYesRadioButton = this.orderCloseCaseGroup.getByRole('radio', { name: 'Yes' });
         this.closeCaseNoRadioButton = this.orderCloseCaseGroup.getByRole('radio', { name: 'No' });
