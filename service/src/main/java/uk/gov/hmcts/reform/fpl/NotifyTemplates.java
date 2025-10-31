@@ -110,4 +110,5 @@ public final class NotifyTemplates {
     public static final String GUARDIAN_UPDATED = "efc77c28-c32a-43d3-93f6-d75542d3743b";
     public static final String LEGAL_COUNSELLOR_REMOVED_THEMSELVES = "14f0ea3c-6b12-4d56-a1c2-775b3d01329e";
     public static final String APPLICANTS_DETAILS_UPDATED = "32ef0278-263c-4d70-983f-1bc68b687ea0";
+    public static final String QUERY_RESPONDED = "de2b3bac-dbe8-4e90-acc3-0772b63161d0";
 }
