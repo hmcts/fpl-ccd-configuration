@@ -61,6 +61,7 @@ import {ExpertReport} from "../pages/expert-report";
 import {Extend26WeekTimeline} from "../pages/extend-26week-timeline";
 import { RecordFinalDecision} from "../pages/record-final-decision";
 import {SendOrderRemainder} from "../pages/send-order-remainder";
+import {EnvironmentConfig, getEnvironmentSpecificTestData} from "../settings/environment-data-config"
 
 
 type CreateFixtures = {
@@ -123,9 +124,10 @@ type CreateFixtures = {
   submit: Submit;
   caseNote: CaseNote;
   expertReport: ExpertReport;
-    extend26WeekTimeline: Extend26WeekTimeline;
-    recordFinalDecision: RecordFinalDecision;
-    sendOrderRemainder: SendOrderRemainder;
+  extend26WeekTimeline: Extend26WeekTimeline;
+  recordFinalDecision: RecordFinalDecision;
+  sendOrderRemainder: SendOrderRemainder;
+  envDataConfig: EnvironmentConfig;
 
 
 };
@@ -373,5 +375,9 @@ othersToBeGivenNotice: async ({ page }, use) => {
     },
     sendOrderRemainder: async ({ page }, use) => {
       await use(new SendOrderRemainder(page));
+    },
+    envDataConfig: async ({}, use) => {
+      const config = getEnvironmentSpecificTestData();
+      await use(config);
     }
 });

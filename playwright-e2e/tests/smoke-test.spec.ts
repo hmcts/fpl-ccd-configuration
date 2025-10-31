@@ -20,6 +20,7 @@ test.describe('Smoke Test @xbrowser', () => {
         respondentDetails,
         allocationProposal,
         submitCase,
+        envDataConfig,
         makeAxeBuilder
                                                                 }, testInfo) => {
         test.info().annotations.push({ type: 'tag', description: 'xbrowser' });
@@ -87,7 +88,7 @@ test.describe('Smoke Test @xbrowser', () => {
                 ),
                 startApplication.applicantDetails()
             ]);
-            await applicantDetails.applicantDetailsNeeded();
+            await applicantDetails.applicantDetailsNeeded(envDataConfig.swanseaOrgPBA);
         });
 
         await test.step('Child details', async() => {
@@ -156,16 +157,14 @@ test.describe('Smoke Test @xbrowser', () => {
         ordersAndDirectionSought,
         startApplication,
         hearingUrgency,
-        groundsForTheApplication,
         applicantDetails,
         allocationProposal,
-        addApplicationDocuments,
         childDetails,
         respondentDetails,
         submitCase,
         page,
         caseFileView,
-        makeAxeBuilder
+        envDataConfig,
     }, testInfo) => {
 
         // 1. Sign in as local-authority user
@@ -204,7 +203,7 @@ test.describe('Smoke Test @xbrowser', () => {
         // Applicant Details
         await startApplication.tabNavigation('Start application');
         await startApplication.applicantDetails();
-        await applicantDetails.solicitorC110AApplicationApplicantDetails();
+        await applicantDetails.solicitorC110AApplicationApplicantDetails(envDataConfig.privateSolicitorOrgPBA);
         await startApplication.applicantDetailsHasBeenUpdated();
         await startApplication.tabNavigation('View application');
 
