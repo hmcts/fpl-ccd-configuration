@@ -584,7 +584,7 @@ class ApplicantLocalAuthorityServiceTest {
             when(validateEmailService.validateIfPresent("email"))
                 .thenReturn(List.of("Email error 1", "Email error 2"));
 
-            final List<String> actualErrors = underTest.validateLocalAuthority(localAuthority);
+            final List<String> actualErrors = underTest.validateLocalAuthority(localAuthority, NO);
 
             assertThat(actualErrors).containsExactlyInAnyOrder(
                 "PBA error 1",
@@ -601,7 +601,7 @@ class ApplicantLocalAuthorityServiceTest {
             when(pbaNumberService.validate("pba")).thenReturn(emptyList());
             when(validateEmailService.validateIfPresent("email")).thenReturn(emptyList());
 
-            final List<String> actualErrors = underTest.validateLocalAuthority(localAuthority);
+            final List<String> actualErrors = underTest.validateLocalAuthority(localAuthority, NO);
 
             assertThat(actualErrors).isEmpty();
 

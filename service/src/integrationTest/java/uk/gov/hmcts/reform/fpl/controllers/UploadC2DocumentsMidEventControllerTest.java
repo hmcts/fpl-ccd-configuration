@@ -107,7 +107,8 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractCallbackTest {
             .data(Map.of("temporaryC2Document", Map.of("pbaNumber", "12345")))
             .build(), "validate");
 
-        assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
+        assertThat(response.getErrors())
+            .contains("Payment by account (PBA) number must include 7 numbers and the PBA prefix");
         assertThat(response.getData()).extracting("temporaryC2Document").extracting("pbaNumber").isEqualTo("PBA12345");
     }
 
@@ -132,7 +133,8 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractCallbackTest {
                     "pbaNumber", "12345")))
             .build(), "validate");
 
-        assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
+        assertThat(response.getErrors())
+            .contains("Payment by account (PBA) number must include 7 numbers and the PBA prefix");
         assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
 

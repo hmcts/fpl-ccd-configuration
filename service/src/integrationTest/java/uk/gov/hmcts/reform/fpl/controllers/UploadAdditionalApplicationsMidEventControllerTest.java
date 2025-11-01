@@ -174,7 +174,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
                 "isCTSCUser", "Yes"))
             .build(), "validate");
 
-        assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
+        assertThat(response.getErrors())
+            .contains("Payment by account (PBA) number must include 7 numbers and the PBA prefix");
         assertThat(response.getData().get("temporaryPbaPayment"))
             .extracting("pbaNumber").isEqualTo("PBA12345");
     }
