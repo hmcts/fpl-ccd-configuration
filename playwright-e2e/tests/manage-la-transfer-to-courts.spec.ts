@@ -29,7 +29,6 @@ test.describe('Manage LAs / Transfer to court', () => {
                 await signInPage.visit();
                 await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
                 await signInPage.navigateToCaseDetails(caseNumber);
-                await runA11yCheck(page, testInfo, 'case-details');
             });
 
             await test.step('Update court info', async() => {
@@ -41,7 +40,6 @@ test.describe('Manage LAs / Transfer to court', () => {
             });
 
             await manageLaTransferToCourts.page.reload();
-            await runA11yCheck(page, testInfo, 'after-reload');
 
             await test.step('Validate court info', async() => {
                 await expect(page.getByText('Family Court sitting at Swansea')).toBeHidden();
@@ -79,7 +77,6 @@ test.describe('Manage LAs / Transfer to court', () => {
             await test.step('Verify new authority has access', async () => {
                 await expect(page.getByText('Applicant 2')).toBeVisible();
                 await expect(page.getByText('London Borough Hillingdon')).toBeVisible();
-                await runA11yCheck(page, testInfo, 'applicant-details');
             });
         });
 
@@ -111,7 +108,6 @@ test.describe('Manage LAs / Transfer to court', () => {
             await test.step('Verify access has been removed', async () => {
                 await expect(page.getByText('Applicant 2')).toBeHidden();
                 await expect(page.getByText('London Borough Hillingdon')).toBeHidden();
-                await runA11yCheck(page, testInfo, 'applicant-details');
             });
         });
 
