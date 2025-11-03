@@ -23,6 +23,8 @@ import java.util.List;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @RestController
@@ -47,6 +49,7 @@ public class ApplicantLocalAuthorityController extends CallbackController {
 
         if (applicantLocalAuthorityService.isCurrentUserHmctsSuperuser()) {
             localAuthority = caseData.getLocalAuthorities().get(0).getValue();
+            caseDetails.getData().put("isCTSCUser", YES.getValue());
         } else {
             localAuthority = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
 
@@ -58,9 +61,10 @@ public class ApplicantLocalAuthorityController extends CallbackController {
                 return respond(caseDetails,
                     List.of("You must be the applicant or acting on behalf of the applicant to modify these details."));
             }
-        }
 
-        localAuthority.setPbaNumberDynamicList(pbaService.populatePbaDynamicList(localAuthority.getPbaNumber()));
+            caseDetails.getData().put("isCTSCUser", NO.getValue());
+            localAuthority.setPbaNumberDynamicList(pbaService.populatePbaDynamicList(localAuthority.getPbaNumber()));
+        }
 
         caseDetails.getData().put(LOCAL_AUTHORITY, localAuthority);
         caseDetails.getData().put(MAIN_CONTACT, applicantLocalAuthorityService.getMainContact(localAuthority));
@@ -76,7 +80,8 @@ public class ApplicantLocalAuthorityController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
         final LocalAuthority localAuthority = caseData.getLocalAuthorityEventData().getLocalAuthority();
 
-        final List<String> errors = applicantLocalAuthorityService.validateLocalAuthority(localAuthority);
+        final List<String> errors = applicantLocalAuthorityService.validateLocalAuthority(localAuthority,
+            caseData.getIsCTSCUser());
 
         if (isNotEmpty(errors)) {
             return respond(caseDetails, errors);
