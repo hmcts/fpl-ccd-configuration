@@ -151,7 +151,6 @@ test.describe('Admin application management', () => {
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
-        await page.pause()
         await sendOrderRemainder.gotoNextStep('Send order reminder');
         await expect.soft(sendOrderRemainder.page.getByText('These concluded hearings do not have CMOs attached (in draft or sealed):')).toBeVisible();
         await sendOrderRemainder.sendOrderRemainder('Yes');

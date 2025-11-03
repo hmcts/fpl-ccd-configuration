@@ -21,7 +21,7 @@ test.describe('Upload additional applications', () => {
   test.slow();
 
   test('LA uploads a C1 application',
-    async ({ page, signInPage, additionalApplications }) => {
+    async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
@@ -34,12 +34,12 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
       // can see some basic properties of the application
-      await expect(page.getByText('PBA0076191')).toBeVisible();
+      await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible();
       await expect(page.getByText('C1 - Change surname or remove from jurisdiction')).toBeVisible();
       await expect(page.getByText('On the same day')).toBeVisible();
 
@@ -66,7 +66,7 @@ test.describe('Upload additional applications', () => {
     });
 
   test('LA uploads a C2 application with draft order ',
-    async ({ page, signInPage, additionalApplications }) => {
+    async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
@@ -79,12 +79,12 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
     });
 
   test('LA uploads combined Other and C2 applications @xbrowser ',
-    async ({ page, signInPage, additionalApplications }) => {
+    async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
@@ -97,12 +97,12 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillOtherApplicationDetails();
 
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
       // can see some basic properties of the application
-      await expect(page.getByText('PBA0076191')).toBeVisible();
+      await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible();
       await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
       await expect(page.getByText('On the same day')).toBeVisible(); // Other application
       await expect(page.getByText('Within 2 days')).toBeVisible(); // C2 application
@@ -113,7 +113,7 @@ test.describe('Upload additional applications', () => {
     });
 
   test('LA uploads a confidential C2 application with draft order @xbrowser',
-    async ({ page, signInPage, additionalApplications }) => {
+    async ({ page, signInPage, additionalApplications ,envDataConfig}) => {
       caseName = 'LA uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
@@ -126,12 +126,12 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
       // can see some basic properties of the application
-      await expect(page.getByText('PBA0076191')).toBeVisible();
+      await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible(); //PBA0076191
       await expect(page.getByText('Within 2 days')).toBeVisible();
 
       // can see the draft order to be approved
@@ -145,7 +145,7 @@ test.describe('Upload additional applications', () => {
 
       // CTSC can see some basic properties of the application
       await additionalApplications.tabNavigation('Other applications');
-      await expect(page.getByText('PBA0076191')).toBeVisible();
+      await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible();
       await expect(page.getByText('Within 2 days')).toBeVisible();
 
       // CTSC can see the draft order to be approved
@@ -172,7 +172,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.tabNavigation('Other applications');
 
       // can see some basic properties of the application
-      await expect(page.getByText('PBA0076191')).toBeVisible();
+      await expect(page.getByText('PBA0096471')).toBeVisible();
       await expect(page.getByText('Within 2 days')).toBeVisible();
 
       // can see the draft order to be approved
@@ -219,14 +219,9 @@ test.describe('Upload additional applications', () => {
         });
 
         await test.step('Upload C2 Document', async () => {
-           await Promise.all([
-                page.waitForResponse(response =>
-                    response.url().includes(`${urlConfig.frontEndBaseURL}/documents`) &&
-                    response.request().method() === 'POST'
-                ),
-                uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile)
-            ]);
+            uploadAdditionalApplicationsSuppliedDocuments.uploadC2Document(config.testPdfFile);
             await expect(uploadAdditionalApplicationsSuppliedDocuments.cancelUploadButton).toBeDisabled({ timeout: 10000 });
+            await uploadAdditionalApplicationsSuppliedDocuments.page.waitForTimeout(6000);//wait for upload to complete restriction by EXUI for users
             await uploadAdditionalApplicationsSuppliedDocuments.checkDocumentRelatedToCaseYes();
             await uploadAdditionalApplicationsSuppliedDocuments.clickContinue();
         });
@@ -266,7 +261,7 @@ test.describe('Upload additional applications', () => {
     });
 
   test('Respondent Solicitor Uploads additional applications',
-    async ({ page, signInPage, additionalApplications }) => {
+    async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'Respondent solicitor Uploads additional application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseWithResSolicitor);
       await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
@@ -280,7 +275,7 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.payForApplication(envDataConfig.privateSolicitorOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
@@ -294,14 +289,15 @@ test.describe('Upload additional applications', () => {
       await expect(page.getByText('This is a confidential application and restricted viewing applies')).toBeVisible();
     });
 
-  test('Failed Payment High Court WA task', async ({ page, signInPage, additionalApplications, caseFileView }) => {
+  test('Failed Payment High Court WA task', async ({ page, signInPage, additionalApplications, caseFileView,envDataConfig }) => {
     caseName = 'Failed Payment High Court WA task ' + dateTime.slice(0, 10);
     setHighCourt(caseData);
     await updateCase(caseName, caseNumber, caseData);
     await signInPage.visit();
     await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
     await signInPage.navigateTOCaseDetails(caseNumber);
-    await additionalApplications.uploadBasicC2Application(false);
+    await signInPage.gotoNextStep('Upload additional applications');
+    await additionalApplications.uploadBasicC2Application(false,envDataConfig.swanseaOrgPBA);
 
     // Check CFV
     await caseFileView.goToCFVTab();

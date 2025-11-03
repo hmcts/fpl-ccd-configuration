@@ -349,7 +349,6 @@ export class Orders extends BasePage {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.page.pause();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
