@@ -113,8 +113,11 @@ public abstract class MessageJudgeService {
             .updatedTime(time.now())
             .build();
 
-        //If this is a new message or reply using the old system there will be no replies
-        if (message.isEmpty() || message.get().getJudicialMessageReplies().isEmpty()) {
+        //If this is a new message there will be no replies
+        if (message.isEmpty()) {
+            return List.of(element(messageReply));
+        }
+        else if (message.get().getJudicialMessageReplies().isEmpty()) {
             return List.of(element(messageReply));
         } else {
             List<Element<JudicialMessageReply>> updatedHistory = new ArrayList<>(message.get()
