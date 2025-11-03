@@ -89,7 +89,6 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
         await createCase.submitOutSourceCase();
         await createCase.getCaseNumber();
         await createCase.findCase(createCase.casenumber);
-       // await page.pause();
         await shareCase.shareCaseWithinOrg(wiltshireCountyUserTwo.email);
         await createCase.clickSignOut();
 
