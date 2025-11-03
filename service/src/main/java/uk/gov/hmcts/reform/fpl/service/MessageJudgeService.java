@@ -116,8 +116,7 @@ public abstract class MessageJudgeService {
         //If this is a new message there will be no replies
         if (message.isEmpty()) {
             return List.of(element(messageReply));
-        }
-        else if (message.get().getJudicialMessageReplies().isEmpty()) {
+        } else if (message.get().getJudicialMessageReplies().isEmpty()) {
             return List.of(element(messageReply));
         } else {
             List<Element<JudicialMessageReply>> updatedHistory = new ArrayList<>(message.get()
