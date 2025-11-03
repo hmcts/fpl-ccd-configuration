@@ -129,6 +129,7 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
         final CaseData caseData = CaseData.builder()
             .localAuthorityPolicy(organisationPolicy("ORG", "ORG name", LASOLICITOR))
             .localAuthorities(wrapElements(existingLocalAuthority))
+            .isCTSCUser(NO)
             .localAuthorityEventData(LocalAuthorityEventData.builder()
                 .localAuthority(existingLocalAuthority)
                 .applicantContact(updatedContact)
@@ -143,6 +144,69 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
             .name("ORG name")
             .email("org@test.com")
             .pbaNumber("PBA1234567")
+            .designated(YES.getValue())
+            .colleagues(List.of(element(existingMainContactUUID, updatedContact)))
+            .build();
+
+        assertThat(updatedCaseData.getLocalAuthorities())
+            .extracting(Element::getValue)
+            .containsExactly(expectedLocalAuthority);
+    }
+
+    @Test
+    void shouldUpdateExistingLocalAuthorityWithStaticPbaWhenCTSCUser() {
+        final UUID existingMainContactUUID = UUID.randomUUID();
+
+        final List<Element<Colleague>> existingColleagues = List.of(
+            element(existingMainContactUUID, Colleague.builder()
+                .role(ColleagueRole.SOCIAL_WORKER)
+                .fullName("Emma Smith")
+                .mainContact(YES.getValue())
+                .build()));
+
+        final LocalAuthority existingLocalAuthority = LocalAuthority.builder()
+            .id("ORG")
+            .name("ORG name")
+            .email("org@test.com")
+            .pbaNumberDynamicList(null)
+            .pbaNumber("PBA1234567")
+            .colleagues(existingColleagues)
+            .build();
+
+        final LocalAuthority updatedLocalAuthority = LocalAuthority.builder()
+            .id("ORG")
+            .name("ORG name")
+            .email("org@test.com")
+            .pbaNumberDynamicList(null)
+            .pbaNumber("PBA1337890")
+            .colleagues(existingColleagues)
+            .build();
+
+        final Colleague updatedContact = Colleague.builder()
+            .role(ColleagueRole.SOCIAL_WORKER)
+            .fullName("Gregory White")
+            .mainContact(YES.getValue())
+            .notificationRecipient(YES.getValue())
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .localAuthorityPolicy(organisationPolicy("ORG", "ORG name", LASOLICITOR))
+            .localAuthorities(wrapElements(existingLocalAuthority))
+            .isCTSCUser(YES)
+            .localAuthorityEventData(LocalAuthorityEventData.builder()
+                .localAuthority(updatedLocalAuthority)
+                .applicantContact(updatedContact)
+                .applicantContactOthers(List.of())
+                .build())
+            .build();
+
+        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+            .id("ORG")
+            .name("ORG name")
+            .email("org@test.com")
+            .pbaNumber("PBA1337890")
             .designated(YES.getValue())
             .colleagues(List.of(element(existingMainContactUUID, updatedContact)))
             .build();
@@ -181,6 +245,7 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
         final CaseData caseData = CaseData.builder()
             .localAuthorityPolicy(organisationPolicy("ORG", "ORG name", LASOLICITOR))
             .localAuthorities(wrapElements(existingLocalAuthority))
+            .isCTSCUser(NO)
             .localAuthorityEventData(LocalAuthorityEventData.builder()
                 .localAuthority(existingLocalAuthority)
                 .applicantContact(existingMainContact)
