@@ -239,5 +239,22 @@
     "ElementLabel": "This message will now be marked as closed",
     "SecurityClassification": "Public",
     "FieldShowCondition": "closeMessageLabel=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "judicialMessageReplies",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "JudicialMessageReply",
+    "ElementLabel": "Message history",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "isJudicialMessageUrgent",
+    "ElementLabel": "Urgency",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
   }
 ]
