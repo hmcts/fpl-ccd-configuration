@@ -63,6 +63,7 @@ import {SendOrderRemainder} from "../pages/send-order-remainder";
 import {AddFamilymanCaseNumberPage} from "../pages/gatekeeping/add-familyman-case-numner";
 import {SendToGatekeeperPage} from "../pages/gatekeeping/send-to-gatekeeper";
 import {HistoryPage} from "../pages/case-details/history";
+import {EnvironmentConfig, getEnvironmentSpecificTestData} from "../settings/environment-data-config"
 
 
 type CreateFixtures = {
@@ -127,9 +128,10 @@ type CreateFixtures = {
   sendToGatekepperPage: SendToGatekeeperPage;
   historyPage: HistoryPage;
   expertReport: ExpertReport;
-    extend26WeekTimeline: Extend26WeekTimeline;
-    recordFinalDecision: RecordFinalDecision;
-    sendOrderRemainder: SendOrderRemainder;
+  extend26WeekTimeline: Extend26WeekTimeline;
+  recordFinalDecision: RecordFinalDecision;
+  sendOrderRemainder: SendOrderRemainder;
+  envDataConfig: EnvironmentConfig;
 
 
 };
@@ -379,5 +381,9 @@ othersToBeGivenNotice: async ({ page }, use) => {
     },
     sendOrderRemainder: async ({ page }, use) => {
       await use(new SendOrderRemainder(page));
+    },
+    envDataConfig: async ({}, use) => {
+      const config = getEnvironmentSpecificTestData();
+      await use(config);
     }
 });

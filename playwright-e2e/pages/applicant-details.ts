@@ -31,7 +31,7 @@ export class ApplicantDetails extends BasePage {
     super(page);
     this.applicantDetailsHeading = page.getByRole('heading', { name: 'Applicant details' });
     this.groupEmailAddress = page.getByLabel('Legal team manager\'s name and');
-    this.pbaNumber = page.getByRole('textbox', { name: 'PBA number' });
+    this.pbaNumber = page.locator('#localAuthority_pbaNumberDynamicList');
     this.customerReference = page.getByLabel('Customer reference');
     this.nameOfApplicantToSign = page.getByLabel('Name of the person who will');
     this.clientCode = page.getByLabel('Client code (Optional)');
@@ -53,8 +53,8 @@ export class ApplicantDetails extends BasePage {
 
   }
 
-  async fillPbaNumber(text: string): Promise<void> {
-      await this.pbaNumber.fill(text);
+  async fillPbaNumber(PBANumber: string): Promise<void> {
+      await this.pbaNumber.selectOption(PBANumber); // PBA0096471
   }
 
   async fillCustomerReference(text: string): Promise<void> {
@@ -89,8 +89,8 @@ export class ApplicantDetails extends BasePage {
       await this.directEmailAddress.fill(email);
   }
 
-  async applicantDetailsNeeded(): Promise<void> {
-      await this.fillPbaNumber('PBA0082848');
+  async applicantDetailsNeeded(PBANumber: string | ''): Promise<void> {
+      await this.fillPbaNumber(PBANumber);
       await this.fillCustomerReference('1234567');
       await this.fillNameOfApplicantToSign('Test');
       await this.fillCountry('United Kingdom');
@@ -136,13 +136,13 @@ export class ApplicantDetails extends BasePage {
 
   }
 
-  async solicitorC110AApplicationApplicantDetails(){
+  async solicitorC110AApplicationApplicantDetails(PBANumber:string){
 
       await expect.soft(this.representingPersonDetails).toBeVisible();
       await this.representingPersonDetails.getByLabel('First name').fill('John');
       await this.representingPersonDetails.getByLabel('Last name').fill('Somuy');
       await this.page.getByLabel('Group email address (Optional)').fill('privatesol@gmail.com');
-      await this.pbaNumber.fill('PBA0096471');
+      await this.pbaNumber.selectOption(PBANumber);
       await this.customerReference.fill('Customer reference 1000');
       await this.clickContinue();
 
