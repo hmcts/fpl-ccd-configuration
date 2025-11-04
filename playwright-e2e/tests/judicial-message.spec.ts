@@ -8,7 +8,7 @@ import {createCase, updateCase} from "../utils/api-helper";
 import {formatToLongDate12hrTime} from "../utils/util-helper";
 
 
-test.describe.only('send and reply message', () => {
+test.describe('send and reply message', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
