@@ -36,15 +36,20 @@ export class QueryManagement extends BasePage {
     }
 
     async enterQueryDetails() {
-        await this.querySubjectText.fill('Birth certificate format');
+
+        await expect.soft(this.page.getByText('The Query Service should only be used for a communication that is purely routine, uncontentious or administrative.')).toBeVisible();
+        await expect.soft(this.page.getByText('Any documents uploaded to the Query Service will not be visible to the Judge or served on the other party/ parties.')).toBeVisible();
+        await expect.soft(this.page.getByText('If a communication relates to a matter of substance or procedure, do not use the Query Service. It is your responsibility to upload such a communication to the case file using Manage Documents and to serve it on the other party/ parties as required by Family Procedure Rule 5.7')).toBeVisible();
+        await expect.soft(this.page.getByText('If your query is urgent please call the court and tribunal support centre (CTSC) on 0330 808 4424.')).toBeVisible();
 
         await expect.soft(this.page.getByText('The subject should be a summary of your query')).toBeVisible();
+        await this.querySubjectText.fill('Birth certificate format');
         await expect.soft(this.page.getByText('Include as many details as possible so case workers can respond to your query')).toBeVisible();
         await this.queryDetailText.fill('Have birth certificate issued in aboard');
         await this.relatedToHearingRadio.getByLabel('Yes').click();
         await this.enterDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
         await this.newDocument.click();
-        await expect(this.page.getByText('Only attach documents related to your query. For all other documents use your case management document upload function.')).toBeVisible();
+        await expect.soft(this.page.getByText('Only attach documents related to your query. For all other documents use your case management document upload function.')).toBeVisible();
         await this.documentCollection.setInputFiles(config.testWordFile);
         await this.waitForAllUploadsToBeCompleted();
     }
