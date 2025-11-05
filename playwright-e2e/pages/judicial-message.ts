@@ -21,7 +21,7 @@ export class JudicialMessage extends BasePage {
         this.whichApplication = page.getByLabel('Which application?');
         this.recipient = page.getByLabel('Recipient', {exact: true}).locator('visible=true');
         this.subject = page.getByLabel('Message subject');
-        this.urgency = page.getByLabel('Urgency (Optional)');
+        this.urgency = page.getByRole('group' ,{name:'Is this urgent?'});
         this.recipientEmail = page.getByLabel('Recipient\'s email address');
         this.message = page.getByLabel('Message', {exact: true});
         this.messageToReply = page.getByLabel('Your messages');
@@ -39,7 +39,7 @@ export class JudicialMessage extends BasePage {
         await this.clickContinue();
         await this.recipient.selectOption('Other Judge/Legal Adviser');
         await this.subject.fill('To the allocated judge - Regard Hearing');
-        await this.urgency.fill('Urgent');
+        await this.urgency.getByText('yes').click();
         await this.message.fill('Allocated judge to decide on the hearing.');
         await this.clickContinue();
     }
@@ -52,7 +52,7 @@ export class JudicialMessage extends BasePage {
         await this.clickContinue();
         await this.recipient.selectOption('Other Judge/Legal Adviser');
         await this.subject.fill('To legal adviser - Regard Hearing assistance');
-        await this.urgency.fill('Urgent');
+        await this.urgency.getByText('yes').click();
         await this.message.fill('Hearing needs assistance from legal adviser.');
         await this.clickContinue();
     }

@@ -40,6 +40,7 @@ test.describe('send and reply message', () => {
             await judicialMessages.expandMessageDetails('CTSC');
             await expect(page.locator('ccd-read-complex-field-collection-table')).toContainText('C2, 25 March 2021, 3:16pm');
             await expect(page.getByText('Allocated judge to decide on the hearing.')).toHaveCount(2);
+            await expect(page.getByText('Same Day')).toBeVisible();
 
         });
 
@@ -60,6 +61,7 @@ test.describe('send and reply message', () => {
             await judicialMessages.expandMessageDetails('CTSC');
             await expect(judicialMessages.page.getByText(formatToLongDate12hrTime(new Date()))).toHaveCount(2);
             await expect(page.getByText('Hearing needs assistance from legal adviser.')).toHaveCount(2);
+            await expect(page.getByText('Same Day')).toBeVisible();
 
         });
 
@@ -82,7 +84,7 @@ test.describe('send and reply message', () => {
 
     });
 
-    test('CTSC admin close the Message', async ({page, signInPage, judicialMessages}) => {
+    test.only('CTSC admin close the Message', async ({page, signInPage, judicialMessages}) => {
         casename = 'CTSC Admin Close Message ' + dateTime.slice(0, 10);
         await updateCase(casename, caseNumber, caseDataCloseMessage);
         await signInPage.visit();
