@@ -1052,7 +1052,7 @@ public class CaseData extends CaseDataParent {
     private final List<Element<JudicialMessage>> judicialMessages;
     private final List<Element<JudicialMessage>> closedJudicialMessages;
     private JudicialMessageRoleType latestRoleSent;
-    private WorkAllocationTaskUrgency waTaskUrgency;
+    private WorkAllocationTaskUrgency waTaskUrgencyLevel;
 
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {

@@ -29,7 +29,7 @@ public class WorkAllocationTaskService {
     }
 
     public void setTaskUrgency(CaseDetailsMap caseDetailsMap, WorkAllocationTaskUrgency taskUrgency) {
-        caseDetailsMap.put("waTaskUrgency", taskUrgency);
+        caseDetailsMap.put("waTaskUrgencyLevel", taskUrgency);
     }
 
 }

@@ -58,6 +58,6 @@ public class WorkAllocationTaskServiceTest {
     void shouldSetTaskUrgency() {
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(new HashMap<>());
         underTest.setTaskUrgency(caseDetailsMap, URGENT);
-        assertThat(caseDetailsMap.get("waTaskUrgency")).isEqualTo(URGENT);
+        assertThat(caseDetailsMap.get("waTaskUrgencyLevel")).isEqualTo(URGENT);
     }
 }
