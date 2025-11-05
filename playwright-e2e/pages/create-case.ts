@@ -182,6 +182,16 @@ export class CreateCase extends BasePage{
     async respondentSolicitorCreatCase(){
         await this.respondentSolicitorUser.check();
         await this.applicationFor.selectOption('Swansea City Council');
-        await this.clickContinue();
+        await Promise.all([
+            this.page.waitForResponse(response => {
+                const url = response.url();
+                return (
+                    url.includes('/data/case-types/CARE_SUPERVISION_EPO/validate') &&
+                    response.request().method() === 'POST' &&
+                    response.status() === 200
+                );
+            }),
+            this.clickContinue()
+        ]);
     }
 }
