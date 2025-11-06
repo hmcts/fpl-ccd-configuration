@@ -84,7 +84,7 @@ test.describe('send and reply message', () => {
 
     });
 
-    test.only('CTSC admin close the Message', async ({page, signInPage, judicialMessages}) => {
+    test('CTSC admin close the Message', async ({page, signInPage, judicialMessages}) => {
         casename = 'CTSC Admin Close Message ' + dateTime.slice(0, 10);
         await updateCase(casename, caseNumber, caseDataCloseMessage);
         await signInPage.visit();
