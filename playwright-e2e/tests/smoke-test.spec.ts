@@ -165,79 +165,115 @@ test.describe('Smoke Test @xbrowser', () => {
         page,
         caseFileView,
         envDataConfig,
-    }, testInfo) => {
+    }) => {
 
-        // 1. Sign in as local-authority user
-        await signInPage.visit();
-        await signInPage.login(
-            privateSolicitorOrgUser.email,
-            privateSolicitorOrgUser.password,
-        );
-        //sign in page
-        await signInPage.isSignedIn();
+        await test.step('Login as private solicitor', async () => {
+            await signInPage.visit();
 
-        // Add application details
-        //Start new case, get case id and assert case id is created
-        await createCase.caseName();
-        await createCase.createCase();
-        await createCase.respondentSolicitorCreatCase();
-        await createCase.submitCase('Private Solicitor -C110 a Application ' + CreateCaseName.getFormattedDate());
-        await startApplication.tabNavigation('View application');
+            await Promise.all([
+                page.waitForResponse(response => {
+                    const url = response.url();
+                    return (
+                        url.includes('/auth/isAuthenticated') &&
+                        response.request().method() === 'GET' &&
+                        response.status() === 200
+                    );
+                }),
+                signInPage.login(
+                    privateSolicitorOrgUser.email,
+                    privateSolicitorOrgUser.password
+                )
+            ]);
+            await signInPage.isSignedIn();
+        });
 
+        await test.step('Create solicitor Case', async () => {
+            await createCase.caseName()
+            await createCase.createCase();
+            await createCase.respondentSolicitorCreatCase()
+        });
 
-        // //Orders and directions sought
-        await startApplication.tabNavigation('Start application');
-        await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
-        await expect(startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
-        await startApplication.tabNavigation('View application');
+        await test.step('Submit solicitor Case', async () => {
+            await createCase.submitCase('Private Solicitor -C110 a Application ' + CreateCaseName.getFormattedDate());
+        });
 
+        await test.step('Complete C110a Application', async () => {
+            await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
+            await expect(startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
 
-        // Hearing urgency
-        await startApplication.tabNavigation('Start application');
-        await startApplication.hearingUrgency();
-        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
-        await hearingUrgency.hearingUrgencySmokeTest();
-        await startApplication.tabNavigation('View application');
+            await test.step('Hearing Urgency', async () => {
+                await startApplication.hearingUrgency();
+                await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
+                await hearingUrgency.hearingUrgencySmokeTest();
+            });
 
-
-        // Applicant Details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.applicantDetails();
-        await applicantDetails.solicitorC110AApplicationApplicantDetails(envDataConfig.privateSolicitorOrgPBA);
-        await startApplication.applicantDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
-
-        // Child details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetails();
-        await childDetails.addChildDetailsForC110AApplication();
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
-
-        // // Add respondents' details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.respondentDetails();
-        await respondentDetails.respondentDetailsPrivateSolicitor();
-        await startApplication.tabNavigation('View application');
-
-        // Allocation Proposal
-        await startApplication.tabNavigation('Start application');
-        await startApplication.allocationProposal();
-        await allocationProposal.allocationProposalSmokeTest();
-        await startApplication.allocationProposalHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+            await test.step('Applicant Details', async() => {
+                await startApplication.applicantDetails();
+                await applicantDetails.solicitorC110AApplicationApplicantDetails(envDataConfig.privateSolicitorOrgPBA);
+                await startApplication.applicantDetailsHasBeenUpdated();
+            });
 
 
-       // Submit the case
-        await startApplication.tabNavigation('Start application');
-        await startApplication.submitCase();
-        await submitCase.submitCaseSmokeTest('£263.00');
-        await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Applications');
-        await caseFileView.openFolder('Original Applications');
-        await expect(page.getByRole('button', { name: 'Document icon' })).toBeVisible();
-        await caseFileView.openDocInNewTab();
-        await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
+            await test.step('Child Details', async () => {
+                await Promise.all([
+                    page.waitForResponse(response =>
+                        response.url().includes('enterChildren') &&
+                        response.request().method() === 'GET' &&
+                        response.status() === 200
+                    ),
+                    startApplication.childDetails()
+                ]);
+                await childDetails.addChildDetailsForC110AApplication();
+                await startApplication.childDetailsHasBeenUpdated();
+            });
+
+            await test.step('Add Respondent Details', async () => {
+                await Promise.all([
+                    page.waitForResponse(response =>
+                        response.url().includes('enterRespondents') &&
+                        response.request().method() === 'GET' &&
+                        response.status() === 200
+                    ),
+                    startApplication.respondentDetails()
+                ]);
+                await respondentDetails.respondentDetailsPrivateSolicitor();
+            });
+
+
+            await test.step('Allocation Proposal', async () => {
+                await Promise.all([
+                    page.waitForResponse(response =>
+                        response.url().includes('otherProposal') &&
+                        response.request().method() === 'GET' &&
+                        response.status() === 200
+                    ),
+                    startApplication.allocationProposal()
+                ]);
+                await allocationProposal.allocationProposalSmokeTest();
+                await startApplication.allocationProposalHasBeenUpdated();
+            });
+
+            await test.step('Submit the Case', async () => {
+                await Promise.all([
+                    page.waitForResponse(response =>
+                        response.url().includes('submitApplication') &&
+                        response.request().method() === 'GET' &&
+                        response.status() === 200
+                    ),
+                    startApplication.submitCase()
+                ]);
+                await submitCase.submitCaseSmokeTest('£263.00');
+            });
+        });
+
+        await test.step('CFV Application check', async () => {
+            await caseFileView.goToCFVTab();
+            await caseFileView.openFolder('Applications');
+            await caseFileView.openFolder('Original Applications');
+            await expect(page.getByRole('button', { name: 'Document icon' })).toBeVisible();
+            await caseFileView.openDocInNewTab();
+            await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
+        });
+
     })
 })
