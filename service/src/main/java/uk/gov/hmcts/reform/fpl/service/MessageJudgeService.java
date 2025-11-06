@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
@@ -87,11 +88,13 @@ public abstract class MessageJudgeService {
     protected String buildTempMessageHistory(JudicialMessage message) {
         List<String> messageHistory = new ArrayList<>(List.of());
 
-        message.getJudicialMessageReplies().forEach(history -> {
-            JudicialMessageReply reply = history.getValue();
-            messageHistory.add(String.format("%s - %s - %s (end of message)", reply.getReplyFrom(),
-                reply.getDateSent(), reply.getMessage()));
-        });
+        if (!isEmpty(message.getJudicialMessageReplies())) {
+            message.getJudicialMessageReplies().forEach(history -> {
+                JudicialMessageReply reply = history.getValue();
+                messageHistory.add(String.format("%s - %s - %s (end of message)", reply.getReplyFrom(),
+                    reply.getDateSent(), reply.getMessage()));
+            });
+        }
 
         if (messageHistory.isEmpty()) {
             return "";
@@ -129,6 +132,8 @@ public abstract class MessageJudgeService {
 
         //If this is a new message the object will be empty
         if (message.isEmpty()) {
+            return List.of(element(messageReply));
+        } else if (isEmpty(message.get().getJudicialMessageReplies())) {
             return List.of(element(messageReply));
         } else {
             List<Element<JudicialMessageReply>> updatedHistory = new ArrayList<>(message.get()
