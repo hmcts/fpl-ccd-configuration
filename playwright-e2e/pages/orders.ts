@@ -291,7 +291,7 @@ export class Orders extends BasePage {
 
     async openOrderDoc(docLink: string) {
         const newPagePromise = this.page.context().waitForEvent('page');
-        await this.page.getByRole('link', { name: `${docLink}` }).click();
+        await this.page.getByRole('button', { name: `${docLink}` }).click();
         this.orderPage = await newPagePromise;
         await this.orderPage.waitForLoadState();
     }
@@ -333,9 +333,7 @@ export class Orders extends BasePage {
     async ctscFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
-        await this.page.pause();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
@@ -353,7 +351,6 @@ export class Orders extends BasePage {
     async judgeUploadsFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();

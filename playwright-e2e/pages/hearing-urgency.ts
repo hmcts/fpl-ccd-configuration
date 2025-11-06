@@ -39,7 +39,17 @@ export class HearingUrgency extends BasePage {
     await this.standardHearingRadioButton.click();
     await this.areRespondentsAwareOfProceedings.click();
     await this.continue.click();
-    await this.checkYourAnsAndSubmit();
+      await Promise.all([
+          this.page.waitForResponse(response => {
+              const url = response.url();
+              return (
+                  url.includes('/api/wa-supported-jurisdiction/get') &&
+                  response.request().method() === 'GET' &&
+                  response.status() === 200
+              );
+          }),
+          await this.checkYourAnsAndSubmit()
+      ]);
     await expect(this.page.getByText('has been updated with event:')).toBeVisible();
 
   }

@@ -26,7 +26,8 @@ import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.setPrefix;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PbaNumberService {
 
-    private static final String VALIDATION_ERROR_MESSAGE = "Payment by account (PBA) number must include 7 numbers";
+    private static final String VALIDATION_ERROR_MESSAGE =
+        "Payment by account (PBA) number must include 7 numbers and the PBA prefix";
 
     public List<Element<Applicant>> update(List<Element<Applicant>> applicantElementsList) {
         var applicantsPartitionedByEmptyPbaNumber = applicantElementsList.stream()
