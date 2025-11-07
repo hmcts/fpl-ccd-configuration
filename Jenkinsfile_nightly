@@ -211,6 +211,17 @@ withNightlyPipeline(type, product, component) {
           steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
         }
       }
+
+      stage('Publish Allure Report') {
+        steps {
+          allure([
+            includeProperties: false,
+            jdk: '',
+            results: [[path: 'allure-results']],
+            reportBuildPolicy: 'ALWAYS'
+          ])
+        }
+      }
     }
 
     afterAlways('fortify-scan') {
