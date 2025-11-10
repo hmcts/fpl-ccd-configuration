@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCal
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -35,6 +37,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-2837", this::run2837,
         "DFPL-2818", this::run2818, // release 5/11/25
         "DFPL-2926", this::run2926
     );
@@ -84,5 +87,17 @@ public class MigrateCaseController extends CallbackController {
                 data.put(field, "");
             }
         });
+    }
+
+    private void run2837(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1732700347667956L, "DFPL-2837");
+
+        caseDetails.getData().putAll(migrateCaseService.removeSupportingEvidenceBundleFromAdditionalApplication(
+            caseData,
+            "DFPL-2837",
+            UUID.fromString("bef6a7d7-0ee1-4984-b6a2-1cda165b5b92"),
+            UUID.fromString("4628b139-e483-4918-b809-ca5f065e7131")));
     }
 }
