@@ -82,7 +82,7 @@ test.describe('Admin application management', () => {
             await expertReport.checkDateValidationPass();
             await expertReport.clickSubmit();
             await expertReport.clickSaveAndContinue();
-            await expertReport.tabNavigation('Expert reports');
+            await expertReport.tabNavigation('Expert Reports');
 
             await expect(expertReport.page.getByText('Report 1')).toBeVisible();
             await expect(expertReport.page.getByText('Pediatric')).toBeVisible();
