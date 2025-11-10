@@ -111,6 +111,7 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run2937(CaseDetails caseDetails) {
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1747829458797329L, "DFPL-2937");
         CaseData caseData = getCaseData(caseDetails);
         List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
 
