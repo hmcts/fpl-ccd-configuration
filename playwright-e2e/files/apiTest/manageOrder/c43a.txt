@@ -6,6 +6,14 @@ Ordered on ${dateTimeComma} by Her Honour Judge Moley
 Family Court sitting at Swansea
 Child in the case
 Timothy Jones Male Born 1 August 2015
+During the proceedings and after they have concluded no person shall publish information related to the
+proceedings including accounts of what has gone on in front of the judge, documents filed in the proceedings,
+transcripts or notes of evidence and submissions, and transcripts and notes of judgments (including extracts,
+quotations, or summaries of such documents). Any person who does so may be in contempt of court. Until the conclusion
+of the proceedings no person shall publish to the public at large or any section of the public without the court’s
+permission any material which is intended or likely to identify the children as being involved in these proceedings or
+an address or school as being that of the children. Any person who does so may be guilty of an offence. The exceptions
+to this are in Rules 12.73 or 12.75 or Practice Direction 12G of the Family Procedure Rules 2010.
 Warning
 Where a Special Guardianship Order is in force no person may cause the child to be known by
 a new surname or remove the child from the United Kingdom without either the written consent
@@ -14,8 +22,8 @@ However, this does not prevent the removal of a child for a period of less than 
 special guardian(s) (Section 14C (3) and (4) Children Act 1989).
 It may be a criminal offence under the Child Abduction Act 1984 to remove the child from the
 United Kingdom without leave of the Court.
-By consent 
-The Court orders that Joe Bloggs is appointed as special guardian for the child. 
+By consent
+The Court orders that Joe Bloggs is appointed as special guardian for the child.
 Further special guardianship details.
 Notice
 Any person with parental responsibility for a child may obtain advice on what can be done

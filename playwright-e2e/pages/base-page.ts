@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import {expect, type Locator, type Page} from "@playwright/test";
 
 export class BasePage {
   readonly nextStep: Locator;
@@ -14,6 +14,7 @@ export class BasePage {
   readonly postCode: Locator;
   readonly findAddress: Locator;
   readonly rateLimit: Locator;
+  readonly startButton: Locator;
 
 
   constructor(page: Page) {
@@ -30,6 +31,7 @@ export class BasePage {
     this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
     this.findAddress = page.getByRole('button', { name: 'Find address' });
     this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
+    this.startButton = page.getByRole('button', { name: 'Start' });
   }
 
   async gotoNextStep(eventName: string) {
@@ -58,7 +60,12 @@ export class BasePage {
   }
 
   async clickContinue() {
-    await this.continueButton.click({});
+    await this.continueButton.waitFor({ state: 'attached'});
+      await this.continueButton.click({});
+  }
+
+  async clickStartButton() {
+      await this.startButton.click();
   }
 
   async clickPreviousButton() {
@@ -104,24 +111,46 @@ export class BasePage {
   }
 
   async clickSubmit() {
-    await this.submit.click();
+
+        await  this.submit.click();
+
   }
   async clickSaveAndContinue() {
       await this.saveAndContinue.click();
   }
-  async enterPostCode(postcode:string){
+  async enterPostCode(postcode:string): Promise<void> {
       await this.postCode.fill(postcode);
-      await this.findAddress.click();
-      await this.page.getByLabel('Select an address').selectOption('3: Object');
 
+      await Promise.all([
+          this.page.waitForResponse(response =>
+              response.url().includes('addresses') &&
+              response.request().method() === 'GET' &&
+              response.status() === 200
+          ),
+          this.findAddress.click()
+      ]);
+
+      const addressDropdown = this.page.locator('select[name="address"]');
+
+      const optionValues = await addressDropdown.locator('option').evaluateAll(options =>
+          options.map(option => (option as HTMLOptionElement).value)
+      );
+
+      const secondOptionValue = optionValues[1];
+
+      if (!secondOptionValue) {
+          throw new Error('No valid second option found in address dropdown');
+      }
+
+      await addressDropdown.selectOption(secondOptionValue);
   }
+
   getCurrentDate():string {
     let date = new Date();
     let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
     let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
     let day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
-    let todayDate = `${day} ${month} ${year}`;
-    return todayDate;
+      return `${day} ${month} ${year}`;
     }
 
     async fillDateInputs(page: Page, date: Date) {

@@ -1,14 +1,17 @@
-import { type Page, type Locator, expect } from "@playwright/test";
-import { CreateCaseName } from "../utils/create-case-name";
+import {expect, type Locator, type Page} from "@playwright/test";
+import {CreateCaseName} from "../utils/create-case-name";
 import {BasePage} from "./base-page";
 
 export class CreateCase extends BasePage{
   readonly page: Page;
   readonly caseJurisdictionFilterDropdown: Locator;
   readonly caseTypeFilterDropdown: Locator;
+  readonly eventTypeFilterDropdown: Locator;
   readonly createCaseLink: Locator;
   readonly addApplicationTitle: Locator;
   readonly viewHistory: Locator;
+  readonly caseNameLabel: Locator;
+  readonly submitButton: Locator
   generatedCaseName: string;
   readonly localAuthority: Locator;
   readonly startButton: Locator;
@@ -30,10 +33,13 @@ export class CreateCase extends BasePage{
     this.createCaseLink = page.getByRole("link", { name: "Create case" });
     this.caseJurisdictionFilterDropdown = this.page.getByLabel("Jurisdiction");
     this.caseTypeFilterDropdown = this.page.getByLabel("Case type");
+    this.eventTypeFilterDropdown = this.page.getByLabel("Event");
     this.addApplicationTitle = this.page.getByRole("heading", {
       name: "Add application details",
     });
     this.viewHistory = page.getByText("History");
+    this.caseNameLabel = page.getByLabel("Case name");
+    this.submitButton = page.getByRole('button', { name: 'Submit' });
     this.generatedCaseName = "";
     this.localAuthority = page.getByLabel('Select the local authority you\'re representing');
     this.caseNameTextBox = page.getByLabel('Case name');
@@ -47,25 +53,59 @@ export class CreateCase extends BasePage{
     this.applyFilter = page.getByLabel('Apply filter');
     this.representingPartyRadio = page.getByLabel('Local Authority', { exact: true });
     this.respondentSolicitorUser = page.getByLabel('Respondent Solicitor');
-    this.applicationFor =page.getByLabel('Select the local authority which relates to the case');
+    this.applicationFor = page.getByLabel('Select the local authority which relates to the case');
   }
 
-  async createCase() {
-    // This click timeout is here allow for ExUI loading spinner to finish
-    await this.createCaseLink.click();
+  private async gotoCreateCase(): Promise<void> {
+      await Promise.all([
+          this.page.waitForResponse((response) =>
+              response.url().includes('/aggregated/caseworkers/') &&
+              response.url().includes('/jurisdictions?access=create') &&
+              response.status() === 200
+          ),
+          this.createCaseLink.click()
+      ]);
+  }
 
-    await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW").catch(
-      (error)=>{
-           this.page.waitForTimeout(500);
-           console.log(error);
-           console.log(" the page reloaded to ");
-           this.page.reload({timeout:3000,waitUntil:'load'});
-         }
-       )
-    await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW");
-    await this.caseTypeFilterDropdown.selectOption("CARE_SUPERVISION_EPO");
-    await this.page.getByLabel("Event").selectOption("openCase");
-    await this.page.getByRole("button", { name: "Start" }).click();
+  private async selectJurisdiction(option: string): Promise<void> {
+      await this.caseJurisdictionFilterDropdown.selectOption(option);
+  }
+
+  private async selectCaseType(option: string): Promise<void> {
+      await this.caseTypeFilterDropdown.selectOption(option);
+  }
+
+  private async selectEventType(option: string): Promise<void> {
+      await this.eventTypeFilterDropdown.selectOption(option);
+  }
+
+  private async fillCaseNameLabel(value: string): Promise<void> {
+      await this.caseNameLabel.fill(value);
+  }
+
+  async clickSubmit(): Promise<void> {
+      await this.submitButton.click();
+  }
+
+  private generateCaseName(value: string = 'Smoke Test'): string {
+      const formattedDate = CreateCaseName.getFormattedDate();
+      return `${value} ${formattedDate}`;
+  }
+
+  async createCase(jurisdictionOption: string = 'PUBLICLAW',
+                      caseTypeOption: string = 'CARE_SUPERVISION_EPO',
+                      eventTypeOption: string = 'openCase') {
+      await this.gotoCreateCase();
+      await this.selectJurisdiction(jurisdictionOption);
+      await this.selectCaseType(caseTypeOption);
+      await this.selectEventType(eventTypeOption);
+      await Promise.all([
+          this.page.waitForResponse((response) =>
+              response.url().includes('/event-triggers/openCase?ignore-warning=false') &&
+              response.status() === 200
+          ),
+          this.clickStartButton()
+      ]);
   }
 
   caseName(testType: string = 'Smoke Test'): void {
@@ -73,14 +113,21 @@ export class CreateCase extends BasePage{
     this.generatedCaseName = `${testType} ${formattedDate}`;
   }
 
-  async submitCase(caseName: string) {
-    await this.page.getByLabel("Case name").click();
-    await this.page.getByLabel("Case name").fill(caseName);
-    await this.page
-      .getByRole("button", { name: "Submit" })
-      // This click timeout is here allow for ExUI loading spinner to finish
-      .click();
-    await expect(this.page.getByText('has been created.')).toBeVisible();
+  async submitCase(caseName: string = this.generateCaseName('Smoke Test')) {
+      await this.fillCaseNameLabel(caseName)
+
+      const [caseResponse] = await Promise.all([
+          this.page.waitForResponse(response =>
+              response.url().includes('/cases') && response.status() === 200
+          ),
+          this.page.waitForResponse(response =>
+              response.url().includes('/api/wa-supported-jurisdiction/get') && response.status() === 200
+          ),
+          this.clickSubmit(),
+      ]);
+
+      const caseData = await caseResponse.json();
+      const caseId = caseData.case_id;
   }
 
   async checkCaseIsCreated(caseName: string) {
@@ -117,7 +164,7 @@ export class CreateCase extends BasePage{
         await this.page.waitForURL('**/case-details/**');
         let url:string= await this.page.url();
         this.urlarry = url.split('/');
-        this.casenumber =  this.urlarry[5].slice(0,16);
+        this.casenumber =  this.urlarry[7].slice(0,16);
   }
 
     async findCase(casenumber:string){
@@ -135,6 +182,16 @@ export class CreateCase extends BasePage{
     async respondentSolicitorCreatCase(){
         await this.respondentSolicitorUser.check();
         await this.applicationFor.selectOption('Swansea City Council');
-        await this.clickContinue();
+        await Promise.all([
+            this.page.waitForResponse(response => {
+                const url = response.url();
+                return (
+                    url.includes('/data/case-types/CARE_SUPERVISION_EPO/validate') &&
+                    response.request().method() === 'POST' &&
+                    response.status() === 200
+                );
+            }),
+            this.clickContinue()
+        ]);
     }
 }

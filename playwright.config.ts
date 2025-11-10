@@ -23,7 +23,7 @@ export default defineConfig({
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
     /* Retry on CI only */
-    retries: process.env.CI ? 3 : 0,
+    retries: process.env.CI ? 2 : 0, // 3 tries in total
     /*build fails when reaches 35 failed test - fail fast*/
     maxFailures: process.env.CI ? 30 : 0,
     /* Opt out of parallel tests on CI. */
@@ -41,15 +41,14 @@ export default defineConfig({
 
     /* Configure projects for major browsers */
     projects: [
-
         {
             name: 'AMRoleCleanup',
            testMatch: '/settings/global-teardown.ts',
-
         },
         {
             ...ProjectsConfig.edge,
-            teardown: 'AMRoleCleanup',
+            teardown: process.env.CI ? 'AMRoleCleanup' : undefined,
+
         },
         {
             ...ProjectsConfig.chrome,
@@ -85,10 +84,4 @@ export default defineConfig({
 
     ],
 
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
