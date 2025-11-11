@@ -280,6 +280,8 @@ ccd:
       initialDelaySeconds: 90
   am-role-assignment-service:
     java:
+      devmemoryRequests: '1024Mi'
+      devmemoryLimits: '2048Mi'
       ingressHost: am-role-assignment-service-${SERVICE_FQDN}
       autoscaling:
         enabled: false
