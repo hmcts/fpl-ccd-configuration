@@ -18,7 +18,7 @@ test.describe('Case progression report ', () => {
 			await updateCase(caseName, caseNumber, caseData);
 			await signInPage.visit();
 			await signInPage.login(CTSCUser.email, CTSCUser.password);
-			await signInPage.navigateTOCaseDetails(caseNumber);
+			await signInPage.navigateToCaseDetails(caseNumber);
 
 			await caseProgressionReport.gotoNextStep('Case progression report');
 			await caseProgressionReport.CaseProgressionReport();

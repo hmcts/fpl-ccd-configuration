@@ -23,7 +23,7 @@ test.describe('Manage LAs / Transfer to court', () => {
             await updateCase(caseName, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateManageLaTransferToCourts();
             await manageLaTransferToCourts.tabNavigation('Summary');
@@ -44,7 +44,7 @@ test.describe('Manage LAs / Transfer to court', () => {
            }
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateCourtAccess();
@@ -66,7 +66,7 @@ test.describe('Manage LAs / Transfer to court', () => {
 
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateRemoveAccess();
@@ -85,7 +85,7 @@ test.describe('Manage LAs / Transfer to court', () => {
             }
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateTranferToLa();
