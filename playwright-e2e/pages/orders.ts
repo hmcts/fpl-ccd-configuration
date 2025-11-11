@@ -314,6 +314,7 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.orderConsent.getByRole('radio', { name: 'Yes' }).check();
         await this.finalOrder.getByRole('radio', { name: 'No' }).check();
+        await this.clickContinue();
     }
 
     async ctscUploadsTransparencyOrder() {
