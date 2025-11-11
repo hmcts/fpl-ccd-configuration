@@ -82,7 +82,7 @@ test.describe('Admin application management', () => {
             await expertReport.checkDateValidationPass();
             await expertReport.clickSubmit();
             await expertReport.clickSaveAndContinue();
-            await expertReport.tabNavigation('Expert reports');
+            await expertReport.tabNavigation('Expert Reports');
 
             await expect(expertReport.page.getByText('Report 1')).toBeVisible();
             await expect(expertReport.page.getByText('Pediatric')).toBeVisible();
@@ -150,7 +150,8 @@ test.describe('Admin application management', () => {
         await updateCase(caseName, caseNumber, caseWithHearing);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await page.pause()
         await sendOrderRemainder.gotoNextStep('Send order reminder');
         await expect.soft(sendOrderRemainder.page.getByText('These concluded hearings do not have CMOs attached (in draft or sealed):')).toBeVisible();
         await sendOrderRemainder.sendOrderRemainder('Yes');

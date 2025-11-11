@@ -1,7 +1,7 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import
+{ expect, type Locator, type Page } from "@playwright/test";
 import { urlConfig } from "../settings/urls";
 import { BasePage } from "./base-page";
-
 export class SignInPage extends BasePage {
     readonly page: Page;
     readonly mourl: string;

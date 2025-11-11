@@ -295,9 +295,8 @@ test.describe('Upload additional applications', () => {
     await updateCase(caseName, caseNumber, caseData);
     await signInPage.visit();
     await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-    await signInPage.navigateTOCaseDetails(caseNumber);
-    await signInPage.gotoNextStep('Upload additional applications');
-    await additionalApplications.uploadBasicC2Application(false,envDataConfig.swanseaOrgPBA);
+    await signInPage.navigateToCaseDetails(caseNumber);
+    await additionalApplications.uploadBasicC2Application(false);
 
     // Check CFV
     await caseFileView.goToCFVTab();
