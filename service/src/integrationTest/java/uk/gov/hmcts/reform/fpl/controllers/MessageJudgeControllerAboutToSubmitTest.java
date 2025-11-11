@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -100,7 +101,15 @@ class MessageJudgeControllerAboutToSubmitTest extends MessageJudgeControllerAbst
             .senderType(SENDER_TYPE)
             .fromLabel("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
             .toLabel("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-            .messageHistory(String.format("%s (%s) - %s", SENDER_TYPE.getLabel(), SENDER, MESSAGE))
+            .judicialMessageReplies(List.of(element(responseCaseData.getJudicialMessages().get(0).getValue()
+                    .getJudicialMessageReplies().get(0).getId(),
+                JudicialMessageReply.builder()
+                    .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
+                    .updatedTime(now())
+                    .message("Some message")
+                    .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
+                    .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
+                .build())))
             .urgency("High urgency")
             .build();
 

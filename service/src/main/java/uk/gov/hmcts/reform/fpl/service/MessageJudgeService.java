@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -24,13 +24,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.lang.String.join;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 public abstract class MessageJudgeService {
@@ -69,14 +72,59 @@ public abstract class MessageJudgeService {
         return judicialMessages;
     }
 
-    protected String buildMessageHistory(String message, String history, String sender) {
-        String formattedLatestMessage = String.format("%s - %s", sender, message);
+    public List<Element<JudicialMessageReply>> sortedJudicialMessageReplies(
+        List<Element<JudicialMessageReply>> judicialMessageReplies) {
+        judicialMessageReplies.sort(Comparator.comparing(judicialMessageReplyElement
+            -> judicialMessageReplyElement.getValue().getUpdatedTime(),
+            Comparator.nullsLast(Comparator.reverseOrder())));
 
-        if (StringUtils.isEmpty(history)) {
-            return formattedLatestMessage;
+        return judicialMessageReplies;
+    }
+
+    protected String buildTempMessageHistory(JudicialMessage message) {
+        List<String> messageHistory = new ArrayList<>(List.of());
+
+        if (!isEmpty(message.getJudicialMessageReplies())) {
+            message.getJudicialMessageReplies().forEach(history -> {
+                JudicialMessageReply reply = history.getValue();
+                messageHistory.add(String.format("%s - %s - %s (end of message)", reply.getReplyFrom(),
+                    reply.getDateSent(), reply.getMessage()));
+            });
         }
 
-        return join("\n \n", history, formattedLatestMessage);
+        String tempMessageHistory = String.join("\n \n", messageHistory);
+
+        if (message.getMessageHistory() != null) {
+            tempMessageHistory = String.format("%s \n \n%s",tempMessageHistory, message.getMessageHistory());
+        }
+
+        return tempMessageHistory;
+    }
+
+    protected List<Element<JudicialMessageReply>> buildMessageReplies(String latestMessage,
+                                                                      Optional<JudicialMessage> message,
+                                                                      String from,
+                                                                      String to) {
+        JudicialMessageReply messageReply = JudicialMessageReply.builder()
+            .message(latestMessage)
+            .replyFrom(from)
+            .replyTo(to)
+            .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
+            .updatedTime(time.now())
+            .build();
+
+        //If this is a new message there will be no replies
+        if (message.isEmpty()) {
+            return List.of(element(messageReply));
+        } else if (isEmpty(message.get().getJudicialMessageReplies())) {
+            return List.of(element(messageReply));
+        } else {
+            List<Element<JudicialMessageReply>> updatedHistory = new ArrayList<>(message.get()
+                .getJudicialMessageReplies().stream().toList());
+            updatedHistory.add(element(messageReply));
+
+            return sortedJudicialMessageReplies(updatedHistory);
+        }
     }
 
     protected String getSenderEmailAddressByRoleType(JudicialMessageRoleType roleType) {
