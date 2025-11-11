@@ -32,7 +32,7 @@ test.describe.skip('Manage case linking', () => {
             await updateCase(casename, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await caseLink.gotoCaseLinkNextStep('Link cases');
             await expect.soft(page.getByRole('heading', {name: 'Before you start'})).toBeVisible();

@@ -26,7 +26,7 @@ test.describe('Manage Documents', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Court correspondence');
 
@@ -42,7 +42,7 @@ test.describe('Manage Documents', () => {
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
 
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             // Judge in Wales should see this Welsh case task + be able to assign it to themselves
             await manageDocuments.tabNavigation('Tasks');
@@ -65,7 +65,7 @@ test.describe('Manage Documents', () => {
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Position Statements');
 
@@ -78,7 +78,7 @@ test.describe('Manage Documents', () => {
         //Login as respondence solicitor
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
         await signInPage.isSignedIn();
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         //go to CFV and assert Position statement  visible
         await caseFileView.goToCFVTab();
@@ -92,7 +92,7 @@ test.describe('Manage Documents', () => {
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Position Statements', 'Yes');
 
@@ -106,7 +106,7 @@ test.describe('Manage Documents', () => {
         await signInPage.logout();
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
         await signInPage.isSignedIn();
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         //go to CFV and assert Position statement not visible
         await caseFileView.goToCFVTab();
@@ -122,7 +122,7 @@ test.describe('Manage Documents', () => {
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Position Statements', 'Yes');
 
@@ -136,7 +136,7 @@ test.describe('Manage Documents', () => {
         await signInPage.visit();
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
         await signInPage.isSignedIn();
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         //go to CFV and assert Position statement not visble
         await caseFileView.goToCFVTab();
@@ -150,10 +150,10 @@ test.describe('Manage Documents', () => {
 
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.isSignedIn();
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         //go to CFV and assert Position statement not visble
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
         await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
@@ -168,7 +168,7 @@ test.describe('Manage Documents', () => {
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Advocate Meeting Minute', 'Yes');
 
@@ -182,7 +182,7 @@ test.describe('Manage Documents', () => {
         await signInPage.visit();
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
         await signInPage.isSignedIn();
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Advocate Meeting Minute');
@@ -197,7 +197,7 @@ test.describe('Manage Documents', () => {
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('└─ Respondents own statements', 'Yes');
 
@@ -212,7 +212,7 @@ test.describe('Manage Documents', () => {
         await signInPage.visit();
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
         await signInPage.isSignedIn();
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Respondents');
@@ -227,7 +227,7 @@ test.describe('Manage Documents', () => {
         await updateCase(caseName, caseNumber, caseWithManageDocumentUploads);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         // remove documents
         await manageDocuments.gotoNextStep('Manage documents');
@@ -244,7 +244,7 @@ test.describe('Manage Documents', () => {
         await updateCase(caseName, caseNumber, caseWithManageDocumentUploads);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
         await caseFileView.moveDocument('Court Correspondence', 'Threshold');
         await caseFileView.openFolder('Threshold');
@@ -258,7 +258,7 @@ test.describe('Manage Documents', () => {
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Court correspondence');
 
@@ -274,7 +274,7 @@ test.describe('Manage Documents', () => {
             await signInPage.visit();
             await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
 
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await manageDocuments.tabNavigation('Tasks');
             await manageDocuments.waitForTask('Review Correspondence (High Court)');

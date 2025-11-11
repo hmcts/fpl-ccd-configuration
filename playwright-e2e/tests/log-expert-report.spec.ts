@@ -20,7 +20,7 @@ test.describe('log expert report', () => {
             await updateCase(caseName, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await logExpertReport.gotoNextStep('Log expert report');
             await logExpertReport.logExpertReport();
