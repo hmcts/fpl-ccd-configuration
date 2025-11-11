@@ -375,7 +375,7 @@ test.describe('manage orders', () => {
         await orders.clickSaveAndContinue();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('link', { name: 'c34b_authority_to_refuse_contact.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c34b_authority_to_refuse_contact.pdf'})).toBeVisible();
 
     })
 
