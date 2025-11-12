@@ -167,7 +167,7 @@ test.describe('Upload additional applications', () => {
 
       // Payment details
       await expect(page.getByText('£263.00')).toBeVisible();
-      await additionalApplications.payForApplication();
+      await additionalApplications.ctscPayForApplication();
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
 
@@ -296,7 +296,8 @@ test.describe('Upload additional applications', () => {
     await signInPage.visit();
     await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
     await signInPage.navigateToCaseDetails(caseNumber);
-    await additionalApplications.uploadBasicC2Application(false);
+    await signInPage.gotoNextStep('Upload additional applications');
+    await additionalApplications.uploadBasicC2Application(false,envDataConfig.swanseaOrgPBA);
 
     // Check CFV
     await caseFileView.goToCFVTab();
