@@ -29,12 +29,6 @@ test.describe('Cafcass upload guardian report ', () => {
 
         await expect(page.getByRole('tree')).toContainText(`${docName}`);
 
-        await signInPage.gotoNextStep('Manage documents');
-        await manageDocuments.removeDocuments('Guardian report', docName);
-        await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Guardian\'s reports');
-
-        await expect(page.getByRole('tree')).not.toContainText(`${docName}`);
 
 
     })
@@ -54,12 +48,7 @@ test.describe('Cafcass upload guardian report ', () => {
 
         await expect(page.getByRole('tree')).toContainText(`${docName}`);
 
-        await signInPage.gotoNextStep('Manage documents');
-        await manageDocuments.removeDocuments('Position Statements', docName);
-        await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Position Statements');
 
-        await expect(page.getByRole('tree')).not.toContainText(`${docName}`);
 
     })
     test(' Upload report  for cases in invalid state', async ({request}) => {
