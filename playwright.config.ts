@@ -30,7 +30,7 @@ export default defineConfig({
     workers: process.env.CI ? 4 : undefined,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: [[process.env.CI ? 'html' : 'list'],
-        ['html', {outputFolder: '../test-results/functionalTest'}]],
+        ['html', {outputFolder: '../functionalTest'}]],
 
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
@@ -77,11 +77,10 @@ export default defineConfig({
         {
             name: "preview",
             use: { ...devices['Desktop Edge'], channel: 'msedge' },
-            workers: process.env.CI ? 2 : undefined,
+            workers: process.env.CI ? 3 : undefined,
             retries: 2,
             timeout: 3 * 60 * 1000,
             expect: {timeout: 1 * 60 * 1000},
-            workers: 2,
         },
 
     ],
