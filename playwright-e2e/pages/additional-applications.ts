@@ -19,7 +19,7 @@ export class AdditionalApplications extends BasePage {
   readonly selectApplicant: Locator;
   readonly selectApplication: Locator;
   readonly checkbox: Locator;
-  readonly paymentPbaDropdown: Locator;
+  readonly paymentPbaNumber: Locator;
   readonly typeOfC2Application: Locator;
   readonly paymentPbaNumberTextBox: Locator;
   readonly paymentPBANumberDynamicList: Locator;
@@ -41,7 +41,7 @@ export class AdditionalApplications extends BasePage {
     this.selectApplicant = page.getByLabel('Select applicant');
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
-    this.paymentPbaDropdown = page.getByLabel('Payment by account (PBA)')
+    this.paymentPbaNumber = page.getByRole('textbox', { name: 'Payment by account (PBA) number' });
     this.typeOfC2Application = page.getByLabel('Application with notice.');
     this.paymentPbaNumberTextBox = page.getByRole('textbox', { name: 'Payment by account (PBA)' });
     this.paymentPBANumberDynamicList = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
@@ -151,18 +151,14 @@ export class AdditionalApplications extends BasePage {
     await this.expectAllUploadsCompleted();
   }
 
-  public async payForApplication() {
-    await this.paymentPbaDropdown.selectOption({ value: '1: PBA0076191' });
-
-    await this.page.getByLabel('Customer reference').fill('Customer reference');
-    
-  }
-  
   public async payForApplication(pbaNumber: string) {
     await this.paymentPBANumberDynamicList.selectOption(pbaNumber);
     await this.page.getByLabel('Customer reference').fill('Test');
     await this.clickContinue();
-
+  }
+  public async ctscPayForApplication() {
+    await this.paymentPbaNumberTextBox.fill('PBA0096471');
+    await this.page.getByLabel('Customer reference').fill('payments');
     await this.clickContinue();
   }
 
