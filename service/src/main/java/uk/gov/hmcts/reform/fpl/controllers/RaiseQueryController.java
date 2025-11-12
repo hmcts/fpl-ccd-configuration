@@ -41,10 +41,6 @@ public class RaiseQueryController extends CallbackController {
 
         log.info("Query collection for this user is {}.", queryCollection);
         caseDetails.getData().putIfAbsent(queryCollection, null);
-        log.info("Setting {} to value {}", queryCollection, caseDetails.getData().get(queryCollection));
-
-        log.info("Final values of query collections: ");
-        queryManagementService.logAllQueryCollections(caseDetails);
 
         return respond(caseDetails);
     }
@@ -56,8 +52,6 @@ public class RaiseQueryController extends CallbackController {
 
         caseDetails.getData().put("latestQueryID", queryManagementService.getLatestQueryIDForCollection(caseDetails,
             queryManagementService.getCurrentCollectionByLoggedInUserRole(caseData)));
-
-        log.info("latestQueryID is set to: {}", caseDetails.getData().get("latestQueryID"));
 
         return respond(caseDetails);
     }

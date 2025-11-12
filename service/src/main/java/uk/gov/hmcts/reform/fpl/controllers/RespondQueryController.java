@@ -23,8 +23,6 @@ public class RespondQueryController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        log.info("Going to send notification");
-
         Map<String,Object> queryResponse =
             queryManagementService.getQueryResponseFromCaseDetails(callbackRequest.getCaseDetailsBefore(),
             callbackRequest.getCaseDetails());
