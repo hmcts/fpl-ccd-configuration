@@ -359,7 +359,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -434,7 +434,7 @@ test.describe('manage orders', () => {
      test('CTSC uploads Family assistance order ', async ({ page, signInPage, orders }) => {
         caseName = 'Family Assistance Order ' + dateTime.slice(0, 10);
 
-         await updateCase(caseName, caseNumber, caseData);
+        await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -446,7 +446,7 @@ test.describe('manage orders', () => {
         await orders.selectOrder('Family assistance order (C42)');
         await orders.clickContinue();
 
-        await orders.judgeUploadsFamilyAssistanceOrder();
+        await orders.ctscFamilyAssistanceOrder();
         await orders.clickContinue();
 
         await orders.clickContinue();

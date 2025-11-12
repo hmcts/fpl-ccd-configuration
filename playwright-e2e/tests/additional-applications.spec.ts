@@ -7,7 +7,6 @@ import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' 
 import { setHighCourt } from '../utils/update-case-details';
 import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
 import config from "../settings/test-docs/config";
-import {urlConfig} from "../settings/urls";
 
 test.describe('Upload additional applications', () => {
   const dateTime = new Date().toISOString();
