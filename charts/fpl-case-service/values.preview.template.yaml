@@ -5,6 +5,8 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   livenessDelay: 50
+  devmemoryRequests: '1024Mi'
+  devmemoryLimits: '2048Mi'
   autoscaling:
     enabled: false
     minReplicas: 1
