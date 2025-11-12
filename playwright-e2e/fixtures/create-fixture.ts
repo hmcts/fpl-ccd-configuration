@@ -61,6 +61,9 @@ import {ExpertReport} from "../pages/expert-report";
 import {Extend26WeekTimeline} from "../pages/extend-26week-timeline";
 import { RecordFinalDecision} from "../pages/record-final-decision";
 import {SendOrderRemainder} from "../pages/send-order-remainder";
+import {AddFamilymanCaseNumberPage} from "../pages/gatekeeping/add-familyman-case-numner";
+import {SendToGatekeeperPage} from "../pages/gatekeeping/send-to-gatekeeper";
+import {HistoryPage} from "../pages/case-details/history";
 import {EnvironmentConfig, getEnvironmentSpecificTestData} from "../settings/environment-data-config"
 
 
@@ -123,6 +126,9 @@ type CreateFixtures = {
   uploadAdditionalApplicationsSuppliedDocuments: SuppliedDocuments;
   submit: Submit;
   caseNote: CaseNote;
+  addFamilymanCaseNumberPage: AddFamilymanCaseNumberPage;
+  sendToGatekepperPage: SendToGatekeeperPage;
+  historyPage: HistoryPage;
   expertReport: ExpertReport;
   extend26WeekTimeline: Extend26WeekTimeline;
   recordFinalDecision: RecordFinalDecision;
@@ -363,6 +369,15 @@ othersToBeGivenNotice: async ({ page }, use) => {
     },
     caseNote: async ({ page }, use) => {
       await use(new CaseNote(page));
+    },
+    addFamilymanCaseNumberPage: async({ page }, use) => {
+      await use(new AddFamilymanCaseNumberPage(page));
+    },
+    sendToGatekepperPage: async({ page }, use) => {
+      await use(new SendToGatekeeperPage(page));
+    },
+    historyPage: async({ page }, use) => {
+      await use(new HistoryPage(page));
     },
     expertReport: async ({ page }, use) => {
       await use(new ExpertReport(page));

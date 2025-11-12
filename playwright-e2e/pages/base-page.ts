@@ -64,7 +64,8 @@ export class BasePage {
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByRole('tab', { name: tabName }).click();
+      const tab = this.page.getByRole('tab').filter({ hasText: new RegExp(`^${tabName}$`) });
+      await tab.click();
   }
 
   async clickContinue() {
