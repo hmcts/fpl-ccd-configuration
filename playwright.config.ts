@@ -77,7 +77,7 @@ export default defineConfig({
         {
             name: "preview",
             use: { ...devices['Desktop Edge'], channel: 'msedge' },
-            workers: process.env.CI ? 3 : undefined,
+            workers: process.env.CI ? 2 : undefined,
             retries: 2,
             timeout: 3 * 60 * 1000,
             expect: {timeout: 1 * 60 * 1000},
