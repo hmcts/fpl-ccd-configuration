@@ -41,6 +41,7 @@ import { LogExpertReport } from "../pages/log-expert-report";
 import { ChangeCaseName } from "../pages/change-case-name";
 import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
+import {QueryManagement} from "../pages/query-management";
 import {ManageTTL} from "../pages/manage-t-t-l";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
@@ -109,6 +110,7 @@ type CreateFixtures = {
   orders: Orders;
   manageLaTransferToCourts: ManageLaTransferToCourts
   manageRepresentatives: ManageRepresentatives;
+  queryManagement: QueryManagement;
   manageTTL: ManageTTL;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
@@ -299,6 +301,7 @@ export const test = base.extend<CreateFixtures>({
     await use(new ManageLaTransferToCourts(page));
 },
 
+
 othersToBeGivenNotice: async ({ page }, use) => {
   await use(new OthersToBeGivenNotice(page));
 },
@@ -307,6 +310,12 @@ othersToBeGivenNotice: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
 
   },
+
+    queryManagement: async ({ page }, use) => {
+        await use(new QueryManagement(page));
+
+  },
+
     manageTTL: async ({ page }, use) => {
         await use(new ManageTTL(page));
     },
