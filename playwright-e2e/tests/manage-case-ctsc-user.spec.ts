@@ -25,7 +25,7 @@ test.describe('Admin application management', () => {
             await updateCase(caseName, caseNumber, caseWithResSolicitor);
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await welshLangRequirements.gotoNextStep('Welsh language requirements');
             await welshLangRequirements.CTSCRequestWelshTranslation('Yes');
             await welshLangRequirements.clickContinue();
@@ -44,7 +44,7 @@ test.describe('Admin application management', () => {
             await updateCase(caseName, caseNumber, caseWithResSolicitor);
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await caseNote.gotoNextStep('Add a case note');
             await expect.soft(page.getByText('Add note detail, including relevant dates and people involved')).toBeVisible();
 
@@ -62,7 +62,7 @@ test.describe('Admin application management', () => {
             await updateCase(caseName, caseNumber, caseWithResSolicitor);
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await expertReport.gotoNextStep('Log expert report');
 
             await expertReport.addNewReport(0);
@@ -82,7 +82,7 @@ test.describe('Admin application management', () => {
             await expertReport.checkDateValidationPass();
             await expertReport.clickSubmit();
             await expertReport.clickSaveAndContinue();
-            await expertReport.tabNavigation('Expert reports');
+            await expertReport.tabNavigation('Expert Reports');
 
             await expect(expertReport.page.getByText('Report 1')).toBeVisible();
             await expect(expertReport.page.getByText('Pediatric')).toBeVisible();
@@ -96,7 +96,7 @@ test.describe('Admin application management', () => {
         await updateCase(caseName, caseNumber, caseWithHearing);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await extend26WeekTimeline.gotoNextStep('Extend 26-week timeline');
         await extend26WeekTimeline.isExtensionApprovedAtHearing('yes');
         await extend26WeekTimeline.selectHearing('Case management hearing, 3 November 2012');
@@ -116,7 +116,7 @@ test.describe('Admin application management', () => {
         await updateCase(caseName, caseNumber, caseWithHearing);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await recordFinalDecision.gotoNextStep('Record final decisions');
 
@@ -150,7 +150,8 @@ test.describe('Admin application management', () => {
         await updateCase(caseName, caseNumber, caseWithHearing);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await page.pause()
         await sendOrderRemainder.gotoNextStep('Send order reminder');
         await expect.soft(sendOrderRemainder.page.getByText('These concluded hearings do not have CMOs attached (in draft or sealed):')).toBeVisible();
         await sendOrderRemainder.sendOrderRemainder('Yes');
