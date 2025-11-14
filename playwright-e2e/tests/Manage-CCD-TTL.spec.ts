@@ -2,6 +2,7 @@ import {test} from '../fixtures/create-fixture';
 import caseData from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 import {CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne} from '../settings/user-credentials';
 import {createCase, updateCase} from "../utils/api-helper";
+import { expect } from 'playwright/test';
 
 test.describe('Manage the Retain and Dispose Config', () => {
     const dateTime = new Date().toISOString();
@@ -10,6 +11,7 @@ test.describe('Manage the Retain and Dispose Config', () => {
 
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('CTSC suspend case disposal',

@@ -8,19 +8,20 @@ import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, judgeUser, j
 import { setHighCourt } from '../utils/update-case-details';
 import { expect } from "@playwright/test";
 
-test.describe('Approve Orders', () => {
+test.describe('Approve Orders @test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
 
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('Judge approves a confidential order uploaded by LA @xbrowser',
         async ({ page, signInPage, approveOrders }) => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseDataByLa);
+            expect(await updateCase(casename, caseNumber, caseDataByLa)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(judgeUser.email, judgeUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
@@ -43,7 +44,7 @@ test.describe('Approve Orders', () => {
     test('Judge approve a confidential order uploaded by CTSC',
         async ({ page, signInPage, approveOrders }) => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseDataByCtsc);
+            expect(await updateCase(casename, caseNumber, caseDataByCtsc)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(judgeUser.email, judgeUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
@@ -73,7 +74,7 @@ test.describe('Approve Orders', () => {
     async ({ page, signInPage, approveOrders, caseFileView }) => {
       casename = 'Review CMO (High Court) WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
-      await updateCase(casename, caseNumber, caseData);
+      expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(judgeLondonUser.email, judgeLondonUser.password);
       await signInPage.navigateToCaseDetails(caseNumber);
