@@ -270,8 +270,8 @@ withPipeline(type, product, component) {
           allowMissing         : true,
           alwaysLinkToLastBuild: true,
           keepAll              : true,
-          reportDir            : "../test-results/functionalTest",
-          reportFiles          : 'index.html',
+          reportDir            : "../test-results/tests/functionalTest",
+          reportFiles          : 'UITest.html',
           reportName           : 'UI Functional Test Report'
         ])
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/tests/functionalTest/**/*'
