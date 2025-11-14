@@ -81,7 +81,6 @@ export default defineConfig({
             retries: 2,
             timeout: 3 * 60 * 1000,
             expect: {timeout: 1 * 60 * 1000},
-            grep: /@xbrowser/,
         },
 
     ],

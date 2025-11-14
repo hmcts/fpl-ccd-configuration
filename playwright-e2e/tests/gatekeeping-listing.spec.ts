@@ -41,9 +41,9 @@ test.describe('Gatekeeping Listing', () => {
         await gateKeepingListing.tabNavigation('People in the case');
         await expect.soft(gateKeepingListing.page.getByText('Fee paid judge')).toBeVisible();
         await expect.soft(gateKeepingListing.page.getByText('Recorder')).toBeVisible();
-        await expect.soft(gateKeepingListing.page.getByText('Ramirez KC',{ exact: true })).toBeVisible();
+        await expect.soft(gateKeepingListing.page.getByText('Fry JP',{ exact: true })).toBeVisible();
         await gateKeepingListing.tabNavigation('Hearings');
-        await expect.soft(gateKeepingListing.page.getByText('Recorder Ramirez KC',{exact:true})).toHaveCount(2);
+        await expect.soft(gateKeepingListing.page.getByText('Recorder Fry JP',{exact:true})).toHaveCount(2);
         //Check CFV
       await caseFileView.goToCFVTab();
       await caseFileView.openFolder('Orders');
