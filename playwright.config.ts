@@ -30,7 +30,7 @@ export default defineConfig({
     workers: process.env.CI ? 4 : undefined,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: [[process.env.CI ? 'html' : 'list'],
-        ['html', {outputFolder: '../UITestReport'}]],
+        ['html', {outputFolder: '../test-results/functionalTest'}]],
 
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
@@ -81,7 +81,7 @@ export default defineConfig({
             retries: 2,
             timeout: 3 * 60 * 1000,
             expect: {timeout: 1 * 60 * 1000},
-            grep: /@test/,
+            grep: /@xbrowser/,
         },
 
     ],
