@@ -22,5 +22,5 @@ export const urlConfig: UrlConfig = {
   accessManagementUrl: process.env.ACCESS_MANAGEMENT_URL || `http://am-role-assignment-service-${env}.service.core-compute-${env}.internal/am/role-assignments`,
   idamwebURL: process.env.IDAM_WEB_URL ||`https://idam-web-public.${env}.platform.hmcts.net`
 
-
+  // You can add other URLs as needed
 };
