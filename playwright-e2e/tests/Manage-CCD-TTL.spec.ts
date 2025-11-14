@@ -17,7 +17,7 @@ test.describe('Manage the Retain and Dispose Config', () => {
     test('CTSC suspend case disposal',
         async ({page, signInPage, manageTTL}) => {
             caseName = 'Suspend system case disposal ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseData);
+            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
@@ -30,14 +30,15 @@ test.describe('Manage the Retain and Dispose Config', () => {
     test('CTSC leader override the system disposal date',
         async ({page, signInPage, manageTTL}) => {
             caseName = 'Override system case disposal date ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseData);
+            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
             await manageTTL.gotoNextStep('Manage Case TTL')
             await manageTTL.overrideSystemTTL();
+            await expect.soft(manageTTL.page.getByText('The data entered is not valid for Override TTL')).toBeHidden();
             await manageTTL.clickContinue();
-            await manageTTL.clickContinue();//click action in not working, It is work around to until the issue resolved
             await manageTTL.clickSaveAndContinue();
+            await expect(manageTTL.page.getByText('has been updated with event: Manage Case TTL')).toBeVisible();
         });
 });
