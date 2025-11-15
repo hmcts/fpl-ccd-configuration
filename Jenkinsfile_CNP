@@ -270,7 +270,7 @@ withPipeline(type, product, component) {
           allowMissing         : true,
           alwaysLinkToLastBuild: true,
           keepAll              : true,
-          reportDir            : "/test-results/functional/",
+          reportDir            : "../test-results/functional/",
           reportFiles          : 'UITest.html',
           reportName           : 'UI Functional Test Report'
         ])
