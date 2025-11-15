@@ -17,12 +17,13 @@ test.describe('manage hearings', () => {
   let caseName : string;
   test.beforeEach(async ()  => {
     caseNumber =  await createCase('e2e case',newSwanseaLocalAuthorityUserOne);
+    expect(caseNumber).toBeDefined();
   });
 
   test('CTSC admin adds new hearing @xbrowser',
     async ({page,signInPage,manageHearings}) => {
       caseName = 'CTSC manage hearings ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password);
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -34,7 +35,7 @@ test.describe('manage hearings', () => {
   test('CTSC admin edits a hearing that has taken place',
     async({page,signInPage,manageHearings}) => {
       caseName = 'CTSC admin edits a hearing that has taken place ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -46,12 +47,12 @@ test.describe('manage hearings', () => {
   test('CTSC admin edits future hearing',
     async({page,signInPage,manageHearings}) => {
       caseName = 'CTSC admin edits future hearing ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateToCaseDetails(caseNumber);
       await manageHearings.gotoNextStep('Manage hearings');
-      await manageHearings.editFutureHearingOnCase('Further case management hearing, 1 January 2050','Arthur Ramirez');
+      await manageHearings.editFutureHearingOnCase('Further case management hearing, 1 January 2050','Mr Arthur Fry');
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
     });
 
@@ -60,7 +61,7 @@ test.describe('manage hearings', () => {
             manageHearings, caseDetails}) => {
       test.skip(!testConfig.waEnabled, 'This test should only run when work allocation has been enabled');
       caseName = 'CTSC admin edits future hearing judge ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, preJudgeAllocationCaseData);
+      expect(await updateCase(caseName, caseNumber, preJudgeAllocationCaseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -97,7 +98,7 @@ test.describe('manage hearings', () => {
   test('CTSC admin vacates a hearing ',
     async({page,signInPage,manageHearings}) => {
       caseName = 'CTSC admin vacates a hearing ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -109,7 +110,7 @@ test.describe('manage hearings', () => {
   test('CTSC admin adjourns a hearing',
     async({page,signInPage,manageHearings}) => {
       caseName = 'CTSC admin adjourns a hearing ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -121,7 +122,7 @@ test.describe('manage hearings', () => {
   test('CTSC admin re-lists a hearing',
     async({page,signInPage,manageHearings}) => {
       caseName = 'CTSC admin re-lists a hearing ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, vacatedHearingCaseData);
+      expect(await updateCase(caseName, caseNumber, vacatedHearingCaseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateToCaseDetails(caseNumber);

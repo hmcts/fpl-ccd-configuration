@@ -10,6 +10,7 @@ test.describe('Court Service', () => {
 
     test.beforeEach(async () => {
         caseNumber = await createCase('Court service', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
     test('LA add court service @xbrowser',
         async ({startApplication, signInPage, courtServices, makeAxeBuilder}, testInfo) => {
@@ -70,7 +71,7 @@ test.describe('Court Service', () => {
         async ({ signInPage, courtServices}) => {
             let casename = 'Amend Court service  ' + dateTime.slice(0, 10);
 
-            await updateCase(casename, caseNumber, caseWithCourtService);
+            expect(await updateCase(casename, caseNumber, caseWithCourtService)).toBeTruthy();
 
             // 1. Sign in as local-authority user
             await signInPage.visit();

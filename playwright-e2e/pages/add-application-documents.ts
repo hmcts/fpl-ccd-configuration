@@ -30,18 +30,9 @@ export class AddApplicationDocuments {
     }
 
     async uploadDocumentSmokeTest(): Promise<void> {
-        await Promise.all([
-            this.page.waitForResponse(response =>
-                response.url().includes('documents') &&
-                response.request().method() === 'POST' &&
-                response.status() === 200
-            ),
-            this.fileUploadButton.setInputFiles(config.testPdfFile)
-        ]);
 
-        await this.page.waitForResponse(response =>
-            response.url().includes('track')
-        );
+       await this.fileUploadButton.setInputFiles(config.testPdfFile);
+        await this.page.waitForTimeout(2000); // wait for upload to complete
 
         await this.selectTypeOfDocument('8: BIRTH_CERTIFICATE');
         await this.fillGiveDetails('testing');

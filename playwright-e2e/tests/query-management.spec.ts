@@ -19,6 +19,7 @@ test.describe('Query management', () => {
     let caseName: string;
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('LA raise query',
@@ -30,19 +31,19 @@ test.describe('Query management', () => {
             await test.step('Test data setup', async () => {
                 caseName = 'LA raise a query ' + dateTime.slice(0, 10);
                 if (urlConfig.env == 'demo') {
-                    await updateCase(caseName, caseNumber, caseWithChildrenCafcassSolicitorDemo);
+                    expect(await updateCase(caseName, caseNumber, caseWithChildrenCafcassSolicitorDemo)).toBeTruthy();
                 } else {
-                    await updateCase(caseName, caseNumber, caseWithChildrenCafcassSolicitor);
+                    expect(await updateCase(caseName, caseNumber, caseWithChildrenCafcassSolicitor)).toBeTruthy();
                 }
 
-                await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]');
+                expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]')).toBeTruthy();
             });
 
 
             await test.step('Test data setup', async () => {
                 await signInPage.visit();
                 await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-                await signInPage.navigateTOCaseDetails(caseNumber);
+                await signInPage.navigateToCaseDetails(caseNumber);
             });
 
             await test.step('LA raise a new query', async () => {
@@ -77,7 +78,7 @@ test.describe('Query management', () => {
 
                 await queryManagement.clickSignOut();
                 await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-                await signInPage.navigateTOCaseDetails(caseNumber);
+                await signInPage.navigateToCaseDetails(caseNumber);
 
                 await queryManagement.tabNavigation('Queries');
                 await expect(page.getByRole('link', {name: 'Birth certificate format'})).toBeHidden();
@@ -89,7 +90,7 @@ test.describe('Query management', () => {
 
                 await queryManagement.clickSignOut();
                 await signInPage.login(CTSCUser.email, CTSCUser.password);
-                await signInPage.navigateTOCaseDetails(caseNumber);
+                await signInPage.navigateToCaseDetails(caseNumber);
                 await queryManagement.tabNavigation('Tasks');
                 await queryManagement.waitForTask('Respond to a Query');
                 await queryManagement.assignToMe();
@@ -120,13 +121,13 @@ test.describe('Query management', () => {
                }) => {
             caseName = 'LA raise a follow up query ' + dateTime.slice(0, 10);
 
-            await updateCase(caseName, caseNumber, caseWtihQuery);
-            await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]');
+            expect(await updateCase(caseName, caseNumber, caseWtihQuery)).toBeTruthy();
+            expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]')).toBeTruthy();
 
             await test.step('Navigate to Test case', async () => {
                 await signInPage.visit();
                 await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-                await signInPage.navigateTOCaseDetails(caseNumber);
+                await signInPage.navigateToCaseDetails(caseNumber);
             });
             await test.step('LA raise follow up query to CTSC', async () => {
                 await queryManagement.tabNavigation('Queries');
@@ -146,7 +147,7 @@ test.describe('Query management', () => {
 
                 await queryManagement.clickSignOut();
                 await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-                await signInPage.navigateTOCaseDetails(caseNumber);
+                await signInPage.navigateToCaseDetails(caseNumber);
 
                 await queryManagement.tabNavigation('Queries');
                 await expect(page.getByRole('button', {name: 'Birth certificate format'})).toBeHidden();
@@ -154,7 +155,7 @@ test.describe('Query management', () => {
             await test.step('CTSC user respond to the follow up query raised', async () => {
                 await queryManagement.clickSignOut();
                 await signInPage.login(CTSCUser.email, CTSCUser.password);
-                await signInPage.navigateTOCaseDetails(caseNumber);
+                await signInPage.navigateToCaseDetails(caseNumber);
                 await queryManagement.tabNavigation('Tasks');
                 await queryManagement.waitForTask('Respond to a Query');
                 await queryManagement.assignToMe();

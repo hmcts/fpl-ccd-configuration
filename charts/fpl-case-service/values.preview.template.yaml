@@ -5,6 +5,8 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   livenessDelay: 50
+  devmemoryRequests: '1524Mi'
+  devmemoryLimits: '2048Mi'
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -283,6 +285,8 @@ ccd:
       initialDelaySeconds: 90
   am-role-assignment-service:
     java:
+      devmemoryRequests: '1024Mi'
+      devmemoryLimits: '2048Mi'
       ingressHost: am-role-assignment-service-${SERVICE_FQDN}
       autoscaling:
         enabled: false

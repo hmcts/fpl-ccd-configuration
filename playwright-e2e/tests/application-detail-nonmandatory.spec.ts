@@ -2,7 +2,7 @@ import {expect, test} from "../fixtures/fixtures";
 import {newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
 import {createCase} from "../utils/api-helper";
 
-test.describe('Non mandatory application details before application submit', () => {
+test.describe('Non mandatory application details before application submit @test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
@@ -12,6 +12,7 @@ test.describe('Non mandatory application details before application submit', () 
 
             casename = 'Risk and harm  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(
@@ -53,6 +54,7 @@ test.describe('Non mandatory application details before application submit', () 
 
             casename = 'Welsh language requirement  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(
@@ -86,6 +88,7 @@ test.describe('Non mandatory application details before application submit', () 
         async ({startApplication, signInPage, internationalElement, makeAxeBuilder}, testInfo) =>  {
             casename = 'International element  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(
@@ -123,6 +126,7 @@ test.describe('Non mandatory application details before application submit', () 
         async ({startApplication, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
             casename = 'c1 application  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(
@@ -153,6 +157,7 @@ test.describe('Non mandatory application details before application submit', () 
         async ({startApplication, signInPage, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
             casename = 'Other people in case ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(

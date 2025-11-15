@@ -12,6 +12,7 @@ export class ManageTTL extends BasePage {
         await this.page.getByRole('textbox', {name: 'Day'}).fill('5');
         await this.page.getByRole('textbox', {name: 'Month'}).fill((new Date().getMonth() + 2).toString());
         await this.page.getByRole('textbox', {name: 'Year'}).fill((new Date().getUTCFullYear() + 1).toString());
+        await this.page.press('body', 'Tab');
 
     }
 

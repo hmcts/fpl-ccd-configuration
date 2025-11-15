@@ -13,12 +13,13 @@ test.describe('send and reply message',()=>{
   let casename : string;
   test.beforeEach(async ()  => {
       caseNumber =  await createCase('e2e case',newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
   });
 
   test('CTSC admin send message to Judge with application @xbrowser',
     async ({page,signInPage,judicialMessages}) => {
         casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
-        await updateCase(casename,caseNumber,caseData);
+        expect(await updateCase(casename,caseNumber,caseData)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email,CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -34,7 +35,7 @@ test.describe('send and reply message',()=>{
     test('CTSC admin send message to Judge with document @xbrowser',
     async ({page,signInPage,judicialMessages}) => {
         casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
-        await updateCase(casename,caseNumber,caseData);
+        expect(await updateCase(casename,caseNumber,caseData)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email,CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -49,7 +50,7 @@ test.describe('send and reply message',()=>{
 
     test('Judge reply CTCS message @xbrowser ',async({page,signInPage,judicialMessages})=>{
         casename = 'Judge Reply ' + dateTime.slice(0, 10);
-        await updateCase(casename,caseNumber,caseDataJudgeMessage);
+        expect(await updateCase(casename,caseNumber,caseDataJudgeMessage)).toBeTruthy();
         await  signInPage.visit();
         await signInPage.login(judgeUser.email,judgeUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -63,7 +64,7 @@ test.describe('send and reply message',()=>{
 
     test('CTSC admin close the Message',async({page,signInPage,judicialMessages}) =>{
       casename = 'CTSC Admin Close Message ' + dateTime.slice(0, 10);
-      await updateCase(casename,caseNumber,caseDataCloseMessage);
+      expect(await updateCase(casename,caseNumber,caseDataCloseMessage)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email,CTSCUser.password);
       await signInPage.navigateToCaseDetails(caseNumber);
