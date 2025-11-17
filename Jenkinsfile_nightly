@@ -119,7 +119,7 @@ withNightlyPipeline(type, product, component) {
             allowMissing: true,
             alwaysLinkToLastBuild: true,
             keepAll: true,
-            reportDir: 'build/reports/tests/functionalTest/ ',
+            reportDir: 'playwright-report',
             reportFiles: 'index.html',
             reportName: 'UITestEdgeReport'
           ])
