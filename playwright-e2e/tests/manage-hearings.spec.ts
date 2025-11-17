@@ -25,7 +25,7 @@ test.describe('manage hearings', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await manageHearings.gotoNextStep('Manage hearings');
       await manageHearings.createNewHearingOnCase();
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
@@ -37,7 +37,7 @@ test.describe('manage hearings', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await manageHearings.gotoNextStep('Manage hearings')
       await manageHearings.editPastHearingOnCase();
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
@@ -49,7 +49,7 @@ test.describe('manage hearings', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await manageHearings.gotoNextStep('Manage hearings');
       await manageHearings.editFutureHearingOnCase('Further case management hearing, 1 January 2050','Arthur Ramirez');
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
@@ -63,7 +63,7 @@ test.describe('manage hearings', () => {
       await updateCase(caseName, caseNumber, preJudgeAllocationCaseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await gateKeepingListing.gotoNextStep('Judicial Gatekeeping');
       await gateKeepingListing.completeJudicialGatekeeping();
       await gateKeepingListing.gotoNextStep('List Gatekeeping Hearing');
@@ -71,7 +71,7 @@ test.describe('manage hearings', () => {
       await gateKeepingListing.clickSignOut();
       await signInPage.visit();
       await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await caseDetails.tabNavigation('Roles and access');
       const todaysDate = new Date().toLocaleDateString('en-GB',
         {day: 'numeric', month: 'long', year: 'numeric'});
@@ -100,7 +100,7 @@ test.describe('manage hearings', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await manageHearings.gotoNextStep('Manage hearings')
       await manageHearings.vacateHearing();
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
@@ -112,7 +112,7 @@ test.describe('manage hearings', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await manageHearings.gotoNextStep('Manage hearings')
       await manageHearings.adjournHearing();
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
@@ -124,7 +124,7 @@ test.describe('manage hearings', () => {
       await updateCase(caseName, caseNumber, vacatedHearingCaseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await manageHearings.gotoNextStep('Manage hearings')
       await manageHearings.reListHearing();
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();

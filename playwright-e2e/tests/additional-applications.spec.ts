@@ -26,7 +26,7 @@ test.describe('Upload additional applications', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await additionalApplications.gotoNextStep('Upload additional applications');
       await additionalApplications.chooseOtherApplicationType();
@@ -49,7 +49,7 @@ test.describe('Upload additional applications', () => {
         await additionalApplications.clickSignOut();
         await signInPage.visit();
         await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         // Judge in Wales should see this Welsh case task + be able to assign it to themselves
         await additionalApplications.tabNavigation('Tasks');
@@ -71,7 +71,7 @@ test.describe('Upload additional applications', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await additionalApplications.gotoNextStep('Upload additional applications');
       await additionalApplications.chooseC2ApplicationType();
@@ -89,7 +89,7 @@ test.describe('Upload additional applications', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await additionalApplications.gotoNextStep('Upload additional applications');
       await additionalApplications.chooseBothApplicationTypes();
@@ -119,7 +119,7 @@ test.describe('Upload additional applications', () => {
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
 
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await additionalApplications.gotoNextStep('Upload additional applications');
       await additionalApplications.chooseConfidentialC2ApplicationType();
       await additionalApplications.fillC2ApplicationDetails();
@@ -141,7 +141,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.clickSignOut();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       // CTSC can see some basic properties of the application
       await additionalApplications.tabNavigation('Other applications');
@@ -159,7 +159,7 @@ test.describe('Upload additional applications', () => {
       await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await additionalApplications.gotoNextStep('Upload additional applications');
       await additionalApplications.chooseConfidentialC2ApplicationType();
@@ -182,7 +182,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.clickSignOut();
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       // LA cannot see some basic properties of the application
       await additionalApplications.tabNavigation('Draft orders');
@@ -206,7 +206,7 @@ test.describe('Upload additional applications', () => {
         await test.step('Login and Navigate to Case', async () => {
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
         });
 
         await test.step('Complete C2 Application', async () => {
@@ -267,7 +267,7 @@ test.describe('Upload additional applications', () => {
       await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
       await signInPage.visit();
       await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await additionalApplications.gotoNextStep('Upload additional applications');
       await additionalApplications.chooseConfidentialC2ApplicationType();
@@ -282,7 +282,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.clickSignOut();
       await signInPage.visit();
       await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       // Assertion
       await additionalApplications.tabNavigation('Other applications');
@@ -295,9 +295,8 @@ test.describe('Upload additional applications', () => {
     await updateCase(caseName, caseNumber, caseData);
     await signInPage.visit();
     await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-    await signInPage.navigateTOCaseDetails(caseNumber);
-    await signInPage.gotoNextStep('Upload additional applications');
-    await additionalApplications.uploadBasicC2Application(false,envDataConfig.swanseaOrgPBA);
+    await signInPage.navigateToCaseDetails(caseNumber);
+    await additionalApplications.uploadBasicC2Application(false);
 
     // Check CFV
     await caseFileView.goToCFVTab();
@@ -312,7 +311,7 @@ test.describe('Upload additional applications', () => {
       await signInPage.visit();
       await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
 
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       // Judge in Wales should see this Welsh case task + be able to assign it to themselves
       await additionalApplications.tabNavigation('Tasks');
