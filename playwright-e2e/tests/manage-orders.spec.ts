@@ -660,7 +660,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'c45a_parental_responsibility_order.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c45a_parental_responsibility_order.pdf' })).toBeVisible();
 
     })
 
@@ -684,6 +684,55 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'c43a_special_guardianship_order.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c43a_special_guardianship_order.pdf' })).toBeVisible();
+
+    })
+
+    test('CTSC Uploads Leave to change a surname (C44A)', async ({ page, signInPage, orders }) => {
+        caseName = 'Leave to change a surname (C44A)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Leave to change a surname (C44A)');
+        await orders.clickContinue();
+
+        await orders.uploadsLeaveToChangeSurname();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: ' c44a_leave_to_change_a_surname.pdf' })).toBeVisible();
+
+    })
+
+    test('Judge Uploads Leave to change a surname (C44A)', async ({ page, signInPage, orders }) => {
+        caseName = 'Leave to change a surname (C44A)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Leave to change a surname (C44A)');
+        await orders.clickContinue();
+
+        await orders.uploadsLeaveToChangeSurname();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: ' c44a_leave_to_change_a_surname.pdf' })).toBeVisible();
+
     });
 })
