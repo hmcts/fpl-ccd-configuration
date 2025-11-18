@@ -12,6 +12,7 @@ test.describe('Placement', () => {
   let caseName: string;
   test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    expect(caseNumber).toBeDefined();
   });
 
   test('Check Placement Application High Court WA Task @xbrowser',
@@ -19,7 +20,7 @@ test.describe('Placement', () => {
       caseFileView }) => {
       caseName = 'Placement Application High Court WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -61,7 +62,7 @@ test.describe('Placement', () => {
       caseFileView }) => {
       caseName = 'CTSC actions notice of placement' + dateTime.slice(0, 10);
       setHighCourt(caseData);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateToCaseDetails(caseNumber);

@@ -11,12 +11,13 @@ test.describe('Change other to respondent', () => {
 
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('Change other to respondent @xbrowser',
         async ({ page, signInPage, changeOtherToRespondent }) => {
             casename = 'CTSC changes other to respondent ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseData);
+            expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
