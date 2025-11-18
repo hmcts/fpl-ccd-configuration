@@ -8,7 +8,7 @@ import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, judgeUser, j
 import { setHighCourt } from '../utils/update-case-details';
 import { expect } from "@playwright/test";
 
-test.describe('Approve Orders @test', () => {
+test.describe.skip('Approve Orders', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;

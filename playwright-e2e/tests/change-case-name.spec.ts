@@ -6,7 +6,7 @@ import { CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser }
 import { expect } from "@playwright/test";
 import {urlConfig} from "../settings/urls";
 
-test.describe('Change case name @test', () => {
+test.describe('Change case name', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;

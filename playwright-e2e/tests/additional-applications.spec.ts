@@ -9,7 +9,7 @@ import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
 import config from "../settings/test-docs/config";
 import {urlConfig} from "../settings/urls";
 
-test.describe('Upload additional applications @test', () => {
+test.describe('Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
@@ -21,7 +21,7 @@ test.describe('Upload additional applications @test', () => {
   //mark test as slow to give extra timeout
   test.slow();
 
-  test('LA uploads a C1 application @test',
+  test('LA uploads a C1 application',
     async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
         expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
@@ -85,7 +85,7 @@ test.describe('Upload additional applications @test', () => {
       await additionalApplications.checkYourAnsAndSubmit();
     });
 
-  test('LA uploads combined Other and C2 applications @xbrowser @test',
+  test('LA uploads combined Other and C2 applications @xbrowser',
     async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
       expect(   await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
@@ -155,7 +155,7 @@ test.describe('Upload additional applications @test', () => {
       await expect(page.getByText('Draft order title')).toBeVisible();
     });
 
-  test('CTSC uploads a confidential C2 application with draft order @test',
+  test('CTSC uploads a confidential C2 application with draft order',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'CTSC uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
       expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();

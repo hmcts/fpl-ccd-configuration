@@ -10,7 +10,7 @@ import {AddAndRemoveAdminCaseFlag} from '../pages/add-and-remove-admin-case-flag
 import {SignInPage} from '../pages/sign-in';
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe('Add a case flag @test', () => {
+test.describe('Add a case flag', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
@@ -20,7 +20,7 @@ test.describe('Add a case flag @test', () => {
         expect(caseNumber).toBeDefined();
     });
 
-    test('Add and remove a case flag as admin user @test',
+    test('Add and remove a case flag as admin user',
         async ({page, signInPage, addAdminCaseFlag}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
@@ -29,7 +29,7 @@ test.describe('Add a case flag @test', () => {
             await runTest(signInPage, addAdminCaseFlag, page);
         });
 
-    test('Add and remove a case flag as judicial user @test @xbrowser',
+    test('Add and remove a case flag as judicial user @xbrowser',
         async ({page, signInPage, addAdminCaseFlag}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
