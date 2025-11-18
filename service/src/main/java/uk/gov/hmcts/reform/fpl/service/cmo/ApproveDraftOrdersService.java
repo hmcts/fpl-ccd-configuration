@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
@@ -14,10 +15,12 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -28,7 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
@@ -38,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHA
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -54,6 +57,7 @@ public class ApproveDraftOrdersService {
     private final BlankOrderGenerator blankOrderGenerator;
     private final HearingOrderGenerator hearingOrderGenerator;
     private final OthersService othersService;
+    private final JudicialService judicialService;
 
     private static final String ORDER_BUNDLES_DRAFT = "hearingOrdersBundlesDrafts";
     private static final String REVIEW_DECISION = "reviewDecision";
@@ -191,10 +195,8 @@ public class ApproveDraftOrdersService {
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
-                        cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers),
-                        caseData.getSealType(),
-                        caseData.getCourt()
-                    );
+                        caseData, cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers),
+                        false);
 
                     List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
                     sealedCMOs.add(reviewedOrder);
@@ -242,9 +244,9 @@ public class ApproveDraftOrdersService {
     @SuppressWarnings("unchecked")
     public void reviewC21Orders(CaseData caseData, Map<String, Object> data,
                                 Element<HearingOrdersBundle> selectedOrdersBundle) {
-        List<Element<HearingOrder>> draftOrders = Stream.of(selectedOrdersBundle.getValue().getOrders(),
-                selectedOrdersBundle.getValue().getAllConfidentialOrders()).flatMap(List::stream)
-            .filter(order -> !order.getValue().getType().isCmo()).collect(toList());
+        List<Element<HearingOrder>> draftOrders = selectedOrdersBundle.getValue()
+            .getAllOrdersAndConfidentialOrders().stream()
+            .filter(order -> !order.getValue().getType().isCmo()).toList();
 
         List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
             List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT), newArrayList());
@@ -253,8 +255,7 @@ public class ApproveDraftOrdersService {
         List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
 
         for (Element<HearingOrder> orderElement : draftOrders) {
-            Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get(REVIEW_DECISION + counter);
-            ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
+            ReviewDecision reviewDecision = caseData.getReviewDraftOrdersData().getReviewDecision(counter);
 
             if (reviewDecision != null && reviewDecision.getDecision() != null
                 && !REVIEW_LATER.equals(reviewDecision.getDecision())) {
@@ -265,9 +266,8 @@ public class ApproveDraftOrdersService {
                         caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
-                        reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
-                        caseData.getSealType(),
-                        caseData.getCourt());
+                        caseData, reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
+                        SEND_TO_ALL_PARTIES.equals(reviewDecision.getDecision()));
 
                     Element<GeneratedOrder> generatedBlankOrder = blankOrderGenerator.buildBlankOrder(caseData,
                         selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers));
@@ -397,5 +397,39 @@ public class ApproveDraftOrdersService {
                     .hasAddressAdded())
                 .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
         ).orElse(null);
+    }
+
+    public String getJudgeTitleAndNameOfCurrentUser(CaseData caseData) {
+        return judicialService.getJudgeTitleAndNameOfCurrentUser(
+                (FEE_PAID_JUDGE.equals(caseData.getAllocateJudgeEventData().getJudgeType()))
+                    ? caseData.getAllocateJudgeEventData().getFeePaidJudgeTitle() : null);
+    }
+
+    public Map<String, Object> previewOrderWithCoverSheet(CaseData caseData) {
+        final List<Element<HearingOrder>> draftOrders = getSelectedHearingDraftOrdersBundle(caseData)
+            .getValue().getAllOrdersAndConfidentialOrders().stream()
+            .filter(order -> !order.getValue().getType().isCmo())
+            .toList();
+
+        final ReviewDraftOrdersData reviewDraftOrdersData = caseData.getReviewDraftOrdersData();
+
+        Map<String, Object> data = new HashMap<>();
+        // Filter out the orders that have been approved by Judge without amendments
+        int labelCounter = 1;
+        for (int i = 0; i <  draftOrders.size(); i++) {
+            ReviewDecision reviewDecision = reviewDraftOrdersData.getReviewDecision(i + 1);
+            if (reviewDecision != null && CMOReviewOutcome.SEND_TO_ALL_PARTIES.equals(reviewDecision.getDecision())) {
+                Element<HearingOrder> orderElement = draftOrders.get(i);
+                HearingOrder approvedOrder = draftOrders.get(i).getValue();
+
+                data.put("previewApprovedOrder" + labelCounter,
+                    hearingOrderGenerator.addCoverSheet(caseData, (approvedOrder.isConfidentialOrder()
+                        ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder())));
+                data.put("previewApprovedOrderTitle" + labelCounter,
+                    String.format("Order %d %s", (i + 1), approvedOrder.getTitle()));
+                labelCounter++;
+            }
+        }
+        return data;
     }
 }
