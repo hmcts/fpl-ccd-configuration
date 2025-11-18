@@ -8,7 +8,7 @@ import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, judgeUser, j
 import { setHighCourt } from '../utils/update-case-details';
 import { expect } from "@playwright/test";
 
-test.describe.skip('Approve Orders', () => {
+test.describe('Approve Orders', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
@@ -23,7 +23,7 @@ test.describe.skip('Approve Orders', () => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
             expect(await updateCase(casename, caseNumber, caseDataByLa)).toBeTruthy();
             await signInPage.visit();
-            await signInPage.login(judgeUser.email, judgeUser.password);
+            await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
 
             await approveOrders.navigateToPageViaNextStep();
@@ -46,7 +46,7 @@ test.describe.skip('Approve Orders', () => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
             expect(await updateCase(casename, caseNumber, caseDataByCtsc)).toBeTruthy();
             await signInPage.visit();
-            await signInPage.login(judgeUser.email, judgeUser.password);
+            await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
 
             await approveOrders.navigateToPageViaNextStep();
@@ -76,6 +76,7 @@ test.describe.skip('Approve Orders', () => {
       setHighCourt(caseData);
       expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
+      await signInPage.page.pause()
       await signInPage.login(judgeLondonUser.email, judgeLondonUser.password);
       await signInPage.navigateToCaseDetails(caseNumber);
       await approveOrders.gotoNextStep('Approve orders')
