@@ -1,5 +1,5 @@
-import {BasePage} from "./base-page";
-import {expect, Locator, Page} from "@playwright/test";
+import { BasePage } from "./base-page";
+import { expect, Locator, Page } from "@playwright/test";
 import config from "../settings/test-docs/config";
 
 export class Orders extends BasePage {
@@ -67,9 +67,12 @@ export class Orders extends BasePage {
     readonly endOfProceedings: Locator;
     readonly endDate: Locator;
     readonly applications: Locator;
-    childInOrder: Locator;
+    readonly childInOrder: Locator;
+    readonly parentalResponsibilty: Locator;
+    readonly relationToChild: Locator;
+    readonly specialGuardianOne: Locator;
 
-   constructor(page: Page) {
+    constructor(page: Page) {
         super(page);
         this.orderTypeRadio = page.getByRole('group', { name: 'Select order' });
         this.orderApproved = page.getByRole('group', { name: 'Was the order approved at a' });
@@ -135,7 +138,10 @@ export class Orders extends BasePage {
         this.endOfProceedings = page.getByRole('radio', { name: 'The end of proceedings' });
         this.endDate = page.getByRole('group', { name: 'End Date' });
         this.applications = page.getByLabel('Applications');
-        this.childInOrder = page.getByRole('group', {name: 'Who’s included in the order?'});
+        this.childInOrder = page.getByRole('group', { name: 'Who’s included in the order?' });
+        this.parentalResponsibilty = page.getByRole('textbox', { name: 'Who\'s been given parental' });
+        this.relationToChild = page.getByRole('radio', { name: 'Father' });
+        this.specialGuardianOne = page.getByRole('group', { name: 'Person 1 (Optional)' });
 
     }
 
@@ -144,7 +150,7 @@ export class Orders extends BasePage {
     }
 
     async selectOrder(orderType: string) {
-        await this.orderTypeRadio.getByLabel(`${orderType}`,{exact:true}).check();
+        await this.orderTypeRadio.getByLabel(`${orderType}`, { exact: true }).check();
 
     }
 
@@ -285,7 +291,7 @@ export class Orders extends BasePage {
 
     async openOrderDoc(docLink: string) {
         const newPagePromise = this.page.context().waitForEvent('page');
-        await this.page.getByRole('link', { name: `${docLink}` }).click();
+        await this.page.getByRole('button', { name: `${docLink}` }).click();
         this.orderPage = await newPagePromise;
         await this.orderPage.waitForLoadState();
     }
@@ -327,9 +333,7 @@ export class Orders extends BasePage {
     async ctscFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
-        await this.page.pause();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
@@ -347,7 +351,6 @@ export class Orders extends BasePage {
     async judgeUploadsFamilyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
@@ -402,34 +405,34 @@ export class Orders extends BasePage {
     }
 
     async assertuploadOrderType() {
-        await expect.soft(this.page.getByText('Appointment of a guardian (C46A)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Appointment of a solicitor (C48A)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Authority to search for a child (C31)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Authority to search for another child (C27)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Discharge education supervision order (C38A)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Discharge of parental responsibility (C45B)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Extension of an education supervision order (C38B)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Leave to remove a child from the UK (C44B)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Power of arrest (FL406)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Refusal of appointment of a children\'s guardian (C47B)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Refusal of appointment of a solicitor (C48B)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Refusal of contact with a child in care (C34B)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Refusal to transfer proceedings (C50)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Termination of appointment of a children\'s guardian (C47C)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Termination of appointment of a solicitor (C48C)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Termination of guardian\'s appointment (C46B)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('To disclose information about the whereabouts of a missing child (C30)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Transfer out Children Act (C49)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Variation of Emergency protection order (C24)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Warrant to assist (C28)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Warrant to assist EPO (C25)', {exact: true})).toBeVisible();
-        await expect.soft(this.page.getByText('Other', {exact: true})).toBeVisible();
+        await expect.soft(this.page.getByText('Appointment of a guardian (C46A)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Appointment of a solicitor (C48A)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Authority to search for a child (C31)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Authority to search for another child (C27)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Discharge education supervision order (C38A)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Discharge of parental responsibility (C45B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Extension of an education supervision order (C38B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Leave to remove a child from the UK (C44B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Power of arrest (FL406)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal of appointment of a children\'s guardian (C47B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal of appointment of a solicitor (C48B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal of contact with a child in care (C34B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Refusal to transfer proceedings (C50)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Termination of appointment of a children\'s guardian (C47C)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Termination of appointment of a solicitor (C48C)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Termination of guardian\'s appointment (C46B)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('To disclose information about the whereabouts of a missing child (C30)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Transfer out Children Act (C49)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Variation of Emergency protection order (C24)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Warrant to assist (C28)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Warrant to assist EPO (C25)', { exact: true })).toBeVisible();
+        await expect.soft(this.page.getByText('Other', { exact: true })).toBeVisible();
     }
 
     async addIssuingDetailsOfUploadedOrder(approvalDate: Date) {
         await this.fillDateInputs(this.page, new Date(new Date().setMonth(new Date().getMonth() + 3)));
         await this.clickContinue();
-        await expect(this.page.getByText('Errors', {exact: true})).toBeVisible();
+        await expect(this.page.getByText('Errors', { exact: true })).toBeVisible();
         await expect(this.page.getByText('Approval date cannot not be in the future')).toBeVisible();
         await this.fillDateInputs(this.page, approvalDate);
     }
@@ -442,19 +445,47 @@ export class Orders extends BasePage {
 
         await this.page.setInputFiles('#manageOrdersUploadOrderFile', config.testPdfFile);
         await this.waitForAllUploadsToBeCompleted();
-        await this.page.getByRole('radio', {name: `${isSealed}`}).check();
+        await this.page.getByRole('radio', { name: `${isSealed}` }).check();
     }
 
     async assertOrderSealScreenshot() {
         await this.orderPage.waitForLoadState('domcontentloaded');
         await this.orderPage.waitForTimeout(1000);
-        await expect(this.orderPage).toHaveScreenshot( {
+        await expect(this.orderPage).toHaveScreenshot({
             fullPage: true,
             threshold: 0.2, // Allow small differences
             maxDiffPixels: 1500, // Allow up to 1500 different pixels
-            clip: {x: 0, y: 0, width: 1280, height: 720} // Fixed dimensions});
+            clip: { x: 0, y: 0, width: 1280, height: 720 } // Fixed dimensions});
         });
 
     }
-}
 
+    async uploadsParentalResponsibiltyOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.parentalResponsibilty.fill('Ross Tray');
+        await this.relationToChild.check();
+        await this.orderFurtherDirectionDetails.fill('Test');
+        await this.finalOrder.getByLabel('No').check();
+    }
+
+    async uploadsSpecialGuardianshipOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.specialGuardianOne.getByRole('checkbox', { name: 'Yes' }).click()
+        await this.finalOrder.getByLabel('No').check();
+        await this.clickContinue();
+    }
+}

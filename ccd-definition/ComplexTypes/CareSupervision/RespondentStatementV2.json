@@ -14,7 +14,7 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public",
-    "CategoryID": "parent_respondentsStatements"
+    "CategoryID": "respondentsOwnStatements"
   },
   {
     "LiveFrom": "01/01/2017",

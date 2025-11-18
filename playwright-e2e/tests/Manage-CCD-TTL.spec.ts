@@ -18,7 +18,7 @@ test.describe('Manage the Retain and Dispose Config', () => {
             await updateCase(caseName, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await manageTTL.gotoNextStep('Manage Case TTL');
             await manageTTL.suspendTTL();
             await manageTTL.clickContinue();
@@ -31,10 +31,11 @@ test.describe('Manage the Retain and Dispose Config', () => {
             await updateCase(caseName, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await manageTTL.gotoNextStep('Manage Case TTL')
             await manageTTL.overrideSystemTTL();
             await manageTTL.clickContinue();
+            await manageTTL.clickContinue();//click action in not working, It is work around to until the issue resolved
             await manageTTL.clickSaveAndContinue();
         });
 });

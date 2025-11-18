@@ -1,7 +1,7 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import
+{ expect, type Locator, type Page } from "@playwright/test";
 import { urlConfig } from "../settings/urls";
 import { BasePage } from "./base-page";
-
 export class SignInPage extends BasePage {
     readonly page: Page;
     readonly url: string;
@@ -11,7 +11,7 @@ export class SignInPage extends BasePage {
     readonly signinButtonLocator: Locator;
     readonly dropdownLocator: Locator;
     readonly applyLocator: Locator;
-    readonly logoutButton: Locator;
+    readonly signoutButton: Locator;
     readonly analyticCookie: Locator;
     readonly hideMessage: Locator;
 
@@ -25,7 +25,7 @@ export class SignInPage extends BasePage {
         this.signinButtonLocator = page.getByRole("button", { name: "Sign in" });
         this.dropdownLocator = this.page.locator('h2[aria-label="Filters"].heading-h2',);
         this.applyLocator = page.getByRole("button", { name: "Apply" });
-        this.logoutButton = page.getByText('Sign out');
+        this.signoutButton = page.getByText('Sign out');
         this.analyticCookie = page.getByRole('button', { name: 'Accept analytics cookies' });
         this.hideMessage = page.getByText('Hide message');
     }
@@ -35,9 +35,12 @@ export class SignInPage extends BasePage {
 
     }
 
-    async navigateTOCaseDetails(caseNumber: string) {
-        await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+    async navigateToCaseDetails(caseNumber: string) {
+        await this.page.goto(`${urlConfig.frontEndBaseURL}/cases/case-details/${urlConfig.jurisdiction}/${urlConfig.caseType}/${caseNumber}`);
+        await this.page.waitForLoadState();
     }
+
+
 
     async login(email: string, password: string) {
         await this.emailInputLocator.fill(email);
@@ -58,11 +61,11 @@ export class SignInPage extends BasePage {
     }
 
     async isSignedIn() {
-        await expect(this.logoutButton).toBeVisible();
+        await expect(this.signoutButton).toBeVisible();
     }
 
     async logout() {
-        await this.logoutButton.click();
+        await this.signoutButton.click();
         await expect(this.emailInputLocator).toBeVisible();
     }
 

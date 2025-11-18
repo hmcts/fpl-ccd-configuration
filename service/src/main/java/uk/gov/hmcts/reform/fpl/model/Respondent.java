@@ -165,3 +165,4 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
                         || AddressNotKnowReason.NO_FIXED_ABODE.getType().equals(party.getAddressNotKnowReason()));
     }
 }
+
