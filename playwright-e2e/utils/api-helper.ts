@@ -65,8 +65,11 @@ export const updateCase = async (caseName = 'e2e Test', caseID: string, caseData
     let postURL = `${urlConfig.serviceUrl}/testing-support/case/populate/${caseID}`;
     try {
         await apiRequest(postURL, systemUpdateUser, 'post', data);
+        return true;
+
     } catch (error) {
         console.log(error);
+        return false;
     }
 }
 
@@ -83,7 +86,7 @@ export const apiRequest = async (postURL: string, authUser: any, method: string 
     };
     try {
         return axios.request(requestConfig).then((res) => {
-            return res.data;
+            if(res.status==200)return res.data;
         });
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -106,8 +109,10 @@ export const giveAccessToCase = async (caseID: string,user: {email: string ,pass
     const postURL : string = `${urlConfig.serviceUrl}/testing-support/case/${caseID}/access`;
     try {
         const res = await apiRequest(postURL, systemUpdateUser, 'post', data);
+        return true
     } catch (error) {
         console.error(error);
+        return false;
     }
 }
 

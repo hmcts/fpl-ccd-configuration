@@ -11,15 +11,16 @@ test.describe('Manage representatives', () => {
 
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('Manage representatives @xbrowser',
         async ({ page, signInPage, manageRepresentatives }) => {
             caseName = 'CTSC Manage representatives ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseData);
+            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password,);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await manageRepresentatives.gotoNextStep('Manage representatives');
             await manageRepresentatives.updateRepresentatives();
