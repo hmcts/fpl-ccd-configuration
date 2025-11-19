@@ -76,7 +76,6 @@ test.describe('Approve Orders @test', () => {
       setHighCourt(caseData);
       expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
-      await signInPage.page.pause()
       await signInPage.login(judgeLondonUser.email, judgeLondonUser.password);
       await signInPage.navigateToCaseDetails(caseNumber);
       await approveOrders.gotoNextStep('Approve orders')
