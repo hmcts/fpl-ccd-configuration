@@ -360,7 +360,7 @@ test.describe('manage orders', () => {
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
         await orders.selectOrderOperation('Create an order');
@@ -432,14 +432,11 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
     })
 
-<<<<<<< Updated upstream
-     test('CTSC uploads Family assistance order ', async ({ page, signInPage, orders }) => {
-=======
-    test('CTSC uploads Family assistance order', async ({ signInPage, orders }) => {
->>>>>>> Stashed changes
+    test('CTSC uploads Family assistance order', async ({ page,signInPage, orders }) => {
+
         caseName = 'Family Assistance Order ' + dateTime.slice(0, 10);
 
-         await updateCase(caseName, caseNumber, caseData);
+        await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -674,7 +671,7 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('button', { name: 'c45a_parental_responsibility_order.pdf', exact: true })).toBeVisible();
 
     })
-  
+
     test('Judge uploads Parental responsibility order (C45A)', async ({ page, signInPage, orders }) => {
         caseName = 'Parental responsibility order (C45A) ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
