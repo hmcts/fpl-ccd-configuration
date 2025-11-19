@@ -20,7 +20,7 @@ test.describe('Add a case flag', () => {
         expect(caseNumber).toBeDefined();
     });
 
-    test('Add and remove a case flag as admin user',
+    test('Add and remove a case flag as admin user @test',
         async ({page, signInPage, addAdminCaseFlag}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
@@ -29,7 +29,7 @@ test.describe('Add a case flag', () => {
             await runTest(signInPage, addAdminCaseFlag, page);
         });
 
-    test('Add and remove a case flag as judicial user @xbrowser',
+    test('Add and remove a case flag as judicial user @test @xbrowser',
         async ({page, signInPage, addAdminCaseFlag}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();

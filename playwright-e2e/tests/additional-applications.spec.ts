@@ -21,7 +21,7 @@ test.describe('Upload additional applications', () => {
   //mark test as slow to give extra timeout
   test.slow();
 
-  test('LA uploads a C1 application',
+  test('LA uploads a C1 application @test',
     async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
         expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
@@ -155,7 +155,7 @@ test.describe('Upload additional applications', () => {
       await expect(page.getByText('Draft order title')).toBeVisible();
     });
 
-  test('CTSC uploads a confidential C2 application with draft order',
+  test('CTSC uploads a confidential C2 application with draft order @test',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'CTSC uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
       expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
