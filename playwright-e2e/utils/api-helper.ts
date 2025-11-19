@@ -13,6 +13,7 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
+            timeout: 30000,  // - 30 second timeout
         };
         const url = `${urlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
         return await axios.post(url, qs.stringify(axiosConfig));
@@ -83,6 +84,7 @@ export const apiRequest = async (postURL: string, authUser: any, method: string 
             'Authorization': `Bearer ${systemUserAuthToken?.data.access_token}`,
             'Content-Type': 'application/json'
         },
+        timeout: 30000,  // - 30 second timeout
     };
     try {
         return axios.request(requestConfig).then((res) => {
