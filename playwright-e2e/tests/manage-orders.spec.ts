@@ -370,7 +370,7 @@ test.describe('manage orders', () => {
 
         await orders.addAuthorityToRefuseContactWithAChildInCareDetails();
 
-       await orders.clickContinue();
+        await orders.clickContinue();
 
         await orders.clickSaveAndContinue();
 
@@ -431,7 +431,11 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
     })
 
+<<<<<<< Updated upstream
      test('CTSC uploads Family assistance order ', async ({ page, signInPage, orders }) => {
+=======
+    test('CTSC uploads Family assistance order', async ({ signInPage, orders }) => {
+>>>>>>> Stashed changes
         caseName = 'Family Assistance Order ' + dateTime.slice(0, 10);
 
          await updateCase(caseName, caseNumber, caseData);
