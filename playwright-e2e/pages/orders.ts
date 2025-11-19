@@ -25,6 +25,7 @@ export class Orders extends BasePage {
     readonly legalAdvisorName: Locator;
     readonly orderFurtherDirectionDetails: Locator;
     readonly closeOrder: Locator;
+    readonly judgeMagistrateTitle: Locator;
     readonly careOrderIssuedDate: Locator;
     readonly careOrderIssuedCourt: Locator;
     readonly jurisdiction: Locator;
@@ -79,7 +80,7 @@ export class Orders extends BasePage {
         this.orderApplication = page.getByRole('group', { name: 'Is there an application for' });
         this.approvedHearing = page.getByLabel('Which hearing?');
         this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });
-        this.isAllChildrenInvolved = page.getByRole('group', { name: 'Is the order about all the children?'});
+        this.isAllChildrenInvolved = page.getByRole('group', { name: 'Is the order about all the children?' });
         this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
         this.EPOEndDate = page.getByRole('group', { name: 'When does it end?' });
         this.finalOrder = page.getByRole('group', { name: 'Is this a final order?' });
@@ -87,6 +88,7 @@ export class Orders extends BasePage {
         this.orderPage = page;
         this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
         this.excluded = page.getByLabel('Who\'s excluded');
+        this.judgeMagistrateTitle = page.getByRole('group', { name: 'Judge or magistrate\'s title' });
         this.powerOfExclusionStart = page.getByRole('group', { name: 'Date power of exclusion starts' });
         this.judgeMagistrateRadioButton = page.getByRole('radio', { name: 'His Honour Judge' });
         this.orderToAmend = page.getByLabel('Select order to amend');
@@ -176,6 +178,7 @@ export class Orders extends BasePage {
         await this.issuingJudge.getByRole('radio', { name: `${hearingJudge}` }).check();
         await this.legalAdvisorName.fill('LA Marien Wester');
         if (hearingJudge == 'No') {
+            await this.judgeMagistrateTitle.getByLabel('His Honour Judge').check();
             await this.judgeLastName.fill('John');
             await this.judgeEmail.fill('email@email.comLegal');
             await this.legalAdvisorName.fill('LA Jonathan');
