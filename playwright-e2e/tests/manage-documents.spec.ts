@@ -19,11 +19,12 @@ test.describe('Manage Documents', () => {
     const caseWithManageDocumentUploads = require('../caseData/caseWithManageDocumentUploads.json');
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('LA uploads documents @xbrowser', async ({ page, signInPage, manageDocuments, caseFileView }) => {
         caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseData);
+        expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -61,8 +62,8 @@ test.describe('Manage Documents', () => {
 
     test('LA uploads Position Statements visible in CFV @xbrowser', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'LA uploads Position Statements visible in CFV ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithResSolicitor);
-        await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
+        expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
+        expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -88,8 +89,8 @@ test.describe('Manage Documents', () => {
 
     test('LA uploads confidential documents visible in CFV not visible to solicitor', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'LA uploads confidential position document ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseData);
-        await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
+        expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+        expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -118,8 +119,8 @@ test.describe('Manage Documents', () => {
 
     test('CTSC uploads confidential documents visible in CFV not visible to solicitor ', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'CTSC uploads confidential Position statement documents  ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithResSolicitor);
-        await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
+        expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
+        expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -164,8 +165,8 @@ test.describe('Manage Documents', () => {
 
     test('CTSC add New Folders Advocate Meeting Minutes ', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'CTSC adds Folder Advocate Meeting Minutes' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithResSolicitor);
-        await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
+        expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
+        expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -193,8 +194,8 @@ test.describe('Manage Documents', () => {
 
     test('CTSC uploads new folder Respondent own statements ', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'CTSC adds Respondent own statements' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithResSolicitor);
-        await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
+        expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
+        expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -224,7 +225,7 @@ test.describe('Manage Documents', () => {
 
     test('CTSC removes document @xbrowser', async ({ page, signInPage, manageDocuments, caseFileView }) => {
         caseName = 'CTSC removes document ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithManageDocumentUploads);
+        expect(await updateCase(caseName, caseNumber, caseWithManageDocumentUploads)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -241,7 +242,7 @@ test.describe('Manage Documents', () => {
 
     test('CTSC user can move document between folder ', async ({ page, signInPage, caseFileView }) => {
         caseName = 'CTSC moved documents between folder ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithManageDocumentUploads);
+        expect(await updateCase(caseName, caseNumber, caseWithManageDocumentUploads)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -255,7 +256,7 @@ test.describe('Manage Documents', () => {
     test('High Court Review Correspondence WA task @xbrowser', async ({ page, signInPage, manageDocuments, caseFileView }) => {
         caseName = 'High Court Review Correspondence WA task ' + dateTime.slice(0, 10);
         setHighCourt(caseData);
-        await updateCase(caseName, caseNumber, caseData);
+        expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateToCaseDetails(caseNumber);
