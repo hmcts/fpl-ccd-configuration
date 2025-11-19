@@ -23,3 +23,15 @@ export function addMonthsToDate(date: Date, months: number): Date {
     newDate.setMonth(newDate.getMonth() + months);
     return newDate;
 }
+export function formatToLongDate12hrTime(date: Date): string {
+    const day = date.getDate();
+    const month = date.toLocaleString('en-GB', { month: 'long' });
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const period = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12 || 12;
+
+    return `${day} ${month} ${year} at ${hours}:${minutes}${period}`;
+}
