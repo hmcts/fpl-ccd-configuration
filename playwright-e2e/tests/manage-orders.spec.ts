@@ -12,6 +12,7 @@ test.describe('manage orders', () => {
     let caseName: string;
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
     [{ user: CTSCUser, role: 'CTSC', EPOtype: 'Remove to accommodation' },
     { user: judgeUser, role: 'Legal', EPOtype: 'Prevent removal from an address' }].
@@ -21,7 +22,7 @@ test.describe('manage orders', () => {
 
                 async ({ page, signInPage, orders }) => {
                     caseName = 'EPO order by ' + role + ' ' + dateTime.slice(0, 10);
-                    await updateCase(caseName, caseNumber, caseData);
+                    expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
                     await signInPage.visit();
                     await signInPage.login(user.email, user.password);
                     await signInPage.navigateToCaseDetails(caseNumber);
@@ -70,7 +71,7 @@ test.describe('manage orders', () => {
 
     test('Amend order under slip rule', async ({ signInPage, orders }) => {
         caseName = 'Amend EPO order ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithOrderData);
+        expect(await updateCase(caseName, caseNumber, caseWithOrderData)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -99,7 +100,7 @@ test.describe('manage orders', () => {
 
     test('Upload Order @xbrowser ', async ({ page, signInPage, orders }) => {
         caseName = 'Upload Order ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithOrderData);
+        expect(await updateCase(caseName, caseNumber, caseWithOrderData)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);

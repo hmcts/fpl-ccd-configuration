@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Comparator.comparingInt;
@@ -126,6 +127,11 @@ public class HearingOrdersBundle implements ConfidentialOrderBundle<HearingOrder
         return hearingOrders.stream()
             .filter(order -> status.equals(order.getValue().getStatus()))
             .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingOrder>> getAllOrdersAndConfidentialOrders() {
+        return Stream.of(getOrders(), getAllConfidentialOrders()).flatMap(List::stream).toList();
     }
 
     @JsonIgnore

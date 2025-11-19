@@ -13,15 +13,16 @@ test.describe('Change case name', () => {
 
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
     test('Change case name',
         async ({ page, signInPage, changeCaseName,manageLaTransferToCourts }) => {
             caseName = 'CTSC Change case name ' + dateTime.slice(0, 10);
             if(urlConfig.env.toUpperCase() === 'DEMO'){
-                await updateCase(caseName, caseNumber, caseDataDemo);
+               expect (await updateCase(caseName, caseNumber, caseDataDemo)).toBeTruthy();
             }
             else{
-                await updateCase(caseName, caseNumber, caseData);
+                expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
             }
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email,CTSCTeamLeadUser.password);
