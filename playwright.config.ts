@@ -48,8 +48,6 @@ export default defineConfig({
         {
             ...ProjectsConfig.edge,
             teardown: process.env.CI ? 'AMRoleCleanup' : undefined,
-            grep: /@smoke-test/
-
         },
         {
             ...ProjectsConfig.chrome,
