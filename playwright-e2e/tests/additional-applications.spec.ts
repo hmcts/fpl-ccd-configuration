@@ -85,7 +85,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.checkYourAnsAndSubmit();
     });
 
-  test('LA uploads combined Other and C2 applications @xbrowser @test',
+  test('LA uploads combined Other and C2 applications @xbrowser',
     async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
       expect(   await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
