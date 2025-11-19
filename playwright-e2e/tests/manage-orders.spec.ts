@@ -354,7 +354,7 @@ test.describe('manage orders', () => {
 
     })
 
-    test('CTSC uploads Authority to refuse contact with a child in care (C34B)', async ({ signInPage, orders ,page }) => {
+    test('CTSC uploads Authority to refuse contact with a child in care (C34B)', async ({ signInPage, orders, page }) => {
         caseName = 'Authority to refuse contact with a child in care (C34B)' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
@@ -370,12 +370,12 @@ test.describe('manage orders', () => {
 
         await orders.addAuthorityToRefuseContactWithAChildInCareDetails();
 
-       await orders.clickContinue();
+        await orders.clickContinue();
 
         await orders.clickSaveAndContinue();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'c34b_authority_to_refuse_contact.pdf'})).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c34b_authority_to_refuse_contact.pdf' })).toBeVisible();
 
     })
 
@@ -431,7 +431,7 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
     })
 
-     test('CTSC uploads Family assistance order ', async ({ page, signInPage, orders }) => {
+    test('CTSC uploads Family assistance order', async ({ page, signInPage, orders }) => {
         caseName = 'Family Assistance Order ' + dateTime.slice(0, 10);
 
         await updateCase(caseName, caseNumber, caseData);
@@ -453,7 +453,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByText('c42_family_assistance_order.pdf', { exact: true })).toBeVisible();
+        await expect(page.getByRole('button',{name:'c42_family_assistance_order.pdf'})).toBeVisible();
 
     })
 
@@ -479,7 +479,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByText('c42_family_assistance_order.pdf', { exact: true })).toBeVisible();
+        await expect(page.getByRole('button',{name:'c42_family_assistance_order.pdf'})).toBeVisible();
 
     })
 
@@ -669,7 +669,7 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('button', { name: 'c45a_parental_responsibility_order.pdf', exact: true })).toBeVisible();
 
     })
-  
+
     test('Judge uploads Parental responsibility order (C45A)', async ({ page, signInPage, orders }) => {
         caseName = 'Parental responsibility order (C45A) ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
