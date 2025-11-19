@@ -23,7 +23,7 @@ test.describe('Approve Orders @test', () => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
             expect(await updateCase(casename, caseNumber, caseDataByLa)).toBeTruthy();
             await signInPage.visit();
-            await signInPage.login(judgeUser.email, judgeUser.password);
+            await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
 
             await approveOrders.navigateToPageViaNextStep();
@@ -46,7 +46,7 @@ test.describe('Approve Orders @test', () => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
             expect(await updateCase(casename, caseNumber, caseDataByCtsc)).toBeTruthy();
             await signInPage.visit();
-            await signInPage.login(judgeUser.email, judgeUser.password);
+            await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
 
             await approveOrders.navigateToPageViaNextStep();
