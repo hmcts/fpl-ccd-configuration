@@ -61,7 +61,8 @@ public class HearingOrderGenerator {
         DocumentReference sealedOrder = documentSealingService.sealDocument(order, caseData.getCourt(),
             caseData.getSealType());
 
-        if (addCoverSheet) {
+        if (addCoverSheet && caseData.getReviewDraftOrdersData() != null
+                && !isEmpty(caseData.getReviewDraftOrdersData().getJudgeTitleAndName())) {
             // add a sealed cover sheet to the order
             sealedOrder = documentSealingService.sealDocument(addCoverSheet(caseData, sealedOrder),
                 caseData.getCourt(), caseData.getSealType());

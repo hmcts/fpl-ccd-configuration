@@ -189,4 +189,69 @@ class HearingOrderGeneratorTest {
         assertThat(actual).isEqualTo(element(ORDER_ID, hearingOrder.toBuilder()
             .status(CMOStatus.RETURNED).requestedChanges(changesRequested).build()));
     }
+
+    @Test
+    void shouldSkipAddingCoverSheetIfJudgeTitleAneNameNotFound() throws IOException {
+        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
+        String othersNotified = "John Smith";
+        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
+        Court court = Court.builder().build();
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
+
+        CaseData caseData = CaseData.builder()
+            .court(court)
+            .reviewCMODecision(reviewDecision)
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .build();
+
+        when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
+
+        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
+            .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
+            .othersNotified(othersNotified)
+            .others(selectedOthers)
+            .order(sealedOrder).lastUploadedOrder(order).build());
+
+        Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
+            caseData,
+            reviewDecision,
+            element(ORDER_ID, hearingOrder),
+            selectedOthers,
+            othersNotified,
+            true);
+
+        assertThat(actual).isEqualTo(expectedOrder);
+    }
+
+    @Test
+    void shouldSkipAddingCoverSheetIfReviewDraftOrdersDataIsNull() throws IOException {
+        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
+        String othersNotified = "John Smith";
+        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
+        Court court = Court.builder().build();
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
+
+        CaseData caseData = CaseData.builder()
+            .court(court)
+            .reviewCMODecision(reviewDecision)
+            .build();
+
+        when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
+
+        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
+            .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
+            .othersNotified(othersNotified)
+            .others(selectedOthers)
+            .order(sealedOrder).lastUploadedOrder(order).build());
+
+        Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
+            caseData,
+            reviewDecision,
+            element(ORDER_ID, hearingOrder),
+            selectedOthers,
+            othersNotified,
+            true);
+
+        assertThat(actual).isEqualTo(expectedOrder);
+    }
 }

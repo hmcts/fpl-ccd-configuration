@@ -211,6 +211,25 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         assertThat(callbackResponse.getData().get("judgeType")).isEqualTo("FEE_PAID_JUDGE");
     }
 
+    @Test
+    void shouldNotReturnErrorsWhenReviewDecisionForTheDraftOrdersIsValidButJudicialProfileNotFound() {
+        UUID hearingOrdersBundleId = UUID.randomUUID();
+
+        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
+            hearingOrdersBundleId, newArrayList(agreedCMO));
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(agreedCMO))
+            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .cmoToReviewList(hearingOrdersBundleId.toString())
+            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
+
+        given(judicialService.isCurrentUserFeePaidJudge()).willThrow(new RuntimeException("Not found"));
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
     private Element<HearingOrdersBundle> buildHearingOrdersBundle(
         UUID hearingOrdersBundle1, List<Element<HearingOrder>> orders) {
         return element(hearingOrdersBundle1,
