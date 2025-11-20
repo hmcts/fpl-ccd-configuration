@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -60,7 +61,8 @@ public class HearingOrderGenerator {
         DocumentReference sealedOrder = documentSealingService.sealDocument(order, caseData.getCourt(),
             caseData.getSealType());
 
-        if (addCoverSheet) {
+        if (addCoverSheet && caseData.getReviewDraftOrdersData() != null
+            && !isEmpty(caseData.getReviewDraftOrdersData().getJudgeTitleAndName())) {
             // add a sealed cover sheet to the order
             sealedOrder = documentSealingService.sealDocument(addCoverSheet(caseData, sealedOrder),
                 caseData.getCourt(), caseData.getSealType());

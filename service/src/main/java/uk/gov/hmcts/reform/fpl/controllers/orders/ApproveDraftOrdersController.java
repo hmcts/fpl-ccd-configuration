@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.previewA
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
 
+@Slf4j
 @RestController
 @RequestMapping("/callback/approve-draft-orders")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -132,8 +134,12 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("judgeTitleAndName",
-            approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData));
+        try {
+            caseDetails.getData().put("judgeTitleAndName",
+                approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData));
+        } catch (Exception e) {
+            log.error("Fail to get judge title and name", e);
+        }
         CaseDetailsHelper.removeTemporaryFields(caseDetails, previewApprovedOrderFields());
 
         // DFPL-1171 move all document processing step to post-about-to-submitted stage
