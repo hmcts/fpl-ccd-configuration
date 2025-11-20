@@ -219,6 +219,8 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             hearingOrdersBundleId, newArrayList(agreedCMO));
 
         CaseData caseData = CaseData.builder()
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder()
+                .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build())
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
