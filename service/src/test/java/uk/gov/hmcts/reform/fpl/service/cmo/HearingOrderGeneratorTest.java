@@ -191,7 +191,7 @@ class HearingOrderGeneratorTest {
     }
 
     @Test
-    void shouldSkipAddingCoverSheetIfJudgeTitleAneNameNotFound() throws IOException {
+    void shouldSkipAddingCoverSheetIfJudgeTitleAneNameNotFound() {
         HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
         String othersNotified = "John Smith";
         List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
@@ -224,7 +224,7 @@ class HearingOrderGeneratorTest {
     }
 
     @Test
-    void shouldSkipAddingCoverSheetIfReviewDraftOrdersDataIsNull() throws IOException {
+    void shouldSkipAddingCoverSheetIfReviewDraftOrdersDataIsNull() {
         HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
         String othersNotified = "John Smith";
         List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
@@ -253,5 +253,25 @@ class HearingOrderGeneratorTest {
             true);
 
         assertThat(actual).isEqualTo(expectedOrder);
+    }
+
+    @Test
+    void shouldNotAddCoverSheetIfJudgeTitleAndNameIsEmptyOrNull() {
+        assertThat(underTest.addCoverSheet(CaseData.builder()
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .build(), order))
+            .isEqualTo(order);
+
+        assertThat(underTest.addCoverSheet(CaseData.builder()
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .build(), order))
+            .isEqualTo(order);
+
+        assertThat(underTest.addCoverSheet(CaseData.builder()
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().judgeTitleAndName("").build())
+            .build(), order))
+            .isEqualTo(order);
     }
 }
