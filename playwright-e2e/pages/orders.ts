@@ -224,7 +224,6 @@ export class Orders extends BasePage {
         await this.EPOEndDate.getByRole('textbox', { name: 'Month' }).fill('10');
         await this.EPOEndDate.getByRole('textbox', { name: 'Year' }).fill('2013');
         await this.EPOEndDate.getByRole('textbox', { name: 'Hour' }).fill('10');
-        await this.EPOEndDate.getByRole('textbox', { name: 'Hour' }).fill('10');
         await this.finalOrder.getByLabel('Yes').click();
     }
     async addC32CareOrder() {
