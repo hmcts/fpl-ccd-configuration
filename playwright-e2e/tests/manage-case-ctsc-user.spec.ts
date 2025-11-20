@@ -17,15 +17,16 @@ test.describe('Admin application management', () => {
 
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('CTSC admin request welsh language translation',
         async ({page, signInPage, welshLangRequirements}) => {
             caseName = 'CTSC request for welsh translation of documents/orders ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseWithResSolicitor);
+           expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await welshLangRequirements.gotoNextStep('Welsh language requirements');
             await welshLangRequirements.CTSCRequestWelshTranslation('Yes');
             await welshLangRequirements.clickContinue();
@@ -41,10 +42,10 @@ test.describe('Admin application management', () => {
     test('CTSC admin add case note to the application',
         async ({page, signInPage, caseNote}) => {
             caseName = 'CTSC admin add case note' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseWithResSolicitor);
+            expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await caseNote.gotoNextStep('Add a case note');
             await expect.soft(page.getByText('Add note detail, including relevant dates and people involved')).toBeVisible();
 
@@ -59,10 +60,10 @@ test.describe('Admin application management', () => {
     test('CTSC log expert report to the application',
         async ({ signInPage, expertReport}) => {
             caseName = 'CTSC log expert report' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseWithResSolicitor);
+            expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await expertReport.gotoNextStep('Log expert report');
 
             await expertReport.addNewReport(0);
@@ -82,7 +83,7 @@ test.describe('Admin application management', () => {
             await expertReport.checkDateValidationPass();
             await expertReport.clickSubmit();
             await expertReport.clickSaveAndContinue();
-            await expertReport.tabNavigation('Expert reports');
+            await expertReport.tabNavigation('Expert Reports');
 
             await expect(expertReport.page.getByText('Report 1')).toBeVisible();
             await expect(expertReport.page.getByText('Pediatric')).toBeVisible();
@@ -93,10 +94,10 @@ test.describe('Admin application management', () => {
 
     test('CTSC request for 26 week Case extension', async ({page, signInPage, extend26WeekTimeline}) => {
         caseName = 'CTSC request 26 week case extension' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithHearing);
+        expect(await updateCase(caseName, caseNumber, caseWithHearing)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await extend26WeekTimeline.gotoNextStep('Extend 26-week timeline');
         await extend26WeekTimeline.isExtensionApprovedAtHearing('yes');
         await extend26WeekTimeline.selectHearing('Case management hearing, 3 November 2012');
@@ -113,10 +114,10 @@ test.describe('Admin application management', () => {
     test('Close the case', async ({signInPage, page, recordFinalDecision}) => {
         caseName = 'CTSC make final decision' + dateTime.slice(0, 10);
         let decisionDate = await subtractMonthDate(1);
-        await updateCase(caseName, caseNumber, caseWithHearing);
+        expect(await updateCase(caseName, caseNumber, caseWithHearing)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
 
         await recordFinalDecision.gotoNextStep('Record final decisions');
 
@@ -147,10 +148,10 @@ test.describe('Admin application management', () => {
     })
     test('CTSC admin send order remainder', async ({signInPage, page, sendOrderRemainder}) => {
         caseName = 'Admin send order remainders' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithHearing);
+        expect(await updateCase(caseName, caseNumber, caseWithHearing)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await sendOrderRemainder.gotoNextStep('Send order reminder');
         await expect.soft(sendOrderRemainder.page.getByText('These concluded hearings do not have CMOs attached (in draft or sealed):')).toBeVisible();
         await sendOrderRemainder.sendOrderRemainder('Yes');

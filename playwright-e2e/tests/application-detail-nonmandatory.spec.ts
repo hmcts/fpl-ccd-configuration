@@ -2,7 +2,7 @@ import {expect, test} from "../fixtures/fixtures";
 import {newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
 import {createCase} from "../utils/api-helper";
 
-test.describe('Non mandatory application details before application submit', () => {
+test.describe('Non mandatory application details before application submit @test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
@@ -12,6 +12,7 @@ test.describe('Non mandatory application details before application submit', () 
 
             casename = 'Risk and harm  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(
@@ -20,7 +21,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             // Risk and harm to children
             await riskAndHarmToChildren.gotoNextStep('Risk and harm to children');
             await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
@@ -53,6 +54,7 @@ test.describe('Non mandatory application details before application submit', () 
 
             casename = 'Welsh language requirement  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(
@@ -61,7 +63,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             // Welsh language requirements
             await welshLangRequirements.gotoNextStep('Welsh language requirements');
@@ -86,6 +88,7 @@ test.describe('Non mandatory application details before application submit', () 
         async ({startApplication, signInPage, internationalElement, makeAxeBuilder}, testInfo) =>  {
             casename = 'International element  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(
@@ -94,7 +97,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber)
+            await signInPage.navigateToCaseDetails(caseNumber)
 
             // International element
            await internationalElement.gotoNextStep('International element');
@@ -123,6 +126,7 @@ test.describe('Non mandatory application details before application submit', () 
         async ({startApplication, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
             casename = 'c1 application  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(
@@ -131,7 +135,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             // C1 With Supplement
             await c1WithSupplement.c1WithSupplementSmokeTest();
@@ -153,6 +157,7 @@ test.describe('Non mandatory application details before application submit', () 
         async ({startApplication, signInPage, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
             casename = 'Other people in case ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+            expect(caseNumber).toBeDefined();
             // 1. Sign in as local-authority user
             await signInPage.visit();
             await signInPage.login(
@@ -161,7 +166,7 @@ test.describe('Non mandatory application details before application submit', () 
             );
             //sign in page
             await signInPage.isSignedIn();
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             //add other people in the case
             await otherPeopleInCase.gotoNextStep('Other people in the case');
             await otherPeopleInCase.addOtherPerson();

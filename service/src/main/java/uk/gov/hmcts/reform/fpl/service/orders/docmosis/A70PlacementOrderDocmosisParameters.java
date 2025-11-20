@@ -16,5 +16,5 @@ public class A70PlacementOrderDocmosisParameters extends DocmosisParameters {
     private String localAuthorityAddress;
     private String applicationDate;
     private DocmosisChild child;
-
+    private String respondentNames;
 }
