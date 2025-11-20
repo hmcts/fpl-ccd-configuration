@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -83,6 +84,7 @@ class HearingOrderGeneratorTest {
         CaseData caseData = CaseData.builder()
             .court(court)
             .reviewCMODecision(reviewDecision)
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().judgeTitleAndName("test").build())
             .build();
 
         when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
@@ -119,6 +121,7 @@ class HearingOrderGeneratorTest {
         CaseData caseData = CaseData.builder()
             .court(court)
             .reviewCMODecision(reviewDecision)
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().judgeTitleAndName("test").build())
             .build();
         when(documentSealingService.sealDocument(amendedOrder, court, SealType.ENGLISH)).thenReturn(sealedOrder);
         when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder))

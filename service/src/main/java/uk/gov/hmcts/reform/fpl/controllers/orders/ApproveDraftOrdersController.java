@@ -96,14 +96,19 @@ public class ApproveDraftOrdersController extends CallbackController {
             CaseDetailsHelper.removeTemporaryFields(caseDetails, previewApprovedOrderFields());
             if ((caseData.getReviewDraftOrdersData() != null
                 && caseData.getReviewDraftOrdersData().hasADraftBeenApprovedWithoutChanges())) {
-                if (judicialService.isCurrentUserFeePaidJudge()) {
-                    data.put("judgeType", FEE_PAID_JUDGE);
-                } else {
-                    data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData.toBuilder()
-                        .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
-                            .judgeTitleAndName(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData))
-                            .build())
-                        .build()));
+                try {
+                    if (judicialService.isCurrentUserFeePaidJudge()) {
+                        data.put("judgeType", FEE_PAID_JUDGE);
+                    } else {
+                        data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData.toBuilder()
+                            .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+                                .judgeTitleAndName(approveDraftOrdersService
+                                    .getJudgeTitleAndNameOfCurrentUser(caseData))
+                                .build())
+                            .build()));
+                    }
+                } catch (Exception e) {
+                    log.error("Fail to get judge title and name", e);
                 }
             }
         }
@@ -116,11 +121,15 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseData = caseData.toBuilder()
-            .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
-                .judgeTitleAndName(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData))
-                .build())
+        try {
+            caseData = caseData.toBuilder()
+                .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+                    .judgeTitleAndName(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData))
+                    .build())
                 .build();
+        } catch (Exception e) {
+            log.error("Fail to get judge title and name", e);
+        }
 
         // Generate the preview of the orders with cover sheet
         CaseDetailsHelper.removeTemporaryFields(caseDetails, previewApprovedOrderFields());

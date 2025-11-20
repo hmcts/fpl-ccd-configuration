@@ -61,8 +61,7 @@ public class HearingOrderGenerator {
         DocumentReference sealedOrder = documentSealingService.sealDocument(order, caseData.getCourt(),
             caseData.getSealType());
 
-        if (addCoverSheet && caseData.getReviewDraftOrdersData() != null
-            && !isEmpty(caseData.getReviewDraftOrdersData().getJudgeTitleAndName())) {
+        if (addCoverSheet) {
             // add a sealed cover sheet to the order
             sealedOrder = documentSealingService.sealDocument(addCoverSheet(caseData, sealedOrder),
                 caseData.getCourt(), caseData.getSealType());
@@ -85,11 +84,17 @@ public class HearingOrderGenerator {
 
     public DocumentReference addCoverSheet(CaseData caseData, DocumentReference orderDoc) {
         try {
-            DocmosisDocument orderWithCoverSheet = docmosisApprovedOrderCoverSheetService
-                .addCoverSheetToApprovedOrder(caseData, orderDoc);
+            if (caseData.getReviewDraftOrdersData() != null
+                && !isEmpty(caseData.getReviewDraftOrdersData().getJudgeTitleAndName())) {
+                DocmosisDocument orderWithCoverSheet = docmosisApprovedOrderCoverSheetService
+                    .addCoverSheetToApprovedOrder(caseData, orderDoc);
 
-            return buildFromDocument(uploadDocumentService
-                .uploadPDF(orderWithCoverSheet.getBytes(), orderDoc.getFilename()));
+                return buildFromDocument(uploadDocumentService
+                    .uploadPDF(orderWithCoverSheet.getBytes(), orderDoc.getFilename()));
+            } else {
+                log.error("Judge tile and name not found. Skip adding cover sheet");
+                return orderDoc;
+            }
         } catch (Exception e) {
             log.error("Error adding cover sheet to order", e);
             return orderDoc;
