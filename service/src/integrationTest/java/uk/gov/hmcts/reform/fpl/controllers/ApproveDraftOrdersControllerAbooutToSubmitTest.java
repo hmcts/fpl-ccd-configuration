@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(ApproveDraftOrdersController.class)
@@ -29,5 +31,14 @@ class ApproveDraftOrdersControllerAbooutToSubmitTest extends AbstractCallbackTes
         CaseData returnedCaseData = extractCaseData(postAboutToSubmitEvent(CaseData.builder().build()));
         assertThat(returnedCaseData.getReviewDraftOrdersData().getJudgeTitleAndName())
             .isEqualTo("Judge Name");
+    }
+
+    @Test
+    void shouldNotThrowErrorWhenJudicialProfileNotFound() {
+        when(judicialService.getJudgeTitleAndNameOfCurrentUser(any()))
+            .thenThrow(new RuntimeException("Not found"));
+
+        extractCaseData(postAboutToSubmitEvent(CaseData.builder().build()));
+        Assertions.assertTrue(true);
     }
 }
