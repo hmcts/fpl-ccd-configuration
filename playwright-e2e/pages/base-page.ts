@@ -182,7 +182,7 @@ export class BasePage {
 
     }
 
-    async tablevalue(tableName: string, cellHeading: string): Promise<string> {
+    async getCellValueInTable(tableName: string, cellHeading: string): Promise<string> {
         const table = this.page.getByRole('table', { name: tableName });
         let cellValue = '';
 

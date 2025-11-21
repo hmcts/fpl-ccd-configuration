@@ -50,7 +50,7 @@ test.describe('Adding gatekeeping details', () => {
                 await sendToGatekepperPage.clickSaveAndContinue();
 
                 await sendToGatekepperPage.tabNavigation('History');
-                const endState = await sendToGatekepperPage.tablevalue('Details', 'End state');
+                const endState = await sendToGatekepperPage.getCellValueInTable('Details', 'End state');
                 expect(endState).toBe('Gatekeeping')
                 expect(await sendToGatekepperPage.page.getByRole('table', {name: 'History'}).locator('tr').nth(1).innerText()).toContain('Send to gatekeeper');
 
