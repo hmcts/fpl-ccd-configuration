@@ -64,8 +64,8 @@ export class GatekeepingListing extends HearingDetailsMixin()
 
   async addHighCourtJudgeAndCompleteGatekeepingListing() {
     await this.selectjudgeType('Fee paid judge');
-    await this.page.getByRole('combobox', {name: 'Search for Judge'}).fill('Arthur Ramirez');
-    await this.page.getByText('Mr Arthur Ramirez (HHJ.Arthur').click();
+    await this.page.getByRole('combobox', {name: 'Search for Judge'}).fill('Arthur');
+    await this.page.getByText('Mr Arthur Fry (Arthur.Fry.JP@ejudiciary.net)').click();
     await this.assertFeePaidJudgeTitle();
     await this.page.getByRole('radio', {name: 'Recorder'}).check();
     await this.clickContinue();

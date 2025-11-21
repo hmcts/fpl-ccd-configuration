@@ -16,14 +16,16 @@ test.describe('Upload additional applications', () => {
 
   test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    expect(caseNumber).toBeDefined();
   });
   //mark test as slow to give extra timeout
   test.slow();
 
-  test('LA uploads a C1 application',
+  test('LA uploads a C1 application @test',
     async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+        expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -68,7 +70,7 @@ test.describe('Upload additional applications', () => {
   test('LA uploads a C2 application with draft order ',
     async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -83,10 +85,10 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.checkYourAnsAndSubmit();
     });
 
-  test('LA uploads combined Other and C2 applications @xbrowser ',
+  test('LA uploads combined Other and C2 applications @xbrowser',
     async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(   await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -115,7 +117,7 @@ test.describe('Upload additional applications', () => {
   test('LA uploads a confidential C2 application with draft order @xbrowser',
     async ({ page, signInPage, additionalApplications ,envDataConfig}) => {
       caseName = 'LA uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
 
@@ -153,10 +155,10 @@ test.describe('Upload additional applications', () => {
       await expect(page.getByText('Draft order title')).toBeVisible();
     });
 
-  test('CTSC uploads a confidential C2 application with draft order',
+  test('CTSC uploads a confidential C2 application with draft order @test',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'CTSC uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password);
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -201,7 +203,7 @@ test.describe('Upload additional applications', () => {
                                                                         uploadAdditionalApplicationsSuppliedDocuments,
                                                                         submit    }) => {
         caseName = 'CTSC standard C2 application ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseData);
+        expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
 
         await test.step('Login and Navigate to Case', async () => {
             await signInPage.visit();
@@ -263,8 +265,8 @@ test.describe('Upload additional applications', () => {
   test('Respondent Solicitor Uploads additional applications',
     async ({ page, signInPage, additionalApplications,envDataConfig }) => {
       caseName = 'Respondent solicitor Uploads additional application ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseWithResSolicitor);
-      await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
+      expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
+      expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
       await signInPage.navigateToCaseDetails(caseNumber);
@@ -292,11 +294,12 @@ test.describe('Upload additional applications', () => {
   test('Failed Payment High Court WA task', async ({ page, signInPage, additionalApplications, caseFileView,envDataConfig }) => {
     caseName = 'Failed Payment High Court WA task ' + dateTime.slice(0, 10);
     setHighCourt(caseData);
-    await updateCase(caseName, caseNumber, caseData);
+    expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
     await signInPage.visit();
     await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
     await signInPage.navigateToCaseDetails(caseNumber);
-    await additionalApplications.uploadBasicC2Application(false);
+    await signInPage.gotoNextStep('Upload additional applications');
+    await additionalApplications.uploadBasicC2Application(false,envDataConfig.swanseaOrgPBA);
 
     // Check CFV
     await caseFileView.goToCFVTab();

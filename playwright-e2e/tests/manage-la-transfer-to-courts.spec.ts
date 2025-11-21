@@ -15,6 +15,7 @@ test.describe('Manage LAs / Transfer to court', () => {
     let caseName: string;
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('CTSC transfer to a new court and submit case @xbrowser',
