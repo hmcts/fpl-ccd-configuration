@@ -17,7 +17,7 @@ test.describe('Adding gatekeeping details', () => {
         expect(caseNumber).toBeDefined();
     });
 
-    test.only('CTSC user add gatekeeping details @xbrowser',
+    test('CTSC user add gatekeeping details @xbrowser',
         async ({
                     signInPage, familymanCaseNumber, sendToGatekepperPage,
                    caseFileView
