@@ -79,7 +79,7 @@ public abstract class MessageJudgeService {
     public List<Element<JudicialMessageReply>> sortedJudicialMessageReplies(
         List<Element<JudicialMessageReply>> judicialMessageReplies) {
         judicialMessageReplies.sort(Comparator.comparing(judicialMessageReplyElement
-            -> judicialMessageReplyElement.getValue().getUpdatedTime(),
+                -> judicialMessageReplyElement.getValue().getUpdatedTime(),
             Comparator.nullsLast(Comparator.reverseOrder())));
 
         return judicialMessageReplies;
@@ -94,10 +94,6 @@ public abstract class MessageJudgeService {
                 messageHistory.add(String.format("%s - %s - %s (end of message)", reply.getReplyFrom(),
                     reply.getDateSent(), reply.getMessage()));
             });
-        }
-
-        if (messageHistory.isEmpty()) {
-            return "";
         }
 
         String tempMessageHistory = String.join("\n \n", messageHistory);
@@ -130,7 +126,7 @@ public abstract class MessageJudgeService {
             .urgency(urgency)
             .build();
 
-        //If this is a new message the object will be empty
+        //If this is a new message there will be no replies
         if (message.isEmpty()) {
             return List.of(element(messageReply));
         } else if (isEmpty(message.get().getJudicialMessageReplies())) {

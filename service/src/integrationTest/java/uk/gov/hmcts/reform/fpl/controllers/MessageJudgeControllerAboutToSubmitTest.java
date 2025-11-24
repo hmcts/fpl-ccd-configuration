@@ -116,7 +116,7 @@ class MessageJudgeControllerAboutToSubmitTest extends MessageJudgeControllerAbst
                     .message("Some message")
                     .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
                     .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
-                    .build())))
+                .build())))
             .urgency(SAME_DAY_URGENCY)
             .isJudicialMessageUrgent(YesNo.YES)
             .build();

@@ -176,6 +176,7 @@ public class CaseData extends CaseDataParent {
     private OutsourcingType outsourcingType;
     private RepresentativeType representativeType;
     private YesNo isLocalAuthority;
+    private String latestQueryID;
 
     @JsonIgnore
     public boolean checkIfCaseIsSubmittedByLA() {

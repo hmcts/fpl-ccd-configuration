@@ -8,22 +8,23 @@ import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, judgeUser, j
 import { setHighCourt } from '../utils/update-case-details';
 import { expect } from "@playwright/test";
 
-test.describe('Approve Orders', () => {
+test.describe('Approve Orders @test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
 
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('Judge approves a confidential order uploaded by LA @xbrowser',
         async ({ page, signInPage, approveOrders }) => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseDataByLa);
+            expect(await updateCase(casename, caseNumber, caseDataByLa)).toBeTruthy();
             await signInPage.visit();
-            await signInPage.login(judgeUser.email, judgeUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await approveOrders.navigateToPageViaNextStep();
             await approveOrders.approveOrders();
@@ -34,7 +35,7 @@ test.describe('Approve Orders', () => {
             // LA able to view the approved order
             await approveOrders.clickSignOut();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await approveOrders.tabNavigation('Orders');
             await expect(page.getByText('Confidential order uploaded by LA')).toBeVisible();
         });
@@ -43,10 +44,10 @@ test.describe('Approve Orders', () => {
     test('Judge approve a confidential order uploaded by CTSC',
         async ({ page, signInPage, approveOrders }) => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseDataByCtsc);
+            expect(await updateCase(casename, caseNumber, caseDataByCtsc)).toBeTruthy();
             await signInPage.visit();
-            await signInPage.login(judgeUser.email, judgeUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await approveOrders.navigateToPageViaNextStep();
             await approveOrders.approveOrders();
@@ -57,14 +58,14 @@ test.describe('Approve Orders', () => {
             // CTSC able to view the approved order
             await approveOrders.clickSignOut();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await approveOrders.tabNavigation('Orders');
             await expect(page.getByText('Confidential order uploaded by CTSC')).toBeVisible();
 
             // LA cannot view the approved order
             await approveOrders.clickSignOut();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await approveOrders.tabNavigation('Orders');
             await expect(page.getByText('Confidential order uploaded by CTSC')).toBeHidden();
         });
@@ -73,10 +74,10 @@ test.describe('Approve Orders', () => {
     async ({ page, signInPage, approveOrders, caseFileView }) => {
       casename = 'Review CMO (High Court) WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
-      await updateCase(casename, caseNumber, caseData);
+      expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(judgeLondonUser.email, judgeLondonUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await approveOrders.gotoNextStep('Approve orders')
       await approveOrders.approveNonUrgentDraftCMO();
 
@@ -90,7 +91,7 @@ test.describe('Approve Orders', () => {
 
         await signInPage.visit();
         await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await approveOrders.tabNavigation('Tasks');
         await approveOrders.waitForTask('Review Order (High Court)');
 

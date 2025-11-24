@@ -15,15 +15,16 @@ test.describe('Manage LAs / Transfer to court', () => {
     let caseName: string;
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('CTSC transfer to a new court and submit case @xbrowser',
         async ({ page, signInPage, manageLaTransferToCourts }) => {
             caseName = 'CTSC transfers case' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseData);
+            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateManageLaTransferToCourts();
             await manageLaTransferToCourts.tabNavigation('Summary');
@@ -37,14 +38,14 @@ test.describe('Manage LAs / Transfer to court', () => {
         async ({ page, signInPage, manageLaTransferToCourts }) => {
             caseName = 'CTSC gives access to another Local authority' + dateTime.slice(0, 10);
            if(urlConfig.env.toUpperCase() === 'DEMO'){
-               await updateCase(caseName, caseNumber, caseDataDemo);
+               expect(await updateCase(caseName, caseNumber, caseDataDemo)).toBeTruthy();
            }
            else{
-            await updateCase(caseName, caseNumber, caseData);
+            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
            }
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateCourtAccess();
@@ -58,15 +59,15 @@ test.describe('Manage LAs / Transfer to court', () => {
             caseName = 'CTSC removed access' + dateTime.slice(0, 10);
 
             if(urlConfig.env.toUpperCase() === 'DEMO'){
-                await updateCase(caseName, caseNumber, caseDataWithTwoLADemo);
+                expect(await updateCase(caseName, caseNumber, caseDataWithTwoLADemo)).toBeTruthy();
             }
             else{
-            await updateCase(caseName, caseNumber, caseDataWithTwoLA);
+            expect(await updateCase(caseName, caseNumber, caseDataWithTwoLA)).toBeTruthy();
             }
 
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateRemoveAccess();
@@ -78,14 +79,14 @@ test.describe('Manage LAs / Transfer to court', () => {
         async ({ page, signInPage, manageLaTransferToCourts }) => {
             caseName = 'CTSC transfers to another local authority' + dateTime.slice(0, 10);
             if(urlConfig.env.toUpperCase() === 'DEMO'){
-                await updateCase(caseName, caseNumber, caseDataDemo);
+                expect(await updateCase(caseName, caseNumber, caseDataDemo)).toBeTruthy();
             }
             else{
-            await updateCase(caseName, caseNumber, caseData);
+            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
             }
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await manageLaTransferToCourts.gotoNextStep('Manage LAs / Transfer to court');
             await manageLaTransferToCourts.updateTranferToLa();

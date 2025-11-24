@@ -212,31 +212,31 @@
     },
     "judicialMessages": [
       {
-        "id": "c09eb60e-facc-4af6-9761-3e23f6748673",
+        "id": "a285ed58-eb62-44a6-baea-38c67e16ebca",
         "value": {
-          "applicationType": "C2, 25 March 2021, 3:16pm",
-          "dateSent": "16 November 2023 at 4:51pm",
-          "judicialMessageReplies":[],
-          "latestMessage": "Some note",
-          "messageHistory": "FamilyPublicLaw+ctsc@gmail.com - Some note",
-          "recipient": "recipient@fpla.com",
-          "recipientType": "HEARING_JUDGE",
-          "relatedDocumentFileNames": "Test.txt",
-          "relatedDocuments": [
+          "sender": "FamilyPublicLaw+ctsc@gmail.com",
+          "status": "OPEN",
+          "toLabel": "Other Judge/Legal Adviser",
+          "urgency": "Not urgent",
+          "dateSent": "4 November 2025 at 10:38am",
+          "fromLabel": "CTSC",
+          "senderType": "CTSC",
+          "requestedBy": "Hearing urgency -reg",
+          "updatedTime": "2025-11-04T10:38:10.814408516",
+          "latestMessage": "Clarification need about the urgency of the hearing. The interpreter requested by the applicant is not yet arranged",
+          "recipientType": "OTHER",
+          "judicialMessageReplies": [
             {
-              "id": "156f8d6d-7be5-4417-9d5c-81d6dd7f6cdd",
+              "id": "88c5a28f-55a0-4714-a551-663a9e7d3034",
               "value": {
-                "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
-                "document_filename": "Test.txt",
-                "document_url": "${TEST_DOCUMENT_URL}"
+                "message": "Clarification need about the urgency of the hearing. The interpreter requested by the applicant is not yet arranged",
+                "replyTo": "Other Judge/Legal Adviser",
+                "dateSent": "4 November 2025 at 10:38am",
+                "replyFrom": "CTSC",
+                "updatedTime": "2025-11-04T10:38:10.814384839"
               }
             }
-          ],
-          "requestedBy": "Subject 1",
-          "sender": "FamilyPublicLaw+ctsc@gmail.com",
-          "senderType": "CTSC",
-          "status": "OPEN",
-          "urgency": "High"
+          ]
         }
       }
     ],
