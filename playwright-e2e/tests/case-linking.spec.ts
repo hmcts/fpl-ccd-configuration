@@ -13,8 +13,7 @@ test.describe.skip('Manage case linking', () => {
     let casename: string;
     let linkedCase1: string;
     let linkedCase2: string;
-    //let linkedCase3: string;
-    //let updatedlinkedCase: string;
+
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
         expect(caseNumber).toBeDefined();
