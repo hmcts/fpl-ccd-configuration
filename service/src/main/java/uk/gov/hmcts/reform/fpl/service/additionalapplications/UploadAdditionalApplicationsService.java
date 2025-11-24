@@ -6,9 +6,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -23,7 +26,9 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
+import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -34,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +60,10 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -72,6 +82,8 @@ public class UploadAdditionalApplicationsService {
     private final DocumentSealingService documentSealingService;
     private final DocumentConversionService documentConversionService;
     private final PbaService pbaService;
+    private final JudicialService judicialService;
+    private final RoleAssignmentService roleAssignmentService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -334,6 +346,31 @@ public class UploadAdditionalApplicationsService {
 
         return data;
     }
+
+    public JudicialMessageRoleType getAllocatedJudgeOrLegalAdviserType(CaseData caseData) {
+        Optional<Judge> allocatedJudgeLegalAdviser = judicialService.getAllocatedJudge(caseData);
+
+        if (allocatedJudgeLegalAdviser.isEmpty()) {
+            throw new UserLookupException(
+                String.format("No allocated judge or legal adviser found for case id: %s",
+                    caseData.getId()));
+        } else {
+            String actorId = allocatedJudgeLegalAdviser.get().getJudgeJudicialUser().getIdamId();
+            Set<String> roleTypes = roleAssignmentService.getJudicialCaseRolesForUserAtTime(actorId, caseData.getId(),
+                ZonedDateTime.now());
+
+            if (roleTypes.contains(ALLOCATED_JUDGE.getRoleName())) {
+                return JudicialMessageRoleType.ALLOCATED_JUDGE;
+            } else if (roleTypes.contains(ALLOCATED_LEGAL_ADVISER.getRoleName())) {
+                return JudicialMessageRoleType.OTHER;
+            } else {
+                throw new UserLookupException(
+                    String.format("No allocated judge or legal adviser found for case id: %s",
+                        caseData.getId()));
+            }
+        }
+    }
+
 
     public PBAPayment updatePBAPayment(PBAPayment pbaPayment, boolean isCTSCUser) {
         if (pbaPayment != null && !NO.getValue().equals(pbaPayment.getUsePbaPayment())) {

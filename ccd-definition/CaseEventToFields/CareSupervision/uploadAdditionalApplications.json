@@ -207,5 +207,19 @@
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "latestRoleSent",
+    "PageFieldDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 6,
+    "DisplayContext": "MANDATORY",
+    "PageID": 5,
+    "ShowSummaryChangeOption": "N",
+    "Publish": "Y",
+    "FieldShowCondition": "c2Type=\"DO_NOT_SHOW\""
   }
 ]

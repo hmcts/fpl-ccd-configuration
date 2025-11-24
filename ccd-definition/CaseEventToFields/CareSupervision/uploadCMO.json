@@ -595,5 +595,19 @@
     "DisplayContext": "COMPLEX",
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "cmoUploadType=\"AGREED\" OR hearingOrderDraftKind CONTAINS \"C21\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "latestRoleSent",
+    "PageFieldDisplayOrder": 31,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 7,
+    "DisplayContext": "MANDATORY",
+    "PageID": "Review",
+    "ShowSummaryChangeOption": "N",
+    "Publish": "Y",
+    "FieldShowCondition": "cmoUploadType = \"DO_NOT_SHOW\""
   }
 ]
