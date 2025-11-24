@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -83,6 +84,7 @@ class HearingOrderGeneratorTest {
         CaseData caseData = CaseData.builder()
             .court(court)
             .reviewCMODecision(reviewDecision)
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().judgeTitleAndName("test").build())
             .build();
 
         when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
@@ -119,6 +121,7 @@ class HearingOrderGeneratorTest {
         CaseData caseData = CaseData.builder()
             .court(court)
             .reviewCMODecision(reviewDecision)
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().judgeTitleAndName("test").build())
             .build();
         when(documentSealingService.sealDocument(amendedOrder, court, SealType.ENGLISH)).thenReturn(sealedOrder);
         when(docmosisApprovedOrderCoverSheetService.addCoverSheetToApprovedOrder(caseData, sealedOrder))
@@ -185,5 +188,90 @@ class HearingOrderGeneratorTest {
 
         assertThat(actual).isEqualTo(element(ORDER_ID, hearingOrder.toBuilder()
             .status(CMOStatus.RETURNED).requestedChanges(changesRequested).build()));
+    }
+
+    @Test
+    void shouldSkipAddingCoverSheetIfJudgeTitleAneNameNotFound() {
+        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
+        String othersNotified = "John Smith";
+        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
+        Court court = Court.builder().build();
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
+
+        CaseData caseData = CaseData.builder()
+            .court(court)
+            .reviewCMODecision(reviewDecision)
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .build();
+
+        when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
+
+        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
+            .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
+            .othersNotified(othersNotified)
+            .others(selectedOthers)
+            .order(sealedOrder).lastUploadedOrder(order).build());
+
+        Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
+            caseData,
+            reviewDecision,
+            element(ORDER_ID, hearingOrder),
+            selectedOthers,
+            othersNotified,
+            true);
+
+        assertThat(actual).isEqualTo(expectedOrder);
+    }
+
+    @Test
+    void shouldSkipAddingCoverSheetIfReviewDraftOrdersDataIsNull() {
+        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
+        String othersNotified = "John Smith";
+        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
+        Court court = Court.builder().build();
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
+
+        CaseData caseData = CaseData.builder()
+            .court(court)
+            .reviewCMODecision(reviewDecision)
+            .build();
+
+        when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
+
+        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
+            .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
+            .othersNotified(othersNotified)
+            .others(selectedOthers)
+            .order(sealedOrder).lastUploadedOrder(order).build());
+
+        Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
+            caseData,
+            reviewDecision,
+            element(ORDER_ID, hearingOrder),
+            selectedOthers,
+            othersNotified,
+            true);
+
+        assertThat(actual).isEqualTo(expectedOrder);
+    }
+
+    @Test
+    void shouldNotAddCoverSheetIfJudgeTitleAndNameIsEmptyOrNull() {
+        assertThat(underTest.addCoverSheet(CaseData.builder()
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .build(), order))
+            .isEqualTo(order);
+
+        assertThat(underTest.addCoverSheet(CaseData.builder()
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .build(), order))
+            .isEqualTo(order);
+
+        assertThat(underTest.addCoverSheet(CaseData.builder()
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().judgeTitleAndName("").build())
+            .build(), order))
+            .isEqualTo(order);
     }
 }
