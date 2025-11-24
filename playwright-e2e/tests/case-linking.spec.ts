@@ -13,15 +13,18 @@ test.describe.skip('Manage case linking', () => {
     let casename: string;
     let linkedCase1: string;
     let linkedCase2: string;
-    let linkedCase3: string;
-    let updatedlinkedCase: string;
+    
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
         linkedCase1 = await createCase('linkedCase1', newSwanseaLocalAuthorityUserOne);
+        expect(linkedCase1).toBeDefined();
         linkedCase2 = await createCase('linkedCase2', newSwanseaLocalAuthorityUserOne);
+        expect(linkedCase2).toBeDefined();
         //  linkedCase3  = await createCase('linkedCase3',newSwanseaLocalAuthorityUserOne);
-        await updateCase('linkedCase1', linkedCase1, caseData);
-        await updateCase('linkedCase2', linkedCase2, caseData);
+        expect(await updateCase('linkedCase1', linkedCase1, caseData)).toBeTruthy();
+
+        expect(await updateCase('linkedCase2', linkedCase2, caseData)).toBeTruthy();
         //  await updateCase('linkedCase3',linkedCase3,caseData);
     });
 
@@ -30,7 +33,7 @@ test.describe.skip('Manage case linking', () => {
             test.slow();
 
             casename = 'CTSC admin link cases ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseData);
+            expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);

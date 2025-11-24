@@ -583,6 +583,27 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionLAShared",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "QueryManagementComponentLauncher",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "latestQueryID",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoDraftInReviewHeading",
     "UserRole": "[LASHARED]",
     "CRUD": "R"

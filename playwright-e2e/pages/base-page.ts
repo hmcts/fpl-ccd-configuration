@@ -1,4 +1,4 @@
-import {expect, type Locator, type Page} from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 
 export class BasePage {
   readonly nextStep: Locator;
@@ -14,6 +14,10 @@ export class BasePage {
   readonly postCode: Locator;
   readonly findAddress: Locator;
   readonly rateLimit: Locator;
+  readonly year: Locator;
+  readonly month: Locator;
+  readonly day: Locator;
+  private dateOfHearing: Locator;
   readonly startButton: Locator;
 
 
@@ -31,20 +35,24 @@ export class BasePage {
     this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
     this.findAddress = page.getByRole('button', { name: 'Find address' });
     this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
+    this.day = page.getByLabel('Day');
+    this.month = this.page.getByLabel('Month');
+    this.year = this.page.getByLabel(' Year ');
+    this.dateOfHearing =  this.page.getByRole('group', { name: 'What is the date of the' });
     this.startButton = page.getByRole('button', { name: 'Start' });
   }
 
   async gotoNextStep(eventName: string) {
       await expect(async () => {
-          await this.page.reload();
+          await this.page.reload({waitUntil: 'domcontentloaded'});
           await this.nextStep.selectOption(eventName);
-          await this.goButton.click({clickCount:2,delay:300});
-          await expect(this.page.getByRole('button', { name: 'Previous' })).toBeDisabled();
+          await this.goButton.click();
+          await expect(this.page.getByRole('button', { name: 'Previous',exact:true })).toBeVisible();
       }).toPass();
   }
 
   async expectAllUploadsCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
         await expect(locs[i]).toBeDisabled();
     }
@@ -147,10 +155,10 @@ export class BasePage {
   }
 
   getCurrentDate():string {
-    let date = new Date();
-    let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
-    let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
-    let day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
+    const date = new Date();
+    const year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
+    const month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
+    const day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
       return `${day} ${month} ${year}`;
     }
 
@@ -165,5 +173,12 @@ export class BasePage {
       await page.getByRole('textbox', {name: 'Hour'}).fill(hour);
       await page.locator('#hearingStartDate-minute').fill(min);
       await page.getByRole('textbox', {name: 'Second'}).fill(sec);
+    }
+    async enterDate(date: Date){
+      await this.dateOfHearing.getByText('Day').fill(date.getDay().toString());
+        await this.dateOfHearing.getByText('Month').fill(date.getMonth().toString());
+        await this.dateOfHearing.getByText('Year').fill(date.getFullYear().toString())
+
+
     }
 }
