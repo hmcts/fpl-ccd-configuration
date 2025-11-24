@@ -4,7 +4,6 @@ import caseData from '../caseData/caseWithHearingDetails.json' assert {type: 'js
 import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert {type: 'json'};
 import { expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
-import config from "../settings/test-docs/config";
 
 test.describe('manage orders', () => {
     const dateTime = new Date().toISOString();
@@ -369,7 +368,7 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
         await expect.soft(page.getByText('Transparency Order', { exact: true })).toBeVisible();
 
-        await orders.ctscUploadsTransparencyOrder();
+        await orders.uploadsTransparencyOrder();
 
         await orders.clickContinue();
         await orders.clickContinue();
@@ -395,7 +394,7 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
         await expect.soft(page.getByText('Transparency Order', { exact: true })).toBeVisible();
 
-        await orders.judgeUploadsTransparencyOrder();
+        await orders.uploadsTransparencyOrder();
 
         await orders.clickContinue();
         await orders.clickContinue();
@@ -419,7 +418,7 @@ test.describe('manage orders', () => {
         await orders.selectOrder('Family assistance order (C42)');
         await orders.clickContinue();
 
-        await orders.ctscFamilyAssistanceOrder();
+        await orders.familyAssistanceOrder();
         await orders.clickContinue();
 
         await orders.clickContinue();
@@ -442,7 +441,7 @@ test.describe('manage orders', () => {
         await orders.selectOrder('Family assistance order (C42)');
         await orders.clickContinue();
 
-        await orders.judgeUploadsFamilyAssistanceOrder();
+        await orders.familyAssistanceOrder();
         await orders.clickContinue();
 
         await orders.clickContinue();
@@ -467,7 +466,7 @@ test.describe('manage orders', () => {
         await orders.selectOrder('Interim care order (C33)');
         await orders.clickContinue();
 
-        await orders.ctscUploadsInterimCareOrder();
+        await orders.uploadsInterimCareOrder();
         await orders.clickContinue();
 
         await orders.clickContinue();
@@ -492,7 +491,7 @@ test.describe('manage orders', () => {
         await orders.selectOrder('Interim care order (C33)');
         await orders.clickContinue();
 
-        await orders.judgeUploadsInterimCareOrder();
+        await orders.uploadsInterimCareOrder();
         await orders.clickContinue();
 
         await orders.clickContinue();
@@ -686,5 +685,53 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c43a_special_guardianship_order.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('CTSC uploads Contact with a child in care order (C34A) ', async ({ page, signInPage, orders }) => {
+        caseName = 'uploads Contact with a child in care order (C34A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithOrderData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Contact with a child in care order (C34A)');
+        await orders.clickContinue();
+
+        await orders.uploadsContactWithChildInCareOrder();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: ' c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeVisible();
+
+        })
+
+    test('Judge uploads Contact with a child in care order (C34A) ', async ({ page, signInPage, orders }) => {
+        caseName = 'uploads Contact with a child in care order (C34A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseWithOrderData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Contact with a child in care order (C34A)');
+        await orders.clickContinue();
+
+        await orders.uploadsContactWithChildInCareOrder();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: ' c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeVisible();
     });
 })

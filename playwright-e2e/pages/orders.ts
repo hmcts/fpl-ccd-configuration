@@ -71,6 +71,10 @@ export class Orders extends BasePage {
     readonly parentalResponsibilty: Locator;
     readonly relationToChild: Locator;
     readonly specialGuardianOne: Locator;
+    readonly firstPartyAllowedContact: Locator;
+    readonly secondPartyAllowedContact: Locator;
+    readonly thirdPartyAllowedContact: Locator;
+    readonly conditionsOfContact: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -142,6 +146,10 @@ export class Orders extends BasePage {
         this.parentalResponsibilty = page.getByRole('textbox', { name: 'Who\'s been given parental' });
         this.relationToChild = page.getByRole('radio', { name: 'Father' });
         this.specialGuardianOne = page.getByRole('group', { name: 'Person 1 (Optional)' });
+        this.firstPartyAllowedContact = page.getByLabel('1st party allowed contact');
+        this.secondPartyAllowedContact = page.getByLabel('2nd party allowed contact (Optional)');
+        this.thirdPartyAllowedContact = page.getByLabel('3rd party allowed contact (Optional)');
+        this.conditionsOfContact = page.getByLabel('Conditions of contact');
 
     }
 
@@ -301,7 +309,7 @@ export class Orders extends BasePage {
         await this.waitForAllUploadsToBeCompleted();
     }
 
-    async ctscUploadsTransparencyOrder() {
+    async uploadsTransparencyOrder() {
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
         await this.orderConsent.getByLabel('Yes').check();
@@ -315,22 +323,7 @@ export class Orders extends BasePage {
         await this.permissionReport.getByLabel('Year').fill('2031');
     }
 
-    async judgeUploadsTransparencyOrder() {
-        await this.issuingJudge.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.orderConsent.getByLabel('Yes').check();
-        await this.finalOrder.getByLabel('No').check();
-        await this.dateChosen.check();
-        await this.endDate.getByLabel('Day').fill('11');
-        await this.endDate.getByLabel('Month').fill('07');
-        await this.endDate.getByLabel('Year').fill('2030');
-        await this.permissionReport.getByLabel('Day').fill('10');
-        await this.permissionReport.getByLabel('Month').fill('08');
-        await this.permissionReport.getByLabel('Year').fill('2020');
-
-    }
-
-    async ctscFamilyAssistanceOrder() {
+    async familyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
@@ -346,27 +339,10 @@ export class Orders extends BasePage {
         await this.orderConsent.getByLabel('Yes').click(); // checkbox not clicking had to work around it
         await this.futherDirections.fill('test');
         await this.finalOrder.getByLabel('No').check();
+
     }
 
-    async judgeUploadsFamilyAssistanceOrder() {
-        await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
-        await this.issuingJudge.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.isAllChildrenInvolved.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.firstFamilyBefriended.selectOption('John Black');
-        await this.secondFamilyBefriended.selectOption('Sarah Black');
-        await this.thirdFamilyBefriended.selectOption('Joe Bloggs');
-        await this.day.fill('07');
-        await this.month.fill('08');
-        await this.year.fill('2025');
-        await this.orderConsent.getByLabel('Yes').click();
-        await this.orderConsent.getByLabel('Yes').click();
-        await this.futherDirections.fill('test');
-        await this.finalOrder.getByLabel('No').check();
-    }
-
-    async ctscUploadsInterimCareOrder() {
+    async uploadsInterimCareOrder() {
         await this.orderApproved.getByLabel('No').check();
         await this.applicationOrder.getByLabel('No').check();
         await this.clickContinue();
@@ -375,18 +351,6 @@ export class Orders extends BasePage {
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.radioNoButton.click();
-        await this.endOfProceedings.check();
-    }
-
-    async judgeUploadsInterimCareOrder() {
-        await this.orderApproved.getByLabel('No').check();
-        await this.applicationOrder.getByLabel('No').check();
-        await this.clickContinue();
-        await this.issuingJudge.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.isAllChildrenInvolved.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.radioNoButton.check();
         await this.endOfProceedings.check();
     }
 
@@ -487,5 +451,24 @@ export class Orders extends BasePage {
         await this.specialGuardianOne.getByRole('checkbox', { name: 'Yes' }).click()
         await this.finalOrder.getByLabel('No').check();
         await this.clickContinue();
+
+    }
+
+    async uploadsContactWithChildInCareOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.finalOrder.getByText('No').click();
+        await this.firstPartyAllowedContact.selectOption('Joe Bloggs');
+        await this.secondPartyAllowedContact.selectOption('Joe Bloggs');
+        await this.thirdPartyAllowedContact.selectOption('-- Respondent --');
+        await this.conditionsOfContact.fill('test');
+        await this.clickContinue();
+
     }
 }
