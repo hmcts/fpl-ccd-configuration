@@ -72,6 +72,8 @@ export class Orders extends BasePage {
     readonly parentalResponsibilty: Locator;
     readonly relationToChild: Locator;
     readonly specialGuardianOne: Locator;
+    readonly partyGrantedLeave: Locator;
+    readonly newSurname: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -145,6 +147,8 @@ export class Orders extends BasePage {
         this.parentalResponsibilty = page.getByRole('textbox', { name: 'Who\'s been given parental' });
         this.relationToChild = page.getByRole('radio', { name: 'Father' });
         this.specialGuardianOne = page.getByRole('group', { name: 'Person 1 (Optional)' });
+        this.partyGrantedLeave = page.getByRole('textbox', { name: 'Party granted leave' });
+        this.newSurname = page.getByRole('textbox', { name: 'Child/Children\'s new surname' });
 
     }
 
@@ -505,5 +509,20 @@ export class Orders extends BasePage {
         await this.specialGuardianOne.getByRole('checkbox', { name: 'Yes' }).click()
         await this.finalOrder.getByLabel('No').check();
         await this.clickContinue();
+
+    }
+
+    async uploadsLeaveToChangeSurname() {
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.finalOrder.getByLabel('No').check();
+        await this.partyGrantedLeave.fill('Jason');
+        await this.newSurname.fill('Fredrick');
+        await this.clickContinue();
     }
 }
+
