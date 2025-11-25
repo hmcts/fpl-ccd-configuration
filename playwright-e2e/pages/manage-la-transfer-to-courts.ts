@@ -36,14 +36,6 @@ export class ManageLaTransferToCourts extends BasePage {
     public async selectLAAction(action:string){
   await this.localAuthorityAction.getByText(action).click();
     }
-    // public async toTransferAnotherCourt() {
-    //     await expect(this.manageLaTransferToCourts).toBeVisible();
-    //     await this.transferAnotherCourt.click();
-    //
-    //
-    //     await this.clickContinue();
-    //     await this.checkYourAnsAndSubmit();
-    // }
     public async selectCourt(courtName:string) {
         await this.selectNewCourt.selectOption(courtName);
     }
