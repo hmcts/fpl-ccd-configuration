@@ -15,13 +15,14 @@ export class JudicialMessage extends BasePage {
     readonly documentType: Locator;
     readonly whichDocument: Locator;
     readonly closureNote: Locator;
+    readonly radio: Locator;
 
     constructor(page: Page) {
         super(page);
         this.whichApplication = page.getByLabel('Which application?');
         this.recipient = page.getByLabel('Recipient', {exact: true}).locator('visible=true');
         this.subject = page.getByLabel('Message subject');
-        this.urgency = page.getByLabel('Urgency (Optional)');
+        this.urgency = page.getByText('Is this urgent? (is there any');
         this.recipientEmail = page.getByLabel('Recipient\'s email address');
         this.message = page.getByLabel('Message', {exact: true});
         this.messageToReply = page.getByLabel('Your messages');
@@ -30,6 +31,7 @@ export class JudicialMessage extends BasePage {
         this.documentType = page.getByLabel('Document type');
         this.whichDocument = page.getByLabel('Which document?');
         this.closureNote = page.getByRole('textbox', {name: 'Add closure note (Optional)'});
+        this.radio = page.getByRole('radio', { name: 'Yes' });
     }
 
     async sendMessageToAllocatedJudgeWithApplication() {
@@ -39,7 +41,7 @@ export class JudicialMessage extends BasePage {
         await this.clickContinue();
         await this.recipient.selectOption('Other Judge/Legal Adviser');
         await this.subject.fill('To the allocated judge - Regard Hearing');
-        await this.urgency.fill('Urgent');
+        await this.urgency.click();
         await this.message.fill('Allocated judge to decide on the hearing.');
         await this.clickContinue();
     }
@@ -52,7 +54,7 @@ export class JudicialMessage extends BasePage {
         await this.clickContinue();
         await this.recipient.selectOption('Other Judge/Legal Adviser');
         await this.subject.fill('To legal adviser - Regard Hearing assistance');
-        await this.urgency.fill('Urgent');
+        await this.urgency.click();
         await this.message.fill('Hearing needs assistance from legal adviser.');
         await this.clickContinue();
     }
@@ -60,6 +62,7 @@ export class JudicialMessage extends BasePage {
     async judgeReplyMessage() {
         await this.messageToReply.selectOption('Hearing urgency -reg, 4 November 2025 at 10:38am, Not urgent');
         await this.clickContinue();
+        await this.radio.click();
         await this.haveToReply.getByLabel('Yes').check();
         await this.reply.fill('Reply CTSC admin about the hearing.');
         await this.clickContinue();

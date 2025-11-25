@@ -73,6 +73,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.service.MessageJudgeService.SAME_DAY_URGENCY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -307,6 +308,7 @@ class SendNewMessageJudgeServiceTest {
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
                     .recipientDynamicList(buildRecipientList(
                         List.of(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())))
+                    .isJudicialMessageUrgent(YesNo.NO)
                     .build()),
                 entry("isSendingEmailsInCourt", YesNo.YES),
                 entry("documentTypesDynamicList",
@@ -326,6 +328,7 @@ class SendNewMessageJudgeServiceTest {
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
                     .recipientDynamicList(buildRecipientList(
                         List.of(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString())))
+                    .isJudicialMessageUrgent(YesNo.NO)
                     .build()),
                 entry("isSendingEmailsInCourt", YesNo.YES),
                 entry("documentTypesDynamicList",
@@ -383,7 +386,7 @@ class SendNewMessageJudgeServiceTest {
                     "Allocated Judge - District Judge Smith (%s)".formatted(MESSAGE_RECIPIENT)))
                 .build()
             )
-            .urgency("High urgency")
+            .isJudicialMessageUrgent(YesNo.YES)
             .build();
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
@@ -411,7 +414,8 @@ class SendNewMessageJudgeServiceTest {
             .recipientType(JudicialMessageRoleType.ALLOCATED_JUDGE)
             .toLabel("Allocated Judge/Legal Adviser (%s)".formatted(MESSAGE_RECIPIENT))
             .subject(MESSAGE_REQUESTED_BY)
-            .urgency("High urgency")
+            .urgency(SAME_DAY_URGENCY)
+            .isJudicialMessageUrgent(YesNo.YES)
             .judicialMessageReplies(List.of(element(updatedMessages.get(0).getValue()
                     .getJudicialMessageReplies().get(0).getId(),
                 JudicialMessageReply.builder()
@@ -887,6 +891,17 @@ class SendNewMessageJudgeServiceTest {
         List<String> expectedError = List.of("No documents available of type: Skeleton arguments");
 
         assertThat(sendNewMessageJudgeService.validateDynamicLists(caseData)).isEqualTo(expectedError);
+    }
+
+    @Test
+    void shouldPopulateMessageUrgency() {
+        MessageJudgeEventData eventData = (MessageJudgeEventData.builder()
+            .judicialMessageMetaData(JudicialMessageMetaData.builder()
+                .isJudicialMessageUrgent(YesNo.YES)
+                .build())
+            .build());
+        assertThat(sendNewMessageJudgeService.getMessageUrgency(eventData.getJudicialMessageMetaData()))
+            .isEqualTo(SAME_DAY_URGENCY);
     }
 
     private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime, JudicialMessageStatus status) {

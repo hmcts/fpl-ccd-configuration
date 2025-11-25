@@ -52,7 +52,7 @@ export class BasePage {
   }
 
   async expectAllUploadsCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
         await expect(locs[i]).toBeDisabled();
     }
@@ -155,10 +155,10 @@ export class BasePage {
   }
 
   getCurrentDate():string {
-    let date = new Date();
-    let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
-    let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
-    let day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
+    const date = new Date();
+    const year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
+    const month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
+    const day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
       return `${day} ${month} ${year}`;
     }
 
@@ -175,10 +175,32 @@ export class BasePage {
       await page.getByRole('textbox', {name: 'Second'}).fill(sec);
     }
     async enterDate(date: Date){
-      await this.dateOfHearing.getByText('Day').fill(date.getDay().toString());
+        await this.dateOfHearing.getByText('Day').fill(date.getDay().toString());
         await this.dateOfHearing.getByText('Month').fill(date.getMonth().toString());
         await this.dateOfHearing.getByText('Year').fill(date.getFullYear().toString())
 
 
     }
+
+    async getCellValueInTable(tableName: string, cellHeading: string): Promise<string> {
+        const table = this.page.getByRole('table', { name: tableName });
+        let cellValue = '';
+
+        try {
+            const rows = await table.locator('tr').all();
+            for (const row of rows) {
+                const heading = await row.locator('th').textContent() || '';
+                if (heading === cellHeading) {
+                    cellValue = await row.locator('td').textContent() || '';
+                    break;
+                }
+            }
+
+            return cellValue;
+        } catch (error) {
+            console.error(`Error getting table value: ${error}`);
+            throw new Error(`Failed to get value for heading "${cellHeading}" in table "${tableName}"`);
+        }
+    }
 }
+

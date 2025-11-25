@@ -79,6 +79,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
             .recipientDynamicList(buildRecipientDynamicList(
                 caseData, senderRole, Optional.of(selectedJudicialMessage.getSenderType().toString())))
             .urgency(selectedJudicialMessage.getUrgency())
+            .isJudicialMessageUrgent(NO) // default to no
             .judicialMessageReplies(!isEmpty(selectedJudicialMessage.getJudicialMessageReplies())
                     ? selectedJudicialMessage.getJudicialMessageReplies() : List.of())
             .messageHistory(!isEmpty(selectedJudicialMessage.getMessageHistory())
@@ -182,7 +183,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
                         .toLabel(toLabel)
                         .recipientDynamicList(null)
                         .judicialMessageReplies(buildMessageReplyList(judicialMessageReply.getLatestMessage(),
-                            judicialMessage, fromLabel, toLabel))
+                            judicialMessage, fromLabel, toLabel, getMessageUrgency(judicialMessageReply)))
                         .messageHistory(judicialMessage.getMessageHistory())
                         .closureNote(judicialMessageReply.getClosureNote())
                         .latestMessage(judicialMessageReply.getLatestMessage())
@@ -196,11 +197,16 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
     }
 
     private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, JudicialMessage message,
-                                                                      String from, String to) {
-        return buildMessageReplies(latestMessage, Optional.of(message), from, to);
+                                                                      String from, String to, String urgency) {
+        return buildMessageReplies(latestMessage, Optional.of(message), from, to, urgency);
     }
 
     private DynamicList rebuildJudicialMessageDynamicList(CaseData caseData, UUID selectedC2Id) {
         return caseData.buildJudicialMessageDynamicList(selectedC2Id);
+    }
+
+    @Override
+    public boolean isMessageUrgent(CaseData caseData) {
+        return YES.equals(caseData.getMessageJudgeEventData().getJudicialMessageReply().getIsJudicialMessageUrgent());
     }
 }
