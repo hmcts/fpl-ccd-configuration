@@ -72,6 +72,12 @@ export class Orders extends BasePage {
     readonly parentalResponsibilty: Locator;
     readonly relationToChild: Locator;
     readonly specialGuardianOne: Locator;
+    firstPartyAllowedContact: Locator;
+    secondPartyAllowedContact: Locator;
+    thirdPartyAllowedContact: Locator;
+    conditionsOfContact: Locator;
+    partyGrantedLeave: Locator;
+    newSurname: Locator;
 
 
     constructor(page: Page) {
