@@ -1,11 +1,25 @@
-import AxeBuilder from "@axe-core/playwright";
+
 import { TestInfo, Page } from "@playwright/test";
+import { AxeResults } from "axe-core";
+import {createHtmlReport} from "axe-html-reporter"
 
-export async function runA11yCheck(page: Page, testInfo: TestInfo, label: string) {
-    const results = await new AxeBuilder({ page }).analyze();
+export async function a11yHTMLReport(axeScanResult: AxeResults, testInfo: TestInfo, label: string) {
 
-    await testInfo.attach(`a11y-${label}`, {
-        body: JSON.stringify(results, null, 2),
-        contentType: 'application/json'
+        createHtmlReport({
+            results: axeScanResult,
+            options: {
+                outputDir: '../test-results/functionalTest',
+                reportFileName: `axe-report-${label.replace(/\s+/g, '_')}.html`,
+            },
+        });
+    const violationCount = axeScanResult.violations.length;
+    if (violationCount > 0) {
+        console.error(`[A11Y WARNING]: Found ${violationCount} accessibility violations.`);
+
+    }
+    await testInfo.attach(label, {
+        path: `../test-results/functionalTest/axe-report-${label.replace(/\s+/g, '_')}.html`,
     });
+
 }
+
