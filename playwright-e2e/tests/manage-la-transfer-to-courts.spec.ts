@@ -149,7 +149,7 @@ test.describe('Manage LAs / Transfer to court', () => {
             });
         });
 
-    test.only('CTSC tranfers to another local authority @xbrowser',
+    test('CTSC tranfers to another local authority @xbrowser',
         async ({ page, signInPage, manageLaTransferToCourts,makeAxeBuilder }, testInfo) => {
 
         await test.step('Update Case Data', async () => {
