@@ -74,8 +74,9 @@
     "ID": "JudicialMessageMetaData",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
-    "ListElementCode": "urgency",
+    "ListElementCode": "isJudicialMessageUrgent",
+    "EventElementLabel": "Is this urgent? (is there any action that needs to be taken within 24 hours?)",
     "FieldDisplayOrder": 7,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   }
 ]

@@ -153,8 +153,19 @@
     "ID": "JudicialMessageReply",
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
-    "ListElementCode": "latestMessage",
+    "ListElementCode": "isJudicialMessageUrgent",
+    "EventElementLabel": "Is this urgent? (is there any action that needs to be taken within 24 hours?)",
     "FieldDisplayOrder": 14,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "latestMessage",
+    "FieldDisplayOrder": 15,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Reply",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
@@ -166,7 +177,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "closureNote",
     "EventElementLabel": "Add closure note",
-    "FieldDisplayOrder": 15,
+    "FieldDisplayOrder": 16,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"No\""
   },
@@ -177,7 +188,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "closeMessageLabel",
     "EventElementLabel": "This message will now be marked as closed",
-    "FieldDisplayOrder": 16,
+    "FieldDisplayOrder": 17,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"No\""
   }
