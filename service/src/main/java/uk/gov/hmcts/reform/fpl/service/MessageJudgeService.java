@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -37,6 +39,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 public abstract class MessageJudgeService {
+    public static final String SAME_DAY_URGENCY = "Same Day";
+
     @Autowired
     protected Time time;
 
@@ -75,7 +79,7 @@ public abstract class MessageJudgeService {
     public List<Element<JudicialMessageReply>> sortedJudicialMessageReplies(
         List<Element<JudicialMessageReply>> judicialMessageReplies) {
         judicialMessageReplies.sort(Comparator.comparing(judicialMessageReplyElement
-            -> judicialMessageReplyElement.getValue().getUpdatedTime(),
+                -> judicialMessageReplyElement.getValue().getUpdatedTime(),
             Comparator.nullsLast(Comparator.reverseOrder())));
 
         return judicialMessageReplies;
@@ -105,12 +109,21 @@ public abstract class MessageJudgeService {
                                                                       Optional<JudicialMessage> message,
                                                                       String from,
                                                                       String to) {
+        return buildMessageReplies(latestMessage, message, from, to, null);
+    }
+
+    protected List<Element<JudicialMessageReply>> buildMessageReplies(String latestMessage,
+                                                                      Optional<JudicialMessage> message,
+                                                                      String from,
+                                                                      String to,
+                                                                      String urgency) {
         JudicialMessageReply messageReply = JudicialMessageReply.builder()
             .message(latestMessage)
             .replyFrom(from)
             .replyTo(to)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .updatedTime(time.now())
+            .urgency(urgency)
             .build();
 
         //If this is a new message there will be no replies
@@ -238,4 +251,11 @@ public abstract class MessageJudgeService {
             judge.getJudgeEmailAddress()
         );
     }
+
+    protected String getMessageUrgency(JudicialMessageMetaData metaData) {
+        return YesNo.YES.equals(metaData.getIsJudicialMessageUrgent())
+            ? SAME_DAY_URGENCY : null;
+    }
+
+    public abstract boolean isMessageUrgent(CaseData caseData);
 }

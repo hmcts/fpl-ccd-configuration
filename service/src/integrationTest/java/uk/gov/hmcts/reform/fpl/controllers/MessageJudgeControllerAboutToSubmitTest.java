@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.service.MessageJudgeService.SAME_DAY_URGENCY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -55,6 +58,9 @@ class MessageJudgeControllerAboutToSubmitTest extends MessageJudgeControllerAbst
     @MockBean
     private RoleAssignmentService roleAssignmentService;
 
+    @MockBean
+    private WorkAllocationTaskService workAllocationTaskService;
+
     @Test
     void shouldAddNewJudicialMessageAndSortIntoExistingJudicialMessageList() {
         when(userService.getOrgRoles()).thenReturn(Set.of(OrganisationalRole.LOCAL_COURT_ADMIN));
@@ -67,7 +73,8 @@ class MessageJudgeControllerAboutToSubmitTest extends MessageJudgeControllerAbst
             .relatedDocumentsLabel("related documents")
             .judicialMessageNote(MESSAGE)
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
-                .urgency("High urgency")
+                .urgency(SAME_DAY_URGENCY)
+                .isJudicialMessageUrgent(YesNo.YES)
                 .recipientDynamicList(buildRecipientDynamicListNoJudges().toBuilder()
                     .value(DynamicListElement.builder()
                         .code(RECIPIENT_TYPE.toString())
@@ -110,7 +117,8 @@ class MessageJudgeControllerAboutToSubmitTest extends MessageJudgeControllerAbst
                     .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
                     .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
                 .build())))
-            .urgency("High urgency")
+            .urgency(SAME_DAY_URGENCY)
+            .isJudicialMessageUrgent(YesNo.YES)
             .build();
 
         assertThat(responseCaseData.getJudicialMessages().get(0).getValue()).isEqualTo(expectedJudicialMessage);
