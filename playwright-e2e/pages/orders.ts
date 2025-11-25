@@ -503,12 +503,6 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.orderConsent.getByLabel('Yes').check();
         await this.finalOrder.getByText('No').click();
-        await this.firstPartyAllowedContact.selectOption('Joe Bloggs');
-        await this.secondPartyAllowedContact.selectOption('Joe Bloggs');
-        await this.thirdPartyAllowedContact.selectOption('-- Respondent --');
-        await this.conditionsOfContact.fill('test');
-        await this.clickContinue();
-        await this.finalOrder.getByLabel('No').check();
         await this.partyGrantedLeave.fill('Jason');
         await this.newSurname.fill('Fredrick');
         await this.clickContinue();
