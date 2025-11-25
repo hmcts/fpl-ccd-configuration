@@ -474,6 +474,20 @@ export class Orders extends BasePage {
     async uploadsContactWithChildInCareOrder() {
         await this.clickContinue();
         await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.finalOrder.getByText('No').click();
+        await this.firstPartyAllowedContact.selectOption('Joe Bloggs');
+        await this.secondPartyAllowedContact.selectOption('Joe Bloggs');
+        await this.thirdPartyAllowedContact.selectOption('-- Respondent --');
+        await this.conditionsOfContact.fill('test');
+        await this.clickContinue();
+
+    }
 
     async uploadsLeaveToChangeSurname() {
         await this.clickContinue();
