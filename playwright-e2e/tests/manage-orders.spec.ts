@@ -776,7 +776,7 @@ test.describe('manage orders', () => {
         caseName = 'Contact with a child in care order (C34A)' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
-        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.login(judgeUser.email, judgeUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
         await orders.gotoNextStep('Manage orders');
 
