@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -150,6 +151,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAb
                     .build())
         ))
             .latestMessage("")
+            .isJudicialMessageUrgent(YesNo.NO)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
