@@ -355,7 +355,7 @@ test.describe('manage orders', () => {
 
     })
 
-    test('CTSC uploads Authority to refuse contact with a child in care (C34B)', async ({ signInPage, orders ,page }) => {
+    test('CTSC uploads Authority to refuse contact with a child in care (C34B)', async ({ signInPage, orders, page }) => {
         caseName = 'Authority to refuse contact with a child in care (C34B)' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
@@ -376,7 +376,7 @@ test.describe('manage orders', () => {
         await orders.clickSaveAndContinue();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'c34b_authority_to_refuse_contact.pdf'})).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c34b_authority_to_refuse_contact.pdf' })).toBeVisible();
 
     })
 
@@ -432,7 +432,7 @@ test.describe('manage orders', () => {
         await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
     })
 
-    test('CTSC uploads Family assistance order', async ({ page,signInPage, orders }) => {
+    test('CTSC uploads Family assistance order', async ({ page, signInPage, orders }) => {
 
         caseName = 'Family Assistance Order ' + dateTime.slice(0, 10);
 
@@ -449,7 +449,7 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await orders.familyAssistanceOrder();
-  
+
         await orders.clickContinue();
 
         await orders.clickContinue();
@@ -722,12 +722,6 @@ test.describe('manage orders', () => {
 
     })
 
-    test('CTSC uploads Contact with a child in care order (C34A) ', async ({ page, signInPage, orders }) => {
-        caseName = 'uploads Contact with a child in care order (C34A) ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithOrderData);
-
-    })
-
     test('CTSC Uploads Leave to change a surname (C44A)', async ({ page, signInPage, orders }) => {
         caseName = 'Leave to change a surname (C44A)' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
@@ -751,7 +745,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c44a_leave_to_change_a_surname.pdf', exact: true })).toBeVisible();
 
-        })
+    })
 
     test('CTSC uploads Contact with a child in care order (C34A) ', async ({ page, signInPage, orders }) => {
         caseName = 'uploads Contact with a child in care order (C34A) ' + dateTime.slice(0, 10);
