@@ -1,7 +1,7 @@
 import {BasePage} from "../base-page";
 import {Page, Locator} from "@playwright/test";
 
-export class AddFamilymanCaseNumberPage extends BasePage {
+export class FamilymanCaseNumberPage extends BasePage {
     readonly caseNumberTextbox: Locator;
 
     public constructor(page: Page) {
@@ -9,7 +9,7 @@ export class AddFamilymanCaseNumberPage extends BasePage {
         this.caseNumberTextbox = page.getByRole('textbox', { name: 'FamilyMan case number' });
     }
 
-    public async fillCaseNumberTextbox(familymanCaseNumber: string): Promise<void> {
+    public async fillfamilyManCaseNumber(familymanCaseNumber: string): Promise<void> {
         await this.caseNumberTextbox.fill(familymanCaseNumber);
     }
 }
