@@ -9,7 +9,7 @@ export class SendToGatekeeperPage extends BasePage {
         this.emailAddressTextbox = page.getByRole('textbox', { name: 'Email address' });
     }
 
-    public async fillAddressTextbox(address: string): Promise<void> {
+    public async fillGateKeeperEmail(address: string): Promise<void> {
         await this.emailAddressTextbox.fill(address);
     }
 }
