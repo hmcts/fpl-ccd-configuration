@@ -494,7 +494,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
-    void shouldGiveRoleTypeForAllocatedJudgeOrLegalAdvisor() {
+    void shouldGiveRoleTypeForAllocatedJudge() {
         Judge allocatedJudge = Judge.builder()
             .judgeJudicialUser(JudicialUser.builder()
                 .idamId("1234")
@@ -514,6 +514,26 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    void shouldGiveRoleTypeForAllocatedLegalAdvisor() {
+        Judge allocatedLegalAdviser = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId("1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedLegalAdviser)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedLegalAdviser));
+        when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
+            any())).thenReturn(Set.of("allocated-legal-adviser"));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.OTHER);
+    }
+
+    @Test
     void shouldThrowExceptionIfUserNotFoundForAllocatedJudgeOrLegalAdvisor() {
         Judge allocatedJudge = Judge.builder()
             .judgeJudicialUser(JudicialUser.builder()
@@ -529,6 +549,27 @@ class UploadAdditionalApplicationsServiceTest {
         when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
         when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
             any())).thenReturn(Set.of("not-a-judge-somehow"));
+
+        UserLookupException thrownException = assertThrows(UserLookupException.class,
+            () -> underTest.getAllocatedJudgeOrLegalAdviserType(caseData));
+        assertThat(thrownException.getMessage())
+            .contains("No allocated judge or legal adviser found for case id: 1234");
+    }
+
+    @Test
+    void shouldThrowExceptionIfJudicialLookupFails() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId("1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .id(1234L)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.empty());
 
         UserLookupException thrownException = assertThrows(UserLookupException.class,
             () -> underTest.getAllocatedJudgeOrLegalAdviserType(caseData));

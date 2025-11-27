@@ -83,6 +83,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
@@ -565,29 +566,14 @@ class DraftOrderServiceTest {
         }
 
         @Test
-        void shouldGiveRoleTypeForHearingJudgeOrLegalAdvisor() {
-            List<Element<HearingBooking>> hearings = hearings();
-
-            UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
-                .hearingOrderDraftKind(List.of(HearingOrderKind.C21))
-                .hearingsForHearingOrderDrafts(dynamicList(DEFAULT_CODE, List.of(hearings.get(0), hearings.get(1))))
-                .build();
-
-            Element<HearingOrder> hearingOrder1 = hearingOrder(C21);
-
+        void shouldGiveRoleTypeForHearingJudge() {
             Optional<JudgeAndLegalAdvisor> test = Optional.of(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
                 .judgeLastName("Dredd")
                     .judgeJudicialUser(JudicialUser.builder().idamId("1234").build())
                 .build());
 
-            HearingOrdersBundle hearingOrdersBundle = ordersBundle(hearings.get(0).getId(), hearingOrder1);
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearings)
-                .uploadDraftOrdersEventData(eventData)
-                .hearingOrdersBundlesDrafts(ElementUtils.wrapElements(hearingOrdersBundle))
-                .build();
+            CaseData caseData = CaseData.builder().id(1234L).build();
 
             when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(test);
             when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
@@ -598,35 +584,49 @@ class DraftOrderServiceTest {
         }
 
         @Test
+        void shouldGiveRoleTypeForHearingLegalAdviser() {
+            Optional<JudgeAndLegalAdvisor> test = Optional.of(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(LEGAL_ADVISOR)
+                .judgeLastName("Dredd")
+                .judgeJudicialUser(JudicialUser.builder().idamId("1234").build())
+                .build());
+
+            CaseData caseData = CaseData.builder().id(1234L).build();
+
+            when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(test);
+            when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
+                any())).thenReturn(Set.of("hearing-legal-adviser"));
+
+            assertThat(service.getHearingJudgeOrLegalAdviserType(caseData))
+                .isEqualTo(JudicialMessageRoleType.OTHER);
+        }
+
+        @Test
         void shouldThrowExceptionIfUserNotFoundForHearingJudgeOrLegalAdvisor() {
-            List<Element<HearingBooking>> hearings = hearings();
-
-            UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
-                .hearingOrderDraftKind(List.of(HearingOrderKind.C21))
-                .hearingsForHearingOrderDrafts(dynamicList(DEFAULT_CODE, List.of(hearings.get(0), hearings.get(1))))
-                .build();
-
-            Element<HearingOrder> hearingOrder1 = hearingOrder(C21);
-
             Optional<JudgeAndLegalAdvisor> test = Optional.of(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
                 .judgeLastName("Dredd")
                 .judgeJudicialUser(JudicialUser.builder().idamId("1234").build())
                 .build());
 
-            HearingOrdersBundle hearingOrdersBundle = ordersBundle(hearings.get(0).getId(), hearingOrder1);
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearings)
-                .uploadDraftOrdersEventData(eventData)
-                .hearingOrdersBundlesDrafts(ElementUtils.wrapElements(hearingOrdersBundle))
-                .id(1234L)
-                .build();
+            CaseData caseData = CaseData.builder().id(1234L).build();
 
             when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(test);
             when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
                 any())).thenReturn(Set.of("not-a-hearing-judge"));
 
+
+            UserLookupException thrownException = assertThrows(UserLookupException.class,
+                () -> service.getHearingJudgeOrLegalAdviserType(caseData));
+            assertThat(thrownException.getMessage())
+                .contains("No hearing judge or legal adviser found for latest hearing for case id: 1234");
+        }
+
+        @Test
+        void shouldThrowExceptionIfJudicialLookupFailsForHearingJudgeOrLegalAdvisor() {
+            CaseData caseData = CaseData.builder().id(1234L).build();
+
+            when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(Optional.empty());
 
             UserLookupException thrownException = assertThrows(UserLookupException.class,
                 () -> service.getHearingJudgeOrLegalAdviserType(caseData));
