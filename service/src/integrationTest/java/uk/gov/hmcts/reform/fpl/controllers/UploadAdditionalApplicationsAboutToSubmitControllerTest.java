@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -34,6 +36,8 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
+import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -43,6 +47,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -76,7 +81,11 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private static final String OTHER_APPLICANT_NAME = "some other name";
     private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
     private static final String ADMIN_ROLE = "caseworker-publiclaw-courtadmin";
-
+    private static final long CASE_ID = 12345L;
+    private static final Judge AlLOCATED_JUDGE = Judge.builder().judgeJudicialUser(JudicialUser.builder()
+            .idamId("1234")
+            .build())
+        .build();
     private static final DocumentReference UPLOADED_DOCUMENT = testDocumentReference();
     private static final DocumentReference PDF_DOCUMENT = testDocumentReference();
 
@@ -91,6 +100,12 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private JudicialService judicialService;
+
+    @MockBean
+    private RoleAssignmentService roleAssignmentService;
 
     @Autowired
     private Time time;
@@ -108,6 +123,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         given(userService.isHmctsUser()).willReturn(true);
         when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
         when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
+        when(judicialService.getAllocatedJudge(any())).thenReturn(Optional.of(AlLOCATED_JUDGE));
+        when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(CASE_ID),
+            any())).thenReturn(Set.of("allocated-judge"));
     }
 
     @Test
@@ -119,6 +137,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         );
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .allocatedJudge(AlLOCATED_JUDGE)
             .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
             .temporaryC2Document(createTemporaryC2Document())
             .temporaryPbaPayment(temporaryPbaPayment)
@@ -162,6 +182,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         personSelector.setSelected(List.of(0, 2));
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .allocatedJudge(AlLOCATED_JUDGE)
             .additionalApplicationType(List.of(AdditionalApplicationType.OTHER_ORDER))
             .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
             .temporaryC2Document(createTemporaryC2Document())
@@ -194,6 +216,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         final PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
         PBAPayment temporaryPbaPayment = createPbaPayment();
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .allocatedJudge(AlLOCATED_JUDGE)
             .additionalApplicationType(
                 List.of(AdditionalApplicationType.C2_ORDER, AdditionalApplicationType.OTHER_ORDER)
             )
@@ -222,6 +246,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @Test
     void shouldAppendAnAdditionalC2DocumentBundleWhenAdditionalDocumentsBundleIsPresent() {
         CaseData caseData = extractCaseData(callbackRequest()).toBuilder()
+            .id(CASE_ID)
+            .allocatedJudge(AlLOCATED_JUDGE)
             .applicantsList(createApplicantsDynamicList(APPLICANT))
             .temporaryC2Document(createTemporaryC2Document())
             .build();
@@ -249,13 +275,15 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @Test
     void shouldRemoveTransientFieldsWhenNoLongerNeeded() {
         CaseDetails caseDetails = CaseDetails.builder()
+            .id(CASE_ID)
             .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
                 "c2Type", WITHOUT_NOTICE,
                 "applicantsList", createApplicantsDynamicList(APPLICANT),
                 "additionalApplicationType", List.of("C2_ORDER"),
                 "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
-                "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument()))
+                "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument(),
+                "allocatedJudge", AlLOCATED_JUDGE))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails, ADMIN_ROLE);
@@ -287,6 +315,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .build();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .allocatedJudge(AlLOCATED_JUDGE)
             .c2DocumentBundle(wrapElements(firstBundleAdded, secondBundleAdded, thirdBundleAdded))
             .applicantsList(createApplicantsDynamicList(APPLICANT))
             .temporaryC2Document(createTemporaryC2Document())
@@ -317,6 +347,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         );
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .allocatedJudge(AlLOCATED_JUDGE)
             .c2DocumentBundle(wrapElements(firstBundleAdded))
             .applicantsList(createApplicantsDynamicList(APPLICANT))
             .temporaryC2Document(createTemporaryC2Document().toBuilder()
@@ -341,7 +373,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = new ArrayList<>();
 
         CaseData caseData = CaseData.builder()
-            .id(1L)
+            .id(CASE_ID)
+            .allocatedJudge(AlLOCATED_JUDGE)
             .isC2Confidential(YesNo.YES)
             .c2DocumentBundle(wrapElements(firstBundleAdded))
             .applicantsList(createApplicantsDynamicList(APPLICANT))
