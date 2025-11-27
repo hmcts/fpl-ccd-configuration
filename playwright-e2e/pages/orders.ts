@@ -480,8 +480,9 @@ export class Orders extends BasePage {
     async uploadsContactWithChildInCareOrder() {
         await this.clickContinue();
         await this.orderApproved.getByLabel('No').check();
+        await this.orderApplication.getByLabel('No').check();
         await this.clickContinue();
-        await this.issuingJudge.getByLabel('Yes').check();
+        await this.issuingJudge.getByLabel('No').click();
         await this.clickContinue();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
@@ -491,7 +492,6 @@ export class Orders extends BasePage {
         await this.secondPartyAllowedContact.selectOption('Joe Bloggs');
         await this.thirdPartyAllowedContact.selectOption('-- Respondent --');
         await this.conditionsOfContact.fill('test');
-        await this.clickContinue();
 
     }
 
