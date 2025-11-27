@@ -86,9 +86,9 @@ withNightlyPipeline(type, product, component) {
 
     loadVaultSecrets(integrationTestSecrets)
 
-    enableMutationTest()
+  //  enableMutationTest()
   //  enableFortifyScan('fpl-aat')
-  //  enableFullFunctionalTest(240)
+    enableFullFunctionalTest(240)
 
     before('mutationTest') {
         setupSecretsForIntegrationTests(pipelineConf)
