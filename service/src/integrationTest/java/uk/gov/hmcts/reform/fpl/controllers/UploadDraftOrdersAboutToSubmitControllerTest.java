@@ -62,7 +62,8 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
     private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
     private static final long CASE_ID = 12345L;
-    private static final JudgeAndLegalAdvisor HEARING_JUDGE = JudgeAndLegalAdvisor.builder().judgeJudicialUser(JudicialUser.builder()
+    private static final JudgeAndLegalAdvisor HEARING_JUDGE = JudgeAndLegalAdvisor.builder()
+        .judgeJudicialUser(JudicialUser.builder()
             .idamId("1234")
             .build())
         .build();
