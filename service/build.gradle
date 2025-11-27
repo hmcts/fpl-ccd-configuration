@@ -22,7 +22,7 @@ plugins {
   id 'org.sonarqube' version '6.2.0.5505'
   id 'project-report'
   id 'idea'
-  id 'info.solidsoft.pitest' version '1.15.1'
+  id 'info.solidsoft.pitest' version '1.15.2'
   id 'com.github.hmcts.rse-cft-lib' version '0.19.1705'
 }
 
