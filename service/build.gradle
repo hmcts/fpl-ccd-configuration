@@ -73,8 +73,8 @@ sourceSets {
 
 idea {
   module {
-    testSourceDirs += file('src/integrationTest/java')
-    testSourceDirs += file('src/functionalTest/java')
+    testSources.from.file('src/integrationTest/java')
+    testSources.from.file('src/functionalTest/java')
   }
 }
 
