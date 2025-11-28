@@ -95,8 +95,8 @@ tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
-tasks.named('resolveMainClassName') {
-  dependsOn tasks.named('compileJava')
+tasks.named('service:resolveMainClassName') {
+  dependsOn tasks.withType(JavaCompile)
 }
 
 //Comment this section in to allow for additional logging of unit tests for any tests with type 'Test'
