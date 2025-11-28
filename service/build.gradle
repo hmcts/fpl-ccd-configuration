@@ -13,7 +13,6 @@ buildscript {
 plugins {
   id 'java'
   id 'java-library'
-  id 'application'
   id 'checkstyle'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.6'
@@ -94,11 +93,6 @@ configurations.integrationTestImplementation {
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
-
-tasks.withType(JavaExec).configureEach {
-  javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
-}
-
 
 //Comment this section in to allow for additional logging of unit tests for any tests with type 'Test'
 /*tasks.withType(Test) {
