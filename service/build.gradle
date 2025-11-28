@@ -95,6 +95,11 @@ tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
+tasks.withType(JavaExec).configureEach {
+  javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
+
+
 //Comment this section in to allow for additional logging of unit tests for any tests with type 'Test'
 /*tasks.withType(Test) {
   useJUnitPlatform()

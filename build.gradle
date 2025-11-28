@@ -34,8 +34,3 @@ dependencyCheck {
   analyzedTypes = ['jar']
   scanConfigurations = ['runtimeClasspath']
 }
-
-tasks.named('resolveMainClassName') {
-  dependsOn tasks.named('compileJava')
-  dependsOn tasks.named('processResources')
-}
