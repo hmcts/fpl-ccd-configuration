@@ -418,7 +418,9 @@ dependencies {
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 }
 
-mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
+application {
+  mainClass = 'uk.gov.hmcts.reform.fpl.Application'
+}
 
 bootJar {
   archiveFileName = 'service.jar'
