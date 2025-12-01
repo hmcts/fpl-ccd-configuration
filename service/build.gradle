@@ -16,7 +16,7 @@ plugins {
   id 'application'
   id 'checkstyle'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.1.6'
+  id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.3.5'
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'org.sonarqube' version '6.2.0.5505'
@@ -32,11 +32,14 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'net.serenity-bdd.aggregator'
 apply plugin: 'au.com.dius.pact'
 
-group = 'uk.gov.hmcts.reform'
-version = '1.0.0'
-
 def mirrorHost = System.env.NONPROD_SUBSCRIPTION_NAME == "sandbox" ? "artifactory.sandbox" : "artifactory"
 def mirrorUrl = "https://${mirrorHost}.platform.hmcts.net/artifactory/maven-remotes"
+
+application {
+  mainClass = 'uk.gov.hmcts.reform.fpl.Application'
+  group = 'uk.gov.hmcts.reform'
+  version = '1.0.0'
+}
 
 sourceSets {
   functionalTest {
@@ -422,10 +425,6 @@ dependencies {
   }
   contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.1.0'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
-}
-
-springBoot {
-  mainClass = 'uk.gov.hmcts.reform.fpl.Application'
 }
 
 bootJar {
