@@ -103,10 +103,10 @@ tasks.withType(JavaExec).configureEach {
   javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
-tasks.named(':service:resolveMainClassName') {
-  dependsOn ':compileJava'
-}
-
+//tasks.named(':service:resolveMainClassName') {
+//  dependsOn ':compileJava'
+//  dependsOn ':processResources'
+//}
 
 //Comment this section in to allow for additional logging of unit tests for any tests with type 'Test'
 /*tasks.withType(Test) {
@@ -516,6 +516,10 @@ bootWithCCD {
     environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
     environment 'PRD_HOST', 'http://rd-professional-api-aat.service.core-compute-aat.internal'
     environment 'MANAGE_CASE_S2S_AUTHORISED_SERVICES', 'ccd_gw,xui_webapp,ccd_data,fpl_case_service'
+  }
+
+  doLast {
+    springBoot.mainClassName
   }
 }
 
