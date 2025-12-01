@@ -26,7 +26,7 @@ plugins {
   id 'com.github.hmcts.rse-cft-lib' version '0.19.1705'
 }
 
-apply plugin: 'org.springframework.boot'
+//apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'net.serenity-bdd.aggregator'
 apply plugin: 'au.com.dius.pact'
@@ -102,11 +102,10 @@ tasks.withType(JavaExec).configureEach {
   javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
-tasks.named("resolveMainClassName") {
-  dependsOn(tasks.named("compileJava"))
-  dependsOn(tasks.named("processResources"))
-}
-
+//tasks.named("resolveMainClassName") {
+//  dependsOn(tasks.named("compileJava"))
+//  dependsOn(tasks.named("processResources"))
+//}
 
 // Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
 tasks.named("processSmokeTestResources") {
