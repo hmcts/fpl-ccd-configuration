@@ -13,7 +13,7 @@ buildscript {
 plugins {
   id 'java'
   id 'java-library'
-  id 'application'
+//  id 'application'
   id 'checkstyle'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.7'
@@ -34,7 +34,7 @@ apply plugin: 'au.com.dius.pact'
 def mirrorHost = System.env.NONPROD_SUBSCRIPTION_NAME == "sandbox" ? "artifactory.sandbox" : "artifactory"
 def mirrorUrl = "https://${mirrorHost}.platform.hmcts.net/artifactory/maven-remotes"
 
-application {
+springBoot {
   mainClass = 'uk.gov.hmcts.reform.fpl.Application'
   group = 'uk.gov.hmcts.reform'
   version = '1.0.0'
@@ -102,11 +102,10 @@ tasks.withType(JavaCompile).configureEach {
 //  javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 //}
 
-tasks.named("resolveMainClassName") {
-  dependsOn(tasks.named("compileJava"))
-  dependsOn(tasks.named("processResources"))
-  inputs.property('compileJava', tasks.named('compileJava'))
-}
+//tasks.named("resolveMainClassName") {
+//  dependsOn(tasks.named("compileJava"))
+//  dependsOn(tasks.named("processResources"))
+//}
 
 // Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
 tasks.named("processSmokeTestResources") {
