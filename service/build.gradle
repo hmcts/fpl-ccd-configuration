@@ -92,13 +92,14 @@ configurations.integrationTestImplementation {
   exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
 tasks.withType(JavaExec).configureEach {
   javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
+
 
 //Comment this section in to allow for additional logging of unit tests for any tests with type 'Test'
 /*tasks.withType(Test) {
@@ -423,7 +424,7 @@ dependencies {
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 }
 
-application {
+springBoot {
   mainClass = 'uk.gov.hmcts.reform.fpl.Application'
 }
 
