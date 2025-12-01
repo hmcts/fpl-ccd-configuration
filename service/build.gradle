@@ -24,6 +24,7 @@ plugins {
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
   id 'com.github.hmcts.rse-cft-lib' version '0.19.1705'
+  id 'uk.gov.hmcts.java' version '0.12.67'
 }
 
 //apply plugin: 'org.springframework.boot'
