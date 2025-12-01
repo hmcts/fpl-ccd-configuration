@@ -103,6 +103,10 @@ tasks.withType(JavaExec).configureEach {
   javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
+tasks.named(':service:resolveMainClassName') {
+  dependsOn ':compileJava'
+}
+
 
 //Comment this section in to allow for additional logging of unit tests for any tests with type 'Test'
 /*tasks.withType(Test) {
