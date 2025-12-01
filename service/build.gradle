@@ -96,10 +96,6 @@ tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
-tasks.named('service:resolveMainClassName') {
-  dependsOn 'compileJava'
-}
-
 tasks.withType(JavaExec).configureEach {
   javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
