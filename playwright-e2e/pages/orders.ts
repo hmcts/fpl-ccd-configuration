@@ -480,7 +480,8 @@ export class Orders extends BasePage {
     async uploadsContactWithChildInCareOrder() {
         await this.clickContinue();
         await this.orderApproved.getByLabel('No').check();
-        await this.orderApplication.getByLabel('No').check();
+        await this.clickContinue();
+        await this.orderApplication.getByLabel('Yes').check();
         await this.clickContinue();
         await this.issuingJudge.getByLabel('No').click();
         await this.clickContinue();
