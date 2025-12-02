@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
@@ -41,7 +42,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
-import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -114,16 +114,12 @@ class DraftOrderServiceTest {
     @Mock
     private JudicialService judicialService;
 
-    @Mock
-    private RoleAssignmentService roleAssignmentService;
-
     @BeforeEach
     void init() {
         service = new DraftOrderService(new ObjectMapper(),
             time,
             new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder()),
-            manageDocumentService, userService, ctscEmailLookupConfiguration, judicialService,
-            roleAssignmentService
+            manageDocumentService, userService, ctscEmailLookupConfiguration, judicialService
         );
     }
 
@@ -576,8 +572,8 @@ class DraftOrderServiceTest {
             CaseData caseData = CaseData.builder().id(1234L).build();
 
             when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(test);
-            when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
-                any())).thenReturn(Set.of("hearing-judge"));
+            when(judicialService.getHearingJudgeAndLegalAdviserRoleAssignments(eq(caseData.getId()), any()))
+                .thenReturn(List.of(RoleAssignment.builder().roleName("hearing-judge").build()));
 
             assertThat(service.getHearingJudgeOrLegalAdviserType(caseData))
                 .isEqualTo(JudicialMessageRoleType.HEARING_JUDGE);
@@ -594,8 +590,8 @@ class DraftOrderServiceTest {
             CaseData caseData = CaseData.builder().id(1234L).build();
 
             when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(test);
-            when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
-                any())).thenReturn(Set.of("hearing-legal-adviser"));
+            when(judicialService.getHearingJudgeAndLegalAdviserRoleAssignments(eq(caseData.getId()), any()))
+                .thenReturn(List.of(RoleAssignment.builder().roleName("hearing-legal-adviser").build()));
 
             assertThat(service.getHearingJudgeOrLegalAdviserType(caseData))
                 .isEqualTo(JudicialMessageRoleType.OTHER);
@@ -612,14 +608,14 @@ class DraftOrderServiceTest {
             CaseData caseData = CaseData.builder().id(1234L).build();
 
             when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(test);
-            when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
-                any())).thenReturn(Set.of("not-a-hearing-judge"));
+            when(judicialService.getHearingJudgeAndLegalAdviserRoleAssignments(eq(caseData.getId()), any()))
+                .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-hearing-judge").build()));
 
 
             UserLookupException thrownException = assertThrows(UserLookupException.class,
                 () -> service.getHearingJudgeOrLegalAdviserType(caseData));
             assertThat(thrownException.getMessage())
-                .contains("No hearing judge or legal adviser found for latest hearing for case id: 1234");
+                .contains("Hearing judge or legal adviser for latest hearing has invalid am role for case id: 1234");
         }
 
         @Test

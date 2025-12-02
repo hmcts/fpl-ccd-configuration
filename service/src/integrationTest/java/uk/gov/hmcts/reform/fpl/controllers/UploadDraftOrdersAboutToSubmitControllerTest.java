@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -27,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
-import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -74,9 +74,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
     @MockBean
     private JudicialService judicialService;
 
-    @MockBean
-    private RoleAssignmentService roleAssignmentService;
-
     UploadDraftOrdersAboutToSubmitControllerTest() {
         super();
     }
@@ -86,8 +83,8 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
         when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
         when(judicialService.getCurrentHearingJudge(any())).thenReturn(Optional.of(HEARING_JUDGE));
-        when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(CASE_ID),
-            any())).thenReturn(Set.of("hearing-judge"));
+        when(judicialService.getHearingJudgeAndLegalAdviserRoleAssignments(eq(CASE_ID), any()))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("hearing-judge").build()));
     }
 
     @Test

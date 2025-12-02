@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
@@ -42,7 +43,6 @@ import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
-import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -122,7 +122,6 @@ class UploadAdditionalApplicationsServiceTest {
     private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);
     private final PbaService pbaService = mock(PbaService.class);
     private final JudicialService judicialService = mock(JudicialService.class);
-    private final RoleAssignmentService roleAssignmentService = mock(RoleAssignmentService.class);
 
     private UploadAdditionalApplicationsService underTest;
 
@@ -138,7 +137,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(documentSealingService.sealDocument(DOCUMENT, COURT_1, SealType.ENGLISH))
             .willReturn(SEALED_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(time, user, manageDocumentService, uploadHelper,
-            documentSealingService, conversionService, pbaService, judicialService, roleAssignmentService);
+            documentSealingService, conversionService, pbaService, judicialService);
         given(user.isHmctsUser()).willReturn(true);
         given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.HMCTS);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
@@ -506,8 +505,8 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
-        when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
-            any())).thenReturn(Set.of("allocated-judge"));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("allocated-judge").build()));
 
         assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
             .isEqualTo(JudicialMessageRoleType.ALLOCATED_JUDGE);
@@ -526,8 +525,8 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedLegalAdviser));
-        when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
-            any())).thenReturn(Set.of("allocated-legal-adviser"));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("allocated-legal-adviser").build()));
 
         assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
             .isEqualTo(JudicialMessageRoleType.OTHER);
@@ -547,13 +546,13 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
-        when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(caseData.getId()),
-            any())).thenReturn(Set.of("not-a-judge-somehow"));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-judge").build()));
 
         UserLookupException thrownException = assertThrows(UserLookupException.class,
             () -> underTest.getAllocatedJudgeOrLegalAdviserType(caseData));
         assertThat(thrownException.getMessage())
-            .contains("No allocated judge or legal adviser found for case id: 1234");
+            .contains("Allocated judge or legal adviser has invalid am role for case id: 1234");
     }
 
     @Test

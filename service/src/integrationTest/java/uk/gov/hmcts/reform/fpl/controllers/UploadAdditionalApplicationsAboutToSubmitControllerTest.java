@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
@@ -37,7 +38,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
-import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -104,9 +104,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @MockBean
     private JudicialService judicialService;
 
-    @MockBean
-    private RoleAssignmentService roleAssignmentService;
-
     @Autowired
     private Time time;
 
@@ -124,8 +121,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
         when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
         when(judicialService.getAllocatedJudge(any())).thenReturn(Optional.of(AlLOCATED_JUDGE));
-        when(roleAssignmentService.getJudicialCaseRolesForUserAtTime(eq("1234"), eq(CASE_ID),
-            any())).thenReturn(Set.of("allocated-judge"));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(CASE_ID)))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("allocated-legal-adviser").build()));
     }
 
     @Test

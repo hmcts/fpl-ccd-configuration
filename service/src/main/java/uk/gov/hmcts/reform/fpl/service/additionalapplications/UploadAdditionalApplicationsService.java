@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
@@ -28,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
-import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -39,7 +39,6 @@ import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +80,6 @@ public class UploadAdditionalApplicationsService {
     private final DocumentConversionService documentConversionService;
     private final PbaService pbaService;
     private final JudicialService judicialService;
-    private final RoleAssignmentService roleAssignmentService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -353,9 +351,11 @@ public class UploadAdditionalApplicationsService {
                 String.format("No allocated judge or legal adviser found for case id: %s",
                     caseData.getId()));
         } else {
-            String actorId = allocatedJudgeLegalAdviser.get().getJudgeJudicialUser().getIdamId();
-            Set<String> roleTypes = roleAssignmentService.getJudicialCaseRolesForUserAtTime(actorId, caseData.getId(),
-                ZonedDateTime.now());
+            List<String> roleTypes = judicialService
+                .getAllocatedJudgeAndLegalAdvisorRoleAssignments(caseData.getId())
+                .stream()
+                .map((RoleAssignment::getRoleName))
+                .toList();
 
             if (roleTypes.contains(ALLOCATED_JUDGE.getRoleName())) {
                 return JudicialMessageRoleType.ALLOCATED_JUDGE;
@@ -363,7 +363,7 @@ public class UploadAdditionalApplicationsService {
                 return JudicialMessageRoleType.OTHER;
             } else {
                 throw new UserLookupException(
-                    String.format("No allocated judge or legal adviser found for case id: %s",
+                    String.format("Allocated judge or legal adviser has invalid am role for case id: %s",
                         caseData.getId()));
             }
         }

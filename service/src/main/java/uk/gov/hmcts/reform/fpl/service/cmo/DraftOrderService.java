@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
@@ -29,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
-import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -88,7 +88,6 @@ public class DraftOrderService {
     private final UserService userService;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final JudicialService judicialService;
-    private final RoleAssignmentService roleAssignmentService;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
         final UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
@@ -319,17 +318,19 @@ public class DraftOrderService {
         Optional<JudgeAndLegalAdvisor> hearingJudgeOrLegalAdviser = judicialService.getCurrentHearingJudge(caseData);
 
         if (hearingJudgeOrLegalAdviser.isPresent()) {
-            String actorId = hearingJudgeOrLegalAdviser.get().getJudgeJudicialUser().getIdamId();
-            Set<String> roleTypes = roleAssignmentService.getJudicialCaseRolesForUserAtTime(actorId, caseData.getId(),
-                ZonedDateTime.now());
+            List<String> roleTypes = judicialService
+                .getHearingJudgeAndLegalAdviserRoleAssignments(caseData.getId(), ZonedDateTime.now())
+                .stream()
+                .map((RoleAssignment::getRoleName))
+                .toList();
 
             if (roleTypes.contains(HEARING_JUDGE.getRoleName())) {
                 return JudicialMessageRoleType.HEARING_JUDGE;
             } else if (roleTypes.contains(HEARING_LEGAL_ADVISER.getRoleName())) {
                 return JudicialMessageRoleType.OTHER;
             } else {
-                throw new UserLookupException(
-                    String.format("No hearing judge or legal adviser found for latest hearing for case id: %s",
+                throw new UserLookupException(String
+                    .format("Hearing judge or legal adviser for latest hearing has invalid am role for case id: %s",
                         caseData.getId()));
             }
         } else {
