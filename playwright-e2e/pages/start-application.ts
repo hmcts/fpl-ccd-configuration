@@ -113,9 +113,6 @@ export class StartApplication extends BasePage {
     }
 
     async childDetails() {
-
-        console.log('clicked child details link');
-
         expect(this.childDetailsLink).toBeVisible();
         await this.gotoNextStep('Child\'s details');
         expect(this.childDetailsHeading).toBeVisible();
