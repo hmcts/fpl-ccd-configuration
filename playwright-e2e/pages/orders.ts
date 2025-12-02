@@ -505,7 +505,6 @@ export class Orders extends BasePage {
         await this.finalOrder.getByText('No').click();
         await this.partyGrantedLeave.fill('Jason');
         await this.newSurname.fill('Fredrick');
-        await this.clickContinue();
 
     }
 }
