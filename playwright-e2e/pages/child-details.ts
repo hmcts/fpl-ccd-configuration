@@ -114,7 +114,7 @@ export class ChildDetails extends BasePage{
                 response.request().method() === 'POST' &&
                 response.status() === 200
             ),
-            await this.clickContinue()
+             this.clickContinue()
         ]);
 
         await Promise.all([
@@ -123,7 +123,7 @@ export class ChildDetails extends BasePage{
                 response.request().method() === 'GET' &&
                 response.status() === 200
             ),
-            await this.clickSaveAndContinue()
+            this.clickSaveAndContinue()
         ]);
 
     }

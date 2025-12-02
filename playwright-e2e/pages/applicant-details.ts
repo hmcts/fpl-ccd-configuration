@@ -101,7 +101,7 @@ export class ApplicantDetails extends BasePage {
               response.request().method() === 'POST' &&
               response.status() === 200
           ),
-          await this.clickContinue()
+           this.clickContinue()
       ]);
 
       await this.fillFirstName('Peter');
