@@ -254,7 +254,7 @@ test.describe('Upload additional applications', () => {
                     response.url().includes('/api/wa-supported-jurisdiction/get') &&
                     response.request().method() === 'GET'
                 ),
-                await additionalApplications.tabNavigation('Other applications')
+                 additionalApplications.tabNavigation('Other applications')
             ]);
             expect([200, 304]).toContain(response.status());
             await expect.soft(page.getByText('C2 application').first()).toBeVisible();

@@ -23,13 +23,14 @@ export class HearingUrgency extends BasePage {
               response.url().includes('validate?pageId=hearingNeeded1') &&
               response.status() === 200
           ),
-          await this.continue.click(),
+           this.continue.click(),
+          ]);
 
-          this.page.waitForResponse((response) =>
+      await Promise.all([   this.page.waitForResponse((response) =>
               response.url().includes('api/wa-supported-jurisdiction/get') &&
               response.status() === 200
           ),
-          await this.checkYourAnsAndSubmit()
+          this.checkYourAnsAndSubmit()
       ]);
 
   }
@@ -48,7 +49,7 @@ export class HearingUrgency extends BasePage {
                   response.status() === 200
               );
           }),
-          await this.checkYourAnsAndSubmit()
+          this.checkYourAnsAndSubmit()
       ]);
     await expect(this.page.getByText('has been updated with event:')).toBeVisible();
 
