@@ -2,7 +2,7 @@ import { test } from '../fixtures/create-fixture';
 import { CTSCUser, judgeUser, newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 import caseData from '../caseData/caseWithHearingDetails.json' assert {type: 'json'};
 import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert {type: 'json'};
-import { expect } from "@playwright/test";
+import {expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
 
 test.describe('manage orders', () => {
@@ -748,8 +748,8 @@ test.describe('manage orders', () => {
     })
 
     test('CTSC uploads Contact with a child in care order (C34A) ', async ({ page, signInPage, orders }) => {
-        caseName = 'uploads Contact with a child in care order (C34A) ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithOrderData);
+        caseName = 'Contact with a child in care order (C34A) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -768,7 +768,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'c34a_contact_with_a_child_in_care.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c34a_contact_with_a_child_in_care.pdf' ,exact: true})).toBeVisible();
 
     })
 

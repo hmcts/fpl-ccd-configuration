@@ -483,7 +483,7 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.orderApplication.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.issuingJudge.getByLabel('No').click();
+        await this.issuingJudge.getByLabel('Yes').click();
         await this.clickContinue();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
