@@ -10,15 +10,16 @@ test.describe('Upload draft orders', () => {
     let casename: string;
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('LA upload CMO draft orders @xbrowser',
         async ({ page, signInPage, uploadDraftOrders }) => {
             casename = 'LA upload CMO draft orders ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseData);
+            expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await uploadDraftOrders.gotoNextStep('Upload draft orders')
             await uploadDraftOrders.uploadCMODraftOrders();
 
@@ -31,10 +32,10 @@ test.describe('Upload draft orders', () => {
         async ({ page, signInPage, uploadDraftOrders }) => {
 
             casename = 'LA upload Additional Draft Order ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseData);
+            expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await uploadDraftOrders.gotoNextStep('Upload draft orders')
             await uploadDraftOrders.uploadAdditionalDraftOrders();
 

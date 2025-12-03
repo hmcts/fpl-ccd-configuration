@@ -35,7 +35,8 @@ export default defineConfig({
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
         // Record trace only when retrying a test for the first time.
-        trace: 'on-first-retry'
+        trace: 'on-first-retry',
+        navigationTimeout: 60_000,
 
     },
 
@@ -48,7 +49,6 @@ export default defineConfig({
         {
             ...ProjectsConfig.edge,
             teardown: process.env.CI ? 'AMRoleCleanup' : undefined,
-
         },
         {
             ...ProjectsConfig.chrome,
@@ -77,8 +77,9 @@ export default defineConfig({
         {
             name: "preview",
             use: { ...devices['Desktop Edge'], channel: 'msedge' },
+            workers: process.env.CI ? 4 : undefined,
             retries: 2,
-            timeout: 5 * 60 * 1000,
+            timeout: 3 * 60 * 1000,
             expect: {timeout: 1 * 60 * 1000},
         },
 

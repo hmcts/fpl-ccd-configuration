@@ -52,7 +52,7 @@ export const secondJudgeWalesUser = {
 };
 
 export const judgeLondonUser = {
-  email: 'EMP264002@ejudiciary.net',
+  email: 'judge-london@ejudiciary.net',
   password: judgePwd,
 };
 

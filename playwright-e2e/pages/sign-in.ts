@@ -1,7 +1,7 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import
+{ expect, type Locator, type Page } from "@playwright/test";
 import { urlConfig } from "../settings/urls";
 import { BasePage } from "./base-page";
-
 export class SignInPage extends BasePage {
     readonly page: Page;
     readonly url: string;
@@ -35,10 +35,12 @@ export class SignInPage extends BasePage {
 
     }
 
-    async navigateTOCaseDetails(caseNumber: string) {
+    async navigateToCaseDetails(caseNumber: string) {
         await this.page.goto(`${urlConfig.frontEndBaseURL}/cases/case-details/${urlConfig.jurisdiction}/${urlConfig.caseType}/${caseNumber}`);
         await this.page.waitForLoadState();
     }
+
+
 
     async login(email: string, password: string) {
         await this.emailInputLocator.fill(email);

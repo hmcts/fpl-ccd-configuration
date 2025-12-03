@@ -41,6 +41,7 @@ import { LogExpertReport } from "../pages/log-expert-report";
 import { ChangeCaseName } from "../pages/change-case-name";
 import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
+import {QueryManagement} from "../pages/query-management";
 import {ManageTTL} from "../pages/manage-t-t-l";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
@@ -60,6 +61,9 @@ import {ExpertReport} from "../pages/expert-report";
 import {Extend26WeekTimeline} from "../pages/extend-26week-timeline";
 import { RecordFinalDecision} from "../pages/record-final-decision";
 import {SendOrderRemainder} from "../pages/send-order-remainder";
+import { FamilymanCaseNumberPage} from "../pages/gatekeeping/familyman-case-number";
+import {SendToGatekeeperPage} from "../pages/gatekeeping/send-to-gatekeeper";
+import {HistoryPage} from "../pages/case-details/history";
 import {EnvironmentConfig, getEnvironmentSpecificTestData} from "../settings/environment-data-config"
 
 
@@ -106,6 +110,7 @@ type CreateFixtures = {
   orders: Orders;
   manageLaTransferToCourts: ManageLaTransferToCourts
   manageRepresentatives: ManageRepresentatives;
+  queryManagement: QueryManagement;
   manageTTL: ManageTTL;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
@@ -121,6 +126,9 @@ type CreateFixtures = {
   uploadAdditionalApplicationsSuppliedDocuments: SuppliedDocuments;
   submit: Submit;
   caseNote: CaseNote;
+  familymanCaseNumber: FamilymanCaseNumberPage;
+  sendToGatekepperPage: SendToGatekeeperPage;
+  historyPage: HistoryPage;
   expertReport: ExpertReport;
   extend26WeekTimeline: Extend26WeekTimeline;
   recordFinalDecision: RecordFinalDecision;
@@ -293,6 +301,7 @@ export const test = base.extend<CreateFixtures>({
     await use(new ManageLaTransferToCourts(page));
 },
 
+
 othersToBeGivenNotice: async ({ page }, use) => {
   await use(new OthersToBeGivenNotice(page));
 },
@@ -301,6 +310,12 @@ othersToBeGivenNotice: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
 
   },
+
+    queryManagement: async ({ page }, use) => {
+        await use(new QueryManagement(page));
+
+  },
+
     manageTTL: async ({ page }, use) => {
         await use(new ManageTTL(page));
     },
@@ -354,6 +369,15 @@ othersToBeGivenNotice: async ({ page }, use) => {
     },
     caseNote: async ({ page }, use) => {
       await use(new CaseNote(page));
+    },
+    familymanCaseNumber: async({ page }, use) => {
+      await use(new FamilymanCaseNumberPage(page));
+    },
+    sendToGatekepperPage: async({ page }, use) => {
+      await use(new SendToGatekeeperPage(page));
+    },
+    historyPage: async({ page }, use) => {
+      await use(new HistoryPage(page));
     },
     expertReport: async ({ page }, use) => {
       await use(new ExpertReport(page));

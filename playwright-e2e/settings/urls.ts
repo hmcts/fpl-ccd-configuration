@@ -1,5 +1,6 @@
 // aat, demo, perftest, ithc
 const env = process.env.ENVIRONMENT || "aat";
+
 const e2ePw: string = process.env.E2E_TEST_PASSWORD || "";
 const defaultPwd: string = process.env.SYSTEM_UPDATE_USER_PASSWORD || "";
 const judgePwd: string = process.env.E2E_TEST_JUDGE_PASSWORD || "";
@@ -21,6 +22,4 @@ export const urlConfig: UrlConfig = {
   manageOrgServiceUrl: process.env.MANAGE_ORG_SERVICE_URL ||`http://rd-professional-api-${env}.service.core-compute-${env}.internal/`,
   accessManagementUrl: process.env.ACCESS_MANAGEMENT_URL || `http://am-role-assignment-service-${env}.service.core-compute-${env}.internal/am/role-assignments`,
   idamwebURL: process.env.IDAM_WEB_URL ||`https://idam-web-public.${env}.platform.hmcts.net`
-
-  // You can add other URLs as needed
 };

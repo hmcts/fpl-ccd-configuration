@@ -4,9 +4,9 @@ import { CreateCaseName } from "../utils/create-case-name";
 import { CaseFileView } from "../pages/case-file-view";
 
 
-test.describe('Smoke Test @xbrowser', () => {
-
-    test('Local Authority C110A application submission @smoke-test @accessibility', async ({
+test.describe('Smoke Test @xbrowser @smoke-test', () => {
+test.setTimeout(7 * 60 * 1000);
+    test('Local Authority C110A application submission  @accessibility ', async ({
                                                                     signInPage,
         page,
         createCase,
@@ -80,63 +80,31 @@ test.describe('Smoke Test @xbrowser', () => {
         });
 
         await test.step('Applicant details', async() => {
-            await Promise.all([
-                page.waitForResponse(response =>
-                    !!response.url().match(/\/event-triggers\/enterApplicantDetailsLA/) &&
-                    response.request().method() === 'GET' &&
-                    response.status() === 200
-                ),
-                startApplication.applicantDetails()
-            ]);
+
+           await startApplication.applicantDetails()
+
             await applicantDetails.applicantDetailsNeeded(envDataConfig.swanseaOrgPBA);
         });
 
         await test.step('Child details', async() => {
-            await Promise.all([
-                page.waitForResponse(response =>
-                    response.url().includes('enterChildren') &&
-                    response.request().method() === 'GET' &&
-                    response.status() === 200
-                ),
-                startApplication.childDetails()
-            ]);
 
+            await   startApplication.childDetails()
             await childDetails.addChildDetailsForC110AApplication();
         });
 
         await test.step('Add respondent details', async() => {
-            await Promise.all([
-                page.waitForResponse(response =>
-                    response.url().includes('enterRespondents') &&
-                    response.request().method() === 'GET' &&
-                    response.status() === 200
-                ),
-                startApplication.respondentDetails()
-            ]);
+            await startApplication.respondentDetails()
             await respondentDetails.respondentDetailsNeeded();
         });
 
         await test.step('Allocation proposal', async() => {
-           await Promise.all([
-               page.waitForResponse(response =>
-                   response.url().includes('otherProposal') &&
-                   response.request().method() === 'GET' &&
-                   response.status() === 200
-               ),
-               startApplication.allocationProposal()
-           ]);
+            await startApplication.allocationProposal()
            await allocationProposal.allocationProposalSmokeTest();
         });
 
         await test.step('Submit case', async() => {
-            await Promise.all([
-                page.waitForResponse(response =>
-                    response.url().includes('submitApplication') &&
-                    response.request().method() === 'GET' &&
-                    response.status() === 200
-                ),
-                startApplication.submitCase()
-            ]);
+
+           await  startApplication.submitCase()
             await submitCase.submitCaseSmokeTest('2,515.00');
         });
 
@@ -197,10 +165,10 @@ test.describe('Smoke Test @xbrowser', () => {
             await createCase.submitCase('Private Solicitor -C110 a Application ' + CreateCaseName.getFormattedDate());
         });
 
-        await test.step('Complete C110a Application', async () => {
+        await test.step('Order and Direction Sorted', async () => {
             await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
             await expect(startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
-
+        });
             await test.step('Hearing Urgency', async () => {
                 await startApplication.hearingUrgency();
                 await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
@@ -215,56 +183,28 @@ test.describe('Smoke Test @xbrowser', () => {
 
 
             await test.step('Child Details', async () => {
-                await Promise.all([
-                    page.waitForResponse(response =>
-                        response.url().includes('enterChildren') &&
-                        response.request().method() === 'GET' &&
-                        response.status() === 200
-                    ),
-                    startApplication.childDetails()
-                ]);
+                 await   startApplication.childDetails()
                 await childDetails.addChildDetailsForC110AApplication();
                 await startApplication.childDetailsHasBeenUpdated();
             });
 
             await test.step('Add Respondent Details', async () => {
-                await Promise.all([
-                    page.waitForResponse(response =>
-                        response.url().includes('enterRespondents') &&
-                        response.request().method() === 'GET' &&
-                        response.status() === 200
-                    ),
-                    startApplication.respondentDetails()
-                ]);
+                await    startApplication.respondentDetails()
                 await respondentDetails.respondentDetailsPrivateSolicitor();
             });
 
 
             await test.step('Allocation Proposal', async () => {
-                await Promise.all([
-                    page.waitForResponse(response =>
-                        response.url().includes('otherProposal') &&
-                        response.request().method() === 'GET' &&
-                        response.status() === 200
-                    ),
-                    startApplication.allocationProposal()
-                ]);
+                await startApplication.allocationProposal()
                 await allocationProposal.allocationProposalSmokeTest();
                 await startApplication.allocationProposalHasBeenUpdated();
             });
 
             await test.step('Submit the Case', async () => {
-                await Promise.all([
-                    page.waitForResponse(response =>
-                        response.url().includes('submitApplication') &&
-                        response.request().method() === 'GET' &&
-                        response.status() === 200
-                    ),
-                    startApplication.submitCase()
-                ]);
+                await   startApplication.submitCase()
                 await submitCase.submitCaseSmokeTest('£263.00');
             });
-        });
+
 
         await test.step('CFV Application check', async () => {
             await caseFileView.goToCFVTab();

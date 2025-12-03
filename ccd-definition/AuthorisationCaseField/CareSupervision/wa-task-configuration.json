@@ -65,7 +65,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "latestQueryID",
+    "UserRole": "caseworker-wa-task-configuration",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "listingRequests",
+    "UserRole": "caseworker-wa-task-configuration",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "waTaskUrgencyLevel",
     "UserRole": "caseworker-wa-task-configuration",
     "CRUD": "R"
   }
