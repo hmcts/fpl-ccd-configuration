@@ -27,8 +27,8 @@ plugins {
   id 'uk.gov.hmcts.java' version '0.12.67'
 }
 
-//apply plugin: 'org.springframework.boot'
-//apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'net.serenity-bdd.aggregator'
 apply plugin: 'au.com.dius.pact'
 
@@ -448,11 +448,13 @@ bootJar {
 test {
   maxHeapSize = "1024m"
   useJUnitPlatform()
+  jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 }
 
 integration {
   maxHeapSize = "1024m"
   useJUnitPlatform()
+  jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 }
 
 pitest {
