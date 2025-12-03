@@ -106,20 +106,6 @@ tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
-//tasks.withType(JavaExec).configureEach {
-//  javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
-//}
-
-//tasks.named("resolveMainClassName") {
-//  dependsOn(tasks.named("compileJava"))
-//  dependsOn(tasks.named("processResources"))
-//}
-
-// Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
-tasks.named("processSmokeTestResources") {
-  duplicatesStrategy = 'include'
-}
-
 //Comment this section in to allow for additional logging of unit tests for any tests with type 'Test'
 /*tasks.withType(Test) {
   useJUnitPlatform()

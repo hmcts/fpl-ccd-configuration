@@ -14,16 +14,16 @@ repositories {
 
 dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
-  analyzers {
-  // Disable scanning of .NET related binaries
-    assemblyEnabled = false
-    ossIndex {
-      enabled = false
-    }
-    nodeAudit {
-      yarnEnabled = false
-    }
-  }
+//  analyzers {
+//  // Disable scanning of .NET related binaries
+//    assemblyEnabled = false
+//    ossIndex {
+//      enabled = false
+//    }
+//    nodeAudit {
+//      yarnEnabled = false
+//    }
+//  }
   analyzedTypes = ['jar']
   scanConfigurations = ['runtimeClasspath']
 }
