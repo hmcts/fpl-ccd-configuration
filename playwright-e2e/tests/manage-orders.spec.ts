@@ -357,7 +357,7 @@ test.describe('manage orders', () => {
 
     test('CTSC uploads Authority to refuse contact with a child in care (C34B)', async ({ signInPage, orders, page }) => {
         caseName = 'Authority to refuse contact with a child in care (C34B)' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseWithOrderData);
+        await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
