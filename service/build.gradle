@@ -283,7 +283,7 @@ def versions = [
   log4j           : '2.24.3',
   logbackVersion  : '1.5.14',
   jackson         : '2.18.3',
-  pdfbox          : '2.0.33',
+  pdfbox          : '3.0.6',
   mockito         : '5.2.0',
   serenity        : '4.2.22',
   pact_version    : '4.1.7',
