@@ -43,7 +43,7 @@ export class AddApplicationDocuments {
                 response.request().method() === 'POST' &&
                 response.status() === 200
             ),
-            await this.page.getByRole('button', { name: 'Continue' }).click()
+             this.page.getByRole('button', { name: 'Continue' }).click()
         ]);
 
         await Promise.all([
@@ -52,7 +52,7 @@ export class AddApplicationDocuments {
                 response.request().method() === 'GET' &&
                 response.status() === 200
             ),
-            await this.page.getByRole('button', { name: 'Save and continue' }).click()
+            this.page.getByRole('button', { name: 'Save and continue' }).click()
         ]);
 
     }

@@ -47,8 +47,8 @@ export class BasePage {
           await this.page.reload({waitUntil: 'domcontentloaded'});
           await this.nextStep.selectOption(eventName);
           await this.goButton.click();
-          await expect(this.page.getByRole('button', { name: 'Previous',exact:true })).toBeVisible();
-      }).toPass();
+          await expect(this.page.getByRole('button', { name: 'Previous',exact:true })).toBeVisible({timeout: 30_000});
+      }).toPass({timeout: 120_000});
   }
 
   async expectAllUploadsCompleted() {
@@ -121,7 +121,7 @@ export class BasePage {
 
   async clickSubmit() {
 
-        await  this.submit.click();
+      await  this.submit.click();
 
   }
   async clickSaveAndContinue() {
@@ -130,28 +130,16 @@ export class BasePage {
   async enterPostCode(postcode:string): Promise<void> {
       await this.postCode.fill(postcode);
 
-      await Promise.all([
-          this.page.waitForResponse(response =>
-              response.url().includes('addresses') &&
-              response.request().method() === 'GET' &&
-              response.status() === 200
-          ),
-          this.findAddress.click()
-      ]);
-
+       await Promise.all([
+              this.findAddress.click(),
+              this.page.waitForResponse(response =>
+                  response.url().includes('addresses') &&
+                  response.request().method() === 'GET' &&
+                  response.status() === 200
+              )
+          ]) ;
       const addressDropdown = this.page.locator('select[name="address"]');
-
-      const optionValues = await addressDropdown.locator('option').evaluateAll(options =>
-          options.map(option => (option as HTMLOptionElement).value)
-      );
-
-      const secondOptionValue = optionValues[1];
-
-      if (!secondOptionValue) {
-          throw new Error('No valid second option found in address dropdown');
-      }
-
-      await addressDropdown.selectOption(secondOptionValue);
+      await addressDropdown.selectOption({ index: 1 });
   }
 
   getCurrentDate():string {

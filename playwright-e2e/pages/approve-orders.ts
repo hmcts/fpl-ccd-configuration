@@ -19,10 +19,10 @@ export class ApproveOrders extends BasePage {
     async approveOrders() {
         await this.yesApproveOrder.click();
         await this.clickContinue();
-        await this.page.pause()
-        expect.soft(await this.page.getByText('If you click \'Continue\', the draft order will be approved without any changes. A coversheet will be added showing your name and the date of approval, and a court seal will also be applied to the final version.')).toBeVisible()
-        expect.soft(await this.page.getByText('Please note that the preview shown below will not display the court seal, but it reflects the content that will be issued.')).toBeVisible();
-        expect.soft(await this.page.getByText('If you wish to make any amendments, please return to the previous screen and select either \'No, I need to make changes\' or \'No, the applicant needs to make changes\'.')).toBeVisible();
+       //await this.page.pause()
+        await expect(this.page.getByText('If you click \'Continue\', the draft order will be approved without any changes. A coversheet will be added showing your name and the date of approval, and a court seal will also be applied to the final version.')).toBeVisible()
+        await expect(this.page.getByText('Please note that the preview shown below will not display the court seal, but it reflects the content that will be issued.')).toBeVisible();
+        await expect(this.page.getByText('If you wish to make any amendments, please return to the previous screen and select either \'No, I need to make changes\' or \'No, the applicant needs to make changes\'.')).toBeVisible();
         await this.clickContinue();
         await this.urgentOrder.check();
         await this.clickContinue();
