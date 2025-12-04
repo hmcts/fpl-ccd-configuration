@@ -24,7 +24,7 @@ plugins {
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
   id 'com.github.hmcts.rse-cft-lib' version '0.19.1705'
-  id 'uk.gov.hmcts.java' version '0.12.67'
+//  id 'uk.gov.hmcts.java' version '0.12.67'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -115,7 +115,9 @@ tasks.withType(JavaCompile).configureEach {
   }
 }*/
 
-task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
+tasks.register('integration', Test) {
+  description = 'Runs the integration tests.'
+  group = 'Verification'
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   // set your environment variables here
@@ -123,23 +125,23 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
+tasks.register('lintUserInterfaceTests', Exec) {
+  description = 'Runs linting of E2E tests.'
   commandLine '/usr/bin/yarn', 'lint'
 }
 
-task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
+tasks.register('runSmokeTests', Exec) {
+  description = 'Runs smoke tests.'
   commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
-task runApiTests(type: Exec, description: 'Runs api tests.', group: 'Verification') {
+tasks.register('runApiTests', Exec) {
+  description = 'Runs api tests.'
+  group = 'Verification'
   onlyIf {
     return System.env.SKIP_API_TESTS == null || System.env.SKIP_API_TESTS == 'false'
   }
   commandLine '/usr/bin/yarn', 'test:api-test'
-//  testLogging.showStandardStreams = true
-//  testClassesDirs = sourceSets.functionalTest.output.classesDirs
-//  classpath = sourceSets.functionalTest.runtimeClasspath
-//  finalizedBy aggregate
 }
 
 project.ext {
@@ -147,7 +149,9 @@ project.ext {
   pacticipantVersion = System.env.GIT_COMMIT != null ? System.env.GIT_COMMIT.substring(0,9) : ''
 }
 
-task runContractTests(type: Test, description: 'Runs contract tests.', group: 'Verification') {
+tasks.register('runContractTests', Test) {
+  description = 'Runs contract tests.'
+  group = 'Verification'
   onlyIf {
     return System.env.SKIP_CONTRACT_TESTS == null || System.env.SKIP_CONTRACT_TESTS == 'false'
   }
@@ -159,7 +163,9 @@ task runContractTests(type: Test, description: 'Runs contract tests.', group: 'V
 }
 
 
-task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
+tasks.register('runAndPublishConsumerPactTests', Test) {
+  description = 'Publish pact test to broker.'
+  group = 'Verification'
   logger.lifecycle("Runs pact consumer Tests")
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
@@ -188,7 +194,9 @@ def static inStrictOrder(Task... tasks) {
   return tasks
 }
 
-task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
+tasks.register('smoke', Test) {
+  description = 'Runs smoke test.'
+  group = 'Verification'
   testLogging.showStandardStreams = true
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
@@ -196,15 +204,19 @@ task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
   finalizedBy aggregate
 }
 
-task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke test.', group: 'Verification') {
+tasks.register('runCodeceptSmokeTest', Test) {
+  description = 'Runs the old codecept smoke test.'
+  group = 'Verification'
   dependsOn(inStrictOrder(runSmokeTests))
 }
 
-task functional(type:Test,description: 'Runs the functional tests.') {
+tasks.register('functional', Test) {
+  description = 'Runs the functional tests.'
   dependsOn(inStrictOrder(runApiTests))
 }
 
-task contract(description: 'Runs the contract tests.') {
+tasks.register('contract') {
+  description = 'Runs the contract tests.'
   dependsOn(inStrictOrder(runContractTests))
 }
 
