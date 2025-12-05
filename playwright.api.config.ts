@@ -35,10 +35,22 @@ export default defineConfig({
 
   /* Configure projects */
   projects: [
+      {
+          name: 'GlobalSetupCafcassAPI',
+          testMatch: '/settings/global-setup-cafcassAPI.ts',
+
+      },
     {
       name: "APITest",
       testMatch: /.*.api.spec.ts/,
       fullyParallel: false,
     },
+      {
+        name: "cafcassAPITest",
+        testMatch: /.*.cafcassAPI.spec.ts/,
+        fullyParallel: true,
+          timeout: 100000,
+        dependencies: ['GlobalSetupCafcassAPI']
+      }
   ],
 });
