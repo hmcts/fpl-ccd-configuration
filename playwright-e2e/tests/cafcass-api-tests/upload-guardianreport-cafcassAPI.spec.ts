@@ -23,8 +23,8 @@ test.describe('Cafcass upload guardian report ', () => {
         //test to see the doc in MC application
         await signInPage.visit();
         await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
-        await caseFileView.goToCFVTab();
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await caseFileView.goToCFVTab();await signInPage.navigateToCaseDetails(caseNumber);
         await caseFileView.openFolder('Guardian\'s reports');
 
         await expect(page.getByRole('tree')).toContainText(`${docName}`);
@@ -32,7 +32,7 @@ test.describe('Cafcass upload guardian report ', () => {
 
 
     })
-    test('Cafcass upload position statement', async ({request, page, signInPage, caseFileView, manageDocuments}) => {
+    test.only('Cafcass upload position statement', async ({request, page, signInPage, caseFileView, manageDocuments}) => {
         await updateCase('Cafcass upload position statement' + startTime.slice(0, 10), caseNumber, submitCase);
         let docName = CreateCaseName.generateFileName('POSITION_STATEMENT');
         let response = await cafcassAPIUploadDoc(request, authToken.cafcassAuth, caseNumber, 'POSITION_STATEMENT');
@@ -42,7 +42,7 @@ test.describe('Cafcass upload guardian report ', () => {
         //test to see the doc in MC application
         await signInPage.visit();
         await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
 

@@ -1,7 +1,6 @@
 import {expect, test} from "../../fixtures/fixtures";
 import {createCase, updateCase} from "../../utils/api-helper";
 import {authToken, newSwanseaLocalAuthorityUserOne} from "../../settings/user-credentials";
-import Ajv from 'ajv';
 import cafcassAPISearchSchema from '../../caseData/cafcassAPITest/cafcassAPICaseSchema.json' assert {type: 'json'};
 import submitCase from '../../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 import cafcassCase from '../../caseData/cafcassAPITest/caseCaffcassAPISearchAllFieldData.json' assert {type: 'json'};
@@ -12,7 +11,6 @@ test.describe('CafcassAPI search cases', () => {
     let intervalEndTime: string;
     let intervalStartTime: string;
     let currentTime: Date;
-    const ajv = new Ajv({allErrors: true, verbose: true});
     let caseNumber1: string
     let caseNumber2: string;
     const TEST_DATA_SETUP_TIMEOUT_MS = 2000;
@@ -39,7 +37,7 @@ test.describe('CafcassAPI search cases', () => {
             let response = await cafcassAPICaseSearch(request, authToken.cafcassAuth, intervalStartTime, intervalEndTime);
 
             //assert the response
-            expect(response.status()).toBe(200);
+            expect.soft(response.status()).toBe(200);
 
             if (response.status() == 200) {
 
@@ -47,7 +45,7 @@ test.describe('CafcassAPI search cases', () => {
                 expect.soft(await body.total).toBeGreaterThanOrEqual(2);
 
                 //assert case id in the response
-                const allCaseIds = body.cases.map((a: { id: string | number }) => String(a.id));
+                const allCaseIds = body.cases.map((a: { id: number }) => String(a.id));
                 expect.soft(allCaseIds).toContain(String(caseNumber1));
                 expect.soft(allCaseIds).toContain(String(caseNumber2));
 

@@ -4,16 +4,14 @@ import fs from "fs";
 import config from "../settings/test-docs/config";
 import Ajv from 'ajv';
 import {authToken} from "../settings/user-credentials";
-import {expect, test} from "../fixtures/fixtures";
-
-const DOCUMENT_DATE_TIME_FORMATTER = new Intl.DateTimeFormat('en-GB', {
+new Intl.DateTimeFormat('en-GB', {
     day: 'numeric',
     month: 'numeric',
     year: 'numeric',
     hour: 'numeric',
     minute: 'numeric'
 });
-export const  GAURDIAN_DETAILS  = [
+export const  GUARDIAN_DETAILS  = [
     {
         "guardianName": "June Thacher",
         "telephoneNumber": "01234567890",
@@ -140,7 +138,7 @@ export const getDateTimePram = (dateTime: Date, interval: number) => {
     return new Date(dateTime.setMinutes(dateTime.getMinutes() + interval)).toISOString()
 }
 
-export const validateCaseItemWithSchema = async (schema: object, caseItem: object): Promise<boolean> => {
+export const validateCaseItemWithSchema = async (schema: object, caseItem:any ): Promise<boolean> => {
     const ajvInstance = new Ajv({allErrors: true, verbose: true});
 
     const validJson = await ajvInstance.validate(schema, caseItem);

@@ -4,15 +4,20 @@ import {cafcassAPIUser, systemUpdateUser} from "./user-credentials";
 
 setup('access Token', async ({ }) => {
     try {
-        const cafcassAuthToken = await getAccessToken({ user: cafcassAPIUser });
-        process.env.CAFCASSAUTH = cafcassAuthToken?.data.access_token;
+        if(!process.env.CAFCASSAUTH) {
+            const cafcassAuthToken = await getAccessToken({user: cafcassAPIUser});
+            process.env.CAFCASSAUTH = cafcassAuthToken?.data.access_token;
+        }
     } catch (error) {
         console.error('Error during cafcassUser auth token:', error);
         throw error;
     }
-    try{
-        const systemUserAuthToken = await getAccessToken({ user: systemUpdateUser });
+    try {
+        if (!process.env.SYSUSERAUTH) {
+
+        const systemUserAuthToken = await getAccessToken({user: systemUpdateUser});
         process.env.SYSUSERAUTH = systemUserAuthToken?.data.access_token;
+    }
     }
     catch (error) {
         console.error('Error during systemUser auth token:', error);

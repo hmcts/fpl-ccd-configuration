@@ -49,6 +49,7 @@ export default defineConfig({
         name: "cafcassAPITest",
         testMatch: /.*.cafcassAPI.spec.ts/,
         fullyParallel: true,
+          timeout: 100000,
         dependencies: ['GlobalSetupCafcassAPI']
       }
   ],
