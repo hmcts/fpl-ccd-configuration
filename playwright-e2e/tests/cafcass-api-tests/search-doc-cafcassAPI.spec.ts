@@ -23,7 +23,7 @@ test.describe('@new CafcassAPI Document Search', () => {
         docId = await getTestDocID(request);
 
     });
-    test.only('  Cafcass user search a valid case document',
+    test('  Cafcass user search a valid case document',
         async ({request}) => {
 console.log(caseNumber);
              let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth,docId);

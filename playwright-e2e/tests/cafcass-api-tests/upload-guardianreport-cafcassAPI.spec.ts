@@ -32,7 +32,7 @@ test.describe('Cafcass upload guardian report ', () => {
 
 
     })
-    test.only('Cafcass upload position statement', async ({request, page, signInPage, caseFileView, manageDocuments}) => {
+    test('Cafcass upload position statement', async ({request, page, signInPage, caseFileView, manageDocuments}) => {
         await updateCase('Cafcass upload position statement' + startTime.slice(0, 10), caseNumber, submitCase);
         let docName = CreateCaseName.generateFileName('POSITION_STATEMENT');
         let response = await cafcassAPIUploadDoc(request, authToken.cafcassAuth, caseNumber, 'POSITION_STATEMENT');

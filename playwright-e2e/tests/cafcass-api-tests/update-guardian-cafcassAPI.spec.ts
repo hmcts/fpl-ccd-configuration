@@ -15,7 +15,7 @@ test.describe('CafcassAPI Update Guardian Details', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test.only(' Cafcass user update the guardian details', async ({request, page, signInPage}) => {
+    test(' Cafcass user update the guardian details', async ({request, page, signInPage}) => {
         await updateCase('Cafcass update guardian details' + dateTime.slice(0, 10), caseNumber, submitCase);
 
         let response = await cafcassUpdateGuardianDetails(request, authToken.cafcassAuth, caseNumber, GUARDIAN_DETAILS);
