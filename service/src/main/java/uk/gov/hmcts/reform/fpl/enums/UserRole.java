@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.enums;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
-import java.util.Set;
 
 public enum UserRole {
     LOCAL_AUTHORITY("caseworker-publiclaw-solicitor"),
@@ -13,8 +12,7 @@ public enum UserRole {
     ROBOTICS("caseworker-publiclaw-rparobot"),
     GATEKEEPER("caseworker-publiclaw-gatekeeper"),
     JUDICIARY("caseworker-publiclaw-judiciary"),
-    HMCTS_SUPERUSER("caseworker-publiclaw-superuser"),
-    FPL_SYSTEM_UPDATE("caseworker-publiclaw-systemupdate");
+    HMCTS_SUPERUSER("caseworker-publiclaw-superuser");
 
     private final String roleName;
 
@@ -34,9 +32,5 @@ public enum UserRole {
 
     public String getRoleName() {
         return roleName;
-    }
-
-    public static boolean isSystemUser(String userRole) {
-        return Set.of(CAFCASS_SYSTEM_UPDATE.roleName, FPL_SYSTEM_UPDATE.roleName).contains(userRole);
     }
 }

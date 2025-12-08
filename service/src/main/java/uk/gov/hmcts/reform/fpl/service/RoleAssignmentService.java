@@ -279,7 +279,7 @@ public class RoleAssignmentService {
                 .roleType(List.of(RoleType.ORGANISATION.toString()))
                 .build()
         );
-        if (isNotEmpty(response.getRoleAssignmentResponse())) {
+        if (response != null && isNotEmpty(response.getRoleAssignmentResponse())) {
             return response.getRoleAssignmentResponse().stream()
                 .map(role -> OrganisationalRole.from(role.getRoleName()))
                 .filter(Optional::isPresent)

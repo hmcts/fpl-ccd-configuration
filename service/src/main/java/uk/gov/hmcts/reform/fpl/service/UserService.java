@@ -113,8 +113,7 @@ public class UserService {
     }
 
     public boolean isCtscUser() {
-        return this.getIdamRoles().stream().noneMatch(UserRole::isSystemUser)
-            && this.hasAnyOrgRoleFrom(List.of(OrganisationalRole.CTSC));
+        return this.hasAnyOrgRoleFrom(List.of(OrganisationalRole.CTSC));
     }
 
 }
