@@ -452,11 +452,12 @@ bootJar {
 test {
   maxHeapSize = "1024m"
   useJUnitPlatform()
-  jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
+//  jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 }
 
 integration {
   maxHeapSize = "1024m"
+  maxParallelForks = 4
   useJUnitPlatform()
   jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 }
