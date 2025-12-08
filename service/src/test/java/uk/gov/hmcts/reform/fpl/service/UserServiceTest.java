@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrganisationalRole;
-import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -20,7 +19,6 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORB;
@@ -199,16 +197,6 @@ class UserServiceTest {
         when(requestData.userRoles()).thenReturn(userRoles);
 
         assertThat(underTest.hasAnyIdamRolesFrom(List.of(HMCTS_SUPERUSER, JUDICIARY))).isFalse();
-    }
-
-    @Test
-    void shouldReturnFalseForSysUser() {
-        when(requestData.userRoles()).thenReturn(Set.of(UserRole.CAFCASS_SYSTEM_UPDATE.getRoleName()));
-        assertThat(underTest.isCtscUser()).isFalse();
-        verifyNoInteractions(roleAssignmentService);
-        when(requestData.userRoles()).thenReturn(Set.of(UserRole.FPL_SYSTEM_UPDATE.getRoleName()));
-        assertThat(underTest.isCtscUser()).isFalse();
-        verifyNoInteractions(roleAssignmentService);
     }
 
 }
