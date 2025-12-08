@@ -35,7 +35,8 @@ export default defineConfig({
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
         // Record trace only when retrying a test for the first time.
-        trace: 'on-first-retry'
+        trace: 'on-first-retry',
+        navigationTimeout: 60_000,
 
     },
 
