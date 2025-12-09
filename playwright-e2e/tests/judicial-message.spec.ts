@@ -27,13 +27,14 @@ test.describe('send and reply message', () => {
             await judicialMessages.gotoNextStep('Send messages');
             await judicialMessages.sendMessageToAllocatedJudgeWithApplication();
             await judicialMessages.checkYourAnsAndSubmit();
+            const sendDate = formatToLongDate12hrTime(new Date());
             await judicialMessages.tabNavigation('Judicial messages');
 
 
             await judicialMessages.assertJudicialMessageHeaders();
             await expect(judicialMessages.page.getByText('Open', {exact: true})).toBeVisible();
             await expect(page.getByRole('cell', {
-                name: formatToLongDate12hrTime(new Date()),
+                name: sendDate,
                 exact: true
             }).locator('span')).toBeVisible();
             await expect(judicialMessages.page.getByText('To the allocated judge - Regard Hearing')).toBeVisible();
