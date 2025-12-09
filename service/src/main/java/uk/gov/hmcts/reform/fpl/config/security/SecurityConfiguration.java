@@ -38,9 +38,9 @@ public class SecurityConfiguration {
         http
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.decoder(jwtDecoder)))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/callback/**")
-                .authenticated());
+            .authorizeRequests()
+            .requestMatchers("/callback/**")
+            .authenticated();
         return http.build();
     }
 
@@ -49,7 +49,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
+            .authorizeRequests(auth -> auth
                 .anyRequest().permitAll());
         return http.build();
     }
@@ -63,7 +63,7 @@ public class SecurityConfiguration {
 
         http
             .securityMatcher("/sendRPAEmailByID/**", "/support/**")
-            .authorizeHttpRequests(authorize -> authorize
+            .authorizeRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST, "/sendRPAEmailByID/*", "/support/**")
                 .authenticated())
             .csrf(csrf -> csrf.disable())
