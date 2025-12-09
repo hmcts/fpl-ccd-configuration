@@ -47,12 +47,12 @@ public class ApproveDraftOrdersController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
         CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency", DRAFT_ORDERS_APPROVED,
             "feePaidJudgeTitle");
 
+        CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 
         return respond(caseDetails);
@@ -61,10 +61,9 @@ public class ApproveDraftOrdersController extends CallbackController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
+        CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(approveDraftOrdersService.populateDraftOrdersData(caseData));
 
         if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
