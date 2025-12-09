@@ -113,7 +113,7 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
 
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
         assertThat(responseData.getHearingOrdersBundlesDrafts()).isEmpty();
-        assertThat(responseData.getReviewCMODecision()).isEqualTo(reviewDecision);
+        assertThat(responseData.getReviewCMODecision()).isNull();
         assertThat(responseData.getOrdersToBeSent()).containsOnly(
             element(cmoElement.getId(),
                 cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ").build())
