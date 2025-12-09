@@ -52,7 +52,7 @@ public class CaseInitiationController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetailsMap caseData = caseDetailsMap(callbackrequest.getCaseDetails());
-        log.info("Java version: {}", System.getProperty("java.version"));
+        log.info("Java version {}", System.getProperty("java.version"));
         if (caseInitiationService.isUserLocalAuthority()) {
             caseData.put("isLocalAuthority", YesNo.YES);
         } else {
