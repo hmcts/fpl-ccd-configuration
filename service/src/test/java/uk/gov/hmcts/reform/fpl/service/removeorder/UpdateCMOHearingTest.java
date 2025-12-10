@@ -88,6 +88,27 @@ class UpdateCMOHearingTest {
     }
 
     @Test
+    void shouldReturnLinkedHearingById() {
+        Element<HearingBooking> hearingWithCMOId = element(HEARING_ID, HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(HEARING_START_DATE)
+            .build());
+
+        Element<HearingOrder> linkedCMO = element(CMO_ID, HearingOrder.builder()
+            .type(DRAFT_CMO)
+            .status(DRAFT)
+            .hearingId(HEARING_ID)
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(hearingWithCMOId))
+            .build();
+
+        assertThat(underTest.getHearingToUnlink(caseData, CMO_ID, linkedCMO.getValue()))
+            .isEqualTo(hearingWithCMOId.getValue());
+    }
+
+    @Test
     void shouldThrowExceptionWhenNoHearingFoundForTheCMOId() {
         HearingBooking hearingWithCMOId = hearing(CMO_ID, HEARING_START_DATE);
 

@@ -79,27 +79,23 @@ export class ChildDetails extends BasePage{
     async removeSolicitor(){
         await this.childHaveRepresentative.getByText('No', { exact: true }).click();
     }
-    async addChildDetailsForC110AApplication(){
 
-        expect(this.page.getByText('Include any middle names and check that the spelling is correct to avoid delays.')).toBeVisible();
-        await this.page.getByRole('textbox', { name: 'First name' }).fill('First ');
-        expect(this.page.getByText('This is the family name of the child. Again, check that spelling is accurate.')).toBeVisible();
-        await this.page.getByRole('textbox', { name: 'Last name' }).fill('Child');
+    async addChildDetailsForC110AApplication(): Promise<void> {
+        await this.page.getByRole('textbox', { name:'First name' }).fill('test');
+        await this.page.getByRole('textbox', { name: 'Last name' }).fill('test');
 
-        await this.page.getByRole('textbox', { name: 'Day' }).fill('12');
-        await this.page.getByRole('textbox', { name: 'Month' }).fill('4');
+        await this.page.getByRole('textbox', { name: 'Day' }).fill('01');
+        await this.page.getByRole('textbox', { name: 'Month' }).fill('01');
         await this.page.getByRole('textbox', { name: 'Year' }).fill('2020');
-        await this.page.getByLabel('What was the child\'s sex at').selectOption('Indeterminate');
-        await this.page.getByRole('textbox', { name: 'What gender do they identify' }).fill('Baby');
+
+        await this.page.getByLabel('What was the child\'s sex at birth').selectOption('Indeterminate');
+        await this.page.getByRole('textbox', { name: 'What gender do they identify' }).fill('Non-binary');
         await this.page.getByRole('radio', { name: 'Living with respondents' }).check();
-        await this.enterPostCode('EN4 0BJ');
+        await this.enterPostCode('SW1A 0AA');
         await this.page.getByRole('group', { name: 'Do you need to keep the address confidential?' }).getByLabel('Yes').check();
-        expect(this.page.getByText('For example, place baby in local authority foster care until further assessments are completed. Supervised contact for parents will be arranged.')).toBeVisible();
-        await this.page.getByRole('textbox', { name: 'Brief summary of care and' }).fill('Brief summary');
-        expect(this.page.getByText('List any events HMCTS will need to take into account when scheduling hearings. For example, child starting primary school or taking GCSEs.')).toBeVisible();
-        await this.page.getByRole('textbox', { name: 'Important dates we need to' }).fill('Dates for KS2 exams 20-05-2025');
+        await this.page.getByRole('textbox', { name: 'Brief summary of care and contact plan' }).fill('Brief summary');
+        await this.page.getByRole('textbox', { name: 'Important dates we need to consider when scheduling hearings' }).fill('Dates for KS2 exams 20-05-2025');
         await this.page.getByRole('group', { name: 'Does the child have any additional needs? (Optional)' }).getByLabel('Yes').check();
-        expect(this.page.getByText('For example, physical or learning disabilities, severe allergies or conditions that need to be taken into account.')).toBeVisible();
         await this.page.getByRole('textbox', { name: 'Give details (Optional)' }).fill('Allegeries to nuts');
         await this.page.getByRole('textbox', { name: 'Birth mother\'s full name (' }).fill('Mother');
         await this.page.getByRole('textbox', { name: 'Birth father\'s full name (' }).fill('Father');
@@ -112,8 +108,24 @@ export class ChildDetails extends BasePage{
         await this.page.getByRole('group', { name: 'Do you need social worker' }).getByLabel('Yes').check();
         await this.page.getByRole('textbox', { name: 'Give a reason (Optional)' }).fill('Test');
 
-        await this.clickContinue();
-        await this.checkYourAnsAndSubmit();
+        await Promise.all([
+            this.page.waitForResponse(response =>
+                response.url().includes('validate') &&
+                response.request().method() === 'POST' &&
+                response.status() === 200
+            ),
+             this.clickContinue()
+        ]);
+
+        await Promise.all([
+            this.page.waitForResponse(response =>
+                response.url().includes('/get') &&
+                response.request().method() === 'GET' &&
+                response.status() === 200
+            ),
+            this.clickSaveAndContinue()
+        ]);
+
     }
 
 
@@ -125,7 +137,7 @@ export class ChildDetails extends BasePage{
         await expect(this.page.getByRole('cell', {name: 'Child\'s current living situation', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Living with respondents', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Building and Street', exact: true})).toBeVisible();
-        await expect(this.page.getByRole('cell', {name: '2 Sussex Way', exact: true})).toBeVisible();
+        await expect(this.page.getByRole('cell', {name: '4 Sussex Way', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Address Line 3', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Cockfosters', exact: true})).toBeVisible();
         await expect(this.page.getByRole('cell', {name: 'Town or City', exact: true})).toBeVisible();

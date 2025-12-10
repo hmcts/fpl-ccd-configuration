@@ -4,8 +4,8 @@ import {BasePage} from "./base-page";
 export class OrdersAndDirectionSought extends BasePage{
   readonly page: Page;
   readonly OrdersAndDirectionsHeading: Locator;
-  readonly OrdersAndDirectionsSought: Locator;
-  readonly WhichOrdersDoYouNeedCareOrder: Locator;
+  readonly ordersAndDirectionsSoughtLink: Locator;
+  readonly careOrderCheckbox: Locator;
   readonly DoYouNeedAnyOtherDirections: Locator;
   readonly WhichCourtAreYouIssuingFor: Locator;
   readonly variationOfSupervisionOrder: Locator;
@@ -16,8 +16,8 @@ export class OrdersAndDirectionSought extends BasePage{
     super(page);
     this.page = page;
     this.OrdersAndDirectionsHeading = page.getByRole("heading", {name: "Orders and directions sought",level:1});
-    this.OrdersAndDirectionsSought = page.getByRole("link", { name: "Orders and directions sought" });
-    this.WhichOrdersDoYouNeedCareOrder = page.getByLabel("Care order", { exact: true });
+    this.ordersAndDirectionsSoughtLink = page.getByRole("link", { name: "Orders and directions sought" });
+    this.careOrderCheckbox = page.getByLabel("Care order", { exact: true });
     this.DoYouNeedAnyOtherDirections = page.getByRole('group', { name: 'Do you need any other directions?' });
     this.WhichCourtAreYouIssuingFor = page.getByRole('group', { name: 'Orders and directions sought' }).getByLabel('Which court are you issuing');
     this.variationOfSupervisionOrder =page.getByRole('group', { name: 'Which orders are you asking' }).getByRole('checkbox', { name: 'Variation of supervision' });
@@ -25,35 +25,32 @@ export class OrdersAndDirectionSought extends BasePage{
     this.orderDetails = page.getByRole('textbox', { name: 'Which order do you need?' });
   }
 
-  async ordersAndDirectionsNeeded() {
-    // await expect(this.OrdersAndDirectionsSought).toBeVisible();
-    // await this.OrdersAndDirectionsSought.click();
-    await expect(()=>{
-        expect(this.OrdersAndDirectionsSought).toBeVisible();
-        this.OrdersAndDirectionsSought.click();
-        expect(this.OrdersAndDirectionsSought).toBeHidden();
-        this.page.reload();
-    }).toPass();
-
-    await expect(this.OrdersAndDirectionsHeading).toBeVisible();
-    await this.WhichOrdersDoYouNeedCareOrder.click();
-    await this.DoYouNeedAnyOtherDirections.getByRole('radio', { name: 'No' }).check();
-    await this.WhichCourtAreYouIssuingFor.selectOption('Barnet');
-    await this.clickContinue();
-    await this.checkYourAnsAndSubmit();
-      await expect(this.page.getByText('has been updated with event:')).toBeVisible();
-
+  async ordersAndDirectionsNeeded(): Promise<void> {
+      await expect(this.ordersAndDirectionsSoughtLink).toBeVisible();
+      await this.gotoNextStep('Orders and directions sought');
+      await this.careOrderCheckbox.click();
+      await this.DoYouNeedAnyOtherDirections.getByRole('radio', { name: 'No' }).check();
+      await this.WhichCourtAreYouIssuingFor.selectOption('Barnet');
+      await Promise.all([
+          this.page.waitForResponse((response) =>
+              response.url().includes('validate?pageId=ordersNeeded1') &&
+              response.status() === 200
+          ),
+          this.clickContinue()
+      ]);
+      await Promise.all([
+          this.page.waitForResponse((response) =>
+            response.url().includes('api/wa-supported-jurisdiction/get') &&
+            response.status() === 200
+          ),
+          this.checkYourAnsAndSubmit()
+      ]);
   }
+
   async SoliciotrC110AAppOrderAndDirectionNeeded(){
 
-      // await expect(this.OrdersAndDirectionsSought).toBeVisible();
-      // await this.OrdersAndDirectionsSought.click();
-      await expect(()=>{
-          expect(this.OrdersAndDirectionsSought).toBeVisible();
-          this.OrdersAndDirectionsSought.click();
-          expect(this.OrdersAndDirectionsSought).toBeHidden();
-          this.page.reload();
-      }).toPass();
+      await expect(this.ordersAndDirectionsSoughtLink).toBeVisible();
+      await this.gotoNextStep('Orders and directions sought')
       await expect(this.OrdersAndDirectionsHeading).toBeVisible();
 
       await this.variationOfSupervisionOrder.check();

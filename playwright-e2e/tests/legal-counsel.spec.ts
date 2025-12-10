@@ -18,16 +18,17 @@ test.describe('Respondent solicitor counsel ', () => {
     let caseName: string;
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('Respondent solicitor add counsel @xbrowser',
         async ({page, signInPage, legalCounsel}) => {
             caseName = 'Respondent Solicitor add Counsel ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseWithResSolicitor);
-            await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
+            expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
+            expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await legalCounsel.gotoNextStep('Add or remove counsel');
             await legalCounsel.clickContinue();
             await legalCounsel.toAddLegalCounsel();
@@ -39,7 +40,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await expect(page.locator('#case-viewer-field-read--respondents1')).toContainText('FPLSolicitorOrg');
             await legalCounsel.clickSignOut();
             await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await expect(page.getByRole('heading', {name: caseName})).toBeVisible();
             await expect(page.locator('h1')).toContainText(caseName);
         });
@@ -47,12 +48,12 @@ test.describe('Respondent solicitor counsel ', () => {
     test('Respondent solicitor remove counsel',
         async ({page, signInPage, legalCounsel}) => {
             caseName = 'Respondent solicitor remove counsel ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseWithResSolCounsel);
-            await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
-            await giveAccessToCase(caseNumber, FPLSolicitorOrgUser, '[BARRISTER]');
+            expect(await updateCase(caseName, caseNumber, caseWithResSolCounsel)).toBeTruthy();
+            expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
+            expect(await giveAccessToCase(caseNumber, FPLSolicitorOrgUser, '[BARRISTER]')).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await legalCounsel.gotoNextStep('Add or remove counsel');
             await legalCounsel.clickContinue();
             await legalCounsel.toRemoveLegalCounsel();
@@ -62,7 +63,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await expect(page.getByText('Counsel', {exact: true})).toBeHidden;
             await legalCounsel.clickSignOut();
             await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await expect(page.getByRole('heading', {name: caseName})).toBeHidden;
         });
 
@@ -70,16 +71,16 @@ test.describe('Respondent solicitor counsel ', () => {
         async ({page, signInPage, legalCounsel}) => {
             caseName = 'Respondent representative removed ' + dateTime.slice(0, 10);
             if (urlConfig.env== 'demo'){
-                await updateCase(caseName, caseNumber, caseWithResSolCounselDemo);
+                expect(await updateCase(caseName, caseNumber, caseWithResSolCounselDemo)).toBeTruthy();
             }
             else{
-                await updateCase(caseName, caseNumber, caseWithResSolCounsel);
+                expect( await updateCase(caseName, caseNumber, caseWithResSolCounsel)).toBeTruthy();
             }
-            await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
-            await giveAccessToCase(caseNumber, FPLSolicitorOrgUser, '[BARRISTER]');
+            expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
+            expect(await giveAccessToCase(caseNumber, FPLSolicitorOrgUser, '[BARRISTER]')).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await legalCounsel.gotoNextStep('Respondents');
             await legalCounsel.removeRepresentative();
             await legalCounsel.clickContinue();
@@ -91,7 +92,7 @@ test.describe('Respondent solicitor counsel ', () => {
             })).toBeVisible;
             await legalCounsel.clickSignOut();
             await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await expect(page.getByRole('heading', {name: caseName})).toBeHidden;
         });
 

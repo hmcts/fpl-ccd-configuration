@@ -12,6 +12,7 @@ test.describe('Placement', () => {
   let caseName: string;
   test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    expect(caseNumber).toBeDefined();
   });
 
   test('Check Placement Application High Court WA Task @xbrowser',
@@ -19,10 +20,10 @@ test.describe('Placement', () => {
       caseFileView }) => {
       caseName = 'Placement Application High Court WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await placement.gotoNextStep('Placement');
       await placement.submitPlacementOrder();
@@ -41,7 +42,7 @@ test.describe('Placement', () => {
         //Test WA Task exists
         await signInPage.visit();
         await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await placement.tabNavigation('Tasks');
         await placement.waitForTask('Check Placement Application (High Court)');
 
@@ -61,10 +62,10 @@ test.describe('Placement', () => {
       caseFileView }) => {
       caseName = 'CTSC actions notice of placement' + dateTime.slice(0, 10);
       setHighCourt(caseData);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await placement.gotoNextStep('Placement');
       await placement.noticeOfPlacement();

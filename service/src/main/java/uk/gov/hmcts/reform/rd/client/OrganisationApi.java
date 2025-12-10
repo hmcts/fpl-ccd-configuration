@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.config.feign.FeignClientConfiguration;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
+import uk.gov.hmcts.reform.rd.model.PbaOrganisationResponse;
 import uk.gov.hmcts.reform.rd.model.Status;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -46,4 +47,10 @@ public interface OrganisationApi {
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "id") String organisationId
     );
+
+    @GetMapping(value = "/refdata/external/v1/organisations/pbas")
+    PbaOrganisationResponse retrievePbaNumbers(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
+        @RequestHeader("UserEmail") String email);
 }
