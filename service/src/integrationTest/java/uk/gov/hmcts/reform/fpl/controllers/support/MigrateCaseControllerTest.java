@@ -46,32 +46,4 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         givenSystemUser();
         givenFplService();
     }
-
-    @Nested
-    class Dfpl2818 {
-        @Test
-        void shouldBlankLegacyDocumentViewFieldsIfPresent() {
-            CaseData caseData = CaseData.builder().build();
-            CaseDetails caseDetails = buildCaseDetails(caseData, "DFPL-2818");
-            caseDetails.getData().put("documentViewHMCTS", "someValue");
-            caseDetails.getData().put("documentViewLA", "anotherValue");
-            caseDetails.getData().put("documentViewNC", "thirdValue");
-
-            Map<String, Object> data = postAboutToSubmitEvent(caseDetails).getData();
-            assertThat(data.get("documentViewHMCTS")).isEqualTo("");
-            assertThat(data.get("documentViewLA")).isEqualTo("");
-            assertThat(data.get("documentViewNC")).isEqualTo("");
-        }
-
-        @Test
-        void shouldNotFailIfFieldsAreAbsent() {
-            CaseData caseData = CaseData.builder().build();
-            CaseDetails caseDetails = buildCaseDetails(caseData, "DFPL-2818");
-
-            Map<String, Object> data = postAboutToSubmitEvent(caseDetails).getData();
-            assertThat(data.containsKey("documentViewHMCTS")).isFalse();
-            assertThat(data.containsKey("documentViewLA")).isFalse();
-            assertThat(data.containsKey("documentViewNC")).isFalse();
-        }
-    }
 }
