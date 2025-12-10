@@ -203,6 +203,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         }
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
         return respond(caseDetails);
     }
