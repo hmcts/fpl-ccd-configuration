@@ -456,7 +456,7 @@ test {
 
 integration {
   maxHeapSize = "1024m"
-//  maxParallelForks = 4
+  maxParallelForks = 4
   useJUnitPlatform()
   jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 }
