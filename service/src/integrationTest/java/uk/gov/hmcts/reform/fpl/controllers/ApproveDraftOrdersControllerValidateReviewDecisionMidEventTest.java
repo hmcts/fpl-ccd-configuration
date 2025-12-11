@@ -142,6 +142,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             hearingOrdersBundleId, newArrayList(draftOrder1, draftOrder2));
 
         ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder()
+            .draftOrder1Document(order)
             .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
             .build();
 
@@ -191,6 +192,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             hearingOrdersBundleId, newArrayList(draftOrder1, draftOrder2));
 
         ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder()
+            .draftOrder1Document(order)
             .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
             .build();
 
