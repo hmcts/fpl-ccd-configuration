@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -9,10 +8,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-import java.util.Map;
 import java.util.NoSuchElementException;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @WebMvcTest(MigrateCaseController.class)
@@ -45,33 +42,5 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     void setup() {
         givenSystemUser();
         givenFplService();
-    }
-
-    @Nested
-    class Dfpl2818 {
-        @Test
-        void shouldBlankLegacyDocumentViewFieldsIfPresent() {
-            CaseData caseData = CaseData.builder().build();
-            CaseDetails caseDetails = buildCaseDetails(caseData, "DFPL-2818");
-            caseDetails.getData().put("documentViewHMCTS", "someValue");
-            caseDetails.getData().put("documentViewLA", "anotherValue");
-            caseDetails.getData().put("documentViewNC", "thirdValue");
-
-            Map<String, Object> data = postAboutToSubmitEvent(caseDetails).getData();
-            assertThat(data.get("documentViewHMCTS")).isEqualTo("");
-            assertThat(data.get("documentViewLA")).isEqualTo("");
-            assertThat(data.get("documentViewNC")).isEqualTo("");
-        }
-
-        @Test
-        void shouldNotFailIfFieldsAreAbsent() {
-            CaseData caseData = CaseData.builder().build();
-            CaseDetails caseDetails = buildCaseDetails(caseData, "DFPL-2818");
-
-            Map<String, Object> data = postAboutToSubmitEvent(caseDetails).getData();
-            assertThat(data.containsKey("documentViewHMCTS")).isFalse();
-            assertThat(data.containsKey("documentViewLA")).isFalse();
-            assertThat(data.containsKey("documentViewNC")).isFalse();
-        }
     }
 }
