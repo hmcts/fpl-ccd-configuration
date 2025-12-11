@@ -277,7 +277,7 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Updates the summary tab'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpdateSummaryCaseDetails'
-      cron: 0 * 3 ? * * * # might be a longer running job
+      cron: 0 * * ? * * * # might be a longer running job
     - name: 'Undelivered emails'
       enabled: false
       cronGroup: "NIGHTLY_CRON"
