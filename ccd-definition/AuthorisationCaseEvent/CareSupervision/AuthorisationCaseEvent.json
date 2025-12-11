@@ -1886,7 +1886,6 @@
           "[SOLICITORA]",
           "[CHILDSOLICITORA]",
           "[APPSOLICITOR]",
-          "[CHILDSOLICITORA]",
           "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
