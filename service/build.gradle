@@ -278,7 +278,7 @@ repositories {
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
 // enforces it's own (older) version which is not recommended.
 def versions = [
-  reformLogging   : '5.1.9',
+  reformLogging   : '6.1.9',
   springBoot      : springBoot.class.package.implementationVersion,
   log4j           : '2.24.3',
   logbackVersion  : '1.5.14',
@@ -332,7 +332,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.1.0'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.2'
   implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.1.1'
-  implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '4.0.4'
+  implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '5.1.1'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.59.2'
