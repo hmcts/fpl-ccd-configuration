@@ -348,7 +348,7 @@ dependencies {
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.hmctsLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.hmctsLogging
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging-spring', version: '5.1.9'
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging-spring', version: '5.1.7'
 
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.5'
