@@ -255,7 +255,7 @@ bankHolidays:
     url: "https://www.gov.uk"
 
 scheduler:
-  enabled: ${SCHEDULER_ENABLED:true}
+  enabled: true
   datasourceConf:
     name: schedulerDataSource
     driver-class-name: org.postgresql.Driver
