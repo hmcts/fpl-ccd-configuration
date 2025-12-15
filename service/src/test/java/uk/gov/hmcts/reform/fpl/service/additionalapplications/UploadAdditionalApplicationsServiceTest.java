@@ -556,7 +556,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionIfJudicialLookupFails() {
+    void shouldReturnStandardCtscRoleWhenNoAllocatedJudgeOrLegalAdvisor() {
         Judge allocatedJudge = Judge.builder()
             .judgeJudicialUser(JudicialUser.builder()
                 .idamId("1234")
@@ -570,10 +570,8 @@ class UploadAdditionalApplicationsServiceTest {
 
         when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.empty());
 
-        UserLookupException thrownException = assertThrows(UserLookupException.class,
-            () -> underTest.getAllocatedJudgeOrLegalAdviserType(caseData));
-        assertThat(thrownException.getMessage())
-            .contains("No allocated judge or legal adviser found for case id: 1234");
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
     }
 
     @Nested

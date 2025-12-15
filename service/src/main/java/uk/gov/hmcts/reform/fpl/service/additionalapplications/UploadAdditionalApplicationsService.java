@@ -347,9 +347,8 @@ public class UploadAdditionalApplicationsService {
         Optional<Judge> allocatedJudgeLegalAdviser = judicialService.getAllocatedJudge(caseData);
 
         if (allocatedJudgeLegalAdviser.isEmpty()) {
-            throw new UserLookupException(
-                String.format("No allocated judge or legal adviser found for case id: %s",
-                    caseData.getId()));
+            // Using this as a placeholder for no allocated judge/legal adviser until C2 work is complete
+            return JudicialMessageRoleType.CTSC;
         } else {
             List<String> roleTypes = judicialService
                 .getAllocatedJudgeAndLegalAdvisorRoleAssignments(caseData.getId())
