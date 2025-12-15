@@ -107,16 +107,26 @@ public class ReviewDraftOrdersData {
 
     @JsonIgnore
     public boolean hasADraftBeenApprovedWithoutChanges() {
-        return (!isEmpty(reviewDecision1) && reviewDecision1.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
-            || (!isEmpty(reviewDecision2) && reviewDecision2.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
-            || (!isEmpty(reviewDecision3) && reviewDecision3.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
-            || (!isEmpty(reviewDecision4) && reviewDecision4.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
-            || (!isEmpty(reviewDecision5) && reviewDecision5.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
-            || (!isEmpty(reviewDecision6) && reviewDecision6.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
-            || (!isEmpty(reviewDecision7) && reviewDecision7.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
-            || (!isEmpty(reviewDecision8) && reviewDecision8.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
-            || (!isEmpty(reviewDecision9) && reviewDecision9.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
-            || (!isEmpty(reviewDecision10) && reviewDecision10.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES));
+        return (!isEmpty(draftOrder1Document) && !isEmpty(reviewDecision1)
+                && reviewDecision1.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(draftOrder2Document) && !isEmpty(reviewDecision2)
+                && reviewDecision2.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(draftOrder3Document) && !isEmpty(reviewDecision3)
+                && reviewDecision3.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(draftOrder4Document) && !isEmpty(reviewDecision4)
+                && reviewDecision4.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(draftOrder5Document) && !isEmpty(reviewDecision5)
+                && reviewDecision5.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(draftOrder6Document) && !isEmpty(reviewDecision6)
+                && reviewDecision6.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(draftOrder7Document) && !isEmpty(reviewDecision7)
+                && reviewDecision7.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(draftOrder8Document) && !isEmpty(reviewDecision8)
+                && reviewDecision8.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(draftOrder9Document) && !isEmpty(reviewDecision9)
+                && reviewDecision9.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES))
+            || (!isEmpty(draftOrder10Document) && !isEmpty(reviewDecision10)
+                && reviewDecision10.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES));
     }
 
     public ReviewDecision getReviewDecision(int counter) {
