@@ -5,14 +5,7 @@ buildscript {
 }
 
 plugins {
-  id 'java'
   id 'org.owasp.dependencycheck' version '12.1.1' apply true
-}
-
-java {
-  toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
-  }
 }
 
 repositories {
@@ -22,7 +15,7 @@ repositories {
 dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
   analyzers {
-  // Disable scanning of .NET related binaries
+    // Disable scanning of .NET related binaries
     assemblyEnabled = false
     ossIndex {
       enabled = false
