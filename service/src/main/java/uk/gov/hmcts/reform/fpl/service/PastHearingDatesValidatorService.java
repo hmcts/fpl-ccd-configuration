@@ -61,7 +61,8 @@ public class PastHearingDatesValidatorService {
         List<String> errors = new ArrayList<>();
         if (HOURS_MINS.getType().equals(hearingDuration)
             && ((hearingHours < 0 || hearingMinutes < 0)
-                || (hearingHours == 0 && hearingMinutes == 0))) {
+                || (hearingHours == 0 && hearingMinutes == 0))
+                || (hearingMinutes >= 60)) {
             errors.add("Enter valid hours and minutes");
         }
         return errors;
