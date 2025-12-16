@@ -11,10 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -22,16 +18,10 @@ import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.SendNewMessageJudgeService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
-import static java.lang.String.join;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
 @RestController
@@ -45,10 +35,8 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2837", this::run2837,
-        "DFPL-2818", this::run2818, // release 5/11/25
-        "DFPL-2937", this::run2937,
-        "DFPL-2926", this::run2926
+        "SNI-8284", this::run8284,
+        "DFPL-2957", this::run2957
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -78,86 +66,23 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2926(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2926";
-        final long expectedCaseId = 1733840267300656L;
-        final String orgId = "2ECEP1Z";
+    private void run8284(CaseDetails caseDetails) {
+        final String migrationId = "SNI-8284";
+        final List<Long> expectedCaseIds = List.of(1746789343771015L, 1746786779392316L);
+        final String orgId = "BDWCNNQ";
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, null));
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheckList(caseId, expectedCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), orgId, null));
     }
 
-    private void run2818(CaseDetails caseDetails) {
-        Map<String, Object> data = caseDetails.getData();
-        List.of("documentViewHMCTS", "documentViewLA", "documentViewNC").forEach(field -> {
-            if (data.containsKey(field)) {
-                data.put(field, "");
-            }
-        });
-    }
+    private void run2957(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2957";
+        final Long expectedCaseId = 1758639722902589L;
+        final String orgId = "OXYRC5A";
 
-    private void run2837(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1732700347667956L, "DFPL-2837");
-
-        caseDetails.getData().putAll(migrateCaseService.removeSupportingEvidenceBundleFromAdditionalApplication(
-            caseData,
-            "DFPL-2837",
-            UUID.fromString("bef6a7d7-0ee1-4984-b6a2-1cda165b5b92"),
-            UUID.fromString("4628b139-e483-4918-b809-ca5f065e7131")));
-    }
-
-    private void run2937(CaseDetails caseDetails) {
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1747829458797329L, "DFPL-2937");
-        CaseData caseData = getCaseData(caseDetails);
-        List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
-
-        if (!isEmpty(judicialMessages)) {
-            List<Element<JudicialMessage>> updatedMessages = judicialMessages.stream()
-                .map(element -> element(element.getId(),
-                    formatMessageHistory(element.getValue()))).toList();
-
-            caseDetails.getData().put("judicialMessages", updatedMessages);
-        }
-
-        List<Element<JudicialMessage>> closedJudicialMessages = caseData.getClosedJudicialMessages();
-
-        if (!isEmpty(closedJudicialMessages)) {
-            List<Element<JudicialMessage>> updatedClosedMessages = closedJudicialMessages.stream()
-                .map(element -> element(element.getId(),
-                    formatMessageHistory(element.getValue()))).toList();
-
-            caseDetails.getData().put("closedJudicialMessages", updatedClosedMessages);
-        }
-
-        caseDetails.getData().remove("waTaskUrgency");
-    }
-
-    private JudicialMessage formatMessageHistory(JudicialMessage judicialMessage) {
-        if (!isEmpty(judicialMessage.getJudicialMessageReplies())) {
-
-            List<Element<JudicialMessageReply>> judicialMessageReplySorted = judicialMessage
-                .getJudicialMessageReplies().stream()
-                .sorted(Comparator.comparing(judicialMessageReplyElement ->
-                    judicialMessageReplyElement.getValue().getUpdatedTime()))
-                .toList();
-
-            Optional<String> messageHistory = judicialMessageReplySorted.stream().map(reply -> {
-                String sender = reply.getValue().getReplyFrom();
-                String message = reply.getValue().getMessage();
-
-                return String.format("%s - %s", sender, message);
-            }).reduce((history, historyToAdd) -> join("\n \n", history, historyToAdd));
-
-            return judicialMessage.toBuilder()
-                .messageHistory(messageHistory.orElse(""))
-                .judicialMessageReplies(null)
-                .build();
-        }
-
-        return judicialMessage;
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheckList(caseId, List.of(expectedCaseId), migrationId);
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), orgId, null));
     }
 }
