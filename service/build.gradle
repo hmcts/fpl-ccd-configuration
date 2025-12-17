@@ -463,7 +463,7 @@ integration {
 
 pitest {
   targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
-  threads.set(10)
+  threads.set(4)
   outputFormats.set(['XML', 'HTML'])
   excludedClasses.set([
     'uk.gov.hmcts.reform.fpl.config.*',
