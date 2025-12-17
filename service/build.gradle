@@ -375,9 +375,9 @@ dependencies {
 
   implementation 'org.postgresql:postgresql:42.7.8'
 
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.22.0'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.16.1'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
-  testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '1.2.3'
+  testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '1.2.2'
 
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
@@ -463,7 +463,7 @@ integration {
 
 pitest {
   targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
-  threads.set(4)
+  threads.set(15)
   outputFormats.set(['XML', 'HTML'])
   excludedClasses.set([
     'uk.gov.hmcts.reform.fpl.config.*',
