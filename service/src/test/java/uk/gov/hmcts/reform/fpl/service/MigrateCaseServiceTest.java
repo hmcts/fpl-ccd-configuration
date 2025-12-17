@@ -66,6 +66,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -3709,7 +3710,44 @@ class MigrateCaseServiceTest {
                     MIGRATION_ID, bundleId, evidenceToRemoveId))
                     .isInstanceOf(AssertionError.class)
                     .hasMessageContaining("C2DocumentBundle or SupportingEvidenceBundle is null"));
-;
+        }
+    }
+
+    @Nested
+    class HearingJudgeEmailAddress {
+        @Test
+        void shouldRemoveTrailingOrFollowingPeriodFromEmail() {
+            String email = ".test.account.@governmentspeltwrung.net";
+            String expectedEmail = "test.account@governmentspeltwrung.net";
+
+            assertThat(underTest.fixInvalidEmailAddressFormat(email)).isEqualTo(expectedEmail);
+        }
+
+        @Test
+        void shouldFixJudgeEmailOnSpecifiedHearingBooking() {
+            final UUID hearingId = UUID.randomUUID();
+            final UUID otherHearingId = UUID.randomUUID();
+            final Long caseId = 12345L;
+            final String migrationId = "DFPL-2992";
+            final HearingBooking expectedHearingBooking = HearingBooking.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeEmailAddress("test.account@governmentspeltwrung.net")
+                    .build())
+                .build();
+
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeEmailAddress(".test.account.@governmentspeltwrung.net")
+                    .build())
+                .build();
+
+            List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, hearingBooking),
+                element(otherHearingId, HearingBooking.builder().build()));
+
+            List<Element<HearingBooking>> fixedHearingBookings = underTest.replaceHearingJudgeEmailAddress(migrationId,
+                hearingBookings, hearingId, caseId);
+
+            assertThat(fixedHearingBookings.contains(element(hearingId, expectedHearingBooking))).isTrue();
         }
     }
 }

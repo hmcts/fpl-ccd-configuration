@@ -1368,4 +1368,36 @@ public class MigrateCaseService {
 
         return Map.of("additionalApplicationsBundle", bundles);
     }
+
+    public String fixInvalidEmailAddressFormat(String emailAddress) {
+        String[] email = emailAddress.split("@");
+
+        if (email[0].startsWith(".")) {
+            email[0] = email[0].substring(1);
+        }
+
+        if (email[0].endsWith(".")) {
+            email[0] = email[0].substring(0, email[0].length() - 1);
+        }
+
+        return String.join("@", email);
+    }
+
+    public List<Element<HearingBooking>> replaceHearingJudgeEmailAddress(String migrationId,
+                                                               List<Element<HearingBooking>> hearings,
+                                                               UUID expectedHearingId,
+                                                               Long caseId) {
+        HearingBooking hearingBooking = ElementUtils.findElement(expectedHearingId, hearings)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid hearingId",
+                migrationId, caseId))
+            ).getValue();
+
+        hearingBooking.setJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor().toBuilder()
+            .judgeEmailAddress(fixInvalidEmailAddressFormat(
+                hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress()))
+            .build());
+
+        return hearings;
+    }
 }
