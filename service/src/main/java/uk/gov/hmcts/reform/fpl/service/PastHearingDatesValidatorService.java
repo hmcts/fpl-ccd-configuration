@@ -61,8 +61,7 @@ public class PastHearingDatesValidatorService {
         List<String> errors = new ArrayList<>();
         if (HOURS_MINS.getType().equals(hearingDuration)
             && ((hearingHours < 0 || hearingMinutes < 0)
-                || (hearingHours == 0 && hearingMinutes == 0))
-                || (hearingMinutes >= 60)) {
+                || (hearingHours == 0 && hearingMinutes == 0))) {
             errors.add("Enter valid hours and minutes");
         }
         return errors;
@@ -89,8 +88,9 @@ public class PastHearingDatesValidatorService {
         if (isInvalidField(caseDetails.getData().get("hearingHours"))) {
             errors.add("Hearing length, in hours should be a whole number");
         }
-        if (isInvalidField(caseDetails.getData().get("hearingMinutes"))) {
-            errors.add("Hearing length, in minutes should be a whole number");
+        if (isInvalidField(caseDetails.getData().get("hearingMinutes"))
+            || Integer.parseInt(caseDetails.getData().get("hearingMinutes").toString()) >= 60) {
+            errors.add("Hearing length, in minutes should be a whole number between 0 and 59");
         }
         if (isInvalidField(caseDetails.getData().get("hearingDays"))) {
             errors.add("Hearing length, in days should be a whole number");
