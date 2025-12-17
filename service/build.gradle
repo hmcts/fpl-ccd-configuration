@@ -462,6 +462,7 @@ integration {
 }
 
 pitest {
+  verbose = true
   targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
   threads.set(15)
   outputFormats.set(['XML', 'HTML'])
