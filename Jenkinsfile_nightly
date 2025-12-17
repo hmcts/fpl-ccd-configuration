@@ -92,7 +92,7 @@ withNightlyPipeline(type, product, component) {
 
     before('mutationTest') {
         setupSecretsForIntegrationTests(pipelineConf)
-        steps {
+        stage('Print Java Version for PIT') {
           sh 'java -version'
         }
     }
