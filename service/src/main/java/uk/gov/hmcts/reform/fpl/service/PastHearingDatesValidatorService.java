@@ -90,7 +90,7 @@ public class PastHearingDatesValidatorService {
         }
         if (isInvalidField(caseDetails.getData().get("hearingMinutes"))
             || Integer.parseInt(caseDetails.getData().get("hearingMinutes").toString()) >= 60) {
-            errors.add("Hearing length, in minutes should be a whole number between 0 and 59");
+            errors.add("Hearing length, in minutes should be a whole number");
         }
         if (isInvalidField(caseDetails.getData().get("hearingDays"))) {
             errors.add("Hearing length, in days should be a whole number");
