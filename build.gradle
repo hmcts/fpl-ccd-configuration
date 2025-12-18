@@ -12,6 +12,8 @@ repositories {
   mavenCentral()
 }
 
+var pipelineJavaVersion = "JavaLanguageVersion.of(21)"
+
 dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
   analyzers {
