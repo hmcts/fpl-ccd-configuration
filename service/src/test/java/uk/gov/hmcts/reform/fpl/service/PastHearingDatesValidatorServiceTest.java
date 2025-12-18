@@ -141,7 +141,7 @@ class PastHearingDatesValidatorServiceTest {
         final List<String> errorList = service.validateHearingIntegers(caseDetails);
 
         assertThat(errorList)
-            .containsOnly("Hearing length, in minutes cannot exceed 59");
+            .containsOnly("Hearing length, in minutes, cannot exceed 59");
     }
 
     @ParameterizedTest

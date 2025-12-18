@@ -83,6 +83,17 @@ public class PastHearingDatesValidatorService {
         }
     }
 
+    private boolean isInvalidMinuteRange(Object s) {
+        if (s == null) {
+            return false;
+        }
+        try {
+            return Integer.parseInt(s.toString()) >= 60;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
     public List<String> validateHearingIntegers(CaseDetails caseDetails) {
         List<String> errors = new ArrayList<>();
         if (isInvalidField(caseDetails.getData().get("hearingHours"))) {
@@ -91,8 +102,8 @@ public class PastHearingDatesValidatorService {
         if (isInvalidField(caseDetails.getData().get("hearingMinutes"))) {
             errors.add("Hearing length, in minutes should be a whole number");
         }
-        if (Integer.parseInt(caseDetails.getData().get("hearingMinutes").toString()) >= 60) {
-            errors.add("Hearing length, in minutes cannot exceed 59");
+        if (isInvalidMinuteRange(caseDetails.getData().get("hearingMinutes"))) {
+            errors.add("Hearing length, in minutes, cannot exceed 59");
         }
         if (isInvalidField(caseDetails.getData().get("hearingDays"))) {
             errors.add("Hearing length, in days should be a whole number");
