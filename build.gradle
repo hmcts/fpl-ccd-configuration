@@ -12,6 +12,12 @@ repositories {
   mavenCentral()
 }
 
+// This is cheating workaround to how Platops Jenkins pipeline detecting Java version
+// For more details on how the pipeline detect and setup Java version,
+// Ref: cnp-jenkins-library src/uk/gov/hmcts/contino/GradleBuilder.groovy function setupToolVersion()
+// We will need to move our nested Gradle build script to this root script in the near future
+var pipelineJavaVersion = "JavaLanguageVersion.of(21)"
+
 dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
   analyzers {
