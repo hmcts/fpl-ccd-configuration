@@ -133,6 +133,17 @@ class PastHearingDatesValidatorServiceTest {
                                        "Hearing length, in minutes should be a whole number");
     }
 
+    @Test
+    void shouldReturnErrorsWhenHearingMinutesAreOutOfRange() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("hearingHours", "1","hearingMinutes", "61"))
+            .build();
+        final List<String> errorList = service.validateHearingIntegers(caseDetails);
+
+        assertThat(errorList)
+            .containsOnly("Hearing length, in minutes cannot exceed 59");
+    }
+
     @ParameterizedTest
     @MethodSource("invalidHoursMinutesSource")
     void shouldReturnValidationErrorWhenHearingHoursOrMinutesAreInvalid(int hours, int minutes) {
