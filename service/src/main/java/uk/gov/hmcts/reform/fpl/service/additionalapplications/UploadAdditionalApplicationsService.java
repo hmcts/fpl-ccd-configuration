@@ -3,12 +3,16 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -23,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -54,6 +59,8 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -72,6 +79,7 @@ public class UploadAdditionalApplicationsService {
     private final DocumentSealingService documentSealingService;
     private final DocumentConversionService documentConversionService;
     private final PbaService pbaService;
+    private final JudicialService judicialService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -334,6 +342,32 @@ public class UploadAdditionalApplicationsService {
 
         return data;
     }
+
+    public JudicialMessageRoleType getAllocatedJudgeOrLegalAdviserType(CaseData caseData) {
+        Optional<Judge> allocatedJudgeLegalAdviser = judicialService.getAllocatedJudge(caseData);
+
+        if (allocatedJudgeLegalAdviser.isEmpty()) {
+            // Using this as a placeholder for no allocated judge/legal adviser until C2 work is complete
+            return JudicialMessageRoleType.CTSC;
+        } else {
+            List<String> roleTypes = judicialService
+                .getAllocatedJudgeAndLegalAdvisorRoleAssignments(caseData.getId())
+                .stream()
+                .map((RoleAssignment::getRoleName))
+                .toList();
+
+            if (roleTypes.contains(ALLOCATED_JUDGE.getRoleName())) {
+                return JudicialMessageRoleType.ALLOCATED_JUDGE;
+            } else if (roleTypes.contains(ALLOCATED_LEGAL_ADVISER.getRoleName())) {
+                return JudicialMessageRoleType.OTHER;
+            } else {
+                throw new UserLookupException(
+                    String.format("Allocated judge or legal adviser has invalid am role for case id: %s",
+                        caseData.getId()));
+            }
+        }
+    }
+
 
     public PBAPayment updatePBAPayment(PBAPayment pbaPayment, boolean isCTSCUser) {
         if (pbaPayment != null && !NO.getValue().equals(pbaPayment.getUsePbaPayment())) {
