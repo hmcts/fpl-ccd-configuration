@@ -40,6 +40,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHA
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -399,14 +401,13 @@ public class ApproveDraftOrdersService {
     }
 
     public String getJudgeTitleAndNameOfCurrentUser(CaseData caseData) {
-        return switch (caseData.getAllocateJudgeEventData().getJudgeType()) {
-            case LEGAL_ADVISOR
-                -> caseData.getAllocateJudgeEventData().getManualJudgeDetails().getJudgeFullName();
-            case FEE_PAID_JUDGE
-                -> judicialService.getJudgeTitleAndNameOfCurrentUser(caseData.getAllocateJudgeEventData()
-                    .getFeePaidJudgeTitle());
-            default -> judicialService.getJudgeTitleAndNameOfCurrentUser(null); // Salaried Judge
-        };
+        if (LEGAL_ADVISOR.equals(caseData.getAllocateJudgeEventData().getJudgeType())) {
+            return caseData.getAllocateJudgeEventData().getManualJudgeDetails().getJudgeFullName();
+        } else {
+            return judicialService.getJudgeTitleAndNameOfCurrentUser(
+                (FEE_PAID_JUDGE.equals(caseData.getAllocateJudgeEventData().getJudgeType()))
+                    ? caseData.getAllocateJudgeEventData().getFeePaidJudgeTitle() : null);
+        }
     }
 
     public Map<String, Object> previewOrderWithCoverSheet(CaseData caseData) {

@@ -101,15 +101,16 @@ public class ApproveDraftOrdersController extends CallbackController {
                     if (judicialService.isCurrentUserFeePaidJudge()) {
                         data.put("judgeType", FEE_PAID_JUDGE);
                     } else {
-                        data.put("judgeType", LEGAL_ADVISOR);
-//                        data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData.toBuilder()
-//                            .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
-//                                .judgeTitleAndName(approveDraftOrdersService
-//                                    .getJudgeTitleAndNameOfCurrentUser(caseData))
-//                                .build())
-//                            .build()));
+                        // Salaried Judge route - automatically populate judge title and name
+                        data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData.toBuilder()
+                            .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+                                .judgeTitleAndName(approveDraftOrdersService
+                                    .getJudgeTitleAndNameOfCurrentUser(caseData))
+                                .build())
+                            .build()));
                     }
                 } catch (Exception e) {
+                    // Legal advisor don't have Judicial profiles
                     log.error("Fail to get judge title and name. Entering Legal advisor route", e);
                     data.put("judgeType", LEGAL_ADVISOR);
                 }

@@ -331,6 +331,7 @@
     "ListElementCode": "judgeFullName",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "judgeType=\"LEGAL_ADVISOR\"",
     "EventElementLabel": "Please input your name. This will appear on the C2 order cover sheet.",
     "Comment": "Reusing existing Legal advisor input field"
   }
