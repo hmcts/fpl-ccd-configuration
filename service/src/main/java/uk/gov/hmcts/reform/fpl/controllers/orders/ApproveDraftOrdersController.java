@@ -28,6 +28,7 @@ import java.util.Map;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.previewApprovedOrderFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
@@ -51,7 +52,7 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
         CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency", DRAFT_ORDERS_APPROVED,
-            "feePaidJudgeTitle");
+            "feePaidJudgeTitle", "manualJudgeDetails");
 
         caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 
@@ -100,15 +101,17 @@ public class ApproveDraftOrdersController extends CallbackController {
                     if (judicialService.isCurrentUserFeePaidJudge()) {
                         data.put("judgeType", FEE_PAID_JUDGE);
                     } else {
-                        data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData.toBuilder()
-                            .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
-                                .judgeTitleAndName(approveDraftOrdersService
-                                    .getJudgeTitleAndNameOfCurrentUser(caseData))
-                                .build())
-                            .build()));
+                        data.put("judgeType", LEGAL_ADVISOR);
+//                        data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData.toBuilder()
+//                            .reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+//                                .judgeTitleAndName(approveDraftOrdersService
+//                                    .getJudgeTitleAndNameOfCurrentUser(caseData))
+//                                .build())
+//                            .build()));
                     }
                 } catch (Exception e) {
-                    log.error("Fail to get judge title and name", e);
+                    log.error("Fail to get judge title and name. Entering Legal advisor route", e);
+                    data.put("judgeType", LEGAL_ADVISOR);
                 }
             }
         }

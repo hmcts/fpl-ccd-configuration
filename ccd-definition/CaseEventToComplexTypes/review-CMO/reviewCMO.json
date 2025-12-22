@@ -322,5 +322,16 @@
     "ListElementCode": "urgencyLabel2",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "manualJudgeDetails",
+    "ListElementCode": "judgeFullName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Please input your name. This will appear on the C2 order cover sheet.",
+    "Comment": "Reusing existing Legal advisor input field"
   }
 ]
