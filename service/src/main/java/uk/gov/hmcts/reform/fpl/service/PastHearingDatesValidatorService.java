@@ -84,12 +84,9 @@ public class PastHearingDatesValidatorService {
     }
 
     private boolean isInvalidMinuteRange(Object s) {
-        if (s == null) {
-            return false;
-        }
         try {
-            return Integer.parseInt(s.toString()) >= 60;
-        } catch (NumberFormatException ex) {
+            return Double.parseDouble(s.toString()) >= 60;
+        } catch (NullPointerException ex) {
             return false;
         }
     }

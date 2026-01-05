@@ -124,7 +124,7 @@ class PastHearingDatesValidatorServiceTest {
     @Test
     void shouldReturnErrorsWhenHearingHoursMinutesAreInvalid() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("hearingHours", "1.5","hearingMinutes", "120.6"))
+            .data(Map.of("hearingHours", "1.5","hearingMinutes", "45.6"))
             .build();
         final List<String> errorList = service.validateHearingIntegers(caseDetails);
 
