@@ -1,5 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import {BasePage} from "./base-page";
+import {urlConfig} from "../settings/urls";
+import config from "../settings/test-docs/config";
 
 export class StartApplication extends BasePage {
     readonly addApplicationDetailsHeading: Locator;
@@ -31,6 +33,7 @@ export class StartApplication extends BasePage {
     readonly otherPeopleInCaseLink: Locator;
     readonly returnApplicationLink: Locator;
     readonly  ordersAndDirectionsSoughtFinishedStatus: Locator;
+    readonly childDetailsHeading: Locator;
 
     // readonly logExpertReportLink: Locator;
     public constructor(page: Page) {
@@ -66,19 +69,13 @@ export class StartApplication extends BasePage {
         this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case' }) ;
         this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
         this.ordersAndDirectionsSoughtFinishedStatus = page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img');
-
+        this.childDetailsHeading = page.getByRole("heading", { name: "Child's details", });
     }
+
     async groundsForTheApplication() {
+        await expect(this.groundsForTheApplicationLink).toBeVisible();
+        await this.gotoNextStep('Grounds for the application');
 
-        await  expect(()=>{
-            this.page.reload();
-            expect(this.groundsForTheApplicationLink).toBeVisible();
-            this.groundsForTheApplicationLink.click();
-            expect( this.groundsForTheApplicationLink).toBeHidden();
-        }).toPass();
-        // expect(await this.groundsForTheApplicationLink).toBeVisible();
-
-        // await expect(this.groundsForTheApplicationHeading).toBeVisible();
     }
 
     async groundsForTheApplicationHasBeenUpdated() {
@@ -86,15 +83,10 @@ export class StartApplication extends BasePage {
     }
 
     async hearingUrgency() {
-        await expect(() => {
-            expect(this.hearingUrgencyLink).toBeVisible();
-            this.hearingUrgencyLink.click();
-            expect(this.hearingUrgencyLink).toBeHidden();
-            this.page.reload();
 
-        }).toPass();
+       await  expect(this.hearingUrgencyLink).toBeVisible();
+       await this.gotoNextStep('Hearing urgency');
 
-        await expect(this.hearingUrgencyHeader).toBeVisible();
     }
 
     async riskAndHarmToChildren() {
@@ -102,31 +94,18 @@ export class StartApplication extends BasePage {
         await this.riskAndHarmToChildrenLink.click();
     }
 
-    async addApplicationDocuments() {
-
-        await expect(()=>{
-            expect(this.uploadDocumentsLink).toBeVisible();
-            this.uploadDocumentsLink.click();
-            expect(this.uploadDocumentsLink).toBeHidden();
-            this.page.reload();
-        }).toPass();
-        // await expect(this.uploadDocumentsLink).toBeVisible();
-        // await this.uploadDocumentsLink.click();
+    async addApplicationDocuments(): Promise<void> {
+        await expect(this.uploadDocumentsLink).toBeVisible();
+        await this.gotoNextStep('Application documents');
     }
 
     async addApplicationDocumentsInProgress() {
         await expect(this.upLoadDocsInProgress).toBeVisible();
     }
 
-    async applicantDetails() {
-        await expect(()=>{
-            expect(this.applicantDetailsLink).toBeVisible();
-            this.applicantDetailsLink.click();
-            expect(this.applicantDetailsLink).toBeHidden();
-            this.page.reload();
-        }).toPass();
-        // await expect(this.applicantDetailsLink).toBeVisible();
-        // await this.applicantDetailsLink.click();
+    async applicantDetails(): Promise<void> {
+        await expect(this.applicantDetailsLink).toBeVisible();
+        await this.gotoNextStep('Applicant\'s details');
     }
 
     async applicantDetailsHasBeenUpdated() {
@@ -134,14 +113,9 @@ export class StartApplication extends BasePage {
     }
 
     async childDetails() {
-        await expect(()=>{
-            expect(this.childDetailsLink).toBeVisible();
-            this.childDetailsLink.click();
-            expect(this.childDetailsLink).toBeHidden();
-            this.page.reload();
-        }).toPass();
-        // await expect(this.childDetailsLink).toBeVisible();
-        // await this.childDetailsLink.click();
+        expect(this.childDetailsLink).toBeVisible();
+        await this.gotoNextStep('Child\'s details');
+        expect(this.childDetailsHeading).toBeVisible();
     }
 
     async childDetailsHasBeenUpdated() {
@@ -149,26 +123,13 @@ export class StartApplication extends BasePage {
     }
 
     async respondentDetails() {
-        await expect(()=>{
-            expect(this.respondentsDetailsLink).toBeVisible();
-            this.respondentsDetailsLink.click();
-            expect(this.respondentsDetailsLink).toBeHidden();
-            this.page.reload();
-        }).toPass();
-        // await expect(this.respondentsDetailsLink).toBeVisible();
-        // await this.respondentsDetailsLink.click();
+        expect(this.respondentsDetailsLink).toBeVisible();
+            await this.gotoNextStep('Respondents\' details');
     }
 
     async allocationProposal() {
-
-        await expect(()=>{
-            expect(this.allocationProposalLink).toBeVisible();
-            this.allocationProposalLink.click();
-            expect(this.allocationProposalLink).toBeHidden();
-            this.page.reload();
-        }).toPass();
-        // await this.allocationProposalLink.click();
-        // await expect(this.allocationProposalLink).toBeVisible();
+        expect(this.allocationProposalLink).toBeVisible();
+        await this.gotoNextStep('Allocation proposal');
     }
 
     async allocationProposalHasBeenUpdated() {
@@ -208,6 +169,7 @@ export class StartApplication extends BasePage {
     }
 
     async submitCase() {
-        await this.submitApplicationLink.click();
+        expect(this.submitApplicationLink).toBeVisible();
+        await this.gotoNextStep('Submit application');
     }
 }

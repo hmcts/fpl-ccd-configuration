@@ -8,17 +8,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -53,36 +48,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     @Nested
-    class Dfpl2740 {
-
-        @Test
-        void shouldRedactStrings() {
-            CaseData caseData = CaseData.builder()
-                .id(1743167066103323L)
-                .changeOfRepresentatives(List.of(
-                    element(UUID.randomUUID(), ChangeOfRepresentation.builder()
-                        .child("unchanged name")
-                        .build()),
-                    element(UUID.fromString("625f113c-5673-4b35-bbf1-6507fcf9ec43"),
-                        ChangeOfRepresentation.builder()
-                            .child("AAAAA BBBB")
-                            .build())
-                ))
-                .build();
-
-            CaseData after = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2740")));
-
-            assertThat(after.getChangeOfRepresentatives()).hasSize(2);
-            assertThat(after.getChangeOfRepresentatives().stream()
-                .map(Element::getValue)
-                .map(ChangeOfRepresentation::getChild))
-                .containsExactly("unchanged name", "AAAAA");
-            ;
-        }
-
-    }
-
-    @Nested
     class Dfpl2677 {
         private static final LocalDate NOW = LocalDate.now();
 
@@ -104,9 +69,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldNotMigrateCaseIfInvalid() {
             assertThatThrownBy(() ->
                 postAboutToSubmitEvent(buildCaseDetails(CaseData.builder()
-                    .id(1L)
-                    .build(),
-                "DFPL-2677")))
+                        .id(1L)
+                        .build(),
+                    "DFPL-2677")))
                 .hasMessageContaining("[Case 1], dateSubmitted is null or lastSubmittedDate is not null");
 
             assertThatThrownBy(() ->

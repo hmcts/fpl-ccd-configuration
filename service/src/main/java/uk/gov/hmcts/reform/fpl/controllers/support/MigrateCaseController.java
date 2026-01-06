@@ -7,19 +7,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
+import uk.gov.hmcts.reform.fpl.service.SendNewMessageJudgeService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.List;
@@ -43,18 +43,14 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2360", this::run2360,
-        "DFPL-2572", this::run2572,
-        "DFPL-2487", this::run2487,
-        "DFPL-2740", this::run2740,
-        "DFPL-2744", this::run2744,
-        "DFPL-2739", this::run2739,
-        "DFPL-2756", this::run2756,
+        "SNI-8284", this::run8284,
+        "DFPL-2992", this::run2992,
         "DFPL-2677", this::run2677,
         "DFPL-2677-rollback", this::rollback2677
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
+    private final SendNewMessageJudgeService sendNewMessageJudgeService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -80,81 +76,59 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2572(CaseDetails caseDetails) {
-        //Required to run migration for TTL
+    private void run8284(CaseDetails caseDetails) {
+        final String migrationId = "SNI-8284";
+        final List<Long> expectedCaseIds = List.of(1746789343771015L, 1746786779392316L);
+        final String orgId = "BDWCNNQ";
+
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheckList(caseId, expectedCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), orgId, null));
     }
 
-    private void run2756(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2756";
-        final long expectedCaseId = 1725874146484241L;
-        final String orgId = "FLXFDT7";
+    private void run2992(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2992";
+        final List<Long> expectedCaseIds = List.of(1763039644207964L, 1744715537303275L, 1734375800667518L);
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, null));
-    }
-
-    private void run2360(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2360";
-        // all existing cases need this field now, new cases will be populated in case initiation
-        caseDetails.getData().put("hasRespondentLA", YesNo.NO);
-    }
-
-    private void run2487(CaseDetails caseDetails) {
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheckList(caseId, expectedCaseIds, migrationId);
         CaseData caseData = getCaseData(caseDetails);
 
-        judicialService.cleanupHearingRoles(caseData.getId());
+        if (caseDetails.getId().equals(expectedCaseIds.getFirst())) {
+            StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
-        List<RoleAssignment> rolesToAssign = judicialService.getHearingJudgeRolesForMigration(caseData);
+            String judgeEmail = migrateCaseService.fixInvalidEmailAddressFormat(
+                standardDirectionOrder.getJudgeAndLegalAdvisor().getJudgeEmailAddress());
 
-        log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
-        judicialService.migrateJudgeRoles(rolesToAssign);
-    }
+            StandardDirectionOrder fixedSdo = standardDirectionOrder.toBuilder()
+                .judgeAndLegalAdvisor(standardDirectionOrder.getJudgeAndLegalAdvisor().toBuilder()
+                    .judgeEmailAddress(judgeEmail)
+                    .build())
+                .build();
 
-    private void run2740(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743167066103323L, "DFPL-2740");
-
-        List<Element<ChangeOfRepresentation>> changes = caseData.getChangeOfRepresentatives();
-        List<Element<ChangeOfRepresentation>> after = changes.stream().map(element -> {
-            ChangeOfRepresentation value = element.getValue();
-            if (element.getId().equals(UUID.fromString("625f113c-5673-4b35-bbf1-6507fcf9ec43"))) {
-                element.setValue(value.toBuilder()
-                    .child(value.getChild().substring(0, 5))
-                    .build());
-            }
-            return element;
-        }).toList();
-
-        caseDetails.getData().put("changeOfRepresentatives", after);
-        caseDetails.getData().remove("noticeOfProceedingsBundle");
-    }
-
-    private void run2744(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743174504422687L, "DFPL-2744");
-
-        if (caseData.getHearingOrdersBundlesDrafts().size() == 1
-            && caseData.getHearingOrdersBundlesDrafts().get(0).getId()
-                .equals(UUID.fromString("cff80b00-7300-4cd5-b0cb-f9f7a2ecd862"))) {
-            caseDetails.getData().remove("hearingOrdersBundlesDrafts");
-        } else {
-            throw new AssertionError("Different numbers of hearingOrdersBundlesDrafts or different UUID");
+            caseDetails.getData().put("standardDirectionsOrder", fixedSdo);
+            return;
         }
-    }
 
-    private void run2739(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
+        if (caseDetails.getId().equals(expectedCaseIds.get(1))) {
+            UUID expectedCancelledHearingId = UUID.fromString("43d52bcc-1d58-49bb-be0d-8d920d9eee91");
+            List<Element<HearingBooking>> cancelledHearings = caseData.getCancelledHearingDetails();
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1726944362364630L, "DFPL-2739");
+            caseDetails.getData().remove("tempAllocatedJudge");
+            caseDetails.getData().put("cancelledHearingDetails",
+                migrateCaseService.replaceHearingJudgeEmailAddress(migrationId, cancelledHearings,
+                    expectedCancelledHearingId, caseId));
+            return;
+        }
 
-        caseDetails.getData().putAll(migrateCaseService.removeDraftOrderFromAdditionalApplication(caseData,
-            "DFPL-2739",
-            UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
-            UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
+        if (caseDetails.getId().equals(expectedCaseIds.get(2))) {
+            UUID expectedHearingId = UUID.fromString("4ab1966f-b5fd-4e97-9cc8-b7a0273b19bc");
+            List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+
+            caseDetails.getData().put("hearingDetails",
+                migrateCaseService.replaceHearingJudgeEmailAddress(migrationId, hearings,
+                    expectedHearingId, caseId));
+        }
     }
 
     private void run2677(CaseDetails caseDetails) {
