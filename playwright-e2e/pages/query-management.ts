@@ -47,7 +47,7 @@ export class QueryManagement extends BasePage {
         await expect.soft(this.page.getByText('Include as many details as possible so case workers can respond to your query')).toBeVisible();
         await this.queryDetailText.fill('Have birth certificate issued in aboard');
         await this.relatedToHearingRadio.getByLabel('Yes').click();
-        await this.enterDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
+        await this.fillDateInputs(this.page,new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
         await this.newDocument.click();
         await expect.soft(this.page.getByText('Only attach documents related to your query. For all other documents use your case management document upload function.')).toBeVisible();
         await this.documentCollection.setInputFiles(config.testWordFile);
