@@ -84,7 +84,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
     "ListElementCode": "judgeEmailAddress",
-    "FieldType": "Text",
+    "FieldType": "Email",
     "ElementLabel": "Email Address",
     "FieldShowCondition": "judgeTitle!=\"\" AND useAllocatedJudge!=\"Yes\"",
     "SecurityClassification": "Public"

@@ -101,7 +101,7 @@ public class MigrateCaseController extends CallbackController {
                     .build())
                 .build();
 
-            caseDetails.getData().put("standardDirectionsOrder", fixedSdo);
+            caseDetails.getData().put("standardDirectionOrder", fixedSdo);
             return;
         }
 
