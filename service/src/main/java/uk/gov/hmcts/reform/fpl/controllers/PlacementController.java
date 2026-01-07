@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -25,6 +26,8 @@ import java.util.UUID;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
@@ -72,6 +75,13 @@ public class PlacementController extends CallbackController {
             caseProperties.put("respondentsSelector", newSelector(caseData.getAllRespondents().size()));
         }
 
+
+        if (placementService.isCurrentUserHmctsSuperuser()) {
+            caseProperties.put("isCTSCUser", YES.getValue());
+        } else {
+            caseDetails.getData().put("isCTSCUser", NO.getValue());
+        }
+
         return respond(caseProperties);
     }
 
@@ -109,6 +119,7 @@ public class PlacementController extends CallbackController {
 
         PlacementEventData eventData = placementService.preparePayment(caseData);
         caseProperties.put(PLACEMENT, eventData.getPlacement());
+        caseProperties.put("placementPayment", eventData.getPlacementPayment());
         caseProperties.put("placementPaymentRequired", eventData.getPlacementPaymentRequired());
         caseProperties.put("placementFee", eventData.getPlacementFee());
 

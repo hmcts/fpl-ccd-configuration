@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisImages;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
@@ -57,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.A92;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
@@ -92,6 +95,8 @@ public class PlacementService {
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final RespondentService respondentService;
     private final CourtService courtService;
+    private final UserService userService;
+    private final PbaService pbaService;
 
     public PlacementEventData prepareChildren(CaseData caseData) {
 
@@ -178,6 +183,12 @@ public class PlacementService {
             .map(PlacementEventData::getPlacementPayment)
             .orElseThrow(() -> new IllegalStateException("Missing placement payment details"));
 
+        if (!pbaPayment.getPbaNumberDynamicList().getValueCode().isEmpty()) {
+                String selectedPba = pbaPayment.getPbaNumberDynamicList().getValueCode();
+                pbaPayment.setPbaNumber(selectedPba);
+                pbaPayment.setPbaNumberDynamicList(null);
+        }
+
         pbaPayment.setPbaNumber(pbaNumberService.update(pbaPayment.getPbaNumber()));
 
         return pbaNumberService.validate(pbaPayment.getPbaNumber());
@@ -194,6 +205,9 @@ public class PlacementService {
         if (isPaymentRequired) {
             final FeesData feesData = feeService.getFeesDataForPlacement();
             placementData.setPlacementFee(toCCDMoneyGBP(feesData.getTotalAmount()));
+            placementData.setPlacementPayment(PBAPayment.builder()
+                .pbaNumberDynamicList(pbaService.populatePbaDynamicList(""))
+                .build());
         }
 
         return placementData;
@@ -491,5 +505,9 @@ public class PlacementService {
         }
 
         return placementData;
+    }
+
+    public boolean isCurrentUserHmctsSuperuser() {
+        return userService.hasAnyIdamRolesFrom(List.of(UserRole.HMCTS_SUPERUSER));
     }
 }
