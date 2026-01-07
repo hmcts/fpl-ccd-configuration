@@ -359,7 +359,7 @@ dependencies {
 
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.59.2'
 
-  implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
+  implementation group: 'com.google.guava', name: 'guava', version: '33.5.0-jre'
 
   implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: versions.jackson
 
@@ -437,7 +437,7 @@ dependencies {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.1.0'
-  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
+  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '33.5.0-jre'
 }
 
 bootJar {
