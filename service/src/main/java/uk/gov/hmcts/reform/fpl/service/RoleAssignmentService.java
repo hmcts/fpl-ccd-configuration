@@ -290,7 +290,8 @@ public class RoleAssignmentService {
         }
     }
 
-    public Set<String> getCaseRolesForUserAtTime(String userId, Long caseId, ZonedDateTime time, List<String> roleNames) {
+    public Set<String> getCaseRolesForUserAtTime(String userId, Long caseId, ZonedDateTime time,
+                                                 List<String> roleNames) {
         String systemUserToken = systemUserService.getSysUserToken();
         QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
             QueryRequest.builder()
