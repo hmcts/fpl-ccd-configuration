@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
@@ -71,24 +72,23 @@ public class PastHearingDatesValidatorService {
         return localDateTime.toLocalTime().equals(MIDNIGHT);
     }
 
-    private boolean isInvalidField(Object s) {
+    private Optional<Integer> parseInteger(Object s) {
         if (s == null) {
-            return false;
+            return Optional.empty();
         }
         try {
-            Integer.parseInt(s.toString());
-            return false;
+            return Optional.of(Integer.parseInt(s.toString()));
         } catch (NumberFormatException ex) {
-            return true;
+            return Optional.empty();
         }
     }
 
+    private boolean isInvalidField(Object s) {
+        return s != null && parseInteger(s).isEmpty();
+    }
+
     private boolean isInvalidMinuteRange(Object s) {
-        try {
-            return Double.parseDouble(s.toString()) >= 60;
-        } catch (NullPointerException ex) {
-            return false;
-        }
+        return parseInteger(s).map(i -> i >= 60).orElse(false);
     }
 
     public List<String> validateHearingIntegers(CaseDetails caseDetails) {
