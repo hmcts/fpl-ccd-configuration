@@ -51,6 +51,8 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
@@ -58,6 +60,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderEventHandler {
+    public static final List<String> JUDGE_ORDER_TYPE_WA_BLACKLIST = List.of(
+        C33_INTERIM_CARE_ORDER.name(),
+        C35B_INTERIM_SUPERVISION_ORDER.name()
+    );
+
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativesInbox representativesInbox;
     private final NotificationService notificationService;
@@ -145,7 +152,9 @@ public class GeneratedOrderEventHandler {
     @EventListener
     public void createWorkAllocationTask(GeneratedOrderEvent event) {
         // Create a review order task for the CTSC if the CTSC didn't upload/generate it
-        if (!userService.isCtscUser()) {
+        // But, if a judge upload/generate the order and it's one of the blacklisted types, don't create a task
+        if (!userService.isCtscUser()
+                && !(userService.isJudiciaryUser() && JUDGE_ORDER_TYPE_WA_BLACKLIST.contains(event.getOrderType()))) {
             CaseData caseData = event.getCaseData();
             workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.ORDER_UPLOADED);
         }
