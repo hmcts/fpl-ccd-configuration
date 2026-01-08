@@ -53,7 +53,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -119,7 +118,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyParties() {
         underTest.notifyParties(new GeneratedOrderEvent(CASE_DATA, ORDER_DOCUMENT, TRANSLATION_REQUIREMENT,
-            ORDER_TITLE, LocalDate.now(), C32A_CARE_ORDER.name()));
+            ORDER_TITLE, LocalDate.now(), ORDER.getType()));
 
         SendEmailResponse adminResponse = response();
         SendEmailResponse laResponse = response();
