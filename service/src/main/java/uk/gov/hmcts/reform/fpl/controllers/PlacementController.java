@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
-import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -79,7 +78,7 @@ public class PlacementController extends CallbackController {
         if (placementService.isCurrentUserHmctsSuperuser()) {
             caseProperties.put("isCTSCUser", YES.getValue());
         } else {
-            caseDetails.getData().put("isCTSCUser", NO.getValue());
+            caseProperties.put("isCTSCUser", NO.getValue());
         }
 
         return respond(caseProperties);

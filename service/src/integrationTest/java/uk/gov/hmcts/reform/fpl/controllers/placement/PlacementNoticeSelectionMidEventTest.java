@@ -10,13 +10,16 @@ import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -31,11 +34,20 @@ class PlacementNoticeSelectionMidEventTest extends AbstractPlacementControllerTe
 
     public static final String EMMA_GREEN_MOTHER = "Emma Green - mother";
     public static final String ADAM_GREEN_FATHER = "Adam Green - father";
+
+    @MockBean
+    private PbaService pbaService;
+
     @MockBean
     private FeesRegisterApi feesRegisterApi;
 
     @Test
     void shouldFetchPlacementFeeWhenPaymentIsRequired() {
+        final DynamicList expectedPbaList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code("PBA1234567")
+                .build())
+            .build();
 
         final DynamicList parentList1 = dynamicLists.from(0,
             Pair.of(EMMA_GREEN_MOTHER, mother.getId()),
@@ -61,12 +73,15 @@ class PlacementNoticeSelectionMidEventTest extends AbstractPlacementControllerTe
         when(feesRegisterApi.findFee("default", "miscellaneous", "family", "family court", "Placement", "adoption"))
             .thenReturn(feeResponse(455.5));
 
+        given(pbaService.populatePbaDynamicList("")).willReturn(expectedPbaList);
+
         final CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "notices-respondents"));
 
         final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
 
         assertThat(actualPlacementData.getPlacementPaymentRequired()).isEqualTo(YES);
         assertThat(actualPlacementData.getPlacementFee()).isEqualTo("45550");
+        assertThat(actualPlacementData.getPlacementPayment().getPbaNumberDynamicList()).isEqualTo(expectedPbaList);
     }
 
     @Test

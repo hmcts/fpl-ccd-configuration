@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
@@ -59,7 +58,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.A92;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
@@ -183,13 +181,13 @@ public class PlacementService {
             .map(PlacementEventData::getPlacementPayment)
             .orElseThrow(() -> new IllegalStateException("Missing placement payment details"));
 
-        if (!pbaPayment.getPbaNumberDynamicList().getValueCode().isEmpty()) {
-                String selectedPba = pbaPayment.getPbaNumberDynamicList().getValueCode();
-                pbaPayment.setPbaNumber(selectedPba);
-                pbaPayment.setPbaNumberDynamicList(null);
+        if (isNotEmpty(pbaPayment.getPbaNumberDynamicList())) {
+            String selectedPba = pbaPayment.getPbaNumberDynamicList().getValueCode();
+            pbaPayment.setPbaNumber(selectedPba);
+            pbaPayment.setPbaNumberDynamicList(null);
+        } else {
+            pbaPayment.setPbaNumber(pbaNumberService.update(pbaPayment.getPbaNumber()));
         }
-
-        pbaPayment.setPbaNumber(pbaNumberService.update(pbaPayment.getPbaNumber()));
 
         return pbaNumberService.validate(pbaPayment.getPbaNumber());
     }
