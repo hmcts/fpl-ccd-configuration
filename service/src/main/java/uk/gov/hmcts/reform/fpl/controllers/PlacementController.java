@@ -134,6 +134,11 @@ public class PlacementController extends CallbackController {
 
         final List<String> errors = placementService.checkPayment(caseData);
 
+        // If the user is entering a PBA manually we will want to normalise it
+        if (caseData.getIsCTSCUser().equals(YES)) {
+            caseProperties.putIfNotEmpty("placementPayment", caseData.getPlacementEventData().getPlacementPayment());
+        }
+
         return respond(caseProperties, errors);
     }
 
