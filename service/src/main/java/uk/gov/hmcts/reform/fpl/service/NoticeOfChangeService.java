@@ -32,12 +32,16 @@ public class NoticeOfChangeService {
     private final RespondentService respondentService;
     private final CoreCaseDataService coreCaseDataService;
 
-    public Map<String, Object> updateRepresentation(CaseData caseData) {
+    public Map<String, Object> updateRepresentation(CaseData caseData, boolean isApplicantSolicitorUser) {
 
         AuditEvent auditEvent = auditEventService.getLatestAuditEventByName(caseData.getId().toString(), NOC_EVENT)
             .orElseThrow(() -> new IllegalStateException(String.format("Could not find %s event in audit", NOC_EVENT)));
 
         UserDetails solicitor = userService.getUserDetailsById(auditEvent.getUserId());
+
+        if (isThirdPartyNoCRequest(caseData, isApplicantSolicitorUser)) {
+            return updateRepresentationService.updateRepresentationThirdPartyOutsourcing(caseData, solicitor);
+        }
 
         return updateRepresentationService.updateRepresentation(caseData, solicitor);
     }
@@ -67,7 +71,9 @@ public class NoticeOfChangeService {
 
             log.info("Representation change applied {}", changeRequest);
         }
-
     }
 
+    public boolean isThirdPartyNoCRequest(CaseData caseData, boolean isApplicantSolicitorUser) {
+        return caseData.isThirdPartyApplicant() && isApplicantSolicitorUser;
+    }
 }

@@ -11,14 +11,19 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
+import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeThirdPartyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.CaseAssignmentService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpdater;
 
 import java.util.List;
@@ -38,6 +43,8 @@ public class NoticeOfChangeController extends CallbackController {
     private final NoticeOfChangeService noticeOfChangeService;
     private final RespondentService respondentService;
     private final RepresentableLegalCounselUpdater legalCounselUpdater;
+    private final LocalAuthorityService localAuthorityService;
+    private final UserService userService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -48,11 +55,18 @@ public class NoticeOfChangeController extends CallbackController {
         // hit so there wouldn't be any difference in caseDetails and caseDetailsBefore
         CaseData originalCaseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(noticeOfChangeService.updateRepresentation(caseData));
+        boolean isApplicantSolicitorUser = userService.isApplicantSolicitorUser(caseData.getId());
+        caseDetails.getData().putAll(noticeOfChangeService.updateRepresentation(caseData, isApplicantSolicitorUser));
 
         caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(legalCounselUpdater.updateLegalCounselFromNoC(caseData, originalCaseData));
+        ChangeOrganisationRequest nocRequest = caseData.getChangeOrganisationRequestField();
+
+        if (noticeOfChangeService.isThirdPartyNoCRequest(caseData, isApplicantSolicitorUser)) {
+            caseDetails.getData().putAll(localAuthorityService.updateLocalAuthorityFromNoC(caseData, nocRequest));
+        } else {
+            caseDetails.getData().putAll(legalCounselUpdater.updateLegalCounselFromNoC(caseData, originalCaseData));
+        }
 
         return caseAssignmentService.applyDecision(caseDetails);
     }
@@ -62,6 +76,27 @@ public class NoticeOfChangeController extends CallbackController {
         CaseData oldCaseData = getCaseDataBefore(callbackRequest);
         CaseData newCaseData = getCaseData(callbackRequest);
 
+        boolean isApplicantSolicitorUser = userService.isApplicantSolicitorUser(newCaseData.getId());
+        if (noticeOfChangeService.isThirdPartyNoCRequest(newCaseData, isApplicantSolicitorUser)) {
+            publishEventsForThirdPartyOutsourcingNoC(oldCaseData, newCaseData);
+        } else {
+            publishNoCEventsForRespondentOrChildSolicitor(newCaseData, oldCaseData);
+        }
+    }
+
+    private void publishEventsForThirdPartyOutsourcingNoC(CaseData oldData, CaseData newData) {
+        String newOrgId = newData.getAppSolicitorPolicy().getOrganisation().getOrganisationID();
+        String previousOrgId = oldData.getAppSolicitorPolicy().getOrganisation().getOrganisationID();
+
+        LocalAuthority oldThirdPartyOrg = oldData.getLocalAuthorities().stream().filter(la ->
+            la.getValue().getId().equals(previousOrgId)).findFirst().orElseThrow().getValue();
+        LocalAuthority newThirdPartyOrg = newData.getLocalAuthorities().stream().filter(la ->
+            la.getValue().getId().equals(newOrgId)).findFirst().orElseThrow().getValue();
+
+        publishEvent(new NoticeOfChangeThirdPartyEvent(oldThirdPartyOrg, newThirdPartyOrg, newData));
+    }
+
+    private void publishNoCEventsForRespondentOrChildSolicitor(CaseData newCaseData, CaseData oldCaseData) {
         Stream.of(SolicitorRole.Representing.values())
             .flatMap(role -> legalCounselUpdater.buildEventsForAccessRemoval(newCaseData, oldCaseData, role).stream())
             .forEach(this::publishEvent);
@@ -101,7 +136,6 @@ public class NoticeOfChangeController extends CallbackController {
     @PostMapping("/update-respondents/about-to-submit")
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
-
         // clean up after the NoC decision
         caseDetails.getData().remove("changeOrganisationRequestField");
 
