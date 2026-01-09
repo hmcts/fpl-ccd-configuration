@@ -30,18 +30,23 @@ import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangedRepresentative;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
@@ -98,6 +103,9 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private OrganisationService organisationService;
+
+    @MockBean
+    private RoleAssignmentService roleAssignmentService;
 
     NoticeOfChangeAboutToStartControllerTest() {
         super("noc-decision");
@@ -260,6 +268,9 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
                     .addressLine1("New Test Road")
                     .build()))
                 .build());
+
+        when(roleAssignmentService.getCaseRolesForUserAtTime(any(), any(), any(ZonedDateTime.class),
+            eq(List.of(APPSOLICITOR.formattedName())))).thenReturn(Set.of("[APPSOLICITOR]"));
 
         final ChangeOrganisationRequest changeRequest = ChangeOrganisationRequest.builder()
             .organisationToAdd(NEW_ORGANISATION)
