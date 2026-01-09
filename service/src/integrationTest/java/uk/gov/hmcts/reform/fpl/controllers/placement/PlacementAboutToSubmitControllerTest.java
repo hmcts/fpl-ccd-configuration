@@ -6,11 +6,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 
 import java.time.LocalDateTime;
@@ -18,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -35,7 +39,6 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
 
     @Test
     void shouldSaveNewPlacementApplication() {
-
         final List<Element<PlacementNoticeDocument>> noticeResponses = wrapElements(PlacementNoticeDocument.builder()
             .type(LOCAL_AUTHORITY)
             .recipientName("Local authority")
@@ -60,12 +63,26 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .placementNotice(placementNoticeDocument)
             .build();
 
+        final DynamicList pbaNumberList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code("PBA1234567")
+                .build())
+            .build();
+
+        final PBAPayment placementPayment = PBAPayment.builder()
+            .pbaNumberDynamicList(pbaNumberList)
+            .clientCode("code")
+            .fileReference("reference")
+            .build();
+
         final CaseData caseData = CaseData.builder()
             .children1(List.of(child1, child2))
             .placementEventData(PlacementEventData.builder()
                 .placement(newPlacement)
                 .placements(wrapElements(existingPlacement))
+                .placementPayment(placementPayment)
                 .build())
+            .isCTSCUser(NO)
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -130,12 +147,26 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .placementNotice(placementNoticeDocument)
             .build();
 
+        final DynamicList pbaNumberList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code("PBA1234567")
+                .build())
+            .build();
+
+        final PBAPayment placementPayment = PBAPayment.builder()
+            .pbaNumberDynamicList(pbaNumberList)
+            .clientCode("code")
+            .fileReference("reference")
+            .build();
+
         final CaseData caseData = CaseData.builder()
             .children1(List.of(child1, child2))
             .placementEventData(PlacementEventData.builder()
                 .placement(newPlacementForChild1)
                 .placements(wrapElements(existingApplicationForChild1, existingApplicationForChild2))
+                .placementPayment(placementPayment)
                 .build())
+            .isCTSCUser(NO)
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));

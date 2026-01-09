@@ -58,6 +58,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.A92;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
@@ -176,20 +177,26 @@ public class PlacementService {
     }
 
     public List<String> checkPayment(CaseData caseData) {
-
         final PBAPayment pbaPayment = Optional.ofNullable(caseData.getPlacementEventData())
             .map(PlacementEventData::getPlacementPayment)
             .orElseThrow(() -> new IllegalStateException("Missing placement payment details"));
 
-        if (isNotEmpty(pbaPayment.getPbaNumberDynamicList())) {
+        if (caseData.getIsCTSCUser().equals(YES)) {
+            pbaPayment.setPbaNumber(pbaNumberService.update(pbaPayment.getPbaNumber()));
+            return pbaNumberService.validate(pbaPayment.getPbaNumber());
+        }
+
+        return pbaNumberService.validate(pbaPayment.getPbaNumberDynamicList().getValue().getCode());
+    }
+
+    public void setPaymentInformation(CaseData caseData) {
+        PBAPayment pbaPayment = caseData.getPlacementEventData().getPlacementPayment();
+
+        if (isNotEmpty(pbaPayment.getPbaNumberDynamicList()) && caseData.getIsCTSCUser().equals(NO)) {
             String selectedPba = pbaPayment.getPbaNumberDynamicList().getValueCode();
             pbaPayment.setPbaNumber(selectedPba);
             pbaPayment.setPbaNumberDynamicList(null);
-        } else {
-            pbaPayment.setPbaNumber(pbaNumberService.update(pbaPayment.getPbaNumber()));
         }
-
-        return pbaNumberService.validate(pbaPayment.getPbaNumber());
     }
 
     public PlacementEventData preparePayment(CaseData caseData) {
@@ -203,9 +210,12 @@ public class PlacementService {
         if (isPaymentRequired) {
             final FeesData feesData = feeService.getFeesDataForPlacement();
             placementData.setPlacementFee(toCCDMoneyGBP(feesData.getTotalAmount()));
-            placementData.setPlacementPayment(PBAPayment.builder()
-                .pbaNumberDynamicList(pbaService.populatePbaDynamicList(""))
-                .build());
+
+            if (caseData.getIsCTSCUser().equals(NO)) {
+                placementData.setPlacementPayment(PBAPayment.builder()
+                    .pbaNumberDynamicList(pbaService.populatePbaDynamicList(""))
+                    .build());
+            }
         }
 
         return placementData;

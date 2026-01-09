@@ -802,12 +802,14 @@ class PlacementServiceTest {
             .placementEventData(PlacementEventData.builder()
                 .placementPayment(payment)
                 .build())
+            .isCTSCUser(YES)
             .build();
 
         final CaseData caseDataWithDropdown = CaseData.builder()
             .placementEventData(PlacementEventData.builder()
                 .placementPayment(paymentWithDropdown)
                 .build())
+            .isCTSCUser(NO)
             .build();
 
         @BeforeEach
@@ -823,8 +825,7 @@ class PlacementServiceTest {
             final List<String> actualErrors = underTest.checkPayment(caseData);
 
             assertThat(actualErrors).isEmpty();
-            assertThat(caseData.getPlacementEventData().getPlacementPayment().getPbaNumber())
-                .isEqualTo(normalisedTestPBANumber);
+            assertThat(payment.getPbaNumber()).isEqualTo(normalisedTestPBANumber);
         }
 
         @Test
@@ -835,8 +836,6 @@ class PlacementServiceTest {
             final List<String> actualErrors = underTest.checkPayment(caseDataWithDropdown);
 
             assertThat(actualErrors).isEmpty();
-            assertThat(caseDataWithDropdown.getPlacementEventData().getPlacementPayment().getPbaNumber())
-                .isEqualTo(normalisedTestPBANumber);
         }
 
         @Test
@@ -847,8 +846,7 @@ class PlacementServiceTest {
             final List<String> actualErrors = underTest.checkPayment(caseData);
 
             assertThat(actualErrors).containsExactly("Invalid PBA");
-            assertThat(caseData.getPlacementEventData().getPlacementPayment().getPbaNumber())
-                .isEqualTo(normalisedTestPBANumber);
+            assertThat(payment.getPbaNumber()).isEqualTo(normalisedTestPBANumber);
         }
 
         @Test
@@ -859,8 +857,55 @@ class PlacementServiceTest {
             final List<String> actualErrors = underTest.checkPayment(caseDataWithDropdown);
 
             assertThat(actualErrors).containsExactly("Invalid PBA");
-            assertThat(caseDataWithDropdown.getPlacementEventData().getPlacementPayment().getPbaNumber())
-                .isEqualTo(normalisedTestPBANumber);
+        }
+    }
+
+    @Nested
+    class SetPaymentDetails {
+        final String pbaNumber = "PBA1234567";
+        final DynamicList pbaDynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(pbaNumber)
+                .build()).build();
+
+        final PBAPayment expectedPayment = PBAPayment.builder()
+            .pbaNumber(pbaNumber)
+            .clientCode("code")
+            .fileReference("reference")
+            .build();
+
+        final PBAPayment paymentWithDropdown = PBAPayment.builder()
+            .pbaNumberDynamicList(pbaDynamicList)
+            .clientCode("code")
+            .fileReference("reference")
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placementPayment(expectedPayment)
+                .build())
+            .isCTSCUser(YES)
+            .build();
+
+        final CaseData caseDataWithDropdown = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placementPayment(paymentWithDropdown)
+                .build())
+            .isCTSCUser(NO)
+            .build();
+
+        @Test
+        void shouldSetPbaNumberFromDropdown() {
+            underTest.setPaymentInformation(caseDataWithDropdown);
+
+            assertThat(caseDataWithDropdown.getPlacementEventData().getPlacementPayment()).isEqualTo(expectedPayment);
+        }
+
+        @Test
+        void shouldDoNothingWhenPbaSetManually() {
+            underTest.setPaymentInformation(caseData);
+
+            assertThat(caseData.getPlacementEventData().getPlacementPayment()).isEqualTo(expectedPayment);
         }
     }
 

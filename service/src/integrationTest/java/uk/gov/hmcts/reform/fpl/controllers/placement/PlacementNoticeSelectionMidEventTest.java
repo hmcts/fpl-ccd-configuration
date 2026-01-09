@@ -68,6 +68,7 @@ class PlacementNoticeSelectionMidEventTest extends AbstractPlacementControllerTe
         final CaseData caseData = CaseData.builder()
             .respondents1(List.of(mother, father))
             .placementEventData(placementData)
+            .isCTSCUser(NO)
             .build();
 
         when(feesRegisterApi.findFee("default", "miscellaneous", "family", "family court", "Placement", "adoption"))

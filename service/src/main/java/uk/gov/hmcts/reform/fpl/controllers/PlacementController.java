@@ -134,25 +134,23 @@ public class PlacementController extends CallbackController {
 
         final List<String> errors = placementService.checkPayment(caseData);
 
-        caseProperties.putIfNotEmpty("placementPayment", caseData.getPlacementEventData().getPlacementPayment());
-
         return respond(caseProperties, errors);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
-
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
         final PlacementEventData eventData = placementService.savePlacement(caseData);
-
+        placementService.setPaymentInformation(caseData);
         caseDetails.getData().put("placements", eventData.getPlacements());
         caseDetails.getData().put("placementIdToBeSealed", eventData.getPlacementIdToBeSealed());
         caseDetails.getData().put("placementsNonConfidential",
                 eventData.getPlacementsNonConfidentialWithNotices(false));
         caseDetails.getData().put("placementsNonConfidentialNotices",
                 eventData.getPlacementsNonConfidentialWithNotices(true));
+        caseDetails.getData().put("placementPayment", eventData.getPlacementPayment());
 
         removeTemporaryFields(caseDetails, PlacementEventData.class);
 
