@@ -680,6 +680,7 @@ class PlacementServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .placementEventData(placementEventData)
+                .isCTSCUser(NO)
                 .build();
 
             final PlacementEventData actualPlacementData = underTest.preparePayment(caseData);
@@ -708,6 +709,7 @@ class PlacementServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .placementEventData(placementEventData)
+                .isCTSCUser(NO)
                 .build();
 
             final PlacementEventData actualPlacementData = underTest.preparePayment(caseData);
