@@ -330,24 +330,32 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "parent_respondentsStatements",
-    "CategoryLabel": "Respondents' statements",
+    "CategoryLabel": "Respondents",
     "DisplayOrder": "10"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CategoryID": "respondentsStatementsConfidential",
+    "CategoryID": "respondentsOwnStatements",
     "ParentCategoryID": "parent_respondentsStatements",
+    "CategoryLabel": "Respondents own statements",
+    "DisplayOrder": "101"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "respondentsOwnStatementsConfidential",
+    "ParentCategoryID": "respondentsOwnStatements",
     "CategoryLabel": "Confidential",
-    "DisplayOrder": "100"
+    "DisplayOrder": "1011"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "respondentWitnessStatements",
-    "CategoryLabel": "Witness statements",
+    "CategoryLabel": "Respondents witness statements",
     "ParentCategoryID": "parent_respondentsStatements",
-    "DisplayOrder": "1002"
+    "DisplayOrder": "102"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -355,7 +363,7 @@
     "CategoryID": "respondentWitnessStatementsConfidential",
     "CategoryLabel": "Confidential",
     "ParentCategoryID": "respondentWitnessStatements",
-    "DisplayOrder": "10020"
+    "DisplayOrder": "1021"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -371,21 +379,6 @@
     "CategoryLabel": "Confidential",
     "DisplayOrder": "110",
     "ParentCategoryID": "guardiansEvidence"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CategoryID": "guardianReports",
-    "CategoryLabel": "Guardian's reports",
-    "DisplayOrder": "1101"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CategoryID": "guardianReportsConfidential",
-    "CategoryLabel": "Confidential",
-    "DisplayOrder": "1110",
-    "ParentCategoryID": "guardianReports"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -918,15 +911,45 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "advocateMeetingMinute",
+    "CategoryLabel": "Advocate Meeting Minutes",
+    "DisplayOrder": "20"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "advocateMeetingMinuteConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "advocateMeetingMinute",
+    "DisplayOrder": "200"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "witnessTemplate",
+    "CategoryLabel": "Witness Template",
+    "DisplayOrder": "21"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "witnessTemplateConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "witnessTemplate",
+    "DisplayOrder": "210"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "documentsSentToParties",
     "CategoryLabel": "Documents Sent To Parties",
-    "DisplayOrder": "20"
+    "DisplayOrder": "22"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "archivedDocuments",
     "CategoryLabel": "Archived Migrated Data",
-    "DisplayOrder": "21"
+    "DisplayOrder": "23"
   }
 ]

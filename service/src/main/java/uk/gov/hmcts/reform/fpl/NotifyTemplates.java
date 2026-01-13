@@ -90,6 +90,7 @@ public final class NotifyTemplates {
     public static final String APPLICATION_REMOVED_NOTIFICATION_TEMPLATE = "b4be9fb8-3052-4d1b-86c0-e74646314ddb";
     public static final String LEGAL_COUNSELLOR_ADDED_EMAIL_TEMPLATE = "2f5826a5-f5c4-41aa-8d75-2bfee7dade87";
     public static final String LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE = "85494117-1030-4c57-a1d7-f6ce32a81454";
+    public static final String LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE = "46d0ca88-43cf-46e9-a8e1-83b4f205285b";
     public static final String LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE = "0ee6157a-a11a-4a0c-be75-508d66857d67";
     public static final String LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE = "db77b13c-3f17-48ee-a7c0-90ba5adf73b6";
     public static final String LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE = "c02ac29c-2d84-4d1a-80f6-888b3fc31e19";
@@ -107,4 +108,7 @@ public final class NotifyTemplates {
     public static final String CHASE_OUTSTANDING_ORDER_LA_TEMPLATE = "a8b9812a-bc54-43f6-84e5-c3f8195320fa";
     public static final String VACATE_HEARING = "738d7a28-4699-4b32-a793-25436bf2d19c";
     public static final String GUARDIAN_UPDATED = "efc77c28-c32a-43d3-93f6-d75542d3743b";
+    public static final String LEGAL_COUNSELLOR_REMOVED_THEMSELVES = "14f0ea3c-6b12-4d56-a1c2-775b3d01329e";
+    public static final String APPLICANTS_DETAILS_UPDATED = "32ef0278-263c-4d70-983f-1bc68b687ea0";
+    public static final String QUERY_RESPONDED = "de2b3bac-dbe8-4e90-acc3-0772b63161d0";
 }

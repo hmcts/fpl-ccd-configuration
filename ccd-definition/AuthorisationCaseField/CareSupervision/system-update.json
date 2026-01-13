@@ -786,6 +786,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseNameHintLabel",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "updatedCaseNameLabel",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submissionConsentLabel",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
@@ -794,6 +808,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "displayAmountToPay",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isCTSCUser",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
   },
@@ -4217,6 +4238,62 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "advocateMeetingMinuteList",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "advocateMeetingMinuteListLA",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "advocateMeetingMinuteListCTSC",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "advocateMeetingMinuteListRemoved",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "witnessTemplateList",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "witnessTemplateListLA",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "witnessTemplateListCTSC",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "witnessTemplateListRemoved",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "carePlanList",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
@@ -4406,6 +4483,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "latestQueryID",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "TTL",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
@@ -4466,8 +4550,19 @@
     "CaseFieldID": "respondentsConfirmPR",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRU"
+  },
+  { "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionLASol",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
+
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "waTaskUrgencyLevel",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
   }
-
-
-
 ]
