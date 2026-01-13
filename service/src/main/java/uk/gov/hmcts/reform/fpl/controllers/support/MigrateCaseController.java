@@ -88,7 +88,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run2992(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2992";
-        final List<Long> expectedCaseIds = List.of(1763039644207964L, 1744715537303275L, 1734375800667518L);
+        final List<Long> expectedCaseIds = List.of(1763039644207964L);
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheckList(caseId, expectedCaseIds, migrationId);
@@ -106,11 +106,12 @@ public class MigrateCaseController extends CallbackController {
                     .build())
                 .build();
 
-            caseDetails.getData().put("standardDirectionsOrder", fixedSdo);
+            caseDetails.getData().put("standardDirectionOrder", fixedSdo);
             return;
         }
 
-        if (caseDetails.getId().equals(expectedCaseIds.get(1))) {
+        // Leaving this option in here for any future incidents with email issues
+        if (caseDetails.getId().equals(1744715537303275L)) {
             UUID expectedCancelledHearingId = UUID.fromString("43d52bcc-1d58-49bb-be0d-8d920d9eee91");
             List<Element<HearingBooking>> cancelledHearings = caseData.getCancelledHearingDetails();
 
@@ -118,16 +119,6 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().put("cancelledHearingDetails",
                 migrateCaseService.replaceHearingJudgeEmailAddress(migrationId, cancelledHearings,
                     expectedCancelledHearingId, caseId));
-            return;
-        }
-
-        if (caseDetails.getId().equals(expectedCaseIds.get(2))) {
-            UUID expectedHearingId = UUID.fromString("4ab1966f-b5fd-4e97-9cc8-b7a0273b19bc");
-            List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
-
-            caseDetails.getData().put("hearingDetails",
-                migrateCaseService.replaceHearingJudgeEmailAddress(migrationId, hearings,
-                    expectedHearingId, caseId));
         }
     }
 
