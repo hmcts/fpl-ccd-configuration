@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTest {
+
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
