@@ -13,10 +13,11 @@ test.describe('CafcassAPI Update Guardian Details', () => {
     let caseNumber: string;
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test(' Cafcass user update the guardian details', async ({request, page, signInPage}) => {
-        await updateCase('Cafcass update guardian details' + dateTime.slice(0, 10), caseNumber, submitCase);
+        expect(await updateCase('Cafcass update guardian details' + dateTime.slice(0, 10), caseNumber, submitCase)).toBeTruthy();
 
         let response = await cafcassUpdateGuardianDetails(request, authToken.cafcassAuth, caseNumber, GUARDIAN_DETAILS);
 

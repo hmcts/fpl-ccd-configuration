@@ -2,7 +2,7 @@ import { test as setup } from '@playwright/test';
 import {getAccessToken} from "../utils/api-helper";
 import {cafcassAPIUser, systemUpdateUser} from "./user-credentials";
 
-setup('access Token', async ({ }) => {
+setup('access Token', async () => {
     try {
         if(!process.env.CAFCASSAUTH) {
             const cafcassAuthToken = await getAccessToken({user: cafcassAPIUser});

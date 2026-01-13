@@ -10,11 +10,12 @@ test.describe('Cafcass upload guardian report ', () => {
     let caseNumber: string
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
 
     test('Cafcass upload gaurdian report', async ({request, page, signInPage, caseFileView, manageDocuments}) => {
-        await updateCase('cafcass upload guardian report' + startTime.slice(0, 10), caseNumber, submitCase);
+        expect(await updateCase('cafcass upload guardian report' + startTime.slice(0, 10), caseNumber, submitCase)).toBeTruthy();
         let docName = CreateCaseName.generateFileName('GUARDIAN_REPORT');
         let response = await cafcassAPIUploadDoc(request, authToken.cafcassAuth, caseNumber, 'GUARDIAN_REPORT');
         //assert the response

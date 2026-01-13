@@ -160,7 +160,6 @@ export const getTestDocID =  async (request: APIRequestContext) => {
 
         if (  caseResponse .ok()) {
             let body = await caseResponse.json();
-            console.log(JSON.stringify(body));
             docId = await body.cases[0].caseData.caseDocuments[0].documentId;
             return docId;
         }

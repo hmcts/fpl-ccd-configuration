@@ -5,6 +5,8 @@ import cafcassAPISearchSchema from '../../caseData/cafcassAPITest/cafcassAPICase
 import submitCase from '../../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 import cafcassCase from '../../caseData/cafcassAPITest/caseCaffcassAPISearchAllFieldData.json' assert {type: 'json'};
 import {cafcassAPICaseSearch, getDateTimePram, validateCaseItemWithSchema} from "../../utils/cafcass-api-test-helper";
+import caseData from "../../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json";
+import {testConfig} from "../../settings/test-config";
 
 test.describe('CafcassAPI search cases', () => {
     let startTime = new Date().toISOString();
@@ -13,7 +15,7 @@ test.describe('CafcassAPI search cases', () => {
     let currentTime: Date;
     let caseNumber1: string
     let caseNumber2: string;
-    const TEST_DATA_SETUP_TIMEOUT_MS = 2000;
+
 
     test.beforeAll(async () => {
         test.setTimeout(90000);
@@ -22,15 +24,17 @@ test.describe('CafcassAPI search cases', () => {
         // set up the test data
         // return case, case with minimum data , case with all data
         caseNumber1 = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        await updateCase('Cafcass search case1 ' + startTime.slice(0, 10), caseNumber1, submitCase);
+        expect(caseNumber1).toBeDefined();
+        expect(await updateCase('Cafcass search case1 ' + startTime.slice(0, 10), caseNumber1, submitCase)).toBeTruthy();
         caseNumber2 = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        await updateCase('Cafcass search case2 ' + startTime.slice(0, 10), caseNumber2, cafcassCase);
+        expect(caseNumber2).toBeDefined();
+        expect(await updateCase('Cafcass search case2 ' + startTime.slice(0, 10), caseNumber2, cafcassCase)).toBeTruthy();
 
     });
     test(' Cafcass user search cases for given time frame',
         async ({request, page}) => {
 
-            await page.waitForTimeout(TEST_DATA_SETUP_TIMEOUT_MS) // wait for the test data to be set up
+            await page.waitForTimeout(testConfig.TEST_DATA_SETUP_TIMEOUT_MS) // wait for the test data to be set up
             intervalStartTime = getDateTimePram(currentTime, -2); // getting time 2 mins before the current time for start time
             intervalEndTime = getDateTimePram(currentTime, 10); // getting time 10 mins after the current time for end time
 

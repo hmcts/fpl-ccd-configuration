@@ -12,6 +12,7 @@ import {
     cafcassAPIDocSearch,
     getTestDocID
 } from "../../utils/cafcass-api-test-helper";
+import {testConfig} from "../../settings/test-config";
 
 test.describe('@new CafcassAPI Document Search', () => {
     let dateTime = new Date().toISOString();
@@ -19,8 +20,11 @@ test.describe('@new CafcassAPI Document Search', () => {
     let docId:string;
     test.beforeEach(async ({request}) => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        await updateCase('Cafcass search document' + dateTime.slice(0, 10), caseNumber, submitCase);
+        expect(caseNumber).toBeDefined();
+        expect(await updateCase('Cafcass search document' + dateTime.slice(0, 10), caseNumber, submitCase)).toBeTruthy();
+        await new Promise(resolve => setTimeout(resolve,testConfig.TEST_DATA_SETUP_TIMEOUT_MS ));
         docId = await getTestDocID(request);
+        expect(docId).toBeDefined();
 
     });
     test('  Cafcass user search a valid case document',

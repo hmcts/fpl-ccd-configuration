@@ -26,6 +26,7 @@ export default defineConfig({
   reporter: [['html', { outputFolder: 'test-results/functional' }],
              ['junit', { outputFile: 'test-results/functional/results.xml' }]
   ],
+    outputDir: 'test-artifacts',
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
