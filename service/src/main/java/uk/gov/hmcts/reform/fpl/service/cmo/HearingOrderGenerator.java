@@ -78,6 +78,8 @@ public class HearingOrderGenerator {
     public Element<HearingOrder> buildRejectedHearingOrder(
         Element<HearingOrder> hearingOrderElement, String changesRequested) {
         return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
+            .refusedOrder(hearingOrderElement.getValue().getOrder())
+            .order(null)
             .status(CMOStatus.RETURNED)
             .requestedChanges(changesRequested)
             .build());

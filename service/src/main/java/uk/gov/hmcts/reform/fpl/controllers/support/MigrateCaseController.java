@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialRefusedOrders;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -27,6 +29,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
 @RestController
@@ -41,7 +46,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
         "SNI-8284", this::run8284,
-        "DFPL-2992", this::run2992
+        "DFPL-2992", this::run2992,
+        "DFPL-2773", this::run2773
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -115,5 +121,37 @@ public class MigrateCaseController extends CallbackController {
                 migrateCaseService.replaceHearingJudgeEmailAddress(migrationId, cancelledHearings,
                     expectedCancelledHearingId, caseId));
         }
+    }
+
+    private void run2773(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isNotEmpty(caseData.getRefusedHearingOrders())) {
+            caseDetails.getData().put("refusedHearingOrders", migrateRefusedOrders(caseData.getRefusedHearingOrders()));
+        }
+
+        // Process all confidential refused orders
+        ConfidentialRefusedOrders existingConfidentialRefusedOrders = caseData.getConfidentialRefusedOrders();
+        if (existingConfidentialRefusedOrders != null) {
+            existingConfidentialRefusedOrders.processAllConfidentialOrders((suffix, refusedOrderElements) -> {
+                if (isNotEmpty(refusedOrderElements)) {
+                    caseDetails.getData().put(
+                        existingConfidentialRefusedOrders.getFieldBaseName() + suffix,
+                        migrateRefusedOrders(refusedOrderElements));
+                }
+            });
+        }
+    }
+
+    // one off migration only, can't any reason to keep this method in the future
+    private List<Element<HearingOrder>> migrateRefusedOrders(List<Element<HearingOrder>> refusedOrders) {
+        return refusedOrders.stream()
+            .map(refusedOrderElement -> element(
+                refusedOrderElement.getId(),
+                refusedOrderElement.getValue().toBuilder()
+                    .refusedOrder(refusedOrderElement.getValue().getOrder())
+                    .order(null)
+                    .build()))
+            .toList();
     }
 }
