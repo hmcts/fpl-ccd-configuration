@@ -25,7 +25,7 @@
     "Name": "Delete an application",
     "Description": "Delete an application",
     "DisplayOrder": 18,
-    "PreConditionState(s)": "Open;RETURNED",
+    "PreConditionState(s)": "Open",
     "PostConditionState": "Deleted",
     "SecurityClassification": "Public",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-deletion/about-to-submit",
