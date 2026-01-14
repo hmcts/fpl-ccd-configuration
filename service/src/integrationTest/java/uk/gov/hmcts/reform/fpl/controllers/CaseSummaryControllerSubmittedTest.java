@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(CaseSummaryController.class)
 @OverrideAutoConfiguration(enabled = true)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CaseSummaryControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 1243L;

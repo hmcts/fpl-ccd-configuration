@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mockito;
-import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
@@ -628,7 +627,6 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
     }
 
     @Nested
-    @DirtiesContext
     class ManagedDocuments {
         private static final DocumentReference NON_CONFIDENTIAL_DOC_1 = getTestDocumentReference();
         private static final DocumentReference NON_CONFIDENTIAL_DOC_2 = getTestDocumentReference();

@@ -11,7 +11,6 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -112,7 +111,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 
 @WebMvcTest(CaseSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
     private static final String SOLICITOR_EMAIL = "solicitor@email.com";

@@ -9,7 +9,6 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
@@ -114,7 +113,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12345L;
