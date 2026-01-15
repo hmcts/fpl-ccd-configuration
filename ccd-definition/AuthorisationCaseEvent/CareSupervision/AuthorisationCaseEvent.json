@@ -1139,7 +1139,8 @@
           "[LAMANAGING]",
           "[LABARRISTER]",
           "[BARRISTER]",
-          "[LASHARED]"
+          "[LASHARED]",
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
       },
@@ -1148,7 +1149,6 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-solicitor"
         ],
         "CRUD": "R"
