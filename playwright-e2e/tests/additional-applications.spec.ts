@@ -303,7 +303,7 @@ test.describe('Upload additional applications', () => {
 
     // Check CFV
     await caseFileView.goToCFVTab();
-    await caseFileView.openFolder('Application');
+    await caseFileView.openFolder('Applications');
     await caseFileView.openFolder('C2 applications');
     await expect(page.getByRole('tree')).toContainText('testPdf.pdf');
 
