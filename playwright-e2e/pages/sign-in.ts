@@ -48,7 +48,7 @@ export class SignInPage extends BasePage {
         if (await this.analyticCookie.isVisible()) {
             await this.analyticCookie.click();
         }
-        await this.isSignedIn();
+      //  await this.isSignedIn();
         const count = await this.hideMessage.count();
 
         for (let i = 0; i < count; ++i) {

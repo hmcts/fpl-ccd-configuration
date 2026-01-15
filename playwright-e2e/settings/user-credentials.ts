@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const e2ePw = process.env.E2E_TEST_PASSWORD || '';
-const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || '';
-const judgePwd = process.env.E2E_TEST_JUDGE_PASSWORD || '';
+const e2ePw = process.env.E2E_TEST_PASSWORD || 'Password1234';
+const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || 'Password12';
+const judgePwd = process.env.E2E_TEST_JUDGE_PASSWORD || 'Hmcts1234';
 
 
 export const newSwanseaLocalAuthorityUserOne = {
@@ -14,6 +14,11 @@ export const newSwanseaLocalAuthorityUserOne = {
 export const systemUpdateUser = {
   email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
   password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPwd,
+};
+
+export const cafcassAPIUser={
+    email: 'cafcass-system-update-user@example.com',
+    password: defaultPwd,
 };
 
 export const CTSCUser = {
@@ -84,4 +89,8 @@ export const swanseaOrgCAAUser = {
 export const WiltshireOrgCAAUser = {
     email: 'admin@wiltshire.gov.uk',
     password: defaultPwd,
+};
+export const authToken={
+    cafcassAuth:process.env.CAFCASSAUTH || '',
+    systemAuth:process.env.SYSUSERAUTH || ''
 };
