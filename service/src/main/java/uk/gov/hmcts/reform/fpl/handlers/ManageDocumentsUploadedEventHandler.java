@@ -361,10 +361,10 @@ public class ManageDocumentsUploadedEventHandler {
     public void createWorkAllocationTask(ManageDocumentsUploadedEvent event) {
         CaseData caseData = event.getCaseData();
 
-        if ((isNotEmpty(event.getNewDocuments().get(COURT_CORRESPONDENCE))
+        if (!userService.isCtscUser()
+            && (isNotEmpty(event.getNewDocuments().get(COURT_CORRESPONDENCE))
                 || isNotEmpty(event.getNewDocumentsLA().get(COURT_CORRESPONDENCE))
-                || isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE)))
-            && !userService.isCtscUser()) {
+                || isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE)))) {
             workAllocationTaskService.createWorkAllocationTask(caseData, CORRESPONDENCE_UPLOADED);
         }
     }
