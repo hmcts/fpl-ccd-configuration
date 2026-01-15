@@ -66,12 +66,13 @@ test.describe('Query management', () => {
                 await queryManagement.tabNavigation('Queries');
                 await queryManagement.assertQueryTable();
                 await expect(page.getByRole('button', {name: 'Birth certificate format'})).toBeVisible();
-                await expect(page.getByRole('cell', {name: 'Local Authority '})).toBeVisible();
+                await expect(page.getByRole('cell', {name: 'Local Authority '}).first()).toBeVisible();
+                await expect(page.getByRole('cell', {name: 'Local Authority '}).nth(1)).toBeVisible();
                 await expect(page.getByRole('cell', {name: 'Awaiting Response'})).toBeVisible();
                 await expect(page.getByRole('cell', {name: `${queryManagement.getCurrentDate()}`})).toBeVisible();
 
                 await queryManagement.tabNavigation('Case File View');
-                await caseFileView.openFolder('Uncategorised');
+                await caseFileView.openFolder('Uncategorised documents');
                 await expect(caseFileView.page.getByText('testWordDoc.docx')).toBeVisible();
             });
             await test.step('Assert Query details are not visible under query tab to respondent solicitor', async () => {
@@ -84,7 +85,7 @@ test.describe('Query management', () => {
                 await expect(page.getByRole('link', {name: 'Birth certificate format'})).toBeHidden();
 
                 await queryManagement.tabNavigation('Case File View');
-                await expect(queryManagement.page.getByText('Uncategorised')).toBeHidden();
+                await expect(queryManagement.page.getByText('Uncategorised documents')).toBeHidden();
             });
             await test.step('CTSC user respond to the query raised', async () => {
 
