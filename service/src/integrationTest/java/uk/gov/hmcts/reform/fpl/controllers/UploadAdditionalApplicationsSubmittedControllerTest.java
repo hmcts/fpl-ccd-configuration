@@ -9,6 +9,7 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -103,6 +104,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadAdditionalApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final String RESPONDENT_FIRSTNAME = "John";
