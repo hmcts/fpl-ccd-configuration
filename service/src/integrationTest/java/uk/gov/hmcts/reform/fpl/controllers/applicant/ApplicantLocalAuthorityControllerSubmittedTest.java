@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ApplicantLocalAuthorityController.class)
@@ -122,11 +123,11 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        verify(notificationService).sendEmail(
+        checkUntil(() -> verify(notificationService).sendEmail(
             eq(APPLICANTS_DETAILS_UPDATED),
             anyCollection(),
             any(),
-            eq(caseData.getId()));
+            eq(caseData.getId())));
     }
 
     private static Colleague solicitor() {

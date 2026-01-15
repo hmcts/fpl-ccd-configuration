@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(CaseSummaryController.class)
@@ -49,9 +50,8 @@ class CaseSummaryControllerSubmittedTest extends AbstractCallbackTest {
             .build();
 
         postSubmittedEvent(caseData);
-
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
-            eq("internal-update-case-summary"), any());
+        checkUntil(() -> verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
+            eq("internal-update-case-summary"), any()));
         verifyNoMoreInteractions(coreCaseDataService);
     }
 }
