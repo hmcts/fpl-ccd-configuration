@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
@@ -107,7 +108,7 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
     void testCafcassTemplate() {
         underTest.notifyCafcass(new AmendedReturnedCaseEvent(CASE_DATA));
 
-        assertThat(response())
+        checkUntil(() -> assertThat(response())
             .hasSubject("Amended application, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line(LOCAL_AUTHORITY_NAME + " has amended its application for:")
@@ -124,6 +125,6 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .line("HM Courts & Tribunals Service")
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
-            );
+            ));
     }
 }
