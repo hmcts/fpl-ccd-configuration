@@ -11,7 +11,6 @@ import org.springframework.core.task.TaskExecutor;
 
 @TestConfiguration
 public class EventListenerTestConfiguration {
-
     @Primary
     @Bean
     public ApplicationEventMulticaster applicationEventMulticaster(@Autowired TaskExecutor taskExecutor) {
