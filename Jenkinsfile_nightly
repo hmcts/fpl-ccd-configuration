@@ -137,7 +137,7 @@ withNightlyPipeline(type, product, component) {
                     allowMissing: true,
                     alwaysLinkToLastBuild: true,
                     keepAll: true,
-                    reportDir: 'test-results/functional',
+                    reportDir: 'test-results/functionalTest',
                     reportFiles: 'index.html',
                     reportName: 'UITestChromiumReport'
                 ])
