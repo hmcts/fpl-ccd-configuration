@@ -174,7 +174,7 @@ test.describe('Manage Documents', () => {
         await manageDocuments.uploadDocuments('Advocate Meeting Minute', 'Yes');
 
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Advocate Meeting Minute');
+        await caseFileView.openFolder('Advocate Meeting Minutes');
         await caseFileView.openFolder('Confidential');
         await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
         await signInPage.logout();
@@ -186,7 +186,7 @@ test.describe('Manage Documents', () => {
         await signInPage.navigateToCaseDetails(caseNumber);
 
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Advocate Meeting Minute');
+        await caseFileView.openFolder('Advocate Meeting Minutes');
         await caseFileView.openFolder('Confidential');
         await signInPage.logout();
 
