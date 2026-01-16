@@ -3,2134 +3,2092 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "componentLauncher",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "taskList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "taskListLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "optionCount",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "children1",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childrenHaveRepresentation",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childrenMainRepresentative",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childrenMainRepresentativeName",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childrenHaveSameRepresentation",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails0",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails1",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails2",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails3",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails4",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails5",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails6",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails7",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails8",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails9",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails10",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails11",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails12",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails13",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childRepresentationDetails14",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "deletionConsent",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "grounds",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "groundsForEPO",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "groundsForSecureAccommodationOrder",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "groundsForRefuseContactWithChild",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "groundsForChildRecoveryOrder",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "groundsForContactWithChild",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "groundsForEducationSupervisionOrder",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "EPO_REASONING_SHOW",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearing",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "internationalElement",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "factorsParenting",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadDocuments_paragraph_1",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_threshold_document",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_checklist_document",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkOther_border_top",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkOther_border_bottom",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "solicitor",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "risks",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingPreferences",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "languageRequirement",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "languageRequirementApplication",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "languageRequirementApplicationNeedWelsh",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "languageRequirementApplicationNeedEnglish",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "languageRequirementUrgent",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationProposal",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationDecision",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orders",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "ordersSolicitor",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedForm",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "supplementDocument",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedFormTranslationRequirements",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedFormTranslationUploadDateTime",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "translatedSubmittedForm",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedFormSentForTranslationLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedFormNeedTranslation",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submissionDeclaration",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseNameHintLabel",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "updatedCaseNameLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submissionConsentLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submissionConsent",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "standardDirectionsDocument",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "dateSubmitted",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherCourtAdminDocuments",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "statementOfService",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "serviceDeclarationLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "serviceConsent",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "noticeOfProceedingsBundle",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c9Declaration",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "skipPaymentPage",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2ApplicationType",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadC2Link",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoHearingDateList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderBasisLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "addRecitalLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "standardDirectionOrder",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "RU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "urgentDirectionsOrder",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "RU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "urgentHearingOrder",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "schedule",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondents_label",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "others_label",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementRespondentsLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentsSelector",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementRespondentsSectionHeader",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementRespondentsSectionSubHeader",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sendPlacementNoticeToAllRespondents",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hasRespondents",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "confidentialChildren",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "confidentialRespondents",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "confidentialOthers",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoDraftInReviewHeading",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoDraftInReviewHint",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoToAction",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childrenList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "singleChild",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sendToCtsc",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "amountToPay",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "displayAmountToPay",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "isCTSCUser",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftApplicationDocument",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "returnApplication",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderCollection",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "RU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicationDetailsHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "groundsForTheApplicationHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "supportingDocumentsHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "informationAboutThePartiesHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtRequirementsHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "ordersAndDirectionsSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingUrgencySubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "thresholdCriteriaSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "riskAndHarmToTheChildrenSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "factorsAffectingParentingSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalInformationGroundsSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalInformationPartiesSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalInformationCourtRequirementsSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherProceedingsSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "internationalElementSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "organisationDetailsSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childDetailsSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentsSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "othersSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationProposalSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "facilitiesOrServiceNeededSubHeadingLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "ordersAndDirectionsLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingUrgencyLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "thresholdCriteriaLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "riskAndHarmToChildrenLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "factorsAffectingParentingLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherProceedingsLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "internationalElementLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentsLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "organisationDetailsLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "localAuthorityDetailsLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childrenLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentsLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "othersLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationProposalLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "facilitiesOrServicesNeededLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftUploadedCMOs",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "pastHearingsForCMO",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoJudgeInfo",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoHearingInfo",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadedCaseManagementOrder",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoUploadType",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "futureHearingsForCMO",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "replacementCMO",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadCMOMessageAcknowledgeLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadCMOMessageAcknowledge",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmosSentToJudge",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "previousCMO",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendOptionCount",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoToSend",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoToSendTranslationRequirements",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend0",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements0",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend1",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements1",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend2",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements2",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend3",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements3",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend4",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements4",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend5",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements5",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend6",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements6",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend7",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements7",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend8",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements8",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSend9",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderToSendTranslationRequirements9",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "showReplacementCMO",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "showCMOsSentToJudge",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sealedCMOs",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantWitnessStmtList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantWitnessStmtListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardianEvidenceList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardianEvidenceListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "expertReportList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "adultPsychRepParentsList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "famCentreAssessNonResList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "familyCentreAssesResList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "haematologistList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "indepSocialWorkerList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "multiDisciplinAssessList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "neuroSurgeonList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "ophthalmologistList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherExpertReportList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherMedicalReportList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "pediatricList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "pediatricRadiologistList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "profDNATestingList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "profDrugAlcoholList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "professionalHairStrandList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "professionalOtherList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychiatricChildOnlyList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychChildParentCarersList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psycReportChildClinList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psycReportChildOnlyEdList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychReportParentChildList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychRepParentFullCogList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychRepParentFuncList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "toxicologyStatementList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "expertReportListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "adultPsychRepParentsListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "famCentreAssessNonResListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "familyCentreAssesResListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "haematologistListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "indepSocialWorkerListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "multiDisciplinAssessListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "neuroSurgeonListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "ophthalmologistListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherExpertReportListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherMedicalReportListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "pediatricListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "pediatricRadiologistListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "profDNATestingListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "profDrugAlcoholListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "professionalHairStrandListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "professionalOtherListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychiatricChildOnlyListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychChildParentCarersListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psycReportChildClinListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psycReportChildOnlyEdListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychReportParentChildListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychRepParentFullCogListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "psychRepParentFuncListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "toxicologyStatementListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "lettersOfInstructionList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "lettersOfInstructionListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "drugAndAlcoholReportList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "drugAndAlcoholReportListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "noticeOfActingOrIssueList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "noticeOfActingOrIssueListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respStmtList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respStmtListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleListRemoved",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "U"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleListV2",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadCMOLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderTabHeading",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingsTabHeading",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "manageLegalRepresentativesLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "manageLegalRepresentativesLink",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementNoticeResponses",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrderDraftInfo",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrderDraftKind",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingsForHearingOrderDrafts",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrdersBundlesDrafts",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrdersBundlesDraftReview",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "currentHearingOrderDrafts",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "lastHearingOrderDraftsHearingId",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalApplicationType",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2Type",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "isC2Confidential",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantsList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "personSelector",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherApplicant",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "notifyApplicationsToAllOthers",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hasOthers",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hasRespondentsOrOthers",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "othersSelector",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedC1WithSupplement",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryPbaPayment",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c1ApplicationDocList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c1ApplicationDocListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2ApplicationDocList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2ApplicationDocListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalApplicationsBundle",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
-  },
-    {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "qmCaseQueriesCollectionEPSManaging",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "QueryManagementComponentLauncher",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "latestQueryID",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submissionRequiredFieldsInfo",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "changeOfRepresentatives",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementChildrenCardinality",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementChildrenList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placement",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placements",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementIdToBeSealed",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementsNonConfidential",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementsNonConfidentialNotices",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementChildNameLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementChildNameLabel2",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementChildNameLabel3",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementChildNameLabel4",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementChildName",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementPaymentRequired",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementPaymentNotRequiredLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementPayment",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementFee",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementLastPaymentTime",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CaseFieldID": "refusedOrdersTabHeading",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CaseFieldID": "refusedHearingOrders",
     "CRUD": "CRU"
   },
@@ -2138,434 +2096,406 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "removableOrderList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "reasonToRemoveOrder",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "removeOrderWarning",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "expertReport",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "groundsForChildAssessmentOrder",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c1Application",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "secureAccommodationOrderType",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "refuseContactWithChildOrderType",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isCTSCUser",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "contactWithChildInCareOrderType",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseSummaryList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseSummaryListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "parentAssessmentList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "parentAssessmentListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "famAndViabilityList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "famAndViabilityListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantOtherDocList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantOtherDocListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "meetingNoteList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "meetingNoteListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "contactNoteList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "contactNoteListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "judgementList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "judgementListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "transcriptList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "transcriptListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respWitnessStmtList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respWitnessStmtListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "previousProceedingList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "previousProceedingListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "skeletonArgumentList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "skeletonArgumentListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "policeDisclosureList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "policeDisclosureListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "medicalRecordList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "medicalRecordListLA",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "advocateMeetingMinuteList",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "advocateMeetingMinuteListLA",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "witnessTemplateList",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "witnessTemplateListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "carePlanList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "carePlanListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentsFiledOnIssueList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentsFiledOnIssueListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "thresholdList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "thresholdListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtChildList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtChildListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtRespList",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtRespListLA",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryApplicationDocuments",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftOrderNeedsReviewUploaded",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftOrderUrgency",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentsConfirmPR",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantContactLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantContact",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantContactOthers",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantOtherContactLabel",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "lastGenuineUpdateTime",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "outsourcingPolicy",
-    "UserRole": "[EPSMANAGING]",
+    "CaseFieldID": "appSolicitorPolicy",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardians",
-    "UserRole": "[EPSMANAGING]",
+    "UserRole": "[APPSOLICITOR]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentsConfirmPR",
+    "UserRole": "[APPSOLICITOR]",
+    "CRUD": "CRUD"
   }
 ]
