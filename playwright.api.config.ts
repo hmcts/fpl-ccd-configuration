@@ -48,6 +48,7 @@ export default defineConfig({
     },
       {
         name: "cafcassAPITest",
+          use: { ...devices['edge'] },
         testMatch: /.*.cafcassAPI.spec.ts/,
         fullyParallel: true,
           timeout: 100000,
