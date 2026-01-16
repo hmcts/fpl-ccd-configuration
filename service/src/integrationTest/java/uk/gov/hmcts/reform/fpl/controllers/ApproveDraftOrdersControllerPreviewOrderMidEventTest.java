@@ -61,7 +61,7 @@ class ApproveDraftOrdersControllerPreviewOrderMidEventTest extends AbstractCallb
     }
 
     @Test
-    void shouldPopulateDraftOrdersReadyForApprovalOnReviewDecisionPageForTheSelectedHearingOrdersBundle() {
+    void shouldPopulatePreviewApprovedOrderIfC2() {
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDrafts(List.of(ORDER_BUNDLE))
             .allocateJudgeEventData(new AllocateJudgeEventData(LEGAL_ADVISOR, null, null,
@@ -83,5 +83,26 @@ class ApproveDraftOrdersControllerPreviewOrderMidEventTest extends AbstractCallb
         assertThat(responseData.get("previewApprovedOrder1")).extracting("document_binary_url")
             .isEqualTo(DRAFT_OREDR_WITH_COVERSHEET.getBinaryUrl());
         assertThat(responseData.get("previewApprovedOrderTitle1")).isEqualTo("Order 1 TestingTitle");
+    }
+
+
+    @Test
+    void shouldPopulatePreviewApprovedOrderIfNoC2() {
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(ORDER_BUNDLE))
+            .allocateJudgeEventData(new AllocateJudgeEventData(LEGAL_ADVISOR, null, null,
+                Judge.builder().judgeFullName("Judge John").build()))
+            .selectedHearingId(SELECTED_HEARING_ID)
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder()
+                .reviewDecision1(ReviewDecision.builder()
+                    .decision(CMOReviewOutcome.REVIEW_LATER)
+                    .build())
+                .build())
+            .build();
+
+        Map<String, Object> responseData = postMidEvent(caseData).getData();
+
+        assertThat(responseData).doesNotContainKey("previewApprovedOrder1");
+        assertThat(responseData).doesNotContainKey("previewApprovedOrderTitle1");
     }
 }
