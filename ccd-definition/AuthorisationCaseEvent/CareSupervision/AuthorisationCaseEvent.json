@@ -252,7 +252,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "changeCaseName-superuser",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "R"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1139,7 +1139,8 @@
           "[LAMANAGING]",
           "[LABARRISTER]",
           "[BARRISTER]",
-          "[LASHARED]"
+          "[LASHARED]",
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
       },
@@ -1148,7 +1149,6 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-solicitor"
         ],
         "CRUD": "R"
@@ -1869,7 +1869,8 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[LAMANAGING]",
-          "[EPSMANAGING]"
+          "[EPSMANAGING]",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
       }
@@ -1884,7 +1885,8 @@
         "UserRoles": [
           "[SOLICITORA]",
           "[CHILDSOLICITORA]",
-          "[APPSOLICITOR]"
+          "[APPSOLICITOR]",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
       }
@@ -1948,6 +1950,65 @@
           "ctsc"
         ],
         "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "queryManagementRaiseQuery",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "[LABARRISTER]",
+          "[LASHARED]",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[CAFCASSSOLICITOR]"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "queryManagementRespondQuery",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin"
+        ],
+        "CRUD": "CRUD"
       }
     ]
   }

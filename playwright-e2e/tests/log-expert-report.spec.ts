@@ -12,15 +12,16 @@ test.describe('log expert report', () => {
 
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('log expert report',
         async ({ page, signInPage, logExpertReport }) => {
             caseName = 'CTSC log expert report ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseData);
+            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await logExpertReport.gotoNextStep('Log expert report');
             await logExpertReport.logExpertReport();

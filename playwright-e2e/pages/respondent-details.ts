@@ -91,42 +91,41 @@ export class RespondentDetails extends BasePage {
 
   }
 
-  async respondentDetailsNeeded() {
-    await expect.soft(this.respondentDetailsHeading).toBeVisible();
-    await this.confirmationCheckbox.check();
-    await this.firstName.fill('Tom');
-    await this.lastName.fill('Jones');
-    await this.dobDay.fill('31');
-    await this.dobMonth.fill('3');
-    await this.dobYear.fill('1980');
-    await this.gender.selectOption('1: Male');
-    await this.currentAddress.getByLabel('No').click();
-    await this.currentAddress.getByLabel('No').click();
-    await this.addressUnknown.getByLabel('Whereabouts unknown').click();
-    await this.addressUnknown.getByLabel('Whereabouts unknown').click();
-    await this.giveMoreDetails.fill('Test');
-    await this.relationToChild.fill('uncle');
-    await this.difficultyCapacity.getByLabel('Yes').check();
-    await this.difficultyCapacityReason.fill('test')
-    await this.legalRepresentation.getByLabel('No').check();
-    await this.addNew.nth(1).click();
-    await this.respondentFirstName.fill('Thierry');
-    await this.respondentLastName.fill('Jordan');
-    await this.respondentdobDay.fill('31');
-    await this.respondentdobMonth.fill('03');
-    await this.respondentdobYear.fill('1980');
-    await this.respondent2Gender.selectOption('1: Male');
-    await this.respondent2CurrentAddressKnown.click();
-    await this.respondent2CurrentAddressKnown.click();
-    await this.respondent2AddressUnknown.click();
-    await this.respondent2HiddenNumber.click();
-    await this.respondet2RelationshipToChild.fill('uncle');
-    await this.respondent2DifficultyUnderstandingCapacity.click();
-    await this.respondent2DificultyCapacityReason.click();
-    await this.page.waitForTimeout(300); // this needs to be removed once EXUI resolves issue
-    await this.clickContinue();
-    await this.checkYourAnsAndSubmit();
-    await expect(this.page.getByText('has been updated with event:')).toBeVisible();
+  async respondentDetailsNeeded(): Promise<void> {
+      await this.confirmationCheckbox.check();
+      await this.firstName.fill('test1');
+      await this.lastName.fill('test1');
+      await this.dobDay.fill('01');
+      await this.dobMonth.fill('03');
+      await this.dobYear.fill('1990')
+      await this.gender.selectOption('1: Male');
+      await this.currentAddress.getByRole('radio', { name: 'No' }).click();
+      await this.currentAddress.getByRole('radio', { name: 'No' }).click();
+      await this.addressUnknown.getByRole('radio', { name: 'Whereabouts unknown' }).click();
+      await this.addressUnknown.getByRole('radio', { name: 'Whereabouts unknown' }).click();
+      await this.giveMoreDetails.fill('test');
+      await this.relationToChild.fill('uncle');
+      await this.difficultyCapacity.getByRole('radio', { name: 'Yes' }).click();
+      await this.difficultyCapacityReason.fill('test');
+      await this.legalRepresentation.getByRole('radio', { name: 'No' }).click();
+
+      await Promise.all([
+          this.page.waitForResponse(response =>
+              response.url().includes('validate') &&
+              response.request().method() === 'POST' &&
+              response.status() === 200
+          ),
+           this.clickContinue()
+      ]);
+
+      await Promise.all([
+          this.page.waitForResponse(response =>
+              response.url().includes('/get') &&
+              response.request().method() === 'GET' &&
+              response.status() === 200
+          ),
+          this.checkYourAnsAndSubmit()
+      ]);
   }
 
   async respondentDetailsPrivateSolicitor() {

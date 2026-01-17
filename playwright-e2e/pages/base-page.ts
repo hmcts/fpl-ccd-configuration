@@ -14,6 +14,11 @@ export class BasePage {
   readonly postCode: Locator;
   readonly findAddress: Locator;
   readonly rateLimit: Locator;
+  readonly year: Locator;
+  readonly month: Locator;
+  readonly day: Locator;
+  private dateOfHearing: Locator;
+  readonly startButton: Locator;
 
 
   constructor(page: Page) {
@@ -30,19 +35,24 @@ export class BasePage {
     this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
     this.findAddress = page.getByRole('button', { name: 'Find address' });
     this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
+    this.day = page.getByLabel('Day');
+    this.month = this.page.getByLabel('Month');
+    this.year = this.page.getByLabel(' Year ');
+    this.dateOfHearing =  this.page.getByRole('group', { name: 'What is the date of the' });
+    this.startButton = page.getByRole('button', { name: 'Start' });
   }
 
   async gotoNextStep(eventName: string) {
       await expect(async () => {
-          await this.page.reload();
+          await this.page.reload({waitUntil: 'domcontentloaded'});
           await this.nextStep.selectOption(eventName);
-          await this.goButton.click({clickCount:2,delay:300});
-          await expect(this.page.getByRole('button', { name: 'Previous' })).toBeDisabled();
-      }).toPass();
+          await this.goButton.click();
+          await expect(this.page.getByRole('button', { name: 'Previous',exact:true })).toBeVisible({timeout: 30_000});
+      }).toPass({timeout: 120_000});
   }
 
   async expectAllUploadsCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
         await expect(locs[i]).toBeDisabled();
     }
@@ -54,11 +64,17 @@ export class BasePage {
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByRole('tab', { name: tabName }).click();
+      const tab = this.page.getByRole('tab').filter({ hasText: new RegExp(`^${tabName}$`) });
+      await tab.click();
   }
 
   async clickContinue() {
-    await this.continueButton.click({});
+    await this.continueButton.waitFor({ state: 'attached'});
+      await this.continueButton.click({});
+  }
+
+  async clickStartButton() {
+      await this.startButton.click();
   }
 
   async clickPreviousButton() {
@@ -104,24 +120,34 @@ export class BasePage {
   }
 
   async clickSubmit() {
-    await this.submit.click();
+
+      await  this.submit.click();
+
   }
   async clickSaveAndContinue() {
       await this.saveAndContinue.click();
   }
-  async enterPostCode(postcode:string){
+  async enterPostCode(postcode:string): Promise<void> {
       await this.postCode.fill(postcode);
-      await this.findAddress.click();
-      await this.page.getByLabel('Select an address').selectOption('1: Object');
 
+       await Promise.all([
+              this.findAddress.click(),
+              this.page.waitForResponse(response =>
+                  response.url().includes('addresses') &&
+                  response.request().method() === 'GET' &&
+                  response.status() === 200
+              )
+          ]) ;
+      const addressDropdown = this.page.locator('select[name="address"]');
+      await addressDropdown.selectOption({ index: 1 });
   }
+
   getCurrentDate():string {
-    let date = new Date();
-    let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
-    let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
-    let day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
-    let todayDate = `${day} ${month} ${year}`;
-    return todayDate;
+    const date = new Date();
+    const year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
+    const month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
+    const day = new Intl.DateTimeFormat('en', {day: 'numeric'}).format(date);
+      return `${day} ${month} ${year}`;
     }
 
     async fillDateInputs(page: Page, date: Date) {
@@ -140,5 +166,33 @@ export class BasePage {
         let hypenatedCaseNumber: string;
         hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);
         return hypenatedCaseNumber
+    async enterDate(date: Date){
+        await this.dateOfHearing.getByText('Day').fill(date.getDay().toString());
+        await this.dateOfHearing.getByText('Month').fill(date.getMonth().toString());
+        await this.dateOfHearing.getByText('Year').fill(date.getFullYear().toString())
+
+
+    }
+
+    async getCellValueInTable(tableName: string, cellHeading: string): Promise<string> {
+        const table = this.page.getByRole('table', { name: tableName });
+        let cellValue = '';
+
+        try {
+            const rows = await table.locator('tr').all();
+            for (const row of rows) {
+                const heading = await row.locator('th').textContent() || '';
+                if (heading === cellHeading) {
+                    cellValue = await row.locator('td').textContent() || '';
+                    break;
+                }
+            }
+
+            return cellValue;
+        } catch (error) {
+            console.error(`Error getting table value: ${error}`);
+            throw new Error(`Failed to get value for heading "${cellHeading}" in table "${tableName}"`);
+        }
     }
 }
+

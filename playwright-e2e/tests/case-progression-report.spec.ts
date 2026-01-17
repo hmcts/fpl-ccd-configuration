@@ -10,15 +10,16 @@ test.describe('Case progression report ', () => {
     let caseName: string;
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
 	});
 
 	test('Case progression report',
 		async ({ page, signInPage, caseProgressionReport }) => {
 			caseName = 'CTSC upload case progression details' + dateTime.slice(0, 10);
-			await updateCase(caseName, caseNumber, caseData);
+			expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
 			await signInPage.visit();
 			await signInPage.login(CTSCUser.email, CTSCUser.password);
-			await signInPage.navigateTOCaseDetails(caseNumber);
+			await signInPage.navigateToCaseDetails(caseNumber);
 
 			await caseProgressionReport.gotoNextStep('Case progression report');
 			await caseProgressionReport.CaseProgressionReport();

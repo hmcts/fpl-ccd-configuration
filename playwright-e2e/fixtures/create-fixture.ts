@@ -41,6 +41,7 @@ import { LogExpertReport } from "../pages/log-expert-report";
 import { ChangeCaseName } from "../pages/change-case-name";
 import { ManageLaTransferToCourts } from "../pages/manage-la-transfer-to-courts";
 import { ManageRepresentatives } from "../pages/manage-representatives";
+import {QueryManagement} from "../pages/query-management";
 import {ManageTTL} from "../pages/manage-t-t-l";
 import { OthersToBeGivenNotice } from "../pages/others-to-be-given-notice";
 import { ChangeOtherToRespondent } from "../pages/change-other-to-respondent";
@@ -53,6 +54,18 @@ import {ManageOrdersIssuingDetails} from "../pages/manage-orders/manage-orders-i
 import {ManageOrdersReview} from "../pages/manage-orders/manage-orders-review";
 import {Submit} from "../pages/manage-orders/submit";
 import {ManageOrdersOrderSelection} from "../pages/manage-orders/manage-orders-order-selection";
+import {Applications} from "../pages/applications/upload-additional/applications";
+import {ApplicationFee} from "../pages/applications/upload-additional/application-fee";
+import {SuppliedDocuments} from "../pages/applications/upload-additional/supplied-documents";
+import {CaseNote} from "../pages/case-note";
+import {ExpertReport} from "../pages/expert-report";
+import {Extend26WeekTimeline} from "../pages/extend-26week-timeline";
+import { RecordFinalDecision} from "../pages/record-final-decision";
+import {SendOrderRemainder} from "../pages/send-order-remainder";
+import { FamilymanCaseNumberPage} from "../pages/gatekeeping/familyman-case-number";
+import {SendToGatekeeperPage} from "../pages/gatekeeping/send-to-gatekeeper";
+import {HistoryPage} from "../pages/case-details/history";
+import {EnvironmentConfig, getEnvironmentSpecificTestData} from "../settings/environment-data-config"
 
 
 type CreateFixtures = {
@@ -98,6 +111,7 @@ type CreateFixtures = {
   orders: Orders;
   manageLaTransferToCourts: ManageLaTransferToCourts
   manageRepresentatives: ManageRepresentatives;
+  queryManagement: QueryManagement;
   manageTTL: ManageTTL;
   othersToBeGivenNotice: OthersToBeGivenNotice;
   changeOtherToRespondent: ChangeOtherToRespondent;
@@ -109,7 +123,19 @@ type CreateFixtures = {
   manageOrdersIssuingDetails: ManageOrdersIssuingDetails;
   manageOrdersOrderSelection: ManageOrdersOrderSelection
   manageOrdersReview: ManageOrdersReview;
+  uploadAdditionalApplications: Applications;
+  uploadAdditionalApplicationsApplicationFee: ApplicationFee;
+  uploadAdditionalApplicationsSuppliedDocuments: SuppliedDocuments;
   submit: Submit;
+  caseNote: CaseNote;
+  familymanCaseNumber: FamilymanCaseNumberPage;
+  sendToGatekepperPage: SendToGatekeeperPage;
+  historyPage: HistoryPage;
+  expertReport: ExpertReport;
+  extend26WeekTimeline: Extend26WeekTimeline;
+  recordFinalDecision: RecordFinalDecision;
+  sendOrderRemainder: SendOrderRemainder;
+  envDataConfig: EnvironmentConfig;
 
 };
 
@@ -276,6 +302,7 @@ export const test = base.extend<CreateFixtures>({
     await use(new ManageLaTransferToCourts(page));
 },
 
+
 othersToBeGivenNotice: async ({ page }, use) => {
   await use(new OthersToBeGivenNotice(page));
 },
@@ -284,6 +311,12 @@ othersToBeGivenNotice: async ({ page }, use) => {
     await use(new ManageRepresentatives(page));
 
   },
+
+    queryManagement: async ({ page }, use) => {
+        await use(new QueryManagement(page));
+
+  },
+
     manageTTL: async ({ page }, use) => {
         await use(new ManageTTL(page));
     },
@@ -323,7 +356,47 @@ othersToBeGivenNotice: async ({ page }, use) => {
       await use(new ManageOrdersReview(page));
     },
 
+    uploadAdditionalApplications: async ({ page }, use) => {
+      await use(new Applications(page));
+    },
+
+    uploadAdditionalApplicationsApplicationFee: async ({ page }, use) => {
+      await use(new ApplicationFee(page));
+    },
+
+    uploadAdditionalApplicationsSuppliedDocuments: async ({ page }, use) => {
+      await use(new SuppliedDocuments(page));
+    },
+
     submit: async ({ page }, use) => {
       await use(new Submit(page));
+    },
+    caseNote: async ({ page }, use) => {
+      await use(new CaseNote(page));
+    },
+    familymanCaseNumber: async({ page }, use) => {
+      await use(new FamilymanCaseNumberPage(page));
+    },
+    sendToGatekepperPage: async({ page }, use) => {
+      await use(new SendToGatekeeperPage(page));
+    },
+    historyPage: async({ page }, use) => {
+      await use(new HistoryPage(page));
+    },
+    expertReport: async ({ page }, use) => {
+      await use(new ExpertReport(page));
+    },
+    extend26WeekTimeline: async ({ page }, use) => {
+      await use(new Extend26WeekTimeline(page));
+    },
+    recordFinalDecision: async ({ page }, use) => {
+      await use(new RecordFinalDecision(page));
+    },
+    sendOrderRemainder: async ({ page }, use) => {
+      await use(new SendOrderRemainder(page));
+    },
+    envDataConfig: async ({}, use) => {
+      const config = getEnvironmentSpecificTestData();
+      await use(config);
     }
 });

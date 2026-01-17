@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -301,6 +302,8 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                     .build())
                 .build())
             .build();
+
+        when(userService.isApplicantSolicitorUser(any())).thenReturn(true);
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 

@@ -18,8 +18,11 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
@@ -183,4 +186,49 @@ class UserServiceTest {
         assertThat(underTest.isCtscUser()).isFalse();
     }
 
+    @Test
+    void shouldReturnTrueWhenUserRoleExistsInIdamRoles() {
+        Set<String> userRoles = Set.of("caseworker", "caseworker-publiclaw", HMCTS_SUPERUSER.getRoleName(), "payments");
+        when(requestData.userRoles()).thenReturn(userRoles);
+
+        assertThat(underTest.hasAnyIdamRolesFrom(List.of(HMCTS_SUPERUSER, JUDICIARY))).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserRoleDoesNotExistInIdamRoles() {
+        Set<String> userRoles = Set.of("caseworker", "caseworker-publiclaw", HMCTS_ADMIN.getRoleName(), "payments");
+        when(requestData.userRoles()).thenReturn(userRoles);
+
+        assertThat(underTest.hasAnyIdamRolesFrom(List.of(HMCTS_SUPERUSER, JUDICIARY))).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenUserIsApplicantSolicitor() {
+        Long caseId = 123L;
+        String userId = "user-1";
+        when(requestData.userId()).thenReturn(userId);
+        when(roleAssignmentService.getCaseRolesForUserAtTime(
+                eq(userId),
+                eq(caseId),
+                any(),
+                eq(List.of(APPSOLICITOR.formattedName()))
+        )).thenReturn(Set.of(APPSOLICITOR.formattedName()));
+
+        assertThat(underTest.isApplicantSolicitorUser(caseId)).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserIsNotApplicantSolicitor() {
+        Long caseId = 123L;
+        String userId = "user-1";
+        when(requestData.userId()).thenReturn(userId);
+        when(roleAssignmentService.getCaseRolesForUserAtTime(
+                eq(userId),
+                eq(caseId),
+                any(),
+                eq(List.of(APPSOLICITOR.formattedName()))
+        )).thenReturn(Set.of());
+
+        assertThat(underTest.isApplicantSolicitorUser(caseId)).isFalse();
+    }
 }

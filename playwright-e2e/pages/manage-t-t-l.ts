@@ -1,5 +1,6 @@
 import {type Page} from "@playwright/test";
 import {BasePage} from "./base-page";
+import {addMonthsToDate} from "../utils/util-helper";
 
 export class ManageTTL extends BasePage {
 
@@ -9,9 +10,11 @@ export class ManageTTL extends BasePage {
     }
 
     async overrideSystemTTL() {
-        await this.page.getByRole('textbox', {name: 'Day'}).fill('5');
-        await this.page.getByRole('textbox', {name: 'Month'}).fill((new Date().getMonth() + 2).toString());
-        await this.page.getByRole('textbox', {name: 'Year'}).fill((new Date().getUTCFullYear() + 1).toString());
+        const futureDate = addMonthsToDate(new Date(), 15);
+        await this.page.getByRole('textbox', {name: 'Day'}).fill(futureDate.getUTCDate().toString());
+        await this.page.getByRole('textbox', {name: 'Month'}).fill(futureDate.getUTCMonth().toString());
+        await this.page.getByRole('textbox', {name: 'Year'}).fill(futureDate.getUTCFullYear().toString());
+        await this.page.press('body', 'Tab');
 
     }
 

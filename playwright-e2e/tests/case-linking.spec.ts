@@ -5,23 +5,26 @@ import {CTSCUser, newSwanseaLocalAuthorityUserOne} from '../settings/user-creden
 import {expect} from '@playwright/test';
 import {createCase, updateCase} from "../utils/api-helper";
 
-
-test.describe('Manage case linking', () => {
+//test is skipped until the issue with linked case retrieve  is resolved by EXUI team
+test.describe.skip('Manage case linking', () => {
     test.setTimeout(600_000);
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
     let linkedCase1: string;
     let linkedCase2: string;
-    let linkedCase3: string;
-    let updatedlinkedCase: string;
+
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
         linkedCase1 = await createCase('linkedCase1', newSwanseaLocalAuthorityUserOne);
+        expect(linkedCase1).toBeDefined();
         linkedCase2 = await createCase('linkedCase2', newSwanseaLocalAuthorityUserOne);
+        expect(linkedCase2).toBeDefined();
         //  linkedCase3  = await createCase('linkedCase3',newSwanseaLocalAuthorityUserOne);
-        await updateCase('linkedCase1', linkedCase1, caseData);
-        await updateCase('linkedCase2', linkedCase2, caseData);
+        expect(await updateCase('linkedCase1', linkedCase1, caseData)).toBeTruthy();
+
+        expect(await updateCase('linkedCase2', linkedCase2, caseData)).toBeTruthy();
         //  await updateCase('linkedCase3',linkedCase3,caseData);
     });
 
@@ -30,10 +33,10 @@ test.describe('Manage case linking', () => {
             test.slow();
 
             casename = 'CTSC admin link cases ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseData);
+            expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
             await caseLink.gotoCaseLinkNextStep('Link cases');
             await expect.soft(page.getByRole('heading', {name: 'Before you start'})).toBeVisible();

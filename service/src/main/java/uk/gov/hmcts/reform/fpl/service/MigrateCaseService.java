@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -1341,5 +1342,62 @@ public class MigrateCaseService {
         c2DocumentBundle.setDraftOrdersBundle(updatedDraftOrders);
 
         return Map.of("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
+    }
+
+    public Map<String, Object> removeSupportingEvidenceBundleFromAdditionalApplication(CaseData caseData,
+                                                                                       String migrationId,
+                                                                                       UUID bundleId, UUID docId) {
+        List<Element<AdditionalApplicationsBundle>> bundles = caseData.getAdditionalApplicationsBundle();
+
+        Element<AdditionalApplicationsBundle> bundle = ElementUtils.findElement(bundleId, bundles)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, additional application bundle not found",
+                migrationId, caseData.getId())));
+
+        C2DocumentBundle c2DocumentBundle = bundle.getValue().getC2DocumentBundle();
+        if (c2DocumentBundle == null || isEmpty(c2DocumentBundle.getSupportingEvidenceBundle())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, C2DocumentBundle or SupportingEvidenceBundle is null",
+                migrationId, caseData.getId()));
+        }
+
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle =
+            ElementUtils.removeElementWithUUID(c2DocumentBundle.getSupportingEvidenceBundle(), docId);
+
+        c2DocumentBundle.setSupportingEvidenceBundle(supportingEvidenceBundle);
+
+        return Map.of("additionalApplicationsBundle", bundles);
+    }
+
+    public String fixInvalidEmailAddressFormat(String emailAddress) {
+        String[] email = emailAddress.split("@");
+
+        if (email[0].startsWith(".")) {
+            email[0] = email[0].substring(1);
+        }
+
+        if (email[0].endsWith(".")) {
+            email[0] = email[0].substring(0, email[0].length() - 1);
+        }
+
+        return String.join("@", email);
+    }
+
+    public List<Element<HearingBooking>> replaceHearingJudgeEmailAddress(String migrationId,
+                                                               List<Element<HearingBooking>> hearings,
+                                                               UUID expectedHearingId,
+                                                               Long caseId) {
+        HearingBooking hearingBooking = ElementUtils.findElement(expectedHearingId, hearings)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid hearingId",
+                migrationId, caseId))
+            ).getValue();
+
+        hearingBooking.setJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor().toBuilder()
+            .judgeEmailAddress(fixInvalidEmailAddressFormat(
+                hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress()))
+            .build());
+
+        return hearings;
     }
 }
