@@ -361,10 +361,6 @@ othersToBeGivenNotice: async ({ page }, use) => {
       await use(new ApplicationFee(page));
     },
 
-    noticeOfChange: async ({ page }, use) => {
-        await use(new NoticeOfChange(page));
-    },
-
     uploadAdditionalApplicationsSuppliedDocuments: async ({ page }, use) => {
       await use(new SuppliedDocuments(page));
     },
