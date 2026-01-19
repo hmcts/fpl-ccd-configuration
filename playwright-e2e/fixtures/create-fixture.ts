@@ -395,5 +395,8 @@ othersToBeGivenNotice: async ({ page }, use) => {
     envDataConfig: async ({}, use) => {
       const config = getEnvironmentSpecificTestData();
       await use(config);
+    },
+    noticeOfChange: async ({ page }, use) => {
+        await use(new NoticeOfChange(page));
     }
 });
