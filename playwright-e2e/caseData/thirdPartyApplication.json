@@ -78,7 +78,6 @@
         }
       }
     ],
-    "relatingLA": "SA",
     "sendToCtsc": "Yes",
     "amountToPay": "26300",
     "childPolicy0": {
@@ -184,7 +183,7 @@
           },
           "representedBy": [],
           "usingOtherOrg": "No",
-          "isLocalAuthority": "YES",
+
           "legalCounsellors": [],
           "legalRepresentation": "Yes"
         }
@@ -206,8 +205,22 @@
             "relationshipToChild": "uncle",
             "addressNotKnowReason": "Whereabouts unknown"
           },
+          "solicitor": {
+            "email": "email@email.com",
+            "lastName": "Solicitor",
+            "firstName": "respondent 1",
+            "organisation": {
+              "OrganisationID": "4ZYL0HK",
+              "OrganisationName": "FPLSolicitorOrg"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "04668769687"
+            },
+            "regionalOfficeAddress": {},
+            "colleaguesToBeNotified": [],
+            "unregisteredOrganisation": {}
+          },
           "representedBy": [],
-          "isLocalAuthority": "NO",
           "legalCounsellors": [],
           "legalRepresentation": "No"
         }
@@ -229,19 +242,17 @@
             "addressNotKnowReason": "No fixed abode"
           },
           "representedBy": [],
-          "isLocalAuthority": "NO",
           "legalCounsellors": [],
           "legalRepresentation": "No"
         }
       }
     ],
     "c1Application": "No",
-    "dateSubmitted": "2025-06-25",
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
     "submittedForm": {
-      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/eb7c3960-7a6c-4fa7-a166-ed799f4de129",
-      "upload_timestamp": "2025-06-25T15:00:04.027867320",
+      "document_url": "${TEST_DOCUMENT_URL}",
       "document_filename": "Private_Solicitor_-C110_a_Application_2025-06-25T145849.968Z.pdf",
-      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/eb7c3960-7a6c-4fa7-a166-ed799f4de129/binary"
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
     },
     "deadline26week": "2025-12-24",
     "otherOrderType": "YES",
@@ -255,7 +266,6 @@
       "otherOrder": "Order to contact the child at foster care",
       "directionDetails": null
     },
-    "isLocalAuthority": "NO",
     "localAuthorities": [
       {
         "id": "e0a7654d-6f28-44a1-a92d-2de87077ff42",
@@ -307,7 +317,6 @@
         }
       }
     ],
-    "lastCreatedWATask": "FAILED_PAYMENT",
       "respondentPolicy0": {
         "Organisation": {
           "OrganisationID": "W9V61CP",
@@ -365,7 +374,6 @@
     "representativeType": "RESPONDENT_SOLICITOR",
     "westLondonDFJCourt": "117",
     "caseSummaryCourtName": "Family Court sitting at Barnet",
-    "dateAndTimeSubmitted": "2025-06-25T16:00:03.396921513+01:00",
     "respondentsConfirmPR": [
       "confirm"
     ],

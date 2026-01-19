@@ -162,12 +162,15 @@ export class BasePage {
       await page.locator('#hearingStartDate-minute').fill(min);
       await page.getByRole('textbox', {name: 'Second'}).fill(sec);
     }
+    hypenateCaseNumber(caseNumber: string) {
+        let hypenatedCaseNumber: string;
+        hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);
+        return hypenatedCaseNumber
+    }
     async enterDate(date: Date){
         await this.dateOfHearing.getByText('Day').fill(date.getDay().toString());
         await this.dateOfHearing.getByText('Month').fill(date.getMonth().toString());
         await this.dateOfHearing.getByText('Year').fill(date.getFullYear().toString())
-
-
     }
 
     async getCellValueInTable(tableName: string, cellHeading: string): Promise<string> {
@@ -190,6 +193,7 @@ export class BasePage {
             throw new Error(`Failed to get value for heading "${cellHeading}" in table "${tableName}"`);
         }
     }
+
     hypenateCaseNumber(caseNumber: string) {
         let hypenatedCaseNumber: string;
         hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);

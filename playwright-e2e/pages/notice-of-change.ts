@@ -21,15 +21,15 @@ export class NoticeOfChange extends BasePage {
     }
 
     async enterClientDetails(firstName: string, lastName: string) {
-        await expect(this.page.getByText(' You must enter the client details exactly as they\'re written on the case, including any mistakes. If the client\'s name is Smyth but it has been labelled "Smith", you should enter Smith. Please ensure that you are only performing a notice of change on behalf of the client that you are representing. ')).toBeVisible();
+        await expect.soft(this.page.getByText(' You must enter the client details exactly as they\'re written on the case, including any mistakes. If the client\'s name is Smyth but it has been labelled "Smith", you should enter Smith. Please ensure that you are only performing a notice of change on behalf of the client that you are representing. ')).toBeVisible();
         await this.page.getByRole('textbox', {name: 'Your client\'s first name'}).fill(firstName);
         await this.page.getByRole('textbox', {name: 'Your client\'s last name'}).fill(lastName);
     }
 
     async confirmDetails() {
-        await expect(this.page.getByText('You should tick to \'sign\' when:')).toBeVisible();
+        await expect.soft(this.page.getByText('You should tick to \'sign\' when:')).toBeVisible();
         await expect.soft(this.page.getByText('You\'re satisfied that all these details are accurate and match what is written on the case')).toBeVisible();
-        await expect(this.page.getByText('You have served notice of this change on every party to the case, including the former legal representative (if there was one)')).toBeVisible();
+        await expect.soft(this.page.getByText('You have served notice of this change on every party to the case, including the former legal representative (if there was one)')).toBeVisible();
 
         await this.page.getByRole('checkbox', {name: 'I confirm all these details'}).check();
         await this.page.getByRole('checkbox', {name: 'I have served notice of this'}).check();
