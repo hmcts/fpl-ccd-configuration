@@ -1,46 +1,46 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
 export class BasePage {
-  readonly nextStep: Locator;
-  readonly goButton: Locator;
-  readonly page: Page;
-  readonly continueButton: Locator;
-  readonly previousButton: Locator;
-  readonly cancelLink: Locator;
-  readonly signOut: Locator;
-  readonly checkYourAnswersHeader: Locator;
-  readonly saveAndContinue: Locator;
-  readonly submit: Locator;
-  readonly postCode: Locator;
-  readonly findAddress: Locator;
-  readonly rateLimit: Locator;
-  readonly year: Locator;
-  readonly month: Locator;
-  readonly day: Locator;
-  private dateOfHearing: Locator;
-  readonly startButton: Locator;
+    readonly nextStep: Locator;
+    readonly goButton: Locator;
+    readonly page: Page;
+    readonly continueButton: Locator;
+    readonly previousButton: Locator;
+    readonly cancelLink: Locator;
+    readonly signOut: Locator;
+    readonly checkYourAnswersHeader: Locator;
+    readonly saveAndContinue: Locator;
+    readonly submit: Locator;
+    readonly postCode: Locator;
+    readonly findAddress: Locator;
+    readonly rateLimit: Locator;
+    readonly year: Locator;
+    readonly month: Locator;
+    readonly day: Locator;
+    private dateOfHearing: Locator;
+    readonly startButton: Locator;
 
 
-  constructor(page: Page) {
-    this.page = page;
-    this.nextStep = page.getByLabel('Next step');
-    this.goButton = page.getByRole('button', { name: 'Go', exact: true });
-    this.continueButton = page.getByRole("button", { name: 'Continue' });
-    this.previousButton = page.getByRole("button", { name: 'Previous' });
-    this.cancelLink = page.getByRole("link", { name: 'Cancel' });
-    this.signOut = page.getByText('Sign out');
-    this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-    this.saveAndContinue = page.getByRole("button", { name: 'Save and Continue'});
-    this.submit = page.getByRole('button', { name: 'Submit' });
-    this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
-    this.findAddress = page.getByRole('button', { name: 'Find address' });
-    this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
-    this.day = page.getByLabel('Day');
-    this.month = this.page.getByLabel('Month');
-    this.year = this.page.getByLabel(' Year ');
-    this.dateOfHearing =  this.page.getByRole('group', { name: 'What is the date of the' });
-    this.startButton = page.getByRole('button', { name: 'Start' });
-  }
+    constructor(page: Page) {
+        this.page = page;
+        this.nextStep = page.getByLabel('Next step');
+        this.goButton = page.getByRole('button', {name: 'Go', exact: true});
+        this.continueButton = page.getByRole("button", {name: 'Continue'});
+        this.previousButton = page.getByRole("button", {name: 'Previous'});
+        this.cancelLink = page.getByRole("link", {name: 'Cancel'});
+        this.signOut = page.getByText('Sign out');
+        this.checkYourAnswersHeader = page.getByRole('heading', {name: 'Check your answers'});
+        this.saveAndContinue = page.getByRole("button", {name: 'Save and Continue'});
+        this.submit = page.getByRole('button', {name: 'Submit'});
+        this.postCode = page.getByRole('textbox', {name: 'Enter a UK postcode'});
+        this.findAddress = page.getByRole('button', {name: 'Find address'});
+        this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
+        this.day = page.getByLabel('Day');
+        this.month = this.page.getByLabel('Month');
+        this.year = this.page.getByLabel(' Year ');
+        this.dateOfHearing = this.page.getByRole('group', {name: 'What is the date of the'});
+        this.startButton = page.getByRole('button', {name: 'Start'});
+    }
 
   async gotoNextStep(eventName: string) {
       await expect(async () => {
@@ -162,12 +162,15 @@ export class BasePage {
       await page.locator('#hearingStartDate-minute').fill(min);
       await page.getByRole('textbox', {name: 'Second'}).fill(sec);
     }
+    hypenateCaseNumber(caseNumber: string) {
+        let hypenatedCaseNumber: string;
+        hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);
+        return hypenatedCaseNumber
+    }
     async enterDate(date: Date){
         await this.dateOfHearing.getByText('Day').fill(date.getDay().toString());
         await this.dateOfHearing.getByText('Month').fill(date.getMonth().toString());
         await this.dateOfHearing.getByText('Year').fill(date.getFullYear().toString())
-
-
     }
 
     async getCellValueInTable(tableName: string, cellHeading: string): Promise<string> {

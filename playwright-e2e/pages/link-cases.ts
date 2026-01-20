@@ -29,11 +29,7 @@ export class CaseLink extends BasePage {
         }
         await this.proposeLink.click();
     }
-    hypenateCaseNumber(caseNumber: string) {
-        let hypenatedCaseNumber: string;
-        hypenatedCaseNumber = caseNumber.slice(0, 4) + "-" + caseNumber.slice(4, 8) + "-" + caseNumber.slice(8, 12) + "-" + caseNumber.slice(12, 16);
-        return hypenatedCaseNumber
-    }
+
     async submitCaseLink() {
         this.submit.click();
     }
