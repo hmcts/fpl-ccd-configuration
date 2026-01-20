@@ -25,8 +25,8 @@ test.describe('Cafcass upload guardian report ', () => {
         await signInPage.visit();
         await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
-        await caseFileView.goToCFVTab();await signInPage.navigateToCaseDetails(caseNumber);
-        await caseFileView.openFolder('Guardian\'s reports');
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Guardian\'s evidence');
 
         await expect(page.getByRole('tree')).toContainText(`${docName}`);
 
