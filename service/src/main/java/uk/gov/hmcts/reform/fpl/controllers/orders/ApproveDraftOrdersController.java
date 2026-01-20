@@ -111,6 +111,7 @@ public class ApproveDraftOrdersController extends CallbackController {
                     }
                 } catch (Exception e) {
                     // Legal advisor don't have Judicial profiles
+                    // this also applies to any other user without a profile, e.g. gatekeeper, superuser
                     log.error("Fail to get judge title and name. Entering Legal advisor route", e);
                     data.put("judgeType", LEGAL_ADVISOR);
                 }
