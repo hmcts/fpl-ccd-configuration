@@ -55,14 +55,13 @@ public class NoticeOfChangeController extends CallbackController {
         // hit so there wouldn't be any difference in caseDetails and caseDetailsBefore
         CaseData originalCaseData = getCaseData(caseDetails);
 
-        boolean isApplicantSolicitorUser = userService.isApplicantSolicitorUser(caseData.getId());
-        caseDetails.getData().putAll(noticeOfChangeService.updateRepresentation(caseData, isApplicantSolicitorUser));
+        caseDetails.getData().putAll(noticeOfChangeService.updateRepresentation(caseData));
 
         caseData = getCaseData(caseDetails);
 
         ChangeOrganisationRequest nocRequest = caseData.getChangeOrganisationRequestField();
 
-        if (noticeOfChangeService.isThirdPartyNoCRequest(caseData, isApplicantSolicitorUser)) {
+        if (noticeOfChangeService.isThirdPartyNoCRequest(caseData)) {
             caseDetails.getData().putAll(localAuthorityService.updateLocalAuthorityFromNoC(caseData, nocRequest));
         } else {
             caseDetails.getData().putAll(legalCounselUpdater.updateLegalCounselFromNoC(caseData, originalCaseData));
@@ -76,8 +75,7 @@ public class NoticeOfChangeController extends CallbackController {
         CaseData oldCaseData = getCaseDataBefore(callbackRequest);
         CaseData newCaseData = getCaseData(callbackRequest);
 
-        boolean isApplicantSolicitorUser = userService.isApplicantSolicitorUser(newCaseData.getId());
-        if (noticeOfChangeService.isThirdPartyNoCRequest(newCaseData, isApplicantSolicitorUser)) {
+        if (noticeOfChangeService.isThirdPartyNoCRequest(oldCaseData)) {
             publishEventsForThirdPartyOutsourcingNoC(oldCaseData, newCaseData);
         } else {
             publishNoCEventsForRespondentOrChildSolicitor(newCaseData, oldCaseData);

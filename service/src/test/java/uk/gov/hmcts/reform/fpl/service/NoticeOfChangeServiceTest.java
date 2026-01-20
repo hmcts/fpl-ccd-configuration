@@ -115,7 +115,7 @@ class NoticeOfChangeServiceTest {
             when(updateRepresentationService.updateRepresentation(caseData, solicitorUser))
                 .thenReturn(UPDATED_REPRESENTATION);
 
-            final Map<String, Object> actual = underTest.updateRepresentation(caseData, false);
+            final Map<String, Object> actual = underTest.updateRepresentation(caseData);
 
             assertThat(actual).isEqualTo(UPDATED_REPRESENTATION);
 
@@ -162,7 +162,7 @@ class NoticeOfChangeServiceTest {
             when(updateRepresentationService.updateRepresentationThirdPartyOutsourcing(caseData, solicitorUser))
                 .thenReturn(UPDATED_REPRESENTATION);
 
-            final Map<String, Object> actual = underTest.updateRepresentation(caseData, true);
+            final Map<String, Object> actual = underTest.updateRepresentation(caseData);
 
             assertThat(actual).isEqualTo(UPDATED_REPRESENTATION);
 
@@ -181,7 +181,7 @@ class NoticeOfChangeServiceTest {
             when(auditEventService.getLatestAuditEventByName(caseData.getId().toString(), NOC_REQUEST_EVENT))
                 .thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> underTest.updateRepresentation(caseData, false))
+            assertThatThrownBy(() -> underTest.updateRepresentation(caseData))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Could not find nocRequest event in audit");
 

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
@@ -115,11 +114,6 @@ public class UserService {
 
     public boolean isCtscUser() {
         return this.hasAnyOrgRoleFrom(List.of(OrganisationalRole.CTSC));
-    }
-
-    public boolean isApplicantSolicitorUser(Long caseId) {
-        return !roleAssignmentService.getCaseRolesForUserAtTime(requestData.userId(), caseId, ZonedDateTime.now(),
-                List.of(APPSOLICITOR.formattedName())).isEmpty();
     }
 
 }
