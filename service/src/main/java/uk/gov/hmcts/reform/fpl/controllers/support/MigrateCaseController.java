@@ -143,7 +143,7 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    // one off migration only, can't any reason to keep this method in the future
+    // one off migration only, can't see any reason to keep this method in the future
     private List<Element<HearingOrder>> migrateRefusedOrders(List<Element<HearingOrder>> refusedOrders) {
         return refusedOrders.stream()
             .map(refusedOrderElement -> element(
