@@ -66,7 +66,7 @@ test.describe('Notice Of Change', () => {
 
         });
 
-    test.skip('Notice of Change - Applicant Solicitor 3rd Party c110A application',
+    test('Notice of Change - Applicant Solicitor 3rd Party c110A application',
         async ({page, signInPage, noticeOfChange}) => {
             let hypenCase: string;
             caseNumber = await createCase('e2e case', privateSolicitorOrgUser);
