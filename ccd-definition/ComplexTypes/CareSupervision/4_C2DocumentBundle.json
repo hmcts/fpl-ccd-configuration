@@ -24,7 +24,16 @@
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "C2ApplicationType",
-    "ElementLabel": "Application type",
+    "ElementLabel": "Application with consent?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "routeType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationRoute",
+    "ElementLabel": "Online or paper form?",
     "SecurityClassification": "Public"
   },
   {
