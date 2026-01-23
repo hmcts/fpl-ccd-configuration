@@ -160,7 +160,8 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         if (isNotEmpty(caseData.getRefusedHearingOrders())) {
-            caseDetails.getData().put("refusedHearingOrders", rollbackRefusedOrders(caseData.getRefusedHearingOrders()));
+            caseDetails.getData().put("refusedHearingOrders",
+                rollbackRefusedOrders(caseData.getRefusedHearingOrders()));
         }
 
         // Process all confidential refused orders
