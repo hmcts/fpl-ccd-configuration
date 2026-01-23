@@ -11,7 +11,8 @@ public enum ChildFinalDecisionReason {
     WITHDRAWN("Application withdrawn"),
     NO_ORDER("No order made"),
     OTHER("Other"),
-    HOUSEKEEPING("Housekeeping");
+    HOUSEKEEPING("Housekeeping"),
+    CONSOLIDATED("Case consolidated");
 
     private final String label;
 }
