@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialRefusedOrders;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -28,8 +30,8 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.DATE_SUBMITTED;
-import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.LAST_SUBMITTED_DATE;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
 @RestController
@@ -45,8 +47,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-log", this::runLog,
         "SNI-8284", this::run8284,
         "DFPL-2992", this::run2992,
-        "DFPL-2677", this::run2677,
-        "DFPL-2677-rollback", this::rollback2677
+        "DFPL-2773", this::run2773,
+        "DFPL-2773-rollback", this::run2773Rollback
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -122,23 +124,68 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run2677(CaseDetails caseDetails) {
-        if (caseDetails.getData().get(DATE_SUBMITTED) == null
-            || caseDetails.getData().get(LAST_SUBMITTED_DATE) != null) {
-            throw new AssertionError("[Case %s], dateSubmitted is null or lastSubmittedDate is not null"
-                .formatted(caseDetails.getId()));
+    private void run2773(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isNotEmpty(caseData.getRefusedHearingOrders())) {
+            caseDetails.getData().put("refusedHearingOrders", migrateRefusedOrders(caseData.getRefusedHearingOrders()));
         }
-        caseDetails.getData().put(LAST_SUBMITTED_DATE, caseDetails.getData().get(DATE_SUBMITTED));
-        caseDetails.getData().put(DATE_SUBMITTED, null);
+
+        // Process all confidential refused orders
+        ConfidentialRefusedOrders existingConfidentialRefusedOrders = caseData.getConfidentialRefusedOrders();
+        if (existingConfidentialRefusedOrders != null) {
+            existingConfidentialRefusedOrders.processAllConfidentialOrders((suffix, refusedOrderElements) -> {
+                if (isNotEmpty(refusedOrderElements)) {
+                    caseDetails.getData().put(
+                        existingConfidentialRefusedOrders.getFieldBaseName() + suffix,
+                        migrateRefusedOrders(refusedOrderElements));
+                }
+            });
+        }
     }
 
-    private void rollback2677(CaseDetails caseDetails) {
-        if (caseDetails.getData().get(LAST_SUBMITTED_DATE) == null
-            || caseDetails.getData().get(DATE_SUBMITTED) != null) {
-            throw new AssertionError("[Case %s], lastSubmittedDate is null or dateSubmitted is not null"
-                .formatted(caseDetails.getId()));
+    // one off migration only, can't see any reason to keep this method in the future
+    private List<Element<HearingOrder>> migrateRefusedOrders(List<Element<HearingOrder>> refusedOrders) {
+        return refusedOrders.stream()
+            .map(refusedOrderElement -> element(
+                refusedOrderElement.getId(),
+                refusedOrderElement.getValue().toBuilder()
+                    .refusedOrder(refusedOrderElement.getValue().getOrder())
+                    .order(null)
+                    .build()))
+            .toList();
+    }
+
+    private void run2773Rollback(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isNotEmpty(caseData.getRefusedHearingOrders())) {
+            caseDetails.getData().put("refusedHearingOrders",
+                rollbackRefusedOrders(caseData.getRefusedHearingOrders()));
         }
-        caseDetails.getData().put(DATE_SUBMITTED, caseDetails.getData().get(LAST_SUBMITTED_DATE));
-        caseDetails.getData().remove(LAST_SUBMITTED_DATE);
+
+        // Process all confidential refused orders
+        ConfidentialRefusedOrders existingConfidentialRefusedOrders = caseData.getConfidentialRefusedOrders();
+        if (existingConfidentialRefusedOrders != null) {
+            existingConfidentialRefusedOrders.processAllConfidentialOrders((suffix, refusedOrderElements) -> {
+                if (isNotEmpty(refusedOrderElements)) {
+                    caseDetails.getData().put(
+                        existingConfidentialRefusedOrders.getFieldBaseName() + suffix,
+                        rollbackRefusedOrders(refusedOrderElements));
+                }
+            });
+        }
+    }
+
+    // one off migration only, can't see any reason to keep this method in the future
+    private List<Element<HearingOrder>> rollbackRefusedOrders(List<Element<HearingOrder>> refusedOrders) {
+        return refusedOrders.stream()
+            .map(refusedOrderElement -> element(
+                refusedOrderElement.getId(),
+                refusedOrderElement.getValue().toBuilder()
+                    .refusedOrder(null)
+                    .order(refusedOrderElement.getValue().getRefusedOrder())
+                    .build()))
+            .toList();
     }
 }
