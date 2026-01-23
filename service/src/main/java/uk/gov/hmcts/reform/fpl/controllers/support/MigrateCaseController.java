@@ -47,7 +47,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-log", this::runLog,
         "SNI-8284", this::run8284,
         "DFPL-2992", this::run2992,
-        "DFPL-2773", this::run2773
+        "DFPL-2773", this::run2773,
+        "DFPL-2773-rollback", this::run2773Rollback
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -151,6 +152,38 @@ public class MigrateCaseController extends CallbackController {
                 refusedOrderElement.getValue().toBuilder()
                     .refusedOrder(refusedOrderElement.getValue().getOrder())
                     .order(null)
+                    .build()))
+            .toList();
+    }
+
+    private void run2773Rollback(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isNotEmpty(caseData.getRefusedHearingOrders())) {
+            caseDetails.getData().put("refusedHearingOrders", rollbackRefusedOrders(caseData.getRefusedHearingOrders()));
+        }
+
+        // Process all confidential refused orders
+        ConfidentialRefusedOrders existingConfidentialRefusedOrders = caseData.getConfidentialRefusedOrders();
+        if (existingConfidentialRefusedOrders != null) {
+            existingConfidentialRefusedOrders.processAllConfidentialOrders((suffix, refusedOrderElements) -> {
+                if (isNotEmpty(refusedOrderElements)) {
+                    caseDetails.getData().put(
+                        existingConfidentialRefusedOrders.getFieldBaseName() + suffix,
+                        rollbackRefusedOrders(refusedOrderElements));
+                }
+            });
+        }
+    }
+
+    // one off migration only, can't see any reason to keep this method in the future
+    private List<Element<HearingOrder>> rollbackRefusedOrders(List<Element<HearingOrder>> refusedOrders) {
+        return refusedOrders.stream()
+            .map(refusedOrderElement -> element(
+                refusedOrderElement.getId(),
+                refusedOrderElement.getValue().toBuilder()
+                    .refusedOrder(null)
+                    .order(refusedOrderElement.getValue().getRefusedOrder())
                     .build()))
             .toList();
     }
