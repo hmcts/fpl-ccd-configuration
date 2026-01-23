@@ -59,6 +59,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @Nested
     class Dfpl2773 {
         private static final String MIGRATION_ID = "DFPL-2773";
+        private static final String ROLLBACK_ID = "DFPL-2773-rollback";
         private static final DocumentReference ORDER_DOCUMENT = testDocumentReference();
         private static final UUID HEARING_ORDER_ID = UUID.randomUUID();
 
@@ -66,7 +67,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldMigrateRefusedOrder() {
             CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
                 .data(Map.of("refusedHearingOrders",
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().order(ORDER_DOCUMENT).build())),
+                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().order(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
                     MIGRATION_ID_KEY, MIGRATION_ID))
                 .build()));
 
@@ -85,7 +87,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldMigrateConfidentialRefusedOrder(String suffix) {
             CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
                 .data(Map.of("refusedHearingOrders" + suffix,
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().order(ORDER_DOCUMENT).build())),
+                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().order(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
                     MIGRATION_ID_KEY, MIGRATION_ID))
                 .build()));
 
@@ -117,8 +120,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldRollbackRefusedOrder() {
             CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
                 .data(Map.of("refusedHearingOrders",
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().refusedOrder(ORDER_DOCUMENT).build())),
-                    MIGRATION_ID_KEY, MIGRATION_ID))
+                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
+                    MIGRATION_ID_KEY, ROLLBACK_ID))
                 .build()));
 
             assertThat(after.getRefusedHearingOrders())
@@ -136,8 +140,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldRollbackConfidentialRefusedOrder(String suffix) {
             CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
                 .data(Map.of("refusedHearingOrders" + suffix,
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().refusedOrder(ORDER_DOCUMENT).build())),
-                    MIGRATION_ID_KEY, MIGRATION_ID))
+                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
+                    MIGRATION_ID_KEY, ROLLBACK_ID))
                 .build()));
 
             after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
@@ -154,7 +159,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldNotRollbackIfEmptyOrNull() {
             CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of(MIGRATION_ID_KEY, MIGRATION_ID))
+                .data(Map.of(MIGRATION_ID_KEY, ROLLBACK_ID))
                 .build()));
 
             assertThat(after.getRefusedHearingOrders()).isNull();
