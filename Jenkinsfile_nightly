@@ -127,23 +127,7 @@ withNightlyPipeline(type, product, component) {
 //          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
 //        }
 //      }
-      stage('Functional UI tests chromium') {
-            try {
-                yarnBuilder.yarn('test:functional-chromium')
-            } catch (Error) {
-                unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-            } finally {
-                publishHTML([
-                    allowMissing: true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'test-results/functional',
-                    reportFiles: 'chromium.html',
-                    reportName: 'UITestChromiumReport'
-                ])
-                steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
-            }
-        }
+
 //      stage('Functional UI tests firefox') {
 //        try {
 //          yarnBuilder.yarn('test:functional-firefox')
@@ -234,4 +218,21 @@ withNightlyPipeline(type, product, component) {
     afterAlways('fortify-scan') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
     }
+}
+stage('Functional UI tests chromium') {
+  try {
+    yarnBuilder.yarn('test:functional-chromium')
+  } catch (Error) {
+    unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+  } finally {
+    publishHTML([
+      allowMissing: true,
+      alwaysLinkToLastBuild: true,
+      keepAll: true,
+      reportDir: 'test-results/functional',
+      reportFiles: 'chromium.html',
+      reportName: 'UITestChromiumReport'
+    ])
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
+  }
 }
