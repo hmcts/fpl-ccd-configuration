@@ -210,29 +210,29 @@ withNightlyPipeline(type, product, component) {
             reportFiles: 'cafcassAPI.html',
             reportName: 'cafcassAPITest'
           ])
-          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
+         // steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
         }
       }
+      stage('Functional UI tests chromium') {
+        try {
+          yarnBuilder.yarn('test:functional-chromium')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'test-results/functional',
+            reportFiles: 'chromium.html',
+            reportName: 'UITestChromiumReport'
+          ])
+        }
+      }
+      steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
     }
 
     afterAlways('fortify-scan') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
     }
-}
-stage('Functional UI tests chromium') {
-  try {
-    yarnBuilder.yarn('test:functional-chromium')
-  } catch (Error) {
-    unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-  } finally {
-    publishHTML([
-      allowMissing: true,
-      alwaysLinkToLastBuild: true,
-      keepAll: true,
-      reportDir: 'test-results/functional',
-      reportFiles: 'chromium.html',
-      reportName: 'UITestChromiumReport'
-    ])
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
-  }
 }
