@@ -207,10 +207,10 @@ withNightlyPipeline(type, product, component) {
             alwaysLinkToLastBuild: true,
             keepAll: true,
             reportDir: 'test-results/functional',
-            reportFiles: 'cafcassAPI.html',
+            reportFiles: 'index.html',
             reportName: 'cafcassAPITest'
           ])
-         // steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
         }
       }
       stage('Functional UI tests chromium') {
@@ -224,7 +224,7 @@ withNightlyPipeline(type, product, component) {
             alwaysLinkToLastBuild: true,
             keepAll: true,
             reportDir: 'test-results/functional',
-            reportFiles: 'chromium.html',
+            reportFiles: 'index.html',
             reportName: 'UITestChromiumReport'
           ])
         }
