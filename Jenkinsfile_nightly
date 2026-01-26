@@ -138,7 +138,7 @@ withNightlyPipeline(type, product, component) {
                     alwaysLinkToLastBuild: true,
                     keepAll: true,
                     reportDir: 'test-results/functional',
-                    reportFiles: 'index.html',
+                    reportFiles: 'chromium.html',
                     reportName: 'UITestChromiumReport'
                 ])
                 steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
@@ -223,7 +223,7 @@ withNightlyPipeline(type, product, component) {
             alwaysLinkToLastBuild: true,
             keepAll: true,
             reportDir: 'test-results/functional',
-            reportFiles: 'index.html',
+            reportFiles: 'cafcassAPI.html',
             reportName: 'cafcassAPITest'
           ])
           steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
