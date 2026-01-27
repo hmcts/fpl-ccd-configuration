@@ -532,7 +532,6 @@ export class Orders extends BasePage {
         await this.endDate.getByLabel('Month').fill('01');
         await this.endDate.getByLabel('Year').fill('2026');
         await this.finalOrder.getByText('No').click();
-       // await this.clickContinue();
 
     }
 }
