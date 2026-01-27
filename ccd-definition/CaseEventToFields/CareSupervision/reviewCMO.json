@@ -715,6 +715,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewCMO",
+    "CaseFieldID": "approveOrderLegalAdvisorFullName",
+    "PageID": "JudgeOrLegalAdvisorDetails",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "judgeType=\"LEGAL_ADVISOR\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "manualJudgeDetails",
     "CaseEventFieldLabel": " ",
     "DisplayContext": "COMPLEX",

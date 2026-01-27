@@ -332,8 +332,7 @@
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "judgeType=\"LEGAL_ADVISOR\"",
-    "EventElementLabel": "Please input your name",
-    "EventHintText": "(as you would like it to appear on the C2 order cover sheet)",
+    "EventElementLabel": "Your name",
     "Comment": "Reusing existing Legal advisor input field"
   }
 ]
