@@ -78,6 +78,9 @@ export class Orders extends BasePage {
     conditionsOfContact: Locator;
     partyGrantedLeave: Locator;
     newSurname: Locator;
+    readonly supervisionOrder: Locator;
+    readonly courtDirectsThat: Locator;
+    readonly requiredOrder: Locator;
 
 
     constructor(page: Page) {
@@ -158,6 +161,9 @@ export class Orders extends BasePage {
         this.conditionsOfContact = page.getByLabel('Conditions of contact');
         this.partyGrantedLeave = page.getByRole('textbox', { name: 'Party granted leave' });
         this.newSurname = page.getByRole('textbox', { name: 'Child/Children\'s new surname' });
+        this.supervisionOrder = page.locator('#manageOrdersC35aOrderExists_Yes');
+        this.courtDirectsThat = page.getByRole('textbox', { name: 'The court directs that' });
+        this.requiredOrder = page.getByRole('radio', { name: 'Variation of supervision order' });
 
     }
 
@@ -506,6 +512,27 @@ export class Orders extends BasePage {
         await this.finalOrder.getByText('No').click();
         await this.partyGrantedLeave.fill('Jason');
         await this.newSurname.fill('Fredrick');
+
+    }
+
+    async uploadsVariationOrExtensionOrder() {
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.supervisionOrder.check();
+        await this.requiredOrder.check();
+        await this.courtDirectsThat.fill('test');
+        await this.approvalDate.getByLabel('Day').fill('11');
+        await this.approvalDate.getByLabel('Month').fill('01');
+        await this.approvalDate.getByLabel('Year').fill('2026');
+        await this.endDate.getByLabel('Day').fill('21');
+        await this.endDate.getByLabel('Month').fill('01');
+        await this.endDate.getByLabel('Year').fill('2026');
+        await this.finalOrder.getByText('No').click();
+       // await this.clickContinue();
 
     }
 }
