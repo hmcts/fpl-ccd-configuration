@@ -169,7 +169,7 @@ export const getTestDocID =  async (request: APIRequestContext) => {
 
     } catch (error) {
         console.log('Error during case search: ', error);
-        throw new Error('Case search was not successful');
+        throw new Error('Case search was not successful: ' + error);
     }
 
 
