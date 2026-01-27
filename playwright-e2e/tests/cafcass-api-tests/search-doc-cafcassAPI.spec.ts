@@ -29,7 +29,6 @@ test.describe('@new CafcassAPI Document Search', () => {
     });
     test('  Cafcass user search a valid case document',
         async ({request}) => {
-console.log(caseNumber);
              let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth,docId);
             //assert the response
             expect(response.status()).toBe(200);
