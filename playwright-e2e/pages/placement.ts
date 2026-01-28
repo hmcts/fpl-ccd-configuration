@@ -9,7 +9,7 @@ export class Placement extends BasePage {
 
   }
 
-  async submitPlacementOrder() {
+  async PlacementApplicationDetails() {
     await this.page.getByLabel('Which child?').selectOption('Timothy Jones');
     await this.clickContinue();
     await this.page.locator("#placement_placementApplication").setInputFiles(config.testPdfFile);
@@ -26,21 +26,23 @@ export class Placement extends BasePage {
     await this.clickContinue();
     await this.page.getByRole('radio', { name: 'Yes' }).check();
     await this.clickContinue();
-    await this.payForApplication();
-    await this.checkYourAnsAndSubmit();
+
   }
 
-  public async payForApplication() {
+  public async payForApplicationLA(PBANumber :string) {
     await expect(this.page.getByText('£556.00')).toBeVisible();
-    await this.page.getByRole('textbox', { name: 'Payment by account (PBA)' }).fill('PBA1234567');
+    await this.page.getByLabel('Payment by account (PBA)').selectOption(PBANumber);
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
   }
+    public async payForApplicationCTSC() {
+        await expect(this.page.getByText('£556.00')).toBeVisible();
+        await this.page.getByRole('textbox', { name: 'Payment by account (PBA)' }).fill('PBA1234567');
+        await this.page.getByLabel('Customer reference').fill('Customer reference');
+        await this.clickContinue();
+    }
 
   public async noticeOfPlacement() {
-    await this.submitPlacementOrder();
-    await this.page.getByLabel('Next step').selectOption('Notice of Placement - Hearing');
-    await this.page.getByRole('button', { name: 'Go' }).click();
     await this.page.getByLabel('Which placement application').selectOption('Timothy Jones');
     await this.page.getByRole('button', { name: 'Continue' }).click();
     await this.page.getByRole('textbox', { name: 'Day' }).fill('10');
@@ -49,8 +51,8 @@ export class Placement extends BasePage {
     await this.page.getByRole('textbox', { name: 'Hour', exact: true }).fill('10');
     await this.page.getByRole('textbox', { name: 'Hearing duration (hours)' }).fill('1');
     await this.page.getByLabel('Hearing venue').selectOption('2: -1');
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.getByRole('button', { name: 'Save and continue' }).click();
+    await this.clickContinue();
+    await this.clickContinue();
+    await this.clickSaveAndContinue();
   }
 }
