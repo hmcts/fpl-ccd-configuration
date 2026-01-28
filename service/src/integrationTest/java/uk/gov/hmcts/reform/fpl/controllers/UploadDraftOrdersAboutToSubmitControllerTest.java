@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -18,16 +17,13 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -36,7 +32,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -45,7 +40,6 @@ import java.util.stream.Stream;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -61,18 +55,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOrdersControllerTest {
 
     private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
-    private static final long CASE_ID = 12345L;
-    private static final JudgeAndLegalAdvisor HEARING_JUDGE = JudgeAndLegalAdvisor.builder()
-        .judgeJudicialUser(JudicialUser.builder()
-            .idamId("1234")
-            .build())
-        .build();
 
     @MockBean
     private ManageDocumentService manageDocumentService;
-
-    @MockBean
-    private JudicialService judicialService;
 
     UploadDraftOrdersAboutToSubmitControllerTest() {
         super();
@@ -82,9 +67,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
     void before() {
         when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
         when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
-        when(judicialService.getCurrentHearingJudge(any())).thenReturn(Optional.of(HEARING_JUDGE));
-        when(judicialService.getHearingJudgeAndLegalAdviserRoleAssignments(eq(CASE_ID), any()))
-            .thenReturn(List.of(RoleAssignment.builder().roleName("hearing-judge").build()));
     }
 
     @Test
@@ -100,7 +82,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .uploadDraftOrdersEventData(eventData)
             .hearingDetails(hearings)
             .build();
@@ -142,7 +123,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .uploadDraftOrdersEventData(eventData)
             .hearingDetails(hearings)
             .build();
@@ -190,7 +170,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .uploadDraftOrdersEventData(eventData)
             .hearingDetails(hearings)
             .draftUploadedCMOs(newArrayList(cmoElement))
@@ -225,7 +204,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         List<Element<HearingOrder>> draftCMOs = List.of();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(CMO))
                 .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
@@ -293,7 +271,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         List<Element<HearingOrder>> draftCMOs = List.of();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(CMO))
                 .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
@@ -329,7 +306,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         List<Element<HearingOrder>> draftOrders = List.of();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(C21))
                 .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
@@ -360,7 +336,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         List<Element<HearingOrder>> draftCMOs = List.of();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(CMO))
                 .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
