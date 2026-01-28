@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
@@ -18,13 +19,16 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildPolicyData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -37,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -51,12 +56,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static java.util.Collections.emptyList;
@@ -76,6 +83,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
@@ -103,12 +111,15 @@ class DraftOrderServiceTest {
     @Mock
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
+    @Mock
+    private JudicialService judicialService;
+
     @BeforeEach
     void init() {
         service = new DraftOrderService(new ObjectMapper(),
             time,
             new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder()),
-            manageDocumentService, userService, ctscEmailLookupConfiguration
+            manageDocumentService, userService, ctscEmailLookupConfiguration, judicialService
         );
     }
 
@@ -548,6 +559,75 @@ class DraftOrderServiceTest {
             assertThat(actualEventData.getCurrentHearingOrderDrafts()).containsExactly(hearingOrder2, hearingOrder3);
             assertThat(actualEventData.getCmoJudgeInfo()).isNull();
 
+        }
+
+        @Test
+        void shouldGiveRoleTypeForHearingJudge() {
+            Optional<JudgeAndLegalAdvisor> test = Optional.of(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Dredd")
+                    .judgeJudicialUser(JudicialUser.builder().idamId("1234").build())
+                .build());
+
+            CaseData caseData = CaseData.builder().id(1234L).build();
+
+            when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(test);
+            when(judicialService.getHearingJudgeAndLegalAdviserRoleAssignments(eq(caseData.getId()), any()))
+                .thenReturn(List.of(RoleAssignment.builder().roleName("hearing-judge").build()));
+
+            assertThat(service.getHearingJudgeOrLegalAdviserType(caseData))
+                .isEqualTo(JudicialMessageRoleType.HEARING_JUDGE);
+        }
+
+        @Test
+        void shouldGiveRoleTypeForHearingLegalAdviser() {
+            Optional<JudgeAndLegalAdvisor> test = Optional.of(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(LEGAL_ADVISOR)
+                .judgeLastName("Dredd")
+                .judgeJudicialUser(JudicialUser.builder().idamId("1234").build())
+                .build());
+
+            CaseData caseData = CaseData.builder().id(1234L).build();
+
+            when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(test);
+            when(judicialService.getHearingJudgeAndLegalAdviserRoleAssignments(eq(caseData.getId()), any()))
+                .thenReturn(List.of(RoleAssignment.builder().roleName("hearing-legal-adviser").build()));
+
+            assertThat(service.getHearingJudgeOrLegalAdviserType(caseData))
+                .isEqualTo(JudicialMessageRoleType.OTHER);
+        }
+
+        @Test
+        void shouldThrowExceptionIfUserNotFoundForHearingJudgeOrLegalAdvisor() {
+            Optional<JudgeAndLegalAdvisor> test = Optional.of(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Dredd")
+                .judgeJudicialUser(JudicialUser.builder().idamId("1234").build())
+                .build());
+
+            CaseData caseData = CaseData.builder().id(1234L).build();
+
+            when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(test);
+            when(judicialService.getHearingJudgeAndLegalAdviserRoleAssignments(eq(caseData.getId()), any()))
+                .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-hearing-judge").build()));
+
+
+            UserLookupException thrownException = assertThrows(UserLookupException.class,
+                () -> service.getHearingJudgeOrLegalAdviserType(caseData));
+            assertThat(thrownException.getMessage())
+                .contains("Hearing judge or legal adviser for latest hearing has invalid am role for case id: 1234");
+        }
+
+        @Test
+        void shouldThrowExceptionIfJudicialLookupFailsForHearingJudgeOrLegalAdvisor() {
+            CaseData caseData = CaseData.builder().id(1234L).build();
+
+            when(judicialService.getCurrentHearingJudge(caseData)).thenReturn(Optional.empty());
+
+            UserLookupException thrownException = assertThrows(UserLookupException.class,
+                () -> service.getHearingJudgeOrLegalAdviserType(caseData));
+            assertThat(thrownException.getMessage())
+                .contains("No hearing judge or legal adviser found for latest hearing for case id: 1234");
         }
     }
 

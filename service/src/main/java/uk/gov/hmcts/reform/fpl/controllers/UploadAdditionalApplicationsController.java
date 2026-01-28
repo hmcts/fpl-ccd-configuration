@@ -86,6 +86,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        caseDetails.getData().remove("latestRoleSent");
         caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
 
         return respond(caseDetails);
@@ -219,6 +220,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().put("c2DocumentBundle", uploadAdditionalApplicationsService
             .sortOldC2DocumentCollection(oldC2DocumentCollection));
+
+        caseDetails.getData().put("latestRoleSent", uploadAdditionalApplicationsService
+            .getAllocatedJudgeOrLegalAdviserType(caseData));
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
             "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
