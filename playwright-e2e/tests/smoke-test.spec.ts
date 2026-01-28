@@ -210,7 +210,9 @@ test.setTimeout(7 * 60 * 1000);
             await caseFileView.goToCFVTab();
             await caseFileView.openFolder('Applications');
             await caseFileView.openFolder('Original Applications');
-            await expect(page.getByRole('button', { name: 'Document icon' })).toBeVisible();
+            await expect(caseFileView.page.getByLabel('Original Applications folder')).toBeVisible();
+            await expect(caseFileView.page.getByRole('treeitem', { name: 'Somuy__Swansea_City_Council_Asa_Yaks.pdf', exact: true })).toBeVisible();
+
             await caseFileView.openDocInNewTab();
             await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
         });
