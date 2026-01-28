@@ -150,6 +150,7 @@ public class MigrateCaseController extends CallbackController {
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 1));
+        caseDetails.getData().putAll(migrateCaseService
+            .updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 1));
     }
 }
