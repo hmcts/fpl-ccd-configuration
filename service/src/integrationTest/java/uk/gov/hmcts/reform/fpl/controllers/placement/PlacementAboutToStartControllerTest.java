@@ -40,7 +40,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
 
     @BeforeEach
     void setup() {
-        given(userService.hasAnyIdamRolesFrom(List.of(UserRole.HMCTS_SUPERUSER))).willReturn(false);
+        given(userService.isCtscUser()).willReturn(false);
     }
 
     @Test

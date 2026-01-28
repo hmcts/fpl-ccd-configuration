@@ -75,7 +75,7 @@ public class PlacementController extends CallbackController {
         }
 
 
-        if (placementService.isCurrentUserHmctsSuperuser()) {
+        if (placementService.isCurrentUserCtsc()) {
             caseProperties.put("isCTSCUser", YES.getValue());
         } else {
             caseProperties.put("isCTSCUser", NO.getValue());

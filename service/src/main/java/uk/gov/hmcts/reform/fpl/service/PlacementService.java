@@ -515,7 +515,7 @@ public class PlacementService {
         return placementData;
     }
 
-    public boolean isCurrentUserHmctsSuperuser() {
-        return userService.hasAnyIdamRolesFrom(List.of(UserRole.HMCTS_SUPERUSER));
+    public boolean isCurrentUserCtsc() {
+        return userService.isCtscUser();
     }
 }
