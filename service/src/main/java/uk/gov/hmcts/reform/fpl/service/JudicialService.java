@@ -543,11 +543,11 @@ public class JudicialService {
         return resultMap;
     }
 
-    private List<RoleAssignment> getAllocatedJudgeAndLegalAdvisorRoleAssignments(Long caseId) {
+    public List<RoleAssignment> getAllocatedJudgeAndLegalAdvisorRoleAssignments(Long caseId) {
         return roleAssignmentService.getCaseRolesAtTime(caseId, ALLOCATED_ROLES, currentTimeUK());
     }
 
-    private List<RoleAssignment> getHearingJudgeAndLegalAdviserRoleAssignments(Long caseId, ZonedDateTime endTime) {
+    public List<RoleAssignment> getHearingJudgeAndLegalAdviserRoleAssignments(Long caseId, ZonedDateTime endTime) {
         return roleAssignmentService.getCaseRolesAtTime(caseId, HEARING_ROLES, endTime);
     }
 

@@ -8,17 +8,22 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
+import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -35,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -49,15 +55,18 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_ID;
@@ -112,6 +121,7 @@ class UploadAdditionalApplicationsServiceTest {
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
     private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);
     private final PbaService pbaService = mock(PbaService.class);
+    private final JudicialService judicialService = mock(JudicialService.class);
 
     private UploadAdditionalApplicationsService underTest;
 
@@ -127,7 +137,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(documentSealingService.sealDocument(DOCUMENT, COURT_1, SealType.ENGLISH))
             .willReturn(SEALED_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(time, user, manageDocumentService, uploadHelper,
-            documentSealingService, conversionService, pbaService);
+            documentSealingService, conversionService, pbaService, judicialService);
         given(user.isHmctsUser()).willReturn(true);
         given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.HMCTS);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
@@ -480,6 +490,88 @@ class UploadAdditionalApplicationsServiceTest {
                     .build(),
                 List.of(C2_APPLICATION, ApplicationType.C1_PARENTAL_RESPONSIBILITY))
         );
+    }
+
+    @Test
+    void shouldGiveRoleTypeForAllocatedJudge() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId("1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("allocated-judge").build()));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.ALLOCATED_JUDGE);
+    }
+
+    @Test
+    void shouldGiveRoleTypeForAllocatedLegalAdvisor() {
+        Judge allocatedLegalAdviser = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId("1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedLegalAdviser)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedLegalAdviser));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("allocated-legal-adviser").build()));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.OTHER);
+    }
+
+    @Test
+    void shouldThrowExceptionIfUserNotFoundForAllocatedJudgeOrLegalAdvisor() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId("1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .id(1234L)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-judge").build()));
+
+        UserLookupException thrownException = assertThrows(UserLookupException.class,
+            () -> underTest.getAllocatedJudgeOrLegalAdviserType(caseData));
+        assertThat(thrownException.getMessage())
+            .contains("Allocated judge or legal adviser has invalid am role for case id: 1234");
+    }
+
+    @Test
+    void shouldReturnStandardCtscRoleWhenNoAllocatedJudgeOrLegalAdvisor() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId("1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .id(1234L)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.empty());
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
     }
 
     @Nested
