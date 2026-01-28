@@ -689,14 +689,14 @@
     "CaseEventID": "reviewCMO",
     "CaseFieldID": "judgeType",
     "DisplayContext": "READONLY",
-    "PageID": "FeePaidJudge",
+    "PageID": "JudgeOrLegalAdvisorDetails",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 1,
     "FieldShowCondition": "feePaidJudgeTitle=\"DO_NOT_SHOW\"",
-    "PageShowCondition": "judgeType=\"FEE_PAID_JUDGE\"",
+    "PageShowCondition": "judgeType=\"FEE_PAID_JUDGE\" OR judgeType=\"LEGAL_ADVISOR\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/approve-draft-orders/preview-orders/mid-event",
-    "Comment": "This page is only shown when a fee paid judge approving and cover sheet is required"
+    "Comment": "This page is only shown when a fee paid judge or legal advisor is approving and cover sheet is required"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -705,10 +705,36 @@
     "CaseFieldID": "feePaidJudgeTitle",
     "CaseEventFieldLabel": "Please select your title",
     "DisplayContext": "MANDATORY",
-    "PageID": "FeePaidJudge",
+    "PageID": "JudgeOrLegalAdvisorDetails",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "PageFieldDisplayOrder": 2
+    "PageFieldDisplayOrder": 2,
+    "FieldShowCondition": "judgeType=\"FEE_PAID_JUDGE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "approveOrderLegalAdvisorFullName",
+    "PageID": "JudgeOrLegalAdvisorDetails",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "judgeType=\"LEGAL_ADVISOR\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "manualJudgeDetails",
+    "CaseEventFieldLabel": " ",
+    "DisplayContext": "COMPLEX",
+    "PageID": "JudgeOrLegalAdvisorDetails",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 2,
+    "FieldShowCondition": "judgeType=\"LEGAL_ADVISOR\""
   },
   {
     "LiveFrom": "01/01/2017",
