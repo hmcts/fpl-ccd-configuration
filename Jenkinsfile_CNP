@@ -252,8 +252,10 @@ withPipeline(type, product, component) {
       yarnBuilder.yarn('yarn-update')
       yarnBuilder.yarn('install-dependencies')
       env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+      env.S2S_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal/testing-support/lease"
       env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      env.ACCESS_MANAGEMENT_URL="https://am-role-assignment-service-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/am/role-assignments"
       env.MOCKED_PAYMENTS = false
       env.TEST_RETRIES = 1
 

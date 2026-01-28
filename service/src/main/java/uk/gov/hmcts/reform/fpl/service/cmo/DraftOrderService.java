@@ -5,31 +5,37 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -56,6 +62,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
 import static uk.gov.hmcts.reform.fpl.model.order.HearingOrder.from;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
@@ -79,6 +87,7 @@ public class DraftOrderService {
     private final ManageDocumentService manageDocumentService;
     private final UserService userService;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+    private final JudicialService judicialService;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
         final UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
@@ -303,6 +312,32 @@ public class DraftOrderService {
             return ctscEmailLookupConfiguration.getEmail();
         }
         return userService.getUserEmail();
+    }
+
+    public JudicialMessageRoleType getHearingJudgeOrLegalAdviserType(CaseData caseData) {
+        Optional<JudgeAndLegalAdvisor> hearingJudgeOrLegalAdviser = judicialService.getCurrentHearingJudge(caseData);
+
+        if (hearingJudgeOrLegalAdviser.isPresent()) {
+            List<String> roleTypes = judicialService
+                .getHearingJudgeAndLegalAdviserRoleAssignments(caseData.getId(), ZonedDateTime.now())
+                .stream()
+                .map((RoleAssignment::getRoleName))
+                .toList();
+
+            if (roleTypes.contains(HEARING_JUDGE.getRoleName())) {
+                return JudicialMessageRoleType.HEARING_JUDGE;
+            } else if (roleTypes.contains(HEARING_LEGAL_ADVISER.getRoleName())) {
+                return JudicialMessageRoleType.OTHER;
+            } else {
+                throw new UserLookupException(String
+                    .format("Hearing judge or legal adviser for latest hearing has invalid am role for case id: %s",
+                        caseData.getId()));
+            }
+        } else {
+            throw new UserLookupException(
+                String.format("No hearing judge or legal adviser found for latest hearing for case id: %s",
+                    caseData.getId()));
+        }
     }
 
     private boolean isInCmoDrafts(Element<HearingOrder> draft, List<Element<HearingOrder>> cmoDrafts) {
