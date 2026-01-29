@@ -137,7 +137,8 @@ public class ResendCafcassEmails implements Job {
                 order.getValue().getDocument(),
                 LanguageTranslationRequirement.NO,
                 order.getValue().getTitle(),
-                getOrderDate(order)
+                getOrderDate(order),
+                order.getValue().getOrderType()
             );
 
             if (featureToggleService.isResendCafcassEmailsEnabled()) {
