@@ -381,7 +381,7 @@ class MigrateCaseServiceTest {
 
         private final String caseRole = "[SOLICITORA]";
 
-        private int policyIndex = 1;
+        private int policyIndex = 0;
 
         private final Organisation previousOrganisation = Organisation.builder()
             .organisationID("ABCDEFG")
