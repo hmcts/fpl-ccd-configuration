@@ -18,8 +18,11 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeThirdPartyRespondentAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
@@ -46,6 +49,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -225,7 +230,18 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         Map<String, Object> data = new HashMap<>(Map.of(
             "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
             "respondents1", respondents,
-            "applicants", List.of(element(buildApplicant()))
+            "applicants", List.of(element(buildApplicant())),
+            "appSolicitorPolicy", OrganisationPolicy.builder()
+                .organisation(Organisation.builder().organisationID("ABC123").build())
+                .orgPolicyCaseAssignedRole(APPSOLICITOR.formattedName())
+                .build(),
+            "localAuthorities", List.of(element(LocalAuthority.builder()
+                .id("ABC123")
+                .representingDetails(RepresentingDetails.builder()
+                    .firstName("Bilbo")
+                    .lastName("Baggins")
+                    .build())
+                .build()))
         ));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
@@ -234,7 +250,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         OrganisationPolicy expectedRespondentPolicyOne = OrganisationPolicy.builder()
             .organisation(solicitorOrganisation)
-            .orgPolicyCaseAssignedRole(SolicitorRole.SOLICITORA.getCaseRoleLabel())
+            .orgPolicyCaseAssignedRole(SOLICITORA.formattedName())
             .build();
 
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswers = NoticeOfChangeAnswers.builder()
@@ -242,12 +258,21 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .respondentLastName("Bloggs")
             .build();
 
+        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersApplicant = NoticeOfChangeAnswers.builder()
+            .respondentFirstName("Bilbo")
+            .respondentLastName("Baggins")
+            .build();
+
         RespondentPolicyData respondentPolicyData = updatedCaseData.getRespondentPolicyData();
         NoticeOfChangeAnswersData noticeOfChangeAnswersData = updatedCaseData.getNoticeOfChangeAnswersData();
+        NoticeOfChangeThirdPartyRespondentAnswersData noticeOfChangeThirdPartyRespondentAnswersData =
+            updatedCaseData.getNoticeOfChangeThirdPartyRespondentAnswersData();
 
         assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
         assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers0()).isEqualTo(expectedNoticeOfChangeAnswers);
         assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isEqualTo(expectedNoticeOfChangeAnswers);
+        assertThat(noticeOfChangeThirdPartyRespondentAnswersData.getNoticeOfChangeAnswersThirdPartyRespondent())
+            .isEqualTo(expectedNoticeOfChangeAnswersApplicant);
 
         assertThat(respondentPolicyData).isEqualTo(RespondentPolicyData.builder()
             .respondentPolicy0(expectedRespondentPolicyOne)
