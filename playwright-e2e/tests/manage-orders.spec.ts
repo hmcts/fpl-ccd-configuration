@@ -534,6 +534,18 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
+        await signInPage.logout();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.tabNavigation('Tasks');
+        await expect(page.getByText('Tasks', { exact: true })).toBeVisible();
+
+        await orders.page.waitForTimeout(7000);
+
+        await orders.page.reload();
+        await expect(orders.page.getByText('Review Order (CTSC)')).toBeHidden();
+
     })
 
     test('Judge uploads Child arrangements order (C43)', async ({
@@ -646,6 +658,18 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c35b_interim_supervision_order.pdf', exact: true })).toBeVisible();
 
+        await signInPage.logout();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.tabNavigation('Tasks');
+        await expect(page.getByText('Tasks', { exact: true })).toBeVisible();
+
+        await orders.page.waitForTimeout(10000);
+
+        await orders.page.reload();
+        await expect(orders.page.getByText('Review Order (CTSC)')).toBeHidden();
+
     })
 
     test('CTSC uploads Parental responsibility order (C45A) ', async ({ page, signInPage, orders }) => {
@@ -696,6 +720,19 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c45a_parental_responsibility_order.pdf' })).toBeVisible();
 
+        await signInPage.logout();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.tabNavigation('Tasks');
+        await expect(page.getByText('Tasks', { exact: true })).toBeVisible();
+
+        await orders.page.waitForTimeout(7000);
+
+        await orders.page.reload();
+        await expect(orders.page.getByText('Review Order (CTSC)')).toBeEnabled();
+        await expect(page.getByRole('tab', { name: 'Tasks' })).toBeVisible();
+
     })
 
     test('Judge uploads Special guardianship order (C43A) ', async ({ page, signInPage, orders }) => {
@@ -719,6 +756,19 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c43a_special_guardianship_order.pdf', exact: true })).toBeVisible();
+
+        await signInPage.logout();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.tabNavigation('Tasks');
+        await expect(page.getByText('Tasks', { exact: true })).toBeVisible();
+
+        await orders.page.waitForTimeout(17000);
+
+        await orders.page.reload();
+        await expect(orders.page.getByText('Review Order (CTSC)')).toBeEnabled();
+        await expect(page.getByRole('tab', { name: 'Tasks' })).toBeVisible();
 
     })
 

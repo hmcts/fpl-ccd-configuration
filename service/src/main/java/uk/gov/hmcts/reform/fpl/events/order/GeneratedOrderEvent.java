@@ -15,6 +15,7 @@ public class GeneratedOrderEvent implements ManageOrdersEvent {
     LanguageTranslationRequirement languageTranslationRequirement;
     String orderTitle;
     LocalDate orderApprovalDate;
+    String orderType;
 
     public Optional<LanguageTranslationRequirement> getLanguageTranslationRequirement() {
         return Optional.ofNullable(languageTranslationRequirement);
