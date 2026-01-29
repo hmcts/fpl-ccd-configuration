@@ -164,7 +164,7 @@ export const getTestDocID =  async (request: APIRequestContext) => {
             return docId;
         }
         else{
-            throw new Error('Case search was not successful');
+            throw new Error('Case search was not successful' + caseResponse.statusText());
         }
 
     } catch (error) {
