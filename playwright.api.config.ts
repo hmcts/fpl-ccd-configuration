@@ -26,6 +26,7 @@ export default defineConfig({
   reporter: [['html', { outputFolder: 'test-results/functional' }],
              ['junit', { outputFile: 'test-results/functional/results.xml' }]
   ],
+    outputDir: 'test-artifacts',
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -35,10 +36,22 @@ export default defineConfig({
 
   /* Configure projects */
   projects: [
+      {
+          name: 'GlobalSetupCafcassAPI',
+          testMatch: '/settings/global-setup-cafcassAPI.ts',
+
+      },
     {
       name: "APITest",
       testMatch: /.*.api.spec.ts/,
       fullyParallel: false,
     },
+      {
+        name: "cafcassAPITest",
+        testMatch: /.*.cafcassAPI.spec.ts/,
+        fullyParallel: true,
+          timeout: 100000,
+        dependencies: ['GlobalSetupCafcassAPI']
+      }
   ],
 });
