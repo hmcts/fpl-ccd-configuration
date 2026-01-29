@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -350,6 +351,12 @@ public class UploadAdditionalApplicationsService {
             // Using this as a placeholder for no allocated judge/legal adviser until C2 work is complete
             return JudicialMessageRoleType.CTSC;
         } else {
+            // Check to see if the judge has a valid jrd profile then generate generic task if not
+            if (Optional.of(allocatedJudgeLegalAdviser.get().getJudgeJudicialUser())
+                    .map(JudicialUser::getIdamId).isEmpty()) {
+                return JudicialMessageRoleType.CTSC;
+            }
+
             List<String> roleTypes = judicialService
                 .getAllocatedJudgeAndLegalAdvisorRoleAssignments(caseData.getId())
                 .stream()

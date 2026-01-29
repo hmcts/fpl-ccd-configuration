@@ -109,7 +109,8 @@ public class UploadDraftOrdersController extends CallbackController {
         caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles.get(AGREED_CMO));
         caseDetails.getData().put("hearingOrdersBundlesDraftReview", bundles.get(DRAFT_CMO));
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
-        caseDetails.getData().put("latestRoleSent", service.getHearingJudgeOrLegalAdviserType(caseData));
+        caseDetails.getData().put("latestRoleSent",
+            service.getHearingJudgeOrLegalAdviserType(caseData.getId(), hearingId, hearings));
 
         // if a AGREED CMO or C21 was uploaded, the judge needs to approve it (WA purposes)
         caseDetails.getData().put("draftOrderNeedsReviewUploaded",

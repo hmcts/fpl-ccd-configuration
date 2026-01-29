@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
@@ -556,10 +557,10 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
-    void shouldReturnStandardCtscRoleWhenNoAllocatedJudgeOrLegalAdvisor() {
+    void shouldReturnStandardCtscRoleWhenAllocatedHasNoJudicialUserProfile() {
         Judge allocatedJudge = Judge.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
             .judgeJudicialUser(JudicialUser.builder()
-                .idamId("1234")
                 .build())
             .build();
 
@@ -568,7 +569,15 @@ class UploadAdditionalApplicationsServiceTest {
             .id(1234L)
             .build();
 
-        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.empty());
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
+    }
+
+    @Test
+    void shouldReturnStandardCtscRoleWhenNoAllocatedJudgeOrLegalAdvisor() {
+        CaseData caseData = CaseData.builder()
+            .id(1234L)
+            .build();
 
         assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
             .isEqualTo(JudicialMessageRoleType.CTSC);

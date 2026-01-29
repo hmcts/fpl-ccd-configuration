@@ -314,12 +314,24 @@ public class DraftOrderService {
         return userService.getUserEmail();
     }
 
-    public JudicialMessageRoleType getHearingJudgeOrLegalAdviserType(CaseData caseData) {
-        Optional<JudgeAndLegalAdvisor> hearingJudgeOrLegalAdviser = judicialService.getCurrentHearingJudge(caseData);
+    public JudicialMessageRoleType getHearingJudgeOrLegalAdviserType(Long caseId,
+                                                                     UUID selectedHearingId,
+                                                                     List<Element<HearingBooking>> hearings) {
+        // If no hearing is selected we want to make a standard approveOrder task
+        if (selectedHearingId == null) {
+            return JudicialMessageRoleType.CTSC;
+        }
+
+        final Element<HearingBooking> hearing = Optional.of(selectedHearingId)
+            .flatMap(id -> findElement(id, hearings))
+            .orElseThrow(() -> new HearingNotFoundException(selectedHearingId));
+
+        Optional<JudgeAndLegalAdvisor> hearingJudgeOrLegalAdviser = Optional
+            .ofNullable(hearing.getValue().getJudgeAndLegalAdvisor());
 
         if (hearingJudgeOrLegalAdviser.isPresent()) {
             List<String> roleTypes = judicialService
-                .getHearingJudgeAndLegalAdviserRoleAssignments(caseData.getId(), ZonedDateTime.now())
+                .getHearingJudgeAndLegalAdviserRoleAssignments(caseId, ZonedDateTime.now())
                 .stream()
                 .map((RoleAssignment::getRoleName))
                 .toList();
@@ -331,12 +343,12 @@ public class DraftOrderService {
             } else {
                 throw new UserLookupException(String
                     .format("Hearing judge or legal adviser for latest hearing has invalid am role for case id: %s",
-                        caseData.getId()));
+                        caseId));
             }
         } else {
             throw new UserLookupException(
                 String.format("No hearing judge or legal adviser found for latest hearing for case id: %s",
-                    caseData.getId()));
+                    caseId));
         }
     }
 
