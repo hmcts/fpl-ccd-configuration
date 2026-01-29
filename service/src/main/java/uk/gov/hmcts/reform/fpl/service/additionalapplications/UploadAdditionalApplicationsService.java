@@ -352,8 +352,7 @@ public class UploadAdditionalApplicationsService {
             return JudicialMessageRoleType.CTSC;
         } else {
             // Check to see if the judge has a valid jrd profile then generate generic task if not
-            if (Optional.of(allocatedJudgeLegalAdviser.get().getJudgeJudicialUser())
-                    .map(JudicialUser::getIdamId).isEmpty()) {
+            if (allocatedJudgeLegalAdviser.map(Judge::getJudgeJudicialUser).map(JudicialUser::getIdamId).isEmpty()) {
                 return JudicialMessageRoleType.CTSC;
             }
 
