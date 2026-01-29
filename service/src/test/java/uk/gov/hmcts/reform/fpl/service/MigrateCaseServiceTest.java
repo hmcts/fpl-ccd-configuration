@@ -402,7 +402,7 @@ class MigrateCaseServiceTest {
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .respondentPolicyData(RespondentPolicyData.builder()
-                    .respondentPolicy1(OrganisationPolicy.builder()
+                    .respondentPolicy0(OrganisationPolicy.builder()
                         .organisation(previousOrganisation)
                         .orgPolicyCaseAssignedRole(caseRole)
                         .build())
