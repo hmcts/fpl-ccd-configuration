@@ -210,6 +210,11 @@
         }
       }
     ],
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    },
     "caseManagementLocation": {
       "region": "7",
       "baseLocation": "234946"
