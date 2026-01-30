@@ -187,6 +187,13 @@ def archiveApiTestResult() {
   ])
   steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
 }
+def setupUITestEnvVariablesForPreview() {
+  env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+  env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+  env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+  env.MOCKED_PAYMENTS = false
+  env.TEST_RETRIES = 1
+}
 
 // Vars for Kubernetes
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
@@ -251,12 +258,7 @@ withPipeline(type, product, component) {
   before('fullFunctionalTest:preview'){
       yarnBuilder.yarn('yarn-update')
       yarnBuilder.yarn('install-dependencies')
-      env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-      env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.MOCKED_PAYMENTS = false
-      env.TEST_RETRIES = 1
-
+      setupUITestEnvVariablesForPreview()
   }
   afterAlways('fullFunctionalTest:preview') {
     archiveApiTestResult()
@@ -295,11 +297,7 @@ withPipeline(type, product, component) {
 
     deployWADmns()
 
-    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.MOCKED_PAYMENTS = false
-    env.TEST_RETRIES = 3
+    setupUITestEnvVariablesForPreview()
   }
 
   afterAlways('smoketest:preview') {
@@ -307,6 +305,7 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/smoke/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '/test-results/functionalTest/**/*'
   }
 
   afterAlways('smoketest:saat') {
