@@ -201,6 +201,7 @@ tasks.register('smoke', Test) {
   classpath = sourceSets.functionalTest.runtimeClasspath
   include "uk/gov/hmcts/reform/fpl/smoke/**"
   finalizedBy aggregate
+  dependsOn(inStrictOrder(runSmokeTests))
 }
 
 tasks.register('runCodeceptSmokeTest', Test) {
