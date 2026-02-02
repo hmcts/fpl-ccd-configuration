@@ -61,6 +61,7 @@ export const updateCase = async (caseName = 'e2e Test', caseID: string, caseData
     caseDataJson.caseData.caseName = caseName;
 
     caseDataJson.caseData.dateSubmitted = dateTime.slice(0, 10);
+    caseDataJson.caseData.lastGenuineUpdateTime = dateTime
 
     caseDataJson.caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
     let data = lodash.template(JSON.stringify(caseDataJson))(docParameter);
@@ -141,6 +142,7 @@ export async function fetchOrganisationUsers(orgId:string,serviceAuthToken :stri
         const responseBody = await response.json();
         return responseBody.organisationInfo[0].users.map((user: any) => user.userIdentifier);
     }
+
 
 }
 
