@@ -109,6 +109,7 @@ withNightlyPipeline(type, product, component) {
     }
 
     afterAlways('fullFunctionalTest') {
+
       stage('Functional UI tests Edge') {
         try {
           yarnBuilder.yarn('test:functional-Edge')
@@ -119,30 +120,14 @@ withNightlyPipeline(type, product, component) {
             allowMissing: true,
             alwaysLinkToLastBuild: true,
             keepAll: true,
-            reportDir: 'playwright-report',
+            reportDir: 'test-results/functional',
             reportFiles: 'index.html',
             reportName: 'UITestEdgeReport'
           ])
-          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
         }
       }
-      stage('Functional UI tests chromium') {
-            try {
-                yarnBuilder.yarn('test:functional-chromium')
-            } catch (Error) {
-                unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-            } finally {
-                publishHTML([
-                    allowMissing: true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'playwright-report',
-                    reportFiles: 'index.html',
-                    reportName: 'UITestChromiumReport'
-                ])
-                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-            }
-        }
+
       stage('Functional UI tests firefox') {
         try {
           yarnBuilder.yarn('test:functional-firefox')
@@ -153,11 +138,11 @@ withNightlyPipeline(type, product, component) {
             allowMissing: true,
             alwaysLinkToLastBuild: true,
             keepAll: true,
-            reportDir: 'playwright-report',
+            reportDir: 'test-results/functional',
             reportFiles: 'index.html',
             reportName: 'UITestFirefoxReport'
           ])
-          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
         }
       }
       stage('Functional UI tests webkit ') {
@@ -170,11 +155,11 @@ withNightlyPipeline(type, product, component) {
             allowMissing: true,
             alwaysLinkToLastBuild: true,
             keepAll: true,
-            reportDir: 'playwright-report',
+            reportDir: 'test-results/functional',
             reportFiles: 'index.html',
             reportName: 'UITestWebkitReport'
           ])
-          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
         }
       }
       stage('Functional UI tests ipadPro11 ') {
@@ -187,11 +172,11 @@ withNightlyPipeline(type, product, component) {
             allowMissing: true,
             alwaysLinkToLastBuild: true,
             keepAll: true,
-            reportDir: 'playwright-report',
+            reportDir: 'test-results/functional',
             reportFiles: 'index.html',
             reportName: 'UITestipadPro11Report'
           ])
-          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
         }
       }
       stage('Functional UI tests galaxyS4 ') {
@@ -204,11 +189,45 @@ withNightlyPipeline(type, product, component) {
             allowMissing: true,
             alwaysLinkToLastBuild: true,
             keepAll: true,
-            reportDir: 'playwright-report',
+            reportDir: 'test-results/functional',
             reportFiles: 'index.html',
             reportName: 'UITestGalaxyS4Report'
           ])
-          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
+        }
+      }
+      stage('Functional UI tests chromium') {
+        try {
+          yarnBuilder.yarn('test:functional-chromium')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'test-results/functional',
+            reportFiles: 'index.html',
+            reportName: 'UITestChromiumReport'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
+        }
+      }
+      stage('Cafcass API tests') {
+        try {
+          yarnBuilder.yarn('test:functional-cafcassAPI')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'test-results/functional',
+            reportFiles: 'index.html',
+            reportName: 'cafcassAPITest'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
         }
       }
     }
