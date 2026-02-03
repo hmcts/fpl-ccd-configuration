@@ -296,7 +296,8 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('preview', '0')
 
     deployWADmns()
-
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
     setupUITestEnvVariablesForPreview()
   }
 
