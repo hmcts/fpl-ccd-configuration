@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -24,12 +26,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -829,6 +833,46 @@ class ApproveDraftOrdersServiceTest {
             order.getValue().setOrder(null);
             return order;
         }
+    }
+
+    @Test
+    void shouldReturnSalariedJudgeTitleAndNameOfCurrentUser() {
+        when(judicialService.getJudgeTitleAndNameOfCurrentUser(null)).thenReturn("Judge John Smith");
+
+        AllocateJudgeEventData eventData = new AllocateJudgeEventData(JudgeType.SALARIED_JUDGE, null, null, null);
+
+        CaseData caseData = CaseData.builder()
+            .allocateJudgeEventData(eventData)
+            .build();
+        assertThat(underTest.getJudgeTitleAndNameOfCurrentUser(caseData)).isEqualTo("Judge John Smith");
+
+    }
+
+    @Test
+    void shouldReturnFeePaidJudgeTitleAndNameOfCurrentUser() {
+        when(judicialService.getJudgeTitleAndNameOfCurrentUser(JudgeOrMagistrateTitle.RECORDER))
+            .thenReturn("Recorder John Smith");
+
+        AllocateJudgeEventData eventData = new AllocateJudgeEventData(JudgeType.FEE_PAID_JUDGE,
+            JudgeOrMagistrateTitle.RECORDER, null, null);
+
+        CaseData caseData = CaseData.builder()
+            .allocateJudgeEventData(eventData)
+            .build();
+        assertThat(underTest.getJudgeTitleAndNameOfCurrentUser(caseData)).isEqualTo("Recorder John Smith");
+
+    }
+
+    @Test
+    void shouldReturnLegalNameFromMaunalInput() {
+        AllocateJudgeEventData eventData = new AllocateJudgeEventData(JudgeType.LEGAL_ADVISOR,
+            JudgeOrMagistrateTitle.RECORDER, null, Judge.builder().judgeFullName("Legal Advisor John Smith").build());
+
+        CaseData caseData = CaseData.builder()
+            .allocateJudgeEventData(eventData)
+            .build();
+        assertThat(underTest.getJudgeTitleAndNameOfCurrentUser(caseData)).isEqualTo("Legal Advisor John Smith");
+
     }
 
     private static Element<HearingOrder> draftCMO(String hearing) {

@@ -54,6 +54,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -369,6 +370,52 @@ class MigrateCaseServiceTest {
             assertThat(actualException.getMessage()).isEqualTo(format(
                 "Migration {id = %s, case reference = %s}, invalid local authorities (applicant)",
                 MIGRATION_ID, caseData.getId()));
+        }
+    }
+
+    @Nested
+    class UpdateRespondentPolicy {
+
+        private final String newOrgId = "HIJKLMN";
+        private final String newOrgName = "New Organisation Name";
+
+        private final String caseRole = "[SOLICITORA]";
+
+        private int policyIndex = 0;
+
+        private final Organisation previousOrganisation = Organisation.builder()
+            .organisationID("ABCDEFG")
+            .organisationName("Previous Organisation Name")
+            .build();
+
+        private final Organisation newOrganisation = Organisation.builder()
+            .organisationID(newOrgId)
+            .organisationName(newOrgName)
+            .build();
+
+        @Test
+        void updateRespondentPolicy() {
+            when(organisationService.findOrganisation(newOrgId))
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                    .name(newOrgName)
+                    .build()));
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentPolicyData(RespondentPolicyData.builder()
+                    .respondentPolicy0(OrganisationPolicy.builder()
+                        .organisation(previousOrganisation)
+                        .orgPolicyCaseAssignedRole(caseRole)
+                        .build())
+                    .build())
+                .build();
+
+            Map<String, OrganisationPolicy> fields = underTest.updateRespondentPolicy(caseData, newOrgId,
+                null, policyIndex);
+            OrganisationPolicy updatedOrgPolicy = fields.get("respondentPolicy" + Integer.toString(policyIndex));
+            assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
+                .organisation(newOrganisation)
+                .orgPolicyCaseAssignedRole(caseRole)
+                .build());
         }
     }
 
