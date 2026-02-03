@@ -16,6 +16,11 @@ export const systemUpdateUser = {
   password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPwd,
 };
 
+export const cafcassAPIUser={
+    email: 'cafcass-system-update-user@example.com',
+    password: defaultPwd,
+};
+
 export const CTSCUser = {
   email: process.env.CTSC_USERNAME || 'fpl-ctsc-admin@justice.gov.uk',
   password: defaultPwd,
@@ -84,4 +89,8 @@ export const swanseaOrgCAAUser = {
 export const WiltshireOrgCAAUser = {
     email: 'admin@wiltshire.gov.uk',
     password: defaultPwd,
+};
+export const authToken={
+    cafcassAuth:process.env.CAFCASSAUTH || '',
+    systemAuth:process.env.SYSUSERAUTH || ''
 };
