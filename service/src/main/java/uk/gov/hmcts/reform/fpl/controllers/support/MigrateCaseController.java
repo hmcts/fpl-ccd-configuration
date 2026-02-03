@@ -43,10 +43,11 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "SNI-8284", this::run8284,
         "DFPL-2992", this::run2992,
         "DFPL-2677", this::run2677,
-        "DFPL-2677-rollback", this::rollback2677
+        "DFPL-2677-rollback", this::rollback2677,
+        "DFPL-3015", this::run3015,
+        "DFPL-3028", this::run3028
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -76,13 +77,13 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run8284(CaseDetails caseDetails) {
-        final String migrationId = "SNI-8284";
-        final List<Long> expectedCaseIds = List.of(1746789343771015L, 1746786779392316L);
-        final String orgId = "BDWCNNQ";
+    private void run3028(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3028";
+        final long expectedCaseId = 1752740940481434L;
+        final String orgId = "GKVZ178";
 
         Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheckList(caseId, expectedCaseIds, migrationId);
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
         caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), orgId, null));
     }
 
@@ -140,5 +141,16 @@ public class MigrateCaseController extends CallbackController {
         }
         caseDetails.getData().put(DATE_SUBMITTED, caseDetails.getData().get(LAST_SUBMITTED_DATE));
         caseDetails.getData().remove(LAST_SUBMITTED_DATE);
+    }
+
+    private void run3015(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3015";
+        final Long expectedCaseId = 1765793464370132L;
+        final String orgId = "ZBGD22I";
+
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService
+            .updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 0));
     }
 }
