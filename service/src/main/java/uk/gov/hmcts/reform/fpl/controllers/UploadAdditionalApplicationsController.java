@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -225,7 +223,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
             "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
             TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE,
-            IS_C2_CONFIDENTIAL, "isCTSCUser", "c2ApplicationRoute","c2ApplicationRouteType","c2EvidenceConsentDocument");
+            IS_C2_CONFIDENTIAL, "isCTSCUser", "c2ApplicationRoute","c2ApplicationRouteType",
+            "c2EvidenceConsentDocument");
 
         return respond(caseDetails);
     }
