@@ -274,7 +274,7 @@ withPipeline(type, product, component) {
           reportFiles          : 'index.html',
           reportName           : 'UI Functional Test Report'
         ])
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
       }
     }
       }
