@@ -65,6 +65,7 @@ test.describe('Admin application management', () => {
             await signInPage.login(CTSCUser.email, CTSCUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
             await expertReport.gotoNextStep('Log expert report');
+            await expertReport.page.pause();
 
             await expertReport.addNewReport(0);
             await expertReport.selectExpertReportType('Pediatric', 0);
