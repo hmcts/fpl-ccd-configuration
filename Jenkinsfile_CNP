@@ -194,7 +194,6 @@ def setupUITestEnvVariablesForPreview() {
   env.TEST_RETRIES = 1
 }
 def installYarnDependenciesIfNeeded() {
-  def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
   if (!fileExists('node_modules')){
     yarnBuilder.yarn('yarn-update')
     yarnBuilder.yarn('install-dependencies')
