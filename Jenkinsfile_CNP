@@ -193,7 +193,8 @@ def setupUITestEnvVariablesForPreview() {
   env.MOCKED_PAYMENTS = false
   env.TEST_RETRIES = 1
 }
-def installYarnDependenciesIfNeeded(yarnBuilder) {
+def installYarnDependenciesIfNeeded() {
+  def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
   if (!fileExists('node_modules')){
     yarnBuilder.yarn('yarn-update')
     yarnBuilder.yarn('install-dependencies')
@@ -261,7 +262,7 @@ withPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest:preview'){
-    installYarnDependenciesIfNeeded(yarnBuilder)
+    installYarnDependenciesIfNeeded()
       setupUITestEnvVariablesForPreview()
   }
   afterAlways('fullFunctionalTest:preview') {
@@ -300,7 +301,7 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('preview', '0')
 
     deployWADmns()
-    installYarnDependenciesIfNeeded(yarnBuilder)
+    installYarnDependenciesIfNeeded()
     setupUITestEnvVariablesForPreview()
   }
 
@@ -340,14 +341,14 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
-   installYarnDependenciesIfNeeded(yarnBuilder)
+   installYarnDependenciesIfNeeded()
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TEST_RETRIES = 3
   }
 
   before('functionalTest:aat') {
-    installYarnDependenciesIfNeeded(yarnBuilder)
+    installYarnDependenciesIfNeeded()
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
     env.TEST_RETRIES = 3
