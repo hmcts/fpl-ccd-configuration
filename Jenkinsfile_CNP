@@ -212,7 +212,6 @@ withPipeline(type, product, component) {
   loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
 
   disableLegacyDeployment()
-  fileExists
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
   enableHighLevelDataSetup()
