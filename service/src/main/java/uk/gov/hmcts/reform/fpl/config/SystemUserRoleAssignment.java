@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 
@@ -18,38 +19,15 @@ public class SystemUserRoleAssignment {
 
     private final RoleAssignmentService roleAssignmentService;
 
-    private static final int MAX_ATTEMPTS = 5;
-    private static final int DELAY_MILLIS = 5000;
-
     @PostConstruct
+    @Retryable(value = Exception.class, label = "Create system update user in AM")
     public void init() {
-        assignSystemUserRoleWithRetry();
-    }
-
-    private void assignSystemUserRoleWithRetry() {
-        for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-            try {
-                log.info("Attempt {} to assign system-update user role", attempt);
-                roleAssignmentService.assignSystemUserRole();
-                log.info("Assigned role successfully");
-                return;
-            } catch (FeignException e) {
-                log.error("Attempt {} failed to create system user role assignment (FeignException)", attempt, e);
-                if (attempt < MAX_ATTEMPTS) {
-                    try {
-                        Thread.sleep(DELAY_MILLIS);
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        log.error("Retry sleep interrupted", ie);
-                        break;
-                    }
-                } else {
-                    log.error("All attempts to assign system user role failed");
-                }
-            } catch (Exception e) {
-                log.error("Unexpected error during system user role assignment", e);
-                break;
-            }
+        try {
+            log.info("Attempting to assign system-update user role");
+            roleAssignmentService.assignSystemUserRole();
+            log.info("Assigned role successfully");
+        } catch (Exception e) {
+            log.error("Could not automatically create system user role assignment", e);
         }
     }
 }

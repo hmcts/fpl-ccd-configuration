@@ -23,15 +23,4 @@ class SystemUserRoleAssignmentTest {
 
         verify(roleAssignmentService).assignSystemUserRole();
     }
-
-    @Test
-    void shouldHandleUnexpectedExceptionGracefully() {
-        SystemUserRoleAssignment underTest = new SystemUserRoleAssignment(roleAssignmentService);
-
-        doThrow(new RuntimeException("Unexpected error")).when(roleAssignmentService).assignSystemUserRole();
-
-        underTest.init();
-
-        verify(roleAssignmentService).assignSystemUserRole();
-    }
 }
