@@ -265,22 +265,14 @@ withPipeline(type, product, component) {
       setupUITestEnvVariablesForPreview()
   }
   afterAlways('fullFunctionalTest:preview') {
-    archiveApiTestResult()
     stage('UIFunctionalTests') {
       try {
           yarnBuilder.yarn('test:functional-nightly-preview')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
-        publishHTML([
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "test-results/functional",
-          reportFiles          : 'index.html',
-          reportName           : 'UI Functional Test Report'
-        ])
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
+        archiveTestResult("test-results/functional", "index.html", "UI Functional Test Report")
+
       }
     }
       }
