@@ -193,12 +193,7 @@ def setupUITestEnvVariablesForPreview() {
   env.MOCKED_PAYMENTS = false
   env.TEST_RETRIES = 1
 }
-def installYarnDependenciesIfNeeded() {
-  if (!fileExists('node_modules')){
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
-  }
-}
+
 
 // Vars for Kubernetes
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
@@ -261,7 +256,10 @@ withPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest:preview'){
-    installYarnDependenciesIfNeeded()
+    if (!fileExists('node_modules')){
+      yarnBuilder.yarn('yarn-update')
+      yarnBuilder.yarn('install-dependencies')
+    }
       setupUITestEnvVariablesForPreview()
   }
   afterAlways('fullFunctionalTest:preview') {
@@ -300,7 +298,10 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('preview', '0')
 
     deployWADmns()
-    installYarnDependenciesIfNeeded()
+    if (!fileExists('node_modules')){
+      yarnBuilder.yarn('yarn-update')
+      yarnBuilder.yarn('install-dependencies')
+    }
     setupUITestEnvVariablesForPreview()
   }
 
@@ -340,14 +341,20 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
-   installYarnDependenciesIfNeeded()
+    if (!fileExists('node_modules')){
+      yarnBuilder.yarn('yarn-update')
+      yarnBuilder.yarn('install-dependencies')
+    }
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TEST_RETRIES = 3
   }
 
   before('functionalTest:aat') {
-    installYarnDependenciesIfNeeded()
+    if (!fileExists('node_modules')){
+      yarnBuilder.yarn('yarn-update')
+      yarnBuilder.yarn('install-dependencies')
+    }
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
     env.TEST_RETRIES = 3
