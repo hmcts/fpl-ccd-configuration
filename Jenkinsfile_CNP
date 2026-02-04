@@ -342,8 +342,6 @@ withPipeline(type, product, component) {
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TEST_RETRIES = 3
-    def healthChecker = new HealthChecker(this)
-    healthChecker.check("$ROLE_ASSIGNMENT_URL/health", 10, 40)
   }
 
   before('functionalTest:aat') {
