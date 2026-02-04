@@ -6,10 +6,9 @@ import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
 
 def type = "java"
-def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 def product = "fpl"
 def component = "case-service"
-
+def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 AppPipelineConfig pipelineConf;
 
 def serviceSecrets = [
@@ -194,7 +193,7 @@ def setupUITestEnvVariablesForPreview() {
   env.MOCKED_PAYMENTS = false
   env.TEST_RETRIES = 1
 }
-def installYarnDependenciesIfNeeded() {
+def installYarnDependenciesIfNeeded(yarnBuilder) {
   if (!fileExists('node_modules')){
     yarnBuilder.yarn('yarn-update')
     yarnBuilder.yarn('install-dependencies')
@@ -210,7 +209,7 @@ withPipeline(type, product, component) {
   loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
 
   disableLegacyDeployment()
-
+  fileExists
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
   enableHighLevelDataSetup()
@@ -262,7 +261,7 @@ withPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest:preview'){
-    installYarnDependenciesIfNeeded()
+    installYarnDependenciesIfNeeded(yarnBuilder)
       setupUITestEnvVariablesForPreview()
   }
   afterAlways('fullFunctionalTest:preview') {
@@ -301,7 +300,7 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('preview', '0')
 
     deployWADmns()
-    installYarnDependenciesIfNeeded()
+    installYarnDependenciesIfNeeded(yarnBuilder)
     setupUITestEnvVariablesForPreview()
   }
 
@@ -341,14 +340,14 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
-   installYarnDependenciesIfNeeded()
+   installYarnDependenciesIfNeeded(yarnBuilder)
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TEST_RETRIES = 3
   }
 
   before('functionalTest:aat') {
-    installYarnDependenciesIfNeeded()
+    installYarnDependenciesIfNeeded(yarnBuilder)
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
     env.TEST_RETRIES = 3
