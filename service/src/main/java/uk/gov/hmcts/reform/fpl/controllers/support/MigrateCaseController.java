@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -47,7 +48,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2677", this::run2677,
         "DFPL-2677-rollback", this::rollback2677,
         "DFPL-3015", this::run3015,
-        "DFPL-3028", this::run3028
+        "DFPL-3028", this::run3028,
+        "DFPL-3033", this::run3033
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -152,5 +154,16 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
         caseDetails.getData().putAll(migrateCaseService
             .updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 0));
+    }
+
+    private void run3033(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3033";
+        final Long expectedCaseId = 1699540495365743L;
+        final String orgId = "CS35UMJ";
+
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService
+            .updateOutsourcingPolicy(getCaseData(caseDetails), orgId, CaseRole.EPSMANAGING.formattedName()));
     }
 }

@@ -6,6 +6,7 @@ import { CaseFileView } from "../pages/case-file-view";
 
 test.describe('Smoke Test @xbrowser @smoke-test', () => {
 test.setTimeout(7 * 60 * 1000);
+
     test('Local Authority C110A application submission  @accessibility ', async ({
                                                                     signInPage,
         page,
