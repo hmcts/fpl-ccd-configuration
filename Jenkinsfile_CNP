@@ -175,35 +175,24 @@ def deployWADmns() {
     env.ENABLE_WA = false
   }
 }
-
-def archiveApiTestResult() {
+def archiveTestResult(reportDir, reportFiles, reportName) {
   publishHTML([
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "test-results/functional",
-          reportFiles          : 'index.html',
-          reportName           : 'API Test Report'
+    allowMissing         : true,
+    alwaysLinkToLastBuild: true,
+    keepAll              : true,
+    reportDir            : reportDir,
+    reportFiles          : reportFiles,
+    reportName           : reportName
   ])
-  steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: "${reportDir}/**/*"
 }
+
 def setupUITestEnvVariablesForPreview() {
   env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
   env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
   env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
   env.MOCKED_PAYMENTS = false
   env.TEST_RETRIES = 1
-}
-def archiveSmokeUITestResult() {
-  publishHTML([
-    allowMissing         : true,
-    alwaysLinkToLastBuild: true,
-    keepAll              : true,
-    reportDir            : "test-results/functional",
-    reportFiles          : 'index.html',
-    reportName           : 'Smoke Test Report'
-  ])
-  steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
 }
 
 // Vars for Kubernetes
@@ -313,7 +302,7 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('smoketest:preview') {
-    archiveSmokeUITestResult()
+    archiveTestResult("test-results/functional", "index.html", "Smoke Test Report")
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
@@ -353,6 +342,8 @@ withPipeline(type, product, component) {
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TEST_RETRIES = 3
+    def healthChecker = new HealthChecker(this)
+    healthChecker.check("$ROLE_ASSIGNMENT_URL/health", 10, 40)
   }
 
   before('functionalTest:aat') {
@@ -368,11 +359,11 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('functionalTest:preview') {
-    archiveApiTestResult()
+    archiveTestResult("test-results/functional", "index.html", "API Test Report")
   }
 
   afterAlways('functionalTest:aat') {
-    archiveApiTestResult()
+    archiveTestResult("test-results/functional", "index.html", "API Test Report")
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
