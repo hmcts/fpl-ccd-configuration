@@ -6,9 +6,10 @@ import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
 
 def type = "java"
+def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 def product = "fpl"
 def component = "case-service"
-def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+
 AppPipelineConfig pipelineConf;
 
 def serviceSecrets = [
@@ -185,7 +186,6 @@ def archiveTestResult(reportDir, reportFiles, reportName) {
   ])
   steps.archiveArtifacts allowEmptyArchive: true, artifacts: "${reportDir}/**/*"
 }
-
 def setupUITestEnvVariablesForPreview() {
   env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
   env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
@@ -210,6 +210,7 @@ withPipeline(type, product, component) {
   loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
 
   disableLegacyDeployment()
+
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
   enableHighLevelDataSetup()
@@ -265,6 +266,7 @@ withPipeline(type, product, component) {
       setupUITestEnvVariablesForPreview()
   }
   afterAlways('fullFunctionalTest:preview') {
+    archiveTestResult("test-results/functional", "index.html", "API Test Report")
     stage('UIFunctionalTests') {
       try {
           yarnBuilder.yarn('test:functional-nightly-preview')
@@ -313,6 +315,7 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('smoketest:aat') {
+    archiveTestResult("test-results/functional", "index.html", "Smoke Test Report")
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
