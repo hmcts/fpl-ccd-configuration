@@ -22,4 +22,5 @@ class SystemUserRoleAssignmentTest {
 
         verify(roleAssignmentService).assignSystemUserRole();
     }
+
 }
