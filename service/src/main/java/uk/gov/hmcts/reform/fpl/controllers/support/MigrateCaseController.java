@@ -77,9 +77,8 @@ public class MigrateCaseController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
 
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService
-            .redactTypeReason(caseData, migrationId, 0,
-                caseData.getHearing().getHearingUrgencyDetails().length()));
+        caseDetails.getData().put("hearing",
+            caseData.getHearing().toBuilder().hearingUrgencyDetails("***").build());
     }
 
     private void run3045(CaseDetails caseDetails) {
