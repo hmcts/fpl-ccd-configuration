@@ -304,7 +304,6 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/smoke/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '/test-results/functionalTest/**/*'
   }
 
   afterAlways('smoketest:saat') {
