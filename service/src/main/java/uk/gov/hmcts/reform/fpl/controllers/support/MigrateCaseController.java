@@ -49,7 +49,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2677-rollback", this::rollback2677,
         "DFPL-3015", this::run3015,
         "DFPL-3028", this::run3028,
-        "DFPL-3033", this::run3033
+        "DFPL-3046", this::run3046
     );
     private final CaseConverter caseConverter;
     private final JudicialService judicialService;
@@ -156,14 +156,14 @@ public class MigrateCaseController extends CallbackController {
             .updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 0));
     }
 
-    private void run3033(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3033";
-        final Long expectedCaseId = 1699540495365743L;
-        final String orgId = "CS35UMJ";
+    private void run3046(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3046";
+        final Long expectedCaseId = 1746020457379704L;
+        final String orgId = "TY404LT";
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
         caseDetails.getData().putAll(migrateCaseService
-            .updateOutsourcingPolicy(getCaseData(caseDetails), orgId, CaseRole.EPSMANAGING.formattedName()));
+            .updateOutsourcingPolicy(getCaseData(caseDetails), orgId, CaseRole.LAMANAGING.formattedName()));
     }
 }
