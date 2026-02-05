@@ -30,7 +30,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
         "DFPL-3046", this::run3046,
-        "DFPL-3048", this::run3048
+        "DFPL-3048", this::run3048,
+        "DFPL-3045", this::run3045
     );
 
     @PostMapping("/about-to-submit")
@@ -79,5 +80,15 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService
             .redactTypeReason(caseData, migrationId, 0,
                 caseData.getHearing().getHearingUrgencyDetails().length()));
+    }
+
+    private void run3045(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3045";
+        final Long expectedCaseId = 1745483577456938L;
+        final String orgId = "NOQ0ZJ1";
+
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), orgId, null));
     }
 }
