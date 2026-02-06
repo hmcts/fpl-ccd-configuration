@@ -5,7 +5,7 @@
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "C2ApplicationType",
-    "ElementLabel": "Do other parties consent to the application?",
+    "ElementLabel": "Do all other parties consent to the application?",
     "SecurityClassification": "Public"
   }
 ]
