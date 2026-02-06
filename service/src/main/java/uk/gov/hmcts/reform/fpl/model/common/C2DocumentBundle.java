@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
@@ -35,6 +36,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final UUID id;
     private C2ApplicationType type;
     private final UrgencyTimeFrameType urgencyTimeFrameType;
+    private C2ApplicationRouteType routeType;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
     private final String pbaNumber;

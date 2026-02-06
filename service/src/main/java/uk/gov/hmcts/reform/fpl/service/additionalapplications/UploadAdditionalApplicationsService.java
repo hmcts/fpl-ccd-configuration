@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -252,13 +255,28 @@ public class UploadAdditionalApplicationsService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         String uploadedBy, LocalDateTime uploadedDateTime) {
 
+        final DocumentUploaderType uploaderType = manageDocumentService.getUploaderType(caseData);
+        final List<CaseRole> uploadCaseRoles = new ArrayList<>(userService.getCaseRoles(caseData.getId()));
+
         supportingEvidenceBundle.forEach(supportingEvidence -> {
             supportingEvidence.getValue().setDateTimeUploaded(uploadedDateTime);
             supportingEvidence.getValue().setUploadedBy(uploadedBy);
-            supportingEvidence.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
-            supportingEvidence.getValue().setUploaderCaseRoles(new ArrayList<>(userService
-                .getCaseRoles(caseData.getId())));
+            supportingEvidence.getValue().setUploaderType(uploaderType);
+            supportingEvidence.getValue().setUploaderCaseRoles(uploadCaseRoles);
         });
+
+        // If done with consent add the consent document to the support docs list
+        if (caseData.getC2Type() == C2ApplicationType.WITHOUT_NOTICE
+            && caseData.getC2EvidenceConsentDocument() != null) {
+            supportingEvidenceBundle.add(element(SupportingEvidenceBundle.builder()
+                .name("Evidence of consent")
+                .document(caseData.getC2EvidenceConsentDocument())
+                .dateTimeUploaded(uploadedDateTime)
+                .uploadedBy(uploadedBy)
+                .uploaderType(uploaderType)
+                .uploaderCaseRoles(uploadCaseRoles)
+                .build()));
+        }
 
         return supportingEvidenceBundle;
     }

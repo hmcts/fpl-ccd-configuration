@@ -79,6 +79,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     private static final DocumentReference UPLOADED_DOCUMENT = testDocumentReference();
     private static final DocumentReference PDF_DOCUMENT = testDocumentReference();
+    private static final DocumentReference EVIDENCE_DOCUMENT = testDocumentReference();
 
     @MockBean
     private ManageDocumentService manageDocumentService;
@@ -124,6 +125,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .temporaryPbaPayment(temporaryPbaPayment)
             .applicantsList(createApplicantsDynamicList(APPLICANT))
             .representatives(List.of(representativeElement))
+            .c2Type(WITHOUT_NOTICE)
+            .c2EvidenceConsentDocument(EVIDENCE_DOCUMENT)
             .respondents1(wrapElements(Respondent.builder()
                 .representedBy(wrapElements(representativeElement.getId()))
                 .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build())
@@ -198,6 +201,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 List.of(AdditionalApplicationType.C2_ORDER, AdditionalApplicationType.OTHER_ORDER)
             )
             .temporaryC2Document(createTemporaryC2Document())
+            .c2Type(WITHOUT_NOTICE)
+            .c2EvidenceConsentDocument(EVIDENCE_DOCUMENT)
             .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
             .temporaryPbaPayment(temporaryPbaPayment)
             .applicantsList(createApplicantsDynamicList(APPLICANT))
@@ -364,7 +369,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
         // This is no longer true - PDF conversion has been moved to post submit
         // assertDocument(uploadedC2DocumentBundle.getDocument(), PDF_DOCUMENT);
-        assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle());
+        assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle(), true);
         assertSupplementsBundle(uploadedC2DocumentBundle.getSupplementsBundle());
     }
 
@@ -377,7 +382,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .isEqualTo(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN);
         assertThat(uploadedOtherApplicationsBundle.getAuthor()).isEqualTo(USER_NAME);
 
-        assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle());
+        assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle(), false);
         assertSupplementsBundle(uploadedOtherApplicationsBundle.getSupplementsBundle());
 
         // This is no longer true - PDF conversion has been moved to post submit
@@ -402,7 +407,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(actualDocument.getBinaryUrl()).isEqualTo(expectedDocument.getBinaryUrl());
     }
 
-    private void assertSupportingEvidenceBundle(List<Element<SupportingEvidenceBundle>> documentBundle) {
+    private void assertSupportingEvidenceBundle(List<Element<SupportingEvidenceBundle>> documentBundle,
+                                                boolean isC2withoutNotice) {
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(documentBundle);
 
         assertThat(supportingEvidenceBundle).first().extracting(
@@ -418,6 +424,20 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             UPLOADED_DOCUMENT,
             USER_NAME
         );
+
+        if (isC2withoutNotice) {
+            assertThat(supportingEvidenceBundle).last().extracting(
+                SupportingEvidenceBundle::getName,
+                SupportingEvidenceBundle::getDateTimeUploaded,
+                SupportingEvidenceBundle::getDocument,
+                SupportingEvidenceBundle::getUploadedBy
+            ).containsExactly(
+                "Evidence of consent",
+                time.now(),
+                EVIDENCE_DOCUMENT,
+                USER_NAME
+            );
+        }
     }
 
     private void assertSupplementsBundle(List<Element<Supplement>> documentBundle) {

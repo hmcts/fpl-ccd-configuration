@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
@@ -380,6 +381,8 @@ public class CaseData extends CaseDataParent {
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
+    private final C2ApplicationRouteType c2ApplicationRoute;
+    private final DocumentReference c2EvidenceConsentDocument;
     private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
     private final PBAPayment temporaryPbaPayment;
     private final YesNo isCTSCUser;

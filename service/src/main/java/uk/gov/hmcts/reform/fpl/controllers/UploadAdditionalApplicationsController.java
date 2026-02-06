@@ -223,7 +223,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
             "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
             TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE,
-            IS_C2_CONFIDENTIAL, "isCTSCUser");
+            IS_C2_CONFIDENTIAL, "isCTSCUser", "c2ApplicationRoute","c2ApplicationRouteType",
+            "c2EvidenceConsentDocument");
 
         return respond(caseDetails);
     }
