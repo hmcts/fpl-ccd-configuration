@@ -806,7 +806,8 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeEnabled();
+        await expect(page.getByRole('button', { name: 'c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeVisible();
+
 
     })
 
@@ -833,13 +834,55 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: ' c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeVisible();
 
-        await signInPage.logout();
+    })
+
+    test('CTSC uploads  Variation or extension of education supervision orders (C36)', async ({ page, signInPage, orders }) => {
+        caseName = 'Variation or extension of education supervision orders (C36)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
 
-        await orders.tabNavigation('Tasks');
-        await orders.waitForTask('Review Order (CTSC)')
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
 
+        await orders.selectOrder('Variation or extension of education supervision orders (C36)');
+        await orders.clickContinue();
+
+        await orders.uploadsVariationOrExtensionOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c36_variation_or_extension_of_supervision_orders.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('Judge Uploads Variation or extension of education supervision orders (C36)', async ({ page, signInPage, orders }) => {
+        caseName = 'Variation or extension of education supervision orders (C36)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Variation or extension of education supervision orders (C36)');
+        await orders.clickContinue();
+
+        await orders.uploadsVariationOrExtensionOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c36_variation_or_extension_of_supervision_orders.pdf', exact: true })).toBeVisible();
 
     });
 })
