@@ -7,11 +7,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -26,15 +30,18 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_NEW_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @WebMvcTest(NoticeOfChangeController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -119,6 +126,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                 .solicitor(OLD_REGISTERED_SOLICITOR)
                 .legalCounsellors(wrapElements(counsellor))
                 .build()))
+            .changeOrganisationRequestField(getChangeOrganisationRequest("[SOLICITORA]"))
             .children1(CHILDREN)
             .build();
 
@@ -174,6 +182,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             .caseName(CASE_NAME)
             .children1(CHILDREN)
             .respondents1(List.of(OTHER_RESPONDENT, OLD_RESPONDENT))
+            .changeOrganisationRequestField(getChangeOrganisationRequest("[SOLICITORA]"))
             .build();
 
         CaseData caseData = caseDataBefore.toBuilder()
@@ -219,8 +228,10 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                 Respondent.builder()
                     .party(RESPONDENT_PARTY)
                     .legalRepresentation("No")
-                    .build()
-            )).build();
+                    .build())
+            )
+            .changeOrganisationRequestField(getChangeOrganisationRequest("[SOLICITORA]"))
+            .build();
 
         CaseData caseData = caseDataBefore.toBuilder()
             .respondents1(wrapElements(
@@ -241,6 +252,74 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
         );
     }
 
+    @Test
+    void shouldNotifyNewThirdPartyApplicantSolicitorsWhenNoticeOfChangeIsSubmitted() {
+        NoticeOfChangeRespondentSolicitorTemplate noticeOfChangeNewRespondentSolicitorTemplate =
+            getExpectedNoticeOfChangeParametersThirdPartyApplication(EMPTY);
+
+        NoticeOfChangeRespondentSolicitorTemplate noticeOfChangeOldRespondentSolicitorTemplate =
+            getExpectedNoticeOfChangeParametersThirdPartyApplication(EMPTY);
+
+        final Map<String, Object> newSolicitorParameters = caseConverter.toMap(
+            noticeOfChangeNewRespondentSolicitorTemplate);
+
+        final Map<String, Object> oldSolicitorParameters = caseConverter.toMap(
+            noticeOfChangeOldRespondentSolicitorTemplate);
+
+        CaseData caseDataBefore = CaseData.builder()
+            .id(CASE_ID)
+            .caseName(CASE_NAME)
+            .children1(CHILDREN)
+            .localAuthorities(List.of(element(LocalAuthority.builder()
+                .id(OLD_ORG_ID)
+                .name("Joe Bloggs")
+                .email(OLD_EMAIL)
+                .phone("111222333")
+                .address(Address.builder()
+                    .addressLine1("Old Test Road")
+                    .build())
+                .build())))
+            .appSolicitorPolicy(OrganisationPolicy.builder()
+                .organisation(Organisation.builder().organisationID(OLD_ORG_ID).build())
+                .build())
+            .changeOrganisationRequestField(getChangeOrganisationRequest("[APPSOLICITOR]"))
+            .build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .localAuthorities(List.of(element(LocalAuthority.builder()
+                .id(NEW_ORG_ID)
+                .name("Joe Bloggs")
+                .email(NEW_EMAIL)
+                .phone("444555666")
+                .address(Address.builder()
+                    .addressLine1("New Test Road")
+                    .build())
+                .build())))
+            .appSolicitorPolicy(OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(NEW_ORG_ID)
+                    .build())
+                .build())
+            .build();
+
+        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
+
+        checkUntil(() -> {
+                verify(notificationClient, times(1)).sendEmail(
+                    NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
+                    NEW_EMAIL,
+                    newSolicitorParameters,
+                    notificationReference(CASE_ID));
+
+                verify(notificationClient, times(1)).sendEmail(
+                    NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
+                    OLD_EMAIL,
+                    oldSolicitorParameters,
+                    notificationReference(CASE_ID));
+            }
+        );
+    }
+
     private NoticeOfChangeRespondentSolicitorTemplate getExpectedNoticeOfChangeParameters(String expectedSalutation) {
         return NoticeOfChangeRespondentSolicitorTemplate.builder()
             .salutation(expectedSalutation)
@@ -250,5 +329,25 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             .clientFullName("John Smith")
             .childLastName("Jones")
             .build();
+    }
+
+    private NoticeOfChangeRespondentSolicitorTemplate getExpectedNoticeOfChangeParametersThirdPartyApplication(
+        String expectedSalutation) {
+        return NoticeOfChangeRespondentSolicitorTemplate.builder()
+            .salutation(expectedSalutation)
+            .caseName(CASE_NAME)
+            .ccdNumber(CASE_ID.toString())
+            .caseUrl(caseUrl(CASE_ID))
+            .clientFullName(EMPTY)
+            .childLastName("Jones")
+            .build();
+    }
+
+    private ChangeOrganisationRequest getChangeOrganisationRequest(String caseRoleId) {
+        return ChangeOrganisationRequest.builder()
+            .organisationToAdd(organisation("NEW_ORG"))
+            .caseRoleId(caseRoleDynamicList(caseRoleId))
+            .build();
+
     }
 }
