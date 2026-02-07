@@ -16,7 +16,7 @@ variable "env" {
 }
 
 variable "common_tags" {
-  type = map
+  type = map(any)
 }
 
 variable "tenant_id" {
