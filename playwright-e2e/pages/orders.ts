@@ -534,4 +534,24 @@ export class Orders extends BasePage {
         await this.finalOrder.getByText('No').click();
 
     }
+
+    async uploadsDischargeOfCareOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('Yes').check();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.orderApplication.getByLabel('Yes').click();
+        await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Day' }).fill('3');
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Month' }).fill('4');
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Year' }).fill('2022');
+        await this.careOrderIssuedCourt.selectOption('High Court Family Division');
+        await this.orderFurtherDirectionDetails.fill('Further Direction');
+        await this.finalOrder.getByLabel('No').check();
+        // await this.clickContinue();
+
+    }
 }
