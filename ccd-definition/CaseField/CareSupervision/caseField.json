@@ -2345,8 +2345,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "isC2Confidential",
-    "Label": "Does this application include any confidential information that should not be shared with other parties?",
-    "FieldType": "YesOrNo",
+    "Label": "Is this a confidential application?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationConfidential",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
