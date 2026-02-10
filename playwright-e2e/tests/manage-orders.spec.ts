@@ -725,13 +725,7 @@ test.describe('manage orders', () => {
         await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.tabNavigation('Tasks');
-        await expect(page.getByText('Tasks', { exact: true })).toBeVisible();
-
-        await orders.page.waitForTimeout(7000);
-
-        await orders.page.reload();
-        await expect(orders.page.getByText('Review Order (CTSC)')).toBeEnabled();
-        await expect(page.getByRole('tab', { name: 'Tasks' })).toBeVisible();
+        await orders.waitForTask('Review Order (CTSC)');
 
     })
 
@@ -762,13 +756,7 @@ test.describe('manage orders', () => {
         await signInPage.navigateToCaseDetails(caseNumber);
 
         await orders.tabNavigation('Tasks');
-        await expect(page.getByText('Tasks', { exact: true })).toBeVisible();
-
-        await orders.page.waitForTimeout(17000);
-
-        await orders.page.reload();
-        await expect(orders.page.getByText('Review Order (CTSC)')).toBeEnabled();
-        await expect(page.getByRole('tab', { name: 'Tasks' })).toBeVisible();
+        await orders.waitForTask('Review Order (CTSC)')
 
     })
 

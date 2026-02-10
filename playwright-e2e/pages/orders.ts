@@ -533,7 +533,7 @@ export class Orders extends BasePage {
         await this.endDate.getByLabel('Year').fill('2026');
         await this.finalOrder.getByText('No').click();
 
-    }
+   }
 
     async uploadsDischargeOfCareOrder() {
         await this.clickContinue();
@@ -551,7 +551,6 @@ export class Orders extends BasePage {
         await this.careOrderIssuedCourt.selectOption('High Court Family Division');
         await this.orderFurtherDirectionDetails.fill('Further Direction');
         await this.finalOrder.getByLabel('No').check();
-        // await this.clickContinue();
 
     }
 }
