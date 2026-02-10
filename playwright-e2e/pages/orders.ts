@@ -368,6 +368,7 @@ export class Orders extends BasePage {
         await this.orderConsent.getByLabel('Yes').click(); // checkbox not clicking had to work around it
         await this.futherDirections.fill('test');
         await this.finalOrder.getByLabel('No').check();
+        await this.finalOrder.getByLabel('No').check();// checkbox not clicking had to work around it
 
     }
 
@@ -532,6 +533,7 @@ export class Orders extends BasePage {
         await this.endDate.getByLabel('Month').fill('01');
         await this.endDate.getByLabel('Year').fill('2026');
         await this.finalOrder.getByText('No').click();
+        await this.finalOrder.getByText('No').click();// // checkbox not clicking had to work around it
 
    }
 
