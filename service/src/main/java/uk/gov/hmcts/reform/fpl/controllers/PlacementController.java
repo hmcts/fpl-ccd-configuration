@@ -25,6 +25,8 @@ import java.util.UUID;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
@@ -72,6 +74,13 @@ public class PlacementController extends CallbackController {
             caseProperties.put("respondentsSelector", newSelector(caseData.getAllRespondents().size()));
         }
 
+
+        if (placementService.isCurrentUserCtsc()) {
+            caseProperties.put("isCTSCUser", YES.getValue());
+        } else {
+            caseProperties.put("isCTSCUser", NO.getValue());
+        }
+
         return respond(caseProperties);
     }
 
@@ -109,6 +118,7 @@ public class PlacementController extends CallbackController {
 
         PlacementEventData eventData = placementService.preparePayment(caseData);
         caseProperties.put(PLACEMENT, eventData.getPlacement());
+        caseProperties.put("placementPayment", eventData.getPlacementPayment());
         caseProperties.put("placementPaymentRequired", eventData.getPlacementPaymentRequired());
         caseProperties.put("placementFee", eventData.getPlacementFee());
 
@@ -124,25 +134,28 @@ public class PlacementController extends CallbackController {
 
         final List<String> errors = placementService.checkPayment(caseData);
 
-        caseProperties.putIfNotEmpty("placementPayment", caseData.getPlacementEventData().getPlacementPayment());
+        // If the user is entering a PBA manually we will want to normalise it
+        if (caseData.getIsCTSCUser().equals(YES)) {
+            caseProperties.putIfNotEmpty("placementPayment", caseData.getPlacementEventData().getPlacementPayment());
+        }
 
         return respond(caseProperties, errors);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
-
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
         final PlacementEventData eventData = placementService.savePlacement(caseData);
-
+        placementService.setPaymentInformation(caseData);
         caseDetails.getData().put("placements", eventData.getPlacements());
         caseDetails.getData().put("placementIdToBeSealed", eventData.getPlacementIdToBeSealed());
         caseDetails.getData().put("placementsNonConfidential",
                 eventData.getPlacementsNonConfidentialWithNotices(false));
         caseDetails.getData().put("placementsNonConfidentialNotices",
                 eventData.getPlacementsNonConfidentialWithNotices(true));
+        caseDetails.getData().put("placementPayment", eventData.getPlacementPayment());
 
         removeTemporaryFields(caseDetails, PlacementEventData.class);
 
