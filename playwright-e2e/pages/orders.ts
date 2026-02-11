@@ -365,6 +365,7 @@ export class Orders extends BasePage {
         await this.month.fill('08');
         await this.year.fill('2025');
         await this.orderConsent.getByLabel('Yes').click();
+        await this.orderConsent.getByLabel('Yes').click();// checkbox not clicking had to work around it
         await this.futherDirections.fill('test');
         await this.finalOrder.getByLabel('No').check();
         await this.finalOrder.getByLabel('No').check();// checkbox not clicking had to work around it
