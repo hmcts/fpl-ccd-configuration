@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -49,6 +50,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -120,6 +122,12 @@ class PlacementServiceTest {
 
     @Mock
     private CourtService courtService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private PbaService pbaService;
 
     @InjectMocks
     private PlacementService underTest;
@@ -617,6 +625,17 @@ class PlacementServiceTest {
             .totalAmount(BigDecimal.valueOf(400.5))
             .build();
 
+        final DynamicList expectedPbaList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code("PBA1234567")
+                .build())
+            .build();
+
+        @BeforeEach
+        void setup() {
+            given(pbaService.populatePbaDynamicList("")).willReturn(expectedPbaList);
+        }
+
         @Test
         void shouldNotFetchPlacementFeeWhenPreviousPlacementPaymentWasTakenOnTheSameDay() {
 
@@ -638,6 +657,7 @@ class PlacementServiceTest {
             final PlacementEventData expectedPlacementData = PlacementEventData.builder()
                 .placementLastPaymentTime(lastPayment)
                 .placementPaymentRequired(NO)
+
                 .build();
 
             assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
@@ -660,6 +680,7 @@ class PlacementServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .placementEventData(placementEventData)
+                .isCTSCUser(NO)
                 .build();
 
             final PlacementEventData actualPlacementData = underTest.preparePayment(caseData);
@@ -667,6 +688,9 @@ class PlacementServiceTest {
             final PlacementEventData expectedPlacementData = PlacementEventData.builder()
                 .placementLastPaymentTime(lastPayment)
                 .placementPaymentRequired(YES)
+                .placementPayment(PBAPayment.builder()
+                    .pbaNumberDynamicList(expectedPbaList)
+                    .build())
                 .placementFee("40050")
                 .build();
 
@@ -685,6 +709,7 @@ class PlacementServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .placementEventData(placementEventData)
+                .isCTSCUser(NO)
                 .build();
 
             final PlacementEventData actualPlacementData = underTest.preparePayment(caseData);
@@ -692,6 +717,9 @@ class PlacementServiceTest {
             final PlacementEventData expectedPlacementData = PlacementEventData.builder()
                 .placementPaymentRequired(YES)
                 .placementFee("40050")
+                .placementPayment(PBAPayment.builder()
+                    .pbaNumberDynamicList(expectedPbaList)
+                    .build())
                 .build();
 
             assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
@@ -759,15 +787,31 @@ class PlacementServiceTest {
 
         final String testPBANumber = "1234567";
         final String normalisedTestPBANumber = "PBA" + testPBANumber;
+        final DynamicList pbaDynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(normalisedTestPBANumber)
+                .build()).build();
 
         final PBAPayment payment = PBAPayment.builder()
             .pbaNumber(testPBANumber)
+            .build();
+
+        final PBAPayment paymentWithDropdown = PBAPayment.builder()
+            .pbaNumberDynamicList(pbaDynamicList)
             .build();
 
         final CaseData caseData = CaseData.builder()
             .placementEventData(PlacementEventData.builder()
                 .placementPayment(payment)
                 .build())
+            .isCTSCUser(YES)
+            .build();
+
+        final CaseData caseDataWithDropdown = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placementPayment(paymentWithDropdown)
+                .build())
+            .isCTSCUser(NO)
             .build();
 
         @BeforeEach
@@ -787,6 +831,16 @@ class PlacementServiceTest {
         }
 
         @Test
+        void shouldValidateCorrectPBANumberFromDropdown() {
+
+            when(pbaNumberService.validate(normalisedTestPBANumber)).thenReturn(emptyList());
+
+            final List<String> actualErrors = underTest.checkPayment(caseDataWithDropdown);
+
+            assertThat(actualErrors).isEmpty();
+        }
+
+        @Test
         void shouldNormaliseAndValidateIncorrectPBANumber() {
 
             when(pbaNumberService.validate(normalisedTestPBANumber)).thenReturn(List.of("Invalid PBA"));
@@ -795,6 +849,65 @@ class PlacementServiceTest {
 
             assertThat(actualErrors).containsExactly("Invalid PBA");
             assertThat(payment.getPbaNumber()).isEqualTo(normalisedTestPBANumber);
+        }
+
+        @Test
+        void shouldValidateIncorrectPBANumberFromDropdown() {
+
+            when(pbaNumberService.validate(normalisedTestPBANumber)).thenReturn(List.of("Invalid PBA"));
+
+            final List<String> actualErrors = underTest.checkPayment(caseDataWithDropdown);
+
+            assertThat(actualErrors).containsExactly("Invalid PBA");
+        }
+    }
+
+    @Nested
+    class SetPaymentDetails {
+        final String pbaNumber = "PBA1234567";
+        final DynamicList pbaDynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(pbaNumber)
+                .build()).build();
+
+        final PBAPayment expectedPayment = PBAPayment.builder()
+            .pbaNumber(pbaNumber)
+            .clientCode("code")
+            .fileReference("reference")
+            .build();
+
+        final PBAPayment paymentWithDropdown = PBAPayment.builder()
+            .pbaNumberDynamicList(pbaDynamicList)
+            .clientCode("code")
+            .fileReference("reference")
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placementPayment(expectedPayment)
+                .build())
+            .isCTSCUser(YES)
+            .build();
+
+        final CaseData caseDataWithDropdown = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placementPayment(paymentWithDropdown)
+                .build())
+            .isCTSCUser(NO)
+            .build();
+
+        @Test
+        void shouldSetPbaNumberFromDropdown() {
+            underTest.setPaymentInformation(caseDataWithDropdown);
+
+            assertThat(caseDataWithDropdown.getPlacementEventData().getPlacementPayment()).isEqualTo(expectedPayment);
+        }
+
+        @Test
+        void shouldDoNothingWhenPbaSetManually() {
+            underTest.setPaymentInformation(caseData);
+
+            assertThat(caseData.getPlacementEventData().getPlacementPayment()).isEqualTo(expectedPayment);
         }
     }
 
