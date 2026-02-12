@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildPolicyData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -605,10 +606,8 @@ class DraftOrderServiceTest {
                 caseData.getHearingDetails())).isEqualTo(JudicialMessageRoleType.CTSC);
         }
 
-
-
         @Test
-        void shouldThrowExceptionIfUserNotFoundForHearingJudgeOrLegalAdvisor() {
+        void shouldCreateGenericTaskIfHearingJudgeOrLegalAdvisorHasInvalidAmRole() {
             final UUID selectedHearing = UUID.randomUUID();
 
             CaseData caseData = CaseData.builder().id(CASE_ID)
@@ -621,11 +620,8 @@ class DraftOrderServiceTest {
                 .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-hearing-judge").build()));
 
 
-            UserLookupException thrownException = assertThrows(UserLookupException.class,
-                () -> service.getHearingJudgeOrLegalAdviserType(CASE_ID, selectedHearing,
-                    caseData.getHearingDetails()));
-            assertThat(thrownException.getMessage())
-                .contains("Hearing judge or legal adviser for latest hearing has invalid am role for case id: 1234");
+            assertThat(service.getHearingJudgeOrLegalAdviserType(CASE_ID, selectedHearing,
+                caseData.getHearingDetails())).isEqualTo(JudicialMessageRoleType.CTSC);
         }
 
         @Test
@@ -644,7 +640,33 @@ class DraftOrderServiceTest {
                 () -> service.getHearingJudgeOrLegalAdviserType(CASE_ID, selectedHearing,
                     caseData.getHearingDetails()));
             assertThat(thrownException.getMessage())
-                .contains("No hearing judge or legal adviser found for latest hearing for case id: 1234");
+                .contains("No hearing judge or legal adviser found for selected hearing for case id: 1234");
+        }
+
+        @Test
+        void shouldGenerateGenericTaskWhenNoJrdRecordFound(){
+            final UUID selectedHearing = UUID.randomUUID();
+            final JudgeAndLegalAdvisor legalAdvisorWithInvalidJrd = JudgeAndLegalAdvisor.builder()
+                .judgeTitle(LEGAL_ADVISOR)
+                .judgeLastName("Dredd")
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId(null)
+                    .personalCode(null)
+                    .build())
+                .build();
+            final HearingBooking hearingBooking = legalAdviserHearingBooking(CASE_MANAGEMENT, LocalDateTime.now())
+                .toBuilder().judgeAndLegalAdvisor(legalAdvisorWithInvalidJrd)
+                .build();
+
+
+            CaseData caseData = CaseData.builder().id(CASE_ID)
+                .hearingDetails(List.of(element(hearing(FACT_FINDING, LocalDateTime.now().plusDays(4))),
+                    element(selectedHearing,
+                        hearingBooking)))
+                .build();
+
+            assertThat(service.getHearingJudgeOrLegalAdviserType(CASE_ID, selectedHearing,
+                caseData.getHearingDetails())).isEqualTo(JudicialMessageRoleType.CTSC);
         }
 
         @Test
@@ -1296,6 +1318,9 @@ class DraftOrderServiceTest {
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(LEGAL_ADVISOR)
                 .judgeLastName("Dredd")
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("1234")
+                    .build())
                 .build())
             .build();
     }
@@ -1320,6 +1345,7 @@ class DraftOrderServiceTest {
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
                 .judgeLastName("Dredd")
+                .judgeJudicialUser(JudicialUser.builder().idamId("1234").build())
                 .build())
             .build();
     }

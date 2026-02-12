@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -330,24 +331,28 @@ public class DraftOrderService {
             .ofNullable(hearing.getValue().getJudgeAndLegalAdvisor());
 
         if (hearingJudgeOrLegalAdviser.isPresent()) {
+            //If the hearing judge on the case doesn't link to a JRD profile make a generic approve orders task
+            if (hearingJudgeOrLegalAdviser.map(JudgeAndLegalAdvisor::getJudgeJudicialUser)
+                .map(JudicialUser::getIdamId).isEmpty()) {
+                return JudicialMessageRoleType.CTSC;
+            }
+
             List<String> roleTypes = judicialService
                 .getHearingJudgeAndLegalAdviserRoleAssignments(caseId, ZonedDateTime.now())
                 .stream()
                 .map((RoleAssignment::getRoleName))
                 .toList();
 
-            if (roleTypes.contains(HEARING_JUDGE.getRoleName())) {
-                return JudicialMessageRoleType.HEARING_JUDGE;
-            } else if (roleTypes.contains(HEARING_LEGAL_ADVISER.getRoleName())) {
-                return JudicialMessageRoleType.OTHER;
-            } else {
-                throw new UserLookupException(String
-                    .format("Hearing judge or legal adviser for latest hearing has invalid am role for case id: %s",
-                        caseId));
-            }
+                if (roleTypes.contains(HEARING_JUDGE.getRoleName())) {
+                    return JudicialMessageRoleType.HEARING_JUDGE;
+                } else if (roleTypes.contains(HEARING_LEGAL_ADVISER.getRoleName())) {
+                    return JudicialMessageRoleType.OTHER;
+                } else {
+                    return JudicialMessageRoleType.CTSC;
+                }
         } else {
             throw new UserLookupException(
-                String.format("No hearing judge or legal adviser found for latest hearing for case id: %s",
+                String.format("No hearing judge or legal adviser found for selected hearing for case id: %s",
                     caseId));
         }
     }
