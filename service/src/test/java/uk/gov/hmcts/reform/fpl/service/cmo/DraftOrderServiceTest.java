@@ -644,7 +644,7 @@ class DraftOrderServiceTest {
         }
 
         @Test
-        void shouldGenerateGenericTaskWhenNoJrdRecordFound(){
+        void shouldGenerateGenericTaskWhenNoJrdRecordFound() {
             final UUID selectedHearing = UUID.randomUUID();
             final JudgeAndLegalAdvisor legalAdvisorWithInvalidJrd = JudgeAndLegalAdvisor.builder()
                 .judgeTitle(LEGAL_ADVISOR)

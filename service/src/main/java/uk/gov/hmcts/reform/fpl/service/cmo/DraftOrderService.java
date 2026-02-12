@@ -343,13 +343,13 @@ public class DraftOrderService {
                 .map((RoleAssignment::getRoleName))
                 .toList();
 
-                if (roleTypes.contains(HEARING_JUDGE.getRoleName())) {
-                    return JudicialMessageRoleType.HEARING_JUDGE;
-                } else if (roleTypes.contains(HEARING_LEGAL_ADVISER.getRoleName())) {
-                    return JudicialMessageRoleType.OTHER;
-                } else {
-                    return JudicialMessageRoleType.CTSC;
-                }
+            if (roleTypes.contains(HEARING_JUDGE.getRoleName())) {
+                return JudicialMessageRoleType.HEARING_JUDGE;
+            } else if (roleTypes.contains(HEARING_LEGAL_ADVISER.getRoleName())) {
+                return JudicialMessageRoleType.OTHER;
+            } else {
+                return JudicialMessageRoleType.CTSC;
+            }
         } else {
             throw new UserLookupException(
                 String.format("No hearing judge or legal adviser found for selected hearing for case id: %s",
