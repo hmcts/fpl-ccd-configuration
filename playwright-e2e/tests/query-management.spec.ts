@@ -13,7 +13,7 @@ import caseWithChildrenCafcassSolicitor
     from '../caseData/caseWithMultipleChildCafcassSolicitor.json' assert {type: "json"};
 import caseWtihQuery from '../caseData/caseWithQuery.json' assert {type: "json"};
 
-test.describe.only('Query management', () => {
+test.describe('Query management', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
