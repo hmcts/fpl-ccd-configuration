@@ -131,7 +131,7 @@ tasks.register('lintUserInterfaceTests', Exec) {
 
 tasks.register('runSmokeTests', Exec) {
   description = 'Runs smoke tests.'
-  commandLine '/usr/bin/yarn', 'test:smoke'
+  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
 tasks.register('runApiTests', Exec) {
