@@ -13,7 +13,7 @@ import caseWithChildrenCafcassSolicitor
     from '../caseData/caseWithMultipleChildCafcassSolicitor.json' assert {type: "json"};
 import caseWtihQuery from '../caseData/caseWithQuery.json' assert {type: "json"};
 
-test.describe('Query management', () => {
+test.describe.only('Query management', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
@@ -66,8 +66,8 @@ test.describe('Query management', () => {
                 await queryManagement.tabNavigation('Queries');
                 await queryManagement.assertQueryTable();
                 await expect(page.getByRole('button', {name: 'Birth certificate format'})).toBeVisible();
-                await expect(page.getByRole('cell', {name: 'Local Authority '}).first()).toBeVisible();
-                await expect(page.getByRole('cell', {name: 'Local Authority '}).nth(1)).toBeVisible();
+                await expect(page.getByRole('cell', {name: '(local Authority)'}).first()).toBeVisible();
+                await expect(page.getByRole('cell', {name: '(local Authority)'}).nth(1)).toBeVisible();
                 await expect(page.getByRole('cell', {name: 'Awaiting Response'})).toBeVisible();
                 await expect(page.getByRole('cell', {name: `${queryManagement.getCurrentDate()}`})).toBeVisible();
 
