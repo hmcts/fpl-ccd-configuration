@@ -1223,8 +1223,8 @@
     "hearingVenueId": 203,
     "venue": "East London Family Court",
     "address": {
-      "AddressLine1": "East London Family Court, 6th and 7th Floor",
-      "AddressLine2": "East London Family Court",
+      "AddressLine1": "East London Family Court, 6th and 7th Floor, 11 Westferry Circus",
+      "AddressLine2": "Entrance in Columbus Courtyard",
       "PostTown": "London",
       "PostCode": "E14 4HD"
     }
