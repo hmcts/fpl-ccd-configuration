@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 
@@ -18,6 +19,7 @@ public class SystemUserRoleAssignment {
     private final RoleAssignmentService roleAssignmentService;
 
     @PostConstruct
+    @Retryable(retryFor = Exception.class, label = "Create system update user in AM")
     public void init() {
         try {
             log.info("Attempting to assign system-update user role");
