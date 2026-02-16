@@ -69,7 +69,7 @@
   "resolutions": {
     "yargs-parser": "^20.2.9"
   },
-  "packageManager": "yarn@3.8.6",
+  "packageManager": "yarn@3.8.7",
   "license": "MIT",
   "dependencies": {
     "@axe-core/playwright": "^4.8.5",
