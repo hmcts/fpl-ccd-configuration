@@ -172,6 +172,7 @@ public class CaseData extends CaseDataParent {
     private String caseLocalAuthorityName;
     private OrganisationPolicy localAuthorityPolicy;
     private OrganisationPolicy outsourcingPolicy;
+    private OrganisationPolicy appSolicitorPolicy;
     private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
     private RepresentativeType representativeType;
@@ -1101,6 +1102,12 @@ public class CaseData extends CaseDataParent {
 
     @JsonUnwrapped
     @Builder.Default
+    private final NoticeOfChangeThirdPartyRespondentAnswersData noticeOfChangeThirdPartyRespondentAnswersData =
+        NoticeOfChangeThirdPartyRespondentAnswersData.builder()
+            .build();
+
+    @JsonUnwrapped
+    @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
     @JsonUnwrapped
     @Builder.Default
@@ -1121,6 +1128,15 @@ public class CaseData extends CaseDataParent {
     @JsonIgnore
     public boolean isOutsourced() {
         return Optional.ofNullable(outsourcingPolicy)
+            .map(OrganisationPolicy::getOrganisation)
+            .map(Organisation::getOrganisationID)
+            .filter(StringUtils::isNotEmpty)
+            .isPresent();
+    }
+
+    @JsonIgnore
+    public boolean isThirdPartyApplicant() {
+        return Optional.ofNullable(appSolicitorPolicy)
             .map(OrganisationPolicy::getOrganisation)
             .map(Organisation::getOrganisationID)
             .filter(StringUtils::isNotEmpty)

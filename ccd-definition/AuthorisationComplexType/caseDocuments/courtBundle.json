@@ -32,6 +32,7 @@
       {
         "UserRoles": [
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LABARRISTER]",
           "[LAMANAGING]",
           "[LASHARED]",
@@ -75,6 +76,7 @@
       {
         "UserRoles": [
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LABARRISTER]",
           "[LAMANAGING]",
           "[LASHARED]",
@@ -153,6 +155,7 @@
           "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
+          "[APPSOLICITOR]",
           "[LAMANAGING]",
           "caseworker-publiclaw-superuser"
         ],
