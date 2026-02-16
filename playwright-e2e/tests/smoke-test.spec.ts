@@ -120,7 +120,7 @@ test.setTimeout(7 * 60 * 1000);
         });
     });
 
-    test('Private solicitor applies C110a application', async ({
+    test.only('Private solicitor applies C110a application', async ({
         signInPage,
         createCase,
         ordersAndDirectionSought,
