@@ -6116,7 +6116,7 @@ __metadata:
     mocha-multi: ^1.1.7
     mochawesome: ^6.3.1
     moment: 2.30.1
-    node-fetch: ^2.6.9
+    node-fetch: ^3.0.0
     node-gyp: ^9.4.0
     pdfjs-dist: 4.2.67
     qs: ^6.11.2
@@ -8930,7 +8930,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9":
+"node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -8944,7 +8944,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^3.3.2":
+"node-fetch@npm:^3.0.0, node-fetch@npm:^3.3.2":
   version: 3.3.2
   resolution: "node-fetch@npm:3.3.2"
   dependencies:
