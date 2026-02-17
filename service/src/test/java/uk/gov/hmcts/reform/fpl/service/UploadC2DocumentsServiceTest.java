@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -103,8 +104,10 @@ class UploadC2DocumentsServiceTest {
     private CaseData createCaseDataWithC2DocumentBundle() {
         return CaseData.builder()
             .c2DocumentBundle(wrapElements(createC2DocumentBundle()))
-            .temporaryC2Document(createC2DocumentBundle())
-            .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .temporaryC2Document(createC2DocumentBundle())
+                .c2ApplicationType(Map.of("type", WITH_NOTICE))
+                .build())
             .build();
     }
 

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 
 import java.util.List;
 import java.util.Map;
@@ -103,10 +104,11 @@ public class ObjectHelperTest {
             "test2", C2ApplicationType.WITHOUT_NOTICE
         );
         CaseData caseData = CaseData.builder()
-            .c2ApplicationType(testMap)
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .c2ApplicationType(testMap).build())
             .build();
 
-        assertEquals(testMap, ObjectHelper.getFieldValue(caseData,
+        assertEquals(testMap, ObjectHelper.getFieldValue(caseData.getUploadAdditionalApplicationsEventData(),
             "c2ApplicationType", Map.class));
     }
 

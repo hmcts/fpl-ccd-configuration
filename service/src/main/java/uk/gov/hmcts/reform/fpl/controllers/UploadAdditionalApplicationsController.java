@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
@@ -66,9 +67,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
-    private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
+    private static final String IS_CTSC_USER = "isCTSCUser";
     private static final String SKIP_PAYMENT_PAGE = "skipPaymentPage";
-    private static final String IS_C2_CONFIDENTIAL = "isC2Confidential";
 
     private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
@@ -98,7 +98,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
+        if (caseData.getUploadAdditionalApplicationsEventData().getAdditionalApplicationType()
+            .contains(AdditionalApplicationType.C2_ORDER)) {
             // Initialise the C2 document bundle so we can have a dynamic list present
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, C2DocumentBundle.builder()
                 .hearingList(caseData.buildDynamicHearingList())
@@ -111,11 +112,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
 
         boolean skipPayment = false;
-        if (!isNull(caseData.getTemporaryC2Document())) {
-            C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
-            temporaryC2Document.setType(caseData.getC2Type());
+        if (!isNull(eventData.getTemporaryC2Document())) {
+            C2DocumentBundle temporaryC2Document = eventData.getTemporaryC2Document();
+            temporaryC2Document.setType(eventData.getC2Type());
 
             if (!isNull(temporaryC2Document.getC2AdditionalOrdersRequested())
                 && temporaryC2Document.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT)) {
@@ -138,7 +140,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         if (!skipPayment) {
             caseDetails.getData().putAll(uploadAdditionalApplicationsService.populateTempPbaPayment());
             caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
-            caseDetails.getData().put("isCTSCUser", userService.isCtscUser() ? YES.getValue() : NO.getValue());
+            caseDetails.getData().put(IS_CTSC_USER, userService.isCtscUser() ? YES.getValue() : NO.getValue());
             caseDetails.getData().put(SKIP_PAYMENT_PAGE, NO.getValue());
         } else {
             caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
@@ -152,9 +154,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleValidateMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
 
         if (YesNo.YES.equals(caseData.getIsCTSCUser())) {
-            PBAPayment tempPbaPayment = caseData.getTemporaryPbaPayment();
+            PBAPayment tempPbaPayment = eventData.getTemporaryPbaPayment();
             PBAPayment updatedPbaPayment = pbaNumberService.updatePBAPayment(tempPbaPayment);
             caseDetails.getData().put("temporaryPbaPayment", updatedPbaPayment);
 
@@ -176,11 +179,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             ((LinkedHashMap) caseDetails.getData().get(TEMPORARY_C2_DOCUMENT)).put("hearingList", null);
         }
         CaseData caseData = getCaseData(caseDetails);
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
 
-        if (!isNull(caseData.getTemporaryC2Document())
-            && !caseData.getTemporaryC2Document().getDraftOrdersBundle().isEmpty()) {
+        if (!isNull(eventData.getTemporaryC2Document())
+            && !eventData.getTemporaryC2Document().getDraftOrdersBundle().isEmpty()) {
 
-            List<Element<DraftOrder>> draftOrders = caseData.getTemporaryC2Document().getDraftOrdersBundle();
+            List<Element<DraftOrder>> draftOrders = eventData.getTemporaryC2Document().getDraftOrdersBundle();
             draftOrders.forEach(order -> {
                 order.getValue().setUploaderCaseRoles(manageDocumentService.getUploaderCaseRoles(caseData));
                 order.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
@@ -193,7 +197,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
             HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
-            if (YES.equals(caseData.getIsC2Confidential())) {
+            if (YES.equals(eventData.getIsC2Confidential())) {
                 draftOrderService.confidentialAdditionalApplicationUpdateCase(caseData, newDrafts,
                     hearingOrdersBundles.getAgreedCmos());
             } else {
@@ -220,11 +224,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().put("c2DocumentBundle", uploadAdditionalApplicationsService
             .sortOldC2DocumentCollection(oldC2DocumentCollection));
 
-        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
-            "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
-            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE,
-            IS_C2_CONFIDENTIAL, "isCTSCUser", "c2ApplicationRoute","c2ApplicationRouteType",
-            "c2EvidenceConsentDocument");
+        removeTemporaryFields(caseDetails, UploadAdditionalApplicationsEventData.class);
+        removeTemporaryFields(caseDetails, AMOUNT_TO_PAY, IS_CTSC_USER, SKIP_PAYMENT_PAGE);
 
         return respond(caseDetails);
     }
