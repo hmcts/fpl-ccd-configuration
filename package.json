@@ -19,7 +19,7 @@
     "debug": "4.4.0",
     "eslint": "^8.0.0",
     "eslint-plugin-codeceptjs": "^1.3.0",
-    "glob": "^7.2.3",
+    "glob": "^11.0.0",
     "html_codesniffer": "^2.5.1",
     "husky": "^7.0.4",
     "interpolate-json": "^3.0.0",
