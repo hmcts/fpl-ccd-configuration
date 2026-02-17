@@ -377,8 +377,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         HearingOrdersBundle actualBundle = updatedCaseData.getHearingOrdersBundlesDrafts().get(0).getValue();
         assertThat(actualBundle.getOrdersCTSC().get(0).getValue().getOrderConfidential())
-            .isEqualTo(caseData.getUploadAdditionalApplicationsEventData().
-                getTemporaryC2Document().getDraftOrdersBundle().get(0).getValue().getDocument());
+            .isEqualTo(caseData.getUploadAdditionalApplicationsEventData()
+                .getTemporaryC2Document().getDraftOrdersBundle().get(0).getValue().getDocument());
     }
 
     private void assertC2DocumentBundle(C2DocumentBundle uploadedC2DocumentBundle) {

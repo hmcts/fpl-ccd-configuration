@@ -329,8 +329,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
             CaseData updatedCaseData = extractCaseData(CaseDetails.builder().data(response.getData()).build());
 
-            assertThat(updatedCaseData.getUploadAdditionalApplicationsEventData().
-                getTemporaryC2Document()).extracting("requestedHearingToAdjourn").isNull();
+            assertThat(updatedCaseData.getUploadAdditionalApplicationsEventData()
+                    .getTemporaryC2Document()).extracting("requestedHearingToAdjourn").isNull();
             assertThat(response.getData().get("skipPaymentPage")).isEqualTo(NO.getValue());
         }
 
