@@ -66,7 +66,9 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractCallbackTest {
             .build(), "get-fee");
 
         CaseData updatedCaseData = extractCaseData(CaseDetails.builder().data(response.getData()).build());
-        assertThat(updatedCaseData).extracting("temporaryC2Document").extracting("document")
+        assertThat(updatedCaseData.getUploadAdditionalApplicationsEventData())
+            .extracting("temporaryC2Document")
+            .extracting("document")
             .isNull();
     }
 
