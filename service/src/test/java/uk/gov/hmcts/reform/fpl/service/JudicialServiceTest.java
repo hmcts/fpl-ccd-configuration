@@ -876,7 +876,7 @@ class JudicialServiceTest {
     @Nested
     class IsFeePaidJudge {
         @Test
-        void returnsTrueWhenCurrentUserHasActiveFeePaidAppointment() {
+        void returnsTrueWhenCurrentUserHasActiveFeePaidAsPrimaryRole() {
             final LocalDateTime today = LocalDateTime.now();
             when(time.now()).thenReturn(today);
 
@@ -891,18 +891,26 @@ class JudicialServiceTest {
                     JudicialUserAppointment.builder()
                         .appointmentId("feePaidAppointmentId")
                         .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .isPrincipalAppointment(Boolean.TRUE.toString())
                         .startDate(starDate)
                         .endDate(endDate)
                         .build(),
                     JudicialUserAppointment.builder()
                         .appointmentId("otherAppointmentId")
-                        .appointmentType("Other Appointment Type")
+                        .appointmentType("Salaried / Other Appointment Type")
+                        .isPrincipalAppointment(Boolean.FALSE.toString())
                         .startDate(starDate)
                         .endDate(endDate)
                         .build()))
                 .authorisations(List.of(
                     JudicialUserAuthorisations.builder()
                         .appointmentId("feePaidAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("otherAppointmentId")
                         .serviceCodes(List.of(SERVICE_CODE))
                         .startDate(starDate)
                         .endDate(endDate)
@@ -915,7 +923,7 @@ class JudicialServiceTest {
         }
 
         @Test
-        void returnsFalseWhenNoFeePaidAppointment() {
+        void returnsFalseWhenCurrentUserHasActiveFeePaidAsSecondaryRole() {
             final LocalDateTime today = LocalDateTime.now();
             when(time.now()).thenReturn(today);
 
@@ -928,12 +936,26 @@ class JudicialServiceTest {
             JudicialUserProfile profile = JudicialUserProfile.builder()
                 .appointments(List.of(
                     JudicialUserAppointment.builder()
+                        .appointmentId("feePaidAppointmentId")
+                        .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .isPrincipalAppointment(Boolean.FALSE.toString())
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAppointment.builder()
                         .appointmentId("otherAppointmentId")
-                        .appointmentType("Other Appointment Type")
+                        .appointmentType("Salaried / Other Appointment Type")
+                        .isPrincipalAppointment(Boolean.TRUE.toString())
                         .startDate(starDate)
                         .endDate(endDate)
                         .build()))
                 .authorisations(List.of(
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("feePaidAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
                     JudicialUserAuthorisations.builder()
                         .appointmentId("otherAppointmentId")
                         .serviceCodes(List.of(SERVICE_CODE))
@@ -948,7 +970,148 @@ class JudicialServiceTest {
         }
 
         @Test
-        void returnsFalseWhenFeePaidAppointmentExpiredOrNotAppointedToFPL() {
+        void returnsTrueWhenCurrentUserHasActiveFeePaidAsSecondaryRoleButNoPrimaryRoleExist() {
+            final LocalDateTime today = LocalDateTime.now();
+            when(time.now()).thenReturn(today);
+
+            final LocalDate starDate = today.toLocalDate().minusDays(1);
+            final LocalDate endDate = today.toLocalDate().plusDays(1);
+
+            UserDetails userDetails = UserDetails.builder().id("idamId").build();
+            when(userService.getUserDetails()).thenReturn(userDetails);
+
+            JudicialUserProfile profile = JudicialUserProfile.builder()
+                .appointments(List.of(
+                    JudicialUserAppointment.builder()
+                        .appointmentId("feePaidAppointmentId")
+                        .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .isPrincipalAppointment(Boolean.FALSE.toString())
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAppointment.builder()
+                        .appointmentId("otherAppointmentId")
+                        .appointmentType("Salaried / Other Appointment Type")
+                        .isPrincipalAppointment(Boolean.FALSE.toString())
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()))
+                .authorisations(List.of(
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("feePaidAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("otherAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()
+                ))
+                .build();
+            when(underTest.getJudicialUserProfilesByIdamId("idamId")).thenReturn(List.of(profile));
+
+            assertThat(underTest.isCurrentUserFeePaidJudge()).isTrue();
+        }
+
+        @Test
+        void returnsTrueWhenCurrentUserHasActiveFeePaidAsPrimaryRoleWhenMultiplePrimaryRoleExist() {
+            final LocalDateTime today = LocalDateTime.now();
+            when(time.now()).thenReturn(today);
+
+            final LocalDate starDate = today.toLocalDate().minusDays(1);
+            final LocalDate endDate = today.toLocalDate().plusDays(1);
+
+            UserDetails userDetails = UserDetails.builder().id("idamId").build();
+            when(userService.getUserDetails()).thenReturn(userDetails);
+
+            JudicialUserProfile profile = JudicialUserProfile.builder()
+                .appointments(List.of(
+                    JudicialUserAppointment.builder()
+                        .appointmentId("feePaidAppointmentId")
+                        .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .isPrincipalAppointment(Boolean.TRUE.toString())
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAppointment.builder()
+                        .appointmentId("otherAppointmentId")
+                        .appointmentType("Salaried / Other Appointment Type")
+                        .isPrincipalAppointment(Boolean.TRUE.toString())
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()))
+                .authorisations(List.of(
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("feePaidAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("otherAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()
+                ))
+                .build();
+            when(underTest.getJudicialUserProfilesByIdamId("idamId")).thenReturn(List.of(profile));
+
+            assertThat(underTest.isCurrentUserFeePaidJudge()).isTrue();
+        }
+
+        @Test
+        void returnsFalseWhenNoFeePaidAppointmentAtAll() {
+            final LocalDateTime today = LocalDateTime.now();
+            when(time.now()).thenReturn(today);
+
+            final LocalDate starDate = today.toLocalDate().minusDays(1);
+            final LocalDate endDate = today.toLocalDate().plusDays(1);
+
+            UserDetails userDetails = UserDetails.builder().id("idamId").build();
+            when(userService.getUserDetails()).thenReturn(userDetails);
+
+            JudicialUserProfile profile = JudicialUserProfile.builder()
+                .appointments(List.of(
+                    JudicialUserAppointment.builder()
+                        .appointmentId("otherAppointmentId")
+                        .appointmentType("Salaried / Other Appointment Type")
+                        .isPrincipalAppointment(Boolean.TRUE.toString())
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAppointment.builder()
+                        .appointmentId("otherAppointmentId2")
+                        .appointmentType("Salaried / Other Appointment Type")
+                        .isPrincipalAppointment(Boolean.FALSE.toString())
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()
+                )).authorisations(List.of(
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("otherAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("otherAppointmentId2")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()
+                ))
+                .build();
+            when(underTest.getJudicialUserProfilesByIdamId("idamId")).thenReturn(List.of(profile));
+
+            assertThat(underTest.isCurrentUserFeePaidJudge()).isFalse();
+        }
+
+        @Test
+        void returnsFalseWhenFeePaidAppointmentExpired() {
             final LocalDateTime today = LocalDateTime.now();
             when(time.now()).thenReturn(today);
 
@@ -963,12 +1126,14 @@ class JudicialServiceTest {
                     JudicialUserAppointment.builder()
                         .appointmentId("feePaidAppointmentId_expired")
                         .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .isPrincipalAppointment(Boolean.TRUE.toString())
                         .startDate(starDate.minusDays(10))
                         .endDate(endDate.minusDays(10))
                         .build(),
                     JudicialUserAppointment.builder()
-                        .appointmentId("feePaidAppointmentId_otherService")
-                        .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .appointmentId("otherAppointmentId")
+                        .appointmentType("Salaried / Other Appointment Type")
+                        .isPrincipalAppointment(Boolean.TRUE.toString())
                         .startDate(starDate)
                         .endDate(endDate)
                         .build()))
@@ -980,8 +1145,55 @@ class JudicialServiceTest {
                         .endDate(endDate)
                         .build(),
                     JudicialUserAuthorisations.builder()
-                        .appointmentId("feePaidAppointmentId_otherService")
-                        .serviceCodes(List.of("Other_service"))
+                        .appointmentId("otherAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()
+                ))
+                .build();
+            when(underTest.getJudicialUserProfilesByIdamId("idamId")).thenReturn(List.of(profile));
+
+            assertThat(underTest.isCurrentUserFeePaidJudge()).isFalse();
+        }
+
+        @Test
+        void returnsFalseWhenAuthorizationOfFeePaidAppointmentExpired() {
+            final LocalDateTime today = LocalDateTime.now();
+            when(time.now()).thenReturn(today);
+
+            final LocalDate starDate = today.toLocalDate().minusDays(1);
+            final LocalDate endDate = today.toLocalDate().plusDays(1);
+
+            UserDetails userDetails = UserDetails.builder().id("idamId").build();
+            when(userService.getUserDetails()).thenReturn(userDetails);
+
+            JudicialUserProfile profile = JudicialUserProfile.builder()
+                .appointments(List.of(
+                    JudicialUserAppointment.builder()
+                        .appointmentId("feePaidAppointmentId_expired")
+                        .appointmentType(APPOINTMENT_TYPE_FEE_PAID)
+                        .isPrincipalAppointment(Boolean.FALSE.toString())
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build(),
+                    JudicialUserAppointment.builder()
+                        .appointmentId("otherAppointmentId")
+                        .appointmentType("Salaried / Other Appointment Type")
+                        .isPrincipalAppointment(Boolean.FALSE.toString())
+                        .startDate(starDate)
+                        .endDate(endDate)
+                        .build()))
+                .authorisations(List.of(
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("feePaidAppointmentId_expired")
+                        .serviceCodes(List.of(SERVICE_CODE))
+                        .startDate(starDate.minusDays(10))
+                        .endDate(endDate.minusDays(10))
+                        .build(),
+                    JudicialUserAuthorisations.builder()
+                        .appointmentId("otherAppointmentId")
+                        .serviceCodes(List.of(SERVICE_CODE))
                         .startDate(starDate)
                         .endDate(endDate)
                         .build()
