@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
@@ -147,11 +148,13 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(C2_ORDER))
-            .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
-            .c2Type(WITH_NOTICE)
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
+                .temporaryPbaPayment(pbaPayment)
+                .applicantsList(applicantsList)
+                .c2Type(WITH_NOTICE)
+                .build())
             .build();
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
@@ -188,11 +191,13 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(C2_ORDER))
-            .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
-            .c2Type(WITH_NOTICE)
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
+                .temporaryPbaPayment(pbaPayment)
+                .applicantsList(applicantsList)
+                .c2Type(WITH_NOTICE)
+                .build())
             .build();
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
@@ -220,11 +225,13 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(OTHER_ORDER))
-            .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(supplement, supportingDocument))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
-            .otherApplicant("some other name")
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(supplement, supportingDocument))
+                .temporaryPbaPayment(pbaPayment)
+                .applicantsList(applicantsList)
+                .otherApplicant("some other name")
+                .build())
             .build();
 
         given(peopleInCaseService.getSelectedRespondents(any())).willReturn(List.of());
@@ -252,9 +259,11 @@ class UploadAdditionalApplicationsServiceTest {
             .value(DYNAMIC_LIST_ELEMENTS.get(1)).listItems(DYNAMIC_LIST_ELEMENTS).build();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(OTHER_ORDER))
-            .applicantsList(applicantsList)
-            .otherApplicant(otherApplicantName)
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .applicantsList(applicantsList)
+                .otherApplicant(otherApplicantName)
+                .build())
             .build();
 
         assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
@@ -282,13 +291,17 @@ class UploadAdditionalApplicationsServiceTest {
                 RespondentParty.builder().firstName("First").lastName("Respondent")
                     .address(Address.builder().postcode("SE1").build()).build()).build());
 
-        CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
-            .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
-            .c2Type(WITH_NOTICE)
-            .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
-            .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement, otherSupportingDocument))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
+        CaseData caseData = CaseData.builder()
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .temporaryPbaPayment(pbaPayment)
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .c2Type(WITH_NOTICE)
+                .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
+                .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement,
+                    otherSupportingDocument))
+                .temporaryPbaPayment(pbaPayment)
+                .applicantsList(applicantsList)
+                .build())
             .respondents1(respondentsInCase)
             .build();
 
@@ -327,13 +340,16 @@ class UploadAdditionalApplicationsServiceTest {
                 RespondentParty.builder().firstName("First").lastName("Respondent")
                     .address(Address.builder().postcode("SE1").build()).build()).build());
 
-        CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
-            .additionalApplicationType(List.of(C2_ORDER))
-            .c2Type(WITH_NOTICE)
-            .isC2Confidential(YesNo.YES)
-            .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
+        CaseData caseData = CaseData.builder()
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .temporaryPbaPayment(pbaPayment)
+                .additionalApplicationType(List.of(C2_ORDER))
+                .c2Type(WITH_NOTICE)
+                .isC2Confidential(YesNo.YES)
+                .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
+                .temporaryPbaPayment(pbaPayment)
+                .applicantsList(applicantsList)
+                .build())
             .respondents1(respondentsInCase)
             .localAuthorityPolicy(OrganisationPolicy.builder()
                 .orgPolicyCaseAssignedRole(CaseRole.LASOLICITOR.formattedName())
@@ -369,13 +385,16 @@ class UploadAdditionalApplicationsServiceTest {
                 RespondentParty.builder().firstName("First").lastName("Respondent")
                     .address(Address.builder().postcode("SE1").build()).build()).build());
 
-        CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
-            .additionalApplicationType(List.of(C2_ORDER))
-            .c2Type(WITH_NOTICE)
-            .isC2Confidential(YesNo.YES)
-            .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
+        CaseData caseData = CaseData.builder()
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .temporaryPbaPayment(pbaPayment)
+                .additionalApplicationType(List.of(C2_ORDER))
+                .c2Type(WITH_NOTICE)
+                .isC2Confidential(YesNo.YES)
+                .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
+                .temporaryPbaPayment(pbaPayment)
+                .applicantsList(applicantsList)
+                .build())
             .respondents1(respondentsInCase)
             .respondentPolicyData(RespondentPolicyData.builder()
                 .respondentPolicy0(OrganisationPolicy.builder()
@@ -492,13 +511,16 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
 
             CaseData caseData = CaseData.builder()
-                .additionalApplicationType(List.of(C2_ORDER))
-                .temporaryC2Document(C2DocumentBundle.builder()
-                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                    .additionalApplicationType(List.of(C2_ORDER))
+                    .temporaryC2Document(C2DocumentBundle.builder()
+                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                        .build())
                     .build())
                 .build();
 
-            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            boolean result = underTest.shouldSkipPayments(caseData, booking,
+                caseData.getUploadAdditionalApplicationsEventData().getTemporaryC2Document());
             assertThat(result).isTrue();
         }
 
@@ -509,13 +531,16 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
 
             CaseData caseData = CaseData.builder()
-                .additionalApplicationType(List.of(C2_ORDER))
-                .temporaryC2Document(C2DocumentBundle.builder()
-                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                    .additionalApplicationType(List.of(C2_ORDER))
+                    .temporaryC2Document(C2DocumentBundle.builder()
+                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                        .build())
                     .build())
                 .build();
 
-            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            boolean result = underTest.shouldSkipPayments(caseData, booking,
+                caseData.getUploadAdditionalApplicationsEventData().getTemporaryC2Document());
             assertThat(result).isFalse();
         }
 
@@ -526,13 +551,16 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
 
             CaseData caseData = CaseData.builder()
-                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
-                .temporaryC2Document(C2DocumentBundle.builder()
-                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                    .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                    .temporaryC2Document(C2DocumentBundle.builder()
+                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                        .build())
                     .build())
                 .build();
 
-            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            boolean result = underTest.shouldSkipPayments(caseData, booking,
+                caseData.getUploadAdditionalApplicationsEventData().getTemporaryC2Document());
             assertThat(result).isFalse();
         }
 
@@ -543,13 +571,17 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
 
             CaseData caseData = CaseData.builder()
-                .additionalApplicationType(List.of(C2_ORDER))
-                .temporaryC2Document(C2DocumentBundle.builder()
-                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                    .additionalApplicationType(List.of(C2_ORDER))
+                    .temporaryC2Document(C2DocumentBundle.builder()
+                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT,
+                            CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                        .build())
                     .build())
                 .build();
 
-            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            boolean result = underTest.shouldSkipPayments(caseData, booking,
+                caseData.getUploadAdditionalApplicationsEventData().getTemporaryC2Document());
             assertThat(result).isFalse();
         }
 
@@ -560,13 +592,16 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
 
             CaseData caseData = CaseData.builder()
-                .additionalApplicationType(List.of(C2_ORDER))
-                .temporaryC2Document(C2DocumentBundle.builder()
-                    .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                    .additionalApplicationType(List.of(C2_ORDER))
+                    .temporaryC2Document(C2DocumentBundle.builder()
+                        .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                        .build())
                     .build())
                 .build();
 
-            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            boolean result = underTest.shouldSkipPayments(caseData, booking,
+                caseData.getUploadAdditionalApplicationsEventData().getTemporaryC2Document());
             assertThat(result).isFalse();
         }
 
@@ -577,13 +612,16 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
 
             CaseData caseData = CaseData.builder()
-                .additionalApplicationType(List.of(OTHER_ORDER))
-                .temporaryC2Document(C2DocumentBundle.builder()
-                    .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                    .additionalApplicationType(List.of(OTHER_ORDER))
+                    .temporaryC2Document(C2DocumentBundle.builder()
+                        .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                        .build())
                     .build())
                 .build();
 
-            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            boolean result = underTest.shouldSkipPayments(caseData, booking,
+                caseData.getUploadAdditionalApplicationsEventData().getTemporaryC2Document());
             assertThat(result).isFalse();
         }
     }
@@ -646,7 +684,9 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
 
             CaseData caseData = CASE_DATA.toBuilder()
-                .isC2Confidential(YesNo.YES)
+                .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                    .isC2Confidential(YesNo.YES)
+                    .build())
                 .respondentPolicyData(RespondentPolicyData.builder()
                     .respondentPolicy0(OrganisationPolicy.builder()
                         .orgPolicyCaseAssignedRole(CaseRole.SOLICITORA.formattedName()).build())

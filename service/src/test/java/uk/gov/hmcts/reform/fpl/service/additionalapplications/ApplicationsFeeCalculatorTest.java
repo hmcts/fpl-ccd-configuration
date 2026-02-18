@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -68,8 +69,11 @@ class ApplicationsFeeCalculatorTest {
         C2DocumentBundle c2Document = buildC2Document();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(C2_ORDER))
-            .temporaryC2Document(c2Document).build();
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(c2Document)
+                .build())
+            .build();
 
         when(feeService.getFeesDataForAdditionalApplications(c2OrderFeeTypes))
             .thenReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
@@ -89,8 +93,11 @@ class ApplicationsFeeCalculatorTest {
         C2DocumentBundle c2Document = buildC2Document();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
-            .temporaryC2Document(c2Document).build();
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .temporaryC2Document(c2Document)
+                .build())
+            .build();
 
         Map<String, Object> actualData = feeCalculator.calculateFee(caseData);
 
@@ -103,9 +110,12 @@ class ApplicationsFeeCalculatorTest {
         C2DocumentBundle c2Document = buildC2Document();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
-            .temporaryOtherApplicationsBundle(OtherApplicationsBundle.builder().build())
-            .temporaryC2Document(c2Document).build();
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .temporaryOtherApplicationsBundle(OtherApplicationsBundle.builder().build())
+                .temporaryC2Document(c2Document)
+                .build())
+            .build();
 
         Map<String, Object> actualData = feeCalculator.calculateFee(caseData);
 
@@ -118,8 +128,11 @@ class ApplicationsFeeCalculatorTest {
         OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationsBundle();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(OTHER_ORDER))
-            .temporaryOtherApplicationsBundle(otherApplicationsBundle).build();
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .temporaryOtherApplicationsBundle(otherApplicationsBundle)
+                .build())
+            .build();
 
         when(feeService.getFeesDataForAdditionalApplications(otherOrderFeeTypes))
             .thenReturn(FeesData.builder().totalAmount(BigDecimal.valueOf(20)).build());
@@ -142,8 +155,11 @@ class ApplicationsFeeCalculatorTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(C2_ORDER))
-            .temporaryC2Document(c2DocumentBundle).build();
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(c2DocumentBundle)
+                .build())
+            .build();
 
         List<FeeType> feeTypes = List.of(FeeType.C2_WITHOUT_NOTICE, PARENTAL_RESPONSIBILITY_FEMALE_PARENT);
 
@@ -167,9 +183,12 @@ class ApplicationsFeeCalculatorTest {
         OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationsWithPRAndSecureAccommodation();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
-            .temporaryC2Document(c2Document)
-            .temporaryOtherApplicationsBundle(otherApplicationsBundle).build();
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .temporaryC2Document(c2Document)
+                .temporaryOtherApplicationsBundle(otherApplicationsBundle)
+                .build())
+            .build();
 
         List<FeeType> feeTypeList = List.of(C2_WITH_NOTICE, APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME,
             CHILD_ASSESSMENT_ORDER, PARENTAL_RESPONSIBILITY_FATHER, SPECIAL_GUARDIANSHIP,
@@ -194,8 +213,11 @@ class ApplicationsFeeCalculatorTest {
             .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN).build();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(OTHER_ORDER))
-            .temporaryOtherApplicationsBundle(applicationsBundle).build();
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .temporaryOtherApplicationsBundle(applicationsBundle)
+                .build())
+            .build();
 
         when(feeService.getFeesDataForAdditionalApplications(List.of(APPOINTMENT_OF_GUARDIAN)))
             .thenThrow(new FeeRegisterException(404, "message", new RuntimeException()));

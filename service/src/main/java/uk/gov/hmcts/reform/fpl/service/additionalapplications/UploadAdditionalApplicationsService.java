@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -58,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -87,7 +91,9 @@ public class UploadAdditionalApplicationsService {
     }
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
-        String applicantName = getSelectedApplicantName(caseData.getApplicantsList(), caseData.getOtherApplicant())
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
+
+        String applicantName = getSelectedApplicantName(eventData.getApplicantsList(), eventData.getOtherApplicant())
             .filter(not(String::isBlank))
             .orElseThrow(() -> new IllegalArgumentException("Applicant should not be empty"));
 
@@ -97,17 +103,17 @@ public class UploadAdditionalApplicationsService {
         List<Element<Respondent>> respondentsInCase = caseData.getAllRespondents();
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
-            .pbaPayment(updatePBAPayment(caseData.getTemporaryPbaPayment(), YES.equals(caseData.getIsCTSCUser())))
+            .pbaPayment(updatePBAPayment(eventData.getTemporaryPbaPayment(), YES.equals(caseData.getIsCTSCUser())))
             .amountToPay(caseData.getAmountToPay())
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now, DATE_TIME))
             .applicationReviewed(YesNo.NO);
 
-        List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
+        List<AdditionalApplicationType> additionalApplicationTypeList = eventData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             C2DocumentBundle c2DocumentBundle = buildC2DocumentBundle(
                 caseData, applicantName, respondentsInCase, uploadedBy, now);
-            if (YES.equals(caseData.getIsC2Confidential())) {
+            if (YES.equals(eventData.getIsC2Confidential())) {
                 additionalApplicationsBundleBuilder.c2DocumentBundleConfidential(c2DocumentBundle);
                 buildC2BundleByPolicy(caseData, c2DocumentBundle, additionalApplicationsBundleBuilder);
             } else {
@@ -171,7 +177,8 @@ public class UploadAdditionalApplicationsService {
                                                    List<Element<Respondent>> respondentsInCase,
                                                    String uploadedBy,
                                                    LocalDateTime uploadedTime) {
-        C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
+        C2DocumentBundle temporaryC2Document = eventData.getTemporaryC2Document();
 
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(caseData,
             temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
@@ -190,7 +197,7 @@ public class UploadAdditionalApplicationsService {
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-            .type(caseData.getC2Type())
+            .type(eventData.getC2Type())
             .respondents(respondentsInCase)
             .build();
     }
@@ -200,7 +207,8 @@ public class UploadAdditionalApplicationsService {
                                                                  List<Element<Respondent>> respondentsInCase,
                                                                  String uploadedBy,
                                                                  LocalDateTime uploadedTime) {
-        OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
+        OtherApplicationsBundle temporaryOtherApplicationsBundle = eventData.getTemporaryOtherApplicationsBundle();
 
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(caseData,
             temporaryOtherApplicationsBundle.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
@@ -252,13 +260,29 @@ public class UploadAdditionalApplicationsService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         String uploadedBy, LocalDateTime uploadedDateTime) {
 
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
+        final DocumentUploaderType uploaderType = manageDocumentService.getUploaderType(caseData);
+        final List<CaseRole> uploadCaseRoles = new ArrayList<>(userService.getCaseRoles(caseData.getId()));
+
         supportingEvidenceBundle.forEach(supportingEvidence -> {
             supportingEvidence.getValue().setDateTimeUploaded(uploadedDateTime);
             supportingEvidence.getValue().setUploadedBy(uploadedBy);
-            supportingEvidence.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
-            supportingEvidence.getValue().setUploaderCaseRoles(new ArrayList<>(userService
-                .getCaseRoles(caseData.getId())));
+            supportingEvidence.getValue().setUploaderType(uploaderType);
+            supportingEvidence.getValue().setUploaderCaseRoles(uploadCaseRoles);
         });
+
+        // If done with consent add the consent document to the support docs list
+        if (eventData.getC2Type() == C2ApplicationType.WITHOUT_NOTICE
+            && eventData.getC2EvidenceConsentDocument() != null) {
+            supportingEvidenceBundle.add(element(SupportingEvidenceBundle.builder()
+                .name("Evidence of consent")
+                .document(eventData.getC2EvidenceConsentDocument())
+                .dateTimeUploaded(uploadedDateTime)
+                .uploadedBy(uploadedBy)
+                .uploaderType(uploaderType)
+                .uploaderCaseRoles(uploadCaseRoles)
+                .build()));
+        }
 
         return supportingEvidenceBundle;
     }
@@ -300,8 +324,9 @@ public class UploadAdditionalApplicationsService {
     }
 
     private boolean onlyApplyingForC2(CaseData caseData) {
-        return caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)
-            && caseData.getAdditionalApplicationType().size() == 1;
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
+        return eventData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)
+            && eventData.getAdditionalApplicationType().size() == 1;
     }
 
     public boolean onlyApplyingForAnAdjournment(CaseData caseData, C2DocumentBundle temporaryC2Bundle) {

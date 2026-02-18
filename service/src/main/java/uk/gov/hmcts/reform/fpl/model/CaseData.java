@@ -19,8 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -52,7 +50,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
@@ -76,6 +73,7 @@ import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
@@ -122,7 +120,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -379,14 +376,11 @@ public class CaseData extends CaseDataParent {
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
-    private final C2DocumentBundle temporaryC2Document;
-    private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
-    private final PBAPayment temporaryPbaPayment;
+    @Temp
+    private final String amountToPay;
     private final YesNo isCTSCUser;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
-    private final DynamicList applicantsList;
-    private final String otherApplicant;
 
     private final DocumentReference redDotAssessmentForm;
     private final String caseFlagNotes;
@@ -479,15 +473,7 @@ public class CaseData extends CaseDataParent {
             .orElse(null);
     }
 
-    private final Map<String, C2ApplicationType> c2ApplicationType;
-    private final C2ApplicationType c2Type;
-    private final YesNo isC2Confidential;
     private final OrderTypeAndDocument orderTypeAndDocument;
-    private final List<AdditionalApplicationType> additionalApplicationType;
-
-    public List<AdditionalApplicationType> getAdditionalApplicationType() {
-        return defaultIfNull(additionalApplicationType, emptyList());
-    }
 
     private final FurtherDirections orderFurtherDirections;
     private final OrderExclusionClause orderExclusionClause;
@@ -703,8 +689,6 @@ public class CaseData extends CaseDataParent {
     public String getComplianceDeadline() {
         return formatLocalDateToString(getDefaultCompletionDate(), FormatStyle.LONG);
     }
-
-    private final String amountToPay;
 
     private LocalDate caseCompletionDate;
     @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
@@ -970,7 +954,6 @@ public class CaseData extends CaseDataParent {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-
     private String sendToCtsc;
     private String displayAmountToPay;
     private final String confirmChangeState;
@@ -1076,6 +1059,11 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     @Builder.Default
     private final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder().build();
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final UploadAdditionalApplicationsEventData uploadAdditionalApplicationsEventData =
+        UploadAdditionalApplicationsEventData.builder().build();
 
     @JsonUnwrapped
     @Builder.Default
