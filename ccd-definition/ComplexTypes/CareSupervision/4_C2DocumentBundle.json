@@ -195,7 +195,8 @@
     "ElementLabel": "Requested hearing to adjourn",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "label of the hearing selected in hearingList"
   },
   {
     "LiveFrom": "01/01/2017",

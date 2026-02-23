@@ -72,7 +72,7 @@
     "EventElementLabel": "Which hearing are you requesting to be adjourned?",
     "FieldDisplayOrder": "6",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "isHearingAdjournmentRequired = \"Yes\""
+    "FieldShowCondition": "temporaryC2Document.isHearingAdjournmentRequired=\"Yes\" OR temporaryC2Document.isHearingAdjournmentRequired=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",

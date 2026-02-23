@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -124,7 +125,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .uploadAdditionalApplicationsEventData(
                 UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
-                    .temporaryC2Document(createTemporaryC2Document())
+                    .temporaryC2Document(createC2EventData())
                     .temporaryPbaPayment(temporaryPbaPayment)
                     .applicantsList(createApplicantsDynamicList(APPLICANT))
                     .c2Type(WITHOUT_NOTICE)
@@ -174,7 +175,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(AdditionalApplicationType.OTHER_ORDER))
                     .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
-                    .temporaryC2Document(createTemporaryC2Document())
+                    .temporaryC2Document(createC2EventData())
                     .temporaryPbaPayment(temporaryPbaPayment)
                     .applicantsList(createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE))
                     .otherApplicant(OTHER_APPLICANT_NAME)
@@ -209,7 +210,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .additionalApplicationType(
                     List.of(AdditionalApplicationType.C2_ORDER, AdditionalApplicationType.OTHER_ORDER)
                 )
-                .temporaryC2Document(createTemporaryC2Document())
+                .temporaryC2Document(createC2EventData())
                 .c2Type(WITHOUT_NOTICE)
                 .c2EvidenceConsentDocument(EVIDENCE_DOCUMENT)
                 .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
@@ -240,7 +241,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                 .applicantsList(createApplicantsDynamicList(APPLICANT))
                 .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
-                .temporaryC2Document(createTemporaryC2Document())
+                .temporaryC2Document(createC2EventData())
                 .build()
             ).build();
 
@@ -267,7 +268,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @Test
     void shouldRemoveTransientFieldsWhenNoLongerNeeded() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
+            .data(Map.of("temporaryC2Document", createC2EventData(),
                 "c2Type", WITHOUT_NOTICE,
                 "applicantsList", createApplicantsDynamicList(APPLICANT),
                 "additionalApplicationType", List.of("C2_ORDER"),
@@ -308,7 +309,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .c2DocumentBundle(wrapElements(firstBundleAdded, secondBundleAdded, thirdBundleAdded))
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                 .applicantsList(createApplicantsDynamicList(APPLICANT))
-                .temporaryC2Document(createTemporaryC2Document())
+                .temporaryC2Document(createC2EventData())
                 .build())
             .build();
 
@@ -340,7 +341,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .c2DocumentBundle(wrapElements(firstBundleAdded))
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                 .applicantsList(createApplicantsDynamicList(APPLICANT))
-                .temporaryC2Document(createTemporaryC2Document().toBuilder()
+                .temporaryC2Document(createC2EventData().toBuilder()
                     .draftOrdersBundle(List.of()) // C2 app without draft order
                     .build())
                 .build())
@@ -367,7 +368,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                 .isC2Confidential(YesNo.YES)
                 .applicantsList(createApplicantsDynamicList(APPLICANT))
-                .temporaryC2Document(createTemporaryC2Document())
+                .temporaryC2Document(createC2EventData())
                 .build())
             .c2DocumentBundle(wrapElements(firstBundleAdded))
             .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
@@ -489,8 +490,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .build();
     }
 
-    private C2DocumentBundle createTemporaryC2Document() {
-        return C2DocumentBundle.builder()
+    private C2AdditionalApplicationEventData createC2EventData() {
+        return C2AdditionalApplicationEventData.builder()
             .type(WITH_NOTICE)
             .document(UPLOADED_DOCUMENT)
             .draftOrdersBundle(createDraftOrderBundle())

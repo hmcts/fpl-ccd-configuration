@@ -191,8 +191,8 @@ public class UploadAdditionalApplicationsService {
             getSupplementsBundle(temporaryC2Document.getSupplementsBundle(),
                 uploadedBy, uploadedTime);
 
-        C2DocumentBundle.C2DocumentBundleBuilder<?,?> c2DocumentBundleBuilder =
-            ((C2DocumentBundle) temporaryC2Document).toBuilder()
+        C2DocumentBundle.C2DocumentBundleBuilder<?, ?> c2DocumentBundleBuilder =
+            temporaryC2Document.toC2DocumentBundle().toBuilder()
                 .id(UUID.randomUUID())
                 .applicantName(applicantName)
                 .author(uploadedBy)
@@ -206,8 +206,6 @@ public class UploadAdditionalApplicationsService {
         if (YES.equals(temporaryC2Document.getIsSameDayUrgencyRequired())) {
             c2DocumentBundleBuilder.urgencyTimeFrameType(UrgencyTimeFrameType.SAME_DAY);
         }
-
-
 
         return c2DocumentBundleBuilder.build();
     }
