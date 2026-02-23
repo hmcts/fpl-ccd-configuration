@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.model.event;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
@@ -27,7 +29,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UploadAdditionalApplicationsEventData {
     @Temp
-    C2DocumentBundle temporaryC2Document;
+    C2AdditionalApplicationEventData temporaryC2Document;
     @Temp
     C2ApplicationRouteType c2ApplicationRoute;
     @Temp

@@ -3,8 +3,9 @@ package uk.gov.hmcts.reform.fpl.model.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
@@ -14,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 
@@ -28,7 +29,10 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
-@Builder(toBuilder = true)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = C2AdditionalApplicationEventData.class)
+})
+@SuperBuilder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"supportingEvidenceLA", "supportingEvidenceNC"})
@@ -54,7 +58,6 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String applicantName;
     private final List<Element<Respondent>> respondents;
     private final String requestedHearingToAdjourn;
-    private final DynamicList hearingList;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);

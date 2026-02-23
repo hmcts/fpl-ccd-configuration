@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -101,9 +102,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         if (caseData.getUploadAdditionalApplicationsEventData().getAdditionalApplicationType()
             .contains(AdditionalApplicationType.C2_ORDER)) {
             // Initialise the C2 document bundle so we can have a dynamic list present
-            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, C2DocumentBundle.builder()
-                .hearingList(caseData.buildDynamicHearingList())
-                .build());
+            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT,
+                C2AdditionalApplicationEventData.builder()
+                    .hearingList(caseData.buildDynamicHearingList())
+                    .build());
         }
         return respond(caseDetails);
     }
@@ -116,7 +118,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         boolean skipPayment = false;
         if (!isNull(eventData.getTemporaryC2Document())) {
-            C2DocumentBundle temporaryC2Document = eventData.getTemporaryC2Document();
+            C2AdditionalApplicationEventData temporaryC2Document =
+                eventData.getTemporaryC2Document();
             temporaryC2Document.setType(eventData.getC2Type());
 
             if (!isNull(temporaryC2Document.getC2AdditionalOrdersRequested())

@@ -7,7 +7,8 @@
     "ListElementCode": "document",
     "EventElementLabel": "Upload C2 application",
     "FieldDisplayOrder": "1",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "c2ApplicationRoute=\"PAPER_FORM\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -18,7 +19,7 @@
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\" AND c2ApplicationRoute=\"PAPER_FORM\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,7 +30,7 @@
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\" AND c2ApplicationRoute=\"PAPER_FORM\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -39,28 +40,28 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to this case"
+    "EventElementLabel": "Tick to confirm this document is related to this case",
+    "FieldShowCondition": "c2ApplicationRoute=\"PAPER_FORM\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "c2AdditionalOrdersRequested",
-    "EventElementLabel": "Are you using the C2 to apply for any of the below?",
+    "ListElementCode": "isSameDayUrgencyRequired",
+    "EventElementLabel": "Is there any reason, such as a safeguarding risk or other urgent issue, that requires your application to be considered by a judge on the same day ?",
     "FieldDisplayOrder": "4",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "parentalResponsibilityType",
-    "EventElementLabel": "Who's seeking parental responsibility?",
+    "ListElementCode": "isHearingAdjournmentRequired",
+    "EventElementLabel": "Are you requesting an adjournment for a scheduled hearing?",
     "FieldDisplayOrder": "5",
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "temporaryC2Document.c2AdditionalOrdersRequested CONTAINS \"PARENTAL_RESPONSIBILITY\""
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -71,7 +72,7 @@
     "EventElementLabel": "Which hearing are you requesting to be adjourned?",
     "FieldDisplayOrder": "6",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "temporaryC2Document.c2AdditionalOrdersRequested CONTAINS \"REQUESTING_ADJOURNMENT\""
+    "FieldShowCondition": "isHearingAdjournmentRequired = \"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -82,15 +83,16 @@
     "EventElementLabel": "Hearing requested to adjourn",
     "FieldDisplayOrder": "7",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "temporaryC2Document=\"DO NOT SHOW\""
+    "FieldShowCondition": "temporaryC2Document=\"DO NOT SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "urgencyTimeFrameType",
-    "EventElementLabel": "Please state how soon you want the judge to consider your application?",
+    "ListElementCode": "canBeConsideredAtNextHearing",
+    "EventElementLabel": "Can your application be considered at the next scheduled hearing?",
     "FieldDisplayOrder": "8",
     "DisplayContext": "OPTIONAL"
   },

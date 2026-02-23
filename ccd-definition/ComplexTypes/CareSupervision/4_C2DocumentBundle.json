@@ -154,7 +154,8 @@
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "C2AdditionalOrdersRequested",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Most of the options are deprecated - DFPL-2841, REQUESTING_ADJOURNMENT is the only valid option remaining"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -164,7 +165,18 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ParentalResponsibilityType",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Deprecated - DFPL-2841"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "isHearingAdjournmentRequired",
+    "ElementLabel": "Are you requesting an adjournment for a scheduled hearing?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -173,7 +185,8 @@
     "ElementLabel": "Which hearing?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Temporary field"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -187,12 +200,33 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "isSameDayUrgencyRequired",
+    "ElementLabel": "Is there any reason, such as a safeguarding risk or other urgent issue, that requires your application to be considered by a judge on the same day ?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "urgencyTimeFrameType",
     "ElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "UrgencyTimeFrameType",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Most of the options are deprecated - DFPL-2841, SAME_DAY is the only valid option remaining"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "canBeConsideredAtNextHearing",
+    "ElementLabel": "Can your application be considered at the next scheduled hearing?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -254,6 +288,7 @@
     "FieldTypeParameter": "DocumentAcknowledge",
     "ElementLabel": "Tick to confirm this document is related to this case",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Temporary field"
   }
 ]

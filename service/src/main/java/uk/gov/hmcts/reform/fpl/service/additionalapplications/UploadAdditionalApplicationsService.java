@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
@@ -178,7 +180,8 @@ public class UploadAdditionalApplicationsService {
                                                    String uploadedBy,
                                                    LocalDateTime uploadedTime) {
         UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
-        C2DocumentBundle temporaryC2Document = eventData.getTemporaryC2Document();
+        C2AdditionalApplicationEventData temporaryC2Document =
+            eventData.getTemporaryC2Document();
 
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(caseData,
             temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
@@ -188,18 +191,25 @@ public class UploadAdditionalApplicationsService {
             getSupplementsBundle(temporaryC2Document.getSupplementsBundle(),
                 uploadedBy, uploadedTime);
 
+        C2DocumentBundle.C2DocumentBundleBuilder<?,?> c2DocumentBundleBuilder =
+            ((C2DocumentBundle) temporaryC2Document).toBuilder()
+                .id(UUID.randomUUID())
+                .applicantName(applicantName)
+                .author(uploadedBy)
+                .document(temporaryC2Document.getDocument())
+                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
+                .supplementsBundle(updatedSupplementsBundle)
+                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+                .type(eventData.getC2Type())
+                .respondents(respondentsInCase);
 
-        return temporaryC2Document.toBuilder()
-            .id(UUID.randomUUID())
-            .applicantName(applicantName)
-            .author(uploadedBy)
-            .document(temporaryC2Document.getDocument())
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
-            .supplementsBundle(updatedSupplementsBundle)
-            .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-            .type(eventData.getC2Type())
-            .respondents(respondentsInCase)
-            .build();
+        if (YES.equals(temporaryC2Document.getIsSameDayUrgencyRequired())) {
+            c2DocumentBundleBuilder.urgencyTimeFrameType(UrgencyTimeFrameType.SAME_DAY);
+        }
+
+
+
+        return c2DocumentBundleBuilder.build();
     }
 
     private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
