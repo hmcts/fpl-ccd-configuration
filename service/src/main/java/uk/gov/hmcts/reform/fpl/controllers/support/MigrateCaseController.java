@@ -31,7 +31,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-log", this::runLog,
         "DFPL-3046", this::run3046,
         "DFPL-3048", this::run3048,
-        "DFPL-3045", this::run3045
+        "DFPL-3047", this::run3047
     );
 
     @PostMapping("/about-to-submit")
@@ -81,14 +81,14 @@ public class MigrateCaseController extends CallbackController {
             caseData.getHearing().toBuilder().hearingUrgencyDetails("***").build());
     }
 
-    private void run3045(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3045";
-        final Long expectedCaseId = 1745483577456938L;
-        final String orgId = "NOQ0ZJ1";
+    private void run3047(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3047";
+        final Long expectedCaseId = 1757072393794849L;
+        final String orgId = "CVPRECR";
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
         caseDetails.getData().putAll(migrateCaseService
-            .updateOutsourcingPolicy(getCaseData(caseDetails), orgId, null));
+            .updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 0));
     }
 }
