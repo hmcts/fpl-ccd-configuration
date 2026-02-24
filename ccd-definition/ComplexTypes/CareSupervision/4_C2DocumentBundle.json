@@ -226,8 +226,7 @@
     "ElementLabel": "Can your application be considered at the next scheduled hearing?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Temporary field"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
