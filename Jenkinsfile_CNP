@@ -28,7 +28,8 @@ def integrationTestSecrets = [
     secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
     secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
+    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
+    secret('fpl-case-service-idam-client-secret', 'IDAM_CLIENT_SECRET')
   ]
 ]
 
