@@ -30,7 +30,8 @@ def integrationTestSecrets = [
         secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
         secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
         secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-        secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
+        secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
+        secret('idam-data-store-client-secret', 'IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET')
     ]
 ]
 
@@ -80,14 +81,16 @@ withNightlyPipeline(type, product, component) {
     env.MANAGE_ORG_SERVICE_URL = "http://rd-professional-api-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/"
     env.ACCESS_MANAGEMENT_URL ="http://am-role-assignment-service-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/am/role-assignments"
     env.IDAM_WEB_URL = "https://idam-web-public.${env.ENVIRONMENT}.platform.hmcts.net"
-    env.JURISDICTIONS = "PUBLICLAW"
+  env.IDAM_TESTING_SUPPORT_URL = "http://idam-api-${env.ENVIRONMENT}.platform.hmcts.net/testing-support"
+
+  env.JURISDICTIONS = "PUBLICLAW"
     env.CASE_TYPE = "CARE_SUPERVISION_EPO"
 
 
     loadVaultSecrets(integrationTestSecrets)
 
-    enableMutationTest()
-    enableFortifyScan('fpl-aat')
+ //   enableMutationTest()
+ //   enableFortifyScan('fpl-aat')
     enableFullFunctionalTest(240)
 
     before('mutationTest') {

@@ -1,37 +1,30 @@
 import {systemUpdateUser} from '../settings/user-credentials';
 import {urlConfig} from '../settings/urls';
-import {ServiceAuthUtils} from "@hmcts/playwright-common";
+import {testConfig} from '../settings/test-config';
+import {IdamUtils} from "@hmcts/playwright-common";
+import {IdamTokenParams} from "@hmcts/playwright-common/dist/utils/idam.utils";
 import {APIRequestContext, request} from "@playwright/test";
 import axios from 'axios';
-import * as qs from 'qs';
 import lodash from 'lodash';
-import {ServiceTokenParams} from "@hmcts/playwright-common/dist/utils/service-auth.utils";
+
 
 export const  getAccessToken = async ({user}: { user: { email: string; password: string } }) => {
-    try {
-        const axiosConfig = {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            timeout: 30000,  // - 30 second timeout
-        };
-        const url = `${urlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
-        return await axios.post(url, qs.stringify(axiosConfig));
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error(error.response?.status, error.response?.data);
-        } else {
-            console.error(error);
-        }
-        throw error;
-    }
+
+const idamTokenParams: IdamTokenParams = {
+    clientId: "fpl_case_service",
+    clientSecret: testConfig.idamClientSecret,
+    grantType: "password",
+    scope: "openid profile roles",
+    username: user.email,
+    password: user.password
+
+}
+    const idamUtils = new IdamUtils();
+    const token = await idamUtils.generateIdamToken(idamTokenParams);
+    return token;
+
 };
 
-export const  getServiceAuthToken = async () => {
-   const params: ServiceTokenParams = { microservice: 'fpl_case_service'}
-    const serviceAuth = new ServiceAuthUtils();
-    return serviceAuth.retrieveToken(params);
-};
 
 export const createCase = async (caseName = 'e2e UI Test', user: { email: string, password: string }) => {
 
@@ -47,13 +40,17 @@ export const createCase = async (caseName = 'e2e UI Test', user: { email: string
     }
 }
 
-export const updateCase = async (caseName = 'e2e Test', caseID: string, caseDataJson: any) => {
-    //This can be moved to before test hook to as same document URL will be used for all test data
-    //replace the documents placeholder with document url
+export async function getDocParameter() {
     let docDetail = await apiRequest(urlConfig.serviceUrl + '/testing-support/test-document', systemUpdateUser);
-    let docParameter = {
+    return {
         TEST_DOCUMENT_URL: docDetail.document_url,
         TEST_DOCUMENT_BINARY_URL: docDetail.document_binary_url
+    };
+}
+export const updateCase = async (caseName = 'e2e Test', caseID: string, caseDataJson: any) => {
+    let docParameter = {
+        TEST_DOCUMENT_URL: process.env.TEST_DOCUMENT_URL,
+        TEST_DOCUMENT_BINARY_URL: process.env.TEST_DOCUMENT_BINARY_URL
 
     };
     const dateTime = new Date().toISOString();
@@ -75,22 +72,22 @@ export const updateCase = async (caseName = 'e2e Test', caseID: string, caseData
     }
 }
 
-export const apiRequest = async (postURL: string, authUser: any, method: string = 'get', data: any = {}) => {
-    const systemUserAuthToken = await getAccessToken({user: authUser});
+export const apiRequest = async (postURL: string, user: { email: string }, method: string = 'get', data: any = {}) => {
+    const envKey = user.email.toUpperCase().split('@')[0] + 'AUTH';
+    const accessToken = process.env[envKey];
     const requestConfig = {
-        method: method,
+        method,
         url: postURL,
-        data: data,
+        data,
         headers: {
-            'Authorization': `Bearer ${systemUserAuthToken?.data.access_token}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         },
-        timeout: 30000,  // - 30 second timeout
+        timeout: 30000,
     };
     try {
-        return axios.request(requestConfig).then((res) => {
-            if(res.status==200)return res.data;
-        });
+        const res = await axios.request(requestConfig);
+        if (res.status === 200) return res.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error(error.response?.status, error.response?.data);
@@ -98,10 +95,9 @@ export const apiRequest = async (postURL: string, authUser: any, method: string 
             console.error(error);
         }
         throw error;
-
     }
+};
 
-}
 
 export const giveAccessToCase = async (caseID: string,user: {email: string ,password: string},role: string ) => {
     const data = JSON.stringify({
