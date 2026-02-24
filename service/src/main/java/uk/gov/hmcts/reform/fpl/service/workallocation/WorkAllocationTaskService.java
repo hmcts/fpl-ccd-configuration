@@ -28,7 +28,7 @@ public class WorkAllocationTaskService {
             caseDetails -> Map.of(WORK_ALLOCATION_DUMMY_CASE_FIELD, taskType));
     }
 
-    public void setTaskUrgency(CaseDetailsMap caseDetailsMap, WorkAllocationTaskUrgency taskUrgency) {
+    public void setTaskUrgency(Map<String, Object> caseDetailsMap, WorkAllocationTaskUrgency taskUrgency) {
         caseDetailsMap.put("waTaskUrgencyLevel", taskUrgency);
     }
 

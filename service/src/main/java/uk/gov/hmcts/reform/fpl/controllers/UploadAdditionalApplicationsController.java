@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final UserService userService;
     private final ManageDocumentService manageDocumentService;
     private final PbaNumberService pbaNumberService;
+    private final WorkAllocationTaskService workAllocationTaskService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -226,6 +228,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().put("c2DocumentBundle", uploadAdditionalApplicationsService
             .sortOldC2DocumentCollection(oldC2DocumentCollection));
+
+        workAllocationTaskService.setTaskUrgency(caseDetails.getData(),
+            uploadAdditionalApplicationsService.getBundleUrgency(additionalApplicationsBundle));
 
         removeTemporaryFields(caseDetails, UploadAdditionalApplicationsEventData.class);
         removeTemporaryFields(caseDetails, AMOUNT_TO_PAY, IS_CTSC_USER, SKIP_PAYMENT_PAGE);

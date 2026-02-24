@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -377,5 +378,13 @@ public class UploadAdditionalApplicationsService {
                 .build();
         }
         return pbaPayment;
+    }
+
+    public WorkAllocationTaskUrgency getBundleUrgency(AdditionalApplicationsBundle bundle) {
+        if (bundle.getC2DocumentBundle() != null
+            && UrgencyTimeFrameType.SAME_DAY.equals(bundle.getC2DocumentBundle().getUrgencyTimeFrameType())) {
+            return WorkAllocationTaskUrgency.URGENT;
+        }
+        return WorkAllocationTaskUrgency.HIGH;
     }
 }
