@@ -19,8 +19,6 @@ public class C2AdditionalApplicationEventData extends C2DocumentBundle {
     @Temp
     private YesNo isSameDayUrgencyRequired;
     @Temp
-    private YesNo canBeConsideredAtNextHearing;
-    @Temp
     private DynamicList hearingList;
 
     @JsonIgnore

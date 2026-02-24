@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -58,6 +59,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String applicantName;
     private final List<Element<Respondent>> respondents;
     private final String requestedHearingToAdjourn;
+    private YesNo canBeConsideredAtNextHearing;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
