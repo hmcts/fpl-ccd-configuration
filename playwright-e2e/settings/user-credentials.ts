@@ -94,3 +94,8 @@ export const authToken={
     cafcassAuth:process.env.CAFCASSAUTH || '',
     systemAuth:process.env.SYSUSERAUTH || ''
 };
+export const UITestUserAuthToken={
+    swanseaLAAuthToken:process.env.SWANSEALAAUTH || '',
+    systemAuthToken:process.env.SYSUSERAUTH || '',
+    privateSolicitorOrgAuthToken:process.env.PRIVATE_SOLICITOR_ORG_AUTH_TOKEN || ''
+}
