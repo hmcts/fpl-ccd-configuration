@@ -1,8 +1,9 @@
 import {systemUpdateUser} from '../settings/user-credentials';
 import {urlConfig} from '../settings/urls';
 import {testConfig} from '../settings/test-config';
-import {IdamUtils} from "@hmcts/playwright-common";
 import {IdamTokenParams} from "@hmcts/playwright-common/dist/utils/idam.utils";
+import {IdamUtils, withRetry} from "@hmcts/playwright-common";
+import {isRetryableError} from "@hmcts/playwright-common/dist/utils/retry.utils.js"
 import {APIRequestContext, request} from "@playwright/test";
 import axios from 'axios';
 import lodash from 'lodash';
@@ -20,8 +21,13 @@ const idamTokenParams: IdamTokenParams = {
 
 }
     const idamUtils = new IdamUtils();
-    const token = await idamUtils.generateIdamToken(idamTokenParams);
-    return token;
+    try {
+        const token = await idamUtils.generateIdamToken(idamTokenParams);
+        return token;
+    } catch (error) {
+        console.error('Error generating IDAM token:', error);
+        throw error;
+    }
 
 };
 
@@ -71,10 +77,17 @@ export const updateCase = async (caseName = 'e2e Test', caseID: string, caseData
         return false;
     }
 }
-
-export const apiRequest = async (postURL: string, user: { email: string }, method: string = 'get', data: any = {}) => {
+const fetchAccessToken = async (user: { email: string; password: string; }) => {
     const envKey = user.email.toUpperCase().split('@')[0] + 'AUTH';
     const accessToken = process.env[envKey];
+    if (accessToken === undefined) {
+        process.env[envKey] = await getAccessToken({user});
+    }
+    return accessToken;
+}
+const apiRequest = async (postURL: string, user: { email: string,password:string }, method: string = 'get', data: any = {}) => {
+
+    const accessToken = await fetchAccessToken(user);
     const requestConfig = {
         method,
         url: postURL,
@@ -85,9 +98,17 @@ export const apiRequest = async (postURL: string, user: { email: string }, metho
         },
         timeout: 30000,
     };
+    const exec = async()=> {
+        return await axios.request({...requestConfig});
+    };
     try {
-        const res = await axios.request(requestConfig);
-        if (res.status === 200) return res.data;
+
+        let attempts =2;
+        const response = attempts > 1
+            ? await withRetry(exec, attempts, 300, 2000, 15000, isRetryableError)
+            : await exec();
+      //  const res = await axios.request(requestConfig);
+        if (response.status === 200) return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error(error.response?.status, error.response?.data);
