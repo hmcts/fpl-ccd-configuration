@@ -387,4 +387,14 @@ public class UploadAdditionalApplicationsService {
         }
         return WorkAllocationTaskUrgency.HIGH;
     }
+
+    public List<String> validateC2Bundle(UploadAdditionalApplicationsEventData eventData) {
+        List<String> errors = new ArrayList<>();
+
+        if (isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle()) && !userService.isCtscUser()) {
+            errors.add("Please upload a draft order to proceed");
+        }
+
+        return errors;
+    }
 }

@@ -124,6 +124,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 eventData.getTemporaryC2Document();
             temporaryC2Document.setType(eventData.getC2Type());
 
+            List<String> errors = uploadAdditionalApplicationsService.validateC2Bundle(eventData);
+            // Draft order is mandatory to non-CTSC user
+            if (!errors.isEmpty()) {
+                return respond(caseDetails, errors);
+            }
+
             if (!isNull(temporaryC2Document.getC2AdditionalOrdersRequested())
                 && temporaryC2Document.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT)) {
                 // Get the selected hearing from the dynamic list + populate the 'selected hearing' field
