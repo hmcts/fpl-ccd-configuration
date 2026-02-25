@@ -206,6 +206,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @Test
     void shouldAddErrorOnFeeRegisterException() {
+        given(userService.isCtscUser()).willReturn(true);
         given(feeService.getFeesDataForAdditionalApplications(any()))
             .willThrow((new FeeRegisterException(1, "", new Throwable())));
 
@@ -228,6 +229,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         void beforeEach() {
             given(feeService.getFeesDataForAdditionalApplications(any()))
                 .willReturn(FeesData.builder().totalAmount(BigDecimal.ONE).build());
+            given(userService.isCtscUser()).willReturn(true);
         }
 
         @Test
@@ -394,4 +396,22 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     }
 
+    @Test
+    void shouReturnErrorWhenNoC2DraftOrderUploadedAndNonCTSCUser() {
+        given(userService.isCtscUser()).willReturn(false);
+
+        C2AdditionalApplicationEventData temporaryC2Document = C2AdditionalApplicationEventData.builder()
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .temporaryC2Document(temporaryC2Document)
+                .c2Type(WITH_NOTICE)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "populate-data");
+
+        assertThat(response.getErrors()).contains("Please upload a draft order to proceed");
+    }
 }

@@ -718,6 +718,31 @@ class UploadAdditionalApplicationsServiceTest {
         }
     }
 
+    @Test
+    public void shouldNotReturnErrorIfCTSCUserAndNoC2DraftOrdersUploaded() {
+        given(user.isCtscUser()).willReturn(true);
+        UploadAdditionalApplicationsEventData eventData = UploadAdditionalApplicationsEventData.builder()
+            .temporaryC2Document(C2AdditionalApplicationEventData.builder().build())
+            .build();
+
+        List<String> errors = underTest.validateC2Bundle(eventData);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnErrorIfNotCTSCUserAndNoC2DraftOrdersUploaded() {
+        given(user.isCtscUser()).willReturn(false);
+
+        UploadAdditionalApplicationsEventData eventData = UploadAdditionalApplicationsEventData.builder()
+            .temporaryC2Document(C2AdditionalApplicationEventData.builder().build())
+            .build();
+
+        List<String> errors = underTest.validateC2Bundle(eventData);
+
+        assertThat(errors).contains("Please upload a draft order to proceed");
+    }
+
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
         assertThat(actualC2Bundle.getId()).isNotNull();
