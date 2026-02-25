@@ -126,7 +126,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
             List<String> errors = uploadAdditionalApplicationsService.validateC2Bundle(eventData);
             // Draft order is mandatory to non-CTSC user
-            if (!errors.isEmpty()) {
+            if (!isEmpty(errors)) {
                 return respond(caseDetails, errors);
             }
 
