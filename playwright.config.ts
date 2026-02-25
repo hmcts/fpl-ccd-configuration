@@ -62,6 +62,7 @@ export default defineConfig({
         },
         {
             ...ProjectsConfig.firefox,
+            dependencies: ['GlobalSetup'],
             grep: /@xbrowser/
         },
         {

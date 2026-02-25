@@ -6,7 +6,7 @@ setup('access Token', async () => {
     try {
         if(!process.env.CAFCASSAUTH) {
             const cafcassAuthToken = await getAccessToken({user: cafcassAPIUser});
-            process.env.CAFCASSAUTH = cafcassAuthToken?.data.access_token;
+            process.env.CAFCASSAUTH = cafcassAuthToken;
         }
     } catch (error) {
         console.error('Error during cafcassUser auth token:', error);
@@ -16,7 +16,7 @@ setup('access Token', async () => {
         if (!process.env.SYSUSERAUTH) {
 
         const systemUserAuthToken = await getAccessToken({user: systemUpdateUser});
-        process.env.SYSUSERAUTH = systemUserAuthToken?.data.access_token;
+        process.env.SYSUSERAUTH = systemUserAuthToken;
     }
     }
     catch (error) {
