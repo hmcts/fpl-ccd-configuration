@@ -175,17 +175,30 @@ def deployWADmns() {
     env.ENABLE_WA = false
   }
 }
-
-def archiveApiTestResult() {
+def archiveTestResult(reportDir, reportFiles, reportName) {
   publishHTML([
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "test-results/functional",
-          reportFiles          : 'index.html',
-          reportName           : 'API Test Report'
+    allowMissing         : true,
+    alwaysLinkToLastBuild: true,
+    keepAll              : true,
+    reportDir            : reportDir,
+    reportFiles          : reportFiles,
+    reportName           : reportName
   ])
-  steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: "${reportDir}/**/*"
+}
+def setupUITestEnvVariablesForPreview() {
+  env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+  env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+  env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+  env.MOCKED_PAYMENTS = false
+  env.TEST_RETRIES = 1
+}
+def installYarnDependenciesIfNeeded(yarnBuilder) {
+    if (!fileExists('node_modules')){
+      yarnBuilder.yarn('yarn-update')
+      yarnBuilder.yarn('install-dependencies')
+  }
+
 }
 
 // Vars for Kubernetes
@@ -249,32 +262,19 @@ withPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest:preview'){
-      yarnBuilder.yarn('yarn-update')
-      yarnBuilder.yarn('install-dependencies')
-      env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-      env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.MOCKED_PAYMENTS = false
-      env.TEST_RETRIES = 1
-
+    installYarnDependenciesIfNeeded(yarnBuilder)
+      setupUITestEnvVariablesForPreview()
   }
   afterAlways('fullFunctionalTest:preview') {
-    archiveApiTestResult()
+    archiveTestResult("test-results/functional", "index.html", "API Test Report")
     stage('UIFunctionalTests') {
       try {
           yarnBuilder.yarn('test:functional-nightly-preview')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
-        publishHTML([
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "test-results/functional",
-          reportFiles          : 'index.html',
-          reportName           : 'UI Functional Test Report'
-        ])
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functional/**/*'
+        archiveTestResult("test-results/functional", "index.html", "UI Functional Test Report")
+
       }
     }
       }
@@ -294,15 +294,12 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('preview', '0')
 
     deployWADmns()
-
-    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.MOCKED_PAYMENTS = false
-    env.TEST_RETRIES = 3
+    installYarnDependenciesIfNeeded(yarnBuilder)
+    setupUITestEnvVariablesForPreview()
   }
 
   afterAlways('smoketest:preview') {
+    archiveTestResult("test-results/functional", "index.html", "Smoke Test Report")
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
@@ -317,6 +314,7 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('smoketest:aat') {
+    archiveTestResult("test-results/functional", "index.html", "Smoke Test Report")
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
@@ -336,16 +334,14 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
+   installYarnDependenciesIfNeeded(yarnBuilder)
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TEST_RETRIES = 3
   }
 
   before('functionalTest:aat') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
+    installYarnDependenciesIfNeeded(yarnBuilder)
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
     env.TEST_RETRIES = 3
@@ -356,11 +352,11 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('functionalTest:preview') {
-    archiveApiTestResult()
+    archiveTestResult("test-results/functional", "index.html", "API Test Report")
   }
 
   afterAlways('functionalTest:aat') {
-    archiveApiTestResult()
+    archiveTestResult("test-results/functional", "index.html", "API Test Report")
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
