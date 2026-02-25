@@ -77,11 +77,12 @@ export const updateCase = async (caseName = 'e2e Test', caseID: string, caseData
         return false;
     }
 }
-const fetchAccessToken = async (user: { email: string; password: string; }) => {
+export const fetchAccessToken = async (user: { email: string; password: string; }) => {
     const envKey = user.email.toUpperCase().split('@')[0] + 'AUTH';
-    const accessToken = process.env[envKey];
+    let accessToken = process.env[envKey];
     if (accessToken === undefined) {
-        process.env[envKey] = await getAccessToken({user});
+        accessToken = await getAccessToken({user});
+        process.env[envKey] = accessToken;
     }
     return accessToken;
 }

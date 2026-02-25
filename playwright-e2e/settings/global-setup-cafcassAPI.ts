@@ -1,26 +1,37 @@
 import { test as setup } from '@playwright/test';
 import {getAccessToken} from "../utils/api-helper";
-import {cafcassAPIUser, systemUpdateUser} from "./user-credentials";
+import {cafcassAPIUser, systemUpdateUser,newSwanseaLocalAuthorityUserOne} from "./user-credentials";
+import { getDocParameter } from '../utils/api-helper';
+
+const userMap: Record<string, any> = {
+    [newSwanseaLocalAuthorityUserOne.email]: newSwanseaLocalAuthorityUserOne,
+    [systemUpdateUser.email]: systemUpdateUser,
+    [cafcassAPIUser.email]: cafcassAPIUser,
+};
+setup.describe.configure({ mode: 'serial' });
 
 setup('access Token', async () => {
-    try {
-        if(!process.env.CAFCASSAUTH) {
-            const cafcassAuthToken = await getAccessToken({user: cafcassAPIUser});
-            process.env.CAFCASSAUTH = cafcassAuthToken;
+    for (const email in userMap) {
+        const envKey = email.toUpperCase().split('@')[0] + 'AUTH';
+        if (!process.env[envKey]) {
+            try {
+                process.env[envKey] = await getAccessToken({ user: userMap[email] });
+            } catch (error) {
+                console.error(`Error during auth token for ${email}:`, error);
+                throw error;
+            }
         }
-    } catch (error) {
-        console.error('Error during cafcassUser auth token:', error);
-        throw error;
     }
+});
+setup('document parameters', async () => {
     try {
-        if (!process.env.SYSUSERAUTH) {
 
-        const systemUserAuthToken = await getAccessToken({user: systemUpdateUser});
-        process.env.SYSUSERAUTH = systemUserAuthToken;
-    }
-    }
-    catch (error) {
-        console.error('Error during systemUser auth token:', error);
+        const testDoc = await getDocParameter();
+        process.env.TEST_DOCUMENT_URL = testDoc.TEST_DOCUMENT_URL;
+        process.env.TEST_DOCUMENT_BINARY_URL = testDoc.TEST_DOCUMENT_BINARY_URL;
+    } catch (error) {
+        console.error('Error fetching document parameters:', error);
         throw error;
     }
 });
+
