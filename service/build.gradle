@@ -131,8 +131,7 @@ tasks.register('lintUserInterfaceTests', Exec) {
 
 tasks.register('runSmokeTests', Exec) {
   description = 'Runs smoke tests.'
-  group = 'Verification'
-  commandLine '/usr/bin/yarn',  'test:smoke'
+  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
 tasks.register('runApiTests', Exec) {
@@ -202,7 +201,6 @@ tasks.register('smoke', Test) {
   classpath = sourceSets.functionalTest.runtimeClasspath
   include "uk/gov/hmcts/reform/fpl/smoke/**"
   finalizedBy aggregate
-  dependsOn(inStrictOrder(runSmokeTests))
 }
 
 tasks.register('runCodeceptSmokeTest', Test) {
