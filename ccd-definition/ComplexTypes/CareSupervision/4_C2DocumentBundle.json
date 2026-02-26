@@ -172,11 +172,10 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "ListElementCode": "isHearingAdjournmentRequired",
-    "ElementLabel": "Are you requesting an adjournment for a scheduled hearing?",
+    "ElementLabel": "Adjournment requested?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Temporary field"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -192,7 +191,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "ListElementCode": "requestedHearingToAdjourn",
-    "ElementLabel": "Requested hearing to adjourn",
+    "ElementLabel": "Hearing to be adjourned",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N",
@@ -201,12 +200,11 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "isSameDayUrgencyRequired",
-    "ElementLabel": "Is there any reason, such as a safeguarding risk or other urgent issue, that requires your application to be considered by a judge on the same day ?",
+    "ListElementCode": "hasSafeguardingRisk",
+    "ElementLabel": "Safeguarding risk?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Temporary field"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -223,7 +221,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "ListElementCode": "canBeConsideredAtNextHearing",
-    "ElementLabel": "Can your application be considered at the next scheduled hearing?",
+    "ElementLabel": "Consider at next hearing?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"

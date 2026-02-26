@@ -15,10 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 @SuperBuilder(toBuilder = true)
 public class C2AdditionalApplicationEventData extends C2DocumentBundle {
     @Temp
-    private YesNo isHearingAdjournmentRequired;
-    @Temp
-    private YesNo isSameDayUrgencyRequired;
-    @Temp
     private DynamicList hearingList;
 
     @JsonIgnore

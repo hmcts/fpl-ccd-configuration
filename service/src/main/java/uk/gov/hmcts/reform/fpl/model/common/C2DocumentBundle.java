@@ -58,8 +58,11 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final String applicantName;
     private final List<Element<Respondent>> respondents;
+
+    private final YesNo hasSafeguardingRisk;
+    private final YesNo isHearingAdjournmentRequired;
     private final String requestedHearingToAdjourn;
-    private YesNo canBeConsideredAtNextHearing;
+    private final YesNo canBeConsideredAtNextHearing;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);

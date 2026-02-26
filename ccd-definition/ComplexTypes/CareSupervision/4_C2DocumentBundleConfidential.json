@@ -160,6 +160,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "isHearingAdjournmentRequired",
+    "ElementLabel": "Adjournment requested?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "hearingList",
     "ElementLabel": "Which hearing?",
@@ -171,8 +180,17 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "requestedHearingToAdjourn",
-    "ElementLabel": "Requested hearing to adjourn",
+    "ElementLabel": "Hearing to be adjourned",
     "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "hasSafeguardingRisk",
+    "ElementLabel": "Safeguarding risk?",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -183,6 +201,15 @@
     "ElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "UrgencyTimeFrameType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleConfidential",
+    "ListElementCode": "canBeConsideredAtNextHearing",
+    "ElementLabel": "Consider at next hearing?",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

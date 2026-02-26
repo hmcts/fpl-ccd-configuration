@@ -204,7 +204,7 @@ public class UploadAdditionalApplicationsService {
                 .type(eventData.getC2Type())
                 .respondents(respondentsInCase);
 
-        if (YES.equals(temporaryC2Document.getIsSameDayUrgencyRequired())) {
+        if (YES.equals(temporaryC2Document.getHasSafeguardingRisk())) {
             c2DocumentBundleBuilder.urgencyTimeFrameType(UrgencyTimeFrameType.SAME_DAY);
         }
 
