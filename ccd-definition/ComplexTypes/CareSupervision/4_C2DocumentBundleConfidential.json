@@ -160,7 +160,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "isHearingAdjournmentRequired",
     "ElementLabel": "Adjournment requested?",
     "FieldType": "YesOrNo",
@@ -187,7 +187,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "hasSafeguardingRisk",
     "ElementLabel": "Safeguarding risk?",
     "FieldType": "YesOrNo",
