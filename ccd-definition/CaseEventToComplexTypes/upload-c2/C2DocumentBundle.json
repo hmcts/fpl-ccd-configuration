@@ -48,8 +48,8 @@
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "isSameDayUrgencyRequired",
-    "EventElementLabel": "Is there any reason, such as a safeguarding risk or other urgent issue, that requires your application to be considered by a judge on the same day ?",
+    "ListElementCode": "hasSafeguardingRisk",
+    "EventElementLabel": "Is there any reason, such as a safeguarding risk or other urgent issue, that requires your application to be considered by a judge on the same day?",
     "FieldDisplayOrder": "4",
     "DisplayContext": "MANDATORY"
   },
