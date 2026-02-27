@@ -28,7 +28,8 @@ def integrationTestSecrets = [
     secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
     secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
+    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
+    secret('fpl-case-service-idam-client-secret', 'IDAM_CLIENT_SECRET')
   ]
 ]
 
@@ -185,7 +186,22 @@ def archiveApiTestResult() {
           reportFiles          : 'index.html',
           reportName           : 'API Test Report'
   ])
-  steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+}
+def setupUITestEnvVariablesForPreview() {
+  env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+  env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+  env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+  env.IDAM_WEB_URL = "https://idam-web-public.aat.platform.hmcts.net"
+  env.IDAM_TESTING_SUPPORT_URL = "http://idam-api-aat.platform.hmcts.net/testing-support"
+  env.MOCKED_PAYMENTS = false
+  env.TEST_RETRIES = 1
+}
+def installYarnDependenciesIfNeeded(yarnBuilder) {
+    if (!fileExists('node_modules')){
+      yarnBuilder.yarn('yarn-update')
+      yarnBuilder.yarn('install-dependencies')
+  }
 }
 
 // Vars for Kubernetes
@@ -254,6 +270,8 @@ withPipeline(type, product, component) {
       env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
       env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      env.IDAM_WEB_URL = "https://idam-web-public.aat.platform.hmcts.net"
+      env.IDAM_TESTING_SUPPORT_URL = "http://idam-api-aat.platform.hmcts.net/testing-support"
       env.MOCKED_PAYMENTS = false
       env.TEST_RETRIES = 1
 
