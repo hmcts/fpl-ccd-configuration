@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -340,8 +339,8 @@ public class UploadAdditionalApplicationsService {
 
     public boolean onlyApplyingForAnAdjournment(CaseData caseData, C2DocumentBundle temporaryC2Bundle) {
         return onlyApplyingForC2(caseData)
-            && temporaryC2Bundle.getC2AdditionalOrdersRequested().size() == 1
-            && temporaryC2Bundle.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT);
+            && YES.equals(temporaryC2Bundle.getIsHearingAdjournmentRequired())
+            && isEmpty(temporaryC2Bundle.getC2AdditionalOrdersRequested());
     }
 
     /** Only skip the payment if the hearing we are asking to adjourn is >= 14 days away,

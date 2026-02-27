@@ -129,8 +129,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 return respond(caseDetails, errors);
             }
 
-            if (!isNull(temporaryC2Document.getC2AdditionalOrdersRequested())
-                && YES.equals(temporaryC2Document.getIsHearingAdjournmentRequired())) {
+            if (YES.equals(temporaryC2Document.getIsHearingAdjournmentRequired())) {
                 // Get the selected hearing from the dynamic list + populate the 'selected hearing' field
                 UUID selectedHearingCode = getDynamicListSelectedValue(temporaryC2Document.getHearingList(), mapper);
                 HearingBooking hearing = findElement(selectedHearingCode,
