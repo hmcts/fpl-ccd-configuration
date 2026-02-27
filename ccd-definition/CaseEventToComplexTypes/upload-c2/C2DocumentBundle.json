@@ -59,7 +59,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "safeguardingRiskDetails",
-    "EventElementLabel": "Reason.",
+    "EventElementLabel": "Reason",
     "EventHintText": " If your application is urgent please call the court and tribunal support centre (CTSC) on 0330 808 4424",
     "FieldDisplayOrder": "5",
     "DisplayContext": "MANDATORY",
