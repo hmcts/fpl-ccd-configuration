@@ -204,10 +204,6 @@ public class UploadAdditionalApplicationsService {
                 .type(eventData.getC2Type())
                 .respondents(respondentsInCase);
 
-        if (YES.equals(temporaryC2Document.getHasSafeguardingRisk())) {
-            c2DocumentBundleBuilder.urgencyTimeFrameType(UrgencyTimeFrameType.SAME_DAY);
-        }
-
         return c2DocumentBundleBuilder.build();
     }
 
@@ -381,8 +377,10 @@ public class UploadAdditionalApplicationsService {
     }
 
     public WorkAllocationTaskUrgency getBundleUrgency(AdditionalApplicationsBundle bundle) {
+        // Part of C2 redesign work, as of now, only C2 bundle affect the WA task urgency.
+        // Future service improvement may need for other additional application.
         if (bundle.getC2DocumentBundle() != null
-            && UrgencyTimeFrameType.SAME_DAY.equals(bundle.getC2DocumentBundle().getUrgencyTimeFrameType())) {
+            && YES.equals(bundle.getC2DocumentBundle().getHasSafeguardingRisk())) {
             return WorkAllocationTaskUrgency.URGENT;
         }
         return WorkAllocationTaskUrgency.HIGH;

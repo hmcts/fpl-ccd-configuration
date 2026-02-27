@@ -209,13 +209,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "safeguardingRiskDetails",
+    "ElementLabel": "Safeguarding Reason",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "urgencyTimeFrameType",
     "ElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "UrgencyTimeFrameType",
     "SecurityClassification": "Public",
     "Searchable": "N",
-    "Comment": "Most of the options are deprecated - DFPL-2841, SAME_DAY is the only valid option remaining"
+    "Comment": "Deprecated - DFPL-2841"
   },
   {
     "LiveFrom": "01/01/2017",

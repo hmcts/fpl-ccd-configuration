@@ -197,6 +197,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleConfidential",
+    "ListElementCode": "safeguardingRiskDetails",
+    "ElementLabel": "Safeguarding risk reason",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "urgencyTimeFrameType",
     "ElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldType": "FixedRadioList",

@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class C2DocumentBundle implements ApplicationsBundle {
     private final UUID id;
     private C2ApplicationType type;
+    @Deprecated
     private final UrgencyTimeFrameType urgencyTimeFrameType;
     private C2ApplicationRouteType routeType;
     private final String nameOfRepresentative;
@@ -55,11 +56,13 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private List<Element<DraftOrder>> draftOrdersBundle;
     private final List<Element<Supplement>> supplementsBundle;
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
+    @Deprecated
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final String applicantName;
     private final List<Element<Respondent>> respondents;
 
     private final YesNo hasSafeguardingRisk;
+    private final String safeguardingRiskDetails;
     private final YesNo isHearingAdjournmentRequired;
     private final String requestedHearingToAdjourn;
     private final YesNo canBeConsideredAtNextHearing;
