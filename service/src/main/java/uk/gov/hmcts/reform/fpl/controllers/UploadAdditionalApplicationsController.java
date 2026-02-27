@@ -52,7 +52,6 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -131,7 +130,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             }
 
             if (!isNull(temporaryC2Document.getC2AdditionalOrdersRequested())
-                && temporaryC2Document.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT)) {
+                && YES.equals(temporaryC2Document.getIsHearingAdjournmentRequired())) {
                 // Get the selected hearing from the dynamic list + populate the 'selected hearing' field
                 UUID selectedHearingCode = getDynamicListSelectedValue(temporaryC2Document.getHearingList(), mapper);
                 HearingBooking hearing = findElement(selectedHearingCode,
