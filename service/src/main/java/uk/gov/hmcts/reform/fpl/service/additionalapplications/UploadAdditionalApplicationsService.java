@@ -204,6 +204,10 @@ public class UploadAdditionalApplicationsService {
                 .type(eventData.getC2Type())
                 .respondents(respondentsInCase);
 
+        if (YES.equals(temporaryC2Document.getIsHearingAdjournmentRequired())) {
+            c2DocumentBundleBuilder.c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT));
+        }
+
         return c2DocumentBundleBuilder.build();
     }
 
