@@ -66,8 +66,8 @@ test.describe('Query management', () => {
                 await queryManagement.tabNavigation('Queries');
                 await queryManagement.assertQueryTable();
                 await expect(page.getByRole('button', {name: 'Birth certificate format'})).toBeVisible();
-                await expect(page.getByRole('cell', {name: 'Local Authority '}).first()).toBeVisible();
-                await expect(page.getByRole('cell', {name: 'Local Authority '}).nth(1)).toBeVisible();
+                await expect(page.getByRole('cell', {name: '(local-authority)'}).first()).toBeVisible();
+                await expect(page.getByRole('cell', {name: '(local-authority)'}).nth(1)).toBeVisible();
                 await expect(page.getByRole('cell', {name: 'Awaiting Response'})).toBeVisible();
                 await expect(page.getByRole('cell', {name: `${queryManagement.getCurrentDate()}`})).toBeVisible();
 
