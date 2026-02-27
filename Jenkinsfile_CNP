@@ -299,6 +299,7 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('smoketest:preview') {
+    yarnBuilder.yarn('test:smoke')
     archiveTestResult("test-results/functional", "index.html", "Smoke Test Report")
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
@@ -314,7 +315,6 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('smoketest:aat') {
-    archiveTestResult("test-results/functional", "index.html", "Smoke Test Report")
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
