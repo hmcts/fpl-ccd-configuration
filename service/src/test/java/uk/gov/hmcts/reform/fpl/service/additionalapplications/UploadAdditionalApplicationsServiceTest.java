@@ -515,7 +515,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
                     .temporaryC2Document(C2AdditionalApplicationEventData.builder()
-                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                        .isHearingAdjournmentRequired(YesNo.YES)
                         .build())
                     .build())
                 .build();
@@ -535,7 +535,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
                     .temporaryC2Document(C2AdditionalApplicationEventData.builder()
-                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                        .isHearingAdjournmentRequired(YesNo.YES)
                         .build())
                     .build())
                 .build();
@@ -555,7 +555,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
                     .temporaryC2Document(C2AdditionalApplicationEventData.builder()
-                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                        .isHearingAdjournmentRequired(YesNo.YES)
                         .build())
                     .build())
                 .build();
@@ -575,6 +575,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
                     .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                        .isHearingAdjournmentRequired(YesNo.YES)
                         .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT,
                             CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
                         .build())
