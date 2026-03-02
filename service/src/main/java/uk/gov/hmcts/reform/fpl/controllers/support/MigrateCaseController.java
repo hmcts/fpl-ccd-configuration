@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -29,7 +30,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3046", this::run3046,
+        "DFPL-3080", this::run3080,
         "DFPL-3048", this::run3048,
         "DFPL-3047", this::run3047
     );
@@ -58,15 +59,15 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3046(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3046";
-        final Long expectedCaseId = 1746020457379704L;
-        final String orgId = "TY404LT";
+    private void run3080(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3080";
+        final List<Long> expectedCaseIds = List.of(1751556200580074L, 1768391304150686L);
+        final String orgId = "CPYYWBZ";
 
         Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        migrateCaseService.doCaseIdCheckList(caseId, expectedCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService
-            .updateOutsourcingPolicy(getCaseData(caseDetails), orgId, CaseRole.LAMANAGING.formattedName()));
+            .updateOutsourcingPolicy(getCaseData(caseDetails), orgId, CaseRole.EPSMANAGING.formattedName()));
     }
 
     private void run3048(CaseDetails caseDetails) {
