@@ -29,14 +29,10 @@ const idamTokenParams: IdamTokenParams = {
         throw error;
     }
 
-<<<<<<< nightly-dev
-=======
 export const  getServiceAuthToken = async () => {
    const params: ServiceTokenParams = { microservice: 'fpl_case_service'}
     const serviceAuth = new ServiceAuthUtils();
     return await serviceAuth.retrieveToken(params);
-
->>>>>>> master
 };
 
 
