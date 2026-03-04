@@ -47,6 +47,8 @@ public class UploadAdditionalApplicationsEventData {
     DynamicList applicantsList;
     @Temp
     String otherApplicant;
+    @Temp
+    YesNo hasConfidentialParty;
 
     public List<AdditionalApplicationType> getAdditionalApplicationType() {
         return defaultIfNull(additionalApplicationType, emptyList());

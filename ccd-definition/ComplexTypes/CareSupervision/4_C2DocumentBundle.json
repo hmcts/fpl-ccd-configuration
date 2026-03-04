@@ -175,7 +175,8 @@
     "ElementLabel": "Adjournment requested?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Temporary field"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -294,6 +295,17 @@
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DocumentAcknowledge",
     "ElementLabel": "Tick to confirm this document is related to this case",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "NoConfidentialAddressConfirmation",
+    "ElementLabel": "There is a confidential address on this case. Check the document and confirm it doesn't contain a confidential address.",
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Temporary field"

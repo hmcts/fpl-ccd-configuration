@@ -63,7 +63,6 @@ public class C2DocumentBundle implements ApplicationsBundle {
 
     private final YesNo hasSafeguardingRisk;
     private final String safeguardingRiskDetails;
-    private final YesNo isHearingAdjournmentRequired;
     private final String requestedHearingToAdjourn;
     private final YesNo canBeConsideredAtNextHearing;
 

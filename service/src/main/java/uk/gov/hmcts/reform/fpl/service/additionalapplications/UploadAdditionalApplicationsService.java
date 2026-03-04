@@ -339,8 +339,8 @@ public class UploadAdditionalApplicationsService {
 
     public boolean onlyApplyingForAnAdjournment(CaseData caseData, C2DocumentBundle temporaryC2Bundle) {
         return onlyApplyingForC2(caseData)
-            && YES.equals(temporaryC2Bundle.getIsHearingAdjournmentRequired())
-            && isEmpty(temporaryC2Bundle.getC2AdditionalOrdersRequested());
+            && temporaryC2Bundle.getC2AdditionalOrdersRequested().size() == 1
+            && temporaryC2Bundle.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT);
     }
 
     /** Only skip the payment if the hearing we are asking to adjourn is >= 14 days away,

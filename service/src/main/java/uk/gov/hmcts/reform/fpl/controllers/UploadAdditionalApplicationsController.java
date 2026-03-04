@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
+import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
@@ -82,6 +83,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final ManageDocumentService manageDocumentService;
     private final PbaNumberService pbaNumberService;
     private final WorkAllocationTaskService workAllocationTaskService;
+    private final ConfidentialDetailsService confidentialDetailsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -108,6 +110,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     .hearingList(caseData.buildDynamicHearingList())
                     .build());
         }
+
+        caseDetails.getData().putAll(confidentialDetailsService.populateHasConfidentialPartyFlag(caseData));
         return respond(caseDetails);
     }
 
