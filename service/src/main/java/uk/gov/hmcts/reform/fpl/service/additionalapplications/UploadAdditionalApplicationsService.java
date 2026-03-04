@@ -337,6 +337,12 @@ public class UploadAdditionalApplicationsService {
             && eventData.getAdditionalApplicationType().size() == 1;
     }
 
+    public boolean onlyApplyingForAnAdjournment(CaseData caseData, C2AdditionalApplicationEventData temporaryC2Bundle) {
+        return onlyApplyingForC2(caseData)
+            && YES.equals(temporaryC2Bundle.getIsHearingAdjournmentRequired())
+            && isEmpty(temporaryC2Bundle.getC2AdditionalOrdersRequested());
+    }
+
     public boolean onlyApplyingForAnAdjournment(CaseData caseData, C2DocumentBundle temporaryC2Bundle) {
         return onlyApplyingForC2(caseData)
             && temporaryC2Bundle.getC2AdditionalOrdersRequested().size() == 1
@@ -351,7 +357,8 @@ public class UploadAdditionalApplicationsService {
      * @param temporaryC2Bundle - the current C2 bundle as amended during the callback
      * @return - boolean for whether we should skip the payments or not
      */
-    public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
+    public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing,
+                                      C2AdditionalApplicationEventData temporaryC2Bundle) {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
     }
