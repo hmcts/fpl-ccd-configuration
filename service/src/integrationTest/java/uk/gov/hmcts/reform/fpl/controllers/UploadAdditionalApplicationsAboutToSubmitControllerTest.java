@@ -291,6 +291,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @Test
     void shouldRemoveTransientFieldsWhenNoLongerNeeded() {
         CaseDetails caseDetails = CaseDetails.builder()
+            .id(CASE_ID)
             .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
                 "c2Type", WITHOUT_NOTICE,
                 "applicantsList", createApplicantsDynamicList(APPLICANT),
