@@ -30,7 +30,8 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
 export const  getServiceAuthToken = async () => {
    const params: ServiceTokenParams = { microservice: 'fpl_case_service'}
     const serviceAuth = new ServiceAuthUtils();
-    return serviceAuth.retrieveToken(params);
+    return await serviceAuth.retrieveToken(params);
+
 };
 
 export const createCase = async (caseName = 'e2e UI Test', user: { email: string, password: string }) => {
@@ -215,4 +216,102 @@ export async function deleteRoleAssignments(
      return deletedRecords;
 }
 
+export async function assignAMJudicialRole(caseID: string, judicialUser: { email: string; password: string; }) {
+    const serviceAuthToken = await getServiceAuthToken();
+    const bearerToken = await getAccessToken({user: systemUpdateUser}).then(res => `Bearer ${res.data.access_token}`);
+    const judgeID = await getIdamUserId(judicialUser);
+    const assignerId = await getIdamUserId(systemUpdateUser);
+    const roleStartTime = new Date().toISOString();
+    const headers = {
+        'ServiceAuthorization': serviceAuthToken,
+        'Authorization': bearerToken,
+        'Content-Type': 'application/json'
+    };
+    const data = {
+        "roleRequest": {
+            "assignerId": assignerId,
+            "replaceExisting": false,
+            "process": "fpl-case-service",
+            "reference": "fpl-case-role-assignment"
+        },
+        "requestedRoles": [
+            {
+                "attributes": {
+                    "jurisdiction": "PUBLICLAW",
+                    "caseType": "CARE_SUPERVISION_EPO",
+                    "caseId": caseID,
+                    "substantive": "Y"
+                },
+                "actorIdType": "IDAM",
+                "status": "CREATE_REQUESTED",
+                "actorId": judgeID,
+                "beginTime": roleStartTime,
+                "classification": "PUBLIC",
+                "grantType": "SPECIFIC",
+                "roleCategory": "JUDICIAL",
+                "roleName": "hearing-judge",
+                "roleType": "CASE",
+                "readOnly": false
+            },
+            {
+                "attributes": {
+                    "jurisdiction": "PUBLICLAW",
+                    "caseType": "CARE_SUPERVISION_EPO",
+                    "caseId": caseID,
+                    "substantive": "Y"
+                },
+                "actorIdType": "IDAM",
+                "status": "CREATE_REQUESTED",
+                "actorId": judgeID,
+                "beginTime": roleStartTime,
+                "classification": "PUBLIC",
+                "grantType": "SPECIFIC",
+                "roleCategory": "JUDICIAL",
+                "roleName": "allocated-judge",
+                "roleType": "CASE",
+                "readOnly": false
+            }
+        ]
+    };
+    const requestContext: APIRequestContext = await request.newContext();
+    const postURL = `${urlConfig.accessManagementUrl}`;
+    try {
+        const response = await requestContext.post(
+            postURL,
+            {
+                headers: headers,
+                data: data,
+            }
+        );
+        if (response.statusText() === 'Created' || response.status() === 201) {
+            return true
+        }
+        // handle response if needed
+    } catch (error) {
+        console.error('POST request failed:', error);
+        throw error;
+    }
+}
 
+export async function getIdamUserId(user: { email: string; password: string; }): Promise<any> {
+    const requestContext: APIRequestContext = await request.newContext();
+    const bearerToken = await getAccessToken({user}).then(res => `Bearer ${res.data.access_token}`);
+    const url = `${urlConfig.idamUrl}/details`;
+
+    const headers = {
+        'Authorization': bearerToken,
+        'Content-Type': 'application/json'
+    };
+    const response = await requestContext.get(url, {headers});
+    if (!response.ok()) {
+        throw new Error(`Failed to fetch user id: ${response.status()} ${response.statusText()}`);
+    }
+    try {
+        const data = await response.json();
+        return data.id;
+    } catch (err) {
+        console.error('Failed to parse user id response:', err);
+        throw err;
+    }
+
+}
