@@ -808,7 +808,6 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeVisible();
 
-
     })
 
     test('Judge Uploads Contact with a child in care order (C34A)', async ({ page, signInPage, orders }) => {
@@ -883,6 +882,56 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c36_variation_or_extension_of_supervision_orders.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('CTSC uploads Discharge of care order (C32B) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Discharge of care order (C32B)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Discharge of care order (C32B)');
+        await orders.clickContinue();
+
+        await orders.uploadsDischargeOfCareOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c32b_discharge_of_care_order.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('Judge Uploads Discharge of care order (C32B) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Discharge of care order (C32B)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Discharge of care order (C32B)');
+        await orders.clickContinue();
+
+        await orders.uploadsDischargeOfCareOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c32b_discharge_of_care_order.pdf', exact: true })).toBeVisible();
 
     });
 })

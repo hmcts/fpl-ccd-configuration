@@ -22,9 +22,11 @@ import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
@@ -85,7 +87,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     @MockBean(FeeService.class), @MockBean(PbaNumberService.class), @MockBean(DocumentSealingService.class),
     @MockBean(RespondentService.class), @MockBean(DocmosisDocumentGeneratorService.class),
     @MockBean(UploadDocumentService.class), @MockBean(HearingVenueLookUpService.class),
-    @MockBean(HighCourtAdminEmailLookupConfiguration.class)
+    @MockBean(HighCourtAdminEmailLookupConfiguration.class), @MockBean(UserService.class),
+    @MockBean(PbaService.class)
 })
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 

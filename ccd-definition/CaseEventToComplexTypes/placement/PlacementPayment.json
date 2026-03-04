@@ -4,7 +4,16 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementPayment",
     "ListElementCode": "pbaNumber",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "isCTSCUser=\"Yes\""
+  },
+  {
+    "ID": "PlacementPayment",
+    "CaseEventID": "placement",
+    "CaseFieldID": "placementPayment",
+    "ListElementCode": "pbaNumberDynamicList",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "isCTSCUser!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
