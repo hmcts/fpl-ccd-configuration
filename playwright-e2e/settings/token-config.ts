@@ -17,8 +17,8 @@ export const users: User[] = [
 ];
 
 export const services: string[] = [
-  'fpl-case-service',
-  'ccd-data'
+  'fpl_case_service',
+  'ccd_data'
 ];
 
 

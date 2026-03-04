@@ -1,9 +1,15 @@
-import {deleteRoleAssignments, fetchOrganisationUsers, getAccessToken, queryRoleAssignments} from "../utils/api-helper";
+import {
+    deleteRoleAssignments,
+    fetchOrganisationUsers,
+    fetchS2SToken,
+    getAccessToken,
+    queryRoleAssignments
+} from "../utils/api-helper";
 import {systemUpdateUser} from "./user-credentials";
 import {getDateBeforeToday} from "../utils/document-format-helper";
 import {testConfig} from "./test-config";
 import { test as teardown } from '@playwright/test';
-import {TokenManager} from "../utils/token-manager";
+
 
 teardown('delete AM Role', async ({ }) => {
     console.log('deleting AM Role...');
@@ -14,8 +20,8 @@ teardown('delete AM Role', async ({ }) => {
     let recordsFetched = '0';
 
     // query the AM roles for the users
-    const fplServiceAuthToken = TokenManager.getS2SToken('fpl_case_service');
-    const CCDServiceAuthToken = TokenManager.getS2SToken('ccd_data');
+    const fplServiceAuthToken = fetchS2SToken('fpl_case_service');
+    const CCDServiceAuthToken = fetchS2SToken('ccd_data');
     const userBearerToken = await getAccessToken({user: systemUpdateUser});
 
     userIds = await fetchOrganisationUsers('W9V61CP', fplServiceAuthToken);

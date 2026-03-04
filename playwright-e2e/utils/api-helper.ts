@@ -7,7 +7,6 @@ import {isRetryableError} from "@hmcts/playwright-common/dist/utils/retry.utils.
 import {APIRequestContext, request} from "@playwright/test";
 import axios from 'axios';
 import lodash from 'lodash';
-import {TokenManager} from "./token-manager";
 
 
 export const  getAccessToken = async ({user}: { user: { email: string; password: string } }) => {
@@ -82,7 +81,7 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
         password: string
     }, method: string = 'get', data: any = {}) => {
 
-        const accessToken = TokenManager.getAccessToken(user.email);
+        const accessToken = fetchAccessToken(user.email);
         const requestConfig = {
             method,
             url: postURL,
@@ -225,8 +224,8 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
     }
 
     export async function assignAMJudicialRole(caseID: string, judicialUser: { email: string; password: string; }) {
-        const serviceAuthToken = TokenManager.getS2SToken('fpl_case_service');
-        let systemUserAccesstoken = TokenManager.getAccessToken(systemUpdateUser.email)//await fetchAccessToken(systemUpdateUser);
+        const serviceAuthToken = fetchS2SToken('fpl_case_service');
+        let systemUserAccesstoken = fetchAccessToken(systemUpdateUser.email)//await fetchAccessToken(systemUpdateUser);
         const bearerToken = `Bearer ${systemUserAccesstoken}`;
         const judgeID = await getIdamUserId(judicialUser);
         const assignerId = await getIdamUserId(systemUpdateUser);
@@ -304,7 +303,7 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
 
     export async function getIdamUserId(user: { email: string; password: string; }): Promise<any> {
         const requestContext: APIRequestContext = await request.newContext();
-        let accessToken = TokenManager.getAccessToken(user.email)//await fetchAccessToken(user);
+        let accessToken = fetchAccessToken(user.email)//await fetchAccessToken(user);
         const bearerToken = `Bearer ${accessToken}`;
         //await getAccessToken({user}).then(res => `Bearer ${res.data.access_token}`);
         const url = `${urlConfig.idamUrl}/details`;
@@ -323,6 +322,25 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
         } catch (err) {
             console.error('Failed to parse user id response:', err);
             throw err;
+        }
+
+    }
+    export  function fetchAccessToken(email:string) {
+        const accessTokens = JSON.parse(process.env.ACCESS_TOKENS || '{}');
+        if (accessTokens[email]) {
+            return accessTokens[email];
+        } else {
+            throw new Error(`Access token for ${email} not found in environment variables.`);
+        }
+
+
+    }
+    export  function fetchS2SToken(service: string) {
+        const s2sTokens = JSON.parse(process.env.S2S_TOKENS || '{}');
+        if (s2sTokens[service]) {
+            return s2sTokens[service];
+        } else {
+            throw new Error(`S2S token for ${service} not found in environment variables.`);
         }
 
     }

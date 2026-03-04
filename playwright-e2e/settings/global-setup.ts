@@ -5,39 +5,36 @@ import { getDocParameter } from '../utils/api-helper';
 import {each} from "lodash";
 import {ServiceTokenParams} from "@hmcts/playwright-common/dist/utils/service-auth.utils";
 import {ServiceAuthUtils} from "@hmcts/playwright-common";
-import {TokenManager} from "../utils/token-manager";
+import {users,services} from "./token-config";
 
-const userMap: Record<string, any> = {
-    [newSwanseaLocalAuthorityUserOne.email]: newSwanseaLocalAuthorityUserOne,
-    [systemUpdateUser.email]: systemUpdateUser,
-};
-const service = [
-    'fpl_case_service',
-    'ccd_data',
-];
+
 setup.describe.configure({ mode: 'serial' });
 
 setup('access Token', async () => {
-    for (const email in userMap) {
-        const envKey = email.toUpperCase().split('@')[0] + 'AUTH';
+    const accessTokens: Record<string, string> = {};
+    for (const user in users) {
         let accessToken = '';
-            try {
-              accessToken = await getAccessToken({ user: userMap[email] });
-                TokenManager.setAccessToken(email, accessToken);
-            } catch (error) {
-                console.error(`Error during auth token for ${email}:`, error);
-                throw error;
-            }
+        try {
+            accessToken = await getAccessToken({user: users[user]});
+            accessTokens[users[user].email] = accessToken;
+        } catch (error) {
+            console.error(`Error during auth token for ${users[user].email}:`, error);
+            throw error;
+        }
     }
+    // Store all access tokens in a global environment variable as JSON
+    process.env.ACCESS_TOKENS = JSON.stringify(accessTokens);
 });
 setup(' Service S2S Token', async () => {
+    const serviceS2STokens: Record<string, string> = {};
     const serviceAuth = new ServiceAuthUtils();
-    let serviceS2SToken;
-    for (const serv in service) {
+    let serviceS2SToken = '';
+    for (const serv in services) {
 
-        serviceS2SToken = await serviceAuth.retrieveToken({microservice: `${serv}`} as ServiceTokenParams);
-        TokenManager.setS2SToken(serv, serviceS2SToken);
+        serviceS2SToken = await serviceAuth.retrieveToken({microservice: `${services[serv]}`} as ServiceTokenParams);
+        serviceS2STokens[services[serv]] = serviceS2SToken;
     }
+    process.env.S2S_TOKENS = JSON.stringify(serviceS2STokens);
 });
 setup('document parameters', async () => {
     try {
