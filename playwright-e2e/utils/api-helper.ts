@@ -7,7 +7,7 @@ import {isRetryableError} from "@hmcts/playwright-common/dist/utils/retry.utils.
 import {APIRequestContext, request} from "@playwright/test";
 import axios from 'axios';
 import lodash from 'lodash';
-import {ServiceTokenParams} from "@hmcts/playwright-common/dist/utils/service-auth.utils";
+import {TokenManager} from "./token-manager";
 
 
 export const  getAccessToken = async ({user}: { user: { email: string; password: string } }) => {
@@ -30,13 +30,6 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
         throw error;
     }
 }
-
-    export const getServiceAuthToken = async () => {
-        const params: ServiceTokenParams = {microservice: 'fpl_case_service'}
-        const serviceAuth = new ServiceAuthUtils();
-        return await serviceAuth.retrieveToken(params);
-    };
-
 
     export const createCase = async (caseName = 'e2e UI Test', user: { email: string, password: string }) => {
 
@@ -84,21 +77,12 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
             return false;
         }
     }
-    export const fetchAccessToken = async (user: { email: string; password: string; }) => {
-        const envKey = user.email.toUpperCase().split('@')[0] + 'AUTH';
-        let accessToken = process.env[envKey];
-        if (accessToken === undefined) {
-            accessToken = await getAccessToken({user});
-            process.env[envKey] = accessToken;
-        }
-        return accessToken;
-    }
     const apiRequest = async (postURL: string, user: {
         email: string,
         password: string
     }, method: string = 'get', data: any = {}) => {
 
-        const accessToken = await fetchAccessToken(user);
+        const accessToken = TokenManager.getAccessToken(user.email);
         const requestConfig = {
             method,
             url: postURL,
@@ -118,7 +102,6 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
             const response = attempts > 1
                 ? await withRetry(exec, attempts, 300, 2000, 15000, isRetryableError)
                 : await exec();
-            //  const res = await axios.request(requestConfig);
             if (response.status === 200) return response.data;
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -242,8 +225,8 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
     }
 
     export async function assignAMJudicialRole(caseID: string, judicialUser: { email: string; password: string; }) {
-        const serviceAuthToken = await getServiceAuthToken();
-        let systemUserAccesstoken = await fetchAccessToken(systemUpdateUser);
+        const serviceAuthToken = TokenManager.getS2SToken('fpl_case_service');
+        let systemUserAccesstoken = TokenManager.getAccessToken(systemUpdateUser.email)//await fetchAccessToken(systemUpdateUser);
         const bearerToken = `Bearer ${systemUserAccesstoken}`;
         const judgeID = await getIdamUserId(judicialUser);
         const assignerId = await getIdamUserId(systemUpdateUser);
@@ -321,7 +304,7 @@ export const  getAccessToken = async ({user}: { user: { email: string; password:
 
     export async function getIdamUserId(user: { email: string; password: string; }): Promise<any> {
         const requestContext: APIRequestContext = await request.newContext();
-        let accessToken = await fetchAccessToken(user);
+        let accessToken = TokenManager.getAccessToken(user.email)//await fetchAccessToken(user);
         const bearerToken = `Bearer ${accessToken}`;
         //await getAccessToken({user}).then(res => `Bearer ${res.data.access_token}`);
         const url = `${urlConfig.idamUrl}/details`;
