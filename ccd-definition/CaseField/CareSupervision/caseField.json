@@ -2836,5 +2836,15 @@
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasConfidentialParty",
+    "FieldType": "YesOrNo",
+    "Label": "Has confidential party?",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temp field - common flag for show/hide condition related to confidential stuff"
   }
 ]

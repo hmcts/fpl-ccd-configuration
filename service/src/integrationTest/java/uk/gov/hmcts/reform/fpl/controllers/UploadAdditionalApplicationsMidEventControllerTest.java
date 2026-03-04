@@ -25,12 +25,12 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -90,7 +90,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
     void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField() {
         given(userService.isCtscUser()).willReturn(true);
 
-        C2DocumentBundle temporaryC2Document = C2DocumentBundle.builder()
+        C2AdditionalApplicationEventData temporaryC2Document = C2AdditionalApplicationEventData.builder()
             .supplementsBundle(wrapElements(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()))
             .build();
 
@@ -206,13 +206,14 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @Test
     void shouldAddErrorOnFeeRegisterException() {
+        given(userService.isCtscUser()).willReturn(true);
         given(feeService.getFeesDataForAdditionalApplications(any()))
             .willThrow((new FeeRegisterException(1, "", new Throwable())));
 
         CaseData caseData = CaseData.builder()
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                 .additionalApplicationType(List.of(C2_ORDER))
-                .temporaryC2Document(C2DocumentBundle.builder().type(WITH_NOTICE).build())
+                .temporaryC2Document(C2AdditionalApplicationEventData.builder().type(WITH_NOTICE).build())
                 .build())
             .build();
 
@@ -228,6 +229,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         void beforeEach() {
             given(feeService.getFeesDataForAdditionalApplications(any()))
                 .willReturn(FeesData.builder().totalAmount(BigDecimal.ONE).build());
+            given(userService.isCtscUser()).willReturn(true);
         }
 
         @Test
@@ -241,8 +243,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
                     .c2Type(WITH_NOTICE)
-                    .temporaryC2Document(C2DocumentBundle.builder()
-                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                        .isHearingAdjournmentRequired(YES)
                         .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
                         .build())
                     .build())
@@ -266,8 +268,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
                     .c2Type(WITH_NOTICE)
-                    .temporaryC2Document(C2DocumentBundle.builder()
-                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                        .isHearingAdjournmentRequired(YES)
                         .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
                         .build())
                     .build())
@@ -291,8 +293,9 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
                     .c2Type(WITH_NOTICE)
-                    .temporaryC2Document(C2DocumentBundle.builder()
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
                         .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT, APPOINTMENT_OF_GUARDIAN))
+                        .isHearingAdjournmentRequired(YES)
                         .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
                         .build())
                     .build())
@@ -317,7 +320,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
                     .c2Type(WITH_NOTICE)
-                    .temporaryC2Document(C2DocumentBundle.builder()
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
                         .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN))
                         .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
                         .build())
@@ -394,4 +397,22 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     }
 
+    @Test
+    void shouReturnErrorWhenNoC2DraftOrderUploadedAndNonCTSCUser() {
+        given(userService.isCtscUser()).willReturn(false);
+
+        C2AdditionalApplicationEventData temporaryC2Document = C2AdditionalApplicationEventData.builder()
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .temporaryC2Document(temporaryC2Document)
+                .c2Type(WITH_NOTICE)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "populate-data");
+
+        assertThat(response.getErrors()).contains("Please upload a draft order to proceed");
+    }
 }

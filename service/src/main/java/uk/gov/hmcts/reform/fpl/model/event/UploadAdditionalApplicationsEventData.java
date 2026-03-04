@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Temp;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -27,7 +26,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UploadAdditionalApplicationsEventData {
     @Temp
-    C2DocumentBundle temporaryC2Document;
+    C2AdditionalApplicationEventData temporaryC2Document;
     @Temp
     C2ApplicationRouteType c2ApplicationRoute;
     @Temp
@@ -48,6 +47,8 @@ public class UploadAdditionalApplicationsEventData {
     DynamicList applicantsList;
     @Temp
     String otherApplicant;
+    @Temp
+    YesNo hasConfidentialParty;
 
     public List<AdditionalApplicationType> getAdditionalApplicationType() {
         return defaultIfNull(additionalApplicationType, emptyList());

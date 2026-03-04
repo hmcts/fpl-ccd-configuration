@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
+import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class ManageDocumentsControllerV2 extends CallbackController {
 
     private final ManageDocumentService manageDocumentService;
+    private final ConfidentialDetailsService confidentialDetailsService;
 
     @PostMapping("/manage-document-type-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleManageDocumentTypeSelected(
@@ -111,7 +113,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
             caseDetails.getData().put("askForPlacementNoticeRecipientType", YesNo.from(DocumentUploaderType
                 .HMCTS == manageDocumentService.getUploaderType(caseData)));
-            caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
+            caseDetails.getData().putAll(confidentialDetailsService.populateHasConfidentialPartyFlag(caseData));
             caseDetails.getData().put("uploadableDocumentBundle", List.of(
                 element(UploadableDocumentBundle.builder()
                     .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(

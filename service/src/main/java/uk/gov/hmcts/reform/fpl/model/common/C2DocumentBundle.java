@@ -3,18 +3,20 @@ package uk.gov.hmcts.reform.fpl.model.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 
@@ -28,13 +30,17 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
-@Builder(toBuilder = true)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = C2AdditionalApplicationEventData.class)
+})
+@SuperBuilder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"supportingEvidenceLA", "supportingEvidenceNC"})
 public class C2DocumentBundle implements ApplicationsBundle {
     private final UUID id;
     private C2ApplicationType type;
+    @Deprecated
     private final UrgencyTimeFrameType urgencyTimeFrameType;
     private C2ApplicationRouteType routeType;
     private final String nameOfRepresentative;
@@ -50,11 +56,15 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private List<Element<DraftOrder>> draftOrdersBundle;
     private final List<Element<Supplement>> supplementsBundle;
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
+    @Deprecated
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final String applicantName;
     private final List<Element<Respondent>> respondents;
+
+    private final YesNo hasSafeguardingRisk;
+    private final String safeguardingRiskDetails;
     private final String requestedHearingToAdjourn;
-    private final DynamicList hearingList;
+    private final YesNo canBeConsideredAtNextHearing;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
