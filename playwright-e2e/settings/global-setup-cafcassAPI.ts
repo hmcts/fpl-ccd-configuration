@@ -1,7 +1,7 @@
 import { test as setup } from '@playwright/test';
 import {getAccessToken} from "../utils/api-helper";
 import { getDocParameter } from '../utils/api-helper';
-import {users} from "./token-config";
+import {users} from "./token-config-cafcassAPITest";
 
 setup.describe.configure({ mode: 'serial' });
 

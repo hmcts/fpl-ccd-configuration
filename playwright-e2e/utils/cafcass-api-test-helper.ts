@@ -34,7 +34,7 @@ export const  GUARDIAN_DETAILS  = [
 
 export const cafcassAPICaseSearch = async (request: APIRequestContext, user: { email: string,password:string }, startTime: string, endTime: string) => {
     try {
-        const accessToken = await fetchAccessToken(user);
+        const accessToken = await fetchAccessToken(user.email);
         let response = await request.get(`${urlConfig.serviceUrl}/cases`,
             {
                 headers: {
@@ -55,7 +55,7 @@ export const cafcassAPICaseSearch = async (request: APIRequestContext, user: { e
 export const cafcassAPIDocSearch = async (request: APIRequestContext, user: { email: string,password:string }, docId: string) => {
 
     try {
-        const accessToken = await fetchAccessToken(user);
+        const accessToken = await fetchAccessToken(user.email);
         let response = await request.get(`${urlConfig.serviceUrl}/cases/documents/${docId}/binary`,
             {
                 headers: {
@@ -78,7 +78,7 @@ export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, u
 }[] | undefined) => {
     let url = `${urlConfig.serviceUrl}/cases/${caseID}/guardians`
     try {
-        const accessToken = await fetchAccessToken(user);
+        const accessToken = await fetchAccessToken(user.email);
         let response = await request.post(url,
             {
                 headers: {
@@ -98,7 +98,7 @@ export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, u
 export const cafcassAPICaseDocSearch = async (request: APIRequestContext, user: { email: string,password:string }, documentId: string) => {
     let url = `${urlConfig.serviceUrl}/cases/documents/{documentId}/binary`
     try {
-        const accessToken = await fetchAccessToken(user);
+        const accessToken = await fetchAccessToken(user.email);
         let response = await request.get(`${urlConfig.serviceUrl}/cases`,
             {
                 headers: {
@@ -117,7 +117,7 @@ export const cafcassAPIUploadDoc = async (request: APIRequestContext, user: { em
     let url = `${urlConfig.serviceUrl}/cases/${caseID}/document`;
     let docUpload = fs.readFileSync(config.testPdfFile);
     try {
-        const accessToken = await fetchAccessToken(user);
+        const accessToken = await fetchAccessToken(user.email);
         let response = await request.post(url,
             {
                 headers: {
