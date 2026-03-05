@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -32,6 +33,8 @@ public class UploadC2DocumentsService {
     private final DocumentUploadHelper documentUploadHelper;
 
     public List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
+
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(
             caseData.getC2DocumentBundle(), new ArrayList<>()
         );
@@ -39,7 +42,7 @@ public class UploadC2DocumentsService {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
-            unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())
+            unwrapElements(eventData.getTemporaryC2Document().getSupportingEvidenceBundle())
                 .stream()
                 .map(supportingEvidence -> supportingEvidence.toBuilder()
                     .dateTimeUploaded(time.now())
@@ -47,11 +50,12 @@ public class UploadC2DocumentsService {
                     .build())
                 .collect(Collectors.toList());
 
-        C2DocumentBundle.C2DocumentBundleBuilder c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(uploadedBy)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
-            .type(caseData.getC2ApplicationType().get("type"));
+        C2DocumentBundle.C2DocumentBundleBuilder c2DocumentBundleBuilder =
+            eventData.getTemporaryC2Document().toBuilder()
+                .author(uploadedBy)
+                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
+                .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
+                .type(eventData.getC2ApplicationType().get("type"));
 
         c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));
 

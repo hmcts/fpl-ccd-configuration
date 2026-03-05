@@ -1082,12 +1082,31 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2EvidenceConsentDocument",
+    "Label": "Evidence of consent",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "skipPaymentPage",
     "Label": "Skip payment page",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Hidden field used to control whether we skip the payment page (i.e. for adjourning hearings additional app)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2ApplicationRoute",
+    "Label": "Do you want to make the C2 application online or upload a paper form?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationRoute",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -2232,18 +2251,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "additionalApplicationType",
-    "Label": "What are you applying for?",
+    "Label": "What application are you making?",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "AdditionalApplicationType",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "additionalApplicationsLabel",
-    "Label": "Use this feature to upload applications for additional orders. You might need to upload additional forms, depending on your application type.",
-    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -2325,7 +2335,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2Type",
-    "Label": "What type of C2 application?",
+    "Label": "Do all other parties consent to this application?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "C2ApplicationType",
     "SecurityClassification": "Public",
@@ -2335,8 +2345,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "isC2Confidential",
-    "Label": "Is this a confidential application? If you select yes, only yourself and HMCTS will be able to view this application.",
-    "FieldType": "YesOrNo",
+    "Label": "Is this a confidential application?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationConfidential",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -2353,7 +2364,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicantsList",
-    "Label": "Select applicant",
+    "Label": "Who is making this application?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
     "Searchable": "N"
