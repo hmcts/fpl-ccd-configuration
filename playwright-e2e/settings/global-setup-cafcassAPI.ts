@@ -1,27 +1,24 @@
 import { test as setup } from '@playwright/test';
 import {getAccessToken} from "../utils/api-helper";
-import {cafcassAPIUser, systemUpdateUser,newSwanseaLocalAuthorityUserOne} from "./user-credentials";
 import { getDocParameter } from '../utils/api-helper';
+import {users} from "./token-config";
 
-const userMap: Record<string, any> = {
-    [newSwanseaLocalAuthorityUserOne.email]: newSwanseaLocalAuthorityUserOne,
-    [systemUpdateUser.email]: systemUpdateUser,
-    [cafcassAPIUser.email]: cafcassAPIUser,
-};
 setup.describe.configure({ mode: 'serial' });
 
 setup('access Token', async () => {
-    for (const email in userMap) {
-        const envKey = email.toUpperCase().split('@')[0] + 'AUTH';
-        if (!process.env[envKey]) {
-            try {
-                process.env[envKey] = await getAccessToken({ user: userMap[email] });
-            } catch (error) {
-                console.error(`Error during auth token for ${email}:`, error);
-                throw error;
-            }
+    const accessTokens: Record<string, string> = {};
+    for (const user in users) {
+        let accessToken = '';
+        try {
+            accessToken = await getAccessToken({user: users[user]});
+            accessTokens[users[user].email] = accessToken;
+        } catch (error) {
+            console.error(`Error during auth token for ${users[user].email}:`, error);
+            throw error;
         }
     }
+    // Store all access tokens in a global environment variable as JSON
+    process.env.ACCESS_TOKENS = JSON.stringify(accessTokens);
 });
 setup('document parameters', async () => {
     try {
