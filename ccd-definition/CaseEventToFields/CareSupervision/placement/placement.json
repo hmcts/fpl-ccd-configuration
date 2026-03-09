@@ -62,7 +62,8 @@
     "PageID": "placement",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -75,7 +76,8 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "placement=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "placement=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
