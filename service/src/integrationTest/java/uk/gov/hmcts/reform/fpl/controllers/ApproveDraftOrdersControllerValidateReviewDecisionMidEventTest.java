@@ -214,24 +214,32 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
     }
 
     @Test
-    void shouldNotReturnErrorsWhenReviewDecisionForTheDraftOrdersIsValidButJudicialProfileNotFound() {
+    void shouldSetLegalAdvisorTypeIfLegalAdvisorApproving() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
-            hearingOrdersBundleId, newArrayList(agreedCMO));
+            hearingOrdersBundleId, newArrayList(draftOrder1, draftOrder2));
+
+        ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder()
+            .draftOrder1Document(order)
+            .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
+            .build();
 
         CaseData caseData = CaseData.builder()
-            .reviewDraftOrdersData(ReviewDraftOrdersData.builder()
-                .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build())
+            .others(Others.builder()
+                .firstOther(Other.builder().name("test1").build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
+                .build())
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
-            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
+            .reviewDraftOrdersData(reviewDraftOrdersData).build();
 
-        given(judicialService.isCurrentUserFeePaidJudge()).willThrow(new RuntimeException("Not found"));
+        when(judicialService.isCurrentUserFeePaidJudge()).thenThrow(new RuntimeException("Not found"));
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getData().get("judgeType")).isEqualTo("LEGAL_ADVISOR");
     }
 
     private Element<HearingOrdersBundle> buildHearingOrdersBundle(

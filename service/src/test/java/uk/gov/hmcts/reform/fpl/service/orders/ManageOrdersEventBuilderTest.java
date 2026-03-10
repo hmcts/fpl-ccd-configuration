@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -92,12 +93,14 @@ class ManageOrdersEventBuilderTest {
         when(order.getDocument()).thenReturn(orderDocument);
         when(order.asLabel()).thenReturn(ORDER_TITLE);
         when(order.getTranslationRequirements()).thenReturn(TRANSLATION_REQUIREMENT);
+        when(order.getOrderType()).thenReturn(C35A_SUPERVISION_ORDER.name());
 
         assertThat(underTest.build(caseData, caseDataBefore, eventData)).isEqualTo(new GeneratedOrderEvent(caseData,
             orderDocument,
             TRANSLATION_REQUIREMENT,
             ORDER_TITLE,
-            LocalDate.now()));
+            LocalDate.now(),
+            C35A_SUPERVISION_ORDER.name()));
     }
 
     @Test

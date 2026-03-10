@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -11,6 +13,7 @@ import static java.util.Objects.nonNull;
 
 @Data
 @Jacksonized
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder(toBuilder = true)
 public class Hearing {
     private final HearingUrgencyType hearingUrgencyType;
@@ -49,6 +52,7 @@ public class Hearing {
      * @deprecated (DFPL-2304, historical hearing urgency field)
      */
     @Deprecated(since = "DFPL-2304")
+    @JsonProperty("type_GiveReason")
     private final String typeGiveReason;
     /**
      * This historical hearing urgency field is deprecated since DFPL-2304.

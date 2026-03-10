@@ -972,20 +972,42 @@ public class MigrateCaseService {
 
     public Map<String, OrganisationPolicy> updateOutsourcingPolicy(CaseData caseData, String orgId,
                                                                                String caseRole) {
-        String orgName = organisationService.findOrganisation(orgId)
-            .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
-            .orElseThrow();
-
-        Organisation newOrganisation = Organisation.builder()
-            .organisationID(orgId)
-            .organisationName(orgName)
-            .build();
+        String orgName = getOrgName(orgId);
+        Organisation newOrganisation = createNewOrganisation(orgId, orgName);
 
         caseRole = caseData.getOutsourcingPolicy() != null
             ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : caseRole;
 
         return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
             .orgPolicyCaseAssignedRole(caseRole).build());
+    }
+
+    private String getOrgName(String orgId) {
+        return organisationService.findOrganisation(orgId)
+            .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
+            .orElseThrow();
+    }
+
+    private Organisation createNewOrganisation(String orgId, String orgName) {
+        return Organisation.builder()
+            .organisationID(orgId)
+            .organisationName(orgName)
+            .build();
+    }
+
+    public Map<String, OrganisationPolicy> updateRespondentPolicy(CaseData caseData,
+                                                                  String orgId,
+                                                                  String caseRole,
+                                                                  int policyIndex) {
+        String orgName = getOrgName(orgId);
+        Organisation newOrganisation = createNewOrganisation(orgId, orgName);
+        OrganisationPolicy policyData = caseData.getRespondentPolicyData().getAllPolicies()[policyIndex];
+        caseRole = policyData != null ? policyData.getOrgPolicyCaseAssignedRole() : caseRole;
+
+        return Map.of("respondentPolicy" + Integer.toString(policyIndex), OrganisationPolicy.builder()
+            .organisation(newOrganisation)
+            .orgPolicyCaseAssignedRole(caseRole)
+            .build());
     }
 
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,

@@ -78,6 +78,9 @@ export class Orders extends BasePage {
     conditionsOfContact: Locator;
     partyGrantedLeave: Locator;
     newSurname: Locator;
+    readonly supervisionOrder: Locator;
+    readonly courtDirectsThat: Locator;
+    readonly requiredOrder: Locator;
 
 
     constructor(page: Page) {
@@ -158,6 +161,9 @@ export class Orders extends BasePage {
         this.conditionsOfContact = page.getByLabel('Conditions of contact');
         this.partyGrantedLeave = page.getByRole('textbox', { name: 'Party granted leave' });
         this.newSurname = page.getByRole('textbox', { name: 'Child/Children\'s new surname' });
+        this.supervisionOrder = page.locator('#manageOrdersC35aOrderExists_Yes');
+        this.courtDirectsThat = page.getByRole('textbox', { name: 'The court directs that' });
+        this.requiredOrder = page.getByRole('radio', { name: 'Variation of supervision order' });
 
     }
 
@@ -359,9 +365,10 @@ export class Orders extends BasePage {
         await this.month.fill('08');
         await this.year.fill('2025');
         await this.orderConsent.getByLabel('Yes').click();
-        await this.orderConsent.getByLabel('Yes').click(); // checkbox not clicking had to work around it
+        await this.orderConsent.getByLabel('Yes').click();// checkbox not clicking had to work around it
         await this.futherDirections.fill('test');
         await this.finalOrder.getByLabel('No').check();
+        await this.finalOrder.getByLabel('No').check();// checkbox not clicking had to work around it
 
     }
 
@@ -506,6 +513,46 @@ export class Orders extends BasePage {
         await this.finalOrder.getByText('No').click();
         await this.partyGrantedLeave.fill('Jason');
         await this.newSurname.fill('Fredrick');
+
+    }
+
+    async uploadsVariationOrExtensionOrder() {
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.supervisionOrder.check();
+        await this.requiredOrder.check();
+        await this.courtDirectsThat.fill('test');
+        await this.approvalDate.getByLabel('Day').fill('11');
+        await this.approvalDate.getByLabel('Month').fill('01');
+        await this.approvalDate.getByLabel('Year').fill('2026');
+        await this.endDate.getByLabel('Day').fill('21');
+        await this.endDate.getByLabel('Month').fill('01');
+        await this.endDate.getByLabel('Year').fill('2026');
+        await this.finalOrder.getByText('No').click();
+        await this.finalOrder.getByText('No').click();// // checkbox not clicking had to work around it
+
+   }
+
+    async uploadsDischargeOfCareOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('Yes').check();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.orderApplication.getByLabel('Yes').click();
+        await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Day' }).fill('3');
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Month' }).fill('4');
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Year' }).fill('2022');
+        await this.careOrderIssuedCourt.selectOption('High Court Family Division');
+        await this.orderFurtherDirectionDetails.fill('Further Direction');
+        await this.finalOrder.getByLabel('No').check();
 
     }
 }
