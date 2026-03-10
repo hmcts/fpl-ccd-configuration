@@ -214,8 +214,6 @@ test.describe('Upload additional applications', () => {
     await test.step('Complete C2 Application', async () => {
       await additionalApplications.gotoNextStep('Upload additional applications');
       await additionalApplications.chooseC2ApplicationType();
-     // await additionalApplications.page.pause();
-     // await uploadAdditionalApplications.checkC2Order();
       await uploadAdditionalApplications.checkC2Order();
       await uploadAdditionalApplications.checkConfidentialApplicationYes();
       await uploadAdditionalApplications.selectApplicantValue(1);
