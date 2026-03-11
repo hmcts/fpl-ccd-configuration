@@ -1,7 +1,12 @@
 import { test as setup } from '@playwright/test';
-import {getAccessToken} from "../utils/api-helper";
+import { getAccessToken } from "../utils/api-helper";
+import { newSwanseaLocalAuthorityUserOne, systemUpdateUser } from "./user-credentials";
 import { getDocParameter } from '../utils/api-helper';
-import {users} from "./token-config-cafcassAPITest";
+import {each} from "lodash";
+import {ServiceTokenParams} from "@hmcts/playwright-common/dist/utils/service-auth.utils";
+import {ServiceAuthUtils} from "@hmcts/playwright-common";
+import {users,services} from "./token-config";
+
 
 setup.describe.configure({ mode: 'serial' });
 
@@ -20,6 +25,17 @@ setup('access Token', async () => {
     // Store all access tokens in a global environment variable as JSON
     process.env.ACCESS_TOKENS = JSON.stringify(accessTokens);
 });
+setup(' Service S2S Token', async () => {
+    const serviceS2STokens: Record<string, string> = {};
+    const serviceAuth = new ServiceAuthUtils();
+    let serviceS2SToken = '';
+    for (const serv in services) {
+
+        serviceS2SToken = await serviceAuth.retrieveToken({microservice: `${services[serv]}`} as ServiceTokenParams);
+        serviceS2STokens[services[serv]] = serviceS2SToken;
+    }
+    process.env.S2S_TOKENS = JSON.stringify(serviceS2STokens);
+});
 setup('document parameters', async () => {
     try {
 
@@ -31,4 +47,3 @@ setup('document parameters', async () => {
         throw error;
     }
 });
-
