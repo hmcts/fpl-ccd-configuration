@@ -23,16 +23,24 @@ export class AdditionalApplications extends BasePage {
   readonly typeOfC2Application: Locator;
   readonly paymentPbaNumberTextBox: Locator;
   readonly paymentPBANumberDynamicList: Locator;
+  readonly applyOnline: Locator;
+  readonly uploadPaperForm: Locator;
+  readonly evidenceConsent: Locator;
+  readonly partiesConsent: Locator;
+  readonly confirmDocuments: Locator;
+  readonly uploadApplication: Locator;
+  readonly otherApplicant: Locator;
+
 
   public constructor(page: Page) {
     super(page);
-    this.otherSpecificOrder = page.getByText('Other specific order - including C1 and C100 orders, and supplements');
-    this.c2Order = page.getByText('C2 - to add or remove someone on a case, or for a specific request to the judge');
+    this.otherSpecificOrder = page.getByText('Other specific application -');
+    this.c2Order = page.getByRole('checkbox', { name: 'C2 Application' });
     this.confidentialC2Order = page.getByLabel('Yes')
     this.nonConfidentialC2Order = page.locator('[for="isC2Confidential_No"]');
-    this.applicant = page.getByLabel('Select applicant');
+    this.applicant = page.getByLabel('Who is making this');
     this.c1ApplicationType = page.getByLabel('Select application');
-    this.applicationForm = page.getByRole('button', { name: 'Upload application' });
+    this.applicationForm = page.getByRole('button', { name: 'Upload C2 application' });
     this.c2ApplicationForm = page.getByRole('button', { name: 'Upload C2 application' });
     this.acknowledgeOtherApplicationForm = page.locator('[name="temporaryOtherApplicationsBundle_documentAcknowledge"]');
     this.acknowledgeC2ApplicationForm = page.locator('[name="temporaryC2Document_documentAcknowledge"]');
@@ -42,39 +50,77 @@ export class AdditionalApplications extends BasePage {
     this.selectApplication = page.getByLabel('What type of C2 application?');
     this.checkbox = page.getByLabel('Yes');
     this.paymentPbaNumber = page.getByRole('textbox', { name: 'Payment by account (PBA) number' });
-    this.typeOfC2Application = page.getByLabel('Application with notice.');
+    this.typeOfC2Application = page.getByLabel('Yes - only the judge or HMCTS');
     this.paymentPbaNumberTextBox = page.getByRole('textbox', { name: 'Payment by account (PBA)' });
     this.paymentPBANumberDynamicList = page.locator('#temporaryPbaPayment_pbaNumberDynamicList');
+    this.applyOnline = page.getByRole('radio', { name: 'Apply online' });
+    this.uploadPaperForm = page.getByRole('radio', { name: 'Upload a paper form' });
+    this.evidenceConsent = page.getByRole('button', { name: 'Evidence of consent' });
+    this.partiesConsent = page.getByRole('radio', { name: 'Yes', exact: true });
+    this.confirmDocuments = page.getByRole('checkbox', { name: 'Yes' });
+    this.uploadApplication = page.getByRole('button', { name: 'Upload application' });
+    this.otherApplicant = page.getByRole('textbox', { name: 'Add applicant\'s name' });
+
   }
 
   public async chooseOtherApplicationType() {
     await this.otherSpecificOrder.click();
-    await this.selectApplicant.selectOption('1: applicant');
+    await this.applicant.selectOption('Someone else');
+    await this.otherApplicant.fill('Moniks');
     await this.clickContinue();
+
   }
 
   public async chooseC2ApplicationType() {
     await this.c2Order.click();
+    await this.applyOnline.click();
+    await this.partiesConsent.click();
+    await this.evidenceConsent.setInputFiles(config.testPdfFile);
+    await this.expectAllUploadsCompleted();
+    await this.page.waitForTimeout(6000);
     await this.typeOfC2Application.click();
-    await this.confidentialC2Order.click();
-    await this.selectApplicant.selectOption('3: 5c578fcc-7e41-45b0-82f7-46c38a769cb3');
+    await this.applicant.selectOption('Someone else');
+    await this.otherApplicant.fill('James');
     await this.clickContinue();
   }
 
   public async chooseConfidentialC2ApplicationType() {
     await this.c2Order.click();
-    await this.applicant.selectOption('Swansea City Council, Applicant');
-    await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
-    await this.confidentialC2Order.click();
+    await this.applyOnline.click();
+    await this.partiesConsent.click();
+    await this.evidenceConsent.setInputFiles(config.testPdfFile);
+    await this.expectAllUploadsCompleted();
+    await this.page.waitForTimeout(6000);
+    await this.typeOfC2Application.click();
+    await this.applicant.selectOption('Someone else');
+    await this.otherApplicant.fill('Dianah');
     await this.clickContinue();
   }
 
   public async chooseBothApplicationTypes() {
     await this.c2Order.click();
     await this.otherSpecificOrder.click();
-    await this.applicant.selectOption('Swansea City Council, Applicant');
+    await this.applyOnline.click();
+    await this.partiesConsent.click();
+    await this.evidenceConsent.setInputFiles(config.testPdfFile);
+    await this.expectAllUploadsCompleted();
+    await this.page.waitForTimeout(6000);
     await this.typeOfC2Application.click();
-    await this.nonConfidentialC2Order.click();
+    await this.applicant.selectOption('Someone else');
+    await this.otherApplicant.fill('Dianah');
+    await this.clickContinue();
+  }
+
+  public async enterOnlineC2ApplicationDetails() {
+    await this.c2Order.click();
+    await this.applyOnline.click();
+    await this.evidenceConsent.getByLabel('Yes').click;
+    await this.evidenceConsent.setInputFiles(config.testPdfFile);
+    await this.expectAllUploadsCompleted();
+    await this.page.waitForTimeout(6000);
+    await this.typeOfC2Application.click();
+    await this.applicant.selectOption('Someone else');
+    await this.otherApplicant.fill('Dianah');
     await this.clickContinue();
   }
 
@@ -82,7 +128,7 @@ export class AdditionalApplications extends BasePage {
     await this.c1ApplicationType.selectOption('C1 - Change surname or remove from jurisdiction');
 
     // upload application form
-    await this.applicationForm.setInputFiles(config.testPdfFile3);
+    await this.uploadApplication.setInputFiles(config.testPdfFile);
     await this.expectAllUploadsCompleted();
     await this.page.waitForTimeout(6000);
     await this.acknowledgeOtherApplicationForm.check();
@@ -104,11 +150,11 @@ export class AdditionalApplications extends BasePage {
   }
 
   public async fillC2ApplicationDetails(uploadDraftOrder: boolean = true) {
+
     // upload application form
     await this.c2ApplicationForm.setInputFiles(config.testPdfFile);
     await this.expectAllUploadsCompleted();
     await this.page.waitForTimeout(6000);
-
     await this.acknowledgeC2ApplicationForm.check();
     await this.page.getByLabel('Change surname or remove from jurisdiction.').click();
     await this.within2Days.click();
@@ -162,7 +208,7 @@ export class AdditionalApplications extends BasePage {
     await this.clickContinue();
   }
 
-  public async uploadBasicC2Application(uploadDraftOrder: boolean = true,PBAnumber: string) {
+  public async uploadBasicC2Application(uploadDraftOrder: boolean = true, PBAnumber: string) {
     await this.chooseC2ApplicationType();
     await this.fillC2ApplicationDetails(uploadDraftOrder);
     await this.payForApplication(PBAnumber);
