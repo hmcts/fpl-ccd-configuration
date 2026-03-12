@@ -18,7 +18,7 @@
     "CaseFieldID": "placement",
     "ListElementCode": "placementChildName",
     "SecurityClassification": "Public",
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "FieldShowCondition": "placementChildId = \"DO NOT SHOW\"",
     "RetainHiddenValue": "Yes"
   },
