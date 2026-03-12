@@ -99,8 +99,9 @@ export class AdditionalApplications extends BasePage {
 
   public async chooseBothApplicationTypes() {
     await this.c2Order.click();
+    await this.otherSpecificOrder.click();
     await this.applyOnline.click();
-    await this.evidenceConsent.getByLabel('Yes').click;
+    await this.partiesConsent.click();
     await this.evidenceConsent.setInputFiles(config.testPdfFile);
     await this.expectAllUploadsCompleted();
     await this.page.waitForTimeout(6000);
@@ -146,13 +147,10 @@ export class AdditionalApplications extends BasePage {
     for (let i = 0; i < locs.length; i++) {
       await expect(locs[i]).toBeDisabled();
     }
-    // other Applicants details for C1 Application
-    await this.applicant.selectOption('Swansea City Council, Applicant');
-    await this.applicant.selectOption('Someone else');
-    await this.otherApplicant.fill('Dianah');
   }
 
   public async fillC2ApplicationDetails(uploadDraftOrder: boolean = true) {
+
     // upload application form
     await this.c2ApplicationForm.setInputFiles(config.testPdfFile);
     await this.expectAllUploadsCompleted();
