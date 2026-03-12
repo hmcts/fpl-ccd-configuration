@@ -154,7 +154,8 @@
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "C2AdditionalOrdersRequested",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Most of the options are deprecated - DFPL-2841, REQUESTING_ADJOURNMENT is the only valid option remaining"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -164,7 +165,18 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ParentalResponsibilityType",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Deprecated - DFPL-2841"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "isHearingAdjournmentRequired",
+    "ElementLabel": "Adjournment requested?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -173,14 +185,34 @@
     "ElementLabel": "Which hearing?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Temporary field"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "ListElementCode": "requestedHearingToAdjourn",
-    "ElementLabel": "Requested hearing to adjourn",
+    "ElementLabel": "Hearing to be adjourned",
     "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "label of the hearing selected in hearingList"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "hasSafeguardingRisk",
+    "ElementLabel": "Safeguarding risk?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "safeguardingRiskDetails",
+    "ElementLabel": "Safeguarding Reason",
+    "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -191,6 +223,16 @@
     "ElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "UrgencyTimeFrameType",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Deprecated - DFPL-2841"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "canBeConsideredAtNextHearing",
+    "ElementLabel": "Consider at next hearing?",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -254,6 +296,18 @@
     "FieldTypeParameter": "DocumentAcknowledge",
     "ElementLabel": "Tick to confirm this document is related to this case",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Temporary field"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "NoConfidentialAddressConfirmation",
+    "ElementLabel": "There is a confidential address on this case. Check the document and confirm it doesn't contain a confidential address.",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field"
   }
 ]

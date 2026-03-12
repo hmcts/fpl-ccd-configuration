@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
@@ -187,7 +189,8 @@ public class UploadAdditionalApplicationsService {
                                                    String uploadedBy,
                                                    LocalDateTime uploadedTime) {
         UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
-        C2DocumentBundle temporaryC2Document = eventData.getTemporaryC2Document();
+        C2AdditionalApplicationEventData temporaryC2Document =
+            eventData.getTemporaryC2Document();
 
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(caseData,
             temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
@@ -197,18 +200,23 @@ public class UploadAdditionalApplicationsService {
             getSupplementsBundle(temporaryC2Document.getSupplementsBundle(),
                 uploadedBy, uploadedTime);
 
+        C2DocumentBundle.C2DocumentBundleBuilder<?, ?> c2DocumentBundleBuilder =
+            temporaryC2Document.toC2DocumentBundle().toBuilder()
+                .id(UUID.randomUUID())
+                .applicantName(applicantName)
+                .author(uploadedBy)
+                .document(temporaryC2Document.getDocument())
+                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
+                .supplementsBundle(updatedSupplementsBundle)
+                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+                .type(eventData.getC2Type())
+                .respondents(respondentsInCase);
 
-        return temporaryC2Document.toBuilder()
-            .id(UUID.randomUUID())
-            .applicantName(applicantName)
-            .author(uploadedBy)
-            .document(temporaryC2Document.getDocument())
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
-            .supplementsBundle(updatedSupplementsBundle)
-            .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-            .type(eventData.getC2Type())
-            .respondents(respondentsInCase)
-            .build();
+        if (YES.equals(temporaryC2Document.getIsHearingAdjournmentRequired())) {
+            c2DocumentBundleBuilder.c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT));
+        }
+
+        return c2DocumentBundleBuilder.build();
     }
 
     private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
@@ -338,6 +346,12 @@ public class UploadAdditionalApplicationsService {
             && eventData.getAdditionalApplicationType().size() == 1;
     }
 
+    public boolean onlyApplyingForAnAdjournment(CaseData caseData, C2AdditionalApplicationEventData temporaryC2Bundle) {
+        return onlyApplyingForC2(caseData)
+            && YES.equals(temporaryC2Bundle.getIsHearingAdjournmentRequired())
+            && isEmpty(temporaryC2Bundle.getC2AdditionalOrdersRequested());
+    }
+
     public boolean onlyApplyingForAnAdjournment(CaseData caseData, C2DocumentBundle temporaryC2Bundle) {
         return onlyApplyingForC2(caseData)
             && temporaryC2Bundle.getC2AdditionalOrdersRequested().size() == 1
@@ -352,7 +366,8 @@ public class UploadAdditionalApplicationsService {
      * @param temporaryC2Bundle - the current C2 bundle as amended during the callback
      * @return - boolean for whether we should skip the payments or not
      */
-    public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
+    public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing,
+                                      C2AdditionalApplicationEventData temporaryC2Bundle) {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
     }
@@ -409,5 +424,25 @@ public class UploadAdditionalApplicationsService {
                 .build();
         }
         return pbaPayment;
+    }
+
+    public WorkAllocationTaskUrgency getBundleUrgency(AdditionalApplicationsBundle bundle) {
+        // Part of C2 redesign work, as of now, only C2 bundle affect the WA task urgency.
+        // Future service improvement may need for other additional application.
+        if (bundle.getC2DocumentBundle() != null
+            && YES.equals(bundle.getC2DocumentBundle().getHasSafeguardingRisk())) {
+            return WorkAllocationTaskUrgency.URGENT;
+        }
+        return WorkAllocationTaskUrgency.HIGH;
+    }
+
+    public List<String> validateC2Bundle(UploadAdditionalApplicationsEventData eventData) {
+        List<String> errors = new ArrayList<>();
+
+        if (isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle()) && !userService.isCtscUser()) {
+            errors.add("Please upload a draft order to proceed");
+        }
+
+        return errors;
     }
 }

@@ -24,10 +24,12 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
+import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
@@ -37,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
@@ -50,7 +53,6 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -80,6 +82,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final UserService userService;
     private final ManageDocumentService manageDocumentService;
     private final PbaNumberService pbaNumberService;
+    private final WorkAllocationTaskService workAllocationTaskService;
+    private final ConfidentialDetailsService confidentialDetailsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -102,10 +106,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         if (caseData.getUploadAdditionalApplicationsEventData().getAdditionalApplicationType()
             .contains(AdditionalApplicationType.C2_ORDER)) {
             // Initialise the C2 document bundle so we can have a dynamic list present
-            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, C2DocumentBundle.builder()
-                .hearingList(caseData.buildDynamicHearingList())
-                .build());
+            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT,
+                C2AdditionalApplicationEventData.builder()
+                    .hearingList(caseData.buildDynamicHearingList())
+                    .build());
         }
+
+        caseDetails.getData().putAll(confidentialDetailsService.populateHasConfidentialPartyFlag(caseData));
         return respond(caseDetails);
     }
 
@@ -117,11 +124,17 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         boolean skipPayment = false;
         if (!isNull(eventData.getTemporaryC2Document())) {
-            C2DocumentBundle temporaryC2Document = eventData.getTemporaryC2Document();
+            C2AdditionalApplicationEventData temporaryC2Document =
+                eventData.getTemporaryC2Document();
             temporaryC2Document.setType(eventData.getC2Type());
 
-            if (!isNull(temporaryC2Document.getC2AdditionalOrdersRequested())
-                && temporaryC2Document.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT)) {
+            List<String> errors = uploadAdditionalApplicationsService.validateC2Bundle(eventData);
+            // Draft order is mandatory to non-CTSC user
+            if (!isEmpty(errors)) {
+                return respond(caseDetails, errors);
+            }
+
+            if (YES.equals(temporaryC2Document.getIsHearingAdjournmentRequired())) {
                 // Get the selected hearing from the dynamic list + populate the 'selected hearing' field
                 UUID selectedHearingCode = getDynamicListSelectedValue(temporaryC2Document.getHearingList(), mapper);
                 HearingBooking hearing = findElement(selectedHearingCode,
@@ -227,6 +240,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().put("latestRoleSent", uploadAdditionalApplicationsService
             .getAllocatedJudgeOrLegalAdviserType(caseData));
+
+        workAllocationTaskService.setTaskUrgency(caseDetails.getData(),
+            uploadAdditionalApplicationsService.getBundleUrgency(additionalApplicationsBundle));
 
         removeTemporaryFields(caseDetails, UploadAdditionalApplicationsEventData.class);
         removeTemporaryFields(caseDetails, AMOUNT_TO_PAY, IS_CTSC_USER, SKIP_PAYMENT_PAGE);
