@@ -8,7 +8,8 @@
     "ElementLabel": "Child id",
     "SecurityClassification": "Public",
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "placementChildName = \"DO NOT SHOW\""
+    "FieldShowCondition": "placementChildName = \"DO NOT SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -18,7 +19,8 @@
     "ListElementCode": "placementChildName",
     "SecurityClassification": "Public",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "placementChildId = \"DO NOT SHOW\""
+    "FieldShowCondition": "placementChildId = \"DO NOT SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
