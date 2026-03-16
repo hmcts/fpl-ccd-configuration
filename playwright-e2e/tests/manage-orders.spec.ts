@@ -941,16 +941,20 @@ test.describe('manage orders', () => {
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
+
         await orders.gotoNextStep('Manage orders');
         await orders.selectOrderOperation('Create an order');
         await orders.clickContinue();
+
         await orders.selectOrder('Placement Blank order (A81)');
         await orders.clickContinue();
-        await orders.addPlacementBlankOrder;
+        await orders.addPlacementBlankOrder();
+
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'a81_placement_blank_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'a81_placement_blank_order.pdf' })).toBeVisible
+
     })
 
     test('Judge uploads Placement Blank order (A81) ', async ({ page, signInPage, orders }) => {
@@ -965,7 +969,6 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await orders.selectOrder('Placement Blank order (A81)');
-        await orders.clickContinue();
         await orders.clickContinue();
         await orders.addPlacementBlankOrder();
 
