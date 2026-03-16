@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
@@ -1421,5 +1422,27 @@ public class MigrateCaseService {
             .build());
 
         return hearings;
+    }
+
+    public Map<String, Object> removeStatementOfService(String migrationId, CaseData caseData,
+                                                        String statementIdToBeRemoved) {
+
+        List<Element<Recipients>> statementOfService = caseData.getStatementOfService();
+        if (isEmpty(statementOfService)) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, statement of service not found",
+                migrationId, caseData.getId()));
+        }
+
+        List<Element<Recipients>> statementOfServiceAfter = ElementUtils.removeElementWithUUID(statementOfService,
+            UUID.fromString(statementIdToBeRemoved));
+
+        if (statementOfServiceAfter.size() == statementOfService.size()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, statement of service element not found",
+                migrationId, caseData.getId()));
+        }
+
+        return Map.of("statementOfService", statementOfServiceAfter);
+
     }
 }
