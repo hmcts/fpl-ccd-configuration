@@ -2,6 +2,7 @@ import { test } from '../fixtures/create-fixture';
 import { CTSCUser, judgeUser, newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 import caseData from '../caseData/caseWithHearingDetails.json' assert {type: 'json'};
 import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert {type: 'json'};
+import caseDataWithPlacementApplication from '../caseData/caseWithPlacementApplication.json' assert {type: 'json'};
 import { expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
 
@@ -937,7 +938,7 @@ test.describe('manage orders', () => {
 
     test('CTSC uploads Placement Blank order (A81) ', async ({ page, signInPage, orders }) => {
         caseName = 'Placement Blank order (A81)' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseData);
+        await updateCase(caseName, caseNumber, caseDataWithPlacementApplication);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -959,7 +960,7 @@ test.describe('manage orders', () => {
 
     test('Judge uploads Placement Blank order (A81) ', async ({ page, signInPage, orders }) => {
         caseName = 'Placement Blank order (A81)' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseData);
+        await updateCase(caseName, caseNumber, caseDataWithPlacementApplication);
         await signInPage.visit();
         await signInPage.login(judgeUser.email, judgeUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
