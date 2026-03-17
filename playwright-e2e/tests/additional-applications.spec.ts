@@ -365,7 +365,7 @@ test.describe('Upload additional applications', () => {
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
         await additionalApplications.gotoNextStep('Upload additional applications');
-        await additionalApplications.chooseApplication('C2 Application');
+        await additionalApplications.selectApplicationType('C2 Application');
         await additionalApplications.selectC2FormType('Upload a paper form');
         await additionalApplications.giveC2AppConsent('Yes');
         await additionalApplications.isC2AppConfidential('No');
@@ -373,8 +373,8 @@ test.describe('Upload additional applications', () => {
         await additionalApplications.clickContinue();
         await additionalApplications.uploadC2ApplicationForm();
         await additionalApplications.isC2ApplicationUrgent('No', 'Urgent');
-        await additionalApplications.C2ToadjournHearing('No');
-        await additionalApplications.C2WaitUntilNextHearing('Yes');
+        await additionalApplications.IsC2ToAdjournHearing('No');
+        await additionalApplications.canC2AppWaitUntilNextHearing('Yes');
 
         await additionalApplications.uploadSupplementDocument('0', 'C18 - Recovery order', 'test notes');
         await additionalApplications.uploadC2DraftOrder('0', 'Draft order one');
@@ -386,9 +386,11 @@ test.describe('Upload additional applications', () => {
         await additionalApplications.ctscPayForApplication();
         await additionalApplications.clickContinue();
         await additionalApplications.checkYourAnsAndSubmit();
-        await expect.soft(page.getByText('updated with event: Upload additional applications')).toBeVisible();
-        await additionalApplications.tabNavigation('Other applications');
 
+        await expect.soft(page.getByText('updated with event: Upload additional applications')).toBeVisible();
+        //assertion
+        await additionalApplications.tabNavigation('Other applications');
+        await page.pause();
         await expect(page.getByRole('term').filter({hasText: 'Additional applications 1'})).toBeVisible();
         await expect(page.getByRole('cell', {
             name: 'Draft Orders 1 Document name Draft order one File testWordDoc.docx Document Uploader Type HMCTS',

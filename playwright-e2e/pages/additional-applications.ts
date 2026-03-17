@@ -90,7 +90,7 @@ export class AdditionalApplications extends BasePage {
 
     }
 
-    public async chooseApplication(Type: string) {
+    public async selectApplicationType(Type: string) {
         await this.applicationType.getByRole('checkbox', {name: Type}).click();
     }
 
@@ -136,11 +136,11 @@ export class AdditionalApplications extends BasePage {
         }
     }
 
-    public async C2ToadjournHearing(YesNo: string) {
+    public async IsC2ToAdjournHearing(YesNo: string) {
         await this.adjournHearing.getByRole('radio', {name: YesNo}).click();
     }
 
-    public async C2WaitUntilNextHearing(YesNo: string) {
+    public async canC2AppWaitUntilNextHearing(YesNo: string) {
         await this.waitUntilNextHearing.getByRole('radio', {name: YesNo}).click();
     }
 
