@@ -23,8 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.19.0-rc.2'
-//  id 'com.github.hmcts.rse-cft-lib' version '0.19.2008'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.2017'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.2018'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -541,6 +540,8 @@ bootWithCCD {
     environment("FEATURE_WORKALLOCATION_ENABLED", "true")
     environment("SERVICES_WORK_ALLOCATION_TASK_API", "http://host.docker.internal:9193")
     environment("HEALTH_WORK_ALLOCATION_TASK_API", "http://host.docker.internal:9193/health")
+    environment("FEATURE_JRD_E_LINKS_V2_ENABLED", "true")
+    environment("RSE_LIB_XUI_ENV_FEATURE_JRD_E_LINKS_V2_ENABLED", "true")
   }
 }
 
