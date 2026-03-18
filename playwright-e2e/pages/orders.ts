@@ -81,6 +81,8 @@ export class Orders extends BasePage {
     readonly supervisionOrder: Locator;
     readonly courtDirectsThat: Locator;
     readonly requiredOrder: Locator;
+    readonly paragraph: Locator;
+    readonly childPlacementApplication: Locator;
 
 
     constructor(page: Page) {
@@ -164,6 +166,9 @@ export class Orders extends BasePage {
         this.supervisionOrder = page.locator('#manageOrdersC35aOrderExists_Yes');
         this.courtDirectsThat = page.getByRole('textbox', { name: 'The court directs that' });
         this.requiredOrder = page.getByRole('radio', { name: 'Variation of supervision order' });
+        this.paragraph = page.getByRole('textbox', { name: 'Paragraphs' });
+        this.childPlacementApplication = page.getByLabel('Child placement application');
+
 
     }
 
@@ -535,7 +540,7 @@ export class Orders extends BasePage {
         await this.finalOrder.getByText('No').click();
         await this.finalOrder.getByText('No').click();// // checkbox not clicking had to work around it
 
-   }
+    }
 
     async uploadsDischargeOfCareOrder() {
         await this.clickContinue();
@@ -553,6 +558,15 @@ export class Orders extends BasePage {
         await this.careOrderIssuedCourt.selectOption('High Court Family Division');
         await this.orderFurtherDirectionDetails.fill('Further Direction');
         await this.finalOrder.getByLabel('No').check();
+
+    }
+    async addPlacementBlankOrder() {
+        await this.childPlacementApplication.selectOption('William Black');
+        await this.addIssuingJudgeDetails('Yes');
+        await this.clickContinue();
+        await this.finalOrder.getByLabel('No').check();
+        await this.paragraph.fill('test');
+        await this.clickContinue();
 
     }
 }
