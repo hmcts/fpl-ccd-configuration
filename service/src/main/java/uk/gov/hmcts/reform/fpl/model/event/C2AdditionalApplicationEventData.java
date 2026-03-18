@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 @Getter
 @Jacksonized
@@ -18,6 +20,8 @@ public class C2AdditionalApplicationEventData extends C2DocumentBundle {
     private DynamicList hearingList;
     @Temp
     private YesNo isHearingAdjournmentRequired;
+    @Temp
+    DynamicMultiSelectList childSelectorForApplication;
 
     @JsonIgnore
     public C2DocumentBundle toC2DocumentBundle() {

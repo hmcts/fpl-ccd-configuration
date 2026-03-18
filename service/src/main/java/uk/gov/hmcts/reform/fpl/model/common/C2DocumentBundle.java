@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationPermissionType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
@@ -61,6 +62,9 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String applicantName;
     private final List<Element<Respondent>> respondents;
 
+    private final ApplicationPermissionType applicationPermissionType;
+    private final YesNo applicationRelatesToAllChildren;
+    private final String applicationSummary;
     private final YesNo hasSafeguardingRisk;
     private final String safeguardingRiskDetails;
     private final String requestedHearingToAdjourn;

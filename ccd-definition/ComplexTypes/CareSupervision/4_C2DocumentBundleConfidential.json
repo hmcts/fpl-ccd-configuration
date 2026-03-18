@@ -188,6 +188,46 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleConfidential",
+    "ListElementCode": "applicationPermissionType",
+    "ElementLabel": "Do you need permission to make this application?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ApplicationPermissionType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleConfidential",
+    "ListElementCode": "applicationRelatesToAllChildren",
+    "ElementLabel": "Relates to all children?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleConfidential",
+    "ListElementCode": "childSelectorForApplication",
+    "ElementLabel": "Which children does the application relate to?",
+    "FieldType": "DynamicMultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays an option for each child on the case"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleConfidential",
+    "ListElementCode": "applicationSummary",
+    "ElementLabel": "Application Summary",
+    "HintText": "Give a brief description of what you are applying for and your reason for making the application",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "hasSafeguardingRisk",
     "ElementLabel": "Safeguarding risk?",
     "FieldType": "YesOrNo",
