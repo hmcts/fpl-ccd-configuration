@@ -7,7 +7,8 @@
     "FieldTypeParameter": "JudicialMessageRoleTypes",
     "ElementLabel": "From",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "fromLabel != \"*\""
+    "FieldShowCondition": "fromLabel != \"*\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -119,7 +120,8 @@
     "ListElementCode": "replyFrom",
     "FieldType": "Email",
     "ElementLabel": "Sender's email address",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -127,7 +129,8 @@
     "ListElementCode": "replyTo",
     "FieldType": "Email",
     "ElementLabel": "Recipient's email address",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
