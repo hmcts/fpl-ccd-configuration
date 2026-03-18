@@ -526,7 +526,9 @@ bootWithCCD {
 
     environment "spring.profiles.active", "feature-toggle,local,user-mappings"
     environment 'rse.lib.stub.s2s', 'true'
+    environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
     environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
+    environment 'PRD_HOST', 'http://rd-professional-api-aat.service.core-compute-aat.internal'
     environment 'MANAGE_CASE_S2S_AUTHORISED_SERVICES', 'ccd_gw,xui_webapp,ccd_data,fpl_case_service'
     environment 'DATA_STORE_CROSS_JURISDICTIONAL_ROLES', 'caseworker-caa,caseworker-publiclaw-systemupdate,caseworker-approver'
 
