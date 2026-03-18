@@ -526,17 +526,12 @@ bootWithCCD {
 
     environment "spring.profiles.active", "feature-toggle,local,user-mappings"
     environment 'rse.lib.stub.s2s', 'true'
-//    environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal' o
     environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
-//    environment 'PRD_HOST', 'http://rd-professional-api-aat.service.core-compute-aat.internal'
     environment 'MANAGE_CASE_S2S_AUTHORISED_SERVICES', 'ccd_gw,xui_webapp,ccd_data,fpl_case_service'
-//    environment 'CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES', 'fpl_case_service,aac_manage_case_assignment'
     environment 'DATA_STORE_CROSS_JURISDICTIONAL_ROLES', 'caseworker-caa,caseworker-publiclaw-systemupdate,caseworker-approver'
 
     environment("RSE_LIB_ADDITIONAL_DATABASES", "camunda,wa_workflow_api,cft_task_db,cft_task_db_replica")
-    // ccd-data-store-api
     environment("RD_LOCATION_REF_API_BASE_URL", "http://rd-location-ref-api-aat.service.core-compute-aat.internal")
-    // xui
     environment("FEATURE_WORKALLOCATION_ENABLED", "true")
     environment("SERVICES_WORK_ALLOCATION_TASK_API", "http://host.docker.internal:9193")
     environment("HEALTH_WORK_ALLOCATION_TASK_API", "http://host.docker.internal:9193/health")
