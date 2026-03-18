@@ -93,8 +93,7 @@
     "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Sender",
-    "FieldShowCondition": "judicialMessageReply.isReplying=\"DO_NOT_SHOW\"",
-    "RetainHiddenValue": "Yes"
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -105,8 +104,7 @@
     "FieldDisplayOrder": 9,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Sender's email address",
-    "FieldShowCondition": "judicialMessageReply.isReplying=\"DO_NOT_SHOW\"",
-    "RetainHiddenValue": "Yes"
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -117,8 +115,7 @@
     "FieldDisplayOrder": 10,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Recipient",
-    "FieldShowCondition": "judicialMessageReply.isReplying=\"DO_NOT_SHOW\"",
-    "RetainHiddenValue": "Yes"
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
