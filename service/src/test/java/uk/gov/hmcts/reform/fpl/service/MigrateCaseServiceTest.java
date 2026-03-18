@@ -52,6 +52,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
@@ -3795,6 +3796,45 @@ class MigrateCaseServiceTest {
                 hearingBookings, hearingId, caseId);
 
             assertThat(fixedHearingBookings.contains(element(hearingId, expectedHearingBooking))).isTrue();
+        }
+    }
+
+    @Nested
+    class RemoveStatementOfService {
+        @Test
+        void shouldRemoveStatementOfService() {
+            Element<Recipients> statementOfService =
+                element(Recipients.builder().email("recipient@test.com").name("Recipient").build());
+            Element<Recipients> statementOfServiceToBeRemoved =
+                element(Recipients.builder().email("removed@test.com").name("Removed").build());
+
+            CaseData caseData = CaseData.builder()
+                .statementOfService(List.of(statementOfService, statementOfServiceToBeRemoved))
+                .build();
+
+            Map<String, Object> result = underTest.removeStatementOfService(MIGRATION_ID, caseData,
+                statementOfServiceToBeRemoved.getId().toString());
+
+            assertThat(result).containsExactlyEntriesOf(Map.of("statementOfService", List.of(statementOfService)));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoStatementOfService() {
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeStatementOfService(MIGRATION_ID, caseData, UUID.randomUUID().toString()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoStatementOfServiceRemoved() {
+            CaseData caseData = CaseData.builder()
+                .statementOfService(wrapElementsWithUUIDs(Recipients.builder().build()))
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeStatementOfService(MIGRATION_ID, caseData, UUID.randomUUID().toString()));
         }
     }
 }
