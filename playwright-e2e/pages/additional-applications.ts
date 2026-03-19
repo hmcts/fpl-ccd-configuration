@@ -36,7 +36,7 @@ export class AdditionalApplications extends BasePage {
     private C2Confidentiality: Locator;
     private whoMakeApplication: any;
     private c2application: Locator;
-    private urgentC2Application: Locator;
+    private safegaurdRisk: Locator;
     private adjournHearing: Locator;
     private waitUntilNextHearing: Locator;
     private supplementDocument: Locator;
@@ -83,7 +83,7 @@ export class AdditionalApplications extends BasePage {
         this.applicantName = page.getByRole('textbox', {name: 'Add applicant\'s name'})//page.getByRole('group', { name: 'Who is making this application?' });
         this.c2application = page.getByRole('button', {name: 'Upload C2 application'});
         this.confirmDocuments = page.getByRole('group', {name: 'Tick to confirm this document is related to this case'});
-        this.urgentC2Application = page.getByRole('group', {name: 'Is there any reason, such as a safeguarding risk or other urgent issue, that requires your application to be considered by a judge on the same day?'});
+        this.safegaurdRisk = page.getByRole('group', {name: 'Is there any reason, such as a safeguarding risk or other urgent issue, that requires your application to be considered by a judge on the same day?'});
         this.adjournHearing = page.getByRole('group', {name: 'Are you requesting an adjournment for a scheduled hearing?'});
         this.waitUntilNextHearing = page.getByRole('group', {name: 'Can your application wait to be considered at the next scheduled hearing? '});
         this.supplementDocument = page.locator('#temporaryC2Document_supplementsBundle');
@@ -128,11 +128,11 @@ export class AdditionalApplications extends BasePage {
     }
 
 
-    public async isC2ApplicationUrgent(YesNo: string, reason: string) {
-        await this.urgentC2Application.getByRole('radio', {name: YesNo}).click();
-        if (YesNo == 'Yes') {
-            expect.soft(await this.page.getByLabel('If your application is urgent please call the court and tribunal support centre (CTSC) on 0330 808 4424').isVisible())
-            await this.urgentC2Application.getByLabel('Reason').fill(reason);
+    public  async isC2ApplicationHasSafeguardRisk(YesNo: string, reason?: string) {
+        await this.safegaurdRisk.getByRole('radio', {name: YesNo}).click();
+        if (YesNo == 'Yes' && reason) {
+            expect.soft(await this.page.getByLabel('If your application is urgent please call the court and tribunal support centre (CTSC) on 0330 808 4424').isVisible());
+            await this.page.getByRole('textbox', { name: 'Reason' }).fill(reason);
         }
     }
 
@@ -152,7 +152,9 @@ export class AdditionalApplications extends BasePage {
             await this.page.fill(`#temporaryC2Document_supplementsBundle_${supplementDocNumber}_notes`, notes);
 
         }
-
+        if (supplementType == 'C20 - Secure accommodation'){
+            await this.page.getByRole('group', { name: 'Which jurisdiction?' }).getByRole('radio', { name: 'Wales' }).check();
+        }
 
         await this.page.locator(`#temporaryC2Document_supplementsBundle_${supplementDocNumber}_document`).setInputFiles(config.testPdfFile);
         await this.waitForAllUploadsToBeCompleted();

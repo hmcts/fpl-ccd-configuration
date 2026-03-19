@@ -4,18 +4,17 @@ import {
     judgeWalesUser,
     CTSCUser,
     HighCourtAdminUser,
-    privateSolicitorOrgUser
+    privateSolicitorOrgUser, swanseaOrgCAAUser, CTSCTeamLeadUser
 } from '../settings/user-credentials';
 import {expect} from "@playwright/test";
 import {testConfig} from '../settings/test-config';
 import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json' assert {type: "json"};
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert {type: "json"};
+import caseDataWithHearing from '../caseData/caseWithHearingDetailsNoAdditionalApp.json' assert {type: "json"};
 import {setHighCourt} from '../utils/update-case-details';
-import {createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
+import {assignAMJudicialRole, createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
 import config from "../settings/test-docs/config";
-import {urlConfig} from "../settings/urls";
-import {TableUtils} from "@hmcts/playwright-common";
-import {json} from "node:stream/consumers";
+
 
 test.describe('Upload additional applications', () => {
     const dateTime = new Date().toISOString();
@@ -352,14 +351,14 @@ test.describe('Upload additional applications', () => {
             await expect(page.getByText('Failed Payment (High Court)')).toHaveCount(0);
         }
     });
-    test.only('CTSC user submit confidential C2 paper application', async ({
+    test.only('CTSC user submit  C2 paper application', async ({
                                                                                page,
                                                                                signInPage,
                                                                                additionalApplications,
                                                                                caseFileView,
                                                                                envDataConfig
                                                                            }) => {
-        caseName = 'CTSC submit confidential C2 paper application ' + dateTime.slice(0, 10);
+        caseName = 'CTSC submit C2 paper application ' + dateTime.slice(0, 10);
         expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
@@ -372,7 +371,7 @@ test.describe('Upload additional applications', () => {
         await additionalApplications.selectWhoMakeApplication('Someone else');
         await additionalApplications.clickContinue();
         await additionalApplications.uploadC2ApplicationForm();
-        await additionalApplications.isC2ApplicationUrgent('No', 'Urgent');
+        await additionalApplications.isC2ApplicationHasSafeguardRisk('Yes', 'Urgent');
         await additionalApplications.IsC2ToAdjournHearing('No');
         await additionalApplications.canC2AppWaitUntilNextHearing('Yes');
 
@@ -390,33 +389,21 @@ test.describe('Upload additional applications', () => {
         await expect.soft(page.getByText('updated with event: Upload additional applications')).toBeVisible();
         //assertion
         await additionalApplications.tabNavigation('Other applications');
-        await page.pause();
-        await expect(page.getByRole('term').filter({hasText: 'Additional applications 1'})).toBeVisible();
-        await expect(page.getByRole('cell', {
-            name: 'Draft Orders 1 Document name Draft order one File testWordDoc.docx Document Uploader Type HMCTS',
-            exact: true
-        })).toBeVisible();
-        await expect(page.getByRole('cell', {
-            name: 'Draft Orders 2 Document name Draft order two File testWordDoc.docx Document Uploader Type HMCTS',
-            exact: true
-        })).toBeVisible();
-
-        await expect(page.getByText('Supplements 1')).toBeVisible();
-        await expect(page.getByRole('cell', {name: 'test notes', exact: true})).toBeVisible();
-        await expect(page.getByText('Supporting documents 1')).toBeVisible();
-        await expect(page.getByText('birth certificate of child one')).toBeVisible();
-        await expect(page.getByText('Supporting documents 2')).toBeVisible();
-        await expect(page.getByText('Evidence of consent')).toBeVisible();
-        await expect(page.getByRole('row', {name: 'Safeguarding risk? No', exact: true}).locator('td')).toBeVisible();
-        await expect(page.getByRole('row', {
-            name: 'Consider at next hearing? Yes',
-            exact: true
-        }).locator('div').nth(1)).toBeVisible();
-        await expect(page.getByRole('cell', {
-            name: 'PBA Payment Do you want to enter PBA details? Yes Payment by account (PBA) number PBA0096471 Customer reference payments',
-            exact: true
-        }).getByRole('term')).toBeVisible();
-
+        expect(await additionalApplications.getRowData('Application with consent?',page)).toContain('Yes');
+        expect(await additionalApplications.getRowData('Safeguarding risk?',page)).toContain('Yes');
+        expect(await additionalApplications.getRowData('Consider at next hearing?',page)).toContain('Yes');
+        expect(await additionalApplications.getRowData('Payment by account (PBA) number',page)).toContain('PBA0096471');
+        expect(await additionalApplications.getRowData('Customer reference',page)).toContain('payments');
+        expect(await additionalApplications.getRowData('Application Reviewed by Judge',page)).toContain('No');
+        await expect(additionalApplications.page.getByText('C2 application')).toBeVisible();
+        await expect(additionalApplications.page.getByText('Draft Orders 1')).toBeVisible();
+        await expect(additionalApplications.page.getByText('Draft Orders 2')).toBeVisible();
+        await expect(additionalApplications.page.getByText('Supporting documents 1')).toBeVisible();
+        await expect(additionalApplications.page.getByText('birth certificate',{exact:true})).toBeVisible();
+        await expect(additionalApplications.page.getByText('Supporting documents 2')).toBeVisible();
+        await expect(additionalApplications.page.getByText('Evidence of consent')).toBeVisible();
+        await expect(additionalApplications.page.getByText('Supplements 1')).toBeVisible();
+        await expect(additionalApplications.page.getByText('C18 - Recovery order')).toBeVisible();
 
     });
     test('LA submit C2 paper application', async ({
@@ -426,6 +413,62 @@ test.describe('Upload additional applications', () => {
                                                       caseFileView,
                                                       envDataConfig
                                                   }) => {
+
+
+        caseName = 'LA submit C2 paper application ' + dateTime.slice(0, 10);
+        expect(await updateCase(caseName, caseNumber, caseDataWithHearing)).toBeTruthy();
+        expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
+
+
+        await signInPage.visit();
+        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await additionalApplications.gotoNextStep('Upload additional applications');
+        await additionalApplications.selectApplicationType('C2 Application');
+        await additionalApplications.selectC2FormType('Upload a paper form');
+        await additionalApplications.giveC2AppConsent('No');
+        await additionalApplications.isC2AppConfidential('No');
+        await additionalApplications.selectWhoMakeApplication('Swansea City Council, Applicant');
+        await additionalApplications.clickContinue();
+        await additionalApplications.uploadC2ApplicationForm();
+        await additionalApplications.isC2ApplicationHasSafeguardRisk('No');
+        await additionalApplications.IsC2ToAdjournHearing('No');
+        await additionalApplications.canC2AppWaitUntilNextHearing('No');
+
+        await additionalApplications.uploadSupplementDocument('0', 'C20 - Secure accommodation', 'test notes');
+        await additionalApplications.uploadC2DraftOrder('0', 'Draft order one');
+        await additionalApplications.clickContinue();
+
+        await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
+        await additionalApplications.checkYourAnsAndSubmit();
+
+
+        await expect.soft(page.getByText('updated with event: Upload additional applications')).toBeVisible();
+        //assertion
+        await additionalApplications.tabNavigation('Other applications');
+
+        expect(await additionalApplications.getRowData('Application with consent?',page)).toContain('No');
+        expect(await additionalApplications.getRowData('Safeguarding risk?',page)).toContain('No');
+        expect(await additionalApplications.getRowData('Consider at next hearing?',page)).toContain('No');
+        expect(await additionalApplications.getRowData('Payment by account (PBA) number',page)).toContain(envDataConfig.swanseaOrgPBA);
+        expect(await additionalApplications.getRowData('Customer reference',page)).toContain('Test');
+        expect(await additionalApplications.getRowData('Application Reviewed by Judge',page)).toContain('No');
+        await expect(additionalApplications.page.getByText('C2 application')).toBeVisible();
+        await expect(additionalApplications.page.getByText('Supplements 1')).toBeVisible();
+        await expect(additionalApplications.page.getByText('C20 - Secure accommodation')).toBeVisible();
+        await expect(additionalApplications.page.getByText('Draft order one')).toBeVisible();
+
+        if (testConfig.waEnabled) {
+            await signInPage.clickSignOut();
+            await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
+            await signInPage.navigateToCaseDetails(caseNumber);
+            await additionalApplications.tabNavigation('Tasks');
+            await additionalApplications.waitForTask('View Additional Applications');
+        }
+
+
+
     });
     test('Child solicitor submit paper C2 and other application together', async ({
                                                                                       page,
