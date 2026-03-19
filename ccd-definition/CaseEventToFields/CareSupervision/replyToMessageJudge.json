@@ -95,8 +95,7 @@
     "PageID": "ReplyToMessage",
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 3,
-    "ShowSummaryChangeOption": "Y",
-    "RetainHiddenValue": "Yes"
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",

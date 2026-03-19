@@ -106,7 +106,8 @@
     "FieldType": "Text",
     "ElementLabel": "Urgency",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "urgency!=\"\""
+    "FieldShowCondition": "urgency!=\"\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -114,8 +115,7 @@
     "ListElementCode": "requestedBy",
     "FieldType": "Text",
     "ElementLabel": "Message subject",
-    "SecurityClassification": "Public",
-    "RetainHiddenValue": "Yes"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -123,8 +123,7 @@
     "ListElementCode": "replyFrom",
     "FieldType": "Email",
     "ElementLabel": "Sender's email address",
-    "SecurityClassification": "Public",
-    "RetainHiddenValue": "Yes"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -228,8 +227,7 @@
     "ListElementCode": "messageHistoryTemp",
     "FieldType": "TextArea",
     "ElementLabel": "Message history",
-    "SecurityClassification": "Public",
-    "RetainHiddenValue": "Yes"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
