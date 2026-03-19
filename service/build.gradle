@@ -531,6 +531,7 @@ bootWithCCD {
     environment 'PRD_HOST', 'http://rd-professional-api-aat.service.core-compute-aat.internal'
     environment 'MANAGE_CASE_S2S_AUTHORISED_SERVICES', 'ccd_gw,xui_webapp,ccd_data,fpl_case_service'
     environment 'DATA_STORE_CROSS_JURISDICTIONAL_ROLES', 'caseworker-caa,caseworker-publiclaw-systemupdate,caseworker-approver'
+    environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,fpl_case_service,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service'
 
     environment("RSE_LIB_ADDITIONAL_DATABASES", "camunda,wa_workflow_api,cft_task_db,cft_task_db_replica")
     environment("RD_LOCATION_REF_API_BASE_URL", "http://rd-location-ref-api-aat.service.core-compute-aat.internal")
