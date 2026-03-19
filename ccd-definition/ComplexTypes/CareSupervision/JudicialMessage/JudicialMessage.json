@@ -62,7 +62,8 @@
     "FieldType": "Email",
     "ElementLabel": "To email",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "toLabel != \"*\""
+    "FieldShowCondition": "toLabel != \"*\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -113,7 +114,8 @@
     "ListElementCode": "requestedBy",
     "FieldType": "Text",
     "ElementLabel": "Message subject",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -174,7 +176,8 @@
     "FieldType": "TextArea",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -183,7 +186,8 @@
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -224,7 +228,8 @@
     "ListElementCode": "messageHistoryTemp",
     "FieldType": "TextArea",
     "ElementLabel": "Message history",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
