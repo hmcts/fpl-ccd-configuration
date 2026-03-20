@@ -218,6 +218,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleConfidential",
+    "ListElementCode": "childrenOnApplication",
+    "ElementLabel": "Which children does the application relate to?",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays an option for each child on the case"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "applicationSummary",
     "ElementLabel": "Application Summary",
     "HintText": "Give a brief description of what you are applying for and your reason for making the application",

@@ -64,6 +64,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
 
     private final ApplicationPermissionType applicationPermissionType;
     private final YesNo applicationRelatesToAllChildren;
+    private final String childrenOnApplication;
     private final String applicationSummary;
     private final YesNo hasSafeguardingRisk;
     private final String safeguardingRiskDetails;

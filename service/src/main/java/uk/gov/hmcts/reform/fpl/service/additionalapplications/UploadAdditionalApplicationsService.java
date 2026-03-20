@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
@@ -72,6 +74,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType.APPLY_ONLINE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -238,6 +241,11 @@ public class UploadAdditionalApplicationsService {
 
         if (YES.equals(temporaryC2Document.getIsHearingAdjournmentRequired())) {
             c2DocumentBundleBuilder.c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT));
+        }
+
+        if (eventData.getC2ApplicationRoute().equals(APPLY_ONLINE)) {
+            c2DocumentBundleBuilder
+                .childrenOnApplication(formatChildSelector(temporaryC2Document.getChildSelectorForApplication()));
         }
 
         return c2DocumentBundleBuilder.build();
@@ -438,7 +446,6 @@ public class UploadAdditionalApplicationsService {
         }
     }
 
-
     public PBAPayment updatePBAPayment(PBAPayment pbaPayment, boolean isCTSCUser) {
         if (pbaPayment != null && !NO.getValue().equals(pbaPayment.getUsePbaPayment())) {
             return pbaPayment.toBuilder()
@@ -468,5 +475,11 @@ public class UploadAdditionalApplicationsService {
         }
 
         return errors;
+    }
+
+    public String formatChildSelector(DynamicMultiSelectList childSelector) {
+        return childSelector.getValue().stream()
+            .map(childName -> String.join(" ", childName.getLabel()))
+            .collect(Collectors.joining("\n"));
     }
 }
