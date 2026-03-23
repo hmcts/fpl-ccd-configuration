@@ -194,6 +194,7 @@ def setupUITestEnvVariablesForPreview() {
   env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
   env.IDAM_WEB_URL = "https://idam-web-public.aat.platform.hmcts.net"
   env.IDAM_TESTING_SUPPORT_URL = "http://idam-api-aat.platform.hmcts.net/testing-support"
+  env.S2S_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal/testing-support/lease"
   env.ACCESS_MANAGEMENT_URL="https://am-role-assignment-service-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/am/role-assignments"
   env.MOCKED_PAYMENTS = false
   env.TEST_RETRIES = 1
