@@ -361,7 +361,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @Nested
     class InitialChoice {
-        private final static List<Element<Child>> CHILDREN = List.of(element(Child.builder()
+        private final  List<Element<Child>> children = List.of(element(Child.builder()
             .party(ChildParty.builder()
                 .firstName("Jemima")
                 .lastName("Test")
@@ -371,7 +371,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         @Test
         void shouldInitialiseC2DocumentBundleHearingAndChildrenListIfC2Chosen() {
             CaseData caseData = CaseData.builder()
-                .children1(CHILDREN)
+                .children1(children)
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
                     .build())
@@ -388,7 +388,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         @Test
         void shouldInitialiseC2DocumentBundleHearingAndChildrenListIfC2AndOtherChosen() {
             CaseData caseData = CaseData.builder()
-                .children1(CHILDREN)
+                .children1(children)
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
                     .build())
