@@ -132,7 +132,8 @@ class UploadAdditionalApplicationsServiceTest {
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
-    private static final DocmosisDocument C2_ONLINE_DOCMOSIS_DOCUMENT = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
+    private static final DocmosisDocument C2_ONLINE_DOCMOSIS_DOCUMENT =
+        testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
     private static final String C2_ORDER_NAME = "C2_ORDER.pdf";
     private static final Document C2_ONLINE_DOCUMENT = testDocumentWithName(C2_ORDER_NAME);
 

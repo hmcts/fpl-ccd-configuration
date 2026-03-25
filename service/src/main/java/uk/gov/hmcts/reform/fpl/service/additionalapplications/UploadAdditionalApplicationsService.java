@@ -282,8 +282,8 @@ public class UploadAdditionalApplicationsService {
             .feeCharged(caseData.getAmountToPay())
             .applicantName(applicantName)
             .respondents(respondents)
-            .consent(eventData.getC2Type().getLabel().equals("By consent") ?
-                YES.getValue(language) : NO.getValue(language))
+            .consent(eventData.getC2Type().getLabel().equals("By consent")
+                ? YES.getValue(language) : NO.getValue(language))
             .isConfidential(eventData.getIsC2Confidential().getValue(language))
             .permission(c2EventData.getApplicationPermissionType().getLabel())
             .applicationRelatesToAllChildren(c2EventData.getApplicationRelatesToAllChildren().getValue(language))
@@ -297,10 +297,8 @@ public class UploadAdditionalApplicationsService {
             .crest(CREST.getValue(language))
             .build();
 
-        DocmosisDocument c2OrderDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(docmosisC2OrderDocument,
-            C2_ORDER,
-            RenderFormat.PDF,
-            getCaseLanguage(caseData));
+        DocmosisDocument c2OrderDocument = docmosisDocumentGeneratorService
+            .generateDocmosisDocument(docmosisC2OrderDocument, C2_ORDER, RenderFormat.PDF, getCaseLanguage(caseData));
 
         return buildFromDocument(uploadDocumentService.uploadPDF(c2OrderDocument.getBytes(), C2_ORDER_NAME));
     }

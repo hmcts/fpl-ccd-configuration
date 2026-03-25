@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 @Getter
 @Jacksonized

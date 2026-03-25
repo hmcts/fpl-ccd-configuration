@@ -109,7 +109,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT,
                 C2AdditionalApplicationEventData.builder()
                     .hearingList(caseData.buildDynamicHearingList())
-                    .childSelectorForApplication(uploadAdditionalApplicationsService.getChildrenMultiSelectList(caseData))
+                    .childSelectorForApplication(
+                        uploadAdditionalApplicationsService.getChildrenMultiSelectList(caseData))
                     .build());
         }
 
