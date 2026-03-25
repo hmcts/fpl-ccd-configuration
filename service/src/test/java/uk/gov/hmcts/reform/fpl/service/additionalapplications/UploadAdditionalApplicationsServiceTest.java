@@ -22,6 +22,8 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
@@ -38,6 +40,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiselectListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
@@ -46,7 +50,9 @@ import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -60,8 +66,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.time.LocalDate.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -78,6 +86,7 @@ import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDE
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType.PAPER_FORM;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
@@ -119,10 +128,13 @@ class UploadAdditionalApplicationsServiceTest {
     private final IdamClient idamClient = mock(IdamClient.class);
     private final UserService user = mock(UserService.class);
     private final ManageDocumentService manageDocumentService = mock(ManageDocumentService.class);
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService =
+        mock(DocmosisDocumentGeneratorService.class);
     private final DocumentUploadHelper uploadHelper = mock(DocumentUploadHelper.class);
     private final DocumentConversionService conversionService = mock(DocumentConversionService.class);
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
     private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);
+    private final UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
     private final PbaService pbaService = mock(PbaService.class);
     private final JudicialService judicialService = mock(JudicialService.class);
 
@@ -139,8 +151,9 @@ class UploadAdditionalApplicationsServiceTest {
             .willReturn(SEALED_SUPPLEMENT_DOCUMENT);
         given(documentSealingService.sealDocument(DOCUMENT, COURT_1, SealType.ENGLISH))
             .willReturn(SEALED_DOCUMENT);
-        underTest = new UploadAdditionalApplicationsService(time, user, manageDocumentService, uploadHelper,
-            documentSealingService, conversionService, pbaService, judicialService);
+        underTest = new UploadAdditionalApplicationsService(time, user, manageDocumentService,
+            docmosisDocumentGeneratorService, uploadHelper, documentSealingService, uploadDocumentService,
+            conversionService, pbaService, judicialService);
         given(user.isHmctsUser()).willReturn(true);
         given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.HMCTS);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
@@ -148,7 +161,7 @@ class UploadAdditionalApplicationsServiceTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void shouldBuildExpectedC2DocumentBundle() {
+    void shouldBuildExpectedPaperC2DocumentBundle() {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
@@ -166,6 +179,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .temporaryPbaPayment(pbaPayment)
                 .applicantsList(applicantsList)
                 .c2Type(WITH_NOTICE)
+                .c2ApplicationRoute(PAPER_FORM)
                 .build())
             .build();
 
@@ -209,6 +223,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .temporaryPbaPayment(pbaPayment)
                 .applicantsList(applicantsList)
                 .c2Type(WITH_NOTICE)
+                .c2ApplicationRoute(PAPER_FORM)
                 .build())
             .build();
 
@@ -313,6 +328,7 @@ class UploadAdditionalApplicationsServiceTest {
                     otherSupportingDocument))
                 .temporaryPbaPayment(pbaPayment)
                 .applicantsList(applicantsList)
+                .c2ApplicationRoute(PAPER_FORM)
                 .build())
             .respondents1(respondentsInCase)
             .build();
@@ -337,7 +353,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
-    void shouldBuildBundleWhenLAUploadConfidentialC2Application() {
+    void shouldBuildPaperBundleWhenLAUploadConfidentialC2Application() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
@@ -361,6 +377,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .temporaryC2Document(createC2EventData(c2Supplement, c2SupportingDocument))
                 .temporaryPbaPayment(pbaPayment)
                 .applicantsList(applicantsList)
+                .c2ApplicationRoute(PAPER_FORM)
                 .build())
             .respondents1(respondentsInCase)
             .localAuthorityPolicy(OrganisationPolicy.builder()
@@ -406,6 +423,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .temporaryC2Document(createC2EventData(c2Supplement, c2SupportingDocument))
                 .temporaryPbaPayment(pbaPayment)
                 .applicantsList(applicantsList)
+                .c2ApplicationRoute(PAPER_FORM)
                 .build())
             .respondents1(respondentsInCase)
             .respondentPolicyData(RespondentPolicyData.builder()
@@ -845,6 +863,30 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(errors).contains("Please upload a draft order to proceed");
     }
 
+    @Test
+    public void shouldReturnListOfChildrenAsDynamicMultiSelectList() {
+        UUID child1Id = UUID.randomUUID();
+        UUID child2Id = UUID.randomUUID();
+
+        CaseData caseData =  CaseData.builder().children1(createChildrenList(child1Id, child2Id)).build();
+
+        DynamicMultiselectListElement child1Element = DynamicMultiselectListElement.builder()
+            .label("Jemima Test (Child 1)")
+            .code(child1Id.toString())
+            .build();
+
+        DynamicMultiselectListElement child2Element = DynamicMultiselectListElement.builder()
+            .label("Jim Test (Child 2)")
+            .code(child2Id.toString())
+            .build();
+
+        DynamicMultiSelectList expectedList = DynamicMultiSelectList.builder()
+            .listItems(List.of(child1Element, child2Element))
+            .build();
+
+        assertThat(underTest.getChildrenMultiSelectList(caseData)).isEqualTo(expectedList);
+    }
+
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
         assertThat(actualC2Bundle.getId()).isNotNull();
@@ -970,5 +1012,24 @@ class UploadAdditionalApplicationsServiceTest {
             .email("steve.hudson@gov.uk")
             .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
             .build();
+    }
+
+    private List<Element<Child>> createChildrenList(UUID child1Id, UUID child2Id) {
+
+        Child child1 = Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Jemima")
+                .lastName("Test")
+                .build())
+            .build();
+
+        Child child2 = Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Jim")
+                .lastName("Test")
+                .build())
+            .build();
+
+        return List.of(element(child1Id, child1), element(child2Id, child2));
     }
 }
