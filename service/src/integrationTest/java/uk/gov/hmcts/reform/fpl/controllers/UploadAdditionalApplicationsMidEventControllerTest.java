@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -30,15 +32,19 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiselectListElement;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -132,12 +138,15 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "populate-data");
 
+        UploadAdditionalApplicationsEventData eventData = extractCaseData(response)
+            .getUploadAdditionalApplicationsEventData();
+
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
             .containsKeys("temporaryC2Document", "personSelector")
             .containsEntry("amountToPay", "1000")
-            .containsEntry("displayAmountToPay", YES.getValue())
-            .containsKey("temporaryPbaPayment");
+            .containsEntry("displayAmountToPay", YES.getValue());
+        assertThat(eventData.getTemporaryPbaPayment()).isNotNull();
     }
 
     @Test
@@ -163,11 +172,14 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "get-fee");
 
+        UploadAdditionalApplicationsEventData eventData = extractCaseData(response)
+            .getUploadAdditionalApplicationsEventData();
+
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
             .containsEntry("amountToPay", "100")
-            .containsEntry("displayAmountToPay", YES.getValue())
-            .containsKey("temporaryPbaPayment");
+            .containsEntry("displayAmountToPay", YES.getValue());
+        assertThat(eventData.getTemporaryPbaPayment()).isNotNull();
     }
 
     @Test
@@ -353,10 +365,17 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @Nested
     class InitialChoice {
+        private final static List<Element<Child>> CHILDREN = List.of(element(Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Jemima")
+                .lastName("Test")
+                .build())
+            .build()));
 
         @Test
-        void shouldInitialiseC2DocumentBundleHearingListIfC2Chosen() {
+        void shouldInitialiseC2DocumentBundleHearingAndChildrenListIfC2Chosen() {
             CaseData caseData = CaseData.builder()
+                .children1(CHILDREN)
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
                     .build())
@@ -366,11 +385,14 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
             assertThat(response.getData().get("temporaryC2Document")).isNotNull();
             assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
+            assertThat(response.getData().get("temporaryC2Document"))
+                .extracting("childSelectorForApplication").isNotNull();
         }
 
         @Test
-        void shouldInitialiseC2DocumentBundleHearingListIfC2AndOtherChosen() {
+        void shouldInitialiseC2DocumentBundleHearingAndChildrenListIfC2AndOtherChosen() {
             CaseData caseData = CaseData.builder()
+                .children1(CHILDREN)
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
                     .build())
@@ -380,6 +402,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
             assertThat(response.getData().get("temporaryC2Document")).isNotNull();
             assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
+            assertThat(response.getData().get("temporaryC2Document"))
+                .extracting("childSelectorForApplication").isNotNull();
         }
 
         @Test
@@ -394,7 +418,6 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
             assertThat(response.getData().get("temporaryC2Document")).isNull();
         }
-
     }
 
     @Test

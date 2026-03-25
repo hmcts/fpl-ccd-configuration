@@ -9,7 +9,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationPermissionType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
@@ -35,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
@@ -42,6 +45,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiselectListElement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC2OrderDocument;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
@@ -58,6 +62,7 @@ import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -69,7 +74,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static java.time.LocalDate.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -86,6 +90,7 @@ import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDE
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType.APPLY_ONLINE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType.PAPER_FORM;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
@@ -94,10 +99,14 @@ import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FAT
 import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.WALES;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentWithName;
 
 class UploadAdditionalApplicationsServiceTest {
 
@@ -122,6 +131,10 @@ class UploadAdditionalApplicationsServiceTest {
     private static final DocumentReference  SEALED_DOCUMENT = testDocumentReference("Sealed_TestDocument.pdf");
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
+
+    private static final DocmosisDocument C2_ONLINE_DOCMOSIS_DOCUMENT = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
+    private static final String C2_ORDER_NAME = "C2_ORDER.pdf";
+    private static final Document C2_ONLINE_DOCUMENT = testDocumentWithName(C2_ORDER_NAME);
 
     private final RequestData requestData = mock(RequestData.class);
     private final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -157,6 +170,10 @@ class UploadAdditionalApplicationsServiceTest {
         given(user.isHmctsUser()).willReturn(true);
         given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.HMCTS);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisC2OrderDocument.class),
+            any(), any(), any())).willReturn(C2_ONLINE_DOCMOSIS_DOCUMENT);
+        given(uploadDocumentService.uploadPDF(C2_ONLINE_DOCMOSIS_DOCUMENT.getBytes(), C2_ORDER_NAME))
+            .willReturn(C2_ONLINE_DOCUMENT);
     }
 
     @SuppressWarnings("unchecked")
@@ -190,7 +207,51 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getApplicationReviewed()).isEqualTo(YesNo.NO);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, createSupportingEvidenceBundleBuilder()
+        assertPaperC2DocumentBundle(actual.getC2DocumentBundle(), supplement, createSupportingEvidenceBundleBuilder()
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(List.of())
+            .build());
+
+        // No longer called in this method
+        // verify(conversionService).convertToPdf(DOCUMENT);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void shouldBuildExpectedOnlineC2DocumentBundle() {
+        Supplement supplement = createSupplementsBundle();
+        SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
+        PBAPayment pbaPayment = buildPBAPayment();
+        PBAPayment expectedPbaPayment = PBAPayment.builder().pbaNumber("PBA12345").usePbaPayment("Yes").build();
+
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0))
+            .listItems(DYNAMIC_LIST_ELEMENTS)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .court(COURT_1)
+            .familyManCaseNumber("12345")
+            .amountToPay("9000")
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(createC2EventDataForOnlineForm(supplement, supportingEvidenceBundle))
+                .temporaryPbaPayment(pbaPayment)
+                .applicantsList(applicantsList)
+                .c2Type(WITH_NOTICE)
+                .isC2Confidential(YesNo.NO)
+                .c2ApplicationRoute(APPLY_ONLINE)
+                .build())
+            .build();
+
+        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
+
+        assertThat(actual.getAuthor()).isEqualTo(HMCTS);
+        assertThat(actual.getPbaPayment()).isEqualTo(expectedPbaPayment);
+        assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
+        assertThat(actual.getApplicationReviewed()).isEqualTo(YesNo.NO);
+
+        assertOnlineC2DocumentBundle(actual.getC2DocumentBundle(), supplement, createSupportingEvidenceBundleBuilder()
             .uploaderType(DocumentUploaderType.HMCTS)
             .uploaderCaseRoles(List.of())
             .build());
@@ -342,7 +403,7 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, createSupportingEvidenceBundleBuilder()
+        assertPaperC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, createSupportingEvidenceBundleBuilder()
             .uploaderType(DocumentUploaderType.HMCTS)
             .uploaderCaseRoles(List.of()).build());
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement,
@@ -394,12 +455,12 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getC2DocumentBundleLA().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
-        assertC2DocumentBundle(actual.getC2DocumentBundleLA(), c2Supplement, c2SupportingDocument);
+        assertPaperC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
+        assertPaperC2DocumentBundle(actual.getC2DocumentBundleLA(), c2Supplement, c2SupportingDocument);
     }
 
     @Test
-    void shouldBuildBundleWhenSolicitorUploadConfidentialC2Application() {
+    void shouldBuildPaperBundleWhenSolicitorUploadConfidentialC2Application() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
@@ -441,8 +502,8 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getC2DocumentBundleResp0().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
-        assertC2DocumentBundle(actual.getC2DocumentBundleResp0(), c2Supplement, c2SupportingDocument);
+        assertPaperC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
+        assertPaperC2DocumentBundle(actual.getC2DocumentBundleResp0(), c2Supplement, c2SupportingDocument);
     }
 
     @Test
@@ -887,8 +948,24 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(underTest.getChildrenMultiSelectList(caseData)).isEqualTo(expectedList);
     }
 
-    private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
+    private void assertOnlineC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
+
+        assertThat(actualC2Bundle.getId()).isNotNull();
+        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(C2_ORDER_NAME);
+        assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
+        assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
+        assertThat(actualC2Bundle.getSupplementsBundle()).hasSize(1);
+        assertThat(actualC2Bundle.getChildrenOnApplication()).isEqualTo("Jemima Test (Child 1)\nJim Test (Child 2)");
+
+        assertSupplementsBundle(actualC2Bundle.getSupplementsBundle().get(0).getValue(), expectedSupplement);
+        assertSupportingEvidenceBundle(
+            actualC2Bundle.getSupportingEvidenceBundle().get(0).getValue(), expectedSupportingEvidence
+        );
+    }
+
+    private void assertPaperC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
+                                             SupportingEvidenceBundle expectedSupportingEvidence) {
         assertThat(actualC2Bundle.getId()).isNotNull();
         assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
         assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
@@ -967,6 +1044,41 @@ class UploadAdditionalApplicationsServiceTest {
             .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_SECOND_FEMALE_PARENT)
             .supportingEvidenceBundle(wrapElements(supportingEvidenceBundle))
             .supplementsBundle(wrapElements(supplementsBundle))
+            .build();
+    }
+
+    private C2AdditionalApplicationEventData createC2EventDataForOnlineForm(Supplement supplementsBundle,
+                                                               SupportingEvidenceBundle supportingEvidenceBundle) {
+        DynamicMultiselectListElement child1Element = DynamicMultiselectListElement.builder()
+            .label("Jemima Test (Child 1)")
+            .code("67891")
+            .build();
+
+        DynamicMultiselectListElement child2Element = DynamicMultiselectListElement.builder()
+            .label("Jim Test (Child 2)")
+            .code("12345")
+            .build();
+
+        DynamicMultiSelectList childSelector = DynamicMultiSelectList.builder()
+            .listItems(List.of(child1Element, child2Element))
+            .value(List.of(child1Element, child2Element))
+            .build();
+
+        return C2AdditionalApplicationEventData.builder()
+            .type(WITH_NOTICE)
+            .document(DOCUMENT)
+            .c2AdditionalOrdersRequested(List.of(C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY))
+            .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_SECOND_FEMALE_PARENT)
+            .supportingEvidenceBundle(wrapElements(supportingEvidenceBundle))
+            .supplementsBundle(wrapElements(supplementsBundle))
+            .childSelectorForApplication(childSelector)
+            .applicationPermissionType(ApplicationPermissionType.NOT_REQUIRED)
+            .applicationRelatesToAllChildren(YES)
+            .applicationSummary("Blah Blah")
+            .hasSafeguardingRisk(YES)
+            .safeguardingRiskDetails("Details here")
+            .isHearingAdjournmentRequired(NO)
+            .canBeConsideredAtNextHearing(NO)
             .build();
     }
 

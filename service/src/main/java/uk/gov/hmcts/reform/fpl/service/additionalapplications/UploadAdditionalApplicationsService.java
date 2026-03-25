@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
@@ -17,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
@@ -32,19 +29,15 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiselectListElement;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApprovedOrderCoverSheet;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC2OrderDocument;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
@@ -55,7 +48,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 
@@ -78,7 +70,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -86,13 +77,12 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType.APPLY_ONLINE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.APPROVED_ORDER_COVER;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -287,12 +277,12 @@ public class UploadAdditionalApplicationsService {
 
         DocmosisC2OrderDocument docmosisC2OrderDocument = DocmosisC2OrderDocument.builder()
             .courtName(caseData.getCourt().getName())
-            .caseNumber(caseData.getId().toString())
+            .caseNumber(caseData.getFamilyManCaseNumber())
             .dateIssued(formatLocalDateToString(uploadedDate, DATE))
             .feeCharged(caseData.getAmountToPay())
             .applicantName(applicantName)
             .respondents(respondents)
-            .consent(eventData.getC2ApplicationType().get("type").getLabel().equals("By consent") ?
+            .consent(eventData.getC2Type().getLabel().equals("By consent") ?
                 YES.getValue(language) : NO.getValue(language))
             .isConfidential(eventData.getIsC2Confidential().getValue(language))
             .permission(c2EventData.getApplicationPermissionType().getLabel())
@@ -308,7 +298,7 @@ public class UploadAdditionalApplicationsService {
             .build();
 
         DocmosisDocument c2OrderDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(docmosisC2OrderDocument,
-            APPROVED_ORDER_COVER,
+            C2_ORDER,
             RenderFormat.PDF,
             getCaseLanguage(caseData));
 
