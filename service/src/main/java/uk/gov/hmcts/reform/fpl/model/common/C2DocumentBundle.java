@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.json.serializer.YesNoSerializer;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -66,9 +68,11 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final YesNo applicationRelatesToAllChildren;
     private final String childrenOnApplication;
     private final String applicationSummary;
+    @JsonSerialize(using = YesNoSerializer.class)
     private final YesNo hasSafeguardingRisk;
     private final String safeguardingRiskDetails;
     private final String requestedHearingToAdjourn;
+    @JsonSerialize(using = YesNoSerializer.class)
     private final YesNo canBeConsideredAtNextHearing;
 
     public String toLabel(int index) {
