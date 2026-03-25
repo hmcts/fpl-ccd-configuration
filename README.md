@@ -77,6 +77,19 @@ az acr login --name hmctsprod --subscription [SUBSCRIPTION ID]
 ```
 (Get the DND-CNP-Prod subscription ID from Azure portal under Subscriptions.)
 
+### Work allocation
+Work allocation can be run locally by making use of https://github.com/jthmcts/cftlib-wa/tree/main.
+
+This has been set up for private law but can readily be adapted to work for our service by updating the following in
+import-camunda-definitions.sh.
+```
+DEPLOYMENT_SOURCE="fpl"
+TENANT_ID="publiclaw"
+
+serviceToken="$("$(dirname "$0")/s2s-token.sh" "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal" "fpl_case_service")"
+```
+Follow the README steps in this repository to get up and running.
+
 ### Code Style
 To run code linting enter `yarn lint` in the command line.
 
