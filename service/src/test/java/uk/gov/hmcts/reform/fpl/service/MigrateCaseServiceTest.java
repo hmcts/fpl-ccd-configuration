@@ -48,6 +48,8 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -3835,6 +3837,56 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.removeStatementOfService(MIGRATION_ID, caseData, UUID.randomUUID().toString()));
+        }
+    }
+
+    @Nested
+    class RemoveFirstOther {
+        @Test
+        void shouldRemoveFirstOtherAndLeaveAdditionalOthersIntact() {
+            Other firstOther = Other.builder().name("First Other").build();
+            Other additionalOther1 = Other.builder().name("Additional Other 1").build();
+            Other additionalOther2 = Other.builder().name("Additional Other 2").build();
+            Others others = Others.builder()
+                .firstOther(firstOther)
+                .additionalOthers(List.of(element(additionalOther1), element(additionalOther2)))
+                .build();
+            CaseData caseData = CaseData.builder()
+                .id(123L)
+                .others(others)
+                .build();
+
+            Map<String, Object> result = underTest.removeFirstOther(MIGRATION_ID, caseData);
+            Others updatedOthers = (Others) result.get("others");
+
+            assertThat(updatedOthers.getFirstOther()).isNull();
+            assertThat(updatedOthers.getAdditionalOthers())
+                .extracting(e -> e.getValue().getName())
+                .containsExactly("Additional Other 1", "Additional Other 2");
+        }
+
+        @Test
+        void shouldThrowIfFirstOtherIsNull() {
+            Others others = Others.builder()
+                .firstOther(null)
+                .additionalOthers(List.of())
+                .build();
+            CaseData caseData = CaseData.builder()
+                .id(456L)
+                .others(others)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.removeFirstOther(MIGRATION_ID, caseData));
+        }
+
+        @Test
+        void shouldThrowIfOthersIsNull() {
+            CaseData caseData = CaseData.builder()
+                .id(789L)
+                .others(null)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.removeFirstOther(MIGRATION_ID, caseData));
         }
     }
 }

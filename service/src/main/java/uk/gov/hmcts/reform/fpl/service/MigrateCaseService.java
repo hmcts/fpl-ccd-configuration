@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -1444,5 +1446,29 @@ public class MigrateCaseService {
 
         return Map.of("statementOfService", statementOfServiceAfter);
 
+    }
+
+    public Map<String, Object> removeFirstOther(String migrationId, CaseData caseData) {
+        Others others = caseData.getOthers();
+
+        if (others == null || !others.hasOthers()) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, others is null",
+                migrationId, caseData.getId()));
+        }
+
+        Other firstOther = others.getFirstOther();
+
+        if (firstOther == null) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, firstOther is null",
+                migrationId, caseData.getId()));
+        }
+
+        Others updatedOthers = others.toBuilder()
+            .firstOther(null)
+            .build();
+
+        return Map.of("others", updatedOthers);
     }
 }
