@@ -7,7 +7,7 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: hmctspublic.azurecr.io/fpl/case-service
+    image: hmctsprod.azurecr.io/fpl/case-service
     container_name: fpl-service
     environment:
       - IDAM_API_URL=http://idam-api:5000
