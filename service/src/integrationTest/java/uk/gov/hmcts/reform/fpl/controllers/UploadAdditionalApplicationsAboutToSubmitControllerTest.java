@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -519,8 +520,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .build();
     }
 
-    private C2DocumentBundle createTemporaryC2Document() {
-        return C2DocumentBundle.builder()
+    private C2AdditionalApplicationEventData createTemporaryC2Document() {
+        return C2AdditionalApplicationEventData.builder()
             .type(WITH_NOTICE)
             .document(UPLOADED_DOCUMENT)
             .draftOrdersBundle(createDraftOrderBundle())

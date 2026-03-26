@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
@@ -66,7 +67,7 @@ class ApplicationsFeeCalculatorTest {
 
     @Test
     void shouldCalculateFeeForC2DocumentBundle() {
-        C2DocumentBundle c2Document = buildC2Document();
+        C2AdditionalApplicationEventData c2Document = buildC2EventData();
 
         CaseData caseData = CaseData.builder()
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
@@ -90,7 +91,7 @@ class ApplicationsFeeCalculatorTest {
 
     @Test
     void shouldNotCalculateFeeWhenC2AndOtherApplicationsAreSelectedAndOnlyC2DocumentBundleExists() {
-        C2DocumentBundle c2Document = buildC2Document();
+        C2AdditionalApplicationEventData c2Document = buildC2EventData();
 
         CaseData caseData = CaseData.builder()
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
@@ -107,7 +108,7 @@ class ApplicationsFeeCalculatorTest {
 
     @Test
     void shouldNotCalculateFeeWhenC2AndOtherApplicationsAreSelectedAndOtherApplicationsBundleDocumentIsNull() {
-        C2DocumentBundle c2Document = buildC2Document();
+        C2AdditionalApplicationEventData c2Document = buildC2EventData();
 
         CaseData caseData = CaseData.builder()
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
@@ -149,7 +150,8 @@ class ApplicationsFeeCalculatorTest {
 
     @Test
     void shouldCalculateFeeForC2DocumentBundleWithParentalResponsibility() {
-        C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().type(WITHOUT_NOTICE)
+        C2AdditionalApplicationEventData c2DocumentBundle = C2AdditionalApplicationEventData.builder()
+            .type(WITHOUT_NOTICE)
             .c2AdditionalOrdersRequested(List.of(C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY))
             .parentalResponsibilityType(PR_BY_SECOND_FEMALE_PARENT)
             .build();
@@ -178,7 +180,7 @@ class ApplicationsFeeCalculatorTest {
 
     @Test
     void shouldCalculateFeeForC2DocumentBundleAndOtherApplicationsBundle() {
-        C2DocumentBundle c2Document = buildC2Document();
+        C2AdditionalApplicationEventData c2Document = buildC2EventData();
 
         OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationsWithPRAndSecureAccommodation();
 
@@ -301,12 +303,16 @@ class ApplicationsFeeCalculatorTest {
         assertThat(actualFeesData).isEqualTo(FeesData.builder().totalAmount(BigDecimal.valueOf(20)).build());
     }
 
-    private C2DocumentBundle buildC2Document() {
-        return C2DocumentBundle.builder().type(WITH_NOTICE)
+    private C2AdditionalApplicationEventData buildC2EventData() {
+        return C2AdditionalApplicationEventData.builder().type(WITH_NOTICE)
             .c2AdditionalOrdersRequested(List.of(
                 C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
             .supplementsBundle(List.of(element(Supplement.builder().name(C16_CHILD_ASSESSMENT).build())))
             .build();
+    }
+
+    private C2DocumentBundle buildC2Document() {
+        return buildC2EventData().toC2DocumentBundle();
     }
 
     private OtherApplicationsBundle buildOtherApplicationsWithPRAndSecureAccommodation() {

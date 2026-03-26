@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -161,7 +162,7 @@ class UploadAdditionalApplicationsServiceTest {
         CaseData caseData = CaseData.builder()
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                 .additionalApplicationType(List.of(C2_ORDER))
-                .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
+                .temporaryC2Document(createC2EventData(supplement, supportingEvidenceBundle))
                 .temporaryPbaPayment(pbaPayment)
                 .applicantsList(applicantsList)
                 .c2Type(WITH_NOTICE)
@@ -204,7 +205,7 @@ class UploadAdditionalApplicationsServiceTest {
         CaseData caseData = CaseData.builder()
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                 .additionalApplicationType(List.of(C2_ORDER))
-                .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
+                .temporaryC2Document(createC2EventData(supplement, supportingEvidenceBundle))
                 .temporaryPbaPayment(pbaPayment)
                 .applicantsList(applicantsList)
                 .c2Type(WITH_NOTICE)
@@ -307,7 +308,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .temporaryPbaPayment(pbaPayment)
                 .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
                 .c2Type(WITH_NOTICE)
-                .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
+                .temporaryC2Document(createC2EventData(c2Supplement, c2SupportingDocument))
                 .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement,
                     otherSupportingDocument))
                 .temporaryPbaPayment(pbaPayment)
@@ -357,7 +358,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .additionalApplicationType(List.of(C2_ORDER))
                 .c2Type(WITH_NOTICE)
                 .isC2Confidential(YesNo.YES)
-                .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
+                .temporaryC2Document(createC2EventData(c2Supplement, c2SupportingDocument))
                 .temporaryPbaPayment(pbaPayment)
                 .applicantsList(applicantsList)
                 .build())
@@ -402,7 +403,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .additionalApplicationType(List.of(C2_ORDER))
                 .c2Type(WITH_NOTICE)
                 .isC2Confidential(YesNo.YES)
-                .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
+                .temporaryC2Document(createC2EventData(c2Supplement, c2SupportingDocument))
                 .temporaryPbaPayment(pbaPayment)
                 .applicantsList(applicantsList)
                 .build())
@@ -614,8 +615,8 @@ class UploadAdditionalApplicationsServiceTest {
             CaseData caseData = CaseData.builder()
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
-                    .temporaryC2Document(C2DocumentBundle.builder()
-                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                        .isHearingAdjournmentRequired(YesNo.YES)
                         .build())
                     .build())
                 .build();
@@ -634,8 +635,8 @@ class UploadAdditionalApplicationsServiceTest {
             CaseData caseData = CaseData.builder()
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
-                    .temporaryC2Document(C2DocumentBundle.builder()
-                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                        .isHearingAdjournmentRequired(YesNo.YES)
                         .build())
                     .build())
                 .build();
@@ -654,8 +655,8 @@ class UploadAdditionalApplicationsServiceTest {
             CaseData caseData = CaseData.builder()
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
-                    .temporaryC2Document(C2DocumentBundle.builder()
-                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                        .isHearingAdjournmentRequired(YesNo.YES)
                         .build())
                     .build())
                 .build();
@@ -674,7 +675,8 @@ class UploadAdditionalApplicationsServiceTest {
             CaseData caseData = CaseData.builder()
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
-                    .temporaryC2Document(C2DocumentBundle.builder()
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                        .isHearingAdjournmentRequired(YesNo.YES)
                         .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT,
                             CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
                         .build())
@@ -695,7 +697,7 @@ class UploadAdditionalApplicationsServiceTest {
             CaseData caseData = CaseData.builder()
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(C2_ORDER))
-                    .temporaryC2Document(C2DocumentBundle.builder()
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
                         .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
                         .build())
                     .build())
@@ -715,7 +717,7 @@ class UploadAdditionalApplicationsServiceTest {
             CaseData caseData = CaseData.builder()
                 .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                     .additionalApplicationType(List.of(OTHER_ORDER))
-                    .temporaryC2Document(C2DocumentBundle.builder()
+                    .temporaryC2Document(C2AdditionalApplicationEventData.builder()
                         .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
                         .build())
                     .build())
@@ -818,6 +820,31 @@ class UploadAdditionalApplicationsServiceTest {
         }
     }
 
+    @Test
+    public void shouldNotReturnErrorIfCTSCUserAndNoC2DraftOrdersUploaded() {
+        given(user.isCtscUser()).willReturn(true);
+        UploadAdditionalApplicationsEventData eventData = UploadAdditionalApplicationsEventData.builder()
+            .temporaryC2Document(C2AdditionalApplicationEventData.builder().build())
+            .build();
+
+        List<String> errors = underTest.validateC2Bundle(eventData);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnErrorIfNotCTSCUserAndNoC2DraftOrdersUploaded() {
+        given(user.isCtscUser()).willReturn(false);
+
+        UploadAdditionalApplicationsEventData eventData = UploadAdditionalApplicationsEventData.builder()
+            .temporaryC2Document(C2AdditionalApplicationEventData.builder().build())
+            .build();
+
+        List<String> errors = underTest.validateC2Bundle(eventData);
+
+        assertThat(errors).contains("Please upload a draft order to proceed");
+    }
+
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
         assertThat(actualC2Bundle.getId()).isNotNull();
@@ -889,9 +916,9 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
     }
 
-    private C2DocumentBundle createC2DocumentBundle(Supplement supplementsBundle,
-                                                    SupportingEvidenceBundle supportingEvidenceBundle) {
-        return C2DocumentBundle.builder()
+    private C2AdditionalApplicationEventData createC2EventData(Supplement supplementsBundle,
+                                                               SupportingEvidenceBundle supportingEvidenceBundle) {
+        return C2AdditionalApplicationEventData.builder()
             .type(WITH_NOTICE)
             .document(DOCUMENT)
             .c2AdditionalOrdersRequested(List.of(C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY))
