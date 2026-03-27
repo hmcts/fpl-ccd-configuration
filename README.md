@@ -71,9 +71,9 @@ then you can access XUI on [http://localhost:3000](http://localhost:3000)
 
 (You may be prompted to run `az login` to set up account.)
 
-On first run you may need to log in in with the hmctspublic subscription in order to download cftlib during bootWithCCD:
+On first run you may need to log in in with the hmctsprod subscription in order to download cftlib during bootWithCCD:
 ```
-az acr login --name hmctspublic --subscription [SUBSCRIPTION ID]
+az acr login --name hmctsprod --subscription [SUBSCRIPTION ID]
 ```
 (Get the DND-CNP-Prod subscription ID from Azure portal under Subscriptions.)
 
