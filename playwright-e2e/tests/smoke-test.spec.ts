@@ -4,9 +4,10 @@ import { CreateCaseName } from "../utils/create-case-name";
 import { CaseFileView } from "../pages/case-file-view";
 
 
-test.describe('Smoke Test @xbrowser', () => {
+test.describe('Smoke Test @xbrowser @smoke-test', () => {
+test.setTimeout(7 * 60 * 1000);
 
-    test('Local Authority C110A application submission @smoke-test @accessibility', async ({
+    test('Local Authority C110A application submission  @accessibility ', async ({
                                                                     signInPage,
         page,
         createCase,
@@ -20,6 +21,7 @@ test.describe('Smoke Test @xbrowser', () => {
         respondentDetails,
         allocationProposal,
         submitCase,
+        envDataConfig,
         makeAxeBuilder
                                                                 }, testInfo) => {
         test.info().annotations.push({ type: 'tag', description: 'xbrowser' });
@@ -79,63 +81,31 @@ test.describe('Smoke Test @xbrowser', () => {
         });
 
         await test.step('Applicant details', async() => {
-            await Promise.all([
-                page.waitForResponse(response =>
-                    !!response.url().match(/\/event-triggers\/enterApplicantDetailsLA/) &&
-                    response.request().method() === 'GET' &&
-                    response.status() === 200
-                ),
-                startApplication.applicantDetails()
-            ]);
-            await applicantDetails.applicantDetailsNeeded();
+
+           await startApplication.applicantDetails()
+
+            await applicantDetails.applicantDetailsNeeded(envDataConfig.swanseaOrgPBA);
         });
 
         await test.step('Child details', async() => {
-            await Promise.all([
-                page.waitForResponse(response =>
-                    response.url().includes('enterChildren') &&
-                    response.request().method() === 'GET' &&
-                    response.status() === 200
-                ),
-                startApplication.childDetails()
-            ]);
 
+            await   startApplication.childDetails()
             await childDetails.addChildDetailsForC110AApplication();
         });
 
         await test.step('Add respondent details', async() => {
-            await Promise.all([
-                page.waitForResponse(response =>
-                    response.url().includes('enterRespondents') &&
-                    response.request().method() === 'GET' &&
-                    response.status() === 200
-                ),
-                startApplication.respondentDetails()
-            ]);
+            await startApplication.respondentDetails()
             await respondentDetails.respondentDetailsNeeded();
         });
 
         await test.step('Allocation proposal', async() => {
-           await Promise.all([
-               page.waitForResponse(response =>
-                   response.url().includes('otherProposal') &&
-                   response.request().method() === 'GET' &&
-                   response.status() === 200
-               ),
-               startApplication.allocationProposal()
-           ]);
+            await startApplication.allocationProposal()
            await allocationProposal.allocationProposalSmokeTest();
         });
 
         await test.step('Submit case', async() => {
-            await Promise.all([
-                page.waitForResponse(response =>
-                    response.url().includes('submitApplication') &&
-                    response.request().method() === 'GET' &&
-                    response.status() === 200
-                ),
-                startApplication.submitCase()
-            ]);
+
+           await  startApplication.submitCase()
             await submitCase.submitCaseSmokeTest('2,515.00');
         });
 
@@ -156,89 +126,97 @@ test.describe('Smoke Test @xbrowser', () => {
         ordersAndDirectionSought,
         startApplication,
         hearingUrgency,
-        groundsForTheApplication,
         applicantDetails,
         allocationProposal,
-        addApplicationDocuments,
         childDetails,
         respondentDetails,
         submitCase,
         page,
         caseFileView,
-        makeAxeBuilder
-    }, testInfo) => {
+        envDataConfig,
+    }) => {
 
-        // 1. Sign in as local-authority user
-        await signInPage.visit();
-        await signInPage.login(
-            privateSolicitorOrgUser.email,
-            privateSolicitorOrgUser.password,
-        );
-        //sign in page
-        await signInPage.isSignedIn();
+        await test.step('Login as private solicitor', async () => {
+            await signInPage.visit();
 
-        // Add application details
-        //Start new case, get case id and assert case id is created
-        await createCase.caseName();
-        await createCase.createCase();
-        await createCase.respondentSolicitorCreatCase();
-        await createCase.submitCase('Private Solicitor -C110 a Application ' + CreateCaseName.getFormattedDate());
-        await startApplication.tabNavigation('View application');
+            await Promise.all([
+                page.waitForResponse(response => {
+                    const url = response.url();
+                    return (
+                        url.includes('/auth/isAuthenticated') &&
+                        response.request().method() === 'GET' &&
+                        response.status() === 200
+                    );
+                }),
+                signInPage.login(
+                    privateSolicitorOrgUser.email,
+                    privateSolicitorOrgUser.password
+                )
+            ]);
+            await signInPage.isSignedIn();
+        });
 
+        await test.step('Create solicitor Case', async () => {
+            await createCase.caseName()
+            await createCase.createCase();
+            await createCase.respondentSolicitorCreatCase()
+        });
 
-        // //Orders and directions sought
-        await startApplication.tabNavigation('Start application');
-        await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
-        await expect(startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
-        await startApplication.tabNavigation('View application');
+        await test.step('Submit solicitor Case', async () => {
+            await createCase.submitCase('Private Solicitor -C110 a Application ' + CreateCaseName.getFormattedDate());
+        });
 
+        await test.step('Order and Direction Sorted', async () => {
+            await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
+            await expect(startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
+        });
+            await test.step('Hearing Urgency', async () => {
+                await startApplication.hearingUrgency();
+                await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
+                await hearingUrgency.hearingUrgencySmokeTest();
+            });
 
-        // Hearing urgency
-        await startApplication.tabNavigation('Start application');
-        await startApplication.hearingUrgency();
-        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
-        await hearingUrgency.hearingUrgencySmokeTest();
-        await startApplication.tabNavigation('View application');
-
-
-        // Applicant Details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.applicantDetails();
-        await applicantDetails.solicitorC110AApplicationApplicantDetails();
-        await startApplication.applicantDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
-
-        // Child details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetails();
-        await childDetails.addChildDetailsForC110AApplication();
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
-
-        // // Add respondents' details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.respondentDetails();
-        await respondentDetails.respondentDetailsPrivateSolicitor();
-        await startApplication.tabNavigation('View application');
-
-        // Allocation Proposal
-        await startApplication.tabNavigation('Start application');
-        await startApplication.allocationProposal();
-        await allocationProposal.allocationProposalSmokeTest();
-        await startApplication.allocationProposalHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+            await test.step('Applicant Details', async() => {
+                await startApplication.applicantDetails();
+                await applicantDetails.solicitorC110AApplicationApplicantDetails(envDataConfig.privateSolicitorOrgPBA);
+                await startApplication.applicantDetailsHasBeenUpdated();
+            });
 
 
-       // Submit the case
-        await startApplication.tabNavigation('Start application');
-        await startApplication.submitCase();
-        await submitCase.submitCaseSmokeTest('£263.00');
-        await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Applications');
-        await caseFileView.openFolder('Original Applications');
-        await expect(page.getByRole('button', { name: 'Document icon' })).toBeVisible();
-        await caseFileView.openDocInNewTab();
-        await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
+            await test.step('Child Details', async () => {
+                 await   startApplication.childDetails()
+                await childDetails.addChildDetailsForC110AApplication();
+                await startApplication.childDetailsHasBeenUpdated();
+            });
+
+            await test.step('Add Respondent Details', async () => {
+                await    startApplication.respondentDetails()
+                await respondentDetails.respondentDetailsPrivateSolicitor();
+            });
+
+
+            await test.step('Allocation Proposal', async () => {
+                await startApplication.allocationProposal()
+                await allocationProposal.allocationProposalSmokeTest();
+                await startApplication.allocationProposalHasBeenUpdated();
+            });
+
+            await test.step('Submit the Case', async () => {
+                await   startApplication.submitCase()
+                await submitCase.submitCaseSmokeTest('£263.00');
+            });
+
+
+        await test.step('CFV Application check', async () => {
+            await caseFileView.goToCFVTab();
+            await caseFileView.openFolder('Applications');
+            await caseFileView.openFolder('Original Applications');
+            await expect(caseFileView.page.getByLabel('Original Applications folder')).toBeVisible();
+            await expect(caseFileView.page.getByRole('treeitem', { name: 'Somuy__Swansea_City_Council_Asa_Yaks.pdf', exact: true })).toBeVisible();
+
+            await caseFileView.openDocInNewTab();
+            await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
+        });
+
     })
 })

@@ -42,15 +42,15 @@ export class ExpertReport extends BasePage {
     }
 
     async enterRequestedDate(requestDate: Date, reportNumber: number = 0) {
-        await this.dateRequested.getByLabel('Day').nth(reportNumber).fill(requestDate.getDate().toString());
-        await this.dateRequested.getByLabel('Month').nth(reportNumber).fill(requestDate.getMonth().toString());
-        await this.dateRequested.getByLabel('Year').nth(reportNumber).fill(requestDate.getFullYear().toString());
+        await this.dateRequested.getByLabel('Day').nth(reportNumber).fill(new Intl.DateTimeFormat('en', {day: 'numeric'}).format(requestDate));
+        await this.dateRequested.getByLabel('Month').nth(reportNumber).fill(new Intl.DateTimeFormat('en', {month: 'numeric'}).format(requestDate));
+        await this.dateRequested.getByLabel('Year').nth(reportNumber).fill(new Intl.DateTimeFormat('en', {year: 'numeric'}).format(requestDate));
     }
 
     async enterApprovedDate(approvedDate: Date, reportNumber: number = 0) {
-        await this.dateApproved.nth(reportNumber).getByLabel('Day').fill(approvedDate.getDate().toString());
-        await this.dateApproved.nth(reportNumber).getByLabel('Month').fill(approvedDate.getMonth().toString());
-        await this.dateApproved.nth(reportNumber).getByLabel('Year').fill(approvedDate.getFullYear().toString());
+        await this.dateApproved.nth(reportNumber).getByLabel('Day').fill(new Intl.DateTimeFormat('en', {day: 'numeric'}).format(approvedDate));
+        await this.dateApproved.nth(reportNumber).getByLabel('Month').fill(new Intl.DateTimeFormat('en', {month: 'numeric'}).format(approvedDate));
+        await this.dateApproved.nth(reportNumber).getByLabel('Year').fill(new Intl.DateTimeFormat('en', {year: 'numeric'}).format(approvedDate));
 
     }
 

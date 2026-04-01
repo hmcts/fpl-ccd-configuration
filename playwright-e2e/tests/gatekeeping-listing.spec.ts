@@ -11,6 +11,7 @@ import {
 import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
+import {urlConfig} from "../settings/urls";
 
 test.describe('Gatekeeping Listing', () => {
   const dateTime = new Date().toISOString();
@@ -18,6 +19,7 @@ test.describe('Gatekeeping Listing', () => {
   let caseName: string;
   test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    expect(caseNumber).toBeDefined();
   });
 
   test('Review Standard Direction Order High Court WA Task @xbrowser',
@@ -25,10 +27,10 @@ test.describe('Gatekeeping Listing', () => {
       caseFileView }) => {
       caseName = 'Review Standard Direction Order High Court WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(judgeLondonUser.email, judgeLondonUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await gateKeepingListing.gotoNextStep('Judicial Gatekeeping');
       await gateKeepingListing.completeJudicialGatekeepingWithUploadedOrder();
@@ -39,9 +41,9 @@ test.describe('Gatekeeping Listing', () => {
         await gateKeepingListing.tabNavigation('People in the case');
         await expect.soft(gateKeepingListing.page.getByText('Fee paid judge')).toBeVisible();
         await expect.soft(gateKeepingListing.page.getByText('Recorder')).toBeVisible();
-        await expect.soft(gateKeepingListing.page.getByText('Ramirez KC',{ exact: true })).toBeVisible();
+        await expect.soft(gateKeepingListing.page.getByText('Fry JP',{ exact: true })).toBeVisible();
         await gateKeepingListing.tabNavigation('Hearings');
-        await expect.soft(gateKeepingListing.page.getByText('Recorder Ramirez KC',{exact:true})).toHaveCount(2);
+        await expect.soft(gateKeepingListing.page.getByText('Recorder Fry JP',{exact:true})).toHaveCount(2);
         //Check CFV
       await caseFileView.goToCFVTab();
       await caseFileView.openFolder('Orders');
@@ -52,7 +54,7 @@ test.describe('Gatekeeping Listing', () => {
         //Test WA Task exists
         await signInPage.visit();
         await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await gateKeepingListing.tabNavigation('Tasks');
         await gateKeepingListing.waitForTask('Review Standard Direction Order (High Court)');
 
@@ -69,10 +71,10 @@ test.describe('Gatekeeping Listing', () => {
         async ({page, signInPage, gateKeepingListing}) => {
 
             caseName = 'List urgent direction order by CTSC user ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseWithEpo);
+            expect(await updateCase(caseName, caseNumber, caseWithEpo)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await gateKeepingListing.gotoNextStep('Add urgent directions');
             await gateKeepingListing.completeUrgentDirectionsOrder();
             await expect.soft(page.getByText('has been updated with event: Add urgent directions')).toBeVisible();
@@ -86,6 +88,22 @@ test.describe('Gatekeeping Listing', () => {
             await expect(page.locator('ccd-read-multi-select-list-field').filter({hasText: 'Emergency protection order'}).locator('span')).toBeVisible();
             await expect(page.locator('ccd-field-read-label').filter({hasText: /^Prevent removal from an address$/}).locator('div')).toBeVisible();
 
-        })
+        });
+
+    test('Admin send High Court Case to Gatekeeping', async ({ page, signInPage, gateKeepingListing, historyPage}) => {
+        await test.step('Login and create case', async() => {
+            caseName = 'Review Standard Direction Order High Court WA Task for gatekeeping' + dateTime.slice(0, 10);
+            expect(await updateCase(caseName, caseNumber, caseWithEpo)).toBeTruthy();
+            await signInPage.visit();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateToCaseDetails(caseNumber);
+        });
+
+        await test.step('validate Family man reference number and case status', async() => {
+            await gateKeepingListing.tabNavigation('History');
+            await expect(historyPage.endStateCell).toBeVisible();
+            await expect(historyPage.gatekeepingCell).toBeVisible();
+        });
+    });
 
   });

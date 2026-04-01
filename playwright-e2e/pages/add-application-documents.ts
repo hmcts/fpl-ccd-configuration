@@ -30,18 +30,9 @@ export class AddApplicationDocuments {
     }
 
     async uploadDocumentSmokeTest(): Promise<void> {
-        await Promise.all([
-            this.page.waitForResponse(response =>
-                response.url().includes('documents') &&
-                response.request().method() === 'POST' &&
-                response.status() === 200
-            ),
-            this.fileUploadButton.setInputFiles(config.testPdfFile)
-        ]);
 
-        await this.page.waitForResponse(response =>
-            response.url().includes('track')
-        );
+       await this.fileUploadButton.setInputFiles(config.testPdfFile);
+        await this.page.waitForTimeout(2000); // wait for upload to complete
 
         await this.selectTypeOfDocument('8: BIRTH_CERTIFICATE');
         await this.fillGiveDetails('testing');
@@ -52,7 +43,7 @@ export class AddApplicationDocuments {
                 response.request().method() === 'POST' &&
                 response.status() === 200
             ),
-            await this.page.getByRole('button', { name: 'Continue' }).click()
+             this.page.getByRole('button', { name: 'Continue' }).click()
         ]);
 
         await Promise.all([
@@ -61,7 +52,7 @@ export class AddApplicationDocuments {
                 response.request().method() === 'GET' &&
                 response.status() === 200
             ),
-            await this.page.getByRole('button', { name: 'Save and continue' }).click()
+            this.page.getByRole('button', { name: 'Save and continue' }).click()
         ]);
 
     }

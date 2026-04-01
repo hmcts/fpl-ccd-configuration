@@ -16,12 +16,12 @@ export class ManageOrderTestService {
     }
 
     async testManageOrderContentSame(caseDetailsBefore: any, orderType: string, user: UserCredential = swanseaOrgCAAUser) {
-        let orderCaseDetailsJson = (await import(`../caseData/apiTest/manageOrder/${orderType}.json`, { assert: { type: "json" } })).default;
+        let orderCaseDetailsJson = (await import(`../caseData/apiTest/manageOrder/${orderType}.json`, { with: { type: "json" } })).default;
         let caseData = {...caseDetailsBefore.caseData, ...orderCaseDetailsJson.caseData};
         let orderDocumentReference : any;
 
         let caseDetailsAfter : any;
-        
+
         let today = new Date();
         await test.step('call about-to-submit', async () => {
             caseData = {
@@ -63,7 +63,7 @@ export class ManageOrderTestService {
         await test.step('verify document content', async () => {
             let oneYearLater = new Date(today);
             oneYearLater.setFullYear(today.getFullYear() + 1);
-            
+
             await this.documentService.expectPdfContentSame(orderDocumentReference, `/manageOrder/${orderType}.txt`,
                 {
                     "id": formatCCDCaseNumber(caseDetailsAfter.caseData.id),

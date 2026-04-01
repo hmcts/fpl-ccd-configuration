@@ -3,12 +3,18 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -22,6 +28,8 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -33,7 +41,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -50,6 +60,10 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -65,6 +79,8 @@ public class UploadAdditionalApplicationsService {
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
     private final DocumentConversionService documentConversionService;
+    private final PbaService pbaService;
+    private final JudicialService judicialService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -90,7 +106,7 @@ public class UploadAdditionalApplicationsService {
         List<Element<Respondent>> respondentsInCase = caseData.getAllRespondents();
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
-            .pbaPayment(caseData.getTemporaryPbaPayment())
+            .pbaPayment(updatePBAPayment(caseData.getTemporaryPbaPayment(), YES.equals(caseData.getIsCTSCUser())))
             .amountToPay(caseData.getAmountToPay())
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now, DATE_TIME))
@@ -100,7 +116,7 @@ public class UploadAdditionalApplicationsService {
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             C2DocumentBundle c2DocumentBundle = buildC2DocumentBundle(
                 caseData, applicantName, respondentsInCase, uploadedBy, now);
-            if (YesNo.YES.equals(caseData.getIsC2Confidential())) {
+            if (YES.equals(caseData.getIsC2Confidential())) {
                 additionalApplicationsBundleBuilder.c2DocumentBundleConfidential(c2DocumentBundle);
                 buildC2BundleByPolicy(caseData, c2DocumentBundle, additionalApplicationsBundleBuilder);
             } else {
@@ -314,5 +330,59 @@ public class UploadAdditionalApplicationsService {
     public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
+    }
+
+    public Map<String, Object> populateTempPbaPayment() {
+        final String TEMP_PBA = "temporaryPbaPayment";
+        Map<String, Object> data = new HashMap<>();
+        PBAPayment tempPbaPayment = PBAPayment.builder()
+            .pbaNumberDynamicList(pbaService.populatePbaDynamicList(""))
+            .build();
+
+        data.put(TEMP_PBA, tempPbaPayment);
+
+        return data;
+    }
+
+    public JudicialMessageRoleType getAllocatedJudgeOrLegalAdviserType(CaseData caseData) {
+        Optional<Judge> allocatedJudgeLegalAdviser = judicialService.getAllocatedJudge(caseData);
+
+        if (allocatedJudgeLegalAdviser.isEmpty()) {
+            // Using this as a placeholder for no allocated judge/legal adviser until C2 work is complete
+            return JudicialMessageRoleType.CTSC;
+        } else {
+            // Check to see if the judge has a valid jrd profile then generate generic task if not
+            if (allocatedJudgeLegalAdviser.map(Judge::getJudgeJudicialUser).map(JudicialUser::getIdamId).isEmpty()) {
+                return JudicialMessageRoleType.CTSC;
+            }
+
+            List<String> roleTypes = judicialService
+                .getAllocatedJudgeAndLegalAdvisorRoleAssignments(caseData.getId())
+                .stream()
+                .map((RoleAssignment::getRoleName))
+                .toList();
+
+            if (roleTypes.contains(ALLOCATED_JUDGE.getRoleName())) {
+                return JudicialMessageRoleType.ALLOCATED_JUDGE;
+            } else if (roleTypes.contains(ALLOCATED_LEGAL_ADVISER.getRoleName())) {
+                return JudicialMessageRoleType.OTHER;
+            } else {
+                throw new UserLookupException(
+                    String.format("Allocated judge or legal adviser has invalid am role for case id: %s",
+                        caseData.getId()));
+            }
+        }
+    }
+
+
+    public PBAPayment updatePBAPayment(PBAPayment pbaPayment, boolean isCTSCUser) {
+        if (pbaPayment != null && !NO.getValue().equals(pbaPayment.getUsePbaPayment())) {
+            return pbaPayment.toBuilder()
+                .pbaNumber(isCTSCUser
+                    ? pbaPayment.getPbaNumber() : pbaPayment.getPbaNumberDynamicList().getValueCode())
+                .pbaNumberDynamicList(null)
+                .build();
+        }
+        return pbaPayment;
     }
 }

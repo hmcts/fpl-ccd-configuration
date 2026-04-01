@@ -24,12 +24,16 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
-import uk.gov.hmcts.reform.rd.client.StaffApi;
+import uk.gov.hmcts.reform.rd.model.JudicialUserAppointment;
+import uk.gov.hmcts.reform.rd.model.JudicialUserAuthorisations;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -42,8 +46,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
+import static uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration.SERVICE_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
@@ -55,7 +61,11 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
+import static uk.gov.hmcts.reform.rd.model.JudicialUserAppointment.APPOINTMENT_TYPE_FEE_PAID;
 
 @Slf4j
 @Service
@@ -82,12 +92,13 @@ public class JudicialService {
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
     private final JudicialApi judicialApi;
-    private final StaffApi staffApi;
     private final RoleAssignmentService roleAssignmentService;
     private final ValidateEmailService validateEmailService;
     private final JudicialUsersConfiguration judicialUsersConfiguration;
     private final LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
     private final ElinksService elinksService;
+    private final UserService userService;
+    private final Time time;
 
     /**
      * Delete a set of allocated-[users] on a specific case.
@@ -236,11 +247,7 @@ public class JudicialService {
             return false;
         }
         String systemUserToken = systemUserService.getSysUserToken();
-        List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
-            authTokenGenerator.generate(),
-            JUDICIAL_PAGE_SIZE,
-            elinksService.getElinksAcceptHeader(),
-            JudicialUserRequest.fromPersonalCode(personalCode));
+        List<JudicialUserProfile> judges = getJudicialUserProfiles(JudicialUserRequest.fromPersonalCode(personalCode));
 
         return !judges.isEmpty();
     }
@@ -275,11 +282,7 @@ public class JudicialService {
             return Optional.empty();
         }
         String systemUserToken = systemUserService.getSysUserToken();
-        List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
-            authTokenGenerator.generate(),
-            JUDICIAL_PAGE_SIZE,
-            elinksService.getElinksAcceptHeader(),
-            JudicialUserRequest.fromPersonalCode(personalCode));
+        List<JudicialUserProfile> judges = getJudicialUserProfiles(JudicialUserRequest.fromPersonalCode(personalCode));
 
         if (judges.isEmpty()) {
             return Optional.empty();
@@ -542,11 +545,88 @@ public class JudicialService {
         return resultMap;
     }
 
-    private List<RoleAssignment> getAllocatedJudgeAndLegalAdvisorRoleAssignments(Long caseId) {
+    public List<RoleAssignment> getAllocatedJudgeAndLegalAdvisorRoleAssignments(Long caseId) {
         return roleAssignmentService.getCaseRolesAtTime(caseId, ALLOCATED_ROLES, currentTimeUK());
     }
 
-    private List<RoleAssignment> getHearingJudgeAndLegalAdviserRoleAssignments(Long caseId, ZonedDateTime endTime) {
+    public List<RoleAssignment> getHearingJudgeAndLegalAdviserRoleAssignments(Long caseId, ZonedDateTime endTime) {
         return roleAssignmentService.getCaseRolesAtTime(caseId, HEARING_ROLES, endTime);
+    }
+
+    public List<JudicialUserProfile> getJudicialUserProfiles(JudicialUserRequest request) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        return judicialApi.findUsers(systemUserToken,
+            authTokenGenerator.generate(),
+            JUDICIAL_PAGE_SIZE,
+            elinksService.getElinksAcceptHeader(),
+            request);
+    }
+
+    @Retryable(value = {FeignException.class}, label = "Search JRD for a judge by idam id")
+    public List<JudicialUserProfile> getJudicialUserProfilesByIdamId(String idamId) {
+        return getJudicialUserProfiles(JudicialUserRequest.builder()
+            .idamId(List.of(idamId)).build());
+    }
+
+    public String getJudgeTitleAndNameOfCurrentUser(JudgeOrMagistrateTitle judgeTitle) {
+        UserDetails userDetails = userService.getUserDetails();
+        List<JudicialUserProfile> judicialUserProfiles = getJudicialUserProfilesByIdamId(userDetails.getId());
+
+        return judicialUserProfiles.stream().map(judicialUserProfile ->
+                    formatJudgeTitleAndName(JudgeAndLegalAdvisor.fromJudicialUserProfile(judicialUserProfile,
+                        judgeTitle)))
+            .findFirst()
+            .orElse(userDetails.getFullName());
+    }
+
+    public boolean isCurrentUserFeePaidJudge() {
+        UserDetails userDetails = userService.getUserDetails();
+        List<JudicialUserProfile> judicialUserProfiles  = getJudicialUserProfilesByIdamId(userDetails.getId());
+
+        return !judicialUserProfiles.isEmpty() && isFeePaidJudge(judicialUserProfiles.getFirst());
+    }
+
+    private boolean isFeePaidJudge(JudicialUserProfile judicialUserProfile) {
+        LocalDate todayDate = time.now().toLocalDate();
+
+        // get IDs of all active and authorised FPL appointments from authorization list
+        List<String> authorisedAppointmentIds = nullSafeCollection(judicialUserProfile.getAuthorisations()).stream()
+            .filter(authorisation -> authorisation.getServiceCodes().contains(SERVICE_CODE))
+            .filter(authorisations ->
+                isWithinDateRange(todayDate, authorisations.getStartDate(), authorisations.getEndDate()))
+            .map(JudicialUserAuthorisations::getAppointmentId)
+            .sorted()
+            .toList();
+
+        // get all active and authorised FPL appointments and group by primary vs secondary role
+        Map<Boolean, List<JudicialUserAppointment>> activeAppointmentIds =
+            nullSafeCollection(judicialUserProfile.getAppointments()).stream()
+                // check if active
+                .filter(appointment ->
+                    isWithinDateRange(todayDate, appointment.getStartDate(), appointment.getEndDate()))
+                // check if authorised
+                .filter(appointment ->
+                    authorisedAppointmentIds.contains(appointment.getAppointmentId()))
+                // group by primary vs secondary role
+                .collect(Collectors.groupingBy(appointment ->
+                    Boolean.valueOf(appointment.getIsPrincipalAppointment())));
+
+        List<JudicialUserAppointment> primaryAppointments = nullSafeList(activeAppointmentIds.get(Boolean.TRUE));
+        List<JudicialUserAppointment> secondaryAppointments = nullSafeList(activeAppointmentIds.get(Boolean.FALSE));
+
+        if (primaryAppointments.isEmpty()) {
+            log.info("No active primary appointment found for user {}", judicialUserProfile.getSidamId());
+        } else if (primaryAppointments.size() > 1) {
+            log.warn("More than one active primary appointment found for user {}.", judicialUserProfile.getSidamId());
+        }
+
+        // if there are no active primary appointments then we check secondary appointments for fee paid role
+        return (isEmpty(primaryAppointments) ? secondaryAppointments : primaryAppointments).stream()
+            .anyMatch(appointment -> APPOINTMENT_TYPE_FEE_PAID.equals(appointment.getAppointmentType()));
+    }
+
+    private boolean isWithinDateRange(LocalDate todayDate, LocalDate startDate, LocalDate endDate) {
+        return isNotEmpty(startDate) && todayDate.isAfter(startDate)
+            && (isEmpty(endDate) || todayDate.isBefore(endDate));
     }
 }

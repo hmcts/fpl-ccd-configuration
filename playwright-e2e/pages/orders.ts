@@ -19,12 +19,13 @@ export class Orders extends BasePage {
     readonly isExclusion: Locator;
     readonly excluded: Locator;
     readonly powerOfExclusionStart: Locator;
-    readonly judgeMagistrateTitle: Locator;
+    readonly judgeMagistrateRadioButton: Locator;
     readonly judgeLastName: Locator;
     readonly judgeEmail: Locator;
     readonly legalAdvisorName: Locator;
     readonly orderFurtherDirectionDetails: Locator;
     readonly closeOrder: Locator;
+    readonly judgeMagistrateTitle: Locator;
     readonly careOrderIssuedDate: Locator;
     readonly careOrderIssuedCourt: Locator;
     readonly jurisdiction: Locator;
@@ -71,6 +72,18 @@ export class Orders extends BasePage {
     readonly parentalResponsibilty: Locator;
     readonly relationToChild: Locator;
     readonly specialGuardianOne: Locator;
+    firstPartyAllowedContact: Locator;
+    secondPartyAllowedContact: Locator;
+    thirdPartyAllowedContact: Locator;
+    conditionsOfContact: Locator;
+    partyGrantedLeave: Locator;
+    newSurname: Locator;
+    readonly supervisionOrder: Locator;
+    readonly courtDirectsThat: Locator;
+    readonly requiredOrder: Locator;
+    readonly paragraph: Locator;
+    readonly childPlacementApplication: Locator;
+
 
     constructor(page: Page) {
         super(page);
@@ -79,8 +92,7 @@ export class Orders extends BasePage {
         this.orderApplication = page.getByRole('group', { name: 'Is there an application for' });
         this.approvedHearing = page.getByLabel('Which hearing?');
         this.issuingJudge = page.getByRole('group', { name: 'Is this judge issuing the' });
-        this.judgeMagistrateTitle = page.getByRole('group', { name: 'Judge or magistrate\'s title' });
-        this.isAllChildrenInvolved = page.getByRole('group', { name: 'Is the order about all the children?' })
+        this.isAllChildrenInvolved = page.getByRole('group', { name: 'Is the order about all the children?' });
         this.EPOrderType = page.getByRole('group', { name: 'Type of emergency protection' });
         this.EPOEndDate = page.getByRole('group', { name: 'When does it end?' });
         this.finalOrder = page.getByRole('group', { name: 'Is this a final order?' });
@@ -88,8 +100,11 @@ export class Orders extends BasePage {
         this.orderPage = page;
         this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
         this.excluded = page.getByLabel('Who\'s excluded');
+        this.judgeMagistrateTitle = page.getByRole('group', { name: 'Judge or magistrate\'s title' });
         this.powerOfExclusionStart = page.getByRole('group', { name: 'Date power of exclusion starts' });
+        this.judgeMagistrateRadioButton = page.getByRole('radio', { name: 'His Honour Judge' });
         this.orderToAmend = page.getByLabel('Select order to amend');
+        this.uploadAmendOrder = page.getByRole('textbox', { name: 'Upload the amended order. It will then be dated and stamped as amended.' });
         this.uploadAmendOrder = page.getByRole('button', { name: 'Upload the amended order. It will then be dated and stamped as amended.' });
         this.judgeLastName = page.getByLabel('Last name');
         this.judgeEmail = page.getByLabel('Email Address');
@@ -142,6 +157,18 @@ export class Orders extends BasePage {
         this.parentalResponsibilty = page.getByRole('textbox', { name: 'Who\'s been given parental' });
         this.relationToChild = page.getByRole('radio', { name: 'Father' });
         this.specialGuardianOne = page.getByRole('group', { name: 'Person 1 (Optional)' });
+        this.firstPartyAllowedContact = page.getByLabel('1st party allowed contact');
+        this.secondPartyAllowedContact = page.getByLabel('2nd party allowed contact (Optional)');
+        this.thirdPartyAllowedContact = page.getByLabel('3rd party allowed contact (Optional)');
+        this.conditionsOfContact = page.getByLabel('Conditions of contact');
+        this.partyGrantedLeave = page.getByRole('textbox', { name: 'Party granted leave' });
+        this.newSurname = page.getByRole('textbox', { name: 'Child/Children\'s new surname' });
+        this.supervisionOrder = page.locator('#manageOrdersC35aOrderExists_Yes');
+        this.courtDirectsThat = page.getByRole('textbox', { name: 'The court directs that' });
+        this.requiredOrder = page.getByRole('radio', { name: 'Variation of supervision order' });
+        this.paragraph = page.getByRole('textbox', { name: 'Paragraphs' });
+        this.childPlacementApplication = page.getByLabel('Child placement application');
+
 
     }
 
@@ -214,7 +241,6 @@ export class Orders extends BasePage {
             await this.powerOfExclusionStart.getByLabel('Year').fill('2024');
             await this.powerOfExclusionStart.getByLabel('Day').fill('12');
         }
-
         await this.page.getByRole('group', { name: 'Include: "Any person who can produce the children to the applicant must do so"' }).getByLabel('Yes').click();
         await this.page.getByLabel('Add description of children (').fill('Children description');
         await this.page.getByLabel('Add further directions, if').fill('Furhter direction\nto the applicant \nto take care of children');
@@ -291,7 +317,7 @@ export class Orders extends BasePage {
 
     async openOrderDoc(docLink: string) {
         const newPagePromise = this.page.context().waitForEvent('page');
-        await this.page.getByRole('link', { name: `${docLink}` }).click();
+        await this.page.getByRole('button', { name: `${docLink}` }).click();
         this.orderPage = await newPagePromise;
         await this.orderPage.waitForLoadState();
     }
@@ -299,9 +325,25 @@ export class Orders extends BasePage {
     async uploadAmendedOrder() {
         await this.uploadAmendOrder.setInputFiles(config.testPdfFile);
         await this.waitForAllUploadsToBeCompleted();
+
     }
 
-    async ctscUploadsTransparencyOrder() {
+    async addAuthorityToRefuseContactWithAChildInCareDetails() {
+        await this.clickContinue();
+        await this.judgeMagistrateRadioButton.check();
+        await this.judgeLastName.getByText('Dean');
+        await this.approvalDate.getByLabel('Day').fill('2');
+        await this.approvalDate.getByLabel('Month').fill('2');
+        await this.approvalDate.getByLabel('Year').fill('2024');
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByRole('radio', { name: 'Yes' }).check();
+        await this.clickContinue();
+        await this.orderConsent.getByRole('radio', { name: 'Yes' }).check();
+        await this.finalOrder.getByRole('radio', { name: 'No' }).check();
+        await this.clickContinue();
+    }
+
+    async uploadsTransparencyOrder() {
         await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
         await this.orderConsent.getByLabel('Yes').check();
@@ -315,27 +357,10 @@ export class Orders extends BasePage {
         await this.permissionReport.getByLabel('Year').fill('2031');
     }
 
-    async judgeUploadsTransparencyOrder() {
-        await this.issuingJudge.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.orderConsent.getByLabel('Yes').check();
-        await this.finalOrder.getByLabel('No').check();
-        await this.dateChosen.check();
-        await this.endDate.getByLabel('Day').fill('11');
-        await this.endDate.getByLabel('Month').fill('07');
-        await this.endDate.getByLabel('Year').fill('2030');
-        await this.permissionReport.getByLabel('Day').fill('10');
-        await this.permissionReport.getByLabel('Month').fill('08');
-        await this.permissionReport.getByLabel('Year').fill('2020');
-
-    }
-
-    async ctscFamilyAssistanceOrder() {
+    async familyAssistanceOrder() {
         await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
         await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
         await this.clickContinue();
-        await this.page.pause();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.firstFamilyBefriended.selectOption('John Black');
@@ -345,31 +370,14 @@ export class Orders extends BasePage {
         await this.month.fill('08');
         await this.year.fill('2025');
         await this.orderConsent.getByLabel('Yes').click();
-        await this.orderConsent.getByLabel('Yes').click(); // checkbox not clicking had to work around it
+        await this.orderConsent.getByLabel('Yes').click();// checkbox not clicking had to work around it
         await this.futherDirections.fill('test');
         await this.finalOrder.getByLabel('No').check();
+        await this.finalOrder.getByLabel('No').check();// checkbox not clicking had to work around it
+
     }
 
-    async judgeUploadsFamilyAssistanceOrder() {
-        await expect(this.page.getByText(' Add issuing details', { exact: true })).toBeVisible();
-        await this.issuingJudge.getByLabel('Yes').check();
-        await this.page.pause();
-        await this.clickContinue();
-        await this.isAllChildrenInvolved.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.firstFamilyBefriended.selectOption('John Black');
-        await this.secondFamilyBefriended.selectOption('Sarah Black');
-        await this.thirdFamilyBefriended.selectOption('Joe Bloggs');
-        await this.day.fill('07');
-        await this.month.fill('08');
-        await this.year.fill('2025');
-        await this.orderConsent.getByLabel('Yes').click();
-        await this.orderConsent.getByLabel('Yes').click();
-        await this.futherDirections.fill('test');
-        await this.finalOrder.getByLabel('No').check();
-    }
-
-    async ctscUploadsInterimCareOrder() {
+    async uploadsInterimCareOrder() {
         await this.orderApproved.getByLabel('No').check();
         await this.applicationOrder.getByLabel('No').check();
         await this.clickContinue();
@@ -378,18 +386,6 @@ export class Orders extends BasePage {
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
         await this.radioNoButton.click();
-        await this.endOfProceedings.check();
-    }
-
-    async judgeUploadsInterimCareOrder() {
-        await this.orderApproved.getByLabel('No').check();
-        await this.applicationOrder.getByLabel('No').check();
-        await this.clickContinue();
-        await this.issuingJudge.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.isAllChildrenInvolved.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.radioNoButton.check();
         await this.endOfProceedings.check();
     }
 
@@ -490,5 +486,87 @@ export class Orders extends BasePage {
         await this.specialGuardianOne.getByRole('checkbox', { name: 'Yes' }).click()
         await this.finalOrder.getByLabel('No').check();
         await this.clickContinue();
+
+    }
+
+    async uploadsContactWithChildInCareOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.orderApplication.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').click();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.finalOrder.getByText('No').click();
+        await this.firstPartyAllowedContact.selectOption('Joe Bloggs');
+        await this.secondPartyAllowedContact.selectOption('Joe Bloggs');
+        await this.thirdPartyAllowedContact.selectOption('-- Respondent --');
+        await this.conditionsOfContact.fill('test');
+
+    }
+
+    async uploadsLeaveToChangeSurname() {
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.finalOrder.getByText('No').click();
+        await this.partyGrantedLeave.fill('Jason');
+        await this.newSurname.fill('Fredrick');
+
+    }
+
+    async uploadsVariationOrExtensionOrder() {
+        await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderConsent.getByLabel('Yes').check();
+        await this.supervisionOrder.check();
+        await this.requiredOrder.check();
+        await this.courtDirectsThat.fill('test');
+        await this.approvalDate.getByLabel('Day').fill('11');
+        await this.approvalDate.getByLabel('Month').fill('01');
+        await this.approvalDate.getByLabel('Year').fill('2026');
+        await this.endDate.getByLabel('Day').fill('21');
+        await this.endDate.getByLabel('Month').fill('01');
+        await this.endDate.getByLabel('Year').fill('2026');
+        await this.finalOrder.getByText('No').click();
+        await this.finalOrder.getByText('No').click();// // checkbox not clicking had to work around it
+
+    }
+
+    async uploadsDischargeOfCareOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('Yes').check();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.orderApplication.getByLabel('Yes').click();
+        await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Day' }).fill('3');
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Month' }).fill('4');
+        await this.careOrderIssuedDate.getByRole('textbox', { name: 'Year' }).fill('2022');
+        await this.careOrderIssuedCourt.selectOption('High Court Family Division');
+        await this.orderFurtherDirectionDetails.fill('Further Direction');
+        await this.finalOrder.getByLabel('No').check();
+
+    }
+    async addPlacementBlankOrder() {
+        await this.childPlacementApplication.selectOption('William Black');
+        await this.addIssuingJudgeDetails('Yes');
+        await this.clickContinue();
+        await this.finalOrder.getByLabel('No').check();
+        await this.paragraph.fill('test');
+        await this.clickContinue();
+
     }
 }

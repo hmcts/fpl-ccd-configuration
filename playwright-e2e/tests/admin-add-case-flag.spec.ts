@@ -17,28 +17,29 @@ test.describe('Add a case flag', () => {
 
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
-    test('Add and remove a case flag as admin user',
+    test('Add and remove a case flag as admin user @test',
         async ({page, signInPage, addAdminCaseFlag}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseData);
+            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
             await runTest(signInPage, addAdminCaseFlag, page);
         });
 
-    test('Add and remove a case flag as judicial user @xbrowser',
+    test('Add and remove a case flag as judicial user @test @xbrowser',
         async ({page, signInPage, addAdminCaseFlag}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseData);
+            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
             await runTest(signInPage, addAdminCaseFlag, page);
         });
 
     async function runTest(signInPage: SignInPage, addAdminCaseFlag: AddAndRemoveAdminCaseFlag, page: Page) {
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await addAdminCaseFlag.runAddCaseFlagTest();
         await expect(page.getByText('Potentially violent person',{exact: true})).toBeVisible();
         await expect(page.getByText('Case Flag Added')).toBeVisible();

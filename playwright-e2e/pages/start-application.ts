@@ -33,6 +33,7 @@ export class StartApplication extends BasePage {
     readonly otherPeopleInCaseLink: Locator;
     readonly returnApplicationLink: Locator;
     readonly  ordersAndDirectionsSoughtFinishedStatus: Locator;
+    readonly childDetailsHeading: Locator;
 
     // readonly logExpertReportLink: Locator;
     public constructor(page: Page) {
@@ -68,16 +69,13 @@ export class StartApplication extends BasePage {
         this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case' }) ;
         this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
         this.ordersAndDirectionsSoughtFinishedStatus = page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img');
+        this.childDetailsHeading = page.getByRole("heading", { name: "Child's details", });
     }
 
     async groundsForTheApplication() {
-        await Promise.all([
-            this.page.waitForResponse(response =>
-                response.url().includes(`event-triggers/enterGrounds?ignore-warning=false`) &&
-                response.request().method() === 'GET'
-            ),
-            this.groundsForTheApplicationLink.click()
-        ]);
+        await expect(this.groundsForTheApplicationLink).toBeVisible();
+        await this.gotoNextStep('Grounds for the application');
+
     }
 
     async groundsForTheApplicationHasBeenUpdated() {
@@ -85,15 +83,10 @@ export class StartApplication extends BasePage {
     }
 
     async hearingUrgency() {
-        await Promise.all([
-            this.page.waitForResponse((response) =>
-                response.url().includes('hearingNeeded') &&
-                response.status() === 200
-            ),
-            this.hearingUrgencyLink.click()
-        ])
 
-        await expect(this.hearingUrgencyHeader).toBeVisible();
+       await  expect(this.hearingUrgencyLink).toBeVisible();
+       await this.gotoNextStep('Hearing urgency');
+
     }
 
     async riskAndHarmToChildren() {
@@ -102,14 +95,8 @@ export class StartApplication extends BasePage {
     }
 
     async addApplicationDocuments(): Promise<void> {
-        await Promise.all([
-            this.page.waitForResponse(response =>
-                response.url().includes('event-triggers/uploadDocuments?ignore-warning=false') &&
-                response.request().method() === 'GET' &&
-                response.status() === 200
-            ),
-            await this.uploadDocumentsLink.click()
-        ]);
+        await expect(this.uploadDocumentsLink).toBeVisible();
+        await this.gotoNextStep('Application documents');
     }
 
     async addApplicationDocumentsInProgress() {
@@ -117,7 +104,8 @@ export class StartApplication extends BasePage {
     }
 
     async applicantDetails(): Promise<void> {
-        await this.applicantDetailsLink.click()
+        await expect(this.applicantDetailsLink).toBeVisible();
+        await this.gotoNextStep('Applicant\'s details');
     }
 
     async applicantDetailsHasBeenUpdated() {
@@ -125,7 +113,9 @@ export class StartApplication extends BasePage {
     }
 
     async childDetails() {
-        await this.childDetailsLink.click();
+        expect(this.childDetailsLink).toBeVisible();
+        await this.gotoNextStep('Child\'s details');
+        expect(this.childDetailsHeading).toBeVisible();
     }
 
     async childDetailsHasBeenUpdated() {
@@ -133,11 +123,13 @@ export class StartApplication extends BasePage {
     }
 
     async respondentDetails() {
-        await this.respondentsDetailsLink.click()
+        expect(this.respondentsDetailsLink).toBeVisible();
+            await this.gotoNextStep('Respondents\' details');
     }
 
     async allocationProposal() {
-        await this.allocationProposalLink.click();
+        expect(this.allocationProposalLink).toBeVisible();
+        await this.gotoNextStep('Allocation proposal');
     }
 
     async allocationProposalHasBeenUpdated() {
@@ -177,6 +169,7 @@ export class StartApplication extends BasePage {
     }
 
     async submitCase() {
-        await this.submitApplicationLink.click();
+        expect(this.submitApplicationLink).toBeVisible();
+        await this.gotoNextStep('Submit application');
     }
 }

@@ -24,10 +24,23 @@
     "ID": "EnterApplicantLa",
     "CaseEventID": "enterApplicantDetailsLA",
     "CaseFieldID": "localAuthority",
+    "ListElementCode": "pbaNumberDynamicList",
+    "EventElementLabel": "PBA number",
+    "EventHintText": "For example, PBA1234567",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "isCTSCUser!=\"Yes\"",
+    "FieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterApplicantLa",
+    "CaseEventID": "enterApplicantDetailsLA",
+    "CaseFieldID": "localAuthority",
     "ListElementCode": "pbaNumber",
     "EventElementLabel": "PBA number",
     "EventHintText": "For example, PBA1234567",
     "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "isCTSCUser=\"Yes\"",
     "FieldDisplayOrder": 5
   },
   {

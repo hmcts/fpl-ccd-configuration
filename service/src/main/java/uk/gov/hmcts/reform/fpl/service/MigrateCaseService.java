@@ -26,13 +26,17 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -971,20 +975,42 @@ public class MigrateCaseService {
 
     public Map<String, OrganisationPolicy> updateOutsourcingPolicy(CaseData caseData, String orgId,
                                                                                String caseRole) {
-        String orgName = organisationService.findOrganisation(orgId)
-            .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
-            .orElseThrow();
-
-        Organisation newOrganisation = Organisation.builder()
-            .organisationID(orgId)
-            .organisationName(orgName)
-            .build();
+        String orgName = getOrgName(orgId);
+        Organisation newOrganisation = createNewOrganisation(orgId, orgName);
 
         caseRole = caseData.getOutsourcingPolicy() != null
             ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : caseRole;
 
         return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
             .orgPolicyCaseAssignedRole(caseRole).build());
+    }
+
+    private String getOrgName(String orgId) {
+        return organisationService.findOrganisation(orgId)
+            .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
+            .orElseThrow();
+    }
+
+    private Organisation createNewOrganisation(String orgId, String orgName) {
+        return Organisation.builder()
+            .organisationID(orgId)
+            .organisationName(orgName)
+            .build();
+    }
+
+    public Map<String, OrganisationPolicy> updateRespondentPolicy(CaseData caseData,
+                                                                  String orgId,
+                                                                  String caseRole,
+                                                                  int policyIndex) {
+        String orgName = getOrgName(orgId);
+        Organisation newOrganisation = createNewOrganisation(orgId, orgName);
+        OrganisationPolicy policyData = caseData.getRespondentPolicyData().getAllPolicies()[policyIndex];
+        caseRole = policyData != null ? policyData.getOrgPolicyCaseAssignedRole() : caseRole;
+
+        return Map.of("respondentPolicy" + Integer.toString(policyIndex), OrganisationPolicy.builder()
+            .organisation(newOrganisation)
+            .orgPolicyCaseAssignedRole(caseRole)
+            .build());
     }
 
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,
@@ -1341,5 +1367,108 @@ public class MigrateCaseService {
         c2DocumentBundle.setDraftOrdersBundle(updatedDraftOrders);
 
         return Map.of("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
+    }
+
+    public Map<String, Object> removeSupportingEvidenceBundleFromAdditionalApplication(CaseData caseData,
+                                                                                       String migrationId,
+                                                                                       UUID bundleId, UUID docId) {
+        List<Element<AdditionalApplicationsBundle>> bundles = caseData.getAdditionalApplicationsBundle();
+
+        Element<AdditionalApplicationsBundle> bundle = ElementUtils.findElement(bundleId, bundles)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, additional application bundle not found",
+                migrationId, caseData.getId())));
+
+        C2DocumentBundle c2DocumentBundle = bundle.getValue().getC2DocumentBundle();
+        if (c2DocumentBundle == null || isEmpty(c2DocumentBundle.getSupportingEvidenceBundle())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, C2DocumentBundle or SupportingEvidenceBundle is null",
+                migrationId, caseData.getId()));
+        }
+
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle =
+            ElementUtils.removeElementWithUUID(c2DocumentBundle.getSupportingEvidenceBundle(), docId);
+
+        c2DocumentBundle.setSupportingEvidenceBundle(supportingEvidenceBundle);
+
+        return Map.of("additionalApplicationsBundle", bundles);
+    }
+
+    public String fixInvalidEmailAddressFormat(String emailAddress) {
+        String[] email = emailAddress.split("@");
+
+        if (email[0].startsWith(".")) {
+            email[0] = email[0].substring(1);
+        }
+
+        if (email[0].endsWith(".")) {
+            email[0] = email[0].substring(0, email[0].length() - 1);
+        }
+
+        return String.join("@", email);
+    }
+
+    public List<Element<HearingBooking>> replaceHearingJudgeEmailAddress(String migrationId,
+                                                               List<Element<HearingBooking>> hearings,
+                                                               UUID expectedHearingId,
+                                                               Long caseId) {
+        HearingBooking hearingBooking = ElementUtils.findElement(expectedHearingId, hearings)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid hearingId",
+                migrationId, caseId))
+            ).getValue();
+
+        hearingBooking.setJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor().toBuilder()
+            .judgeEmailAddress(fixInvalidEmailAddressFormat(
+                hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress()))
+            .build());
+
+        return hearings;
+    }
+
+    public Map<String, Object> removeStatementOfService(String migrationId, CaseData caseData,
+                                                        String statementIdToBeRemoved) {
+
+        List<Element<Recipients>> statementOfService = caseData.getStatementOfService();
+        if (isEmpty(statementOfService)) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, statement of service not found",
+                migrationId, caseData.getId()));
+        }
+
+        List<Element<Recipients>> statementOfServiceAfter = ElementUtils.removeElementWithUUID(statementOfService,
+            UUID.fromString(statementIdToBeRemoved));
+
+        if (statementOfServiceAfter.size() == statementOfService.size()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, statement of service element not found",
+                migrationId, caseData.getId()));
+        }
+
+        return Map.of("statementOfService", statementOfServiceAfter);
+
+    }
+
+    public Map<String, Object> removeFirstOther(String migrationId, CaseData caseData) {
+        Others others = caseData.getOthers();
+
+        if (others == null || !others.hasOthers()) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, others is null",
+                migrationId, caseData.getId()));
+        }
+
+        Other firstOther = others.getFirstOther();
+
+        if (firstOther == null) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, firstOther is null",
+                migrationId, caseData.getId()));
+        }
+
+        Others updatedOthers = others.toBuilder()
+            .firstOther(null)
+            .build();
+
+        return Map.of("others", updatedOthers);
     }
 }

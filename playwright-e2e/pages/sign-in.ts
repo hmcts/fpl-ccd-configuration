@@ -1,10 +1,9 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import
+{ expect, type Locator, type Page } from "@playwright/test";
 import { urlConfig } from "../settings/urls";
 import { BasePage } from "./base-page";
-
 export class SignInPage extends BasePage {
     readonly page: Page;
-    readonly url: string;
     readonly mourl: string;
     readonly emailInputLocator: Locator;
     readonly passwordInputLocator: Locator;
@@ -18,7 +17,6 @@ export class SignInPage extends BasePage {
     public constructor(page: Page) {
         super(page);
         this.page = page;
-        this.url = urlConfig.frontEndBaseURL;
         this.mourl = urlConfig.manageOrgURL;
         this.emailInputLocator = page.getByLabel("Email address");
         this.passwordInputLocator = page.getByLabel("Password");
@@ -30,14 +28,16 @@ export class SignInPage extends BasePage {
         this.hideMessage = page.getByText('Hide message');
     }
 
-    async visit(url: string = this.url) {
-        await this.page.goto(url);
-
+    async visit() {
+        await this.page.goto(`${urlConfig.frontEndBaseURL}`);
     }
 
-    async navigateTOCaseDetails(caseNumber: string) {
-        await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+    async navigateToCaseDetails(caseNumber: string) {
+        await this.page.goto(`${urlConfig.frontEndBaseURL}/cases/case-details/${urlConfig.jurisdiction}/${urlConfig.caseType}/${caseNumber}`);
+        await this.page.waitForLoadState();
     }
+
+
 
     async login(email: string, password: string) {
         await this.emailInputLocator.fill(email);
@@ -64,9 +64,5 @@ export class SignInPage extends BasePage {
     async logout() {
         await this.signoutButton.click();
         await expect(this.emailInputLocator).toBeVisible();
-    }
-
-    async isLoggedInMO() {
-        await expect(this.page.getByRole('heading', { name: 'Organisation', exact: true })).toBeVisible();
     }
 }

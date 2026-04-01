@@ -7,7 +7,8 @@
     "FieldTypeParameter": "JudicialMessageRoleTypes",
     "ElementLabel": "From",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "fromLabel != \"*\""
+    "FieldShowCondition": "fromLabel != \"*\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -34,7 +35,8 @@
     "FieldTypeParameter": "JudicialMessageRoleTypes",
     "ElementLabel": "To",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "toLabel != \"*\""
+    "FieldShowCondition": "toLabel != \"*\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -60,7 +62,8 @@
     "FieldType": "Email",
     "ElementLabel": "To email",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "toLabel != \"*\""
+    "FieldShowCondition": "toLabel != \"*\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -103,7 +106,8 @@
     "FieldType": "Text",
     "ElementLabel": "Urgency",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "urgency!=\"\""
+    "FieldShowCondition": "urgency!=\"\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -171,7 +175,8 @@
     "FieldType": "TextArea",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -180,7 +185,8 @@
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -203,6 +209,23 @@
     "ID": "JudicialMessage",
     "ListElementCode": "messageHistory",
     "FieldType": "TextArea",
+    "ElementLabel": "Message history (old)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "judicialMessageReplies",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "JudicialMessageReply",
+    "ElementLabel": "Message history",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "messageHistoryTemp",
+    "FieldType": "TextArea",
     "ElementLabel": "Message history",
     "SecurityClassification": "Public"
   },
@@ -214,5 +237,13 @@
     "ElementLabel": "This message will now be marked as closed",
     "SecurityClassification": "Public",
     "FieldShowCondition": "closeMessageLabel=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "isJudicialMessageUrgent",
+    "ElementLabel": "Urgency",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
   }
 ]

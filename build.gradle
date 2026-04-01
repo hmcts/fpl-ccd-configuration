@@ -5,24 +5,23 @@ buildscript {
 }
 
 plugins {
-  id 'java'
   id 'org.owasp.dependencycheck' version '12.1.1' apply true
-}
-
-java {
-  toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
-  }
 }
 
 repositories {
   mavenCentral()
 }
 
+// This is cheating workaround to how Platops Jenkins pipeline detecting Java version
+// For more details on how the pipeline detect and setup Java version,
+// Ref: cnp-jenkins-library src/uk/gov/hmcts/contino/GradleBuilder.groovy function setupToolVersion()
+// We will need to move our nested Gradle build script to this root script in the near future
+var pipelineJavaVersion = "JavaLanguageVersion.of(21)"
+
 dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
   analyzers {
-  // Disable scanning of .NET related binaries
+    // Disable scanning of .NET related binaries
     assemblyEnabled = false
     ossIndex {
       enabled = false

@@ -115,7 +115,7 @@ export class RespondentDetails extends BasePage {
               response.request().method() === 'POST' &&
               response.status() === 200
           ),
-          await this.clickContinue()
+           this.clickContinue()
       ]);
 
       await Promise.all([
@@ -124,7 +124,7 @@ export class RespondentDetails extends BasePage {
               response.request().method() === 'GET' &&
               response.status() === 200
           ),
-          await this.checkYourAnsAndSubmit()
+          this.checkYourAnsAndSubmit()
       ]);
   }
 

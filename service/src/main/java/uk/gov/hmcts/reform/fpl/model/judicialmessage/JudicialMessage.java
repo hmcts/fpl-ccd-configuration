@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.judicialmessage;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,6 +37,8 @@ public class JudicialMessage extends JudicialMessageMetaData {
     private final String isReplying;
     private final String latestMessage;
     private final String messageHistory;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private final List<Element<JudicialMessageReply>> judicialMessageReplies;
     private final String closureNote;
     private final String replyFrom;
     private final String replyTo;

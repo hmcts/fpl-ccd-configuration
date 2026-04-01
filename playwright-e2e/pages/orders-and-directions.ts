@@ -26,13 +26,8 @@ export class OrdersAndDirectionSought extends BasePage{
   }
 
   async ordersAndDirectionsNeeded(): Promise<void> {
-      await Promise.all([
-          this.page.waitForResponse((response) =>
-              response.url().includes('ordersNeeded') &&
-              response.status() === 200
-          ),
-          this.ordersAndDirectionsSoughtLink.click()
-      ]);
+      await expect(this.ordersAndDirectionsSoughtLink).toBeVisible();
+      await this.gotoNextStep('Orders and directions sought');
       await this.careOrderCheckbox.click();
       await this.DoYouNeedAnyOtherDirections.getByRole('radio', { name: 'No' }).check();
       await this.WhichCourtAreYouIssuingFor.selectOption('Barnet');
@@ -54,14 +49,8 @@ export class OrdersAndDirectionSought extends BasePage{
 
   async SoliciotrC110AAppOrderAndDirectionNeeded(){
 
-      // await expect(this.OrdersAndDirectionsSought).toBeVisible();
-      // await this.OrdersAndDirectionsSought.click();
-      await expect(()=>{
-          expect(this.ordersAndDirectionsSoughtLink).toBeVisible();
-          this.ordersAndDirectionsSoughtLink.click();
-          expect(this.ordersAndDirectionsSoughtLink).toBeHidden();
-          this.page.reload();
-      }).toPass();
+      await expect(this.ordersAndDirectionsSoughtLink).toBeVisible();
+      await this.gotoNextStep('Orders and directions sought')
       await expect(this.OrdersAndDirectionsHeading).toBeVisible();
 
       await this.variationOfSupervisionOrder.check();

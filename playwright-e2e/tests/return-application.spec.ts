@@ -15,16 +15,17 @@ test.describe('Return application', () => {
   let caseName: string;
   test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    expect(caseNumber).toBeDefined();
 
   });
 
   test('CTSC return Application',
     async ({ page, signInPage, returnApplication }) => {
       caseName = 'CTSC return Application ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await returnApplication.gotoNextStep('Return application');
       await returnApplication.ReturnApplication();
 
@@ -39,10 +40,10 @@ test.describe('Return application', () => {
   test('LA submit application @xbrowser',
     async ({ page, signInPage, returnApplication }) => {
       caseName = 'LA submit application ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, returnedCase);
+      expect(await updateCase(caseName, caseNumber, returnedCase)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
       await page.getByRole('link', { name: 'Make changes to the respondents\' details' }).click();
       await returnApplication.UpdateRespondent();
 

@@ -17,10 +17,12 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.A70PlacementOrderDocmosisParameters;
+import uk.gov.hmcts.reform.fpl.utils.RespondentNameFormatter;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
@@ -55,6 +57,13 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
 
         String applicationDate = selectedPlacementApplication.getPlacementUploadDateTime()
             .format(ofPattern(DATE_SHORT));
+
+        String respondentNames = RespondentNameFormatter.formatRespondentNames(
+            caseData.getRespondents1().stream()
+                .map(element -> element.getValue().getParty().getFullName())
+                .collect(Collectors.toList())
+        );
+
         return A70PlacementOrderDocmosisParameters.builder()
             .orderTitle(A70_PLACEMENT_ORDER.getTitle())
             .childrenAct(A70_PLACEMENT_ORDER.getChildrenAct())
@@ -81,6 +90,7 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
                     .build()
             )
             .applicationDate(applicationDate)
+            .respondentNames(respondentNames)
             .isHighCourtCase(courtService.isHighCourtCase(caseData))
             .build();
     }

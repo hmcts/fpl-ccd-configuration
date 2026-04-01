@@ -11,6 +11,9 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.A81PlacementBlankOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.utils.RespondentNameFormatter;
+
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A81_PLACEMENT_BLANK_ORDER;
@@ -34,6 +37,12 @@ public class A81PlacementBlankOrderDocumentParameterGenerator implements Docmosi
         String localAuthorityName = isEmpty(localAuthorityCode) ? null : laNameLookup
             .getLocalAuthorityName(localAuthorityCode);
 
+        String respondentNames = RespondentNameFormatter.formatRespondentNames(
+            caseData.getRespondents1().stream()
+                .map(element -> element.getValue().getParty().getFullName())
+                .collect(Collectors.toList())
+        );
+
         return A81PlacementBlankOrderDocmosisParameters.builder()
             .orderTitle(A81_PLACEMENT_BLANK_ORDER.getTitle())
             .orderType(GeneratedOrderType.BLANK_ORDER)
@@ -42,6 +51,7 @@ public class A81PlacementBlankOrderDocumentParameterGenerator implements Docmosi
             .orderDetails("THE COURT ORDERS THAT:\n\n" + eventData.getManageOrdersParagraphs()
                 + (isEmpty(eventData.getManageOrdersCostOrders())
                 ? "" : ("\n\n" + eventData.getManageOrdersCostOrders())))
+            .respondentNames(respondentNames)
             .build();
     }
 

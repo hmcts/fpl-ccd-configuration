@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -20,7 +21,11 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
+import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -44,6 +49,12 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
     @MockBean
     private OrganisationApi organisationApi;
 
+    @MockBean
+    private UserService userService;
+  
+    @MockBean
+    private PbaService pbaService;
+
     private final Organisation organisation = Organisation.builder()
         .organisationIdentifier("ORG1")
         .name("ORG 1")
@@ -63,6 +74,13 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
         givenFplService();
         given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
             .willReturn(organisation);
+        given(userService.hasAnyIdamRolesFrom(List.of(UserRole.HMCTS_SUPERUSER)))
+            .willReturn(false);
+        given(pbaService.populatePbaDynamicList("")).willReturn(DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code("PBA7654321")
+                .build())
+            .build());
     }
 
     @Test
@@ -124,7 +142,6 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldPopulateLocalAuthorityWithDataFromLegacyApplicant() {
-
         final ApplicantParty legacyApplicant = ApplicantParty.builder()
             .organisationName("Applicant")
             .build();
@@ -169,8 +186,12 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
     }
 
-    @Test
-    void shouldGetExistingLocalAuthorityDetails() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldGetExistingLocalAuthorityDetails(boolean isSuperUser) {
+        given(userService.hasAnyIdamRolesFrom(List.of(UserRole.HMCTS_SUPERUSER)))
+            .willReturn(isSuperUser);
+
         final Element<Colleague> colleague = element(Colleague.builder()
             .role(SOLICITOR)
             .fullName("Alex Smith")

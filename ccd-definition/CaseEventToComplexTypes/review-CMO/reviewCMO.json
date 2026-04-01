@@ -322,5 +322,17 @@
     "ListElementCode": "urgencyLabel2",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "manualJudgeDetails",
+    "ListElementCode": "judgeFullName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "judgeType=\"LEGAL_ADVISOR\"",
+    "EventElementLabel": "Your name",
+    "Comment": "Reusing existing Legal advisor input field"
   }
 ]

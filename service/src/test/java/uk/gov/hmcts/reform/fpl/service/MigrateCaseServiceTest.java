@@ -48,12 +48,16 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -66,6 +70,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -368,6 +373,52 @@ class MigrateCaseServiceTest {
             assertThat(actualException.getMessage()).isEqualTo(format(
                 "Migration {id = %s, case reference = %s}, invalid local authorities (applicant)",
                 MIGRATION_ID, caseData.getId()));
+        }
+    }
+
+    @Nested
+    class UpdateRespondentPolicy {
+
+        private final String newOrgId = "HIJKLMN";
+        private final String newOrgName = "New Organisation Name";
+
+        private final String caseRole = "[SOLICITORA]";
+
+        private int policyIndex = 0;
+
+        private final Organisation previousOrganisation = Organisation.builder()
+            .organisationID("ABCDEFG")
+            .organisationName("Previous Organisation Name")
+            .build();
+
+        private final Organisation newOrganisation = Organisation.builder()
+            .organisationID(newOrgId)
+            .organisationName(newOrgName)
+            .build();
+
+        @Test
+        void updateRespondentPolicy() {
+            when(organisationService.findOrganisation(newOrgId))
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                    .name(newOrgName)
+                    .build()));
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentPolicyData(RespondentPolicyData.builder()
+                    .respondentPolicy0(OrganisationPolicy.builder()
+                        .organisation(previousOrganisation)
+                        .orgPolicyCaseAssignedRole(caseRole)
+                        .build())
+                    .build())
+                .build();
+
+            Map<String, OrganisationPolicy> fields = underTest.updateRespondentPolicy(caseData, newOrgId,
+                null, policyIndex);
+            OrganisationPolicy updatedOrgPolicy = fields.get("respondentPolicy" + Integer.toString(policyIndex));
+            assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
+                .organisation(newOrganisation)
+                .orgPolicyCaseAssignedRole(caseRole)
+                .build());
         }
     }
 
@@ -3621,6 +3672,221 @@ class MigrateCaseServiceTest {
                 MIGRATION_ID, nonExistentBundleId, orderToRemoveId))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("additional application bundle not found");
+        }
+    }
+
+    @Nested
+    class RemoveSupportingEvidenceBundleFromAdditionalApplication {
+        @Test
+        void shouldRemoveSupportingEvidenceBundleFromAdditionalApplication() {
+            UUID bundleId = UUID.randomUUID();
+            UUID evidenceToRemoveId = UUID.randomUUID();
+            UUID evidenceToRetainId = UUID.randomUUID();
+
+            Element<SupportingEvidenceBundle> evidenceToRemove = element(evidenceToRemoveId,
+                SupportingEvidenceBundle.builder().name("evidence to remove").build());
+
+            Element<SupportingEvidenceBundle> evidenceToRetain = element(evidenceToRetainId,
+                SupportingEvidenceBundle.builder().name("evidence to retain").build());
+
+            Element<AdditionalApplicationsBundle> applicationBundle = element(bundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .supportingEvidenceBundle(List.of(evidenceToRemove, evidenceToRetain))
+                        .build())
+                    .build());
+
+            Element<AdditionalApplicationsBundle> otherBundle = element(UUID.randomUUID(),
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .supportingEvidenceBundle(List.of(evidenceToRemove, evidenceToRetain))
+                        .build())
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .additionalApplicationsBundle(List.of(applicationBundle, otherBundle))
+                .build();
+
+            Map<String, Object> result = underTest.removeSupportingEvidenceBundleFromAdditionalApplication(caseData,
+                MIGRATION_ID, bundleId, evidenceToRemoveId);
+
+
+            Element<AdditionalApplicationsBundle> expectedBundle = element(bundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .supportingEvidenceBundle(List.of(evidenceToRetain))
+                        .build())
+                    .build());
+
+            assertThat(result).containsEntry("additionalApplicationsBundle", List.of(expectedBundle, otherBundle));
+        }
+
+        @Test
+        void shouldThrowExceptionIfBundleNotFound() {
+            UUID nonExistentBundleId = UUID.randomUUID();
+            UUID evidenceToRemoveId = UUID.randomUUID();
+
+            Stream.of(
+                CaseData.builder().id(1L).additionalApplicationsBundle(new ArrayList<>()).build(),
+                CaseData.builder().id(1L).additionalApplicationsBundle(null).build()
+            ).forEach(caseData ->
+                assertThatThrownBy(() -> underTest.removeSupportingEvidenceBundleFromAdditionalApplication(caseData,
+                    MIGRATION_ID, nonExistentBundleId, evidenceToRemoveId))
+                    .isInstanceOf(AssertionError.class)
+                    .hasMessageContaining("additional application bundle not found")
+            );
+        }
+
+        @Test
+        void shouldThrowExceptionIfC2OrEvidenceNotFound() {
+            UUID bundleId = UUID.randomUUID();
+            UUID evidenceToRemoveId = UUID.randomUUID();
+
+            Stream.of(
+                CaseData.builder()
+                    .id(1L)
+                    .additionalApplicationsBundle(List.of(
+                        element(bundleId, AdditionalApplicationsBundle.builder().build())))
+                    .build(),
+                CaseData.builder()
+                    .id(1L)
+                    .additionalApplicationsBundle(List.of(
+                        element(bundleId, AdditionalApplicationsBundle.builder()
+                            .c2DocumentBundle(C2DocumentBundle.builder().build()).build())))
+                    .build()
+            ).forEach(caseData ->
+                assertThatThrownBy(() -> underTest.removeSupportingEvidenceBundleFromAdditionalApplication(caseData,
+                    MIGRATION_ID, bundleId, evidenceToRemoveId))
+                    .isInstanceOf(AssertionError.class)
+                    .hasMessageContaining("C2DocumentBundle or SupportingEvidenceBundle is null"));
+        }
+    }
+
+    @Nested
+    class HearingJudgeEmailAddress {
+        @Test
+        void shouldRemoveTrailingOrFollowingPeriodFromEmail() {
+            String email = ".test.account.@governmentspeltwrung.net";
+            String expectedEmail = "test.account@governmentspeltwrung.net";
+
+            assertThat(underTest.fixInvalidEmailAddressFormat(email)).isEqualTo(expectedEmail);
+        }
+
+        @Test
+        void shouldFixJudgeEmailOnSpecifiedHearingBooking() {
+            final UUID hearingId = UUID.randomUUID();
+            final UUID otherHearingId = UUID.randomUUID();
+            final Long caseId = 12345L;
+            final String migrationId = "DFPL-2992";
+            final HearingBooking expectedHearingBooking = HearingBooking.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeEmailAddress("test.account@governmentspeltwrung.net")
+                    .build())
+                .build();
+
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeEmailAddress(".test.account.@governmentspeltwrung.net")
+                    .build())
+                .build();
+
+            List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, hearingBooking),
+                element(otherHearingId, HearingBooking.builder().build()));
+
+            List<Element<HearingBooking>> fixedHearingBookings = underTest.replaceHearingJudgeEmailAddress(migrationId,
+                hearingBookings, hearingId, caseId);
+
+            assertThat(fixedHearingBookings.contains(element(hearingId, expectedHearingBooking))).isTrue();
+        }
+    }
+
+    @Nested
+    class RemoveStatementOfService {
+        @Test
+        void shouldRemoveStatementOfService() {
+            Element<Recipients> statementOfService =
+                element(Recipients.builder().email("recipient@test.com").name("Recipient").build());
+            Element<Recipients> statementOfServiceToBeRemoved =
+                element(Recipients.builder().email("removed@test.com").name("Removed").build());
+
+            CaseData caseData = CaseData.builder()
+                .statementOfService(List.of(statementOfService, statementOfServiceToBeRemoved))
+                .build();
+
+            Map<String, Object> result = underTest.removeStatementOfService(MIGRATION_ID, caseData,
+                statementOfServiceToBeRemoved.getId().toString());
+
+            assertThat(result).containsExactlyEntriesOf(Map.of("statementOfService", List.of(statementOfService)));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoStatementOfService() {
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeStatementOfService(MIGRATION_ID, caseData, UUID.randomUUID().toString()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoStatementOfServiceRemoved() {
+            CaseData caseData = CaseData.builder()
+                .statementOfService(wrapElementsWithUUIDs(Recipients.builder().build()))
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeStatementOfService(MIGRATION_ID, caseData, UUID.randomUUID().toString()));
+        }
+    }
+
+    @Nested
+    class RemoveFirstOther {
+        @Test
+        void shouldRemoveFirstOtherAndLeaveAdditionalOthersIntact() {
+            Other firstOther = Other.builder().name("First Other").build();
+            Other additionalOther1 = Other.builder().name("Additional Other 1").build();
+            Other additionalOther2 = Other.builder().name("Additional Other 2").build();
+            Others others = Others.builder()
+                .firstOther(firstOther)
+                .additionalOthers(List.of(element(additionalOther1), element(additionalOther2)))
+                .build();
+            CaseData caseData = CaseData.builder()
+                .id(123L)
+                .others(others)
+                .build();
+
+            Map<String, Object> result = underTest.removeFirstOther(MIGRATION_ID, caseData);
+            Others updatedOthers = (Others) result.get("others");
+
+            assertThat(updatedOthers.getFirstOther()).isNull();
+            assertThat(updatedOthers.getAdditionalOthers())
+                .extracting(e -> e.getValue().getName())
+                .containsExactly("Additional Other 1", "Additional Other 2");
+        }
+
+        @Test
+        void shouldThrowIfFirstOtherIsNull() {
+            Others others = Others.builder()
+                .firstOther(null)
+                .additionalOthers(List.of())
+                .build();
+            CaseData caseData = CaseData.builder()
+                .id(456L)
+                .others(others)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.removeFirstOther(MIGRATION_ID, caseData));
+        }
+
+        @Test
+        void shouldThrowIfOthersIsNull() {
+            CaseData caseData = CaseData.builder()
+                .id(789L)
+                .others(null)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.removeFirstOther(MIGRATION_ID, caseData));
         }
     }
 }
