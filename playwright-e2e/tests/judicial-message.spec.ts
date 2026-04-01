@@ -5,7 +5,7 @@ import caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json'
 import {newSwanseaLocalAuthorityUserOne, CTSCUser, judgeUser} from '../settings/user-credentials';
 import {expect} from '@playwright/test';
 import {createCase, updateCase} from "../utils/api-helper";
-import {formatToLongDate12hrTime} from "../utils/util-helper";
+import {getLocalLongDate} from "../utils/util-helper";
 
 
 test.describe('send and reply message', () => {
@@ -27,19 +27,22 @@ test.describe('send and reply message', () => {
             await judicialMessages.gotoNextStep('Send messages');
             await judicialMessages.sendMessageToAllocatedJudgeWithApplication();
             await judicialMessages.checkYourAnsAndSubmit();
-            const sendDate = formatToLongDate12hrTime(new Date());
+            const sendDate = getLocalLongDate(new Date());
             await judicialMessages.tabNavigation('Judicial messages');
 
 
             await judicialMessages.assertJudicialMessageHeaders();
             await expect(judicialMessages.page.getByText('Open', {exact: true})).toBeVisible();
-            await expect(page.getByRole('cell', {
-                name: sendDate,
-                exact: true
-            }).locator('span')).toBeVisible();
+
+
             await expect(judicialMessages.page.getByText('To the allocated judge - Regard Hearing')).toBeVisible();
 
             await judicialMessages.expandMessageDetails('CTSC');
+           await expect( judicialMessages.page.locator('table[aria-describedby="complex field table"]')
+               .locator('tbody').locator('tr')
+               .filter({hasText: 'Date sent'})
+               .locator('td')).toContainText(sendDate);
+
             await expect(page.locator('ccd-read-complex-field-collection-table')).toContainText('C2, 25 March 2021, 3:16pm');
             await expect(page.getByText('Allocated judge to decide on the hearing.')).toHaveCount(2);
 
@@ -55,12 +58,13 @@ test.describe('send and reply message', () => {
             await judicialMessages.gotoNextStep('Send messages');
             await judicialMessages.sendMessageToAllocatedJudgeWithDocument();
             await judicialMessages.checkYourAnsAndSubmit();
+            const sendDate = getLocalLongDate(new Date());
             await judicialMessages.tabNavigation('Judicial messages');
 
             await expect(judicialMessages.page.getByText('To legal adviser - Regard Hearing assistance')).toBeVisible();
             await expect(judicialMessages.page.getByText('Open', {exact: true})).toBeVisible();
             await judicialMessages.expandMessageDetails('CTSC');
-            await expect(judicialMessages.page.getByText(formatToLongDate12hrTime(new Date()))).toHaveCount(2);
+            await expect(judicialMessages.page.getByText((sendDate))).toHaveCount(2);
             await expect(page.getByText('Hearing needs assistance from legal adviser.')).toHaveCount(2);
 
         });

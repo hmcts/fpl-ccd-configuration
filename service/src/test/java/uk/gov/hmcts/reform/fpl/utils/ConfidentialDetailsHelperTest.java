@@ -31,7 +31,7 @@ class ConfidentialDetailsHelperTest {
 
         Other confidentialOthers = getConfidentialItemToAdd(others, othersNotConfidential);
 
-        assertThat(confidentialOthers).isEqualToComparingFieldByField(others.get(0).getValue());
+        assertThat(confidentialOthers).usingRecursiveComparison().isEqualTo(others.getFirst().getValue());
     }
 
     @Test
@@ -41,7 +41,7 @@ class ConfidentialDetailsHelperTest {
 
         Other confidentialOthers = getConfidentialItemToAdd(others, othersNotConfidential);
 
-        assertThat(confidentialOthers).isEqualToComparingFieldByField(othersNotConfidential.getValue());
+        assertThat(confidentialOthers).usingRecursiveComparison().isEqualTo(othersNotConfidential.getValue());
     }
 
     @Test
@@ -69,6 +69,25 @@ class ConfidentialDetailsHelperTest {
             .isEqualTo(IsAddressKnowType.LIVE_IN_REFUGE);
     }
 
+    @Test
+    void shouldHandleNullNameInElementToMatchInGetConfidentialOtherToAdd() {
+        List<Element<Other>> others = List.of(element(UUID.randomUUID(), Other.builder().name("John Smith").build()));
+        Element<Other> othersNotConfidential = element(UUID.randomUUID(), Other.builder().name(null).build());
+
+        Other confidentialOther = getConfidentialOtherToAdd(others, othersNotConfidential);
+
+        assertThat(confidentialOther).usingRecursiveComparison().isEqualTo(othersNotConfidential.getValue());
+    }
+
+    @Test
+    void shouldHandleNullIdInGetConfidentialOtherToAdd() {
+        List<Element<Other>> others = List.of(element(ID, Other.builder().name("NullId").build()));
+        Element<Other> othersNotConfidential = element(null, Other.builder().name("NullId").build());
+
+        Other confidentialOther = getConfidentialOtherToAdd(others, othersNotConfidential);
+
+        assertThat(confidentialOther).usingRecursiveComparison().isEqualTo(others.getFirst().getValue());
+    }
 
     private Other.OtherBuilder baseOtherBuilder(String detailsHidden) {
         return Other.builder()
