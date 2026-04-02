@@ -26,7 +26,7 @@ public enum DocmosisTemplates {
     EPO("FL-PLW-GOR-ENG-00228.doc", null, "emergency_protection_order"),
     EPO_V2("FL-PLW-GOR-ENG-00744-v2.doc", null, "emergency_protection_order"),
     COVER_DOCS("FL-PLW-LET-ENG-COVER-SHEET.doc", "FL-PLW-LET-WEL-COVER-SHEET.doc", "cover_documents"),
-    APPROVED_ORDER_COVER("FL-PLW-GOR-ENG-APPROVED-ORDER-COVER-SHEET.docx",
+    APPROVED_ORDER_COVER("FL-PLW-GOR-ENG-APPROVED-ORDER-COVER-SHEET-V2.docx",
         "FL-PLW-GOR-WEL-APPROVED-ORDER-COVER-SHEET.docx", "approved-order-cover"),
     C2_ORDER("FL-PLW-GOR-ENG-C2-ORDER.docx", "FL-PLW-GOR-WEL-C2-ORDER.docx", "c2-order"),
     TRANSLATION_REQUEST("FL-PLW-LET-ENG-00748.doc", null, "translation_request"),
