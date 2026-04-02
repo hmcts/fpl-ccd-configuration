@@ -273,6 +273,7 @@
     "PageID": 5,
     "ShowSummaryChangeOption": "N",
     "Publish": "Y",
-    "FieldShowCondition": "c2Type=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "c2Type=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes"
   }
 ]
