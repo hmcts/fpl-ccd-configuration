@@ -244,7 +244,8 @@ public class UploadAdditionalApplicationsService {
                 .supplementsBundle(updatedSupplementsBundle)
                 .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
                 .type(eventData.getC2Type())
-                .respondents(respondentsInCase);
+                .respondents(respondentsInCase)
+                .routeType(eventData.getC2ApplicationRoute());
 
         if (YES.equals(temporaryC2Document.getIsHearingAdjournmentRequired())) {
             c2DocumentBundleBuilder.c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT));

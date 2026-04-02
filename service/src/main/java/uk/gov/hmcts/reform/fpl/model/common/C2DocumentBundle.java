@@ -74,6 +74,8 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String requestedHearingToAdjourn;
     @JsonSerialize(using = YesNoSerializer.class)
     private final YesNo canBeConsideredAtNextHearing;
+    @JsonSerialize(using = YesNoSerializer.class)
+    private YesNo isHearingAdjournmentRequired;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);

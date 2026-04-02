@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -102,7 +104,9 @@ class ReviewAdditionalApplicationServiceTest {
         Map<String, Object> expectedMap = Map.of(
             "hasApplicationToBeReviewed", YES,
             "onlyOneApplicationToBeReviewed", YES,
-            "additionalApplicationsBundleToBeReviewed", NEW_BUNDLE_1.getValue()
+            "hasC2ToBeReview", YES,
+            "hasOtherToBeReview", NO,
+            "c2AdditionalApplicationToBeReview", buildReviewC2AdditionalApplicationEventData(NEW_BUNDLE_1.getValue())
         );
 
         assertThat(resultMap).isEqualTo(expectedMap);
@@ -173,5 +177,30 @@ class ReviewAdditionalApplicationServiceTest {
         assertThatThrownBy(() -> reviewAdditionalApplicationService.markSelectedBundleAsReviewed(caseData))
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("No value present");
+    }
+
+    private static C2AdditionalApplicationEventData buildReviewC2AdditionalApplicationEventData(AdditionalApplicationsBundle bundle) {
+        boolean isC2Confidential = YES.equals(bundle.getHasConfidentialC2());
+        C2DocumentBundle c2ToBeReviewed = (isC2Confidential)
+            ? bundle.getC2DocumentBundleConfidential() : bundle.getC2DocumentBundle();
+        return C2AdditionalApplicationEventData.builder()
+            .routeType(c2ToBeReviewed.getRouteType())
+            .applicantName(c2ToBeReviewed.getApplicantName())
+            .type(c2ToBeReviewed.getType())
+            .confidentialApplication((isC2Confidential)
+                ? NO.getValue() : YES.getValue() + " - only HMCTS will be able to view this application")
+            .document(c2ToBeReviewed.getDocument())
+            .applicationPermissionType(c2ToBeReviewed.getApplicationPermissionType())
+            .applicationRelatesToAllChildren(c2ToBeReviewed.getApplicationRelatesToAllChildren())
+            .childrenOnApplication(c2ToBeReviewed.getChildrenOnApplication())
+            .applicationSummary(c2ToBeReviewed.getApplicationSummary())
+            .hasSafeguardingRisk(c2ToBeReviewed.getHasSafeguardingRisk())
+            .isHearingAdjournmentRequired(c2ToBeReviewed.getIsHearingAdjournmentRequired())
+            .requestedHearingToAdjourn(c2ToBeReviewed.getRequestedHearingToAdjourn())
+            .canBeConsideredAtNextHearing(c2ToBeReviewed.getCanBeConsideredAtNextHearing())
+            .draftOrdersBundle(c2ToBeReviewed.getDraftOrdersBundle())
+            .supplementsBundle(c2ToBeReviewed.getSupplementsBundle())
+            .supportingEvidenceBundle(c2ToBeReviewed.getSupportingEvidenceBundle())
+            .build();
     }
 }
