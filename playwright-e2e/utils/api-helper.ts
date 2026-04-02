@@ -2,24 +2,25 @@ import {systemUpdateUser} from '../settings/user-credentials';
 import {urlConfig} from '../settings/urls';
 import {testConfig} from '../settings/test-config';
 import {IdamTokenParams} from "@hmcts/playwright-common/dist/utils/idam.utils";
-import {IdamUtils, withRetry} from "@hmcts/playwright-common";
+import {IdamUtils, ServiceAuthUtils, withRetry} from "@hmcts/playwright-common";
 import {isRetryableError} from "@hmcts/playwright-common/dist/utils/retry.utils.js"
 import {APIRequestContext, request} from "@playwright/test";
 import axios from 'axios';
 import lodash from 'lodash';
+import {ServiceTokenParams} from "@hmcts/playwright-common/dist/utils/service-auth.utils";
 
 
 export const  getAccessToken = async ({user}: { user: { email: string; password: string } }) => {
 
-const idamTokenParams: IdamTokenParams = {
-    clientId: "fpl_case_service",
-    clientSecret: testConfig.idamClientSecret,
-    grantType: "password",
-    scope: "openid profile roles",
-    username: user.email,
-    password: user.password
+    const idamTokenParams: IdamTokenParams = {
+        clientId: "fpl_case_service",
+        clientSecret: testConfig.idamClientSecret,
+        grantType: "password",
+        scope: "openid profile roles",
+        username: user.email,
+        password: user.password
 
-}
+    }
     const idamUtils = new IdamUtils();
     try {
         const token = await idamUtils.generateIdamToken(idamTokenParams);
@@ -28,7 +29,7 @@ const idamTokenParams: IdamTokenParams = {
         console.error('Error generating IDAM token:', error);
         throw error;
     }
-
+}
 export const  getServiceAuthToken = async () => {
    const params: ServiceTokenParams = { microservice: 'fpl_case_service'}
     const serviceAuth = new ServiceAuthUtils();
@@ -240,7 +241,7 @@ export async function deleteRoleAssignments(
 
 export async function assignAMJudicialRole(caseID: string, judicialUser: { email: string; password: string; }) {
     const serviceAuthToken = await getServiceAuthToken();
-    const bearerToken = await getAccessToken({user: systemUpdateUser}).then(res => `Bearer ${res.data.access_token}`);
+    const bearerToken = await getAccessToken({user: systemUpdateUser}).then(res => `Bearer ${res}`);
     const judgeID = await getIdamUserId(judicialUser);
     const assignerId = await getIdamUserId(systemUpdateUser);
     const roleStartTime = new Date().toISOString();
@@ -317,7 +318,7 @@ export async function assignAMJudicialRole(caseID: string, judicialUser: { email
 
 export async function getIdamUserId(user: { email: string; password: string; }): Promise<any> {
     const requestContext: APIRequestContext = await request.newContext();
-    const bearerToken = await getAccessToken({user}).then(res => `Bearer ${res.data.access_token}`);
+    const bearerToken = await getAccessToken({user}).then(res => `Bearer ${res}`);
     const url = `${urlConfig.idamUrl}/details`;
 
     const headers = {
