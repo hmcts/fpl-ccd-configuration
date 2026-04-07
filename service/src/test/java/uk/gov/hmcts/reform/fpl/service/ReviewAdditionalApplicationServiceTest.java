@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -179,7 +178,8 @@ class ReviewAdditionalApplicationServiceTest {
             .hasMessage("No value present");
     }
 
-    private static C2AdditionalApplicationEventData buildReviewC2AdditionalApplicationEventData(AdditionalApplicationsBundle bundle) {
+    private static C2AdditionalApplicationEventData buildReviewC2AdditionalApplicationEventData(
+            AdditionalApplicationsBundle bundle) {
         boolean isC2Confidential = YES.equals(bundle.getHasConfidentialC2());
         C2DocumentBundle c2ToBeReviewed = (isC2Confidential)
             ? bundle.getC2DocumentBundleConfidential() : bundle.getC2DocumentBundle();
