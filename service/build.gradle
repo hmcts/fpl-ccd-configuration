@@ -535,9 +535,11 @@ bootWithCCD {
 
     environment("RSE_LIB_ADDITIONAL_DATABASES", "camunda,wa_workflow_api,cft_task_db,cft_task_db_replica")
     environment("RD_LOCATION_REF_API_BASE_URL", "http://rd-location-ref-api-aat.service.core-compute-aat.internal")
-    environment("FEATURE_WORKALLOCATION_ENABLED", "true")
-    environment("SERVICES_WORK_ALLOCATION_TASK_API", "http://host.docker.internal:9193")
-    environment("HEALTH_WORK_ALLOCATION_TASK_API", "http://host.docker.internal:9193/health")
+    // set this to true to enable WA locally
+    environment("FEATURE_WORKALLOCATION_ENABLED", "false")
+    // uncomment these two to enable WA locally
+//    environment("SERVICES_WORK_ALLOCATION_TASK_API", "http://host.docker.internal:9193")
+//    environment("HEALTH_WORK_ALLOCATION_TASK_API", "http://host.docker.internal:9193/health")
     environment("FEATURE_JRD_E_LINKS_V2_ENABLED", "true")
     environment("RSE_LIB_XUI_ENV_FEATURE_JRD_E_LINKS_V2_ENABLED", "true")
   }
