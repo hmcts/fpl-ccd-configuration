@@ -43,9 +43,6 @@ public class ConfirmApplicationReviewedEventData {
     @Temp
     OtherApplicationsBundle otherAdditionalApplicationToBeReview;
 
-    @Temp
-    List<String> confirmApplicationReviewed;
-
     public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
