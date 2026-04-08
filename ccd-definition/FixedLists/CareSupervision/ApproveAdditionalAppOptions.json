@@ -1,0 +1,37 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApproveAdditionalAppOptions",
+    "ListElementCode": "APPROVE_APPLICATION_AND_ORDER",
+    "ListElement": "Approve the application and the order",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApproveAdditionalAppOptions",
+    "ListElementCode": "APPROVE_APPLICATION_CHANGE_ORDER",
+    "ListElement": "Approve the application but make changes to the order",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApproveAdditionalAppOptions",
+    "ListElementCode": "APPLICANT_CHANGE_ORDER",
+    "ListElement": "Approve the application but the applicant need to make changes to the order",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApproveAdditionalAppOptions",
+    "ListElementCode": "REFUSE",
+    "ListElement": "Refuse the application",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApproveAdditionalAppOptions",
+    "ListElementCode": "LIST",
+    "ListElement": "List at the next hearing",
+    "DisplayOrder": 5
+  }
+]

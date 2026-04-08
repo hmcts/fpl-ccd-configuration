@@ -53,5 +53,15 @@
     "FieldTypeParameter": "ConfirmApplicationReviewedCheckBox",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "approveAdditionalAppRouter",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ApproveAdditionalAppOptions",
+    "Label": "What do you want to do?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
