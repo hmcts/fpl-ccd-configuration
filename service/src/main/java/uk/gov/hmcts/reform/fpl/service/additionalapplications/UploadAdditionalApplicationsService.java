@@ -45,7 +45,6 @@ import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -301,8 +300,8 @@ public class UploadAdditionalApplicationsService {
             .crest(CREST.getValue(language))
             .build();
 
-        DocmosisDocument c2OrderDocument = docmosisDocumentGeneratorService
-            .generateDocmosisDocument(docmosisC2OrderDocument, DocmosisTemplates.C2_APPLICATION, RenderFormat.PDF, getCaseLanguage(caseData));
+        DocmosisDocument c2OrderDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            docmosisC2OrderDocument, DocmosisTemplates.C2_APPLICATION, RenderFormat.PDF, getCaseLanguage(caseData));
 
         return buildFromDocument(uploadDocumentService.uploadPDF(c2OrderDocument.getBytes(), C2_APPLICATION_NAME));
     }
