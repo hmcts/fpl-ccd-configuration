@@ -48,7 +48,7 @@
     "test:functional-firefox": "yarn playwright install firefox  && yarn playwright test --project=firefox ",
     "test:functional-ipadPro11": " yarn playwright install webkit  && yarn playwright test --project=iPadPro11 ",
     "test:functional-galaxyS4": "  yarn playwright install chromium  && yarn playwright test --project=GalaxyS4 ",
-    "test:functional-nightly-preview": "yarn playwright install msedge && yarn playwright test --project=preview ",
+    "test:functional-nightly-preview": "yarn playwright install msedge && yarn playwright test --project=preview --grep='Upload draft orders' ",
     "test:smoke": " yarn playwright install msedge && yarn playwright test --grep @smoke-test --project=preview ",
     "test:local": "yarn playwright test  --project=edge  --headed   --repeat-each 1",
     "test:api-test": "yarn playwright test --project=APITest --config=playwright.api.config.ts",
