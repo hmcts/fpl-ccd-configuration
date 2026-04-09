@@ -260,7 +260,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData oldCaseData = getCaseData(oldCaseDetails);
         final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        final UUID lastBundleId = oldCaseData.getAdditionalApplicationsBundle().get(0).getId();
+        final UUID lastBundleId = oldCaseData.getAdditionalApplicationsBundle().getFirst().getId();
 
         CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
             "internal-change-upload-add-apps",
