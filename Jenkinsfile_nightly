@@ -82,15 +82,14 @@ withNightlyPipeline(type, product, component) {
     env.ACCESS_MANAGEMENT_URL ="http://am-role-assignment-service-${env.ENVIRONMENT}.service.core-compute-${env.ENVIRONMENT}.internal/am/role-assignments"
     env.IDAM_WEB_URL = "https://idam-web-public.${env.ENVIRONMENT}.platform.hmcts.net"
     env.IDAM_TESTING_SUPPORT_URL = "http://idam-api-${env.ENVIRONMENT}.platform.hmcts.net/testing-support"
-
-  env.JURISDICTIONS = "PUBLICLAW"
+    env.JURISDICTIONS = "PUBLICLAW"
     env.CASE_TYPE = "CARE_SUPERVISION_EPO"
 
 
     loadVaultSecrets(integrationTestSecrets)
 
- //   enableMutationTest()
- //   enableFortifyScan('fpl-aat')
+    enableMutationTest()
+    enableFortifyScan('fpl-aat')
     enableFullFunctionalTest(240)
 
     before('mutationTest') {
