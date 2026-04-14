@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.cmo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
@@ -22,6 +23,8 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
@@ -36,6 +39,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REMOVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -46,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApproveDraftOrdersService {
@@ -189,9 +194,9 @@ public class ApproveDraftOrdersService {
             if (cmoReviewDecision != null && cmoReviewDecision.getDecision() != null
                 && !REVIEW_LATER.equals(cmoReviewDecision.getDecision())) {
 
-                Element<HearingOrder> reviewedOrder;
+                Element<HearingOrder> reviewedOrder = null;
 
-                if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
+                if (cmoReviewDecision.hasBeenApproved()) {
                     List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
                         caseData.getOthersSelector(), NO.getValue());
 
@@ -203,9 +208,11 @@ public class ApproveDraftOrdersService {
                     sealedCMOs.add(reviewedOrder);
                     data.put("sealedCMOs", sealedCMOs);
                     data.put("state", getStateBasedOnNextHearing(caseData, cmoReviewDecision, reviewedOrder.getId()));
-                } else {
+                } else if (JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
                     reviewedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
                         cmo, cmoReviewDecision.getChangesRequestedByJudge());
+                } else {
+                    log.info("Draft CMO is removed by Judge");
                 }
 
                 caseData.getDraftUploadedCMOs().remove(cmo);
@@ -217,7 +224,11 @@ public class ApproveDraftOrdersService {
                 data.put(ORDER_BUNDLES_DRAFT, hearingOrdersBundles.getAgreedCmos());
                 data.put("hearingOrdersBundlesDraftReview", hearingOrdersBundles.getDraftCmos());
 
-                data.put(ORDERS_TO_BE_SENT, newArrayList(reviewedOrder));
+                if (reviewedOrder != null) {
+                    data.put(ORDERS_TO_BE_SENT, newArrayList(reviewedOrder));
+                } else {
+                    data.remove(ORDERS_TO_BE_SENT);
+                }
             }
         }
         return data;
@@ -262,7 +273,7 @@ public class ApproveDraftOrdersService {
                 && !REVIEW_LATER.equals(reviewDecision.getDecision())) {
                 Element<HearingOrder> reviewedOrder;
 
-                if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
+                if (reviewDecision.hasBeenApproved()) {
                     List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
                         caseData.getOthersSelector(), NO.getValue());
 
@@ -281,7 +292,7 @@ public class ApproveDraftOrdersService {
                     }
                     ordersToBeSent.add(reviewedOrder);
 
-                } else {
+                } else if (JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
                     Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
                         orderElement, reviewDecision.getChangesRequestedByJudge());
 
@@ -291,7 +302,10 @@ public class ApproveDraftOrdersService {
                     }
 
                     ordersToBeSent.add(rejectedOrder);
+                } else {
+                    log.info("Draft order is removed by Judge");
                 }
+
                 selectedOrdersBundle.getValue().removeOrderElement(orderElement);
             }
             counter++;
