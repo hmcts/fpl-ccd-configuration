@@ -58,9 +58,53 @@
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "applicationPermissionType",
+    "EventElementLabel": "Do you need permission to make this application?",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "c2ApplicationRoute=\"APPLY_ONLINE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "applicationRelatesToAllChildren",
+    "EventElementLabel": "Does this application relate to all children in the case?",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "c2ApplicationRoute=\"APPLY_ONLINE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "childSelectorForApplication",
+    "EventElementLabel": "Which children does the application relate to?",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "COMPLEX",
+    "FieldShowCondition": "c2ApplicationRoute=\"APPLY_ONLINE\" AND temporaryC2Document.applicationRelatesToAllChildren=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "applicationSummary",
+    "EventElementLabel": "What is your application about?",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "c2ApplicationRoute=\"APPLY_ONLINE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "hasSafeguardingRisk",
     "EventElementLabel": "Is there any reason, such as a safeguarding risk or other urgent issue, that requires your application to be considered by a judge on the same day?",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 10,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -71,7 +115,7 @@
     "ListElementCode": "safeguardingRiskDetails",
     "EventElementLabel": "Reason",
     "EventHintText": "If your application is urgent please call the court and tribunal support centre (CTSC) on 0330 808 4424",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 11,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryC2Document.hasSafeguardingRisk=\"Yes\""
   },
@@ -82,7 +126,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "isHearingAdjournmentRequired",
     "EventElementLabel": "Are you requesting an adjournment for a scheduled hearing?",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 12,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -92,7 +136,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "hearingList",
     "EventElementLabel": "Which hearing are you requesting to be adjourned?",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 13,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryC2Document.isHearingAdjournmentRequired=\"Yes\""
   },
@@ -103,7 +147,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "requestedHearingToAdjourn",
     "EventElementLabel": "Hearing requested to adjourn",
-    "FieldDisplayOrder": 9,
+    "FieldDisplayOrder": 14,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryC2Document=\"DO NOT SHOW\"",
     "RetainHiddenValue": "Yes"
@@ -115,90 +159,8 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "canBeConsideredAtNextHearing",
     "EventElementLabel": "Can your application wait to be considered at the next scheduled hearing?",
-    "FieldDisplayOrder": 10,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadAdditionalApplications",
-    "CaseFieldID": "temporaryC2Document",
-    "EventElementLabel": "Supplements",
-    "ListElementCode": "supplementsBundle",
-    "FieldDisplayOrder": 11,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadAdditionalApplications",
-    "CaseFieldID": "temporaryC2Document",
-    "EventElementLabel": "Select supplement",
-    "ListElementCode": "supplementsBundle.name",
-    "FieldDisplayOrder": 12,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadAdditionalApplications",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "supplementsBundle.secureAccommodationType",
-    "EventElementLabel": "Which jurisdiction?",
-    "FieldDisplayOrder": 13,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "temporaryC2Document.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadAdditionalApplications",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "supplementsBundle.notes",
-    "FieldDisplayOrder": 14,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadAdditionalApplications",
-    "CaseFieldID": "temporaryC2Document",
-    "EventElementLabel": "Upload document",
-    "ListElementCode": "supplementsBundle.document",
     "FieldDisplayOrder": 15,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadAdditionalApplications",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "supplementsBundle.documentAcknowledgeLabel",
-    "FieldDisplayOrder": 16,
-    "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadAdditionalApplications",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "supplementsBundle.documentAcknowledgeLabelForCYA",
-    "FieldDisplayOrder": 16,
-    "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadAdditionalApplications",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "supplementsBundle.documentAcknowledge",
-    "FieldDisplayOrder": 17,
-    "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to this case"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -207,8 +169,8 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Draft Orders",
     "ListElementCode": "draftOrdersBundle",
-    "FieldDisplayOrder": 18,
-    "DisplayContext": "OPTIONAL"
+    "FieldDisplayOrder": 16,
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -217,7 +179,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
     "ListElementCode": "draftOrdersBundle.title",
-    "FieldDisplayOrder": 19,
+    "FieldDisplayOrder": 17,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -226,7 +188,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.notes",
-    "FieldDisplayOrder": 20,
+    "FieldDisplayOrder": 18,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -236,7 +198,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": 21,
+    "FieldDisplayOrder": 19,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -245,7 +207,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.documentAcknowledgeLabel",
-    "FieldDisplayOrder": 22,
+    "FieldDisplayOrder": 20,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
     "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
@@ -256,7 +218,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.documentAcknowledgeLabelForCYA",
-    "FieldDisplayOrder": 22,
+    "FieldDisplayOrder": 21,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
     "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
@@ -267,7 +229,89 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.documentAcknowledge",
+    "FieldDisplayOrder": 22,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to this case"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Supplements",
+    "ListElementCode": "supplementsBundle",
     "FieldDisplayOrder": 23,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Select supplement",
+    "ListElementCode": "supplementsBundle.name",
+    "FieldDisplayOrder": 24,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.secureAccommodationType",
+    "EventElementLabel": "Which jurisdiction?",
+    "FieldDisplayOrder": 25,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "temporaryC2Document.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.notes",
+    "FieldDisplayOrder": 26,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Upload document",
+    "ListElementCode": "supplementsBundle.document",
+    "FieldDisplayOrder": 27,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.documentAcknowledgeLabel",
+    "FieldDisplayOrder": 28,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.documentAcknowledgeLabelForCYA",
+    "FieldDisplayOrder": 29,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.documentAcknowledge",
+    "FieldDisplayOrder": 30,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Tick to confirm this document is related to this case"
   },
@@ -278,7 +322,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Supporting Documents",
     "ListElementCode": "supportingEvidenceBundle",
-    "FieldDisplayOrder": 24,
+    "FieldDisplayOrder": 31,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -288,7 +332,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
     "ListElementCode": "supportingEvidenceBundle.name",
-    "FieldDisplayOrder": 25,
+    "FieldDisplayOrder": 32,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -297,7 +341,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.notes",
-    "FieldDisplayOrder": 26,
+    "FieldDisplayOrder": 33,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -316,7 +360,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": 27,
+    "FieldDisplayOrder": 34,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -325,7 +369,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledgeLabel",
-    "FieldDisplayOrder": 28,
+    "FieldDisplayOrder": 35,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
     "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
@@ -336,7 +380,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledgeLabelForCYA",
-    "FieldDisplayOrder": 28,
+    "FieldDisplayOrder": 36,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
     "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
@@ -347,7 +391,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledge",
-    "FieldDisplayOrder": 29,
+    "FieldDisplayOrder": 37,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Tick to confirm this document is related to this case"
   }

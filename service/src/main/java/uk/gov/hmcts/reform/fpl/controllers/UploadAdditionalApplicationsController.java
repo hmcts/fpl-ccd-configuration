@@ -102,13 +102,15 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
 
-        if (caseData.getUploadAdditionalApplicationsEventData().getAdditionalApplicationType()
-            .contains(AdditionalApplicationType.C2_ORDER)) {
+        if (eventData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
             // Initialise the C2 document bundle so we can have a dynamic list present
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT,
                 C2AdditionalApplicationEventData.builder()
                     .hearingList(caseData.buildDynamicHearingList())
+                    .childSelectorForApplication(
+                        uploadAdditionalApplicationsService.getChildrenMultiSelectList(caseData))
                     .build());
         }
 

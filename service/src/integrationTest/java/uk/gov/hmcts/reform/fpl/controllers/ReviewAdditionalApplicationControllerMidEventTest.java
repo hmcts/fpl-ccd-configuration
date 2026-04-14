@@ -9,8 +9,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,10 +27,19 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
     @MockBean
     private ReviewAdditionalApplicationService reviewAdditionalApplicationService;
 
+    private static final C2AdditionalApplicationEventData C2_APPLICATION =
+        C2AdditionalApplicationEventData.builder()
+        .build();
+
+    private static final OtherApplicationsBundle OTHER_APPLICATION =
+        OtherApplicationsBundle.builder().applicantName("TEST").build();
+
     private static final Element<AdditionalApplicationsBundle> APPLICATION_BUNDLE_ELEMENT =
         element(AdditionalApplicationsBundle.builder()
             .uploadedDateTime("1 January 2021, 12:00pm")
             .author("TESTING")
+            .c2DocumentBundle(C2_APPLICATION)
+            .otherApplicationsBundle(OTHER_APPLICATION)
             .build());
 
     ReviewAdditionalApplicationControllerMidEventTest() {
@@ -37,6 +50,10 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
     void initTest() {
         when(reviewAdditionalApplicationService.getSelectedApplicationsToBeReviewed(any()))
             .thenReturn(APPLICATION_BUNDLE_ELEMENT);
+        when(reviewAdditionalApplicationService
+            .initReviewFieldsForSelectedBundle(APPLICATION_BUNDLE_ELEMENT.getValue()))
+            .thenReturn(Map.of("c2AdditionalApplicationToBeReview", C2_APPLICATION,
+                "otherAdditionalApplicationToBeReview", OTHER_APPLICATION));
     }
 
     @Test
@@ -45,8 +62,8 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
         CaseData resultCaseData = extractCaseData(response);
         ConfirmApplicationReviewedEventData resultEventData = resultCaseData.getConfirmApplicationReviewedEventData();
 
-        assertThat(resultEventData.getAdditionalApplicationsBundleToBeReviewed())
-            .isEqualTo(APPLICATION_BUNDLE_ELEMENT.getValue());
+        assertThat(resultEventData.getC2AdditionalApplicationToBeReview()).isEqualTo(C2_APPLICATION);
+        assertThat(resultEventData.getOtherAdditionalApplicationToBeReview()).isEqualTo(OTHER_APPLICATION);
     }
 
 }

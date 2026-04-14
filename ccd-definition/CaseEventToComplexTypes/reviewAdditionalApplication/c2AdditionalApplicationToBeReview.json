@@ -1,0 +1,287 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "routeType",
+    "FieldDisplayOrder": 0,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "c2AdditionalApplicationToBeReview=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "applicantName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "type",
+    "EventElementLabel": "Party consent",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "confidentialApplication",
+    "EventElementLabel": "Confidential application",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "routeType=\"PAPER_FORM\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "applicationPermissionType",
+    "EventElementLabel": "Permission needed",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "routeType=\"APPLY_ONLINE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "relatesToAllChildren",
+    "EventElementLabel": "Relates to all children",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "routeType=\"APPLY_ONLINE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "childrenOnApplication",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "routeType=\"APPLY_ONLINE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "applicationSummary",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "routeType=\"APPLY_ONLINE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "hasSafeguardingRisk",
+    "EventElementLabel": "Safeguarding risk",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "isHearingAdjournmentRequired",
+    "EventElementLabel": "Adjournment requested",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "requestedHearingToAdjourn",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "c2AdditionalApplicationToBeReview.isHearingAdjournmentRequired=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "canBeConsideredAtNextHearing",
+    "EventElementLabel": "Consider at next hearing",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DraftOrderToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "draftOrdersBundle.title",
+    "FieldDisplayOrder": 13,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DraftOrderToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "draftOrdersBundle.document",
+    "FieldDisplayOrder": 14,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DraftOrderToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "draftOrdersBundle.uploaderType",
+    "FieldDisplayOrder": 15,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DraftOrderToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "draftOrdersBundle.uploaderCaseRoles",
+    "FieldDisplayOrder": 16,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supplementsBundle.name",
+    "FieldDisplayOrder": 17,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supplementsBundle.notes",
+    "FieldDisplayOrder": 17,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supplementsBundle.dateTimeUploaded",
+    "FieldDisplayOrder": 18,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supplementsBundle.document",
+    "FieldDisplayOrder": 19,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supplementsBundle.uploadedBy",
+    "FieldDisplayOrder": 20,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supportingEvidenceBundle.name",
+    "FieldDisplayOrder": 21,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supportingEvidenceBundle.notes",
+    "FieldDisplayOrder": 22,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supportingEvidenceBundle.dateTimeUploaded",
+    "FieldDisplayOrder": 22,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supportingEvidenceBundle.uploadedBy",
+    "FieldDisplayOrder": 22,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supportingEvidenceBundle.document",
+    "FieldDisplayOrder": 22,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supportingEvidenceBundle.hasConfidentialAddress",
+    "FieldDisplayOrder": 22,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supportingEvidenceBundle.uploaderType",
+    "FieldDisplayOrder": 22,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2AdditionalApplicationToBeReview",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "c2AdditionalApplicationToBeReview",
+    "ListElementCode": "supportingEvidenceBundle.uploaderCaseRoles",
+    "FieldDisplayOrder": 22,
+    "DisplayContext": "READONLY"
+  }
+]

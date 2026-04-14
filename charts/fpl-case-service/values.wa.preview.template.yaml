@@ -9,7 +9,7 @@ xui-webapp:
     imagePullPolicy: Always
     replicas: 1
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:latest
+    image: hmctsprod.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
@@ -54,6 +54,7 @@ xui-webapp:
           - mc-idam-client-secret
           - system-user-name
           - system-user-password
+          - mc-session-secret
 
 
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml

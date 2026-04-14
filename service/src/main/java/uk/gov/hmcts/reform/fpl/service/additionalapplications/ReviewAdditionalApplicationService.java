@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 
 import java.util.ArrayList;
@@ -44,11 +46,49 @@ public class ReviewAdditionalApplicationService {
                 resultMap.put(ONLY_ONE_APPLICATION, NO);
             } else if (applicationsBundlesToBeReviewed.size() == 1) {
                 resultMap.put(ONLY_ONE_APPLICATION, YES);
-                resultMap.put("additionalApplicationsBundleToBeReviewed",
-                    applicationsBundlesToBeReviewed.get(0).getValue());
+                resultMap.putAll(initReviewFieldsForSelectedBundle(applicationsBundlesToBeReviewed
+                    .getFirst().getValue()));
             }
         }
 
+        return resultMap;
+    }
+
+    public Map<String, Object> initReviewFieldsForSelectedBundle(AdditionalApplicationsBundle bundle) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+
+        C2DocumentBundle c2ToBeReviewed = (YES.equals(bundle.getHasConfidentialC2()))
+            ? bundle.getC2DocumentBundleConfidential() : bundle.getC2DocumentBundle();
+        if (!isEmpty(c2ToBeReviewed)) {
+            resultMap.put("hasC2ToBeReview", YES);
+            resultMap.put("c2AdditionalApplicationToBeReview", C2AdditionalApplicationEventData.builder()
+                .routeType(c2ToBeReviewed.getRouteType())
+                .applicantName(c2ToBeReviewed.getApplicantName())
+                .type(c2ToBeReviewed.getType())
+                .confidentialApplication((isEmpty(bundle.getC2DocumentBundleConfidential()))
+                    ? NO.getValue() : YES.getValue() + " - only HMCTS will be able to view this application")
+                .document(c2ToBeReviewed.getDocument())
+                .applicationPermissionType(c2ToBeReviewed.getApplicationPermissionType())
+                .applicationRelatesToAllChildren(c2ToBeReviewed.getApplicationRelatesToAllChildren())
+                .childrenOnApplication(c2ToBeReviewed.getChildrenOnApplication())
+                .applicationSummary(c2ToBeReviewed.getApplicationSummary())
+                .hasSafeguardingRisk(c2ToBeReviewed.getHasSafeguardingRisk())
+                .isHearingAdjournmentRequired(c2ToBeReviewed.getIsHearingAdjournmentRequired())
+                .requestedHearingToAdjourn(c2ToBeReviewed.getRequestedHearingToAdjourn())
+                .canBeConsideredAtNextHearing(c2ToBeReviewed.getCanBeConsideredAtNextHearing())
+                .draftOrdersBundle(c2ToBeReviewed.getDraftOrdersBundle())
+                .supplementsBundle(c2ToBeReviewed.getSupplementsBundle())
+                .supportingEvidenceBundle(c2ToBeReviewed.getSupportingEvidenceBundle())
+                .build());
+        } else {
+            resultMap.put("hasC2ToBeReview", NO);
+        }
+        if (!isEmpty(bundle.getOtherApplicationsBundle())) {
+            resultMap.put("hasOtherToBeReview", YES);
+            resultMap.put("otherAdditionalApplicationToBeReview", bundle.getOtherApplicationsBundle());
+        } else {
+            resultMap.put("hasOtherToBeReview", NO);
+        }
         return resultMap;
     }
 
