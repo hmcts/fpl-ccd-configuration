@@ -283,7 +283,7 @@ public class UploadAdditionalApplicationsService {
             .caseNumber(caseData.getFamilyManCaseNumber())
             .dateIssued(formatLocalDateToString(uploadedDate, DATE))
             .feeCharged(feeChargedAmount)
-            .applicantName(applicantName.split(",")[0])
+            .applicantName(applicantName.split(",")[0]) //Split name from applicant list to remove *Applicant 1*
             .respondents(respondents)
             .consent(eventData.getC2Type().getLabel().equals("By consent")
                 ? YES.getValue(language) : NO.getValue(language))
