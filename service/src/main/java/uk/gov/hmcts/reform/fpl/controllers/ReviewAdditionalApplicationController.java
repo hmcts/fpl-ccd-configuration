@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+
 @Slf4j
 @RestController
 @RequestMapping("/callback/review-additional-application")
@@ -44,6 +47,21 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         return respond(caseDetails);
     }
 
+    @PostMapping("/edit-hearing/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleAdditionalApplication(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        switch (caseData.getApproveAdditionalAppRouter()) {
+            case APPROVE_APPLICATION_AND_ORDER:
+                caseDetails.getData().put("reviewOrderUrgency", YES);
+                break;
+            default:
+                caseDetails.getData().put("reviewOrderUrgency", NO);
+        }
+
+        return respond(caseDetails);
+    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {

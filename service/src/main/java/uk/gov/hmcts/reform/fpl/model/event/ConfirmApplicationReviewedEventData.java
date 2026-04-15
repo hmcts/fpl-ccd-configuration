@@ -43,12 +43,17 @@ public class ConfirmApplicationReviewedEventData {
     @Temp
     OtherApplicationsBundle otherAdditionalApplicationToBeReview;
 
+    @Temp
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    YesNo reviewOrderUrgency;
+
     public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
             "additionalApplicationToBeReviewedList",
             "hasC2ToBeReview", "hasOtherToBeReview",
             "c2AdditionalApplicationToBeReview",
-            "otherAdditionalApplicationToBeReview");
+            "otherAdditionalApplicationToBeReview",
+            "reviewOrderUrgency");
     }
 }

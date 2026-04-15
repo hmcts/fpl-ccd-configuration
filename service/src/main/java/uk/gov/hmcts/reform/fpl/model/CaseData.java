@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -1012,6 +1013,7 @@ public class CaseData extends CaseDataParent {
     private final String sendNoticeOfHearing;
     private final LanguageTranslationRequirement sendNoticeOfHearingTranslationRequirements;
     private final HearingOptions hearingOption;
+    private final ApproveAdditionalAppOptions approveAdditionalAppRouter;
     private final HearingReListOption hearingReListOption;
     private final HearingCancellationReason adjournmentReason;
     private final HearingCancellationReason vacatedReason;
