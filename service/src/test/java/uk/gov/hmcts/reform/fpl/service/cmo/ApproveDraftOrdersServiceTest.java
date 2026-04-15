@@ -67,6 +67,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REMOVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -517,6 +518,41 @@ class ApproveDraftOrdersServiceTest {
     }
 
     @Test
+    void shouldRemoveCMOWhenJudgeRemoveCMO() {
+        Element<HearingOrder> agreedCMO = agreedCMO(HEARING_1);
+
+        Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(HEARING_1, newArrayList(agreedCMO));
+
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(JUDGE_REMOVED)
+            .changesRequestedByJudge("requested changes text").build();
+
+        CaseData caseData = CaseData.builder()
+            .state(State.CASE_MANAGEMENT)
+            .draftUploadedCMOs(newArrayList(agreedCMO))
+            .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
+            .reviewCMODecision(reviewDecision)
+            .build();
+
+        when(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class)))
+            .thenReturn(HearingOrdersBundles.builder()
+                .agreedCmos(emptyList())
+                .draftCmos(emptyList())
+                .build()
+            );
+
+        Map<String, Object> expectedData = Map.of(
+            "draftUploadedCMOs", emptyList(),
+            "hearingOrdersBundlesDrafts", emptyList(),
+            "hearingOrdersBundlesDraftReview", emptyList()
+        );
+
+        Map<String, Object> actualData = underTest.reviewCMO(caseData, ordersBundleElement);
+
+        assertThat(actualData).containsAllEntriesOf(expectedData)
+            .doesNotContainKeys("selectedCMOs", "state", "ordersToBeSent");
+    }
+
+    @Test
     void shouldSealTheDraftOrderAndCreateBlankOrderWhenJudgeApproves() {
         Element<HearingOrder> draftOrder1 = buildBlankOrder("test order1", HEARING_1);
 
@@ -649,6 +685,37 @@ class ApproveDraftOrdersServiceTest {
     }
 
     @Test
+    void shouldRemoveOrderWhenJudgeRemoveTheOrder() {
+        Element<HearingOrder> draftOrder1 = buildBlankOrder("test order1", HEARING_1);
+
+        Element<HearingOrdersBundle> ordersBundleElement =
+            buildDraftOrdersBundle(HEARING_1, newArrayList(draftOrder1));
+
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(JUDGE_REMOVED)
+            .changesRequestedByJudge("some change").build();
+
+        Map<String, Object> data = new HashMap<>();
+
+        CaseData caseData = CaseData.builder()
+            .state(State.CASE_MANAGEMENT)
+            .draftUploadedCMOs(newArrayList(draftOrder1))
+            .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
+            .orderCollection(newArrayList())
+            .build();
+
+        Map<String, Object> expectedData = Map.of(
+            "orderCollection", emptyList(),
+            "hearingOrdersBundlesDrafts", emptyList()
+        );
+
+        underTest.reviewC21Orders(caseData, data, ordersBundleElement);
+        assertThat(data).containsAllEntriesOf(expectedData);
+        assertThat(data).doesNotContainKey("ordersToBeSent");
+        verifyNoInteractions(blankOrderGenerator);
+    }
+
+    @Test
     void shouldThrowAnExceptionWhenNoUpcomingHearingsAreAvailable() {
         Element<HearingOrder> agreedCMO = agreedCMO(HEARING_2);
         Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(HEARING_2, newArrayList(agreedCMO));
@@ -778,7 +845,6 @@ class ApproveDraftOrdersServiceTest {
             assertThat(data).containsAllEntriesOf(expectedData);
         }
 
-
         @Test
         void shouldNotCreateBlankOrderWhenJudgeRequestsChangesOnConfidentialOrder() {
             Element<HearingOrder> draftOrder1 = buildConfidentialBlankOrder("test order1", HEARING_1);
@@ -814,6 +880,37 @@ class ApproveDraftOrdersServiceTest {
 
             underTest.reviewC21Orders(caseData, data, ordersBundleElement);
             assertThat(data).containsAllEntriesOf(expectedData);
+            verifyNoInteractions(blankOrderGenerator);
+        }
+
+        @Test
+        void shouldRemoveOrderWhenJudgeRemovedConfidentialDraftOrder() {
+            Element<HearingOrder> draftOrder1 = buildConfidentialBlankOrder("test order1", HEARING_1);
+
+            Element<HearingOrdersBundle> ordersBundleElement = buildConfidentialDraftOrdersBundle(HEARING_1,
+                newArrayList(draftOrder1), ConfidentialOrderBundle.SUFFIX_CTSC);
+
+            ReviewDecision reviewDecision = ReviewDecision.builder().decision(JUDGE_REMOVED)
+                .changesRequestedByJudge("some change").build();
+
+            Map<String, Object> data = new HashMap<>();
+
+            CaseData caseData = CaseData.builder()
+                .state(State.CASE_MANAGEMENT)
+                .draftUploadedCMOs(newArrayList(draftOrder1))
+                .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
+                .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
+                .orderCollection(newArrayList())
+                .build();
+
+            Map<String, Object> expectedData = Map.of(
+                "orderCollection", emptyList(),
+                "hearingOrdersBundlesDrafts", emptyList()
+            );
+
+            underTest.reviewC21Orders(caseData, data, ordersBundleElement);
+            assertThat(data).containsAllEntriesOf(expectedData);
+            assertThat(data).doesNotContainKeys("ordersToBeSent", "refusedHearingOrdersCTSC");
             verifyNoInteractions(blankOrderGenerator);
         }
 
