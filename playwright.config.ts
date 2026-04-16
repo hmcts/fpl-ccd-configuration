@@ -47,39 +47,29 @@ export default defineConfig({
            testMatch: '/settings/global-teardown.ts',
         },
         {
-            name: 'GlobalSetup',
-            testMatch: '/settings/global-setup.ts',
-        },
-        {
             ...ProjectsConfig.edge,
-            dependencies: ['GlobalSetup'],
             teardown: process.env.CI ? 'AMRoleCleanup' : undefined,
         },
         {
             ...ProjectsConfig.chrome,
-            dependencies: ['GlobalSetup'],
             grep: /@xbrowser/
         },
         {
             ...ProjectsConfig.firefox,
-            dependencies: ['GlobalSetup'],
             grep: /@xbrowser/
         },
         {
             ...ProjectsConfig.webkit,
-            dependencies: ['GlobalSetup'],
             grep: /@xbrowser/
         },
         {
             name: "ipadPro11",
             use: { ...devices["iPad Pro 11 landscape"] },
             grep: /@xbrowser/,
-            dependencies: ['GlobalSetup']
         },
         {
             name: "GalaxyS4",
             use: { ...devices["Galaxy Tab S4 landscape"] },
-            dependencies: ['GlobalSetup'],
             grep: /@xbrowser/,
         },
 
@@ -87,7 +77,6 @@ export default defineConfig({
         {
             name: "preview",
             use: { ...devices['Desktop Edge'], channel: 'msedge' },
-            dependencies: ['GlobalSetup'],
             workers: process.env.CI ? 4 : undefined,
             retries: 2,
             timeout: 3 * 60 * 1000,
