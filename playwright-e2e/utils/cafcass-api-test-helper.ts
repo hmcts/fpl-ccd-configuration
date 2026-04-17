@@ -3,8 +3,7 @@ import {urlConfig} from "../settings/urls";
 import fs from "fs";
 import config from "../settings/test-docs/config";
 import Ajv from 'ajv';
-import {cafcassAPIUser} from "../settings/user-credentials";
-import {fetchAccessToken} from "./api-helper";
+import {authToken} from "../settings/user-credentials";
 new Intl.DateTimeFormat('en-GB', {
     day: 'numeric',
     month: 'numeric',
@@ -32,13 +31,12 @@ export const  GUARDIAN_DETAILS  = [
 ]
 
 
-export const cafcassAPICaseSearch = async (request: APIRequestContext, user: { email: string,password:string }, startTime: string, endTime: string) => {
+export const cafcassAPICaseSearch = async (request: APIRequestContext, AuthToken: string, startTime: string, endTime: string) => {
     try {
-        const accessToken = await fetchAccessToken(user);
         let response = await request.get(`${urlConfig.serviceUrl}/cases`,
             {
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
+                    'Authorization': `Bearer ${AuthToken}`,
                     'Content-Type': 'application/json'
                 }
                 , params: {
@@ -52,14 +50,13 @@ export const cafcassAPICaseSearch = async (request: APIRequestContext, user: { e
         throw error;
     }
 }
-export const cafcassAPIDocSearch = async (request: APIRequestContext, user: { email: string,password:string }, docId: string) => {
+export const cafcassAPIDocSearch = async (request: APIRequestContext, AuthToken: string, docId: string) => {
 
     try {
-        const accessToken = await fetchAccessToken(user);
         let response = await request.get(`${urlConfig.serviceUrl}/cases/documents/${docId}/binary`,
             {
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
+                    'Authorization': `Bearer ${AuthToken}`,
 
                 }
             })
@@ -70,7 +67,7 @@ export const cafcassAPIDocSearch = async (request: APIRequestContext, user: { em
     }
 
 }
-export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, user: { email: string,password:string }, caseID: string, data: {
+export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, AuthToken: string, caseID: string, data: {
     guardianName: string;
     telephoneNumber: string;
     email: string;
@@ -78,11 +75,10 @@ export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, u
 }[] | undefined) => {
     let url = `${urlConfig.serviceUrl}/cases/${caseID}/guardians`
     try {
-        const accessToken = await fetchAccessToken(user);
         let response = await request.post(url,
             {
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
+                    'Authorization': `Bearer ${AuthToken}`,
                     'Content-Type': 'application/json',
                 },
                 data: data,
@@ -95,14 +91,13 @@ export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, u
     }
 
 }
-export const cafcassAPICaseDocSearch = async (request: APIRequestContext, user: { email: string,password:string }, documentId: string) => {
+export const cafcassAPICaseDocSearch = async (request: APIRequestContext, AuthToken: string, documentId: string) => {
     let url = `${urlConfig.serviceUrl}/cases/documents/{documentId}/binary`
     try {
-        const accessToken = await fetchAccessToken(user);
         let response = await request.get(`${urlConfig.serviceUrl}/cases`,
             {
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
+                    'Authorization': `Bearer ${AuthToken}`,
                     'Content-Type': 'application/json'
                 }
             })
@@ -113,15 +108,14 @@ export const cafcassAPICaseDocSearch = async (request: APIRequestContext, user: 
     }
 
 }
-export const cafcassAPIUploadDoc = async (request: APIRequestContext, user: { email: string,password:string }, caseID: string, docType: string, fileType: string = 'pdf') => {
+export const cafcassAPIUploadDoc = async (request: APIRequestContext, AuthToken: string, caseID: string, docType: string, fileType: string = 'pdf') => {
     let url = `${urlConfig.serviceUrl}/cases/${caseID}/document`;
     let docUpload = fs.readFileSync(config.testPdfFile);
     try {
-        const accessToken = await fetchAccessToken(user);
         let response = await request.post(url,
             {
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
+                    'Authorization': `Bearer ${AuthToken}`,
                 },
                 multipart: {
                     file: {
@@ -162,7 +156,7 @@ export const getTestDocID =  async (request: APIRequestContext) => {
     let intervalStartTime = getDateTimePram(currentDateTime, -2); // getting time 2 mins before the current time for start time
     let intervalEndTime = getDateTimePram(currentDateTime, 10); // getting time 10 mins after the current time for end time
     try {
-        let caseResponse = await cafcassAPICaseSearch(request, cafcassAPIUser, intervalStartTime, intervalEndTime);
+        let caseResponse = await cafcassAPICaseSearch(request, authToken.cafcassAuth, intervalStartTime, intervalEndTime);
 
         if (  caseResponse .ok()) {
             let body = await caseResponse.json();
