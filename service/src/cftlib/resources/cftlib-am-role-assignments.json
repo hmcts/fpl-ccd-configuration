@@ -121,7 +121,7 @@
         "classification": "PUBLIC",
         "readOnly": false,
         "attributes": {"region": "7", "substantive": "N", "contractType": "Salaried", "jurisdiction": "PUBLICLAW", "primaryLocation": "234946"},
-        "authorisations": ["294","315","316","317"]
+        "authorisations": []
       }
     ],
     "overrideAll": true
@@ -158,7 +158,7 @@
         "classification": "PUBLIC",
         "readOnly": false,
         "attributes": {"region": "1", "substantive": "N", "contractType": "Salaried", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584"},
-        "authorisations": ["294","315","316","317"]
+        "authorisations": []
       },
       {
         "roleType": "ORGANISATION",
@@ -168,7 +168,7 @@
         "classification": "PUBLIC",
         "readOnly": false,
         "attributes": {"region": "1", "substantive": "N", "contractType": "Salaried", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584"},
-        "authorisations": ["294","315","316","317"]
+        "authorisations": []
       },
       {
         "roleType": "ORGANISATION",
@@ -178,7 +178,7 @@
         "classification": "PUBLIC",
         "readOnly": false,
         "attributes": {"region": "1", "substantive": "N", "contractType": "Salaried", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584"},
-        "authorisations": ["294","315","316","317"]
+        "authorisations": []
       },
       {
         "roleType": "ORGANISATION",
@@ -188,7 +188,7 @@
         "classification": "PUBLIC",
         "readOnly": false,
         "attributes": {"region": "1", "substantive": "N", "contractType": "Salaried", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584"},
-        "authorisations": ["294","315","316","317"]
+        "authorisations": []
       },
 
 
@@ -201,7 +201,7 @@
         "classification": "PUBLIC",
         "readOnly": false,
         "attributes": {"region": "1", "substantive": "N", "contractType": "Salaried", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584"},
-        "authorisations": ["294","315","316","317"]
+        "authorisations": []
       }
     ],
     "overrideAll": true
@@ -910,7 +910,7 @@
         "roleCategory": "LEGAL_OPERATIONS",
         "classification": "PUBLIC",
         "readOnly": false,
-        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "234946", "region": "7" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584", "region": "7" },
         "authorisations": []
       }
     ],
