@@ -51,6 +51,8 @@ public class ReviewAdditionalApplicationService {
             }
         }
 
+        resultMap.put("reviewOrderUrgency", NO);
+
         return resultMap;
     }
 

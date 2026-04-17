@@ -53,7 +53,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         switch (caseData.getApproveAdditionalAppRouter()) {
-            case APPROVE_APPLICATION_AND_ORDER:
+            case APPROVE_APPLICATION_AND_ORDER, APPROVE_APPLICATION_CHANGE_ORDER:
                 caseDetails.getData().put("reviewOrderUrgency", YES);
                 break;
             default:
