@@ -496,7 +496,7 @@ public class JudicialService {
                 .judgeType(eventData.getJudgeType())
                 .build();
 
-            // entering manually, check against our lookup tables, they may be a legal adviser
+            // Entering manually, check against our lookup tables, they may be a legal adviser
             Optional<String> possibleId = this.getJudgeUserIdFromEmail(manualJudgeDetails.getJudgeEmailAddress());
 
             // if they are in our maps - add their UUID extra info to the case
