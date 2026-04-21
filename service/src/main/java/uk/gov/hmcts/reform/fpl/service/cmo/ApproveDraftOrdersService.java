@@ -429,7 +429,7 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> orderElement = draftOrders.get(i);
                 HearingOrder approvedOrder = draftOrders.get(i).getValue();
 
-                if (orderBundles.getHearingId() == null) {
+                if (orderBundles.getHearingId() == null || orderElement.getValue().getHearing() != null) {
                     data.put("previewApprovedOrder" + labelCounter,
                         hearingOrderGenerator.addCoverSheet(caseData, (approvedOrder.isConfidentialOrder()
                             ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder())));

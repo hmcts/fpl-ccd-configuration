@@ -42,11 +42,16 @@ class ApproveDraftOrdersControllerPreviewOrderMidEventTest extends AbstractCallb
 
     private static final Element<HearingOrder> DRAFT_ORDER_ELEMENT = element(HearingOrder.builder()
         .order(DRAFT_ORDER).title("TestingTitle").type(HearingOrderType.C21).status(CMOStatus.SEND_TO_JUDGE).build());
-
+    private static final Element<HearingOrder> DRAFT_ORDER_ELEMENT_C2 = element(HearingOrder.builder()
+        .order(DRAFT_ORDER).title("TestingTitle").type(HearingOrderType.C21)
+        .hearing("No hearing").status(CMOStatus.SEND_TO_JUDGE).build());
     private static final UUID SELECTED_HEARING_ID = UUID.randomUUID();
     private static final Element<HearingOrdersBundle> ORDER_BUNDLE = element(SELECTED_HEARING_ID,
         HearingOrdersBundle.builder().hearingId(UUID.randomUUID())
             .orders(new ArrayList<>((List.of(DRAFT_ORDER_ELEMENT)))).build());
+    private static final Element<HearingOrdersBundle> ORDER_BUNDLE_C2 = element(SELECTED_HEARING_ID,
+        HearingOrdersBundle.builder().hearingId(UUID.randomUUID())
+            .orders(new ArrayList<>((List.of(DRAFT_ORDER_ELEMENT_C2)))).build());
 
     @MockBean
     private HearingOrderGenerator hearingOrderGenerator;
@@ -63,7 +68,7 @@ class ApproveDraftOrdersControllerPreviewOrderMidEventTest extends AbstractCallb
     @Test
     void shouldPopulatePreviewApprovedOrderIfC2() {
         CaseData caseData = CaseData.builder()
-            .hearingOrdersBundlesDrafts(List.of(ORDER_BUNDLE))
+            .hearingOrdersBundlesDrafts(List.of(ORDER_BUNDLE_C2))
             .allocateJudgeEventData(new AllocateJudgeEventData(LEGAL_ADVISOR, null, null,
                 Judge.builder().judgeFullName("Judge John").build()))
             .selectedHearingId(SELECTED_HEARING_ID)
