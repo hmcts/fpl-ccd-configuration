@@ -367,9 +367,8 @@ public class UploadAdditionalApplicationsService {
             } else if (roleTypes.contains(ALLOCATED_LEGAL_ADVISER.getRoleName())) {
                 return JudicialMessageRoleType.OTHER;
             } else {
-                throw new UserLookupException(
-                    String.format("Allocated judge or legal adviser has invalid am role for case id: %s",
-                        caseData.getId()));
+                // If no valid AM roles on case return a generic task
+                return JudicialMessageRoleType.CTSC;
             }
         }
     }

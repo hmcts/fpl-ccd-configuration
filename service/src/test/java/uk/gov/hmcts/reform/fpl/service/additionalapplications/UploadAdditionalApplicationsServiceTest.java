@@ -550,10 +550,8 @@ class UploadAdditionalApplicationsServiceTest {
         when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
             .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-judge").build()));
 
-        UserLookupException thrownException = assertThrows(UserLookupException.class,
-            () -> underTest.getAllocatedJudgeOrLegalAdviserType(caseData));
-        assertThat(thrownException.getMessage())
-            .contains("Allocated judge or legal adviser has invalid am role for case id: 1234");
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
     }
 
     @Test
