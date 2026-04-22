@@ -351,7 +351,7 @@ test.describe('Upload additional applications', () => {
             await expect(page.getByText('Failed Payment (High Court)')).toHaveCount(0);
         }
     });
-    test.only('CTSC user submit  C2 paper application', async ({
+    test('CTSC user submit  C2 paper application', async ({
                                                                                page,
                                                                                signInPage,
                                                                                additionalApplications,
