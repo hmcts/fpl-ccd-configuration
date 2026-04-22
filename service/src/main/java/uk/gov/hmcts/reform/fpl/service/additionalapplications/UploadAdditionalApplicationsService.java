@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
@@ -66,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
@@ -366,7 +368,7 @@ public class UploadAdditionalApplicationsService {
             } else if (roleTypes.contains(ALLOCATED_LEGAL_ADVISER.getRoleName())) {
                 return JudicialMessageRoleType.OTHER;
             } else {
-                // If no valid AM roles on case return a generic task
+                log.info("No valid am role found for case id: {}, creating generic task", caseData.getId());
                 return JudicialMessageRoleType.CTSC;
             }
         }
