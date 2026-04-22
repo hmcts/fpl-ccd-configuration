@@ -38,19 +38,114 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "additionalApplicationsBundleToBeReviewed",
-    "Label": "Additional Application Bundle",
-    "FieldType": "AdditionalApplicationsBundle",
+    "ID": "hasC2ToBeReview",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field in review additional application event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasOtherToBeReview",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field in review additional application event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2AdditionalApplicationToBeReviewLabel",
+    "Label": "<hr><h2>C2 additional application</h2></hr>",
+    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "confirmApplicationReviewed",
-    "Label": "Additional Application Bundle",
+    "ID": "c2AdditionalApplicationToBeReview",
+    "Label": "C2 additional application",
+    "FieldType": "C2DocumentBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherAdditionalApplicationToBeReviewLabel",
+    "Label": "<hr><h2>Other additional application</h2></hr>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherAdditionalApplicationToBeReview",
+    "Label": " ",
+    "FieldType": "OtherApplicationsBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "uploadedDraftOrder",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "approveAdditionalAppRouter",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ApproveAdditionalAppOptions",
+    "Label": "What do you want to do?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewOrderUrgency",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field for displaying review urgency of order page"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewOrderUrgencyLabel",
+    "Label": "<h3>Do any of these orders need to be reviewed urgently? If no urgency in any order, select continue only.</h3><ul><li>EPOs, ICOs, recovery orders or port alerts</li><li>interpreter booking for hearings within 3 working days</li><li>production order for hearings within 10 working days</li><li>order against government departments (such as DWP, HMRC, Home Office)</li><li>any action that needs to be taken within 24 hours</li></ul>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confirmOrderContainsPriorityAction",
+    "Label": " ",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "ConfirmApplicationReviewedCheckBox",
+    "FieldTypeParameter": "ConfirmOrderContainsPriorityActionCheckBox",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Field to confirm if order contains a priority action"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "requireActionLabel",
+    "Label": "<div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Call 020 3966 8650 if you need action within an hour.<br />For internal use only.<br />Monday to Friday from 9am to 5pm</strong></div>",
+    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
