@@ -7,7 +7,7 @@ const judgePwd = process.env.E2E_TEST_JUDGE_PASSWORD || '';
 
 
 export const newSwanseaLocalAuthorityUserOne = {
-  email: 'kurt@swansea.gov.uk',
+  email: 'james@swansea.gov.uk',
   password: defaultPwd,
 };
 
