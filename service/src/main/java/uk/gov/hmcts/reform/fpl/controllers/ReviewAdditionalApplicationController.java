@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
+import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
+import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkdownService;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -23,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReviewAdditionalApplicationController extends CallbackController {
 
+    private final ReviewAdditionalApplicationMarkdownService markdownService;
     private final ReviewAdditionalApplicationService reviewAdditionalApplicationService;
 
     @PostMapping("/about-to-start")
@@ -74,5 +78,17 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         ConfirmApplicationReviewedEventData.eventFields().forEach(caseDetails.getData()::remove);
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public SubmittedCallbackResponse handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseData caseData = getCaseData(callbackRequest);
+
+        MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName());
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(markdownData.getHeader())
+            .confirmationBody(markdownData.getBody())
+            .build();
     }
 }
