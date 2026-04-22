@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
@@ -39,7 +40,6 @@ public class ReviewAdditionalApplicationService {
             resultMap.put(ONLY_ONE_APPLICATION, NO);
         } else {
             resultMap.put("hasApplicationToBeReviewed", YES);
-
             if (applicationsBundlesToBeReviewed.size() > 1) {
                 resultMap.put("additionalApplicationToBeReviewedList", asDynamicList(applicationsBundlesToBeReviewed,
                     AdditionalApplicationsBundle::toLabel));
@@ -63,6 +63,11 @@ public class ReviewAdditionalApplicationService {
             ? bundle.getC2DocumentBundleConfidential() : bundle.getC2DocumentBundle();
         if (!isEmpty(c2ToBeReviewed)) {
             resultMap.put("hasC2ToBeReview", YES);
+            // TODO: check what happens if there's more than one draft order
+            DocumentReference documentReference = isEmpty(bundle.getC2DocumentBundle()) ? null : bundle
+                .getC2DocumentBundle().getDraftOrdersBundle().getFirst().getValue().getDocument();
+
+            resultMap.put("uploadedDraftOrder", documentReference);
             resultMap.put("c2AdditionalApplicationToBeReview", C2AdditionalApplicationEventData.builder()
                 .routeType(c2ToBeReviewed.getRouteType())
                 .applicantName(c2ToBeReviewed.getApplicantName())

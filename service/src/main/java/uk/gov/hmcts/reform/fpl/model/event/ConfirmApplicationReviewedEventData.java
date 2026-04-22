@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.deserializer.DynamicListDeserializer;
 import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.Temp;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -47,6 +48,9 @@ public class ConfirmApplicationReviewedEventData {
     @JsonDeserialize(using = YesNoDeserializer.class)
     YesNo reviewOrderUrgency;
 
+    @Temp
+    DocumentReference uploadedDraftOrder;
+
     public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
@@ -54,6 +58,6 @@ public class ConfirmApplicationReviewedEventData {
             "hasC2ToBeReview", "hasOtherToBeReview",
             "c2AdditionalApplicationToBeReview",
             "otherAdditionalApplicationToBeReview",
-            "reviewOrderUrgency");
+            "reviewOrderUrgency", "uploadedDraftOrder");
     }
 }
