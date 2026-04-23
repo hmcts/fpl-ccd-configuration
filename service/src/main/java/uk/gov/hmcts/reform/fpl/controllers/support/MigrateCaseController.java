@@ -102,7 +102,8 @@ public class MigrateCaseController extends CallbackController {
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
 
-        caseDetails.getData().put("directionDetails", "For the matter to be listed on a without notice basis");
+        caseDetails.getData().putAll(migrateCaseService.replaceDirectionDetails(getCaseData(caseDetails),
+            migrationId, "For the matter to be listed on a without notice basis"));
     }
 
     private void run3101(CaseDetails caseDetails) {

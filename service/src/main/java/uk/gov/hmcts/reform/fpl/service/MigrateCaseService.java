@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -328,6 +329,13 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("posStmtRespList" + (isInLaList ? "LA" : ""), newList);
+    }
+
+    public Map<String, Object> replaceDirectionDetails(CaseData caseData, String migrationId,
+                                                       String replacementText) {
+        Orders updatedOrders = caseData.getOrders().toBuilder().directionDetails(replacementText).build();
+
+        return Map.of("orders", updatedOrders);
     }
 
     public Map<String, Object> updateIncorrectCourtCodes(CaseData caseData) {
