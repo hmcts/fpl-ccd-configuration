@@ -1,3 +1,3 @@
 output "microserviceName" {
-  value = "${var.component}"
+  value = var.component
 }

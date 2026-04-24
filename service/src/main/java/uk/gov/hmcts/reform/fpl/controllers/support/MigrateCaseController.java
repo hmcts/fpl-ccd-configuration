@@ -33,7 +33,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-3080", this::run3080,
         "DFPL-3048", this::run3048,
         "DFPL-3047", this::run3047,
-        "DFPL-3085", this::run3085,
+        "DFPL-3191", this::run3191,
         "DFPL-3101", this::run3101
     );
 
@@ -95,15 +95,15 @@ public class MigrateCaseController extends CallbackController {
             .updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 0));
     }
 
-    private void run3085(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3085";
-        final long expectedCaseId = 1767953928694083L;
+    private void run3191(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3191";
+        final long expectedCaseId = 1774949045897089L;
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeStatementOfService(migrationId, getCaseData(caseDetails),
-            "483e196a-6206-4d09-8172-7f56dc72d32d"));
+        caseDetails.getData().putAll(migrateCaseService.replaceDirectionDetails(getCaseData(caseDetails),
+            migrationId, "For the matter to be listed on a without notice basis"));
     }
 
     private void run3101(CaseDetails caseDetails) {

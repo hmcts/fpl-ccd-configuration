@@ -146,9 +146,10 @@ export class RequestService {
             return ACCESS_TOKEN_SIMPLE_CACHE[user.email];
         } else {
             let token = await getAccessToken({user: user})
+                .then(tokenRsp => tokenRsp?.data.access_token as string);
             ACCESS_TOKEN_SIMPLE_CACHE[user.email] = token;
             return token;
         }
     }
-
+    
 }

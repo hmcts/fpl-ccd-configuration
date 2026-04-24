@@ -28,8 +28,7 @@ def integrationTestSecrets = [
     secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
     secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
-    secret('fpl-case-service-idam-client-secret', 'IDAM_CLIENT_SECRET')
+    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
   ]
 ]
 
@@ -185,15 +184,12 @@ def archiveTestResult(reportDir, reportFiles, reportName) {
     reportFiles          : reportFiles,
     reportName           : reportName
   ])
-
   steps.archiveArtifacts allowEmptyArchive: true, artifacts: "${reportDir}/**/*"
 }
 def setupUITestEnvVariablesForPreview() {
   env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
   env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
   env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-  env.IDAM_WEB_URL = "https://idam-web-public.aat.platform.hmcts.net"
-  env.IDAM_TESTING_SUPPORT_URL = "http://idam-api-aat.platform.hmcts.net/testing-support"
   env.S2S_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal/testing-support/lease"
   env.ACCESS_MANAGEMENT_URL="https://am-role-assignment-service-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/am/role-assignments"
   env.MOCKED_PAYMENTS = false
@@ -268,16 +264,6 @@ withPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest:preview'){
-      yarnBuilder.yarn('yarn-update')
-      yarnBuilder.yarn('install-dependencies')
-      env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-      env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.IDAM_WEB_URL = "https://idam-web-public.aat.platform.hmcts.net"
-      env.IDAM_TESTING_SUPPORT_URL = "http://idam-api-aat.platform.hmcts.net/testing-support"
-      env.MOCKED_PAYMENTS = false
-      env.TEST_RETRIES = 1
-
     installYarnDependenciesIfNeeded(yarnBuilder)
       setupUITestEnvVariablesForPreview()
   }
