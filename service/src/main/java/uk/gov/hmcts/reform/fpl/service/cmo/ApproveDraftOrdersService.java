@@ -268,8 +268,7 @@ public class ApproveDraftOrdersService {
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
                         caseData, reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
-                        (orderElement.getValue().getHearing() == null
-                            || selectedOrdersBundle.getValue().getHearingId() != null) ? false :
+                        selectedOrdersBundle.getValue().getHearingId() != null ? false :
                             SEND_TO_ALL_PARTIES.equals(reviewDecision.getDecision()));
 
                     Element<GeneratedOrder> generatedBlankOrder = blankOrderGenerator.buildBlankOrder(caseData,
@@ -429,7 +428,7 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> orderElement = draftOrders.get(i);
                 HearingOrder approvedOrder = draftOrders.get(i).getValue();
 
-                if (orderBundles.getHearingId() == null || orderElement.getValue().getHearing() != null) {
+                if (orderBundles.getHearingId() == null) {
                     data.put("previewApprovedOrder" + labelCounter,
                         hearingOrderGenerator.addCoverSheet(caseData, (approvedOrder.isConfidentialOrder()
                             ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder())));

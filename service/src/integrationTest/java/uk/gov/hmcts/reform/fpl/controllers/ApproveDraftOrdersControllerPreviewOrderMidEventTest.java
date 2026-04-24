@@ -50,8 +50,7 @@ class ApproveDraftOrdersControllerPreviewOrderMidEventTest extends AbstractCallb
         HearingOrdersBundle.builder().hearingId(UUID.randomUUID())
             .orders(new ArrayList<>((List.of(DRAFT_ORDER_ELEMENT)))).build());
     private static final Element<HearingOrdersBundle> ORDER_BUNDLE_C2 = element(SELECTED_HEARING_ID,
-        HearingOrdersBundle.builder().hearingId(UUID.randomUUID())
-            .orders(new ArrayList<>((List.of(DRAFT_ORDER_ELEMENT_C2)))).build());
+        HearingOrdersBundle.builder().orders(new ArrayList<>((List.of(DRAFT_ORDER_ELEMENT_C2)))).build());
 
     @MockBean
     private HearingOrderGenerator hearingOrderGenerator;
