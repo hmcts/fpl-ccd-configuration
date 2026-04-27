@@ -331,20 +331,6 @@ public class MigrateCaseService {
         return Map.of("posStmtRespList" + (isInLaList ? "LA" : ""), newList);
     }
 
-    public Map<String, Object> replaceDirectionDetails(CaseData caseData, String migrationId,
-                                                       String replacementText) {
-        if (isEmpty(caseData.getOrders())) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, order not found",
-                migrationId, caseData.getId()
-            ));
-        }
-
-        Orders updatedOrders = caseData.getOrders().toBuilder().directionDetails(replacementText).build();
-
-        return Map.of(ORDERS, updatedOrders);
-    }
-
     public Map<String, Object> updateIncorrectCourtCodes(CaseData caseData) {
         IncorrectCourtCodeConfig bhc = IncorrectCourtCodeConfig.builder()
             .incorrectCourtCode("544")
