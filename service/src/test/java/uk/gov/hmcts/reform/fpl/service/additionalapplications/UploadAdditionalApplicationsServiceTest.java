@@ -350,8 +350,10 @@ class UploadAdditionalApplicationsServiceTest {
         DynamicList applicantsList = DynamicList.builder().build();
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(OTHER_ORDER))
-            .applicantsList(applicantsList)
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .applicantsList(applicantsList)
+                .build())
             .build();
 
         assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))

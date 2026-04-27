@@ -533,12 +533,6 @@ public class UploadAdditionalApplicationsService {
             errors.add("Please upload a draft order to proceed");
         }
 
-        if (!isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle())
-            && eventData.getTemporaryC2Document().getDraftOrdersBundle().size() > 1
-            && !userService.isCtscUser()) {
-            errors.add("Please upload only a single draft order to proceed");
-        }
-
         return errors;
     }
 
