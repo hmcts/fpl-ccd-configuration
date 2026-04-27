@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
@@ -9,9 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
-import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -73,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
@@ -407,9 +407,8 @@ public class UploadAdditionalApplicationsService {
             } else if (roleTypes.contains(ALLOCATED_LEGAL_ADVISER.getRoleName())) {
                 return JudicialMessageRoleType.OTHER;
             } else {
-                throw new UserLookupException(
-                    String.format("Allocated judge or legal adviser has invalid am role for case id: %s",
-                        caseData.getId()));
+                log.info("No valid am role found for case id: {}, creating generic task", caseData.getId());
+                return JudicialMessageRoleType.CTSC;
             }
         }
     }
@@ -424,25 +423,5 @@ public class UploadAdditionalApplicationsService {
                 .build();
         }
         return pbaPayment;
-    }
-
-    public WorkAllocationTaskUrgency getBundleUrgency(AdditionalApplicationsBundle bundle) {
-        // Part of C2 redesign work, as of now, only C2 bundle affect the WA task urgency.
-        // Future service improvement may need for other additional application.
-        if (bundle.getC2DocumentBundle() != null
-            && YES.equals(bundle.getC2DocumentBundle().getHasSafeguardingRisk())) {
-            return WorkAllocationTaskUrgency.URGENT;
-        }
-        return WorkAllocationTaskUrgency.HIGH;
-    }
-
-    public List<String> validateC2Bundle(UploadAdditionalApplicationsEventData eventData) {
-        List<String> errors = new ArrayList<>();
-
-        if (isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle()) && !userService.isCtscUser()) {
-            errors.add("Please upload a draft order to proceed");
-        }
-
-        return errors;
     }
 }
