@@ -272,6 +272,20 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    void shouldThrowIllegalArgumentExceptionWhenApplicantListIsEmpty() {
+        DynamicList applicantsList = DynamicList.builder().build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(OTHER_ORDER))
+            .applicantsList(applicantsList)
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Applicant should not be empty");
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles() {
         Supplement c2Supplement = createSupplementsBundle();
@@ -532,7 +546,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionIfUserNotFoundForAllocatedJudgeOrLegalAdvisor() {
+    void shouldReturnGenericTaskForAllocatedJudgeOrLegalAdvisorWithWrongAmRole() {
         Judge allocatedJudge = Judge.builder()
             .judgeJudicialUser(JudicialUser.builder()
                 .idamId("1234")
@@ -547,6 +561,24 @@ class UploadAdditionalApplicationsServiceTest {
         when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
         when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
             .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-judge").build()));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
+    }
+
+    @Test
+    void shouldReturnGenericTaskForAllocatedJudgeOrLegalAdvisorWhenInvalidJrdUser() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .id(1234L)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
 
         assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
             .isEqualTo(JudicialMessageRoleType.CTSC);
@@ -731,6 +763,19 @@ class UploadAdditionalApplicationsServiceTest {
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
+        }
+
+        @Test
+        void shouldSealOtherDocumentIgnoringNullSupplements() {
+            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(null)
+                .build();
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
+
+            assertThat(converted.getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
+            assertThat(converted.getSupplementsBundle()).isEmpty();
         }
 
         @Test

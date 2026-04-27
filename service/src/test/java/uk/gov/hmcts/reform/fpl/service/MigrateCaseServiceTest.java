@@ -133,6 +133,9 @@ class MigrateCaseServiceTest {
     @Mock
     private CourtLookUpService courtLookUpService;
 
+    @Mock
+    private CaseNoteService caseNoteService;
+
     @InjectMocks
     private MigrateCaseService underTest;
 
@@ -852,6 +855,20 @@ class MigrateCaseServiceTest {
         private final UUID noteIdToRemove = UUID.randomUUID();
 
         @Test
+        void shouldRemoveCaseNoteWhenPresent() {
+            CaseData caseData = CaseData.builder()
+                .caseNotes(List.of(
+                    element(noteIdToRemove, CaseNote.builder().note("Test note").build())
+                ))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove);
+
+            assertThat(updatedFields).extracting("caseNotes").asList().hasSize(0);
+
+        }
+
+        @Test
         void shouldThrowExceptionWhenCaseNoteNotPresent() {
             UUID otherNoteId = UUID.randomUUID();
             UUID otherNoteId2 = UUID.randomUUID();
@@ -880,6 +897,30 @@ class MigrateCaseServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .hearingDetails(bookings)
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeHearingBooking(caseData, MIGRATION_ID, hearingBookingToRemove));
+        }
+
+        @Test
+        void shouldThrowAssertionErrorIfDuplicateHearingBookingFound() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(hearingBookingToRemove, HearingBooking.builder().build()));
+            bookings.add(element(hearingBookingToRemove, HearingBooking.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeHearingBooking(caseData, MIGRATION_ID, hearingBookingToRemove));
+        }
+
+        @Test
+        void shouldThrowAssertionErrorIfNoHearingDetailsFound() {
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(null)
                 .build();
 
             assertThrows(AssertionError.class, () ->
