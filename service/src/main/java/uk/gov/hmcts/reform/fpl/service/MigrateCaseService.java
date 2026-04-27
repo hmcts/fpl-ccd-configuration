@@ -333,9 +333,16 @@ public class MigrateCaseService {
 
     public Map<String, Object> replaceDirectionDetails(CaseData caseData, String migrationId,
                                                        String replacementText) {
+        if (isEmpty(caseData.getOrders())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, order not found",
+                migrationId, caseData.getId()
+            ));
+        }
+
         Orders updatedOrders = caseData.getOrders().toBuilder().directionDetails(replacementText).build();
 
-        return Map.of("orders", updatedOrders);
+        return Map.of(ORDERS, updatedOrders);
     }
 
     public Map<String, Object> updateIncorrectCourtCodes(CaseData caseData) {
