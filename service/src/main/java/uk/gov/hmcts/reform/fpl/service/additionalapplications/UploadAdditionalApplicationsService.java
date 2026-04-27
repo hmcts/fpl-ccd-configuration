@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
@@ -10,10 +11,8 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
-import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
-import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -90,6 +89,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
@@ -498,9 +498,8 @@ public class UploadAdditionalApplicationsService {
             } else if (roleTypes.contains(ALLOCATED_LEGAL_ADVISER.getRoleName())) {
                 return JudicialMessageRoleType.OTHER;
             } else {
-                throw new UserLookupException(
-                    String.format("Allocated judge or legal adviser has invalid am role for case id: %s",
-                        caseData.getId()));
+                log.info("No valid am role found for case id: {}, creating generic task", caseData.getId());
+                return JudicialMessageRoleType.CTSC;
             }
         }
     }
