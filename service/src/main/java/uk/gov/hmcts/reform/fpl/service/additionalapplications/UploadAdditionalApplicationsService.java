@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -413,7 +414,6 @@ public class UploadAdditionalApplicationsService {
         }
     }
 
-
     public PBAPayment updatePBAPayment(PBAPayment pbaPayment, boolean isCTSCUser) {
         if (pbaPayment != null && !NO.getValue().equals(pbaPayment.getUsePbaPayment())) {
             return pbaPayment.toBuilder()
@@ -423,5 +423,25 @@ public class UploadAdditionalApplicationsService {
                 .build();
         }
         return pbaPayment;
+    }
+
+    public WorkAllocationTaskUrgency getBundleUrgency(AdditionalApplicationsBundle bundle) {
+        // Part of C2 redesign work, as of now, only C2 bundle affect the WA task urgency.
+        // Future service improvement may need for other additional application.
+        if (bundle.getC2DocumentBundle() != null
+            && YES.equals(bundle.getC2DocumentBundle().getHasSafeguardingRisk())) {
+            return WorkAllocationTaskUrgency.URGENT;
+        }
+        return WorkAllocationTaskUrgency.HIGH;
+    }
+
+    public List<String> validateC2Bundle(UploadAdditionalApplicationsEventData eventData) {
+        List<String> errors = new ArrayList<>();
+
+        if (isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle()) && !userService.isCtscUser()) {
+            errors.add("Please upload a draft order to proceed");
+        }
+
+        return errors;
     }
 }
