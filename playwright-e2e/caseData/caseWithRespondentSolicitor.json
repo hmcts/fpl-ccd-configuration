@@ -167,6 +167,13 @@
             }
         }
     ],
+    "respondentPolicy0": {
+      "Organisation": {
+        "OrganisationID": "D25VR7V",
+        "OrganisationName": "Private solicitors"
+      },
+      "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+    },
     "displayAmountToPay": "Yes",
     "caseSummaryNumberOfChildren": 1,
     "caseSummaryAllocatedJudgeEmail": null,
