@@ -11,7 +11,7 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctsprod.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    devcpuRequests: 500m
+    devcpuRequests: 50m
     devmemoryRequests: 1Gi
     devcpuLimits: 1
     devmemoryLimits: 4Gi
@@ -84,7 +84,7 @@ wa:
 
   camunda-bpm:
     java:
-      devcpuRequests: 500m
+      devcpuRequests: 50m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
       devmemoryLimits: 4Gi
@@ -94,7 +94,7 @@ wa:
   wa-task-management-api:
     java:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
-      devcpuRequests: 500m
+      devcpuRequests: 50m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
       devmemoryLimits: 4Gi
@@ -115,7 +115,7 @@ wa:
         AZURE_SERVICE_BUS_CONNECTION_STRING:
           secretRef: family-public-law-sb-preview
           key: connectionString
-      devcpuRequests: 500m
+      devcpuRequests: 50m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
       devmemoryLimits: 4Gi
@@ -136,7 +136,7 @@ wa:
         WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
   wa-workflow-api:
     java:
-      devcpuRequests: 500m
+      devcpuRequests: 50m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
       devmemoryLimits: 4Gi
@@ -165,7 +165,7 @@ ccd-message-publisher:
     ingressHost: ccd-message-publisher-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-ccd-message-publisher
     disableKeyVaults: true # TODO - check if this can be disabled or not
-    devcpuRequests: 500m
+    devcpuRequests: 50m
     devmemoryRequests: 1Gi
     devcpuLimits: 1
     devmemoryLimits: 4Gi
