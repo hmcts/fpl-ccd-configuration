@@ -96,7 +96,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class UploadAdditionalApplicationsService {
 
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
-    private static final String C2_APPLICATION_NAME = "C2_APPLICATION.pdf";
+    private static final String C2_APPLICATION_NAME = "C2_application.pdf";
 
     private final Time time;
     private final UserService userService;
@@ -533,8 +533,8 @@ public class UploadAdditionalApplicationsService {
             errors.add("Please upload a draft order to proceed");
         }
 
-        if (!isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle()) &&
-            eventData.getTemporaryC2Document().getDraftOrdersBundle().size() > 1 && !userService.isCtscUser()) {
+        if (!isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle())
+            && eventData.getTemporaryC2Document().getDraftOrdersBundle().size() > 1 && !userService.isCtscUser()) {
             errors.add("Please upload only a single draft order to proceed");
         }
 

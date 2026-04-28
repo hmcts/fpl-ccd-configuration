@@ -130,7 +130,7 @@ class UploadAdditionalApplicationsServiceTest {
 
     private static final DocmosisDocument C2_ONLINE_DOCMOSIS_DOCUMENT =
         testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
-    private static final String C2_APPLICATION_NAME = "C2_APPLICATION.pdf";
+    private static final String C2_APPLICATION_NAME = "C2_application.pdf";
     private static final Document C2_ONLINE_DOCUMENT = testDocumentWithName(C2_APPLICATION_NAME);
 
     private final RequestData requestData = mock(RequestData.class);
