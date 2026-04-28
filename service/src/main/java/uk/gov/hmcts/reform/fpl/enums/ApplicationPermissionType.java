@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ApplicationPermissionType {
     YES("Yes"),
-    NOT_REQUIRED("Permission not required"),
-    ALREADY_GRANTED("Permission already granted");
+    ALREADY_GRANTED("Permission already granted"),
+    NOT_REQUIRED("Permission not required");
 
     private final String label;
 }
