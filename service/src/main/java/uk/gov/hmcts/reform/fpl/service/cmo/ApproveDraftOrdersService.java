@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
@@ -36,6 +37,8 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
@@ -45,6 +48,8 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -67,6 +72,7 @@ public class ApproveDraftOrdersService {
     private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
     private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
     private static final String REFUSED_ORDERS = "refusedHearingOrders";
+    private static final String DRAFT_ORDERS_REMOVED = "draftOrdersRemoved";
 
     /**
      * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
@@ -210,6 +216,7 @@ public class ApproveDraftOrdersService {
                         cmo, cmoReviewDecision.getChangesRequestedByJudge());
                 } else {
                     log.info("Draft CMO is removed by Judge");
+                    data.putAll(removeDraftOrders(caseData, List.of(cmo)));
                 }
 
                 caseData.getDraftUploadedCMOs().remove(cmo);
@@ -262,6 +269,7 @@ public class ApproveDraftOrdersService {
 
         int counter = 1;
         List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
+        List<Element<HearingOrder>> draftOrdersToBeRemoved = newArrayList();
 
         for (Element<HearingOrder> orderElement : draftOrders) {
             ReviewDecision reviewDecision = caseData.getReviewDraftOrdersData().getReviewDecision(counter);
@@ -300,7 +308,7 @@ public class ApproveDraftOrdersService {
 
                     ordersToBeSent.add(rejectedOrder);
                 } else {
-                    log.info("Draft order is removed by Judge");
+                    draftOrdersToBeRemoved.add(orderElement);
                 }
 
                 selectedOrdersBundle.getValue().removeOrderElement(orderElement);
@@ -314,6 +322,7 @@ public class ApproveDraftOrdersService {
             data.put(ORDERS_TO_BE_SENT, ordersToBeSent);
         }
 
+        data.putAll(removeDraftOrders(caseData, draftOrdersToBeRemoved));
         data.putAll(updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle));
         data.put("orderCollection", orderCollection);
     }
@@ -447,5 +456,31 @@ public class ApproveDraftOrdersService {
             }
         }
         return data;
+    }
+
+    private Map<String, Object> removeDraftOrders(CaseData caseData, List<Element<HearingOrder>> draftOrdersToBeRemoved) {
+        List<Element<HearingOrder>> draftOrdersRemoved = getIfNull(caseData.getDraftOrdersRemoved(), newArrayList());
+
+        if (!isEmpty(draftOrdersToBeRemoved)) {
+            draftOrdersRemoved.addAll(
+                draftOrdersToBeRemoved.stream()
+                    .map(element ->
+                        element(element.getId(), element.getValue().toBuilder()
+                            .order(null)
+                            .orderConfidential(null)
+                            .orderRemoved(element.getValue().getOrderOrOrderConfidential())
+                            .status(CMOStatus.REMOVED)
+                            .removalReason("The draft order is not required and should be removed")
+                            .build()))
+                    .toList());
+        }
+
+        if (!isEmpty(draftOrdersRemoved)) {
+            caseData.setDraftOrdersRemoved(draftOrdersRemoved);
+            return Map.of(DRAFT_ORDERS_REMOVED, draftOrdersRemoved);
+        } else {
+            caseData.setDraftOrdersRemoved(null);
+            return Map.of();
+        }
     }
 }

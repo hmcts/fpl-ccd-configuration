@@ -198,7 +198,7 @@ public class ApproveDraftOrdersController extends CallbackController {
             data.putAll(approveDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
 
             // review C21 orders
-            approveDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
+            approveDraftOrdersService.reviewC21Orders(getCaseData(caseDetails), data, selectedOrdersBundle);
 
             // update list of rejected orders
             approveDraftOrdersService.updateRejectedHearingOrders(data);
