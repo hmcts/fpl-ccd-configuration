@@ -49,7 +49,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -458,7 +457,8 @@ public class ApproveDraftOrdersService {
         return data;
     }
 
-    private Map<String, Object> removeDraftOrders(CaseData caseData, List<Element<HearingOrder>> draftOrdersToBeRemoved) {
+    private Map<String, Object> removeDraftOrders(CaseData caseData,
+                                                  List<Element<HearingOrder>> draftOrdersToBeRemoved) {
         List<Element<HearingOrder>> draftOrdersRemoved = getIfNull(caseData.getDraftOrdersRemoved(), newArrayList());
 
         if (!isEmpty(draftOrdersToBeRemoved)) {
