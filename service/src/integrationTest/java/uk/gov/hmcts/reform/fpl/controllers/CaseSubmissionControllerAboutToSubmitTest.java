@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -18,18 +19,23 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.caseflag.CaseFlagsType;
+import uk.gov.hmcts.reform.fpl.model.caseflag.FlagDetailType;
+import uk.gov.hmcts.reform.fpl.model.caseflag.ListTypeItem;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
 import java.time.LocalDate;
@@ -45,9 +51,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.APPLICANT;
+import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.EXTERNAL;
+import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.INTERNAL;
+import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.ACTIVE;
+import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.DISRUPTIVE_CUSTOMER;
+import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
@@ -65,6 +80,9 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @MockBean
     private CaseSubmissionService caseSubmissionService;
+
+    @SpyBean
+    private CaseFlagsService caseFlagsService;
 
     private final Document document = document();
     private final LocalDate respondentDOB = LocalDate.now();
@@ -153,6 +171,127 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getData())
             .containsEntry("amountToPay", "233300")
             .containsEntry("displayAmountToPay", YES.getValue());
+    }
+
+    @Test
+    void shouldSetupAndReturnCaseFlagsWhenFeatureIsEnabledAndSetupIsRequired() {
+        given(featureToggleService.isCaseFlagsEnabled()).willReturn(true);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetailsForCaseFlags());
+        CaseData updatedCaseData = extractCaseData(callbackResponse);
+
+        assertFlag(updatedCaseData.getCaseFlags(), null, null, null, null);
+        assertFlag(updatedCaseData.getApplicantFlags(), "Test local authority", APPLICANT, APPLICANT, INTERNAL);
+        assertFlag(updatedCaseData.getApplicantExternalFlags(), "Test local authority", APPLICANT, APPLICANT, EXTERNAL);
+        assertFlag(updatedCaseData.getRespondent1Flags(), "Joe Bloggs", RESPONDENT, "respondent1", INTERNAL);
+        assertFlag(updatedCaseData.getRespondent1ExternalFlags(), "Joe Bloggs", RESPONDENT, "respondent1", EXTERNAL);
+
+        assertThat(callbackResponse.getData()).containsKeys(
+            "caseFlags",
+            "applicantFlags",
+            "applicantExternalFlags",
+            "respondent1Flags",
+            "respondent1ExternalFlags"
+        );
+        verify(caseFlagsService).caseFlagsSetupRequired(any(CaseData.class));
+        verify(caseFlagsService).setupCaseFlags(any(CaseData.class));
+        verify(caseFlagsService).processNewlySetCaseFlags(any(CaseData.class));
+        verify(caseFlagsService).generate(any(CaseData.class));
+    }
+
+    @Test
+    void shouldNotSetupCaseFlagsWhenFeatureIsDisabled() {
+        given(featureToggleService.isCaseFlagsEnabled()).willReturn(false);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetailsForCaseFlags());
+
+        assertThat(callbackResponse.getData()).doesNotContainKeys(
+            "caseFlags",
+            "applicantFlags",
+            "applicantExternalFlags",
+            "respondent1Flags",
+            "respondent1ExternalFlags"
+        );
+        verify(caseFlagsService, never()).caseFlagsSetupRequired(any(CaseData.class));
+        verify(caseFlagsService, never()).setupCaseFlags(any(CaseData.class));
+        verify(caseFlagsService, never()).processNewlySetCaseFlags(any(CaseData.class));
+        verify(caseFlagsService).generate(any(CaseData.class));
+    }
+
+    @Test
+    void shouldGenerateExistingCaseFlagsWithoutSetupWhenSetupIsNotRequired() {
+        given(featureToggleService.isCaseFlagsEnabled()).willReturn(true);
+        CaseDetails caseDetails = caseDetailsForCaseFlags();
+        caseDetails.getData().put("caseFlags", CaseFlagsType.builder().build());
+        caseDetails.getData().put("applicantFlags",
+            caseFlags("Test local authority", APPLICANT, APPLICANT, INTERNAL, LANGUAGE_INTERPRETER));
+        caseDetails.getData().put("applicantExternalFlags",
+            caseFlags("Test local authority", APPLICANT, APPLICANT, EXTERNAL));
+        caseDetails.getData().put("respondent1Flags",
+            caseFlags("Joe Bloggs", RESPONDENT, "respondent1", INTERNAL));
+        caseDetails.getData().put("respondent1ExternalFlags",
+            caseFlags("Joe Bloggs", RESPONDENT, "respondent1", EXTERNAL));
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+        CaseData updatedCaseData = extractCaseData(callbackResponse);
+
+        assertThat(updatedCaseData.getApplicantFlags().getDetails()).hasSize(1);
+        assertThat(callbackResponse.getData()).containsKeys(
+            "caseFlags",
+            "applicantFlags",
+            "applicantExternalFlags",
+            "respondent1Flags",
+            "respondent1ExternalFlags"
+        );
+        assertThat(callbackResponse.getData()).doesNotContainKeys(
+            "caseInterpreterRequiredFlag",
+            "caseAdditionalSecurityFlag"
+        );
+        verify(caseFlagsService).caseFlagsSetupRequired(any(CaseData.class));
+        verify(caseFlagsService, never()).setupCaseFlags(any(CaseData.class));
+        verify(caseFlagsService, never()).processNewlySetCaseFlags(any(CaseData.class));
+        verify(caseFlagsService).generate(any(CaseData.class));
+    }
+
+    @Test
+    void shouldProcessExistingCaseFlagDetailsWhenSetupIsRequired() {
+        given(featureToggleService.isCaseFlagsEnabled()).willReturn(true);
+        CaseDetails caseDetails = caseDetailsForCaseFlags();
+        caseDetails.getData().put("applicantFlags",
+            caseFlags("Test local authority", APPLICANT, APPLICANT, INTERNAL, LANGUAGE_INTERPRETER));
+        caseDetails.getData().put("applicantExternalFlags",
+            caseFlags("Test local authority", APPLICANT, APPLICANT, EXTERNAL, DISRUPTIVE_CUSTOMER));
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+        CaseData updatedCaseData = extractCaseData(callbackResponse);
+
+        assertThat(updatedCaseData.getApplicantFlags().getDetails()).hasSize(1);
+        assertThat(updatedCaseData.getApplicantExternalFlags().getDetails()).hasSize(1);
+        verify(caseFlagsService).setupCaseFlags(any(CaseData.class));
+        verify(caseFlagsService).processNewlySetCaseFlags(any(CaseData.class));
+        verify(caseFlagsService).generate(any(CaseData.class));
+    }
+
+    @Test
+    void shouldSkipCaseFlagProcessingWhenCaseSubmissionHasValidationErrors() {
+        given(featureToggleService.isCaseFlagsEnabled()).willReturn(true);
+        given(featureToggleService.isRestrictedFromCaseSubmission(LOCAL_AUTHORITY_1_CODE)).willReturn(true);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetailsForCaseFlags());
+
+        assertThat(callbackResponse.getErrors()).contains("You cannot submit this application online yet."
+            + " Ask your FPL administrator for your local authority's enrolment date");
+        assertThat(callbackResponse.getData()).doesNotContainKeys(
+            "caseFlags",
+            "applicantFlags",
+            "applicantExternalFlags",
+            "respondent1Flags",
+            "respondent1ExternalFlags"
+        );
+        verify(caseFlagsService, never()).caseFlagsSetupRequired(any(CaseData.class));
+        verify(caseFlagsService, never()).setupCaseFlags(any(CaseData.class));
+        verify(caseFlagsService, never()).processNewlySetCaseFlags(any(CaseData.class));
+        verify(caseFlagsService, never()).generate(any(CaseData.class));
     }
 
     @Nested
@@ -282,6 +421,55 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             "submissionConsentLabel",
             "temporaryApplicationDocuments"
         );
+    }
+
+    private CaseDetails caseDetailsForCaseFlags() {
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+            "localAuthorities", wrapElements(LocalAuthority.builder()
+                .name("Test local authority")
+                .build()),
+            "applicants", List.of(element(buildApplicant())),
+            "respondents1", wrapElements(Respondent.builder()
+                .party(buildRespondentParty())
+                .build())
+        ));
+
+        return CaseDetails.builder()
+            .id(2313L)
+            .data(data)
+            .build();
+    }
+
+    private CaseFlagsType caseFlags(String partyName, String roleOnCase, String groupId, String visibility) {
+        return CaseFlagsType.builder()
+            .partyName(partyName)
+            .roleOnCase(roleOnCase)
+            .groupId(groupId)
+            .visibility(visibility)
+            .build();
+    }
+
+    private CaseFlagsType caseFlags(String partyName, String roleOnCase, String groupId, String visibility,
+                                    String flagName) {
+        return CaseFlagsType.builder()
+            .partyName(partyName)
+            .roleOnCase(roleOnCase)
+            .groupId(groupId)
+            .visibility(visibility)
+            .details(ListTypeItem.from(FlagDetailType.builder()
+                .name(flagName)
+                .status(ACTIVE)
+                .build()))
+            .build();
+    }
+
+    private void assertFlag(CaseFlagsType actual, String partyName, String roleOnCase,
+                            String groupId, String visibility) {
+        assertThat(actual.getPartyName()).isEqualTo(partyName);
+        assertThat(actual.getRoleOnCase()).isEqualTo(roleOnCase);
+        assertThat(actual.getGroupId()).isEqualTo(groupId);
+        assertThat(actual.getVisibility()).isEqualTo(visibility);
     }
 
     private RespondentParty buildRespondentParty() {
