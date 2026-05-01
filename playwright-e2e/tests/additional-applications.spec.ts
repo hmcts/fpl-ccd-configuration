@@ -470,7 +470,7 @@ test.describe('Upload additional applications', () => {
 
 
     });
-    test.only('Respondent solicitor submit C2 online application',async ({
+    test('Respondent solicitor submit C2 online application',async ({
                                                                         page,
                                                                         signInPage,
                                                                         additionalApplications,
