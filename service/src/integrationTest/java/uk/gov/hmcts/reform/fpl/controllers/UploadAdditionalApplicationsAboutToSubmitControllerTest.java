@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
@@ -141,6 +142,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .allocatedJudge(AlLOCATED_JUDGE)
             .uploadAdditionalApplicationsEventData(
                 UploadAdditionalApplicationsEventData.builder()
+                    .c2ApplicationRoute(C2ApplicationRouteType.PAPER_FORM)
                     .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
                     .temporaryC2Document(createTemporaryC2Document())
                     .temporaryPbaPayment(temporaryPbaPayment)
@@ -228,6 +230,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .id(CASE_ID)
             .allocatedJudge(AlLOCATED_JUDGE)
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .c2ApplicationRoute(C2ApplicationRouteType.PAPER_FORM)
                 .additionalApplicationType(
                     List.of(AdditionalApplicationType.C2_ORDER, AdditionalApplicationType.OTHER_ORDER)
                 )
@@ -262,6 +265,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .id(CASE_ID)
             .allocatedJudge(AlLOCATED_JUDGE)
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .c2ApplicationRoute(C2ApplicationRouteType.PAPER_FORM)
                 .applicantsList(createApplicantsDynamicList(APPLICANT))
                 .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
                 .temporaryC2Document(createTemporaryC2Document())
@@ -296,6 +300,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 "c2Type", WITHOUT_NOTICE,
                 "applicantsList", createApplicantsDynamicList(APPLICANT),
                 "additionalApplicationType", List.of("C2_ORDER"),
+                "c2ApplicationRoute", C2ApplicationRouteType.PAPER_FORM,
                 "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
                 "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument(),

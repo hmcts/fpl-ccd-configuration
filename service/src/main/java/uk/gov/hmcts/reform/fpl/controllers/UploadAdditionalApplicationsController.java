@@ -71,6 +71,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String IS_CTSC_USER = "isCTSCUser";
     private static final String SKIP_PAYMENT_PAGE = "skipPaymentPage";
+    private static final String STATEMENT_OF_TRUTH = "statementOfTruth";
 
     private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
@@ -102,13 +103,15 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
 
-        if (caseData.getUploadAdditionalApplicationsEventData().getAdditionalApplicationType()
-            .contains(AdditionalApplicationType.C2_ORDER)) {
+        if (eventData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
             // Initialise the C2 document bundle so we can have a dynamic list present
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT,
                 C2AdditionalApplicationEventData.builder()
                     .hearingList(caseData.buildDynamicHearingList())
+                    .childSelectorForApplication(
+                        uploadAdditionalApplicationsService.getChildrenMultiSelectList(caseData))
                     .build());
         }
 
@@ -245,7 +248,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             uploadAdditionalApplicationsService.getBundleUrgency(additionalApplicationsBundle));
 
         removeTemporaryFields(caseDetails, UploadAdditionalApplicationsEventData.class);
-        removeTemporaryFields(caseDetails, AMOUNT_TO_PAY, IS_CTSC_USER, SKIP_PAYMENT_PAGE);
+        removeTemporaryFields(caseDetails, AMOUNT_TO_PAY, IS_CTSC_USER, SKIP_PAYMENT_PAGE, STATEMENT_OF_TRUTH);
 
         return respond(caseDetails);
     }
@@ -257,7 +260,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData oldCaseData = getCaseData(oldCaseDetails);
         final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        final UUID lastBundleId = oldCaseData.getAdditionalApplicationsBundle().get(0).getId();
+        final UUID lastBundleId = oldCaseData.getAdditionalApplicationsBundle().getFirst().getId();
 
         CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
             "internal-change-upload-add-apps",
