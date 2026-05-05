@@ -9,9 +9,11 @@ import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -24,26 +26,35 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiselectListElement;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC2OrderDocument;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,12 +76,18 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType.APPLY_ONLINE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.fromCCDMoneyGBP;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
@@ -79,15 +96,31 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class UploadAdditionalApplicationsService {
 
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
+    private static final String C2_APPLICATION_NAME = "C2_application.pdf";
 
     private final Time time;
     private final UserService userService;
     private final ManageDocumentService manageDocumentService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
-    private final DocumentConversionService documentConversionService;
+    private final UploadDocumentService uploadDocumentService;
     private final PbaService pbaService;
     private final JudicialService judicialService;
+
+    public DynamicMultiSelectList getChildrenMultiSelectList(CaseData caseData) {
+        List<DynamicMultiselectListElement> listItems = new ArrayList<>();
+        if (caseData.getChildren1() != null) {
+            IncrementalInteger i = new IncrementalInteger(1);
+            caseData.getChildren1().forEach(child -> {
+                listItems.add(DynamicMultiselectListElement.builder().code(child.getId().toString())
+                    .label(child.getValue().getParty().getFirstName() + " "
+                        + child.getValue().getParty().getLastName()
+                        + " (Child " + i.getAndIncrement() + ")").build());
+            });
+        }
+        return DynamicMultiSelectList.builder().listItems(listItems).build();
+    }
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -217,7 +250,65 @@ public class UploadAdditionalApplicationsService {
             c2DocumentBundleBuilder.c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT));
         }
 
+        if (eventData.getC2ApplicationRoute().equals(APPLY_ONLINE)) {
+            String childrenOnApplication = formatChildSelector(temporaryC2Document.getChildSelectorForApplication());
+            c2DocumentBundleBuilder.childrenOnApplication(childrenOnApplication);
+            // If Online application we want to replace the C2 document with the one generated by the filled in fields
+            c2DocumentBundleBuilder.document(createC2OrderDocument(
+                caseData, uploadedTime.toLocalDate(), applicantName, respondentsInCase, childrenOnApplication));
+        }
+
         return c2DocumentBundleBuilder.build();
+    }
+
+    private DocumentReference createC2OrderDocument(CaseData caseData,
+                                                    LocalDate uploadedDate,
+                                                    String applicantName,
+                                                    List<Element<Respondent>> respondentsInCase,
+                                                    String childrenOnApplication) {
+
+        final Language language = getCaseLanguage(caseData);
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
+        C2AdditionalApplicationEventData c2EventData = eventData.getTemporaryC2Document();
+
+        String respondents = respondentsInCase.stream()
+            .map(respondent ->
+                String.join(" ", respondent.getValue().getParty().getFullName()))
+            .collect(Collectors.joining(" "));
+
+        Optional<BigDecimal> decimalAmount = fromCCDMoneyGBP(caseData.getAmountToPay());
+        String feeChargedAmount = String.format("£ %s", decimalAmount.isPresent() ? decimalAmount.get() : "N/A");
+
+        DocmosisC2OrderDocument docmosisC2OrderDocument = DocmosisC2OrderDocument.builder()
+            .courtName(caseData.getCourt().getName())
+            .caseNumber(caseData.getFamilyManCaseNumber())
+            .dateIssued(formatLocalDateToString(uploadedDate, DATE))
+            .feeCharged(feeChargedAmount)
+            .applicantName(applicantName.split(",")[0]) //Split name from applicant list to remove *Applicant 1*
+            .respondents(respondents)
+            .consent(eventData.getC2Type().getLabel().equals("By consent")
+                ? YES.getValue(language) : NO.getValue(language))
+            .isConfidential(eventData.getIsC2Confidential().getValue(language))
+            .permission(c2EventData.getApplicationPermissionType().getLabel())
+            .applicationRelatesToAllChildren(c2EventData.getApplicationRelatesToAllChildren().getValue(language))
+            .childrenOnApplication(childrenOnApplication)
+            .applicationSummary(c2EventData.getApplicationSummary())
+            .safeguarding(c2EventData.getHasSafeguardingRisk().getValue(language))
+            .safeguardingReason(c2EventData.getSafeguardingRiskDetails())
+            .requestAdjournment(c2EventData.getIsHearingAdjournmentRequired().getValue(language))
+            .whichHearing(c2EventData.getRequestedHearingToAdjourn())
+            .considerAtNextHearing(c2EventData.getCanBeConsideredAtNextHearing().getValue(language))
+            .crest(CREST.getValue(language))
+            .build();
+
+        DocmosisDocument c2OrderDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            docmosisC2OrderDocument, DocmosisTemplates.C2_APPLICATION, RenderFormat.PDF, getCaseLanguage(caseData));
+
+        return buildFromDocument(uploadDocumentService.uploadPDF(c2OrderDocument.getBytes(), C2_APPLICATION_NAME));
+    }
+
+    private Language getCaseLanguage(CaseData caseData) {
+        return Optional.ofNullable(caseData.getC110A().getLanguageRequirementApplication()).orElse(Language.ENGLISH);
     }
 
     private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
@@ -442,6 +533,17 @@ public class UploadAdditionalApplicationsService {
             errors.add("Please upload a draft order to proceed");
         }
 
+        if (!isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle())
+            && eventData.getTemporaryC2Document().getDraftOrdersBundle().size() > 1 && !userService.isCtscUser()) {
+            errors.add("Please upload only a single draft order to proceed");
+        }
+
         return errors;
+    }
+
+    public String formatChildSelector(DynamicMultiSelectList childSelector) {
+        return childSelector.getValue().stream()
+            .map(childName -> String.join(" ", childName.getLabel()))
+            .collect(Collectors.joining("\n"));
     }
 }

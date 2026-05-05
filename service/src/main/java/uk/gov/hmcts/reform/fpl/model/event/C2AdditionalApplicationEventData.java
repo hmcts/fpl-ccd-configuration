@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.json.serializer.YesNoSerializer;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
 
 @Getter
 @Jacksonized
@@ -21,6 +22,8 @@ public class C2AdditionalApplicationEventData extends C2DocumentBundle {
     @Temp
     @JsonSerialize(using = YesNoSerializer.class)
     private YesNo isHearingAdjournmentRequired;
+    @Temp
+    DynamicMultiSelectList childSelectorForApplication;
 
     @JsonIgnore
     public C2DocumentBundle toC2DocumentBundle() {
