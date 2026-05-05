@@ -64,7 +64,10 @@ test.describe('send and reply message', () => {
             await expect(judicialMessages.page.getByText('To legal adviser - Regard Hearing assistance')).toBeVisible();
             await expect(judicialMessages.page.getByText('Open', {exact: true})).toBeVisible();
             await judicialMessages.expandMessageDetails('CTSC');
-            await expect(judicialMessages.page.getByText((sendDate))).toHaveCount(2);
+            await expect( judicialMessages.page.locator('table[aria-describedby="complex field table"]')
+                .locator('tbody').locator('tr')
+                .filter({hasText: 'Date sent'})
+                .locator('td')).toContainText(sendDate);
             await expect(page.getByText('Hearing needs assistance from legal adviser.')).toHaveCount(2);
 
         });
