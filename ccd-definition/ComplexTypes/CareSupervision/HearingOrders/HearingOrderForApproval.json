@@ -48,6 +48,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingOrderForApproval",
+    "ListElementCode": "orderRemoved",
+    "FieldType": "Document",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public",
+    "CategoryID": "draftOrdersRemoved"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForApproval",
     "ListElementCode": "hearing",
     "FieldType": "Text",
     "ElementLabel": "Hearing",
