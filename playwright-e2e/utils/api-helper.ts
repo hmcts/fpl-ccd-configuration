@@ -286,6 +286,11 @@ export async function assignAMJudicialRole(caseID: string, judicialUser: { email
         if (response.statusText() === 'Created' || response.status() === 201) {
             return true
         }
+        else
+        {
+           console.log('Failed to assign AM judicial role:' +  response.statusText() + ' ' + response.status() );
+            return false
+        }
         // handle response if needed
     } catch (error) {
         console.error('POST request failed:', error);

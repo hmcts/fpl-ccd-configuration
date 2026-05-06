@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
@@ -53,9 +54,11 @@ public class ApplicationsFeeCalculator {
     private final FeeService feeService;
 
     public Map<String, Object> calculateFee(CaseData caseData) {
+        UploadAdditionalApplicationsEventData eventData =
+            caseData.getUploadAdditionalApplicationsEventData();
 
-        if (isAllApplicationsSpecified(caseData.getAdditionalApplicationType())) {
-            if (isAllApplicationsUploaded(caseData)) {
+        if (isAllApplicationsSpecified(eventData.getAdditionalApplicationType())) {
+            if (isAllApplicationsUploaded(eventData)) {
                 return calculateAdditionalApplicationsFee(caseData);
             }
             return emptyMap();
@@ -77,17 +80,18 @@ public class ApplicationsFeeCalculator {
         return applicationTypes.containsAll(asList(AdditionalApplicationType.values()));
     }
 
-    private boolean isAllApplicationsUploaded(CaseData caseData) {
-        return caseData.getTemporaryOtherApplicationsBundle() != null
-            && caseData.getTemporaryOtherApplicationsBundle().getDocument() != null;
+    private boolean isAllApplicationsUploaded(UploadAdditionalApplicationsEventData eventData) {
+        return eventData.getTemporaryOtherApplicationsBundle() != null
+            && eventData.getTemporaryOtherApplicationsBundle().getDocument() != null;
     }
 
     private Map<String, Object> calculateAdditionalApplicationsFee(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
 
         try {
-            final List<FeeType> feeTypes = getFeeTypes(caseData.getTemporaryC2Document(),
-                caseData.getTemporaryOtherApplicationsBundle());
+            final List<FeeType> feeTypes = getFeeTypes(eventData.getTemporaryC2Document(),
+                eventData.getTemporaryOtherApplicationsBundle());
             log.info("feeTypes lookup {} ", feeTypes);
             final FeesData feesData = feeService.getFeesDataForAdditionalApplications(feeTypes);
 
