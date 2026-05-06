@@ -163,6 +163,18 @@ class FeatureToggleServiceTest {
             eq(true));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsCaseFlagsEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isCaseFlagsEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("case-flags-enabled"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(true));
+    }
+
     @Nested
     class CafcassAPIFeatureFlag {
         private static final LDValue CAFCASS_API_ENABLED =
