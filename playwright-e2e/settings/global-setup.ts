@@ -1,12 +1,11 @@
 import { test as setup } from '@playwright/test';
-import {getAccessToken} from "../utils/api-helper";
-import {cafcassAPIUser, systemUpdateUser,newSwanseaLocalAuthorityUserOne} from "./user-credentials";
+import { getAccessToken } from "../utils/api-helper";
+import { newSwanseaLocalAuthorityUserOne, systemUpdateUser } from "./user-credentials";
 import { getDocParameter } from '../utils/api-helper';
 
 const userMap: Record<string, any> = {
     [newSwanseaLocalAuthorityUserOne.email]: newSwanseaLocalAuthorityUserOne,
     [systemUpdateUser.email]: systemUpdateUser,
-    [cafcassAPIUser.email]: cafcassAPIUser,
 };
 setup.describe.configure({ mode: 'serial' });
 
@@ -34,4 +33,3 @@ setup('document parameters', async () => {
         throw error;
     }
 });
-
