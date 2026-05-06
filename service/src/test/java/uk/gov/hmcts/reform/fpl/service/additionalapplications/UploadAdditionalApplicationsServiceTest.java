@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
-import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -62,7 +61,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -266,6 +264,20 @@ class UploadAdditionalApplicationsServiceTest {
             .additionalApplicationType(List.of(OTHER_ORDER))
             .applicantsList(applicantsList)
             .otherApplicant(otherApplicantName)
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Applicant should not be empty");
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenApplicantListIsEmpty() {
+        DynamicList applicantsList = DynamicList.builder().build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(OTHER_ORDER))
+            .applicantsList(applicantsList)
             .build();
 
         assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
@@ -534,7 +546,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionIfUserNotFoundForAllocatedJudgeOrLegalAdvisor() {
+    void shouldReturnGenericTaskForAllocatedJudgeOrLegalAdvisorWithWrongAmRole() {
         Judge allocatedJudge = Judge.builder()
             .judgeJudicialUser(JudicialUser.builder()
                 .idamId("1234")
@@ -550,10 +562,26 @@ class UploadAdditionalApplicationsServiceTest {
         when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
             .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-judge").build()));
 
-        UserLookupException thrownException = assertThrows(UserLookupException.class,
-            () -> underTest.getAllocatedJudgeOrLegalAdviserType(caseData));
-        assertThat(thrownException.getMessage())
-            .contains("Allocated judge or legal adviser has invalid am role for case id: 1234");
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
+    }
+
+    @Test
+    void shouldReturnGenericTaskForAllocatedJudgeOrLegalAdvisorWhenInvalidJrdUser() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .id(1234L)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
     }
 
     @Test
@@ -735,6 +763,19 @@ class UploadAdditionalApplicationsServiceTest {
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
+        }
+
+        @Test
+        void shouldSealOtherDocumentIgnoringNullSupplements() {
+            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(null)
+                .build();
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
+
+            assertThat(converted.getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
+            assertThat(converted.getSupplementsBundle()).isEmpty();
         }
 
         @Test

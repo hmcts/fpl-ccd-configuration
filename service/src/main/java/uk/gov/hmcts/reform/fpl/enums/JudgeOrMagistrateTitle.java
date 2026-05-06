@@ -6,6 +6,8 @@ import lombok.Getter;
 public enum JudgeOrMagistrateTitle {
     HER_HONOUR_JUDGE("Her Honour Judge"),
     HIS_HONOUR_JUDGE("His Honour Judge"),
+    CIRCUIT_JUDGE_SITTING_IN_RETIRE("Circuit Judge (sitting in retirement)"),
+    DISTRICT_JUDGE_SITTING_IN_RETIRE("District Judge (sitting in retirement)"),
     DISTRICT_JUDGE("District Judge"),
     DEPUTY_DISTRICT_JUDGE("Deputy District Judge"),
     DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT("District Judge Magistrates Court"),
