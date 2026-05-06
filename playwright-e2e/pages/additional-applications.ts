@@ -41,10 +41,15 @@ export class AdditionalApplications extends BasePage {
     private waitUntilNextHearing: Locator;
     private supplementDocument: Locator;
     private applicantName: Locator;
+    private C2applicationPermissionType: Locator;
+    private C2RelatedToAllChildren: Locator;
+    private C2applicationDetails: any;
+    c2applicationPage: Page ;
 
 
     public constructor(page: Page) {
         super(page);
+        this.c2applicationPage = page;
         this.otherSpecificOrder = page.getByText('Other specific application -');
         this.c2Order = page.getByRole('checkbox', {name: 'C2 Application'});
         this.confidentialC2Order = page.getByLabel('Yes')
@@ -87,6 +92,9 @@ export class AdditionalApplications extends BasePage {
         this.adjournHearing = page.getByRole('group', {name: 'Are you requesting an adjournment for a scheduled hearing?'});
         this.waitUntilNextHearing = page.getByRole('group', {name: 'Can your application wait to be considered at the next scheduled hearing? '});
         this.supplementDocument = page.locator('#temporaryC2Document_supplementsBundle');
+        this.C2applicationPermissionType = page.getByRole('group', {name: 'Do you need permission to make this application?'});
+        this.C2RelatedToAllChildren = page.getByRole('group', {name: 'Does this application relate to all children in the case?'});
+        this.C2applicationDetails =page.getByLabel('What is your application about?');
 
     }
 
@@ -326,5 +334,35 @@ export class AdditionalApplications extends BasePage {
         await this.fillC2ApplicationDetails(uploadDraftOrder);
         await this.payForApplication(PBAnumber);
         await this.checkYourAnsAndSubmit();
+    }
+    public async selectPermissionC2PermissionType(permissionType: string) {
+        await this.C2applicationPermissionType.getByRole('radio', {name: permissionType}).click();
+    }
+
+    public async selectC2RelatedToAllChildren(YesNo: string,childNames: string[]) {
+        await this.C2RelatedToAllChildren.getByRole('radio', {name: YesNo}).click();
+        if(YesNo == 'No'){
+            for (const childName of childNames) {
+                await this.page.getByRole('checkbox', {name: childName}).click();
+            }
+        }
+    }
+
+    async enterC2ApplicationDetails() {
+        await expect.soft(this.page.getByText('Give a brief description of what you are applying for and your reason for making the application')).toBeVisible()
+        await this.C2applicationDetails.fill('The C2 application for the taking the gaurdian ship of the chidren')
+    }
+
+    async checkStatementOfTruth() {
+        await expect.soft(this.page.getByText('I understand that proceedings for contempt of court may be brought against anyone who makes, or causes to be made, a false statement in a document verified by a statement of truth')).toBeVisible();
+        await this.page.getByRole('checkbox', { name: 'I believe that the facts' }).check();
+    }
+
+    async openC2Application(docName: string) {
+
+        const newPagePromise = this.page.context().waitForEvent('page');
+        await this.page.getByRole('button', { name: `${docName}` }).click();
+        this.c2applicationPage = await newPagePromise;
+        await this.c2applicationPage.waitForLoadState();
     }
 }

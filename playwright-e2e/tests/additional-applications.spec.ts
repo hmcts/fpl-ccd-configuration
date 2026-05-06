@@ -470,6 +470,51 @@ test.describe('Upload additional applications', () => {
 
 
     });
+    test('Respondent solicitor submit C2 online application',async ({
+                                                                        page,
+                                                                        signInPage,
+                                                                        additionalApplications,
+                                                                        caseFileView,
+                                                                        envDataConfig
+                                                                    }) => {
+
+        caseName = 'C2 Online application by Respondent solicitor ' + dateTime.slice(0, 10);
+        expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
+        expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
+       // expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
+        await signInPage.visit();
+        await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await additionalApplications.gotoNextStep('Upload additional applications');
+        await additionalApplications.selectApplicationType('C2 Application');
+        await additionalApplications.selectC2FormType('Apply online');
+        await additionalApplications.giveC2AppConsent('No');
+        await additionalApplications.isC2AppConfidential('Yes');
+        await additionalApplications.selectWhoMakeApplication('Charlie Respondent, Respondent 1');
+        await additionalApplications.clickContinue();
+        await additionalApplications.selectPermissionC2PermissionType('Permission already granted');
+        await additionalApplications.selectC2RelatedToAllChildren('No',['Child katie']);
+        await additionalApplications.enterC2ApplicationDetails();
+        await additionalApplications.isC2ApplicationHasSafeguardRisk('Yes', 'Urgent');
+        await additionalApplications.IsC2ToAdjournHearing('No');
+        await additionalApplications.canC2AppWaitUntilNextHearing('Yes');
+        await additionalApplications.uploadC2DraftOrder('0', 'Draft order one');
+        await additionalApplications.checkStatementOfTruth();
+        await additionalApplications.clickContinue();
+        await additionalApplications.payForApplication(envDataConfig.privateSolicitorOrgPBA);
+        await additionalApplications.checkYourAnsAndSubmit();
+        await expect(additionalApplications.page.getByText('with event: Upload additional applications')).toBeVisible();
+        await additionalApplications.tabNavigation('Other applications');
+        await expect(additionalApplications.page.getByText('Charlie Respondent, Respondent 1')).toBeVisible();
+        await expect(additionalApplications.page.getByRole('button', { name: 'C2_APPLICATION.pdf' })).toBeVisible();
+        await additionalApplications.openC2Application('C2_APPLICATION.pdf');
+        await expect(additionalApplications.c2applicationPage.getByText('For permission to start proceedings')).toBeVisible();
+        await expect(additionalApplications.c2applicationPage.getByText('For an order or directions in existing proceedings')).toBeVisible();
+        await expect(additionalApplications.c2applicationPage.getByText('To be joined as, or ceased to be, a party in existing family proceedings')).toBeVisible();
+        await expect(additionalApplications.c2applicationPage.getByText('under the Children Act 1989')).toBeVisible();
+        await expect(additionalApplications.c2applicationPage.getByText('I, Charlie Respondent believe that the facts stated in this application are true.')).toBeVisible();
+
+    });
     test('Child solicitor submit paper C2 and other application together', async ({
                                                                                       page,
                                                                                       signInPage,
