@@ -55,6 +55,7 @@ public class ConfirmApplicationReviewedEventData {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
             "additionalApplicationToBeReviewedList",
+            "approveAdditionalAppRouter",
             "hasC2ToBeReview", "hasOtherToBeReview",
             "c2AdditionalApplicationToBeReview",
             "otherAdditionalApplicationToBeReview",

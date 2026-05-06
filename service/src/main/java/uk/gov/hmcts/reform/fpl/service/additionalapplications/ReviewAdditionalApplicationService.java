@@ -47,7 +47,7 @@ public class ReviewAdditionalApplicationService {
             } else if (applicationsBundlesToBeReviewed.size() == 1) {
                 resultMap.put(ONLY_ONE_APPLICATION, YES);
                 resultMap.putAll(initReviewFieldsForSelectedBundle(applicationsBundlesToBeReviewed
-                    .getFirst().getValue()));
+                    .get(0).getValue()));
             }
         }
 
