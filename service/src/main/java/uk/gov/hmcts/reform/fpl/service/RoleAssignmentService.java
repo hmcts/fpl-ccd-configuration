@@ -290,19 +290,17 @@ public class RoleAssignmentService {
         }
     }
 
-    @Retryable(retryFor = {FeignException.class}, label = "Fetch case role assignments for user")
-    public Set<String> getJudicialCaseRolesForUserAtTime(String userId, Long caseId, ZonedDateTime time) {
+    public Set<String> getCaseRolesForUserAtTime(String userId, Long caseId, ZonedDateTime time,
+                                                 List<String> roleNames) {
         String systemUserToken = systemUserService.getSysUserToken();
         QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
             QueryRequest.builder()
                 .actorId(List.of(userId))
                 .attributes(Map.of(CASE_ID, List.of(caseId.toString())))
-                .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
-                    HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
+                .roleName(roleNames)
                 .validAt(getDateTimeInUtc(time))
                 .build()
         );
-
         if (isNotEmpty(resp.getRoleAssignmentResponse())) {
             return resp.getRoleAssignmentResponse().stream()
                 .map(RoleAssignment::getRoleName)
@@ -312,7 +310,17 @@ public class RoleAssignmentService {
         }
     }
 
-    @Retryable(value = {FeignException.class}, label = "Fetch judicial case role assignments at time")
+    @Retryable(retryFor = {FeignException.class}, label = "Fetch case role assignments for user")
+    public Set<String> getJudicialCaseRolesForUserAtTime(String userId, Long caseId, ZonedDateTime time) {
+        return getCaseRolesForUserAtTime(userId, caseId, time, List.of(
+            HEARING_JUDGE.getRoleName(),
+            ALLOCATED_JUDGE.getRoleName(),
+            HEARING_LEGAL_ADVISER.getRoleName(),
+            ALLOCATED_LEGAL_ADVISER.getRoleName()
+        ));
+    }
+
+    @Retryable(retryFor = {FeignException.class}, label = "Fetch judicial case role assignments at time")
     public List<RoleAssignment> getJudicialCaseRolesAtTime(Long caseId, ZonedDateTime time) {
         String systemUserToken = systemUserService.getSysUserToken();
         QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),

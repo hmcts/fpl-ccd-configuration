@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static java.util.Objects.isNull;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 
 @Slf4j
@@ -38,6 +40,10 @@ public class NoticeOfChangeService {
             .orElseThrow(() -> new IllegalStateException(String.format("Could not find %s event in audit", NOC_EVENT)));
 
         UserDetails solicitor = userService.getUserDetailsById(auditEvent.getUserId());
+
+        if (isThirdPartyNoCRequest(caseData)) {
+            return updateRepresentationService.updateRepresentationThirdPartyOutsourcing(caseData, solicitor);
+        }
 
         return updateRepresentationService.updateRepresentation(caseData, solicitor);
     }
@@ -67,7 +73,13 @@ public class NoticeOfChangeService {
 
             log.info("Representation change applied {}", changeRequest);
         }
-
     }
 
+    public boolean isThirdPartyNoCRequest(CaseData caseData) {
+        ChangeOrganisationRequest nocRequest = caseData.getChangeOrganisationRequestField();
+        if (isNull(nocRequest)) {
+            throw new IllegalStateException("ChangeOrganisationRequestField is required");
+        }
+        return nocRequest.getCaseRoleId().getValue().getCode().equals(APPSOLICITOR.formattedName());
+    }
 }
