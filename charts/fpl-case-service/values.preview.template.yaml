@@ -99,6 +99,7 @@ xui-webapp:
           - mc-idam-client-secret
           - system-user-name
           - system-user-password
+          - mc-session-secret
 ccd:
   ccd:
     adminWeb:

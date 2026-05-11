@@ -18,8 +18,8 @@ provider "azurerm" {
 provider "azurerm" {
   features {}
   resource_provider_registrations = "none"
-  alias                      = "postgres_network"
-  subscription_id            = var.aks_subscription_id
+  alias                           = "postgres_network"
+  subscription_id                 = var.aks_subscription_id
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -69,6 +69,12 @@ module "key-vault" {
   product_group_name      = "dcd_group_fpl_v2"
   common_tags             = var.common_tags
   create_managed_identity = true
+  jenkins_object_id       = data.azurerm_user_assigned_identity.jenkins.principal_id
+}
+
+data "azurerm_user_assigned_identity" "jenkins" {
+  name                = "jenkins-${var.env}-mi"
+  resource_group_name = "managed-identities-${var.env}-rg"
 }
 
 module "fpl-scheduler-postgres-v15-flexible-server" {
