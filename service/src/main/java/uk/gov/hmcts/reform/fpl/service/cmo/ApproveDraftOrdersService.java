@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -227,6 +229,15 @@ public class ApproveDraftOrdersService {
         return caseData.getDraftUploadedCMOs().stream()
             .filter(cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE))
             .collect(toList());
+    }
+
+    public Optional<UUID> getSelectedHearingDraftOrderId(CaseData caseData) {
+        try {
+            return Optional.ofNullable(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData)
+                .getValue().getHearingId());
+        } catch (HearingOrdersBundleNotFoundException e) {
+            return Optional.empty();
+        }
     }
 
     public Element<HearingOrdersBundle> getSelectedHearingDraftOrdersBundle(CaseData caseData) {

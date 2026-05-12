@@ -94,12 +94,16 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         if (errors.isEmpty()) {
             data.remove("judgeType");
+            data.remove("selectedHearingIdDraft");
             CaseDetailsHelper.removeTemporaryFields(caseDetails, previewApprovedOrderFields());
             if ((caseData.getReviewDraftOrdersData() != null
                 && caseData.getReviewDraftOrdersData().hasADraftBeenApprovedWithoutChanges())) {
                 try {
                     if (judicialService.isCurrentUserFeePaidJudge()) {
                         data.put("judgeType", FEE_PAID_JUDGE);
+                        data.put("selectedHearingIdDraft", approveDraftOrdersService
+                            .getSelectedHearingDraftOrderId(caseData).isPresent() ?
+                            approveDraftOrdersService.getSelectedHearingDraftOrderId(caseData).get() : null);
                     } else {
                         // Salaried Judge route - automatically populate judge title and name
                         data.putAll(approveDraftOrdersService.previewOrderWithCoverSheet(caseData.toBuilder()
@@ -114,6 +118,9 @@ public class ApproveDraftOrdersController extends CallbackController {
                     // this also applies to any other user without a profile, e.g. gatekeeper, superuser
                     log.error("Fail to get judge title and name. Entering Legal advisor route", e);
                     data.put("judgeType", LEGAL_ADVISOR);
+                    data.put("selectedHearingIdDraft", approveDraftOrdersService
+                        .getSelectedHearingDraftOrderId(caseData).isPresent() ?
+                        approveDraftOrdersService.getSelectedHearingDraftOrderId(caseData).get() : null);
                 }
             }
         }
