@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
@@ -20,11 +18,9 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
-import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -253,11 +249,11 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
     void shouldReturnNullIfOrderHasNoHearingId() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
-        Element<HearingOrder> draftOrder1 = element(HearingOrder.builder().title("Draft C21 Order 1").
-            type(HearingOrderType.C21).hearing("Hearing 1").status(SEND_TO_JUDGE).build());
+        Element<HearingOrder> draftOrder1 = element(HearingOrder.builder().title("Draft C21 Order 1")
+            .type(HearingOrderType.C21).hearing("Hearing 1").status(SEND_TO_JUDGE).build());
 
-        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(hearingOrdersBundleId,
-            newArrayList(draftOrder1));
+        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
+            hearingOrdersBundleId, newArrayList(draftOrder1));
 
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
