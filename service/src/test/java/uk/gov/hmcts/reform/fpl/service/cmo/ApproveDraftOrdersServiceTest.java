@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
@@ -737,6 +738,29 @@ class ApproveDraftOrdersServiceTest {
             .willReturn(ordersBundle);
 
         assertThat(underTest.getSelectedHearingDraftOrderId(caseData)).isEqualTo(Optional.of(selectedHearingId));
+    }
+
+    @Test
+    void shouldReturnExceptionWhenNoHearingId() {
+        UUID selectedHearingOrdersBundleId = UUID.randomUUID();
+
+        Element<HearingOrder> draftOrder1 = element(HearingOrder.builder()
+            .title("Draft C21 Order 1").type(HearingOrderType.C21).hearing("Hearing 1").status(SEND_TO_JUDGE).build());
+
+        Element<HearingOrdersBundle> ordersBundle = element(selectedHearingOrdersBundleId, HearingOrdersBundle
+            .builder().orders(new ArrayList<>((List.of(draftOrder1)))).build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(ordersBundle))
+            .selectedHearingId(selectedHearingOrdersBundleId)
+            .allocateJudgeEventData(new AllocateJudgeEventData(LEGAL_ADVISOR, null, null,
+                Judge.builder().judgeFullName("Judge John").build())).build();
+
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willThrow(new HearingOrdersBundleNotFoundException("Could not find hearing draft orders bundle with id"
+                + UUID.randomUUID()));
+
+        assertThat(underTest.getSelectedHearingDraftOrderId(caseData)).isEqualTo(Optional.empty());
     }
 
     @Test
