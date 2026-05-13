@@ -46,11 +46,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -81,6 +77,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.EMPTY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -715,6 +712,29 @@ class ApproveDraftOrdersServiceTest {
     }
 
     @Test
+    void shouldReturnSelectedDraftOrderHearingId() {
+        UUID selectedHearingOrdersBundleId = UUID.randomUUID();
+        UUID selectedHearingId = UUID.randomUUID();
+
+        Element<HearingOrder> draftOrder1 = element(HearingOrder.builder().hearingId(selectedHearingId)
+            .title("Draft C21 Order 1").type(HearingOrderType.C21).hearing("Hearing 1").status(SEND_TO_JUDGE).build());
+
+        Element<HearingOrdersBundle> ordersBundle = element(selectedHearingOrdersBundleId, HearingOrdersBundle
+            .builder().hearingId(selectedHearingId).orders(new ArrayList<>((List.of(draftOrder1)))).build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(ordersBundle))
+            .selectedHearingId(selectedHearingOrdersBundleId)
+            .allocateJudgeEventData(new AllocateJudgeEventData(LEGAL_ADVISOR, null, null,
+                Judge.builder().judgeFullName("Judge John").build())).build();
+
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willReturn(ordersBundle);
+
+        assertThat(underTest.getSelectedHearingDraftOrderId(caseData)).isEqualTo(Optional.of(selectedHearingId));
+    }
+
+    @Test
     void shouldGetLatestSealedCMOFromSealedCMOsList() {
         Element<HearingOrder> cmo1 = agreedCMO(HEARING_1);
         Element<HearingOrder> cmo2 = agreedCMO(HEARING_2);
@@ -865,7 +885,7 @@ class ApproveDraftOrdersServiceTest {
 
     @Test
     void shouldReturnLegalNameFromMaunalInput() {
-        AllocateJudgeEventData eventData = new AllocateJudgeEventData(JudgeType.LEGAL_ADVISOR,
+        AllocateJudgeEventData eventData = new AllocateJudgeEventData(LEGAL_ADVISOR,
             JudgeOrMagistrateTitle.RECORDER, null, Judge.builder().judgeFullName("Legal Advisor John Smith").build());
 
         CaseData caseData = CaseData.builder()
