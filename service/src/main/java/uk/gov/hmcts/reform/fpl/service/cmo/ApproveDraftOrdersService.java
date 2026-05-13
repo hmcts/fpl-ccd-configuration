@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
@@ -459,7 +458,8 @@ public class ApproveDraftOrdersService {
 
     private Map<String, Object> removeDraftOrders(CaseData caseData,
                                                   List<Element<HearingOrder>> draftOrdersToBeRemoved) {
-        List<Element<HearingOrder>> draftOrdersRemoved = getIfNull(caseData.getDraftOrdersRemoved(), newArrayList());
+        List<Element<HearingOrder>> draftOrdersRemoved = defaultIfNull(caseData.getDraftOrdersRemoved(),
+            newArrayList());
 
         if (!isEmpty(draftOrdersToBeRemoved)) {
             draftOrdersRemoved.addAll(
