@@ -59,13 +59,12 @@ public class ReviewAdditionalApplicationService {
     public Map<String, Object> initReviewFieldsForSelectedBundle(AdditionalApplicationsBundle bundle) {
         HashMap<String, Object> resultMap = new HashMap<>();
 
-        C2DocumentBundle c2ToBeReviewed = (YES.equals(bundle.getHasConfidentialC2()))
-            ? bundle.getC2DocumentBundleConfidential() : bundle.getC2DocumentBundle();
+        C2DocumentBundle c2ToBeReviewed = getRelevantC2DocumentBundle(bundle);
         if (!isEmpty(c2ToBeReviewed)) {
             resultMap.put("hasC2ToBeReview", YES);
             // TODO: check what happens if there's more than one draft order
-            DocumentReference documentReference = isEmpty(bundle.getC2DocumentBundle()) ? null : bundle
-                .getC2DocumentBundle().getDraftOrdersBundle().getFirst().getValue().getDocument();
+            DocumentReference documentReference = (isEmpty(c2ToBeReviewed.getDraftOrdersBundle())) ? null :
+                c2ToBeReviewed.getDraftOrdersBundle().getFirst().getValue().getDocument();
 
             resultMap.put("uploadedDraftOrder", documentReference);
             resultMap.put("c2AdditionalApplicationToBeReview", C2AdditionalApplicationEventData.builder()
@@ -97,6 +96,13 @@ public class ReviewAdditionalApplicationService {
             resultMap.put("hasOtherToBeReview", NO);
         }
         return resultMap;
+    }
+
+    private C2DocumentBundle getRelevantC2DocumentBundle(AdditionalApplicationsBundle bundle) {
+        if (YES.equals(bundle.getHasConfidentialC2()) && !isEmpty(bundle.getC2DocumentBundleConfidential())) {
+            return bundle.getC2DocumentBundleConfidential();
+        }
+        return bundle.getC2DocumentBundle();
     }
 
     private List<Element<AdditionalApplicationsBundle>> getApplicationsToBeReviewed(CaseData caseData) {

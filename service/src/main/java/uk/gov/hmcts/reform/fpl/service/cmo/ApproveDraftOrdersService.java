@@ -315,11 +315,6 @@ public class ApproveDraftOrdersService {
             orderCollection.add(generatedBlankOrder);
         }
         data.put("orderCollection", orderCollection);
-        List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((List<Element<HearingOrder>>)
-            data.get(ORDERS_TO_BE_SENT), newArrayList());
-        ordersToBeSent.add(reviewedOrder);
-        data.put(ORDERS_TO_BE_SENT, ordersToBeSent);
-        selectedOrdersBundle.getValue().removeOrderElement(orderElement);
     }
 
     public void approveAndSealDraftOrder(
@@ -332,10 +327,16 @@ public class ApproveDraftOrdersService {
         Element<HearingOrder> orderElement = selectedOrdersBundle.getValue().getOrders().stream()
             .filter(order -> order.getId().equals(draftOrderId))
             .findFirst()
-            .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
-                "No HearingOrder found with element id: " + draftOrderId
-            ));
+            .orElseGet(() ->
+                selectedOrdersBundle.getValue().getOrdersCTSC().stream()
+                    .filter(order -> order.getId().equals(draftOrderId))
+                    .findFirst()
+                    .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                        "No HearingOrder found with element id: " + draftOrderId
+                    ))
+            );
         doApproveAndSealDraftOrder(caseData, data, selectedOrdersBundle, orderElement, reviewDecision);
+        selectedOrdersBundle.getValue().removeOrderElement(orderElement);
     }
 
     private <T> Map<String, List<Element<T>>> addToConfidentialOrderBundle(Element<HearingOrdersBundle>
@@ -468,6 +469,5 @@ public class ApproveDraftOrdersService {
         }
         return data;
     }
-
 
 }

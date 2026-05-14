@@ -107,7 +107,11 @@ public class ReviewAdditionalApplicationController extends CallbackController {
 
         CaseData caseData = getCaseData(caseDetails);
 
-        MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName());
+        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+        boolean isConfidential = eventData.getC2AdditionalApplicationToBeReview().confidentialApplication
+            .equals("Yes - only HMCTS will be able to view this application");
+
+        MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName(), isConfidential);
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(markdownData.getHeader())
@@ -127,15 +131,23 @@ public class ReviewAdditionalApplicationController extends CallbackController {
 
         Element<DraftOrder> draftOrder = bundle.getDraftOrdersBundle().getFirst();
 
+        boolean isConfidential = eventData.getC2AdditionalApplicationToBeReview().confidentialApplication
+            .equals("Yes - only HMCTS will be able to view this application");
+
         Element<HearingOrdersBundle> bundleFromDraftOrder = caseData.getHearingOrdersBundlesDrafts().stream()
-        .filter(bundleElement ->
-            bundleElement.getValue().getOrders().stream()
-                .anyMatch(orderElement -> orderElement.getId().equals(draftOrder.getId()))
-        )
-        .findFirst()
-        .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
-            "No HearingOrdersBundle found containing order with element id: " + draftOrder.getId()
-        ));
+            .filter(bundleElement -> {
+                if (isConfidential) {
+                    return bundleElement.getValue().getOrdersCTSC().stream()
+                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrder.getId()));
+                } else {
+                    return bundleElement.getValue().getOrders().stream()
+                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrder.getId()));
+                }
+            })
+            .findFirst()
+            .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                "No HearingOrdersBundle found containing order with element id: " + draftOrder.getId()
+            ));
 
         switch (caseData.getApproveAdditionalAppRouter()) {
             case APPROVE_APPLICATION_AND_ORDER: {

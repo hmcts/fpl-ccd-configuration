@@ -22,7 +22,7 @@ public class C2AdditionalApplicationEventData extends C2DocumentBundle {
 
     // Review application fields
     @Temp
-    String confidentialApplication;
+    public String confidentialApplication;
 
     @JsonIgnore
     public C2DocumentBundle toC2DocumentBundle() {

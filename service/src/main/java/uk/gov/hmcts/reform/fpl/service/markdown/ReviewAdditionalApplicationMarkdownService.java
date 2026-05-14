@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.REVIEW_ADDITIONAL_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.REVIEW_ADDITIONAL_APPLICATION_CONFIDENTIAL;
 
 @Service
 public class ReviewAdditionalApplicationMarkdownService extends MarkdownSubstitutionService {
@@ -21,12 +22,13 @@ public class ReviewAdditionalApplicationMarkdownService extends MarkdownSubstitu
         super(mapper);
     }
 
-    public MarkdownData getMarkdownData(String caseName) {
+    public MarkdownData getMarkdownData(String caseName, boolean isConfidential) {
         ReviewAdditionalApplicationSubstitutionData substitutionData = ReviewAdditionalApplicationSubstitutionData.builder()
             .caseName(defaultString(caseName))
             .build();
 
-        return generateMarkdown(REVIEW_ADDITIONAL_APPLICATION, substitutionData);
+        return generateMarkdown(isConfidential ? REVIEW_ADDITIONAL_APPLICATION_CONFIDENTIAL :
+            REVIEW_ADDITIONAL_APPLICATION, substitutionData);
     }
 
     @Override
