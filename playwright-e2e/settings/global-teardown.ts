@@ -22,10 +22,10 @@ teardown('delete AM Role', async ({ }) => {
 
     userIds = await fetchOrganisationUsers('W9V61CP', fplServiceAuthToken);
 
-    recordsFetched = await queryRoleAssignments(userIds, roleAssignments, validAt, userBearerToken?.data.access_token, CCDServiceAuthToken);
+    recordsFetched = await queryRoleAssignments(userIds, roleAssignments, validAt, userBearerToken, CCDServiceAuthToken);
 
     if (recordsFetched != '0') {
-        deleted = await deleteRoleAssignments(userIds, roleAssignments, validAt, userBearerToken?.data.access_token, CCDServiceAuthToken);
+        deleted = await deleteRoleAssignments(userIds, roleAssignments, validAt, userBearerToken, CCDServiceAuthToken);
     } else {
         console.log('There are no role assignments to delete');
     }
