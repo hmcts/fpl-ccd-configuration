@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -195,7 +196,7 @@ class ReviewAdditionalApplicationServiceTest {
             .childrenOnApplication(c2ToBeReviewed.getChildrenOnApplication())
             .applicationSummary(c2ToBeReviewed.getApplicationSummary())
             .hasSafeguardingRisk(c2ToBeReviewed.getHasSafeguardingRisk())
-            .isHearingAdjournmentRequired(c2ToBeReviewed.getIsHearingAdjournmentRequired())
+            .isHearingAdjournmentRequired(isEmpty(c2ToBeReviewed.getRequestedHearingToAdjourn()) ? NO : YES)
             .requestedHearingToAdjourn(c2ToBeReviewed.getRequestedHearingToAdjourn())
             .canBeConsideredAtNextHearing(c2ToBeReviewed.getCanBeConsideredAtNextHearing())
             .draftOrdersBundle(c2ToBeReviewed.getDraftOrdersBundle())

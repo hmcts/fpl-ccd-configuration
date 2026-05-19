@@ -73,7 +73,7 @@ public class ReviewAdditionalApplicationService {
                 .childrenOnApplication(c2ToBeReviewed.getChildrenOnApplication())
                 .applicationSummary(c2ToBeReviewed.getApplicationSummary())
                 .hasSafeguardingRisk(c2ToBeReviewed.getHasSafeguardingRisk())
-                .isHearingAdjournmentRequired(c2ToBeReviewed.getIsHearingAdjournmentRequired())
+                .isHearingAdjournmentRequired(isEmpty(c2ToBeReviewed.getRequestedHearingToAdjourn()) ? NO : YES)
                 .requestedHearingToAdjourn(c2ToBeReviewed.getRequestedHearingToAdjourn())
                 .canBeConsideredAtNextHearing(c2ToBeReviewed.getCanBeConsideredAtNextHearing())
                 .draftOrdersBundle(c2ToBeReviewed.getDraftOrdersBundle())
