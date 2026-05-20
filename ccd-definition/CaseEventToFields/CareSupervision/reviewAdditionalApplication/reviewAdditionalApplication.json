@@ -83,6 +83,19 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "judgeNameAndTitle",
+    "PageFieldDisplayOrder": 0,
+    "DisplayContext": "READONLY",
+    "PageID": 2,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "hasApplicationToBeReviewed=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
     "CaseFieldID": "c2AdditionalApplicationToBeReviewLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -201,5 +214,52 @@
     "PageID": 4,
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "addCoverSheet",
+    "PageFieldDisplayOrder": 0,
+    "DisplayContext": "READONLY",
+    "PageID": 5,
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "previewOrderLabel=\"DO_NOT_SHOW\"",
+    "PageShowCondition": "addCoverSheet=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "previewOrderLabel",
+    "DisplayContext": "READONLY",
+    "PageID": 5,
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "previewApprovedOrderTitle1",
+    "DisplayContext": "READONLY",
+    "PageID": 5,
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "previewApprovedOrder1",
+    "DisplayContext": "READONLY",
+    "PageID": 5,
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 3
   }
 ]

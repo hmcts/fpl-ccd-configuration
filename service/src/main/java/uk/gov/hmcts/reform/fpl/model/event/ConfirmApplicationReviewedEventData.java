@@ -49,7 +49,14 @@ public class ConfirmApplicationReviewedEventData {
     YesNo reviewOrderUrgency;
 
     @Temp
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    YesNo addCoverSheet;
+
+    @Temp
     DocumentReference uploadedDraftOrder;
+
+    @Temp
+    String judgeNameAndTitle;
 
     public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
@@ -59,6 +66,8 @@ public class ConfirmApplicationReviewedEventData {
             "hasC2ToBeReview", "hasOtherToBeReview",
             "c2AdditionalApplicationToBeReview",
             "otherAdditionalApplicationToBeReview",
-            "reviewOrderUrgency", "uploadedDraftOrder");
+            "reviewOrderUrgency", "uploadedDraftOrder",
+            "addCoverSheet", "previewApprovedOrder1",
+            "previewApprovedOrderTitle1", "judgeNameAndTitle");
     }
 }

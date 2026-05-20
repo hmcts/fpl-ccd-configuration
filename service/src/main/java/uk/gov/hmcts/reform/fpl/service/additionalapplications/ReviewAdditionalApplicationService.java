@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReviewAdditionalApplicationService {
     public static final String ONLY_ONE_APPLICATION = "onlyOneApplicationToBeReviewed";
+
+    private final ApproveDraftOrdersService approveDraftOrdersService;
 
     public Map<String, Object> initEventField(CaseData caseData) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -52,6 +55,8 @@ public class ReviewAdditionalApplicationService {
         }
 
         resultMap.put("reviewOrderUrgency", NO);
+        resultMap.put("addCoverSheet", NO);
+        resultMap.put("judgeNameAndTitle", approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData));
 
         return resultMap;
     }

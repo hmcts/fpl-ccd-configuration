@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
+import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkdownService;
 
 
@@ -43,6 +44,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
     private final CoreCaseDataService coreCaseDataService;
     private final ReviewAdditionalApplicationMarkdownService markdownService;
     private final ReviewAdditionalApplicationService reviewAdditionalApplicationService;
+    private final HearingOrderGenerator hearingOrderGenerator;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -72,11 +74,31 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         switch (caseData.getApproveAdditionalAppRouter()) {
-            case APPROVE_APPLICATION_AND_ORDER, APPROVE_APPLICATION_CHANGE_ORDER:
+            case APPROVE_APPLICATION_AND_ORDER:
                 caseDetails.getData().put("reviewOrderUrgency", YES);
+                caseDetails.getData().put("addCoverSheet", YES);
+
+                ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+                C2DocumentBundle bundle  = eventData.getC2AdditionalApplicationToBeReview().toC2DocumentBundle();
+
+                Element<DraftOrder> draftOrder = bundle.getDraftOrdersBundle().getFirst();
+
+                caseDetails.getData().put("previewApprovedOrder1", hearingOrderGenerator.addCoverSheet(caseData
+                        .toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+                                .judgeTitleAndName(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData))
+                            .build())
+                        .build(),
+                    draftOrder.getValue().getDocument()));
+                caseDetails.getData().put("previewApprovedOrderTitle1", String.format("Order %s",
+                    draftOrder.getValue().getTitle()));
+                break;
+            case APPROVE_APPLICATION_CHANGE_ORDER:
+                caseDetails.getData().put("reviewOrderUrgency", YES);
+                caseDetails.getData().put("addCoverSheet", NO);
                 break;
             default:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
+                caseDetails.getData().put("addCoverSheet", NO);
         }
 
         return respond(caseDetails);
@@ -96,6 +118,8 @@ public class ReviewAdditionalApplicationController extends CallbackController {
     @PostMapping("/submitted")
     public SubmittedCallbackResponse handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails oldCaseDetails = callbackRequest.getCaseDetails();
+
+        approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(getCaseData(oldCaseDetails));
 
         CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallbackWithoutChange(oldCaseDetails.getId(),
             "internal-change-approve-add-apps");
@@ -155,7 +179,9 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                     .decision(SEND_TO_ALL_PARTIES)
                     .build();
                 approveDraftOrdersService.approveAndSealDraftOrder(
-                    caseData,
+                    caseData.toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+                        .judgeTitleAndName(eventData.getJudgeNameAndTitle())
+                        .build()).build(),
                     data,
                     bundleFromDraftOrder,
                     draftOrder.getId(),
