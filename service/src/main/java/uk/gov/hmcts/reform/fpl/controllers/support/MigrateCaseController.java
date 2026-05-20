@@ -29,7 +29,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3080", this::run3249,
+        "DFPL-3249", this::run3249,
         "DFPL-3048", this::run3048,
         "DFPL-3047", this::run3047,
         "DFPL-3101", this::run3101
