@@ -18,8 +18,8 @@ provider "azurerm" {
 provider "azurerm" {
   features {}
   resource_provider_registrations = "none"
-  alias                      = "postgres_network"
-  subscription_id            = var.aks_subscription_id
+  alias                           = "postgres_network"
+  subscription_id                 = var.aks_subscription_id
 }
 
 resource "azurerm_resource_group" "rg" {
