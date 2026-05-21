@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -229,6 +230,15 @@ public class ApproveDraftOrdersService {
             .collect(toList());
     }
 
+    public Optional<UUID> getSelectedHearingDraftOrderId(CaseData caseData) {
+        try {
+            return Optional.ofNullable(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData)
+                .getValue().getHearingId());
+        } catch (HearingOrdersBundleNotFoundException e) {
+            return Optional.empty();
+        }
+    }
+
     public Element<HearingOrdersBundle> getSelectedHearingDraftOrdersBundle(CaseData caseData) {
         return draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData);
     }
@@ -268,7 +278,8 @@ public class ApproveDraftOrdersService {
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
                         caseData, reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
-                        SEND_TO_ALL_PARTIES.equals(reviewDecision.getDecision()));
+                        selectedOrdersBundle.getValue().getHearingId() != null ? false :
+                            SEND_TO_ALL_PARTIES.equals(reviewDecision.getDecision()));
 
                     Element<GeneratedOrder> generatedBlankOrder = blankOrderGenerator.buildBlankOrder(caseData,
                         selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers));
@@ -411,8 +422,8 @@ public class ApproveDraftOrdersService {
     }
 
     public Map<String, Object> previewOrderWithCoverSheet(CaseData caseData) {
-        final List<Element<HearingOrder>> draftOrders = getSelectedHearingDraftOrdersBundle(caseData)
-            .getValue().getAllOrdersAndConfidentialOrders().stream()
+        final HearingOrdersBundle orderBundles = getSelectedHearingDraftOrdersBundle(caseData).getValue();
+        final List<Element<HearingOrder>> draftOrders = orderBundles.getAllOrdersAndConfidentialOrders().stream()
             .filter(order -> !order.getValue().getType().isCmo())
             .toList();
 
@@ -427,9 +438,11 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> orderElement = draftOrders.get(i);
                 HearingOrder approvedOrder = draftOrders.get(i).getValue();
 
-                data.put("previewApprovedOrder" + labelCounter,
-                    hearingOrderGenerator.addCoverSheet(caseData, (approvedOrder.isConfidentialOrder()
-                        ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder())));
+                if (orderBundles.getHearingId() == null) {
+                    data.put("previewApprovedOrder" + labelCounter,
+                        hearingOrderGenerator.addCoverSheet(caseData, (approvedOrder.isConfidentialOrder()
+                            ? approvedOrder.getOrderConfidential() : approvedOrder.getOrder())));
+                }
                 data.put("previewApprovedOrderTitle" + labelCounter,
                     String.format("Order %d %s", (i + 1), approvedOrder.getTitle()));
                 labelCounter++;
