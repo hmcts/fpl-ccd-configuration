@@ -38,19 +38,56 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "additionalApplicationsBundleToBeReviewed",
-    "Label": "Additional Application Bundle",
-    "FieldType": "AdditionalApplicationsBundle",
+    "ID": "hasC2ToBeReview",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field in review additional application event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasOtherToBeReview",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field in review additional application event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2AdditionalApplicationToBeReviewLabel",
+    "Label": "<hr><h2>C2 additional application</h2></hr>",
+    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "confirmApplicationReviewed",
-    "Label": "Additional Application Bundle",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "ConfirmApplicationReviewedCheckBox",
+    "ID": "c2AdditionalApplicationToBeReview",
+    "Label": "C2 additional application",
+    "FieldType": "C2DocumentBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherAdditionalApplicationToBeReviewLabel",
+    "Label": "<hr><h2>Other additional application</h2></hr>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherAdditionalApplicationToBeReview",
+    "Label": " ",
+    "FieldType": "OtherApplicationsBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
