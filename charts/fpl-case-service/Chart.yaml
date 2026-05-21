@@ -24,7 +24,7 @@ dependencies:
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: xui-mo-webapp.enabled
   - name: aac-manage-case-assignment
-    version: ~0.2.22
+    version: 0.2.22
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: aac-manage-case-assignment.enabled
   - name: ccd-case-document-am-api
