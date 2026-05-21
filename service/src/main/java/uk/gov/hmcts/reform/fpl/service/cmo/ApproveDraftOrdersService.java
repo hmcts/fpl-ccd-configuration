@@ -263,6 +263,8 @@ public class ApproveDraftOrdersService {
                 && !REVIEW_LATER.equals(reviewDecision.getDecision())) {
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
                     approveAndSealDraftOrder(caseData, data, selectedOrdersBundle, orderElement.getId(), reviewDecision);
+                    ordersToBeSent = defaultIfNull((List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT),
+                        newArrayList());
                 } else {
                     Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
                         orderElement, reviewDecision.getChangesRequestedByJudge());
@@ -314,6 +316,13 @@ public class ApproveDraftOrdersService {
         } else {
             orderCollection.add(generatedBlankOrder);
         }
+
+        // Approved C21s must be included for downstream draft-order notification events.
+        List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT),
+            newArrayList());
+        ordersToBeSent.add(reviewedOrder);
+        data.put(ORDERS_TO_BE_SENT, ordersToBeSent);
+
         data.put("orderCollection", orderCollection);
     }
 
