@@ -1,0 +1,122 @@
+[
+  {
+    "CaseFieldID": "flagLauncherExternal",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabDisplayOrder": 69,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 12,
+    "DisplayContextParameter": "#ARGUMENT(READ,EXTERNAL)"
+  },
+  {
+    "CaseFieldID": "applicantExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 69,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "CaseFieldID": "respondent1ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "CaseFieldID": "respondent2ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "CaseFieldID": "respondent3ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "CaseFieldID": "respondent4ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 6
+  },
+  {
+    "CaseFieldID": "respondent5ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 7
+  },
+  {
+    "CaseFieldID": "respondent6ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 8
+  },
+  {
+    "CaseFieldID": "respondent7ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 9
+  },
+  {
+    "CaseFieldID": "respondent8ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "CaseFieldID": "respondent9ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 11
+  },
+  {
+    "CaseFieldID": "respondent10ExternalFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "support",
+    "TabLabel": "Support",
+    "TabFieldDisplayOrder": 2
+  }
+]

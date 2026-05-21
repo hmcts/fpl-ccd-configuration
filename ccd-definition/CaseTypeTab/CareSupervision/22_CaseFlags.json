@@ -1,0 +1,132 @@
+[
+  {
+    "CaseFieldID": "flagLauncher",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabDisplayOrder": 69,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 13,
+    "DisplayContextParameter": "#ARGUMENT(READ,VERSION2.1)"
+  },
+  {
+    "CaseFieldID": "caseFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher = \"hidden\"",
+    "TabDisplayOrder": 69,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 12
+  },
+  {
+    "CaseFieldID": "applicantFlags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 69,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "CaseFieldID": "respondent1Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "CaseFieldID": "respondent2Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "CaseFieldID": "respondent3Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "CaseFieldID": "respondent4Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 6
+  },
+  {
+    "CaseFieldID": "respondent5Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 7
+  },
+  {
+    "CaseFieldID": "respondent6Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 8
+  },
+  {
+    "CaseFieldID": "respondent7Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 9
+  },
+  {
+    "CaseFieldID": "respondent8Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "CaseFieldID": "respondent9Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 11
+  },
+  {
+    "CaseFieldID": "respondent10Flags",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "TabDisplayOrder": 1,
+    "TabID": "caseFlags",
+    "TabLabel": "Case Flags",
+    "TabFieldDisplayOrder": 2
+  }
+]
