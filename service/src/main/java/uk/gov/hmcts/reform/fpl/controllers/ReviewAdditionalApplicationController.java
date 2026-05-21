@@ -69,7 +69,8 @@ public class ReviewAdditionalApplicationController extends CallbackController {
     }
 
     @PostMapping("/edit-hearing/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleAdditionalApplication(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAdditionalApplication(@RequestBody CallbackRequest
+                                                                                    callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -85,7 +86,8 @@ public class ReviewAdditionalApplicationController extends CallbackController {
 
                 caseDetails.getData().put("previewApprovedOrder1", hearingOrderGenerator.addCoverSheet(caseData
                         .toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
-                                .judgeTitleAndName(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData))
+                                .judgeTitleAndName(approveDraftOrdersService
+                                    .getJudgeTitleAndNameOfCurrentUser(caseData))
                             .build())
                         .build(),
                     draftOrder.getValue().getDocument()));

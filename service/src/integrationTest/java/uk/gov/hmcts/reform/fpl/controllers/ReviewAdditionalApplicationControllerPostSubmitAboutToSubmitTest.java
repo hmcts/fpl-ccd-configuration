@@ -28,7 +28,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_AND_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.REFUSE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -120,7 +123,11 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
     }
 
     private CaseData buildCaseData(ApproveAdditionalAppOptions router, boolean confidential) {
-        DocumentReference draftDocument = document("draft-order.docx");
+        DocumentReference draftDocument = DocumentReference.builder()
+            .url("http://dm-store/documents/draft-order.docx")
+            .binaryUrl("http://dm-store/documents/draft-order.docx/binary")
+            .filename("draft-order.docx")
+            .build();
 
         Element<DraftOrder> draftOrder = element(
             DRAFT_ORDER_ID,
@@ -154,14 +161,6 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
                 .c2AdditionalApplicationToBeReview(c2Data)
                 .build())
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
-            .build();
-    }
-
-    private static DocumentReference document(String filename) {
-        return DocumentReference.builder()
-            .url("http://dm-store/documents/" + filename)
-            .binaryUrl("http://dm-store/documents/" + filename + "/binary")
-            .filename(filename)
             .build();
     }
 }

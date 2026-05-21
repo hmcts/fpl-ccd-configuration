@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ReviewAdditionalApplicationSubstitutionData implements MarkdownSubstitutionData{
+public class ReviewAdditionalApplicationSubstitutionData implements MarkdownSubstitutionData {
     private final String caseName;
 }

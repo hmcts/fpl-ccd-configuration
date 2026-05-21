@@ -254,7 +254,6 @@ public class ApproveDraftOrdersService {
             List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT), newArrayList());
 
         int counter = 1;
-        List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
 
         for (Element<HearingOrder> orderElement : draftOrders) {
             ReviewDecision reviewDecision = caseData.getReviewDraftOrdersData().getReviewDecision(counter);
@@ -262,7 +261,8 @@ public class ApproveDraftOrdersService {
             if (reviewDecision != null && reviewDecision.getDecision() != null
                 && !REVIEW_LATER.equals(reviewDecision.getDecision())) {
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    approveAndSealDraftOrder(caseData, data, selectedOrdersBundle, orderElement.getId(), reviewDecision);
+                    approveAndSealDraftOrder(caseData, data, selectedOrdersBundle, orderElement.getId(),
+                        reviewDecision);
                     ordersToBeSent = defaultIfNull((List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT),
                         newArrayList());
                 } else {
@@ -288,7 +288,7 @@ public class ApproveDraftOrdersService {
         }
 
         data.putAll(updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle));
-        data.put("orderCollection", orderCollection);
+        data.put("orderCollection", caseData.getOrderCollection());
     }
 
     @SuppressWarnings("unchecked")
@@ -318,7 +318,8 @@ public class ApproveDraftOrdersService {
         }
 
         // Approved C21s must be included for downstream draft-order notification events.
-        List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT),
+        List<Element<HearingOrder>> ordersToBeSent =
+            defaultIfNull((List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT),
             newArrayList());
         ordersToBeSent.add(reviewedOrder);
         data.put(ORDERS_TO_BE_SENT, ordersToBeSent);

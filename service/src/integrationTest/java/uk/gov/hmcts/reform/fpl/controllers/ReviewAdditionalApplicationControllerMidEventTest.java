@@ -128,7 +128,8 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "edit-hearing");
-        ConfirmApplicationReviewedEventData resultEventData = extractCaseData(response).getConfirmApplicationReviewedEventData();
+        ConfirmApplicationReviewedEventData resultEventData = extractCaseData(response)
+            .getConfirmApplicationReviewedEventData();
 
         assertThat(resultEventData.getReviewOrderUrgency()).isEqualTo(YesNo.YES);
         assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.NO);
@@ -141,7 +142,8 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "edit-hearing");
-        ConfirmApplicationReviewedEventData resultEventData = extractCaseData(response).getConfirmApplicationReviewedEventData();
+        ConfirmApplicationReviewedEventData resultEventData = extractCaseData(response)
+            .getConfirmApplicationReviewedEventData();
 
         assertThat(resultEventData.getReviewOrderUrgency()).isEqualTo(YesNo.NO);
         assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.NO);

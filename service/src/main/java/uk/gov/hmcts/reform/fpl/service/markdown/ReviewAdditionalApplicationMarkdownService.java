@@ -23,7 +23,8 @@ public class ReviewAdditionalApplicationMarkdownService extends MarkdownSubstitu
     }
 
     public MarkdownData getMarkdownData(String caseName, boolean isConfidential) {
-        ReviewAdditionalApplicationSubstitutionData substitutionData = ReviewAdditionalApplicationSubstitutionData.builder()
+        ReviewAdditionalApplicationSubstitutionData substitutionData =
+            ReviewAdditionalApplicationSubstitutionData.builder()
             .caseName(defaultString(caseName))
             .build();
 
