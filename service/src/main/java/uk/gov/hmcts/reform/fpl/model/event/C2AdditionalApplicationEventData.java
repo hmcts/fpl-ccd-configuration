@@ -25,6 +25,10 @@ public class C2AdditionalApplicationEventData extends C2DocumentBundle {
     @Temp
     DynamicMultiSelectList childSelectorForApplication;
 
+    // Review application fields
+    @Temp
+    String confidentialApplication;
+
     @JsonIgnore
     public C2DocumentBundle toC2DocumentBundle() {
         return super.toBuilder().build();

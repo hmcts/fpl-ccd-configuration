@@ -37,8 +37,9 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("additionalApplicationsBundleToBeReviewed",
-            reviewAdditionalApplicationService.getSelectedApplicationsToBeReviewed(caseData).getValue());
+        caseDetails.getData().putAll(reviewAdditionalApplicationService
+            .initReviewFieldsForSelectedBundle(reviewAdditionalApplicationService
+                .getSelectedApplicationsToBeReviewed(caseData).getValue()));
 
         return respond(caseDetails);
     }
