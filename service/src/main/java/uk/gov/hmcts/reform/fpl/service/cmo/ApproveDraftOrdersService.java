@@ -313,8 +313,8 @@ public class ApproveDraftOrdersService {
 
         Element<HearingOrder> reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
             caseData, reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
-            selectedOrdersBundle.getValue().getHearingId() == null &&
-                SEND_TO_ALL_PARTIES.equals(reviewDecision.getDecision()));
+            selectedOrdersBundle.getValue().getHearingId() == null && SEND_TO_ALL_PARTIES.equals(
+                reviewDecision.getDecision()));
 
         Element<GeneratedOrder> generatedBlankOrder = blankOrderGenerator.buildBlankOrder(caseData,
             selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers));
