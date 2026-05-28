@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
@@ -8,11 +9,11 @@ import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
-import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -44,7 +45,6 @@ import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -52,6 +52,7 @@ import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -77,24 +78,25 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType.APPLY_ONLINE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.fromCCDMoneyGBP;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
 
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
-    private static final String C2_ORDER_NAME = "C2_ORDER.pdf";
+    private static final String C2_APPLICATION_NAME = "C2_application.pdf";
 
     private final Time time;
     private final UserService userService;
@@ -103,7 +105,6 @@ public class UploadAdditionalApplicationsService {
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
     private final UploadDocumentService uploadDocumentService;
-    private final DocumentConversionService documentConversionService;
     private final PbaService pbaService;
     private final JudicialService judicialService;
 
@@ -276,12 +277,15 @@ public class UploadAdditionalApplicationsService {
                 String.join(" ", respondent.getValue().getParty().getFullName()))
             .collect(Collectors.joining(" "));
 
+        Optional<BigDecimal> decimalAmount = fromCCDMoneyGBP(caseData.getAmountToPay());
+        String feeChargedAmount = String.format("£ %s", decimalAmount.isPresent() ? decimalAmount.get() : "N/A");
+
         DocmosisC2OrderDocument docmosisC2OrderDocument = DocmosisC2OrderDocument.builder()
             .courtName(caseData.getCourt().getName())
             .caseNumber(caseData.getFamilyManCaseNumber())
             .dateIssued(formatLocalDateToString(uploadedDate, DATE))
-            .feeCharged(caseData.getAmountToPay())
-            .applicantName(applicantName)
+            .feeCharged(feeChargedAmount)
+            .applicantName(applicantName.split(",")[0]) //Split name from applicant list to remove *Applicant 1*
             .respondents(respondents)
             .consent(eventData.getC2Type().getLabel().equals("By consent")
                 ? YES.getValue(language) : NO.getValue(language))
@@ -298,10 +302,10 @@ public class UploadAdditionalApplicationsService {
             .crest(CREST.getValue(language))
             .build();
 
-        DocmosisDocument c2OrderDocument = docmosisDocumentGeneratorService
-            .generateDocmosisDocument(docmosisC2OrderDocument, C2_ORDER, RenderFormat.PDF, getCaseLanguage(caseData));
+        DocmosisDocument c2OrderDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            docmosisC2OrderDocument, DocmosisTemplates.C2_APPLICATION, RenderFormat.PDF, getCaseLanguage(caseData));
 
-        return buildFromDocument(uploadDocumentService.uploadPDF(c2OrderDocument.getBytes(), C2_ORDER_NAME));
+        return buildFromDocument(uploadDocumentService.uploadPDF(c2OrderDocument.getBytes(), C2_APPLICATION_NAME));
     }
 
     private Language getCaseLanguage(CaseData caseData) {
@@ -496,9 +500,8 @@ public class UploadAdditionalApplicationsService {
             } else if (roleTypes.contains(ALLOCATED_LEGAL_ADVISER.getRoleName())) {
                 return JudicialMessageRoleType.OTHER;
             } else {
-                throw new UserLookupException(
-                    String.format("Allocated judge or legal adviser has invalid am role for case id: %s",
-                        caseData.getId()));
+                log.info("No valid am role found for case id: {}, creating generic task", caseData.getId());
+                return JudicialMessageRoleType.CTSC;
             }
         }
     }
@@ -529,6 +532,11 @@ public class UploadAdditionalApplicationsService {
 
         if (isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle()) && !userService.isCtscUser()) {
             errors.add("Please upload a draft order to proceed");
+        }
+
+        if (!isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle())
+            && eventData.getTemporaryC2Document().getDraftOrdersBundle().size() > 1 && !userService.isCtscUser()) {
+            errors.add("Please upload only a single draft order to proceed");
         }
 
         return errors;

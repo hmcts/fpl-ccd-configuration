@@ -1,9 +1,10 @@
 import {expect, test} from "../../fixtures/fixtures";
 import {createCase, updateCase} from "../../utils/api-helper";
 import {
-    authToken,
+    cafcassAPIUser,
     CTSCTeamLeadUser,
-    newSwanseaLocalAuthorityUserOne
+    newSwanseaLocalAuthorityUserOne,
+    systemUpdateUser
 } from "../../settings/user-credentials";
 import submitCase from '../../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 import {cafcassUpdateGuardianDetails, GUARDIAN_DETAILS} from "../../utils/cafcass-api-test-helper";
@@ -19,7 +20,7 @@ test.describe('CafcassAPI Update Guardian Details', () => {
     test(' Cafcass user update the guardian details', async ({request, page, signInPage}) => {
         expect(await updateCase('Cafcass update guardian details' + dateTime.slice(0, 10), caseNumber, submitCase)).toBeTruthy();
 
-        let response = await cafcassUpdateGuardianDetails(request, authToken.cafcassAuth, caseNumber, GUARDIAN_DETAILS);
+        let response = await cafcassUpdateGuardianDetails(request, cafcassAPIUser, caseNumber, GUARDIAN_DETAILS);
 
         //assert the response
         expect(response.status()).toBe(200);
@@ -40,7 +41,7 @@ test.describe('CafcassAPI Update Guardian Details', () => {
     })
     test('Cafcass update guardian details for cases in not valid state', async ({request}) => {
 
-        let response = await cafcassUpdateGuardianDetails(request, authToken.cafcassAuth, caseNumber, GUARDIAN_DETAILS);
+        let response = await cafcassUpdateGuardianDetails(request, cafcassAPIUser, caseNumber, GUARDIAN_DETAILS);
         //assertion
         expect(response.status()).toBe(404);
         expect(response.statusText()).toBe('Not Found');
@@ -48,7 +49,7 @@ test.describe('CafcassAPI Update Guardian Details', () => {
     test('Cafcass Update guardian details by user without cafcass role', async ({request}) => {
 
         await updateCase('Cafcass Update guardian details by user without cafcass role ' + dateTime.slice(0, 10), caseNumber, submitCase);
-        let response = await cafcassUpdateGuardianDetails(request, authToken.systemAuth, caseNumber, GUARDIAN_DETAILS);
+        let response = await cafcassUpdateGuardianDetails(request, systemUpdateUser, caseNumber, GUARDIAN_DETAILS);
         //assertion
         expect(response.status()).toEqual(403);
         expect(response.statusText()).toEqual('Forbidden');

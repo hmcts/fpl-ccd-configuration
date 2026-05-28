@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
-import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -49,6 +48,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC2OrderDocument;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
@@ -57,7 +57,6 @@ import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -76,7 +75,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -122,10 +120,8 @@ class UploadAdditionalApplicationsServiceTest {
     );
 
     private static final DocumentReference DOCUMENT = testDocumentReference("TestDocument.doc");
-    private static final DocumentReference CONVERTED_DOCUMENT = testDocumentReference("TestDocument.pdf");
 
     private static final DocumentReference SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.doc");
-    private static final DocumentReference CONVERTED_SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.pdf");
     private static final DocumentReference SEALED_SUPPLEMENT_DOCUMENT =
         testDocumentReference("Sealed_SupplementFile.pdf");
     private static final DocumentReference  SEALED_DOCUMENT = testDocumentReference("Sealed_TestDocument.pdf");
@@ -134,8 +130,8 @@ class UploadAdditionalApplicationsServiceTest {
 
     private static final DocmosisDocument C2_ONLINE_DOCMOSIS_DOCUMENT =
         testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
-    private static final String C2_ORDER_NAME = "C2_ORDER.pdf";
-    private static final Document C2_ONLINE_DOCUMENT = testDocumentWithName(C2_ORDER_NAME);
+    private static final String C2_APPLICATION_NAME = "C2_application.pdf";
+    private static final Document C2_ONLINE_DOCUMENT = testDocumentWithName(C2_APPLICATION_NAME);
 
     private final RequestData requestData = mock(RequestData.class);
     private final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -145,7 +141,6 @@ class UploadAdditionalApplicationsServiceTest {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService =
         mock(DocmosisDocumentGeneratorService.class);
     private final DocumentUploadHelper uploadHelper = mock(DocumentUploadHelper.class);
-    private final DocumentConversionService conversionService = mock(DocumentConversionService.class);
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
     private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);
     private final UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
@@ -159,21 +154,19 @@ class UploadAdditionalApplicationsServiceTest {
 
         given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
-        given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
-        given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
         given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT, COURT_1, SealType.ENGLISH))
             .willReturn(SEALED_SUPPLEMENT_DOCUMENT);
         given(documentSealingService.sealDocument(DOCUMENT, COURT_1, SealType.ENGLISH))
             .willReturn(SEALED_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(time, user, manageDocumentService,
             docmosisDocumentGeneratorService, uploadHelper, documentSealingService, uploadDocumentService,
-            conversionService, pbaService, judicialService);
+            pbaService, judicialService);
         given(user.isHmctsUser()).willReturn(true);
         given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.HMCTS);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisC2OrderDocument.class),
             any(), any(), any())).willReturn(C2_ONLINE_DOCMOSIS_DOCUMENT);
-        given(uploadDocumentService.uploadPDF(C2_ONLINE_DOCMOSIS_DOCUMENT.getBytes(), C2_ORDER_NAME))
+        given(uploadDocumentService.uploadPDF(C2_ONLINE_DOCMOSIS_DOCUMENT.getBytes(), C2_APPLICATION_NAME))
             .willReturn(C2_ONLINE_DOCUMENT);
     }
 
@@ -212,9 +205,6 @@ class UploadAdditionalApplicationsServiceTest {
             .uploaderType(DocumentUploaderType.HMCTS)
             .uploaderCaseRoles(List.of())
             .build());
-
-        // No longer called in this method
-        // verify(conversionService).convertToPdf(DOCUMENT);
     }
 
     @SuppressWarnings("unchecked")
@@ -256,9 +246,6 @@ class UploadAdditionalApplicationsServiceTest {
             .uploaderType(DocumentUploaderType.HMCTS)
             .uploaderCaseRoles(List.of())
             .build());
-
-        // No longer called in this method
-        // verify(conversionService).convertToPdf(DOCUMENT);
     }
 
     @ParameterizedTest
@@ -266,8 +253,6 @@ class UploadAdditionalApplicationsServiceTest {
     void shouldNotConvertApplications(boolean isHmctsUser) {
         given(user.isHmctsUser()).willReturn(isHmctsUser);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(USER_EMAIL);
-        given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
-        given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
 
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
@@ -352,6 +337,22 @@ class UploadAdditionalApplicationsServiceTest {
                 .additionalApplicationType(List.of(OTHER_ORDER))
                 .applicantsList(applicantsList)
                 .otherApplicant(otherApplicantName)
+                .build())
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Applicant should not be empty");
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenApplicantListIsEmpty() {
+        DynamicList applicantsList = DynamicList.builder().build();
+
+        CaseData caseData = CaseData.builder()
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .applicantsList(applicantsList)
                 .build())
             .build();
 
@@ -634,7 +635,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionIfUserNotFoundForAllocatedJudgeOrLegalAdvisor() {
+    void shouldReturnGenericTaskForAllocatedJudgeOrLegalAdvisorWithWrongAmRole() {
         Judge allocatedJudge = Judge.builder()
             .judgeJudicialUser(JudicialUser.builder()
                 .idamId("1234")
@@ -650,10 +651,26 @@ class UploadAdditionalApplicationsServiceTest {
         when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
             .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-judge").build()));
 
-        UserLookupException thrownException = assertThrows(UserLookupException.class,
-            () -> underTest.getAllocatedJudgeOrLegalAdviserType(caseData));
-        assertThat(thrownException.getMessage())
-            .contains("Allocated judge or legal adviser has invalid am role for case id: 1234");
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
+    }
+
+    @Test
+    void shouldReturnGenericTaskForAllocatedJudgeOrLegalAdvisorWhenInvalidJrdUser() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .id(1234L)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
     }
 
     @Test
@@ -858,6 +875,19 @@ class UploadAdditionalApplicationsServiceTest {
         }
 
         @Test
+        void shouldSealOtherDocumentIgnoringNullSupplements() {
+            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(null)
+                .build();
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
+
+            assertThat(converted.getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
+            assertThat(converted.getSupplementsBundle()).isEmpty();
+        }
+
+        @Test
         void shouldSealConfidentialC2Document() {
             C2DocumentBundle bundle = C2DocumentBundle.builder()
                 .document(DOCUMENT)
@@ -926,6 +956,22 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    public void shouldReturnErrorIfNotCTSCUserAndMultipleC2DraftOrdersUploaded() {
+        given(user.isCtscUser()).willReturn(false);
+
+        UploadAdditionalApplicationsEventData eventData = UploadAdditionalApplicationsEventData.builder()
+            .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                .draftOrdersBundle(List.of(element(DraftOrder.builder().build()),
+                    element(DraftOrder.builder().build())))
+                .build())
+            .build();
+
+        List<String> errors = underTest.validateC2Bundle(eventData);
+
+        assertThat(errors).contains("Please upload only a single draft order to proceed");
+    }
+
+    @Test
     public void shouldReturnListOfChildrenAsDynamicMultiSelectList() {
         UUID child1Id = UUID.randomUUID();
         UUID child2Id = UUID.randomUUID();
@@ -953,7 +999,7 @@ class UploadAdditionalApplicationsServiceTest {
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
 
         assertThat(actualC2Bundle.getId()).isNotNull();
-        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(C2_ORDER_NAME);
+        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(C2_APPLICATION_NAME);
         assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
         assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
         assertThat(actualC2Bundle.getSupplementsBundle()).hasSize(1);
