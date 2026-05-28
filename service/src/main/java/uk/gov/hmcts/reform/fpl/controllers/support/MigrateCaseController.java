@@ -122,7 +122,8 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         if (isNotEmpty(caseData.getRefusedHearingOrders())) {
-            caseDetails.getData().put("refusedHearingOrders", migrateRefusedOrders(caseData.getRefusedHearingOrders()));
+            caseDetails.getData().put("refusedHearingOrders",
+                migrateRefusedOrders(caseData.getRefusedHearingOrders(), false));
         }
 
         // Process all confidential refused orders
@@ -132,20 +133,24 @@ public class MigrateCaseController extends CallbackController {
                 if (isNotEmpty(refusedOrderElements)) {
                     caseDetails.getData().put(
                         existingConfidentialRefusedOrders.getFieldBaseName() + suffix,
-                        migrateRefusedOrders(refusedOrderElements));
+                        migrateRefusedOrders(refusedOrderElements, true));
                 }
             });
         }
     }
 
     // one off migration only, can't see any reason to keep this method in the future
-    private List<Element<HearingOrder>> migrateRefusedOrders(List<Element<HearingOrder>> refusedOrders) {
+    private List<Element<HearingOrder>> migrateRefusedOrders(List<Element<HearingOrder>> refusedOrders,
+                                                             boolean isConfidential) {
         return refusedOrders.stream()
             .map(refusedOrderElement -> element(
                 refusedOrderElement.getId(),
                 refusedOrderElement.getValue().toBuilder()
-                    .refusedOrder(refusedOrderElement.getValue().getOrder())
+                    .refusedOrder((isConfidential)
+                        ? refusedOrderElement.getValue().getOrderConfidential()
+                        : refusedOrderElement.getValue().getOrder())
                     .order(null)
+                    .orderConfidential(null)
                     .build()))
             .toList();
     }
@@ -155,7 +160,7 @@ public class MigrateCaseController extends CallbackController {
 
         if (isNotEmpty(caseData.getRefusedHearingOrders())) {
             caseDetails.getData().put("refusedHearingOrders",
-                rollbackRefusedOrders(caseData.getRefusedHearingOrders()));
+                rollbackRefusedOrders(caseData.getRefusedHearingOrders(), false));
         }
 
         // Process all confidential refused orders
@@ -165,20 +170,22 @@ public class MigrateCaseController extends CallbackController {
                 if (isNotEmpty(refusedOrderElements)) {
                     caseDetails.getData().put(
                         existingConfidentialRefusedOrders.getFieldBaseName() + suffix,
-                        rollbackRefusedOrders(refusedOrderElements));
+                        rollbackRefusedOrders(refusedOrderElements, true));
                 }
             });
         }
     }
 
     // one off migration only, can't see any reason to keep this method in the future
-    private List<Element<HearingOrder>> rollbackRefusedOrders(List<Element<HearingOrder>> refusedOrders) {
+    private List<Element<HearingOrder>> rollbackRefusedOrders(List<Element<HearingOrder>> refusedOrders,
+                                                              boolean isConfidential) {
         return refusedOrders.stream()
             .map(refusedOrderElement -> element(
                 refusedOrderElement.getId(),
                 refusedOrderElement.getValue().toBuilder()
                     .refusedOrder(null)
-                    .order(refusedOrderElement.getValue().getRefusedOrder())
+                    .order((!isConfidential) ? refusedOrderElement.getValue().getRefusedOrder() : null)
+                    .orderConfidential((isConfidential) ? refusedOrderElement.getValue().getRefusedOrder() : null)
                     .build()))
             .toList();
     }
