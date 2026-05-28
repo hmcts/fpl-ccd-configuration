@@ -1,8 +1,8 @@
 import { test } from '../fixtures/create-fixture';
-import { newSwanseaLocalAuthorityUserOne } from '../settings/user-credentials';
+import {judgeWalesUser, newSwanseaLocalAuthorityUserOne} from '../settings/user-credentials';
 import caseData from '../caseData/caseWithHearingDetails.json' assert { type: 'json' };
 import { expect } from '@playwright/test';
-import {createCase, updateCase} from "../utils/api-helper";
+import {assignAMJudicialRole, createCase, getIdamUserId, updateCase} from "../utils/api-helper";
 
 test.describe('Upload draft orders', () => {
     const dateTime = new Date().toISOString();
@@ -17,6 +17,7 @@ test.describe('Upload draft orders', () => {
         async ({ page, signInPage, uploadDraftOrders }) => {
             casename = 'LA upload CMO draft orders ' + dateTime.slice(0, 10);
             expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
+            expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
             await signInPage.navigateToCaseDetails(caseNumber);
@@ -33,6 +34,7 @@ test.describe('Upload draft orders', () => {
 
             casename = 'LA upload Additional Draft Order ' + dateTime.slice(0, 10);
             expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();
+            expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
             await signInPage.navigateToCaseDetails(caseNumber);

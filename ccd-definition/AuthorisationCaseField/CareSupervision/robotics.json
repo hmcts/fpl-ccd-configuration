@@ -40,5 +40,12 @@
     "CaseFieldID": "componentLauncher",
     "UserRole": "caseworker-publiclaw-rparobot",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "familyManCaseNumber",
+    "UserRole": "caseworker-publiclaw-rparobot",
+    "CRUD": "R"
   }
 ]

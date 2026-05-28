@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
@@ -76,6 +77,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -95,7 +97,7 @@ class GeneratedOrderEventHandlerTest {
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT = LanguageTranslationRequirement.NO;
     private static final String ORDER_TITLE = "orderTitle";
     private static final GeneratedOrderEvent EVENT = new GeneratedOrderEvent(CASE_DATA, TEST_DOCUMENT,
-        TRANSLATION_REQUIREMENT, ORDER_TITLE, LocalDate.now());
+        TRANSLATION_REQUIREMENT, ORDER_TITLE, LocalDate.now(), C35A_SUPERVISION_ORDER.name());
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITH_CASE_URL = mock(OrderIssuedNotifyData.class);
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITHOUT_CASE_URL = mock(OrderIssuedNotifyData.class);
     private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
@@ -380,7 +382,7 @@ class GeneratedOrderEventHandlerTest {
 
         var orderApprovalDate = LocalDate.now();
         GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, TEST_DOCUMENT,
-                TRANSLATION_REQUIREMENT, ORDER_TITLE, orderApprovalDate);
+                TRANSLATION_REQUIREMENT, ORDER_TITLE, orderApprovalDate, C35A_SUPERVISION_ORDER.name());
         underTest.notifyCafcass(event);
         verify(cafcassNotificationService).sendEmail(
             eq(caseData),
@@ -426,5 +428,44 @@ class GeneratedOrderEventHandlerTest {
 
         verify(workAllocationTaskService, never()).createWorkAllocationTask(any(),
             any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Order.class, names = {"C33_INTERIM_CARE_ORDER", "C35B_INTERIM_SUPERVISION_ORDER"})
+    void shouldNotCreateWorkAllocationTaskWhenJudgeUploadsOrderInBlackList(Order orderType) {
+        given(userService.isCtscUser()).willReturn(false);
+        given(userService.isJudiciaryUser()).willReturn(true);
+
+        GeneratedOrderEvent event = new GeneratedOrderEvent(
+            CASE_DATA,
+            TEST_DOCUMENT,
+            TRANSLATION_REQUIREMENT,
+            ORDER_TITLE,
+            LocalDate.now(),
+            orderType.name()
+        );
+        underTest.createWorkAllocationTask(event);
+
+        verify(workAllocationTaskService, never()).createWorkAllocationTask(any(), any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Order.class, mode = EnumSource.Mode.EXCLUDE,
+        names = {"C33_INTERIM_CARE_ORDER", "C35B_INTERIM_SUPERVISION_ORDER"})
+    void shouldNotCreateWorkAllocationTaskWhenJudgeUploadsOrderNotInBlackList(Order orderType) {
+        given(userService.isCtscUser()).willReturn(false);
+        given(userService.isJudiciaryUser()).willReturn(true);
+
+        GeneratedOrderEvent event = new GeneratedOrderEvent(
+            CASE_DATA,
+            TEST_DOCUMENT,
+            TRANSLATION_REQUIREMENT,
+            ORDER_TITLE,
+            LocalDate.now(),
+            orderType.name()
+        );
+        underTest.createWorkAllocationTask(event);
+
+        verify(workAllocationTaskService).createWorkAllocationTask(CASE_DATA, WorkAllocationTaskType.ORDER_UPLOADED);
     }
 }

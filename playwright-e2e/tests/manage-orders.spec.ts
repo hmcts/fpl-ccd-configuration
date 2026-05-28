@@ -2,7 +2,8 @@ import { test } from '../fixtures/create-fixture';
 import { CTSCUser, judgeUser, newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 import caseData from '../caseData/caseWithHearingDetails.json' assert {type: 'json'};
 import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert {type: 'json'};
-import {expect } from "@playwright/test";
+import caseDataWithPlacementApplication from '../caseData/caseWithPlacementApplication.json' assert {type: 'json'};
+import { expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
 
 test.describe('manage orders', () => {
@@ -534,6 +535,18 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c33_interim_care_order.pdf', exact: true })).toBeVisible();
 
+        await signInPage.logout();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.tabNavigation('Tasks');
+        await expect(page.getByText('Tasks', { exact: true })).toBeVisible();
+
+        await orders.page.waitForTimeout(7000);
+
+        await orders.page.reload();
+        await expect(orders.page.getByText('Review Order (CTSC)')).toBeHidden();
+
     })
 
     test('Judge uploads Child arrangements order (C43)', async ({
@@ -646,6 +659,18 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c35b_interim_supervision_order.pdf', exact: true })).toBeVisible();
 
+        await signInPage.logout();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.tabNavigation('Tasks');
+        await expect(page.getByText('Tasks', { exact: true })).toBeVisible();
+
+        await orders.page.waitForTimeout(10000);
+
+        await orders.page.reload();
+        await expect(orders.page.getByText('Review Order (CTSC)')).toBeHidden();
+
     })
 
     test('CTSC uploads Parental responsibility order (C45A) ', async ({ page, signInPage, orders }) => {
@@ -696,6 +721,13 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c45a_parental_responsibility_order.pdf' })).toBeVisible();
 
+        await signInPage.logout();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.tabNavigation('Tasks');
+        await orders.waitForTask('Review Order (CTSC)');
+
     })
 
     test('Judge uploads Special guardianship order (C43A) ', async ({ page, signInPage, orders }) => {
@@ -719,6 +751,13 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c43a_special_guardianship_order.pdf', exact: true })).toBeVisible();
+
+        await signInPage.logout();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.tabNavigation('Tasks');
+        await orders.waitForTask('Review Order (CTSC)')
 
     })
 
@@ -768,7 +807,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'c34a_contact_with_a_child_in_care.pdf' ,exact: true})).toBeVisible();
+        await expect(page.getByRole('button', { name: 'c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeVisible();
 
     })
 
@@ -795,5 +834,148 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: ' c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeVisible();
 
-    });
+    })
+
+    test('CTSC uploads  Variation or extension of education supervision orders (C36)', async ({ page, signInPage, orders }) => {
+        caseName = 'Variation or extension of education supervision orders (C36)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Variation or extension of education supervision orders (C36)');
+        await orders.clickContinue();
+
+        await orders.uploadsVariationOrExtensionOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c36_variation_or_extension_of_supervision_orders.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('Judge Uploads Variation or extension of education supervision orders (C36)', async ({ page, signInPage, orders }) => {
+        caseName = 'Variation or extension of education supervision orders (C36)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Variation or extension of education supervision orders (C36)');
+        await orders.clickContinue();
+
+        await orders.uploadsVariationOrExtensionOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c36_variation_or_extension_of_supervision_orders.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('CTSC uploads Discharge of care order (C32B) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Discharge of care order (C32B)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Discharge of care order (C32B)');
+        await orders.clickContinue();
+
+        await orders.uploadsDischargeOfCareOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c32b_discharge_of_care_order.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('Judge Uploads Discharge of care order (C32B) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Discharge of care order (C32B)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Discharge of care order (C32B)');
+        await orders.clickContinue();
+
+        await orders.uploadsDischargeOfCareOrder();
+        await orders.clickContinue();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c32b_discharge_of_care_order.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('CTSC uploads Placement Blank order (A81) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Placement Blank order (A81)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseDataWithPlacementApplication);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.gotoNextStep('Manage orders');
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Placement Blank order (A81)');
+        await orders.clickContinue();
+        await orders.addPlacementBlankOrder();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'a81_placement_blank_order.pdf' })).toBeVisible
+
+    })
+
+    test('Judge uploads Placement Blank order (A81) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Placement Blank order (A81)' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseDataWithPlacementApplication);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.gotoNextStep('Manage orders');
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Placement Blank order (A81)');
+        await orders.clickContinue();
+        await orders.addPlacementBlankOrder();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'a81_placement_blank_order.pdf' })).toBeVisible();
+    })
 })

@@ -33,5 +33,12 @@
     "ListElementCode": "HOUSEKEEPING",
     "ListElement": "Housekeeping",
     "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildFinalDecision",
+    "ListElementCode": "CONSOLIDATED",
+    "ListElement": "Case consolidated",
+    "DisplayOrder": 6
   }
 ]

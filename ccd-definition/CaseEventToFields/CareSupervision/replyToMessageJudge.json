@@ -22,7 +22,8 @@
     "PageDisplayOrder": 1,
     "PageFieldDisplayOrder": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "judicialMessageDynamicList=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "judicialMessageDynamicList=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -82,7 +83,8 @@
     "PageFieldDisplayOrder": 2,
     "PageID": "ReplyToMessage",
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "judicialMessageReply=\"DO NOT SHOW\""
+    "FieldShowCondition": "judicialMessageReply=\"DO NOT SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -106,6 +108,7 @@
     "PageFieldDisplayOrder": 4,
     "ShowSummaryChangeOption": "N",
     "Publish": "Y",
-    "FieldShowCondition": "judicialMessageReply=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "judicialMessageReply=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes"
   }
 ]

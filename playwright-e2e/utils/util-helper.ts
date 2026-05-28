@@ -35,3 +35,10 @@ export function formatToLongDate12hrTime(date: Date): string {
 
     return `${day} ${month} ${year} at ${hours}:${minutes}${period}`;
 }
+export function getLocalLongDate(date: Date): string {
+    const day = date.getDate();
+    const month = date.toLocaleString('en-GB', { month: 'long' });
+    const year = date.getFullYear();
+
+    return `${day} ${month} ${year} `;
+}

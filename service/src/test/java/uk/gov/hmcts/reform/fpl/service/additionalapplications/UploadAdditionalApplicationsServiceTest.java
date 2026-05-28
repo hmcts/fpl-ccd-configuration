@@ -8,10 +8,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -19,6 +22,8 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -35,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -49,6 +55,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -58,6 +65,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_ID;
@@ -112,6 +120,7 @@ class UploadAdditionalApplicationsServiceTest {
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
     private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);
     private final PbaService pbaService = mock(PbaService.class);
+    private final JudicialService judicialService = mock(JudicialService.class);
 
     private UploadAdditionalApplicationsService underTest;
 
@@ -127,7 +136,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(documentSealingService.sealDocument(DOCUMENT, COURT_1, SealType.ENGLISH))
             .willReturn(SEALED_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(time, user, manageDocumentService, uploadHelper,
-            documentSealingService, conversionService, pbaService);
+            documentSealingService, conversionService, pbaService, judicialService);
         given(user.isHmctsUser()).willReturn(true);
         given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.HMCTS);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
@@ -255,6 +264,20 @@ class UploadAdditionalApplicationsServiceTest {
             .additionalApplicationType(List.of(OTHER_ORDER))
             .applicantsList(applicantsList)
             .otherApplicant(otherApplicantName)
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Applicant should not be empty");
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenApplicantListIsEmpty() {
+        DynamicList applicantsList = DynamicList.builder().build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(OTHER_ORDER))
+            .applicantsList(applicantsList)
             .build();
 
         assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
@@ -482,6 +505,112 @@ class UploadAdditionalApplicationsServiceTest {
         );
     }
 
+    @Test
+    void shouldGiveRoleTypeForAllocatedJudge() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId("1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("allocated-judge").build()));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.ALLOCATED_JUDGE);
+    }
+
+    @Test
+    void shouldGiveRoleTypeForAllocatedLegalAdvisor() {
+        Judge allocatedLegalAdviser = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId("1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedLegalAdviser)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedLegalAdviser));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("allocated-legal-adviser").build()));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.OTHER);
+    }
+
+    @Test
+    void shouldReturnGenericTaskForAllocatedJudgeOrLegalAdvisorWithWrongAmRole() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId("1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .id(1234L)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
+        when(judicialService.getAllocatedJudgeAndLegalAdvisorRoleAssignments(eq(caseData.getId())))
+            .thenReturn(List.of(RoleAssignment.builder().roleName("not-a-judge").build()));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
+    }
+
+    @Test
+    void shouldReturnGenericTaskForAllocatedJudgeOrLegalAdvisorWhenInvalidJrdUser() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeJudicialUser(JudicialUser.builder()
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .id(1234L)
+            .build();
+
+        when(judicialService.getAllocatedJudge(caseData)).thenReturn(Optional.of(allocatedJudge));
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
+    }
+
+    @Test
+    void shouldReturnStandardCtscRoleWhenAllocatedHasNoJudicialUserProfile() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
+            .judgeJudicialUser(JudicialUser.builder()
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(allocatedJudge)
+            .id(1234L)
+            .build();
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
+    }
+
+    @Test
+    void shouldReturnStandardCtscRoleWhenNoAllocatedJudgeOrLegalAdvisor() {
+        CaseData caseData = CaseData.builder()
+            .id(1234L)
+            .build();
+
+        assertThat(underTest.getAllocatedJudgeOrLegalAdviserType(caseData))
+            .isEqualTo(JudicialMessageRoleType.CTSC);
+    }
+
     @Nested
     class SkipPayments {
 
@@ -634,6 +763,19 @@ class UploadAdditionalApplicationsServiceTest {
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
+        }
+
+        @Test
+        void shouldSealOtherDocumentIgnoringNullSupplements() {
+            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(null)
+                .build();
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
+
+            assertThat(converted.getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
+            assertThat(converted.getSupplementsBundle()).isEmpty();
         }
 
         @Test
