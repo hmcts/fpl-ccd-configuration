@@ -67,7 +67,6 @@ public class ReviewAdditionalApplicationService {
         C2DocumentBundle c2ToBeReviewed = getRelevantC2DocumentBundle(bundle);
         if (!isEmpty(c2ToBeReviewed)) {
             resultMap.put("hasC2ToBeReview", YES);
-            // TODO: check what happens if there's more than one draft order
             DocumentReference documentReference = (isEmpty(c2ToBeReviewed.getDraftOrdersBundle())) ? null :
                 c2ToBeReviewed.getDraftOrdersBundle().getFirst().getValue().getDocument();
 
