@@ -1070,11 +1070,6 @@ public class CaseData extends CaseDataParent {
 
     @JsonUnwrapped
     @Builder.Default
-    private final C2AdditionalApplicationEventData c2AdditionalApplicationEventData =
-        C2AdditionalApplicationEventData.builder().build();
-
-    @JsonUnwrapped
-    @Builder.Default
     private final UploadTranslationsEventData uploadTranslationsEventData = UploadTranslationsEventData.builder()
         .build();
 
