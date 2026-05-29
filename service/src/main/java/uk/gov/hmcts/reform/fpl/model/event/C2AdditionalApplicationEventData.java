@@ -20,9 +20,6 @@ public class C2AdditionalApplicationEventData extends C2DocumentBundle {
     @Temp
     private DynamicList hearingList;
     @Temp
-    @JsonSerialize(using = YesNoSerializer.class)
-    private YesNo isHearingAdjournmentRequired;
-    @Temp
     DynamicMultiSelectList childSelectorForApplication;
 
     // Review application fields
