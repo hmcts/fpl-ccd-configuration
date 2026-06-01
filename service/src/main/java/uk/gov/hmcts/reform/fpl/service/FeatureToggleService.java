@@ -144,6 +144,7 @@ public class FeatureToggleService {
     }
 
     public boolean isShareCaseToAllLaUserDisabled() {
+        // true - disable the share case to all logic
         return ldClient.boolVariation("disable-sharing-case-to-all-la-user", createLDContext(), false);
     }
 
