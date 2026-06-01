@@ -2415,9 +2415,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "respondentsSelector",
+    "ID": "respondentsSelectorV2",
     "Label": "Select who should be notified",
-    "FieldType": "RespondentsSelector",
+    "FieldType": "DynamicMultiSelectList",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
