@@ -96,7 +96,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     @Override
     @JsonIgnore
     public boolean isRemovable() {
-        return isSealed();
+        return true;
     }
 
     @Override
