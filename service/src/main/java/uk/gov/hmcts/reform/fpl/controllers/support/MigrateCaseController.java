@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Map;
@@ -29,7 +29,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3249", this::run3249,
+        "DFPL-3227", this::run3227,
         "DFPL-3048", this::run3048,
         "DFPL-3047", this::run3047,
         "DFPL-3101", this::run3101
@@ -59,18 +59,21 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3249(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3249";
-        final long expectedCaseId = 1778745075233385L;
+    private void run3227(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3227";
+        final long expectedCaseId = 1777547979393690L;
         final CaseData caseData = getCaseData(caseDetails);
-        final Address blankedAddress = Address.builder()
-            .country("United Kingdom")
+        final String replacementEmail = caseData.getAllocatedJudge().getJudgeEmailAddress();
+        final JudgeAndLegalAdvisor replacedJudge = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()
+            .toBuilder()
+                .judgeEmailAddress(replacementEmail)
             .build();
-
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
 
-        caseDetails.getData().put("orders", caseData.getOrders().toBuilder().address(blankedAddress).build());
+        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder().toBuilder()
+                .judgeAndLegalAdvisor(replacedJudge)
+            .build());
     }
 
     private void run3048(CaseDetails caseDetails) {
