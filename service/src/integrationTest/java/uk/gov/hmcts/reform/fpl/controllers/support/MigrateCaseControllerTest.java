@@ -87,7 +87,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldMigrateConfidentialRefusedOrder(String suffix) {
             CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
                 .data(Map.of("refusedHearingOrders" + suffix,
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().order(ORDER_DOCUMENT)
+                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().orderConfidential(ORDER_DOCUMENT)
                         .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
                     MIGRATION_ID_KEY, MIGRATION_ID))
                 .build()));
@@ -148,7 +148,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
                 if (suffixAfter.equals(suffix)) {
                     assertThat(orders).isEqualTo(List.of(element(HEARING_ORDER_ID,
-                        HearingOrder.builder().order(ORDER_DOCUMENT)
+                        HearingOrder.builder().orderConfidential(ORDER_DOCUMENT)
                             .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
                 } else {
                     assertThat(orders).isNull();
