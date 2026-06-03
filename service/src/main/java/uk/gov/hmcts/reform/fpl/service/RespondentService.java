@@ -257,7 +257,6 @@ public class RespondentService {
     public List<Element<Respondent>> getSelectedRespondents(List<Element<Respondent>> respondents,
                                                             DynamicMultiSelectList dynamicMultiSelectList, String allRespondentsSelected) {
 
-        List<Element<Respondent>> selectedRespondents = new ArrayList<>();
         if (useAllRespondents(allRespondentsSelected)) {
             return respondents;
         } else {
@@ -265,15 +264,10 @@ public class RespondentService {
                 return Collections.emptyList();
             }
 
-            dynamicMultiSelectList.getValue().forEach(selectedRespondent -> {
-                String listCode = selectedRespondent.getCode();
-                respondents.forEach(respondent -> {
-                    if (listCode.equals(respondent.getId().toString())) {
-                        selectedRespondents.add(respondent);
-                    }
-                });
-            });
-            return selectedRespondents;
+            return respondents.stream()
+                .filter(respondent -> dynamicMultiSelectList.getValue().stream()
+                    .anyMatch(listValue -> listValue.hasCode(respondent.getId())))
+                .toList();
         }
     }
 
