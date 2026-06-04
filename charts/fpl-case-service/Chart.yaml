@@ -11,7 +11,7 @@ dependencies:
     version: 5.3.0
     repository: 'oci://hmctsprod.azurecr.io/helm'
   - name: ccd
-    version: 9.2.2
+    version: 9.2.3
     repository: 'oci://hmctsprod.azurecr.io/helm'
     tags:
       - fpl-ccd-stack
