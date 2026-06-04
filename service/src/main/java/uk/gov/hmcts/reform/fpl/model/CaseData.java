@@ -13,6 +13,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
@@ -845,6 +846,8 @@ public class CaseData extends CaseDataParent {
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
+    @Setter
+    private List<Element<HearingOrder>> draftOrdersRemoved;
     @JsonUnwrapped
     @Builder.Default
     private ConfidentialRefusedOrders confidentialRefusedOrders = ConfidentialRefusedOrders.builder().build();
