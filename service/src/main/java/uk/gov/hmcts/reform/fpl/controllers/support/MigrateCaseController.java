@@ -11,11 +11,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -30,7 +29,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3080", this::run3080,
+        "DFPL-3227", this::run3227,
         "DFPL-3048", this::run3048,
         "DFPL-3047", this::run3047,
         "DFPL-3101", this::run3101
@@ -60,15 +59,21 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3080(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3080";
-        final List<Long> expectedCaseIds = List.of(1751556200580074L, 1768391304150686L);
-        final String orgId = "CPYYWBZ";
-
+    private void run3227(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3227";
+        final long expectedCaseId = 1777547979393690L;
+        final CaseData caseData = getCaseData(caseDetails);
+        final String replacementEmail = caseData.getAllocatedJudge().getJudgeEmailAddress();
+        final JudgeAndLegalAdvisor replacedJudge = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()
+            .toBuilder()
+                .judgeEmailAddress(replacementEmail)
+            .build();
         Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheckList(caseId, expectedCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService
-            .updateOutsourcingPolicy(getCaseData(caseDetails), orgId, CaseRole.EPSMANAGING.formattedName()));
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+
+        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder().toBuilder()
+                .judgeAndLegalAdvisor(replacedJudge)
+            .build());
     }
 
     private void run3048(CaseDetails caseDetails) {
