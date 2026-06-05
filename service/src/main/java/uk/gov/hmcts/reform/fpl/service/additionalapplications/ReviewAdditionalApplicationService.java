@@ -65,18 +65,26 @@ public class ReviewAdditionalApplicationService {
         HashMap<String, Object> resultMap = new HashMap<>();
 
         C2DocumentBundle c2ToBeReviewed = getRelevantC2DocumentBundle(bundle);
+        boolean isConfidential = YES.equals(bundle.getHasConfidentialC2())
+            && !isEmpty(bundle.getC2DocumentBundleConfidential());
         if (!isEmpty(c2ToBeReviewed)) {
             resultMap.put("hasC2ToBeReview", YES);
             DocumentReference documentReference = (isEmpty(c2ToBeReviewed.getDraftOrdersBundle())) ? null :
                 c2ToBeReviewed.getDraftOrdersBundle().getFirst().getValue().getDocument();
 
             resultMap.put("uploadedDraftOrder", documentReference);
+            if (!isEmpty(c2ToBeReviewed.getDraftOrdersBundle())) {
+                resultMap.put("reviewAdditionalAppDraftOrderId",
+                    c2ToBeReviewed.getDraftOrdersBundle().getFirst().getId().toString());
+            }
+            resultMap.put("reviewAdditionalAppIsConfidential", isConfidential ? YES : NO);
             resultMap.put("c2AdditionalApplicationToBeReview", C2AdditionalApplicationEventData.builder()
                 .routeType(c2ToBeReviewed.getRouteType())
                 .applicantName(c2ToBeReviewed.getApplicantName())
                 .type(c2ToBeReviewed.getType())
-                .confidentialApplication((isEmpty(bundle.getC2DocumentBundleConfidential()))
-                    ? NO.getValue() : YES.getValue() + " - only HMCTS will be able to view this application")
+                .confidentialApplication(isConfidential
+                    ? YES.getValue() + " - only HMCTS will be able to view this application"
+                    : NO.getValue())
                 .document(c2ToBeReviewed.getDocument())
                 .applicationPermissionType(c2ToBeReviewed.getApplicationPermissionType())
                 .applicationRelatesToAllChildren(c2ToBeReviewed.getApplicationRelatesToAllChildren())

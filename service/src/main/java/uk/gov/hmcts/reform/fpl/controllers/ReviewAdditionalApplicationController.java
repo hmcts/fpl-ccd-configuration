@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkd
 
 
 import java.util.Map;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -113,6 +114,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
 
         caseDetails.getData().put("additionalApplicationsBundle",
             reviewAdditionalApplicationService.markSelectedBundleAsReviewed(caseData));
+        ConfirmApplicationReviewedEventData.eventFields().forEach(caseDetails.getData()::remove);
 
         return respond(caseDetails);
     }
@@ -132,10 +134,9 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         }
 
         CaseData caseData = getCaseData(caseDetails);
-
-        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
-        boolean isConfidential = eventData.getC2AdditionalApplicationToBeReview().confidentialApplication
-            .equals("Yes - only HMCTS will be able to view this application");
+        ConfirmApplicationReviewedEventData oldEventData = getCaseData(oldCaseDetails)
+            .getConfirmApplicationReviewedEventData();
+        boolean isConfidential = YES.equals(oldEventData.getReviewAdditionalAppIsConfidential());
 
         MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName(), isConfidential);
 
@@ -153,26 +154,22 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
 
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
-        C2DocumentBundle bundle  = eventData.getC2AdditionalApplicationToBeReview().toC2DocumentBundle();
-
-        Element<DraftOrder> draftOrder = bundle.getDraftOrdersBundle().getFirst();
-
-        boolean isConfidential = eventData.getC2AdditionalApplicationToBeReview().confidentialApplication
-            .equals("Yes - only HMCTS will be able to view this application");
+        UUID draftOrderId = UUID.fromString(eventData.getReviewAdditionalAppDraftOrderId());
+        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
 
         Element<HearingOrdersBundle> bundleFromDraftOrder = caseData.getHearingOrdersBundlesDrafts().stream()
             .filter(bundleElement -> {
                 if (isConfidential) {
                     return bundleElement.getValue().getOrdersCTSC().stream()
-                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrder.getId()));
+                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
                 } else {
                     return bundleElement.getValue().getOrders().stream()
-                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrder.getId()));
+                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
                 }
             })
             .findFirst()
             .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
-                "No HearingOrdersBundle found containing order with element id: " + draftOrder.getId()
+                "No HearingOrdersBundle found containing order with element id: " + draftOrderId
             ));
 
         switch (caseData.getApproveAdditionalAppRouter()) {
@@ -186,7 +183,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                         .build()).build(),
                     data,
                     bundleFromDraftOrder,
-                    draftOrder.getId(),
+                    draftOrderId,
                     reviewDecision
                 );
                 caseDetails.getData().put("orderCollection", data.get("orderCollection"));
@@ -199,8 +196,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 break;
         }
 
-        // Clean up temp fields here as needed in post-submit and /submitted returns SubmittedCallbackResponse
-        ConfirmApplicationReviewedEventData.eventFields().forEach(caseDetails.getData()::remove);
+        ConfirmApplicationReviewedEventData.postSubmitEventFields().forEach(caseDetails.getData()::remove);
 
         return respond(caseDetails);
     }

@@ -58,16 +58,31 @@ public class ConfirmApplicationReviewedEventData {
     @Temp
     String judgeNameAndTitle;
 
+    @Temp
+    String reviewAdditionalAppDraftOrderId;
+
+    @Temp
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    YesNo reviewAdditionalAppIsConfidential;
+
     public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
             "additionalApplicationToBeReviewedList",
-            "approveAdditionalAppRouter",
             "hasC2ToBeReview", "hasOtherToBeReview",
             "c2AdditionalApplicationToBeReview",
             "otherAdditionalApplicationToBeReview",
             "reviewOrderUrgency", "uploadedDraftOrder",
             "addCoverSheet", "previewApprovedOrder1",
-            "previewApprovedOrderTitle1", "judgeNameAndTitle");
+            "previewApprovedOrderTitle1");
+    }
+
+    public static List<String> postSubmitEventFields() {
+        return List.of(
+            "approveAdditionalAppRouter",
+            "judgeNameAndTitle",
+            "reviewAdditionalAppDraftOrderId",
+            "reviewAdditionalAppIsConfidential"
+        );
     }
 }

@@ -143,6 +143,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewAdditionalAppDraftOrderId",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field for storing selected draft order id"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewAdditionalAppIsConfidential",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field for storing confidentiality flag"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "reviewOrderUrgencyLabel",
     "Label": "<h3>Do any of these orders need to be reviewed urgently? If no urgency in any order, select continue only.</h3><ul><li>EPOs, ICOs, recovery orders or port alerts</li><li>interpreter booking for hearings within 3 working days</li><li>production order for hearings within 10 working days</li><li>order against government departments (such as DWP, HMRC, Home Office)</li><li>any action that needs to be taken within 24 hours</li></ul>",
     "FieldType": "Label",
