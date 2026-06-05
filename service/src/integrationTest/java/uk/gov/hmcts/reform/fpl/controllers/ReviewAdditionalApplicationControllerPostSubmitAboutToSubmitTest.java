@@ -34,6 +34,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_AND_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.REFUSE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(ReviewAdditionalApplicationController.class)
@@ -79,7 +81,12 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
         verify(approveDraftOrdersService).approveAndSealDraftOrder(any(), any(), any(), any(), any());
         verify(approveDraftOrdersService).updateHearingDraftOrdersBundle(any(), any());
         assertThat(response.getData().get("orderCollection")).isEqualTo("updated-order-collection");
-        assertThat(response.getData()).doesNotContainKeys("c2AdditionalApplicationToBeReview", "judgeNameAndTitle");
+        assertThat(response.getData()).doesNotContainKeys(
+            "approveAdditionalAppRouter",
+            "judgeNameAndTitle",
+            "reviewAdditionalAppDraftOrderId",
+            "reviewAdditionalAppIsConfidential"
+        );
     }
 
     @Test
@@ -99,7 +106,12 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
 
         verify(approveDraftOrdersService).approveAndSealDraftOrder(any(), any(), any(), any(), any());
         assertThat(response.getData().get("orderCollection")).isEqualTo("updated-order-collection");
-        assertThat(response.getData()).doesNotContainKeys("c2AdditionalApplicationToBeReview", "judgeNameAndTitle");
+        assertThat(response.getData()).doesNotContainKeys(
+            "approveAdditionalAppRouter",
+            "judgeNameAndTitle",
+            "reviewAdditionalAppDraftOrderId",
+            "reviewAdditionalAppIsConfidential"
+        );
     }
 
     @Test
@@ -110,7 +122,12 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
 
         verify(approveDraftOrdersService, never()).approveAndSealDraftOrder(any(), any(), any(), any(), any());
         verify(approveDraftOrdersService, never()).updateHearingDraftOrdersBundle(any(), any());
-        assertThat(response.getData()).doesNotContainKeys("c2AdditionalApplicationToBeReview", "judgeNameAndTitle");
+        assertThat(response.getData()).doesNotContainKeys(
+            "approveAdditionalAppRouter",
+            "judgeNameAndTitle",
+            "reviewAdditionalAppDraftOrderId",
+            "reviewAdditionalAppIsConfidential"
+        );
     }
 
     private AboutToStartOrSubmitCallbackResponse postPostSubmitAboutToSubmit(CaseData caseData) {
@@ -159,12 +176,11 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
             .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
                 .judgeNameAndTitle("District Judge Example")
                 .c2AdditionalApplicationToBeReview(c2Data)
+                .reviewAdditionalAppDraftOrderId(DRAFT_ORDER_ID.toString())
+                .reviewAdditionalAppIsConfidential(confidential ? YES : NO)
                 .build())
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .build();
     }
 }
-
-
-
 
