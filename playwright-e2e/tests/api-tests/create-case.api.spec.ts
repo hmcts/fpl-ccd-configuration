@@ -27,7 +27,8 @@ test('Create and share case API test @apiTest', async ({callback}) => {
     });
 
     await test.step('verify case access', async () => {
-        await callback.getCase(wiltshireCountyUserTwo, caseDetails.id);
+        await callback.getCase(wiltshireCountyUserOne, caseDetails.id);
+        await callback.getCase(wiltshireCountyUserTwo, caseDetails.id, false);
         await callback.getCase(newSwanseaLocalAuthorityUserOne, caseDetails.id, false);
     });
 });
