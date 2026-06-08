@@ -5,7 +5,7 @@
     "ListElementCode": "judgeTitle",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LegalAdvisorTitle",
-    "ElementLabel": "Judge or magistrate's title",
+    "ElementLabel": "Judge or Magistrate's title",
     "SecurityClassification": "Public"
   },
   {
