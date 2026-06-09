@@ -12,6 +12,16 @@
         "readOnly": false,
         "attributes": {"region": "7", "substantive": "N", "jurisdiction": "PUBLICLAW", "caseType": "CARE_SUPERVISION_EPO"},
         "authorisations": ["294","315","316","317"]
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "case-allocator",
+        "grantType": "STANDARD",
+        "roleCategory": "SYSTEM",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {"region": "1", "substantive": "N", "jurisdiction": "PUBLICLAW", "caseType": "CARE_SUPERVISION_EPO", "primaryLocation": "229786"},
+        "authorisations": ["294","315","316","317"]
       }
     ],
     "overrideAll": true
