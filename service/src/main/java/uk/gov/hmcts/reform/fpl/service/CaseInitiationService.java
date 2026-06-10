@@ -111,18 +111,22 @@ public class CaseInitiationService {
     }
 
     public String getOrganisationUsers() {
-        Optional<Organisation> userOrg = organisationService.findOrganisation();
+        if (featureToggleService.isShareCaseToAllLaUserDisabled()) {
+            return "DO_NOT_SHARE";
+        } else {
+            Optional<Organisation> userOrg = organisationService.findOrganisation();
 
-        try {
-            if (userOrg.isPresent()) {
-                return "<ul>" + caseAccessService.getLocalAuthorityUsersAllInfo().stream()
-                    .map(OrganisationUser::getUserString)
-                    .collect(Collectors.joining("")) + "</ul>";
+            try {
+                if (userOrg.isPresent()) {
+                    return "<ul>" + caseAccessService.getLocalAuthorityUsersAllInfo().stream()
+                        .map(OrganisationUser::getUserString)
+                        .collect(Collectors.joining("")) + "</ul>";
+                }
+            } catch (Exception e) {
+                return "No users found";
             }
-        } catch (Exception e) {
             return "No users found";
         }
-        return "No users found";
     }
 
     public List<String> checkUserAllowedToCreateCase(CaseData caseData) {
