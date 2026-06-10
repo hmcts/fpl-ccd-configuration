@@ -3,13 +3,27 @@
 set -eu
 
 dir=$(dirname ${0})
+skip_system_update_am_role_seeding=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --skip-system-update-am-role-seeding)
+      skip_system_update_am_role_seeding=true
+      shift
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      exit 1
+      ;;
+  esac
+done
 
 jq -c '(.[])' service/src/cftlib/resources/cftlib-am-role-assignments.json | while read user; do
   email=$(jq -r '.email' <<< $user)
   idamId=$(jq -r '.id' <<< $user)
   password=${SYSTEM_UPDATE_USER_PASSWORD}
 
-  if [[ "${SKIP_SYSTEM_UPDATE_AM_ROLE_SEEDING:-false}" == "true" && "$email" == "fpl-system-update@mailnesia.com" ]]; then
+  if [[ "$skip_system_update_am_role_seeding" == "true" && "$email" == "fpl-system-update@mailnesia.com" ]]; then
     echo "Skipping system-update AM role seeding in preview"
     continue
   fi

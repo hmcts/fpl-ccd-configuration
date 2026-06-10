@@ -293,9 +293,8 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-      export SKIP_SYSTEM_UPDATE_AM_ROLE_SEEDING=true
       ./bin/add-ccd-user-roles.sh
-      ./bin/add-role-assignments.sh
+      ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
     """
 
     archiveCoreCaseDataDefinitions('preview')
