@@ -9,6 +9,11 @@ jq -c '(.[])' service/src/cftlib/resources/cftlib-am-role-assignments.json | whi
   idamId=$(jq -r '.id' <<< $user)
   password=${SYSTEM_UPDATE_USER_PASSWORD}
 
+  if [[ "${SKIP_SYSTEM_UPDATE_AM_ROLE_SEEDING:-false}" == "true" && "$email" == "fpl-system-update@mailnesia.com" ]]; then
+    echo "Skipping system-update AM role seeding in preview"
+    continue
+  fi
+
   if [[ $email == *"ejudiciary"* ]]; then
     password=${E2E_TEST_JUDGE_PASSWORD}
   fi
