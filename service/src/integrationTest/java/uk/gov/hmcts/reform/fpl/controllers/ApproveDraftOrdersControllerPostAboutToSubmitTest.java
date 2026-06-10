@@ -63,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -116,7 +117,8 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         assertThat(responseData.getReviewCMODecision()).isNull();
         assertThat(responseData.getOrdersToBeSent()).containsOnly(
             element(cmoElement.getId(),
-                cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ").build())
+                cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ")
+                    .refusedOrder(cmo.getOrder()).order(null).build())
         );
     }
 
@@ -323,7 +325,10 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
             .build();
 
         HearingOrder expectedRejectedOrder = draftOrder.toBuilder()
-            .status(RETURNED).requestedChanges("missing data").build();
+            .status(RETURNED).requestedChanges("missing data")
+            .refusedOrder(draftOrder.getOrder()).order(null)
+            .documentAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
+            .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 

@@ -915,7 +915,11 @@ class ApproveDraftOrdersServiceTest {
                 .build();
 
             Element<HearingOrder> rejectedOrderToReturn = element(draftOrder1.getId(),
-                draftOrder1.getValue().toBuilder().status(RETURNED).requestedChanges("some change").build());
+                draftOrder1.getValue().toBuilder()
+                    .status(RETURNED)
+                    .requestedChanges("some change")
+                    .orderRemoved(draftOrder1.getValue().getOrderConfidential())
+                    .build());
 
             given(hearingOrderGenerator.buildRejectedHearingOrder(
                 draftOrder1, reviewDecision.getChangesRequestedByJudge())).willReturn(rejectedOrderToReturn);
@@ -924,7 +928,10 @@ class ApproveDraftOrdersServiceTest {
                 "orderCollection", emptyList(),
                 "hearingOrdersBundlesDrafts", emptyList(),
                 "ordersToBeSent", List.of(rejectedOrderToReturn),
-                "refusedHearingOrdersCTSC", List.of(rejectedOrderToReturn)
+                "refusedHearingOrdersCTSC", List.of(element(rejectedOrderToReturn.getId(),
+                    rejectedOrderToReturn.getValue().toBuilder()
+                        .orderConfidential(null)
+                        .build()))
             );
 
             underTest.reviewC21Orders(caseData, data, ordersBundleElement);

@@ -143,6 +143,11 @@ public class FeatureToggleService {
         return isNotEmpty(featureFlag) && featureFlag.isEnableApi();
     }
 
+    public boolean isShareCaseToAllLaUserDisabled() {
+        // true - disable the share case to all logic
+        return ldClient.boolVariation("disable-sharing-case-to-all-la-user", createLDContext(), false);
+    }
+
     private LDContext createLDContext() {
         return createLDContext(Map.of());
     }
