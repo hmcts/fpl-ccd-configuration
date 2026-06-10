@@ -80,7 +80,6 @@ public class HearingOrderGenerator {
         return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
             .refusedOrder(hearingOrderElement.getValue().getOrderOrOrderConfidential())
             .order(null)
-            .orderConfidential(null)
             .status(CMOStatus.RETURNED)
             .requestedChanges(changesRequested)
             .build());
