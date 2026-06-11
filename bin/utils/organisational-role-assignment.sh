@@ -26,7 +26,7 @@ SERVICE_TOKEN=$($BASEDIR/idam-lease-service-token.sh fpl_case_service \
 
 echo -e "\nCreating role assignment: \n User: ${USER_ID}\n Role name: ${ROLE_NAME}\n ROLE_CLASSIFICATION: ${ROLE_CLASSIFICATION}\n"
 
-curl --silent --show-error --fail --retry 3 --retry-delay 3 --retry-all-errors -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" \
+curl --silent --show-error --retry 3 --retry-delay 3 -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" \
   -H "accept: application/vnd.uk.gov.hmcts.role-assignment-service.create-assignments+json;charset=UTF-8;version=1.0" \
   -H "Authorization: Bearer ${USER_TOKEN}" \
   -H "ServiceAuthorization: Bearer ${SERVICE_TOKEN}" \
