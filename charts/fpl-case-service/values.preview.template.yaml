@@ -37,7 +37,7 @@ java:
     DECLARATION_OF_PARENTAGE: Private
     RD_STAFF_API_ENABLED: true
     RD_JUDICIAL_API_ENABLED: true
-    CREATE_SYSTEM_USER_ROLE: true
+    CREATE_SYSTEM_USER_ROLE: false
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
