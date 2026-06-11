@@ -164,9 +164,11 @@ public class RoleAssignmentService {
     @Retryable(value = {FeignException.class}, label = "Create system-user role assignment")
     public void assignSystemUserRole() {
         String systemUserToken = systemUserService.getSysUserToken();
+        String systemUserId = systemUserService.getUserId(systemUserToken);
+        log.info("Submitting system-update AM role assignment: actorId={}, roleName=case-allocator", systemUserId);
         amApi.createRoleAssignment(systemUserToken, authTokenGenerator.generate(), AssignmentRequest.builder()
             .requestedRoles(List.of(RoleAssignment.builder()
-                .actorId(systemUserService.getUserId(systemUserToken))
+                .actorId(systemUserId)
                 .roleType(RoleType.ORGANISATION)
                 .classification("PUBLIC")
                 .grantType(GrantType.STANDARD)
@@ -176,12 +178,13 @@ public class RoleAssignmentService {
                 .readOnly(false)
                 .build()))
             .roleRequest(RoleRequest.builder()
-                .assignerId(systemUserService.getUserId(systemUserToken))
+                .assignerId(systemUserId)
                 .reference("public-law-case-allocator-system-user")
                 .process("public-law-system-users")
                 .replaceExisting(true)
                 .build())
             .build());
+        log.info("System-update AM role assignment submitted for actorId={}", systemUserId);
     }
 
     /**

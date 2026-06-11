@@ -22,10 +22,14 @@ for ATTEMPT in $(seq 1 "${MAX_ATTEMPTS}"); do
     -H "ServiceAuthorization: Bearer ${SERVICE_TOKEN}" \
     "${ROLE_ASSIGNMENT_URL}/am/role-assignments/actors/${SYSTEM_UPDATE_USER_ID}"); then
 
-    ASSIGNMENT_SIZE=$(echo "${ACTOR_JSON}" | jq -r '.assignmentSize // 0')
+    HAS_CASE_ALLOCATOR=$(echo "${ACTOR_JSON}" | jq -r '
+      [(.roleAssignmentResponse // [])[]
+       | select(.roleName == "case-allocator" and .roleCategory == "SYSTEM" and .status == "LIVE")]
+      | length > 0
+    ')
 
-    if [[ "${ASSIGNMENT_SIZE}" -gt 0 ]]; then
-      echo "System-update AM role present (assignmentSize=${ASSIGNMENT_SIZE})"
+    if [[ "${HAS_CASE_ALLOCATOR}" == "true" ]]; then
+      echo "System-update AM case-allocator role is LIVE"
       exit 0
     fi
   fi
