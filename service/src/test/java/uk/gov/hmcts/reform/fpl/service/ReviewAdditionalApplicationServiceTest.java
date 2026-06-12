@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -12,25 +14,30 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class ReviewAdditionalApplicationServiceTest {
 
-    private ReviewAdditionalApplicationService reviewAdditionalApplicationService =
-        new ReviewAdditionalApplicationService();
+    @Mock
+    private ApproveDraftOrdersService approveDraftOrdersService;
+
+    @InjectMocks
+    private ReviewAdditionalApplicationService reviewAdditionalApplicationService;
 
     private static final Element<AdditionalApplicationsBundle> REVIEWED_BUNDLE =
         element(AdditionalApplicationsBundle.builder()
@@ -61,6 +68,8 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Test
     void shouldInitEventFieldWithListOfBundlesToBeReviewed() {
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn("District Judge Example");
+
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
             .build();
@@ -71,7 +80,10 @@ class ReviewAdditionalApplicationServiceTest {
             "hasApplicationToBeReviewed", YES,
             "onlyOneApplicationToBeReviewed", NO,
             "additionalApplicationToBeReviewedList",
-            asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2), AdditionalApplicationsBundle::toLabel)
+            asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2), AdditionalApplicationsBundle::toLabel),
+            "reviewOrderUrgency", NO,
+            "addCoverSheet", NO,
+            "judgeNameAndTitle", "District Judge Example"
         );
 
         assertThat(resultMap).isEqualTo(expectedMap);
@@ -79,6 +91,8 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Test
     void shouldInitEventFieldWithOutBundlesToBeReviewed() {
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn("District Judge Example");
+
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE))
             .build();
@@ -87,7 +101,10 @@ class ReviewAdditionalApplicationServiceTest {
 
         Map<String, Object> expectedMap = Map.of(
             "hasApplicationToBeReviewed", NO,
-            "onlyOneApplicationToBeReviewed", NO
+            "onlyOneApplicationToBeReviewed", NO,
+            "reviewOrderUrgency", NO,
+            "addCoverSheet", NO,
+            "judgeNameAndTitle", "District Judge Example"
             );
 
         assertThat(resultMap).isEqualTo(expectedMap);
@@ -95,21 +112,25 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Test
     void shouldInitEventFieldWithOneBundleToBeReviewed() {
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn("District Judge Example");
+
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1))
             .build();
 
         Map<String, Object> resultMap = reviewAdditionalApplicationService.initEventField(caseData);
 
-        Map<String, Object> expectedMap = Map.of(
-            "hasApplicationToBeReviewed", YES,
-            "onlyOneApplicationToBeReviewed", YES,
-            "hasC2ToBeReview", YES,
-            "hasOtherToBeReview", NO,
-            "c2AdditionalApplicationToBeReview", buildReviewC2AdditionalApplicationEventData(NEW_BUNDLE_1.getValue())
-        );
-
-        assertThat(resultMap).isEqualTo(expectedMap);
+        assertThat(resultMap)
+            .containsEntry("hasApplicationToBeReviewed", YES)
+            .containsEntry("onlyOneApplicationToBeReviewed", YES)
+            .containsEntry("hasC2ToBeReview", YES)
+            .containsEntry("hasOtherToBeReview", NO)
+            .containsEntry("uploadedDraftOrder", null)
+            .containsEntry("reviewOrderUrgency", NO)
+            .containsEntry("addCoverSheet", NO)
+            .containsEntry("judgeNameAndTitle", "District Judge Example")
+            .containsEntry("c2AdditionalApplicationToBeReview",
+                buildReviewC2AdditionalApplicationEventData(NEW_BUNDLE_1.getValue()));
     }
 
     @Test
@@ -189,14 +210,14 @@ class ReviewAdditionalApplicationServiceTest {
             .applicantName(c2ToBeReviewed.getApplicantName())
             .type(c2ToBeReviewed.getType())
             .confidentialApplication((isC2Confidential)
-                ? NO.getValue() : YES.getValue() + " - only HMCTS will be able to view this application")
+                ? YES.getValue() + " - only HMCTS will be able to view this application" : NO.getValue())
             .document(c2ToBeReviewed.getDocument())
             .applicationPermissionType(c2ToBeReviewed.getApplicationPermissionType())
             .applicationRelatesToAllChildren(c2ToBeReviewed.getApplicationRelatesToAllChildren())
             .childrenOnApplication(c2ToBeReviewed.getChildrenOnApplication())
             .applicationSummary(c2ToBeReviewed.getApplicationSummary())
             .hasSafeguardingRisk(c2ToBeReviewed.getHasSafeguardingRisk())
-            .isHearingAdjournmentRequired(isEmpty(c2ToBeReviewed.getRequestedHearingToAdjourn()) ? NO : YES)
+            .isHearingAdjournmentRequired(c2ToBeReviewed.getIsHearingAdjournmentRequired())
             .requestedHearingToAdjourn(c2ToBeReviewed.getRequestedHearingToAdjourn())
             .canBeConsideredAtNextHearing(c2ToBeReviewed.getCanBeConsideredAtNextHearing())
             .draftOrdersBundle(c2ToBeReviewed.getDraftOrdersBundle())

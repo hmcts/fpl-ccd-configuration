@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.deserializer.DynamicListDeserializer;
 import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.Temp;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -43,12 +44,45 @@ public class ConfirmApplicationReviewedEventData {
     @Temp
     OtherApplicationsBundle otherAdditionalApplicationToBeReview;
 
+    @Temp
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    YesNo reviewOrderUrgency;
+
+    @Temp
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    YesNo addCoverSheet;
+
+    @Temp
+    DocumentReference uploadedDraftOrder;
+
+    @Temp
+    String judgeNameAndTitle;
+
+    @Temp
+    String reviewAdditionalAppDraftOrderId;
+
+    @Temp
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    YesNo reviewAdditionalAppIsConfidential;
+
     public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
             "additionalApplicationToBeReviewedList",
             "hasC2ToBeReview", "hasOtherToBeReview",
             "c2AdditionalApplicationToBeReview",
-            "otherAdditionalApplicationToBeReview");
+            "otherAdditionalApplicationToBeReview",
+            "reviewOrderUrgency", "uploadedDraftOrder",
+            "addCoverSheet", "previewApprovedOrder1",
+            "previewApprovedOrderTitle1");
+    }
+
+    public static List<String> postSubmitEventFields() {
+        return List.of(
+            "approveAdditionalAppRouter",
+            "judgeNameAndTitle",
+            "reviewAdditionalAppDraftOrderId",
+            "reviewAdditionalAppIsConfidential"
+        );
     }
 }
