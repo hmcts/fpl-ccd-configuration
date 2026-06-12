@@ -106,5 +106,21 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
             .isEqualTo(dynamicList(futureHearing1, futureHearing2, todayHearing, pastHearing1, pastHearing2));
         assertThat(updatedCaseData.getSelectedHearingId()).isNull();
     }
+    @Test
+    void shouldReturnValidationErrorWhenAllocatedJudgeIsNull() {
+        // Arrange - Setup a case context with no allocated judge
+        CaseData initialCaseData = CaseData.builder()
+            .id(12345L)
+            .allocatedJudge(null)
+            .build();
+
+        // Act - Post to webhook endpoint using base infrastructure
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(initialCaseData);
+
+        // Assert - Verify the callback blocks execution with the correct error message
+        assertThat(response.getErrors()).containsExactly(
+            "You will need to add a judge or legal adviser using the allocated judge event before you can proceed to use manage hearings"
+        );
+    }
 
 }

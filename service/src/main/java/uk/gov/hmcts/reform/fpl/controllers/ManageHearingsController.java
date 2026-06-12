@@ -98,6 +98,10 @@ public class ManageHearingsController extends CallbackController {
         if (caseData.getAllocatedJudge() != null) {
             caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
             caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+        } else {
+            // Add error message when allocated judge is null
+            return respond(caseDetails, List.of("You will need to add a judge or legal adviser using the allocated"
+                + "judge event before you can proceed to use manage hearings"));
         }
 
         boolean isFirstHearing = isEmpty(caseData.getAllHearings());
