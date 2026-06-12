@@ -47,6 +47,14 @@ for ATTEMPT in $(seq 1 "${MAX_ATTEMPTS}"); do
       | length
     ')
 
+    MATCHING_UNKNOWN=$(echo "${QUERY_JSON}" | jq -r --arg roleName "${TARGET_ROLE_NAME}" --arg roleCategory "${TARGET_ROLE_CATEGORY}" '
+      [(.roleAssignmentResponse // [])[]
+       | select(.roleName == $roleName and ((.roleCategory // "") | ascii_upcase) == $roleCategory)
+       | ((.status // "UNKNOWN") | ascii_upcase)
+       | select(. == "UNKNOWN")]
+      | length
+    ')
+
     STATUS_SUMMARY=$(echo "${QUERY_JSON}" | jq -r --arg roleName "${TARGET_ROLE_NAME}" --arg roleCategory "${TARGET_ROLE_CATEGORY}" '
       [(.roleAssignmentResponse // [])[]
        | select(.roleName == $roleName and ((.roleCategory // "") | ascii_upcase) == $roleCategory)
@@ -59,6 +67,11 @@ for ATTEMPT in $(seq 1 "${MAX_ATTEMPTS}"); do
 
     if [[ "${MATCHING_LIVE}" -gt 0 ]]; then
       echo "System-update AM ${TARGET_ROLE_NAME} role is ${TARGET_STATUS} (matches=${MATCHING_TOTAL}, statuses=${STATUS_SUMMARY})"
+      exit 0
+    fi
+
+    if [[ "${MATCHING_TOTAL}" -gt 0 && "${MATCHING_UNKNOWN}" -eq "${MATCHING_TOTAL}" ]]; then
+      echo "System-update AM ${TARGET_ROLE_NAME} role found with UNKNOWN status only; accepting fallback (matches=${MATCHING_TOTAL}, statuses=${STATUS_SUMMARY})"
       exit 0
     fi
 
