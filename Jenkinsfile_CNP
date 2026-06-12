@@ -296,7 +296,7 @@ withPipeline(type, product, component) {
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       ./bin/add-ccd-user-roles.sh
       ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
-      bash ./bin/wait-for-system-update-am-role.sh 6 10
+      bash ./bin/wait-for-system-update-am-role.sh 18 10
     """
 
     archiveCoreCaseDataDefinitions('preview')

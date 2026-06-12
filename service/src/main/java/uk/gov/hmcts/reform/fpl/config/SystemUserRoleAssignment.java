@@ -23,6 +23,6 @@ public class SystemUserRoleAssignment {
     public void init() {
         log.info("Attempting to assign system-update user role");
         roleAssignmentService.assignSystemUserRole();
-        log.info("Assigned role successfully");
+        log.info("System-update role assignment startup step completed");
     }
 }

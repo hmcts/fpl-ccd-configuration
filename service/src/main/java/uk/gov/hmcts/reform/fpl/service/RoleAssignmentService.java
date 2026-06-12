@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.am.model.GrantType;
 import uk.gov.hmcts.reform.am.model.QueryRequest;
 import uk.gov.hmcts.reform.am.model.QueryResponse;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
+import uk.gov.hmcts.reform.am.model.RoleAssignmentRequestResource;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.am.model.RoleRequest;
 import uk.gov.hmcts.reform.am.model.RoleType;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -48,6 +50,8 @@ public class RoleAssignmentService {
 
     private static final String FPL_ROLE_ASSIGNMENT = "fpl-case-role-assignment";
     private static final String CASE_ID = "caseId";
+    private static final String SYSTEM_CASE_ALLOCATOR_ROLE = "case-allocator";
+    private static final String LIVE_STATUS = "LIVE";
 
     /**
      * Create a role assignment in AM. This will REPLACE the existing role assignment.
@@ -165,15 +169,20 @@ public class RoleAssignmentService {
     public void assignSystemUserRole() {
         String systemUserToken = systemUserService.getSysUserToken();
         String systemUserId = systemUserService.getUserId(systemUserToken);
-        log.info("Submitting system-update AM role assignment: actorId={}, roleName=case-allocator", systemUserId);
-        amApi.createRoleAssignment(systemUserToken, authTokenGenerator.generate(), AssignmentRequest.builder()
+        log.info("Submitting system-update AM role assignment: actorId={}, roleName={}",
+            systemUserId, SYSTEM_CASE_ALLOCATOR_ROLE);
+
+        RoleAssignmentRequestResource createResponse = amApi.createRoleAssignment(
+            systemUserToken,
+            authTokenGenerator.generate(),
+            AssignmentRequest.builder()
             .requestedRoles(List.of(RoleAssignment.builder()
                 .actorId(systemUserId)
                 .roleType(RoleType.ORGANISATION)
                 .classification("PUBLIC")
                 .grantType(GrantType.STANDARD)
                 .roleCategory(RoleCategory.SYSTEM)
-                .roleName("case-allocator")
+                .roleName(SYSTEM_CASE_ALLOCATOR_ROLE)
                 .attributes(Map.of("jurisdiction", JURISDICTION, "primaryLocation", "UK"))
                 .readOnly(false)
                 .build()))
@@ -183,8 +192,57 @@ public class RoleAssignmentService {
                 .process("public-law-system-users")
                 .replaceExisting(true)
                 .build())
-            .build());
-        log.info("System-update AM role assignment submitted for actorId={}", systemUserId);
+            .build()
+        );
+
+        List<RoleAssignment> requestedRoles = Optional.ofNullable(createResponse)
+            .map(RoleAssignmentRequestResource::getRoleAssignmentResponse)
+            .map(AssignmentRequest::getRequestedRoles)
+            .orElse(List.of());
+
+        log.info("System-update AM role assignment response summary: actorId={}, rolesReturned={}, statusSummary={}",
+            systemUserId,
+            requestedRoles.size(),
+            summariseBy(requestedRoles, role -> Optional.ofNullable(role.getStatus()).orElse("UNKNOWN")));
+
+        if (hasLiveSystemUpdateCaseAllocatorRole(systemUserToken, systemUserId)) {
+            log.info("System-update AM role assignment is LIVE: actorId={}, roleName={}",
+                systemUserId, SYSTEM_CASE_ALLOCATOR_ROLE);
+        } else {
+            log.warn("System-update AM role assignment submitted but not LIVE yet: actorId={}, roleName={}",
+                systemUserId, SYSTEM_CASE_ALLOCATOR_ROLE);
+        }
+    }
+
+    private boolean hasLiveSystemUpdateCaseAllocatorRole(String systemUserToken, String systemUserId) {
+        QueryResponse response = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .actorId(List.of(systemUserId))
+                .roleName(List.of(SYSTEM_CASE_ALLOCATOR_ROLE))
+                .roleType(List.of(RoleType.ORGANISATION.toString()))
+                .build()
+        );
+
+        List<RoleAssignment> roleAssignments = Optional.ofNullable(response)
+            .map(QueryResponse::getRoleAssignmentResponse)
+            .orElse(List.of())
+            .stream()
+            .filter(role -> SYSTEM_CASE_ALLOCATOR_ROLE.equals(role.getRoleName()))
+            .toList();
+
+        log.info("Queried system-update AM role assignments: actorId={}, roleName={}, assignmentsFound={}, statusSummary={}",
+            systemUserId,
+            SYSTEM_CASE_ALLOCATOR_ROLE,
+            roleAssignments.size(),
+            summariseBy(roleAssignments, role -> Optional.ofNullable(role.getStatus()).orElse("UNKNOWN")));
+
+        return roleAssignments.stream().anyMatch(role -> RoleCategory.SYSTEM.equals(role.getRoleCategory())
+            && LIVE_STATUS.equalsIgnoreCase(role.getStatus()));
+    }
+
+    private static Map<String, Long> summariseBy(List<RoleAssignment> roleAssignments,
+                                                  Function<RoleAssignment, String> classifier) {
+        return roleAssignments.stream().collect(Collectors.groupingBy(classifier, Collectors.counting()));
     }
 
     /**
