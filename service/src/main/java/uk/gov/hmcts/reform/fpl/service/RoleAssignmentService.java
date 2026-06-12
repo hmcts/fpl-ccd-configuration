@@ -230,13 +230,17 @@ public class RoleAssignmentService {
             .filter(role -> SYSTEM_CASE_ALLOCATOR_ROLE.equals(role.getRoleName()))
             .toList();
 
-        log.info("Queried system-update AM role assignments: actorId={}, roleName={}, assignmentsFound={}, statusSummary={}",
+        log.info(
+            "Queried system-update AM role assignments: actorId={}, roleName={},"
+               + " assignmentsFound={}, statusSummary={}",
             systemUserId,
             SYSTEM_CASE_ALLOCATOR_ROLE,
             roleAssignments.size(),
-            summariseBy(roleAssignments, role -> Optional.ofNullable(role.getStatus()).orElse("UNKNOWN")));
+            summariseBy(roleAssignments, role -> Optional.ofNullable(role.getStatus())
+                .orElse("UNKNOWN")));
 
-        return roleAssignments.stream().anyMatch(role -> RoleCategory.SYSTEM.equals(role.getRoleCategory())
+        return roleAssignments.stream().anyMatch(role -> RoleCategory.SYSTEM
+            .equals(role.getRoleCategory())
             && LIVE_STATUS.equalsIgnoreCase(role.getStatus()));
     }
 
