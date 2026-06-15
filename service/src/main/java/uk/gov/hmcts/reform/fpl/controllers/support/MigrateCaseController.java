@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
@@ -29,7 +30,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3227", this::run3227,
+        "DFPL-3272", this::run3272,
         "DFPL-3048", this::run3048,
         "DFPL-3047", this::run3047,
         "DFPL-3101", this::run3101
@@ -59,21 +60,19 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3227(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3227";
-        final long expectedCaseId = 1777547979393690L;
+    private void run3272(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3272";
+        final long expectedCaseId = 1778521486149688L;
         final CaseData caseData = getCaseData(caseDetails);
-        final String replacementEmail = caseData.getAllocatedJudge().getJudgeEmailAddress();
-        final JudgeAndLegalAdvisor replacedJudge = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()
-            .toBuilder()
-                .judgeEmailAddress(replacementEmail)
+
+        final Orders updatedOrder = caseData.getOrders().toBuilder()
+            .directionDetails(null)
             .build();
+
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
 
-        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder().toBuilder()
-                .judgeAndLegalAdvisor(replacedJudge)
-            .build());
+        caseDetails.getData().put("orders", updatedOrder);
     }
 
     private void run3048(CaseDetails caseDetails) {
