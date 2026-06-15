@@ -26,10 +26,11 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert;
@@ -70,7 +71,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.CREATE;
 import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.END_DATE_RANGE_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
@@ -140,13 +140,18 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         .judgeTitle(DISTRICT_JUDGE)
         .build();
 
+    private static final UUID CHILD_1_ID = UUID.randomUUID();
+    private static final UUID CHILD_2_ID = UUID.randomUUID();
     private static final Child CHILD_1 = Child.builder()
         .party(ChildParty.builder().firstName("first1").lastName("last1").gender(ChildGender.BOY).build())
         .build();
     private static final Child CHILD_2 = Child.builder()
         .party(ChildParty.builder().firstName("first2").lastName("last2").gender(ChildGender.OTHER).build())
         .build();
-    private static final List<Element<Child>> CHILDREN = wrapElements(CHILD_1, CHILD_2);
+    private static final List<Element<Child>> CHILDREN = List.of(
+        Element.<Child>builder().id(CHILD_1_ID).value(CHILD_1).build(),
+        Element.<Child>builder().id(CHILD_2_ID).value(CHILD_2).build()
+    );
 
     private static final byte[] DOCUMENT_BINARIES = testDocumentBinaries();
     private static final DocmosisDocument DOCMOSIS_DOCUMENT = testDocmosisDocument(DOCUMENT_BINARIES);
@@ -263,9 +268,17 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         CaseData responseCaseData = extractCaseData(response);
 
-        assertThat(responseCaseData.getChildSelector()).isEqualTo(Selector.newSelector(2));
+        assertThat(responseCaseData.getChildSelectorForManageOrders()).isEqualTo(
+            DynamicMultiSelectList.builder()
+                .listItems(List.of(
+                    DynamicMultiSelectListElement.builder().code(CHILD_1_ID.toString())
+                        .label("first1 last1 (Child 1)").build(),
+                    DynamicMultiSelectListElement.builder().code(CHILD_2_ID.toString())
+                        .label("first2 last2 (Child 2)").build()
+                )).build()
+        );
         assertThat(response.getData().get("children_label"))
-            .isEqualTo("Child 1: first1 last1\nChild 2: first2 last2\n");
+            .isEqualTo("first1 last1 (Child 1)\nfirst2 last2 (Child 2)");
 
         assertThat(response.getData().get("childrenDetailsSectionSubHeader")).isEqualTo("Care order (C32A)");
     }
@@ -274,7 +287,11 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void childrenDetailsShouldReturnErrorWhenNoChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
-            .childSelector(Selector.newSelector(2))
+            .childSelectorForManageOrders(DynamicMultiSelectList.builder()
+                .listItems(List.of(
+                    DynamicMultiSelectListElement.builder().code("0").label("First child").build(),
+                    DynamicMultiSelectListElement.builder().code("1").label("Second child").build()
+                )).build())
             .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32A_CARE_ORDER).build())
             .build();
 
@@ -473,7 +490,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "issuing-details");
         assertThat(response.getErrors()).isEmpty();
         assertThat(response.getData())
-            .containsKeys("children_label", "childSelector", "childrenDetailsSectionSubHeader");
+            .containsKeys("children_label", "childSelectorForManageOrders", "childrenDetailsSectionSubHeader");
     }
 
     @Test

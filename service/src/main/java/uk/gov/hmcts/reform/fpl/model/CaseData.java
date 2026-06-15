@@ -499,8 +499,8 @@ public class CaseData extends CaseDataParent {
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
+    private final DynamicMultiSelectList childSelectorForManageOrders;
     private final Selector othersSelector;
-//    private final Selector respondentsSelector;
     private final DynamicMultiSelectList respondentsSelectorV2;
     private final Selector personSelector;
     private final Selector careOrderSelector;
