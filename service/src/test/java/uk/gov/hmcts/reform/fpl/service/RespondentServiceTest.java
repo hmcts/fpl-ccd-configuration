@@ -587,7 +587,8 @@ class RespondentServiceTest {
     @Test
     void shouldSelectSomeWhenAskedToNotSelectAll() {
         UUID respondentId = UUID.randomUUID();
-        Element<Respondent> firstRespondent = element(respondentId, Respondent.builder().legalRepresentation("0").build());
+        Element<Respondent> firstRespondent = element(respondentId, Respondent.builder()
+            .legalRepresentation("0").build());
         Element<Respondent> secondRespondent = element(Respondent.builder().legalRepresentation("1").build());
 
         List<Element<Respondent>> allRespondents = List.of(firstRespondent, secondRespondent);

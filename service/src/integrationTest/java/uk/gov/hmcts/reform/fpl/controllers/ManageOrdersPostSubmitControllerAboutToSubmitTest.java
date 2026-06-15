@@ -153,14 +153,14 @@ class ManageOrdersPostSubmitControllerAboutToSubmitTest extends AbstractCallback
 
         assertThat(response.getData()).doesNotContainKeys(
             "judgeAndLegalAdvisor", "manageOrdersApprovalDate", "orderAppliesToAllChildren", "children_label",
-            "childSelectorForManageOrders", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType", "orderTempQuestions",
-            "issuingDetailsSectionSubHeader", "hearingDetailsSectionSubHeader",
-            "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader",
-            "manageOrdersOperation", "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase",
-            "manageOrdersChildrenDescription", "manageOrdersEndDateTime", "manageOrdersEpoType",
-            "manageOrdersEpoRemovalAddress", "manageOrdersExclusionRequirement", "manageOrdersWhoIsExcluded",
-            "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest", "manageOrdersTitle",
-            "manageOrdersDirections", "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassRegion"
+            "childSelectorForManageOrders", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType",
+            "orderTempQuestions", "issuingDetailsSectionSubHeader", "hearingDetailsSectionSubHeader",
+            "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader", "manageOrdersOperation",
+            "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase", "manageOrdersChildrenDescription",
+            "manageOrdersEndDateTime", "manageOrdersEpoType", "manageOrdersEpoRemovalAddress",
+            "manageOrdersExclusionRequirement", "manageOrdersWhoIsExcluded", "manageOrdersExclusionStartDate",
+            "manageOrdersPowerOfArrest", "manageOrdersTitle", "manageOrdersDirections",
+            "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassRegion"
         );
     }
 

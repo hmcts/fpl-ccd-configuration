@@ -255,7 +255,8 @@ public class RespondentService {
     }
 
     public List<Element<Respondent>> getSelectedRespondents(List<Element<Respondent>> respondents,
-                                                            DynamicMultiSelectList dynamicMultiSelectList, String allRespondentsSelected) {
+                                                            DynamicMultiSelectList dynamicMultiSelectList,
+                                                            String allRespondentsSelected) {
 
         if (useAllRespondents(allRespondentsSelected)) {
             return respondents;
@@ -331,7 +332,7 @@ public class RespondentService {
         caseDetails.getData().put("respondents1", respondents);
     }
 
-    public DynamicMultiSelectList getRespondentsMultiSelectList (CaseData caseData) {
+    public DynamicMultiSelectList getRespondentsMultiSelectList(CaseData caseData) {
         List<DynamicMultiSelectListElement> listItems = new ArrayList<>();
         if (caseData.getRespondents1() != null) {
             IncrementalInteger i = new IncrementalInteger(1);
