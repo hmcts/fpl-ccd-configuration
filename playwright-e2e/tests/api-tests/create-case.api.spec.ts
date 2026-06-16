@@ -27,8 +27,12 @@ test('Create and share case API test @apiTest', async ({callback}) => {
     });
 
     await test.step('verify case access', async () => {
-        await callback.getCase(wiltshireCountyUserOne, caseDetails.id);
-        await callback.getCase(wiltshireCountyUserTwo, caseDetails.id, false);
+        // comment out the following two if share case all is enabled
+        await callback.getCase(wiltshireCountyUserTwo, caseDetails.id);
+
+        // uncomment the following two if share case all is disabled
+        // await callback.getCase(wiltshireCountyUserOne, caseDetails.id);
+        // await callback.getCase(wiltshireCountyUserTwo, caseDetails.id, false);
         await callback.getCase(newSwanseaLocalAuthorityUserOne, caseDetails.id, false);
     });
 });
