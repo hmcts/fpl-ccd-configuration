@@ -20,10 +20,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -51,7 +52,6 @@ import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -63,13 +63,19 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
-    private static final Child CHILD_1 = Child.builder()
+    private static final UUID childId1 = UUID.randomUUID();
+    private static final UUID childId2 = UUID.randomUUID();
+    private static final UUID childId3 = UUID.randomUUID();
+    private static final Child child1 = Child.builder()
         .party(ChildParty.builder().firstName("first1").lastName("last1").gender(ChildGender.BOY).build())
         .build();
-    private static final Child CHILD_2 = Child.builder()
+    private static final Child child2 = Child.builder()
         .party(ChildParty.builder().firstName("first2").lastName("last2").gender(ChildGender.GIRL).build())
         .build();
-    private static final List<Element<Child>> CHILDREN = wrapElements(CHILD_1, CHILD_2);
+    private static final List<Element<Child>> childrenList = List.of(
+        Element.<Child>builder().id(childId1).value(child1).build(),
+        Element.<Child>builder().id(childId2).value(child2).build()
+    );
 
     // need actual pdfs for the merging
     private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
@@ -142,7 +148,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C21_BLANK_ORDER")
                 .type("Blank order (C21)")
-                .children(CHILDREN)
+                .children(childrenList)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Dredd")
@@ -185,7 +191,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C23_EMERGENCY_PROTECTION_ORDER")
                 .type("Emergency protection order (C23)")
-                .children(CHILDREN)
+                .children(childrenList)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Dredd")
@@ -218,7 +224,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C21_BLANK_ORDER")
                 .type("Blank order (C21)")
-                .children(CHILDREN)
+                .children(childrenList)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Dredd")
@@ -236,13 +242,24 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
     }
 
     private CaseData buildCaseData() {
+        DynamicMultiSelectListElement childEle1 = DynamicMultiSelectListElement.builder().code(childId1.toString())
+            .label("first1 last1").build();
+        DynamicMultiSelectListElement childEle2 = DynamicMultiSelectListElement.builder().code(childId2.toString())
+            .label("first2 last2").build();
+
         return CaseData.builder()
             .id(1234123412341234L)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("CASE_NUMBER")
-            .children1(CHILDREN)
+            .children1(childrenList)
             .orderAppliesToAllChildren("No")
-            .childSelector(Selector.builder().count("3").selected(List.of(0,1)).build())
+            .childSelectorForManageOrders(
+                DynamicMultiSelectList.builder()
+                    .value(List.of(childEle1, childEle2))
+                    .listItems(List.of(childEle1, childEle2, DynamicMultiSelectListElement.builder()
+                        .code(childId3.toString())
+                        .label("first3 last3").build()))
+                    .build())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
             .allocatedJudge(Judge.builder().judgeLastName("Dredd").judgeTitle(HIS_HONOUR_JUDGE).build())
             .build();

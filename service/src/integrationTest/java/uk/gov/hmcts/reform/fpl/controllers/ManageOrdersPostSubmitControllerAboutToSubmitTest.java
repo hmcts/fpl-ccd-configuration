@@ -17,9 +17,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -166,6 +167,11 @@ class ManageOrdersPostSubmitControllerAboutToSubmitTest extends AbstractCallback
 
     private CaseData buildCaseData() {
         List<Element<GeneratedOrder>> orderCollection = new ArrayList<>();
+        DynamicMultiSelectListElement childEle1 = DynamicMultiSelectListElement.builder().code("0")
+            .label("First child").build();
+        DynamicMultiSelectListElement childEle2 = DynamicMultiSelectListElement.builder().code("1")
+            .label("Second child").build();
+
 
         orderCollection.add(element(GeneratedOrder.builder()
             .orderType("C21_BLANK_ORDER")
@@ -192,7 +198,13 @@ class ManageOrdersPostSubmitControllerAboutToSubmitTest extends AbstractCallback
             .familyManCaseNumber("CASE_NUMBER")
             .children1(CHILDREN)
             .orderAppliesToAllChildren("No")
-            .childSelector(Selector.builder().count("3").selected(List.of(0,1)).build())
+            .childSelectorForManageOrders(
+                DynamicMultiSelectList.builder()
+                    .value(List.of(childEle1, childEle2))
+                    .listItems(List.of(childEle1, childEle2,
+                        DynamicMultiSelectListElement.builder().code("2").label("first3 last3").build()
+                    )).build()
+            )
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
             .allocatedJudge(Judge.builder().judgeLastName("Dredd").judgeTitle(HIS_HONOUR_JUDGE).build())
             .orderCollection(orderCollection)

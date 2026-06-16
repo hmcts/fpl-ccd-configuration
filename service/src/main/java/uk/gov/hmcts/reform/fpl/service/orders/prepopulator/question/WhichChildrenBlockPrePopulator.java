@@ -29,7 +29,7 @@ public class WhichChildrenBlockPrePopulator implements QuestionBlockOrderPrePopu
             .getChildrenMultiSelectList(caseData);
         return Map.of(
             "childSelectorForManageOrders", childSelectorForManageOrders,
-            "children_label", childrenService.formatChildrenSelector(childSelectorForManageOrders)
+            "children_label", childrenService.getChildrenLabelFromMultiSelectList(childSelectorForManageOrders)
         );
     }
 }
