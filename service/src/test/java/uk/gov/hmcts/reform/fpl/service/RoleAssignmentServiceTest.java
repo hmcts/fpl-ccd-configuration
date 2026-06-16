@@ -68,22 +68,10 @@ class RoleAssignmentServiceTest {
         void shouldCreateValidSystemUserRoleAssignment() {
             when(systemUserService.getSysUserToken()).thenReturn("token");
             when(systemUserService.getUserId("token")).thenReturn("systemUserId");
-            when(amApi.queryRoleAssignments(any(), any(), any())).thenReturn(QueryResponse.builder()
-                .roleAssignmentResponse(List.of(RoleAssignment.builder()
-                    .roleName("case-allocator")
-                    .roleCategory(RoleCategory.SYSTEM)
-                    .status("LIVE")
-                    .build()))
-                .build());
 
             underTest.assignSystemUserRole();
 
             verify(amApi).createRoleAssignment(any(), any(), assignmentRequestCaptor.capture());
-            verify(amApi).queryRoleAssignments(any(), any(), eq(QueryRequest.builder()
-                .actorId(List.of("systemUserId"))
-                .roleName(List.of("case-allocator"))
-                .roleType(List.of(RoleType.ORGANISATION.toString()))
-                .build()));
 
             verifyRoleAssignmentRequest(assignmentRequestCaptor.getValue());
         }

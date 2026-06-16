@@ -21,8 +21,7 @@ public class SystemUserRoleAssignment {
     @PostConstruct
     @Retryable(retryFor = Exception.class, label = "Create system update user in AM")
     public void init() {
-        log.info("Attempting to assign system-update user role");
+        log.info("Assigning system-update user role");
         roleAssignmentService.assignSystemUserRole();
-        log.info("System-update role assignment startup step completed");
     }
 }
