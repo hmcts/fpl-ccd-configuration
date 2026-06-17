@@ -117,6 +117,47 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         @Test
+        void shouldNotMigrateIfNewFormatAlready() {
+            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
+                .data(Map.of(MIGRATION_ID_KEY, MIGRATION_ID,
+                    "refusedHearingOrders", List.of(element(HEARING_ORDER_ID, HearingOrder.builder()
+                        .refusedOrder(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE"))
+                        .build()))))
+                .build()));
+
+            assertThat(after.getRefusedHearingOrders())
+                .isEqualTo(List.of(element(HEARING_ORDER_ID,
+                    HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "CTSC", "LA", "Resp0", "Child0", "Resp1", "Child1", "Resp2", "Child2", "Resp3", "Child3", "Resp4", "Child4",
+            "Resp5", "Child5", "Resp6", "Child6", "Resp7", "Child7", "Resp8", "Child8", "Resp9", "Child9",
+            "Child10", "Child11", "Child12", "Child13", "Child14"
+        })
+        void shouldNotMigrateConfidentialRefusedOrderIfNewFormatAlready(String suffix) {
+            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
+                .data(Map.of("refusedHearingOrders" + suffix,
+                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
+                    MIGRATION_ID_KEY, MIGRATION_ID))
+                .build()));
+
+            after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
+                if (suffixAfter.equals(suffix)) {
+                    assertThat(orders).isEqualTo(List.of(element(HEARING_ORDER_ID,
+                        HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
+                            .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
+                } else {
+                    assertThat(orders).isNull();
+                }
+            });
+        }
+
+        @Test
         void shouldRollbackRefusedOrder() {
             CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
                 .data(Map.of("refusedHearingOrders",
@@ -166,6 +207,45 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
                 assertThat(orders).isNull();
+            });
+        }
+        @Test
+        void shouldNotRollbackRefusedOrderIfRolledBackAlready() {
+            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
+                .data(Map.of("refusedHearingOrders",
+                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().order(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
+                    MIGRATION_ID_KEY, ROLLBACK_ID))
+                .build()));
+
+            assertThat(after.getRefusedHearingOrders())
+                .isEqualTo(List.of(element(HEARING_ORDER_ID,
+                    HearingOrder.builder().order(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "CTSC", "LA", "Resp0", "Child0", "Resp1", "Child1", "Resp2", "Child2", "Resp3", "Child3", "Resp4", "Child4",
+            "Resp5", "Child5", "Resp6", "Child6", "Resp7", "Child7", "Resp8", "Child8", "Resp9", "Child9",
+            "Child10", "Child11", "Child12", "Child13", "Child14"
+        })
+        void shouldNotRollbackConfidentialRefusedOrderIfRolledbackAlready(String suffix) {
+            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
+                .data(Map.of("refusedHearingOrders" + suffix,
+                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().orderConfidential(ORDER_DOCUMENT)
+                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
+                    MIGRATION_ID_KEY, ROLLBACK_ID))
+                .build()));
+
+            after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
+                if (suffixAfter.equals(suffix)) {
+                    assertThat(orders).isEqualTo(List.of(element(HEARING_ORDER_ID,
+                        HearingOrder.builder().orderConfidential(ORDER_DOCUMENT)
+                            .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
+                } else {
+                    assertThat(orders).isNull();
+                }
             });
         }
     }

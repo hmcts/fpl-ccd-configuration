@@ -143,17 +143,20 @@ public class MigrateCaseController extends CallbackController {
                                                              boolean isConfidential) {
         return refusedOrders.stream()
             .map(refusedOrderElement -> {
-                DocumentReference orderDoc = (isConfidential)
+                DocumentReference refusedOrderDoc = (isConfidential)
                     ? refusedOrderElement.getValue().getOrderConfidential()
                     : refusedOrderElement.getValue().getOrder();
 
-                return (orderDoc != null)
-                    ? element(refusedOrderElement.getId(), refusedOrderElement.getValue().toBuilder()
-                        .refusedOrder(orderDoc)
+                if (refusedOrderDoc == null) {
+                    log.warn("Refused order document is null for element: {}", refusedOrderElement.getId());
+                    return refusedOrderElement;
+                } else {
+                    return element(refusedOrderElement.getId(), refusedOrderElement.getValue().toBuilder()
+                        .refusedOrder(refusedOrderDoc)
                         .order(null)
                         .orderConfidential(null)
-                        .build())
-                    : refusedOrderElement;
+                        .build());
+                }
             })
             .toList();
     }
@@ -185,15 +188,18 @@ public class MigrateCaseController extends CallbackController {
         return refusedOrders.stream()
             .map(refusedOrderElement -> {
                 DocumentReference refusedOrderDoc = refusedOrderElement.getValue().getRefusedOrder();
-                return (refusedOrderDoc != null)
-                    ? element(
+                if (refusedOrderDoc == null) {
+                    log.warn("Refused order document is null for element: {}", refusedOrderElement.getId());
+                    return refusedOrderElement;
+                } else {
+                    return element(
                         refusedOrderElement.getId(),
                         refusedOrderElement.getValue().toBuilder()
                             .refusedOrder(null)
                             .order((!isConfidential) ? refusedOrderDoc : null)
                             .orderConfidential((isConfidential) ? refusedOrderDoc : null)
-                            .build())
-                    : refusedOrderElement;
+                            .build());
+                }
             })
             .toList();
     }
