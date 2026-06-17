@@ -33,6 +33,12 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
             await createCase.clickContinue();
             await createCase.fillcaseName(caseName);
             await createCase.submitOutSourceCase();
+            await createCase.page.waitForTimeout(600)
+            const url = createCase.page.url();
+            if(url.includes('openCasecheckSharing')) {
+                await createCase.shareWithOrganisationUser('No');
+                await createCase.submitOutSourceCase();
+            }
             await expect(page.locator('cut-alert')).toContainText('has been created.');
             await expect(page.getByRole('heading', {name: `${caseName}`})).toBeVisible();
 
@@ -49,6 +55,12 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
         await createCase.clickContinue();
         await createCase.fillcaseName(caseName);
         await createCase.submitOutSourceCase();
+        await createCase.page.waitForTimeout(600)
+        const url = createCase.page.url();
+        if(url.includes('openCasecheckSharing')) {
+            await createCase.shareWithOrganisationUser('No');
+            await createCase.submitOutSourceCase();
+        }
         await expect(page.locator('cut-alert')).toContainText('has been created.');
         await expect(page.getByRole('heading', {name: `${caseName}`})).toBeVisible();
         await createCase.getCaseNumber();
