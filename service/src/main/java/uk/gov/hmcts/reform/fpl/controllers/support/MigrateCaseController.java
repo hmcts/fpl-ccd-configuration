@@ -13,8 +13,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialRefusedOrders;
+import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
@@ -38,7 +39,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-log", this::runLog,
         "DFPL-2773", this::run2773,
         "DFPL-2773-rollback", this::run2773Rollback,
-        "DFPL-3227", this::run3227,
+        "DFPL-3272", this::run3272,
         "DFPL-3048", this::run3048,
         "DFPL-3047", this::run3047,
         "DFPL-3101", this::run3101
@@ -68,21 +69,19 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3227(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3227";
-        final long expectedCaseId = 1777547979393690L;
+    private void run3272(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3272";
+        final long expectedCaseId = 1778521486149688L;
         final CaseData caseData = getCaseData(caseDetails);
-        final String replacementEmail = caseData.getAllocatedJudge().getJudgeEmailAddress();
-        final JudgeAndLegalAdvisor replacedJudge = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()
-            .toBuilder()
-            .judgeEmailAddress(replacementEmail)
+
+        final Orders updatedOrder = caseData.getOrders().toBuilder()
+            .directionDetails(null)
             .build();
+
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
 
-        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder().toBuilder()
-            .judgeAndLegalAdvisor(replacedJudge)
-            .build());
+        caseDetails.getData().put("orders", updatedOrder);
     }
 
     private void run3048(CaseDetails caseDetails) {
@@ -143,15 +142,19 @@ public class MigrateCaseController extends CallbackController {
     private List<Element<HearingOrder>> migrateRefusedOrders(List<Element<HearingOrder>> refusedOrders,
                                                              boolean isConfidential) {
         return refusedOrders.stream()
-            .map(refusedOrderElement -> element(
-                refusedOrderElement.getId(),
-                refusedOrderElement.getValue().toBuilder()
-                    .refusedOrder((isConfidential)
-                        ? refusedOrderElement.getValue().getOrderConfidential()
-                        : refusedOrderElement.getValue().getOrder())
-                    .order(null)
-                    .orderConfidential(null)
-                    .build()))
+            .map(refusedOrderElement -> {
+                DocumentReference orderDoc = (isConfidential)
+                    ? refusedOrderElement.getValue().getOrderConfidential()
+                    : refusedOrderElement.getValue().getOrder();
+
+                return (orderDoc != null)
+                    ? element(refusedOrderElement.getId(), refusedOrderElement.getValue().toBuilder()
+                        .refusedOrder(orderDoc)
+                        .order(null)
+                        .orderConfidential(null)
+                        .build())
+                    : refusedOrderElement;
+            })
             .toList();
     }
 
@@ -180,13 +183,18 @@ public class MigrateCaseController extends CallbackController {
     private List<Element<HearingOrder>> rollbackRefusedOrders(List<Element<HearingOrder>> refusedOrders,
                                                               boolean isConfidential) {
         return refusedOrders.stream()
-            .map(refusedOrderElement -> element(
-                refusedOrderElement.getId(),
-                refusedOrderElement.getValue().toBuilder()
-                    .refusedOrder(null)
-                    .order((!isConfidential) ? refusedOrderElement.getValue().getRefusedOrder() : null)
-                    .orderConfidential((isConfidential) ? refusedOrderElement.getValue().getRefusedOrder() : null)
-                    .build()))
+            .map(refusedOrderElement -> {
+                DocumentReference refusedOrderDoc = refusedOrderElement.getValue().getRefusedOrder();
+                return (refusedOrderDoc != null)
+                    ? element(
+                        refusedOrderElement.getId(),
+                        refusedOrderElement.getValue().toBuilder()
+                            .refusedOrder(null)
+                            .order((!isConfidential) ? refusedOrderDoc : null)
+                            .orderConfidential((isConfidential) ? refusedOrderDoc : null)
+                            .build())
+                    : refusedOrderElement;
+            })
             .toList();
     }
 }
