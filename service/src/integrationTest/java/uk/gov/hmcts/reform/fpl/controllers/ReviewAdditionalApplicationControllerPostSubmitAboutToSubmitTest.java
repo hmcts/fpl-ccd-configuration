@@ -32,6 +32,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPLICANT_CHANGE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_AND_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.REFUSE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -122,6 +123,26 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
 
         verify(approveDraftOrdersService, never()).approveAndSealDraftOrder(any(), any(), any(), any(), any());
         verify(approveDraftOrdersService, never()).updateHearingDraftOrdersBundle(any(), any());
+        assertThat(response.getData()).doesNotContainKeys(
+            "approveAdditionalAppRouter",
+            "judgeNameAndTitle",
+            "reviewAdditionalAppDraftOrderId",
+            "reviewAdditionalAppIsConfidential"
+        );
+    }
+
+    @Test
+    void shouldMoveOrderToRejectedCollectionWhenApplicantMustChangeOrder() {
+        CaseData caseData = buildCaseData(APPLICANT_CHANGE_ORDER, false);
+
+        when(reviewAdditionalApplicationService.returnDraftOrderToApplicant(any(), any(), any()))
+            .thenReturn(Map.of("refusedHearingOrders", List.of("rejected-order")));
+
+        AboutToStartOrSubmitCallbackResponse response = postPostSubmitAboutToSubmit(caseData);
+
+        verify(reviewAdditionalApplicationService).returnDraftOrderToApplicant(any(), any(), any());
+        verify(approveDraftOrdersService, never()).approveAndSealDraftOrder(any(), any(), any(), any(), any());
+        assertThat(response.getData().get("refusedHearingOrders")).isEqualTo(List.of("rejected-order"));
         assertThat(response.getData()).doesNotContainKeys(
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",

@@ -99,6 +99,10 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 caseDetails.getData().put("reviewOrderUrgency", YES);
                 caseDetails.getData().put("addCoverSheet", NO);
                 break;
+            case APPLICANT_CHANGE_ORDER:
+                caseDetails.getData().put("reviewOrderUrgency", NO);
+                caseDetails.getData().put("addCoverSheet", NO);
+                break;
             default:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
                 caseDetails.getData().put("addCoverSheet", NO);
@@ -192,6 +196,13 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 );
                 break;
             }
+            case APPLICANT_CHANGE_ORDER:
+                caseDetails.getData().putAll(reviewAdditionalApplicationService.returnDraftOrderToApplicant(
+                    caseData,
+                    bundleFromDraftOrder,
+                    draftOrderId
+                ));
+                break;
             default:
                 break;
         }

@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPLICANT_CHANGE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_AND_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_CHANGE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.REFUSE;
@@ -132,6 +133,20 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
             .getConfirmApplicationReviewedEventData();
 
         assertThat(resultEventData.getReviewOrderUrgency()).isEqualTo(YesNo.YES);
+        assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.NO);
+    }
+
+    @Test
+    void shouldSetFlagsForApplicantChangeOrderRoute() {
+        CaseData caseData = CaseData.builder()
+            .approveAdditionalAppRouter(APPLICANT_CHANGE_ORDER)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "edit-hearing");
+        ConfirmApplicationReviewedEventData resultEventData = extractCaseData(response)
+            .getConfirmApplicationReviewedEventData();
+
+        assertThat(resultEventData.getReviewOrderUrgency()).isEqualTo(YesNo.NO);
         assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.NO);
     }
 
