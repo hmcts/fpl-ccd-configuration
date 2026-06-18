@@ -1,0 +1,14 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "AccessTypeID": "la-all-fpl-cases",
+    "OrganisationProfileID": "LOCAL_AUTHORITY_PROFILE",
+    "AccessMandatory": "N",
+    "AccessDefault": "N",
+    "Display": "Y",
+    "Description": "All FPL cases",
+    "Hint": "Grant access to all FPL cases",
+    "DisplayOrder": 1
+  }
+]
