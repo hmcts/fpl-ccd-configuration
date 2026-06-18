@@ -76,14 +76,16 @@ public class ApplicantsListGenerator {
         if (isNotEmpty(caseData.getCaseLocalAuthorityName())) {
             applicantsFullNames.add(InterlocutoryApplicant.builder()
                 .code("applicant")
-                .name(caseData.getCaseLocalAuthorityName() + ", Applicant").build());
+                .name((!caseData.isC1Application()) ? caseData.getCaseLocalAuthorityName() + ", Applicant" :
+                    caseData.getCaseLocalAuthorityName() + ", Local Authority").build());
         }
 
         caseData.getSecondaryLocalAuthority()
             .map(LocalAuthority::getName)
             .map(localAuthorityName -> InterlocutoryApplicant.builder()
                 .code("secondaryLocalAuthority")
-                .name(localAuthorityName + ", Secondary LA").build())
+                .name((!caseData.isC1Application()) ?  localAuthorityName + ", Secondary LA" :
+                    localAuthorityName + ", Applicant").build())
             .ifPresent(applicantsFullNames::add);
 
         applicantsFullNames.addAll(buildRespondentNameElements(caseData.getAllRespondents()));
