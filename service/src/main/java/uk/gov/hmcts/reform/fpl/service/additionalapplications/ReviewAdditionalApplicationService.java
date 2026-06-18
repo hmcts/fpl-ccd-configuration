@@ -194,21 +194,22 @@ public class ReviewAdditionalApplicationService {
         hearingOrdersBundle.getValue().removeOrderElement(orderElement);
         updates.putAll(approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, hearingOrdersBundle));
 
+
         return updates;
     }
 
-    private Map<String, List<Element<HearingOrder>>> addToConfidentialOrderBundle(
+    private <T> Map<String, List<Element<T>>> addToConfidentialOrderBundle(
         Element<HearingOrdersBundle> draftBundle,
         Element<HearingOrder> draftOrderElement,
-        ConfidentialOrderBundle<HearingOrder> targetBundle,
-        Element<HearingOrder> orderToBeAdded
+        ConfidentialOrderBundle<T> targetBundle,
+        Element<T> orderToBeAdded
     ) {
-        Map<String, List<Element<HearingOrder>>> updates = new HashMap<>();
+        Map<String, List<Element<T>>> updates = new HashMap<>();
 
         draftBundle.getValue().processAllConfidentialOrders((suffix, selectedDraftOrders) -> {
             if (isNotEmpty(selectedDraftOrders)
                 && findElement(draftOrderElement.getId(), selectedDraftOrders).isPresent()) {
-                List<Element<HearingOrder>> confidentialOrders =
+                List<Element<T>> confidentialOrders =
                     defaultIfNull(targetBundle.getConfidentialOrdersBySuffix(suffix), new ArrayList<>());
                 confidentialOrders.add(orderToBeAdded);
                 updates.put(targetBundle.getFieldBaseName() + suffix, confidentialOrders);
