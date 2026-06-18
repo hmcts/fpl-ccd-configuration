@@ -209,6 +209,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 assertThat(orders).isNull();
             });
         }
+
         @Test
         void shouldNotRollbackRefusedOrderIfRolledBackAlready() {
             CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
