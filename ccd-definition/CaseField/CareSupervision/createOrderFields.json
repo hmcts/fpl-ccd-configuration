@@ -108,7 +108,8 @@
     "Label": " ",
     "FieldType": "ChildSelector",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Field still used in closeCase & recordFinalDecisions events"
   },
   {
     "LiveFrom": "01/01/2017",
