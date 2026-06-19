@@ -367,7 +367,7 @@ public class ApproveDraftOrdersService {
             .filter(order -> order.getId().equals(draftOrderId))
             .findFirst()
             .orElseGet(() ->
-                selectedOrdersBundle.getValue().getOrdersCTSC().stream()
+                selectedOrdersBundle.getValue().getAllConfidentialOrders().stream()
                     .filter(order -> order.getId().equals(draftOrderId))
                     .findFirst()
                     .orElseThrow(() -> new HearingOrdersBundleNotFoundException(

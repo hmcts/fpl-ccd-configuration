@@ -164,7 +164,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         Element<HearingOrdersBundle> bundleFromDraftOrder = caseData.getHearingOrdersBundlesDrafts().stream()
             .filter(bundleElement -> {
                 if (isConfidential) {
-                    return bundleElement.getValue().getOrdersCTSC().stream()
+                    return bundleElement.getValue().getAllConfidentialOrders().stream()
                         .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
                 } else {
                     return bundleElement.getValue().getOrders().stream()

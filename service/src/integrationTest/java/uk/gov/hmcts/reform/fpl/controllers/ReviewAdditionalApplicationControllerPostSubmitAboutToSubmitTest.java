@@ -116,6 +116,25 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
     }
 
     @Test
+    void shouldApproveAndSealOrderForConfidentialRespondentC2() {
+        CaseData caseData = buildCaseData(APPROVE_APPLICATION_AND_ORDER, true, true);
+
+        doAnswer(i -> {
+            Map<String, Object> data = i.getArgument(1);
+            data.put("orderCollection", "updated-order-collection");
+            return null;
+        }).when(approveDraftOrdersService).approveAndSealDraftOrder(any(), any(), any(), any(), any());
+
+        when(approveDraftOrdersService.updateHearingDraftOrdersBundle(any(), any()))
+            .thenReturn(Map.of("hearingOrdersBundlesDrafts", List.of()));
+
+        AboutToStartOrSubmitCallbackResponse response = postPostSubmitAboutToSubmit(caseData);
+
+        verify(approveDraftOrdersService).approveAndSealDraftOrder(any(), any(), any(), any(), any());
+        assertThat(response.getData().get("orderCollection")).isEqualTo("updated-order-collection");
+    }
+
+    @Test
     void shouldSkipApprovalWhenRouterIsNotApproveApplicationAndOrder() {
         CaseData caseData = buildCaseData(REFUSE, false);
 
@@ -161,6 +180,12 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
     }
 
     private CaseData buildCaseData(ApproveAdditionalAppOptions router, boolean confidential) {
+        return buildCaseData(router, confidential, false);
+    }
+
+    private CaseData buildCaseData(ApproveAdditionalAppOptions router,
+                                   boolean confidential,
+                                   boolean confidentialInRespondentCollection) {
         DocumentReference draftDocument = DocumentReference.builder()
             .url("http://dm-store/documents/draft-order.docx")
             .binaryUrl("http://dm-store/documents/draft-order.docx/binary")
@@ -181,15 +206,21 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
             ? element(DRAFT_ORDER_ID, HearingOrder.builder().orderConfidential(draftDocument).build())
             : element(DRAFT_ORDER_ID, HearingOrder.builder().order(draftDocument).build());
 
-        Element<HearingOrdersBundle> hearingOrdersBundle = confidential
-            ? element(HearingOrdersBundle.builder()
-                .orders(new ArrayList<>())
-                .ordersCTSC(new ArrayList<>(List.of(hearingOrder)))
-                .build())
-            : element(HearingOrdersBundle.builder()
-                .orders(new ArrayList<>(List.of(hearingOrder)))
-                .ordersCTSC(new ArrayList<>())
-                .build());
+        HearingOrdersBundle.HearingOrdersBundleBuilder hearingOrdersBundleBuilder = HearingOrdersBundle.builder()
+            .orders(new ArrayList<>())
+            .ordersCTSC(new ArrayList<>());
+
+        if (confidential) {
+            if (confidentialInRespondentCollection) {
+                hearingOrdersBundleBuilder.ordersResp0(new ArrayList<>(List.of(hearingOrder)));
+            } else {
+                hearingOrdersBundleBuilder.ordersCTSC(new ArrayList<>(List.of(hearingOrder)));
+            }
+        } else {
+            hearingOrdersBundleBuilder.orders(new ArrayList<>(List.of(hearingOrder)));
+        }
+
+        Element<HearingOrdersBundle> hearingOrdersBundle = element(hearingOrdersBundleBuilder.build());
 
         return CaseData.builder()
             .approveAdditionalAppRouter(router)
