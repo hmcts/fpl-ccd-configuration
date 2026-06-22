@@ -1997,8 +1997,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-gatekeeper"
         ],
         "CRUD": "CRU"
       }
@@ -2012,8 +2011,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-gatekeeper"
         ],
         "CRUD": "CRU"
       }

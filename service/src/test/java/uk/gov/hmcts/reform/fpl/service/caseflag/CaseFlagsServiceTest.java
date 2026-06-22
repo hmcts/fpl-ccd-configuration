@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.caseflag.AllPartyFlags;
 import uk.gov.hmcts.reform.fpl.model.caseflag.CaseFlagsType;
 import uk.gov.hmcts.reform.fpl.model.caseflag.FlagDetailType;
 import uk.gov.hmcts.reform.fpl.model.caseflag.GenericTypeItem;
@@ -21,12 +22,15 @@ import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.EXTERNAL;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.INTERNAL;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.RESPONDENT1;
+import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.RESPONDENT10;
 import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.ACTIVE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.DISRUPTIVE_CUSTOMER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.LANGUAGE_INTERPRETER;
@@ -62,7 +66,7 @@ class CaseFlagsServiceTest {
     void shouldReturnThatCaseFlagsSetupIsRequiredWhenCaseFlagsAreMissingAfterPartyFlagsAreInitialised() {
         caseFlagsService.setupCaseFlags(caseData);
 
-        caseData.setCaseFlags(null);
+        partyFlags(caseData).setCaseFlags(null);
 
         assertThat(caseFlagsService.caseFlagsSetupRequired(caseData)).isTrue();
     }
@@ -71,12 +75,12 @@ class CaseFlagsServiceTest {
     void shouldReturnThatCaseFlagsSetupIsRequiredWhenApplicantFlagsAreMissingOrHaveNoRole() {
         caseFlagsService.setupCaseFlags(caseData);
 
-        caseData.setApplicantFlags(null);
+        partyFlags(caseData).setApplicantFlags(null);
 
         assertThat(caseFlagsService.caseFlagsSetupRequired(caseData)).isTrue();
 
         caseFlagsService.setupCaseFlags(caseData);
-        caseData.setApplicantExternalFlags(CaseFlagsType.builder().roleOnCase("").build());
+        partyFlags(caseData).setApplicantExternalFlags(CaseFlagsType.builder().roleOnCase("").build());
 
         assertThat(caseFlagsService.caseFlagsSetupRequired(caseData)).isTrue();
     }
@@ -84,18 +88,18 @@ class CaseFlagsServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("respondentFlagSetters")
     void shouldReturnThatCaseFlagsSetupIsRequiredWhenUsedRespondentFlagsAreMissingOrHaveNoRole(
-        String description, BiConsumer<CaseData, CaseFlagsType> setter) {
+        String description, BiConsumer<AllPartyFlags, CaseFlagsType> setter) {
 
         caseFlagsService.setupCaseFlags(caseData);
 
-        setter.accept(caseData, null);
+        setter.accept(partyFlags(caseData), null);
 
         assertThat(caseFlagsService.caseFlagsSetupRequired(caseData))
             .as(description + " missing")
             .isTrue();
 
         caseFlagsService.setupCaseFlags(caseData);
-        setter.accept(caseData, CaseFlagsType.builder().roleOnCase("").build());
+        setter.accept(partyFlags(caseData), CaseFlagsType.builder().roleOnCase("").build());
 
         assertThat(caseFlagsService.caseFlagsSetupRequired(caseData))
             .as(description + " role missing")
@@ -107,10 +111,10 @@ class CaseFlagsServiceTest {
         CaseData caseDataWithTwoRespondents = buildCaseData(2);
         caseFlagsService.setupCaseFlags(caseDataWithTwoRespondents);
 
-        caseDataWithTwoRespondents.setRespondent3Flags(CaseFlagsType.builder().build());
-        caseDataWithTwoRespondents.setRespondent3ExternalFlags(CaseFlagsType.builder().build());
-        caseDataWithTwoRespondents.setRespondent10Flags(CaseFlagsType.builder().build());
-        caseDataWithTwoRespondents.setRespondent10ExternalFlags(CaseFlagsType.builder().build());
+        partyFlags(caseDataWithTwoRespondents).setRespondent3Flags(CaseFlagsType.builder().build());
+        partyFlags(caseDataWithTwoRespondents).setRespondent3ExternalFlags(CaseFlagsType.builder().build());
+        partyFlags(caseDataWithTwoRespondents).setRespondent10Flags(CaseFlagsType.builder().build());
+        partyFlags(caseDataWithTwoRespondents).setRespondent10ExternalFlags(CaseFlagsType.builder().build());
 
         assertThat(caseFlagsService.caseFlagsSetupRequired(caseDataWithTwoRespondents)).isFalse();
     }
@@ -123,8 +127,8 @@ class CaseFlagsServiceTest {
 
         caseFlagsService.setupCaseFlags(caseDataWithoutLocalAuthority);
 
-        assertThat(caseDataWithoutLocalAuthority.getCaseFlags()).isNotNull();
-        assertThat(caseDataWithoutLocalAuthority.getApplicantFlags()).isNull();
+        assertThat(partyFlags(caseDataWithoutLocalAuthority).getCaseFlags()).isNotNull();
+        assertThat(partyFlags(caseDataWithoutLocalAuthority).getApplicantFlags()).isNull();
         assertThat(caseFlagsService.caseFlagsSetupRequired(caseDataWithoutLocalAuthority)).isTrue();
     }
 
@@ -145,22 +149,23 @@ class CaseFlagsServiceTest {
     @Test
     void shouldSetupCaseApplicantAndRespondentFlags() {
         caseFlagsService.setupCaseFlags(caseData);
+        AllPartyFlags allPartyFlags = partyFlags(caseData);
 
-        assertFlag(caseData.getCaseFlags(), null, null, null, null);
-        assertFlag(caseData.getApplicantFlags(), APPLICANT_NAME, APPLICANT, APPLICANT, INTERNAL);
-        assertFlag(caseData.getApplicantExternalFlags(), APPLICANT_NAME, APPLICANT, APPLICANT, EXTERNAL);
+        assertFlag(allPartyFlags.getCaseFlags(), null, null, null, null);
+        assertFlag(allPartyFlags.getApplicantFlags(), APPLICANT_NAME, APPLICANT, APPLICANT, INTERNAL);
+        assertFlag(allPartyFlags.getApplicantExternalFlags(), APPLICANT_NAME, APPLICANT, APPLICANT, EXTERNAL);
 
-        List<CaseFlagsType> internalRespondentFlags = internalRespondentFlags(caseData);
-        List<CaseFlagsType> externalRespondentFlags = externalRespondentFlags(caseData);
+        List<CaseFlagsType> internalRespondentFlags = internalRespondentFlags(allPartyFlags);
+        List<CaseFlagsType> externalRespondentFlags = externalRespondentFlags(allPartyFlags);
 
         for (int respondentNumber = 1; respondentNumber <= 10; respondentNumber++) {
-            String respondentName = respondentName(respondentNumber);
-            String groupId = "respondent" + respondentNumber;
+            String respondentName = RESPONDENT + SPACE + respondentNumber;
+            String roleOnCaseOrGroupId = RESPONDENT + SPACE + respondentNumber;
 
             assertFlag(internalRespondentFlags.get(respondentNumber - 1),
-                respondentName, RESPONDENT, groupId, INTERNAL);
+                respondentName, roleOnCaseOrGroupId, roleOnCaseOrGroupId, INTERNAL);
             assertFlag(externalRespondentFlags.get(respondentNumber - 1),
-                respondentName, RESPONDENT, groupId, EXTERNAL);
+                respondentName, roleOnCaseOrGroupId, roleOnCaseOrGroupId, EXTERNAL);
         }
     }
 
@@ -172,47 +177,52 @@ class CaseFlagsServiceTest {
 
         caseFlagsService.setupCaseFlags(caseData);
 
-        assertFlag(caseData.getApplicantFlags(), UPDATED_APPLICANT_NAME, APPLICANT, APPLICANT, INTERNAL);
-        assertFlag(caseData.getApplicantExternalFlags(), UPDATED_APPLICANT_NAME, APPLICANT, APPLICANT, EXTERNAL);
+        assertFlag(partyFlags(caseData).getApplicantFlags(), UPDATED_APPLICANT_NAME, APPLICANT, APPLICANT, INTERNAL);
+        assertFlag(partyFlags(caseData).getApplicantExternalFlags(), UPDATED_APPLICANT_NAME, APPLICANT, APPLICANT,
+            EXTERNAL);
     }
 
     @Test
     void shouldUpdateRespondentFlagNamesWhenRespondentNameChanges() {
         caseFlagsService.setupCaseFlags(caseData);
 
-        caseData.getAllRespondents().getFirst().setValue(respondent("Updated", "Respondent"));
+        caseData.getAllRespondents().getFirst().setValue(respondent("Updated", RESPONDENT));
 
         caseFlagsService.setupCaseFlags(caseData);
 
-        assertFlag(caseData.getRespondent1Flags(), "Updated Respondent", RESPONDENT, "respondent1", INTERNAL);
-        assertFlag(caseData.getRespondent1ExternalFlags(), "Updated Respondent", RESPONDENT, "respondent1", EXTERNAL);
+        assertFlag(partyFlags(caseData).getRespondent1Flags(), "Updated Respondent", RESPONDENT1, RESPONDENT1,
+            INTERNAL);
+        assertFlag(partyFlags(caseData).getRespondent1ExternalFlags(), "Updated Respondent", RESPONDENT1, RESPONDENT1,
+            EXTERNAL);
     }
 
     @Test
     void shouldPreserveExistingFlagDetailsWhenUpdatingPartyNames() {
         ListTypeItem<FlagDetailType> applicantDetails = ListTypeItem.from(flagDetail(LANGUAGE_INTERPRETER, ACTIVE));
         ListTypeItem<FlagDetailType> respondentDetails = ListTypeItem.from(flagDetail(VEXATIOUS_LITIGANT, ACTIVE));
-        caseData.setApplicantFlags(CaseFlagsType.builder()
-            .partyName("Old applicant")
-            .roleOnCase(APPLICANT)
-            .groupId(APPLICANT)
-            .visibility(INTERNAL)
-            .details(applicantDetails)
-            .build());
-        caseData.setRespondent1Flags(CaseFlagsType.builder()
-            .partyName("Old respondent")
-            .roleOnCase(RESPONDENT)
-            .groupId("respondent1")
-            .visibility(INTERNAL)
-            .details(respondentDetails)
+        caseData.setAllPartyFlags(AllPartyFlags.builder()
+            .applicantFlags(CaseFlagsType.builder()
+                .partyName("Old applicant")
+                .roleOnCase(APPLICANT)
+                .groupId(APPLICANT)
+                .visibility(INTERNAL)
+                .details(applicantDetails)
+                .build())
+            .respondent1Flags(CaseFlagsType.builder()
+                .partyName("Old respondent")
+                .roleOnCase(RESPONDENT)
+                .groupId(RESPONDENT1)
+                .visibility(INTERNAL)
+                .details(respondentDetails)
+                .build())
             .build());
 
         caseFlagsService.setupCaseFlags(caseData);
 
-        assertThat(caseData.getApplicantFlags().getPartyName()).isEqualTo(APPLICANT_NAME);
-        assertThat(caseData.getApplicantFlags().getDetails()).isSameAs(applicantDetails);
-        assertThat(caseData.getRespondent1Flags().getPartyName()).isEqualTo("Respondent 1");
-        assertThat(caseData.getRespondent1Flags().getDetails()).isSameAs(respondentDetails);
+        assertThat(partyFlags(caseData).getApplicantFlags().getPartyName()).isEqualTo(APPLICANT_NAME);
+        assertThat(partyFlags(caseData).getApplicantFlags().getDetails()).isSameAs(applicantDetails);
+        assertThat(partyFlags(caseData).getRespondent1Flags().getPartyName()).isEqualTo(RESPONDENT1);
+        assertThat(partyFlags(caseData).getRespondent1Flags().getDetails()).isSameAs(respondentDetails);
     }
 
     @Test
@@ -221,7 +231,8 @@ class CaseFlagsServiceTest {
 
         caseFlagsService.setupCaseFlags(caseDataWithElevenRespondents);
 
-        assertThat(caseDataWithElevenRespondents.getRespondent10Flags().getPartyName()).isEqualTo("Respondent 10");
+        assertThat(partyFlags(caseDataWithElevenRespondents).getRespondent10Flags().getPartyName())
+            .isEqualTo(RESPONDENT10);
         assertThat(caseFlagsService.caseFlagsSetupRequired(caseDataWithElevenRespondents)).isFalse();
         assertThat(caseFlagsService.generate(caseDataWithElevenRespondents))
             .doesNotContainKeys("respondent11Flags", "respondent11ExternalFlags");
@@ -230,9 +241,11 @@ class CaseFlagsServiceTest {
     @Test
     void shouldSetInterpreterRequiredFlagWhenActiveLanguageFlagExists() {
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(emptyFlags())
-            .applicantExternalFlags(emptyFlags())
-            .respondent1Flags(flagsWith(LANGUAGE_INTERPRETER))
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(emptyFlags())
+                .applicantExternalFlags(emptyFlags())
+                .respondent1Flags(flagsWith(LANGUAGE_INTERPRETER))
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -245,8 +258,10 @@ class CaseFlagsServiceTest {
     @MethodSource("interpreterFlagNames")
     void shouldSetInterpreterRequiredFlagForAllInterpreterFlagCodes(String flagName) {
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(flagsWith(flagName))
-            .applicantExternalFlags(emptyFlags())
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(flagsWith(flagName))
+                .applicantExternalFlags(emptyFlags())
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -258,8 +273,10 @@ class CaseFlagsServiceTest {
     @Test
     void shouldSetInterpreterRequiredFlagWhenActiveSignLanguageFlagExists() {
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(flagsWith(SIGN_LANGUAGE_INTERPRETER))
-            .applicantExternalFlags(emptyFlags())
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(flagsWith(SIGN_LANGUAGE_INTERPRETER))
+                .applicantExternalFlags(emptyFlags())
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -272,8 +289,10 @@ class CaseFlagsServiceTest {
     @MethodSource("additionalSecurityFlagNames")
     void shouldSetAdditionalSecurityFlagForAllSecurityFlagCodes(String flagName) {
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(emptyFlags())
-            .applicantExternalFlags(flagsWith(flagName))
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(emptyFlags())
+                .applicantExternalFlags(flagsWith(flagName))
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -285,8 +304,10 @@ class CaseFlagsServiceTest {
     @Test
     void shouldSetAdditionalSecurityFlagWhenActiveSecurityFlagExists() {
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(emptyFlags())
-            .applicantExternalFlags(flagsWith(VEXATIOUS_LITIGANT))
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(emptyFlags())
+                .applicantExternalFlags(flagsWith(VEXATIOUS_LITIGANT))
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -298,9 +319,11 @@ class CaseFlagsServiceTest {
     @Test
     void shouldSetAdditionalSecurityFlagWhenActiveDisruptiveCustomerFlagExists() {
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(emptyFlags())
-            .applicantExternalFlags(emptyFlags())
-            .respondent1ExternalFlags(flagsWith(DISRUPTIVE_CUSTOMER))
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(emptyFlags())
+                .applicantExternalFlags(emptyFlags())
+                .respondent1ExternalFlags(flagsWith(DISRUPTIVE_CUSTOMER))
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -312,8 +335,10 @@ class CaseFlagsServiceTest {
     @Test
     void shouldSetDependentFlagsToNoWhenThereAreNoActiveRelevantFlags() {
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(flagsWithStatus(SIGN_LANGUAGE_INTERPRETER, "Inactive"))
-            .applicantExternalFlags(flagsWithStatus(VEXATIOUS_LITIGANT, "Inactive"))
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(flagsWithStatus(SIGN_LANGUAGE_INTERPRETER, "Inactive"))
+                .applicantExternalFlags(flagsWithStatus(VEXATIOUS_LITIGANT, "Inactive"))
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -325,13 +350,15 @@ class CaseFlagsServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("respondentFlagSetters")
     void shouldProcessActiveFlagsFromEveryRespondentFlagField(
-        String description, BiConsumer<CaseData, CaseFlagsType> setter) {
+        String description, BiConsumer<AllPartyFlags, CaseFlagsType> setter) {
 
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(emptyFlags())
-            .applicantExternalFlags(emptyFlags())
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(emptyFlags())
+                .applicantExternalFlags(emptyFlags())
+                .build())
             .build();
-        setter.accept(flaggedCaseData, flagsWith(VEXATIOUS_LITIGANT));
+        setter.accept(partyFlags(flaggedCaseData), flagsWith(VEXATIOUS_LITIGANT));
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
 
@@ -347,10 +374,12 @@ class CaseFlagsServiceTest {
             GenericTypeItem.from(flagDetail("Not relevant", ACTIVE))
         );
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(CaseFlagsType.builder().details(details).build())
-            .applicantExternalFlags(null)
-            .respondent1Flags(CaseFlagsType.builder().details(null).build())
-            .respondent1ExternalFlags(null)
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(CaseFlagsType.builder().details(details).build())
+                .applicantExternalFlags(null)
+                .respondent1Flags(CaseFlagsType.builder().details(null).build())
+                .respondent1ExternalFlags(null)
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -362,11 +391,13 @@ class CaseFlagsServiceTest {
     @Test
     void shouldSetDependentFlagsWhenRelevantActiveFlagAppearsAfterInactiveFlagWithSameName() {
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(flagsWith(
-                flagDetail(SIGN_LANGUAGE_INTERPRETER, "Inactive"),
-                flagDetail(SIGN_LANGUAGE_INTERPRETER, ACTIVE)
-            ))
-            .applicantExternalFlags(emptyFlags())
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(flagsWith(
+                    flagDetail(SIGN_LANGUAGE_INTERPRETER, "Inactive"),
+                    flagDetail(SIGN_LANGUAGE_INTERPRETER, ACTIVE)
+                ))
+                .applicantExternalFlags(emptyFlags())
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -378,8 +409,10 @@ class CaseFlagsServiceTest {
     @Test
     void shouldSetBothDependentFlagsWhenInterpreterAndSecurityFlagsAreActive() {
         CaseData flaggedCaseData = CaseData.builder()
-            .applicantFlags(flagsWith(SIGN_LANGUAGE_INTERPRETER))
-            .applicantExternalFlags(flagsWith(DISRUPTIVE_CUSTOMER))
+            .allPartyFlags(AllPartyFlags.builder()
+                .applicantFlags(flagsWith(SIGN_LANGUAGE_INTERPRETER))
+                .applicantExternalFlags(flagsWith(DISRUPTIVE_CUSTOMER))
+                .build())
             .build();
 
         caseFlagsService.processNewlySetCaseFlags(flaggedCaseData);
@@ -403,9 +436,11 @@ class CaseFlagsServiceTest {
             "respondent1Flags",
             "respondent1ExternalFlags"
         );
-        assertThat(generatedData.get("caseFlags")).isSameAs(caseDataWithOneRespondent.getCaseFlags());
-        assertThat(generatedData.get("applicantFlags")).isSameAs(caseDataWithOneRespondent.getApplicantFlags());
-        assertThat(generatedData.get("respondent1Flags")).isSameAs(caseDataWithOneRespondent.getRespondent1Flags());
+        assertThat(generatedData.get("caseFlags")).isSameAs(partyFlags(caseDataWithOneRespondent).getCaseFlags());
+        assertThat(generatedData.get("applicantFlags"))
+            .isSameAs(partyFlags(caseDataWithOneRespondent).getApplicantFlags());
+        assertThat(generatedData.get("respondent1Flags"))
+            .isSameAs(partyFlags(caseDataWithOneRespondent).getRespondent1Flags());
     }
 
     @Test
@@ -465,30 +500,30 @@ class CaseFlagsServiceTest {
 
     private static Stream<Arguments> respondentFlagSetters() {
         return Stream.of(
-            respondentFlagSetter("respondent1Flags", CaseData::setRespondent1Flags),
-            respondentFlagSetter("respondent1ExternalFlags", CaseData::setRespondent1ExternalFlags),
-            respondentFlagSetter("respondent2Flags", CaseData::setRespondent2Flags),
-            respondentFlagSetter("respondent2ExternalFlags", CaseData::setRespondent2ExternalFlags),
-            respondentFlagSetter("respondent3Flags", CaseData::setRespondent3Flags),
-            respondentFlagSetter("respondent3ExternalFlags", CaseData::setRespondent3ExternalFlags),
-            respondentFlagSetter("respondent4Flags", CaseData::setRespondent4Flags),
-            respondentFlagSetter("respondent4ExternalFlags", CaseData::setRespondent4ExternalFlags),
-            respondentFlagSetter("respondent5Flags", CaseData::setRespondent5Flags),
-            respondentFlagSetter("respondent5ExternalFlags", CaseData::setRespondent5ExternalFlags),
-            respondentFlagSetter("respondent6Flags", CaseData::setRespondent6Flags),
-            respondentFlagSetter("respondent6ExternalFlags", CaseData::setRespondent6ExternalFlags),
-            respondentFlagSetter("respondent7Flags", CaseData::setRespondent7Flags),
-            respondentFlagSetter("respondent7ExternalFlags", CaseData::setRespondent7ExternalFlags),
-            respondentFlagSetter("respondent8Flags", CaseData::setRespondent8Flags),
-            respondentFlagSetter("respondent8ExternalFlags", CaseData::setRespondent8ExternalFlags),
-            respondentFlagSetter("respondent9Flags", CaseData::setRespondent9Flags),
-            respondentFlagSetter("respondent9ExternalFlags", CaseData::setRespondent9ExternalFlags),
-            respondentFlagSetter("respondent10Flags", CaseData::setRespondent10Flags),
-            respondentFlagSetter("respondent10ExternalFlags", CaseData::setRespondent10ExternalFlags)
+            respondentFlagSetter("respondent1Flags", AllPartyFlags::setRespondent1Flags),
+            respondentFlagSetter("respondent1ExternalFlags", AllPartyFlags::setRespondent1ExternalFlags),
+            respondentFlagSetter("respondent2Flags", AllPartyFlags::setRespondent2Flags),
+            respondentFlagSetter("respondent2ExternalFlags", AllPartyFlags::setRespondent2ExternalFlags),
+            respondentFlagSetter("respondent3Flags", AllPartyFlags::setRespondent3Flags),
+            respondentFlagSetter("respondent3ExternalFlags", AllPartyFlags::setRespondent3ExternalFlags),
+            respondentFlagSetter("respondent4Flags", AllPartyFlags::setRespondent4Flags),
+            respondentFlagSetter("respondent4ExternalFlags", AllPartyFlags::setRespondent4ExternalFlags),
+            respondentFlagSetter("respondent5Flags", AllPartyFlags::setRespondent5Flags),
+            respondentFlagSetter("respondent5ExternalFlags", AllPartyFlags::setRespondent5ExternalFlags),
+            respondentFlagSetter("respondent6Flags", AllPartyFlags::setRespondent6Flags),
+            respondentFlagSetter("respondent6ExternalFlags", AllPartyFlags::setRespondent6ExternalFlags),
+            respondentFlagSetter("respondent7Flags", AllPartyFlags::setRespondent7Flags),
+            respondentFlagSetter("respondent7ExternalFlags", AllPartyFlags::setRespondent7ExternalFlags),
+            respondentFlagSetter("respondent8Flags", AllPartyFlags::setRespondent8Flags),
+            respondentFlagSetter("respondent8ExternalFlags", AllPartyFlags::setRespondent8ExternalFlags),
+            respondentFlagSetter("respondent9Flags", AllPartyFlags::setRespondent9Flags),
+            respondentFlagSetter("respondent9ExternalFlags", AllPartyFlags::setRespondent9ExternalFlags),
+            respondentFlagSetter("respondent10Flags", AllPartyFlags::setRespondent10Flags),
+            respondentFlagSetter("respondent10ExternalFlags", AllPartyFlags::setRespondent10ExternalFlags)
         );
     }
 
-    private static Arguments respondentFlagSetter(String description, BiConsumer<CaseData, CaseFlagsType> setter) {
+    private static Arguments respondentFlagSetter(String description, BiConsumer<AllPartyFlags, CaseFlagsType> setter) {
         return arguments(description, setter);
     }
 
@@ -499,6 +534,10 @@ class CaseFlagsServiceTest {
                 .build())))
             .respondents1(respondents(respondentCount))
             .build();
+    }
+
+    private static AllPartyFlags partyFlags(CaseData caseData) {
+        return caseData.getAllPartyFlags();
     }
 
     private static List<Element<Respondent>> respondents(int respondentCount) {
@@ -514,10 +553,6 @@ class CaseFlagsServiceTest {
                 .lastName(lastName)
                 .build())
             .build();
-    }
-
-    private static String respondentName(int respondentNumber) {
-        return "Respondent " + respondentNumber;
     }
 
     private static CaseFlagsType emptyFlags() {
@@ -545,33 +580,33 @@ class CaseFlagsServiceTest {
             .build();
     }
 
-    private static List<CaseFlagsType> internalRespondentFlags(CaseData caseData) {
+    private static List<CaseFlagsType> internalRespondentFlags(AllPartyFlags allPartyFlags) {
         return List.of(
-            caseData.getRespondent1Flags(),
-            caseData.getRespondent2Flags(),
-            caseData.getRespondent3Flags(),
-            caseData.getRespondent4Flags(),
-            caseData.getRespondent5Flags(),
-            caseData.getRespondent6Flags(),
-            caseData.getRespondent7Flags(),
-            caseData.getRespondent8Flags(),
-            caseData.getRespondent9Flags(),
-            caseData.getRespondent10Flags()
+            allPartyFlags.getRespondent1Flags(),
+            allPartyFlags.getRespondent2Flags(),
+            allPartyFlags.getRespondent3Flags(),
+            allPartyFlags.getRespondent4Flags(),
+            allPartyFlags.getRespondent5Flags(),
+            allPartyFlags.getRespondent6Flags(),
+            allPartyFlags.getRespondent7Flags(),
+            allPartyFlags.getRespondent8Flags(),
+            allPartyFlags.getRespondent9Flags(),
+            allPartyFlags.getRespondent10Flags()
         );
     }
 
-    private static List<CaseFlagsType> externalRespondentFlags(CaseData caseData) {
+    private static List<CaseFlagsType> externalRespondentFlags(AllPartyFlags allPartyFlags) {
         return List.of(
-            caseData.getRespondent1ExternalFlags(),
-            caseData.getRespondent2ExternalFlags(),
-            caseData.getRespondent3ExternalFlags(),
-            caseData.getRespondent4ExternalFlags(),
-            caseData.getRespondent5ExternalFlags(),
-            caseData.getRespondent6ExternalFlags(),
-            caseData.getRespondent7ExternalFlags(),
-            caseData.getRespondent8ExternalFlags(),
-            caseData.getRespondent9ExternalFlags(),
-            caseData.getRespondent10ExternalFlags()
+            allPartyFlags.getRespondent1ExternalFlags(),
+            allPartyFlags.getRespondent2ExternalFlags(),
+            allPartyFlags.getRespondent3ExternalFlags(),
+            allPartyFlags.getRespondent4ExternalFlags(),
+            allPartyFlags.getRespondent5ExternalFlags(),
+            allPartyFlags.getRespondent6ExternalFlags(),
+            allPartyFlags.getRespondent7ExternalFlags(),
+            allPartyFlags.getRespondent8ExternalFlags(),
+            allPartyFlags.getRespondent9ExternalFlags(),
+            allPartyFlags.getRespondent10ExternalFlags()
         );
     }
 

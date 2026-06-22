@@ -42,7 +42,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
-import uk.gov.hmcts.reform.fpl.model.caseflag.CaseFlagsType;
+import uk.gov.hmcts.reform.fpl.model.caseflag.AllPartyFlags;
 import uk.gov.hmcts.reform.fpl.model.caselink.CaseLink;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -205,30 +205,9 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     private final HearingJudgeEventData hearingJudgeEventData = new HearingJudgeEventData();
 
-    // Case Flags
-    private CaseFlagsType caseFlags;
-    private CaseFlagsType applicantFlags;
-    private CaseFlagsType applicantExternalFlags;
-    private CaseFlagsType respondent1Flags;
-    private CaseFlagsType respondent1ExternalFlags;
-    private CaseFlagsType respondent2Flags;
-    private CaseFlagsType respondent2ExternalFlags;
-    private CaseFlagsType respondent3Flags;
-    private CaseFlagsType respondent3ExternalFlags;
-    private CaseFlagsType respondent4Flags;
-    private CaseFlagsType respondent4ExternalFlags;
-    private CaseFlagsType respondent5Flags;
-    private CaseFlagsType respondent5ExternalFlags;
-    private CaseFlagsType respondent6Flags;
-    private CaseFlagsType respondent6ExternalFlags;
-    private CaseFlagsType respondent7Flags;
-    private CaseFlagsType respondent7ExternalFlags;
-    private CaseFlagsType respondent8Flags;
-    private CaseFlagsType respondent8ExternalFlags;
-    private CaseFlagsType respondent9Flags;
-    private CaseFlagsType respondent9ExternalFlags;
-    private CaseFlagsType respondent10Flags;
-    private CaseFlagsType respondent10ExternalFlags;
+    @Builder.Default
+    @JsonUnwrapped
+    private AllPartyFlags allPartyFlags = new AllPartyFlags();
 
     private String caseInterpreterRequiredFlag;
     private String caseAdditionalSecurityFlag;

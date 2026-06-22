@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.caseflag.AllPartyFlags;
 import uk.gov.hmcts.reform.fpl.model.caseflag.CaseFlagsType;
 import uk.gov.hmcts.reform.fpl.model.caseflag.FlagDetailType;
 import uk.gov.hmcts.reform.fpl.model.caseflag.ListTypeItem;
@@ -71,8 +72,8 @@ class CaseFlagsControllerAboutToSubmitTest extends AbstractCallbackTest {
         ArgumentCaptor<CaseData> captor = ArgumentCaptor.forClass(CaseData.class);
         verify(caseFlagsService).processNewlySetCaseFlags(captor.capture());
         assertThat(captor.getValue().getId()).isEqualTo(CASE_REFERENCE);
-        assertThat(captor.getValue().getApplicantFlags().getDetails()).hasSize(1);
-        assertThat(captor.getValue().getRespondent1ExternalFlags().getDetails()).hasSize(1);
+        assertThat(partyFlags(captor.getValue()).getApplicantFlags().getDetails()).hasSize(1);
+        assertThat(partyFlags(captor.getValue()).getRespondent1ExternalFlags().getDetails()).hasSize(1);
     }
 
     @Test
@@ -164,5 +165,9 @@ class CaseFlagsControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .status(status)
                 .build()))
             .build();
+    }
+
+    private AllPartyFlags partyFlags(CaseData caseData) {
+        return caseData.getAllPartyFlags();
     }
 }

@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.caseflag.AllPartyFlags;
 import uk.gov.hmcts.reform.fpl.model.caseflag.CaseFlagsType;
 import uk.gov.hmcts.reform.fpl.model.caseflag.FlagDetailType;
 import uk.gov.hmcts.reform.fpl.model.caseflag.ListTypeItem;
@@ -59,7 +60,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.EXTERNAL;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.INTERNAL;
-import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.RESPONDENT1;
 import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.ACTIVE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.DISRUPTIVE_CUSTOMER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.LANGUAGE_INTERPRETER;
@@ -179,12 +180,13 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetailsForCaseFlags());
         CaseData updatedCaseData = extractCaseData(callbackResponse);
+        AllPartyFlags allPartyFlags = partyFlags(updatedCaseData);
 
-        assertFlag(updatedCaseData.getCaseFlags(), null, null, null, null);
-        assertFlag(updatedCaseData.getApplicantFlags(), "Test local authority", APPLICANT, APPLICANT, INTERNAL);
-        assertFlag(updatedCaseData.getApplicantExternalFlags(), "Test local authority", APPLICANT, APPLICANT, EXTERNAL);
-        assertFlag(updatedCaseData.getRespondent1Flags(), "Joe Bloggs", RESPONDENT, "respondent1", INTERNAL);
-        assertFlag(updatedCaseData.getRespondent1ExternalFlags(), "Joe Bloggs", RESPONDENT, "respondent1", EXTERNAL);
+        assertFlag(allPartyFlags.getCaseFlags(), null, null, null, null);
+        assertFlag(allPartyFlags.getApplicantFlags(), "Test local authority", APPLICANT, APPLICANT, INTERNAL);
+        assertFlag(allPartyFlags.getApplicantExternalFlags(), "Test local authority", APPLICANT, APPLICANT, EXTERNAL);
+        assertFlag(allPartyFlags.getRespondent1Flags(), "Joe Bloggs", RESPONDENT1, RESPONDENT1, INTERNAL);
+        assertFlag(allPartyFlags.getRespondent1ExternalFlags(), "Joe Bloggs", RESPONDENT1, RESPONDENT1, EXTERNAL);
 
         assertThat(callbackResponse.getData()).containsKeys(
             "caseFlags",
@@ -224,18 +226,18 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseDetails caseDetails = caseDetailsForCaseFlags();
         caseDetails.getData().put("caseFlags", CaseFlagsType.builder().build());
         caseDetails.getData().put("applicantFlags",
-            caseFlags("Test local authority", APPLICANT, APPLICANT, INTERNAL, LANGUAGE_INTERPRETER));
+            caseFlags(INTERNAL, LANGUAGE_INTERPRETER));
         caseDetails.getData().put("applicantExternalFlags",
             caseFlags("Test local authority", APPLICANT, APPLICANT, EXTERNAL));
         caseDetails.getData().put("respondent1Flags",
-            caseFlags("Joe Bloggs", RESPONDENT, "respondent1", INTERNAL));
+            caseFlags("Joe Bloggs", RESPONDENT1, RESPONDENT1, INTERNAL));
         caseDetails.getData().put("respondent1ExternalFlags",
-            caseFlags("Joe Bloggs", RESPONDENT, "respondent1", EXTERNAL));
+            caseFlags("Joe Bloggs", RESPONDENT1, RESPONDENT1, EXTERNAL));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData updatedCaseData = extractCaseData(callbackResponse);
 
-        assertThat(updatedCaseData.getApplicantFlags().getDetails()).hasSize(1);
+        assertThat(partyFlags(updatedCaseData).getApplicantFlags().getDetails()).hasSize(1);
         assertThat(callbackResponse.getData()).containsKeys(
             "caseFlags",
             "applicantFlags",
@@ -258,15 +260,15 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         given(featureToggleService.isCaseFlagsEnabled()).willReturn(true);
         CaseDetails caseDetails = caseDetailsForCaseFlags();
         caseDetails.getData().put("applicantFlags",
-            caseFlags("Test local authority", APPLICANT, APPLICANT, INTERNAL, LANGUAGE_INTERPRETER));
+            caseFlags(INTERNAL, LANGUAGE_INTERPRETER));
         caseDetails.getData().put("applicantExternalFlags",
-            caseFlags("Test local authority", APPLICANT, APPLICANT, EXTERNAL, DISRUPTIVE_CUSTOMER));
+            caseFlags(EXTERNAL, DISRUPTIVE_CUSTOMER));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData updatedCaseData = extractCaseData(callbackResponse);
 
-        assertThat(updatedCaseData.getApplicantFlags().getDetails()).hasSize(1);
-        assertThat(updatedCaseData.getApplicantExternalFlags().getDetails()).hasSize(1);
+        assertThat(partyFlags(updatedCaseData).getApplicantFlags().getDetails()).hasSize(1);
+        assertThat(partyFlags(updatedCaseData).getApplicantExternalFlags().getDetails()).hasSize(1);
         verify(caseFlagsService).setupCaseFlags(any(CaseData.class));
         verify(caseFlagsService).processNewlySetCaseFlags(any(CaseData.class));
         verify(caseFlagsService).generate(any(CaseData.class));
@@ -450,12 +452,11 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
     }
 
-    private CaseFlagsType caseFlags(String partyName, String roleOnCase, String groupId, String visibility,
-                                    String flagName) {
+    private CaseFlagsType caseFlags(String visibility, String flagName) {
         return CaseFlagsType.builder()
-            .partyName(partyName)
-            .roleOnCase(roleOnCase)
-            .groupId(groupId)
+            .partyName("Test local authority")
+            .roleOnCase(APPLICANT)
+            .groupId(APPLICANT)
             .visibility(visibility)
             .details(ListTypeItem.from(FlagDetailType.builder()
                 .name(flagName)
@@ -470,6 +471,10 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(actual.getRoleOnCase()).isEqualTo(roleOnCase);
         assertThat(actual.getGroupId()).isEqualTo(groupId);
         assertThat(actual.getVisibility()).isEqualTo(visibility);
+    }
+
+    private AllPartyFlags partyFlags(CaseData caseData) {
+        return caseData.getAllPartyFlags();
     }
 
     private RespondentParty buildRespondentParty() {
