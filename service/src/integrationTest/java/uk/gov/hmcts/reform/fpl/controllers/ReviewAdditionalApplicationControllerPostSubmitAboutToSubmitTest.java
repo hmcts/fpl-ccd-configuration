@@ -154,12 +154,12 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
     void shouldMoveOrderToRejectedCollectionWhenApplicantMustChangeOrder() {
         CaseData caseData = buildCaseData(APPLICANT_CHANGE_ORDER, false);
 
-        when(reviewAdditionalApplicationService.returnDraftOrderToApplicant(any(), any(), any()))
+        when(reviewAdditionalApplicationService.returnDraftOrderToApplicant(any(), any(), any(), any()))
             .thenReturn(Map.of("refusedHearingOrders", List.of("rejected-order")));
 
         AboutToStartOrSubmitCallbackResponse response = postPostSubmitAboutToSubmit(caseData);
 
-        verify(reviewAdditionalApplicationService).returnDraftOrderToApplicant(any(), any(), any());
+        verify(reviewAdditionalApplicationService).returnDraftOrderToApplicant(any(), any(), any(), any());
         verify(approveDraftOrdersService, never()).approveAndSealDraftOrder(any(), any(), any(), any(), any());
         assertThat(response.getData().get("refusedHearingOrders")).isEqualTo(List.of("rejected-order"));
         assertThat(response.getData()).doesNotContainKeys(

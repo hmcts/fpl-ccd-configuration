@@ -200,7 +200,8 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 caseDetails.getData().putAll(reviewAdditionalApplicationService.returnDraftOrderToApplicant(
                     caseData,
                     bundleFromDraftOrder,
-                    draftOrderId
+                    draftOrderId,
+                    eventData.getReviewAdditionalAppRequestedChanges()
                 ));
                 break;
             default:

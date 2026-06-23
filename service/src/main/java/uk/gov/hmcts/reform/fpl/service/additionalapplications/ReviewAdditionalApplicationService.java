@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -168,7 +169,8 @@ public class ReviewAdditionalApplicationService {
 
     public Map<String, Object> returnDraftOrderToApplicant(CaseData caseData,
                                                             Element<HearingOrdersBundle> hearingOrdersBundle,
-                                                            UUID draftOrderId) {
+                                                            UUID draftOrderId,
+                                                            String requestedChanges) {
         Map<String, Object> updates = new HashMap<>();
 
         Element<HearingOrder> orderElement = hearingOrdersBundle.getValue().getAllOrdersAndConfidentialOrders().stream()
@@ -178,8 +180,10 @@ public class ReviewAdditionalApplicationService {
                 "No HearingOrder found with element id: " + draftOrderId
             ));
 
-        Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(orderElement,
-            APPLICANT_CHANGES_REQUESTED);
+        Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
+            orderElement,
+            isBlank(requestedChanges) ? APPLICANT_CHANGES_REQUESTED : requestedChanges
+        );
 
         if (orderElement.getValue().isConfidentialOrder()) {
             updates.putAll(addToConfidentialOrderBundle(hearingOrdersBundle, orderElement,
