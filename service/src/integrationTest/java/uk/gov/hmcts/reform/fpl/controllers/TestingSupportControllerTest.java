@@ -34,12 +34,9 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.testingsupport.controllers.TestingSupportController;
-import uk.gov.hmcts.reform.fpl.testingsupport.pojos.TestingSupportAmRoleRequest;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,7 +56,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.UploadDocumentService.oldToSecureDocument;
-import static uk.gov.hmcts.reform.fpl.utils.DateAndTimeHelper.currentTimeUK;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOldDocument;
 
 @ActiveProfiles("integration-test")
