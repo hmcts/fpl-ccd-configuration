@@ -45,6 +45,7 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.NotificationList;
 
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.resolve;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.utils.DateAndTimeHelper.currentTimeUK;
+import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 
 @Slf4j
 @RestController
@@ -228,7 +229,7 @@ public class TestingSupportController {
             (!isEmpty(request.getUserIds()) ? request.getUserIds() : List.of()),
             request.getRole(),
             roleCategory,
-            (!isEmpty(request.getStartTime()) ? request.getStartTime() : currentTimeUK()),
+            (!isEmpty(request.getStartTime()) ? request.getStartTime() : ZonedDateTime.now(LONDON_TIMEZONE)),
             request.getEndTime());
     }
 }
