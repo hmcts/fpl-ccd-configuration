@@ -16,6 +16,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
@@ -33,9 +34,12 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.testingsupport.controllers.TestingSupportController;
+import uk.gov.hmcts.reform.fpl.testingsupport.pojos.TestingSupportAmRoleRequest;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,12 +49,17 @@ import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.UploadDocumentService.oldToSecureDocument;
+import static uk.gov.hmcts.reform.fpl.utils.DateAndTimeHelper.currentTimeUK;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOldDocument;
 
 @ActiveProfiles("integration-test")
@@ -63,6 +72,7 @@ class TestingSupportControllerTest {
     private static final String POPULATE_CASE_PATH = "/testing-support/case/populate/1";
     private static final String CREATE_CASE_PATH = "/testing-support/case/create";
     private static final String TEST_DOCUMENT_PATH = "/testing-support/test-document";
+    private static final String AM_ROLE_PATH = "/testing-support/case/1/am-role";
     private static final String USER_ID = randomAlphanumeric(10);
     private static final String USER_AUTH_TOKEN = randomAlphanumeric(10);
     private static final String SERVICE_AUTH_TOKEN = randomAlphanumeric(10);
@@ -177,6 +187,23 @@ class TestingSupportControllerTest {
         assertThat(response.getStatus()).isEqualTo(SC_OK);
         assertThat(responseReference).isEqualTo(uploadedReference);
     }
+
+    @Test
+    void shouldAssignAmRole() throws Exception {
+        MockHttpServletResponse response = makePostRequest(AM_ROLE_PATH, Map.of(
+            "userIds", List.of("testUid1"),
+            "role", "testRole",
+            "roleCategory", RoleCategory.PROFESSIONAL
+            )).getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(SC_OK);
+
+        verify(roleAssignmentService).assignCaseRole(
+            eq(CASE_ID), eq(List.of("testUid1")), eq("testRole"), eq(RoleCategory.PROFESSIONAL),
+            any(), any());
+        verifyNoMoreInteractions(roleAssignmentService);
+    }
+
 
     private static Stream<Arguments> stateToEventNameSource() {
         return Stream.of(
