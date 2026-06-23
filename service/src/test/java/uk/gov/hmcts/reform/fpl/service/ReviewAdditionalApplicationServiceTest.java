@@ -7,15 +7,21 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialRefusedOrders;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
+import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -24,7 +30,10 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -35,6 +44,9 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Mock
     private ApproveDraftOrdersService approveDraftOrdersService;
+
+    @Mock
+    private HearingOrderGenerator hearingOrderGenerator;
 
     @InjectMocks
     private ReviewAdditionalApplicationService reviewAdditionalApplicationService;
@@ -186,7 +198,7 @@ class ReviewAdditionalApplicationServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionSelectedApplicationsCannotBeMarkedAsReviewed() {
+    void shouldThrowWhenMarkingUnknownApplicationAsReviewed() {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
             .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
@@ -198,6 +210,106 @@ class ReviewAdditionalApplicationServiceTest {
         assertThatThrownBy(() -> reviewAdditionalApplicationService.markSelectedBundleAsReviewed(caseData))
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("No value present");
+    }
+
+    @Test
+    void shouldReturnDraftOrderToApplicantAndUpdateRefusedOrders() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrder> rejectedOrder = element(draftOrderId,
+            draftOrder.getValue().toBuilder().status(RETURNED).requestedChanges("Applicant needs to make changes")
+                .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(new ArrayList<>(List.of(hearingBundle)))
+            .build();
+
+        when(hearingOrderGenerator.buildRejectedHearingOrder(draftOrder,
+            "Applicant needs to make changes to the order")).thenReturn(rejectedOrder);
+        when(approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, hearingBundle))
+            .thenReturn(Map.of("hearingOrdersBundlesDrafts", List.of()));
+
+        Map<String, Object> result = reviewAdditionalApplicationService.returnDraftOrderToApplicant(caseData,
+            hearingBundle, draftOrderId, null);
+
+        assertThat(result.get("refusedHearingOrders")).isEqualTo(List.of(rejectedOrder));
+        assertThat(result.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of());
+        verify(approveDraftOrdersService).updateHearingDraftOrdersBundle(caseData, hearingBundle);
+    }
+
+    @Test
+    void shouldReturnConfidentialDraftOrderAndUpdateMatchingRefusedSuffix() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .orderConfidential(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrder> rejectedOrder = element(draftOrderId,
+            draftOrder.getValue().toBuilder().status(RETURNED).requestedChanges("Applicant needs to make changes")
+                .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>())
+            .ordersCTSC(new ArrayList<>())
+            .ordersLA(new ArrayList<>(List.of(draftOrder)))
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(new ArrayList<>(List.of(hearingBundle)))
+            .confidentialRefusedOrders(ConfidentialRefusedOrders.builder().build())
+            .build();
+
+        when(hearingOrderGenerator.buildRejectedHearingOrder(draftOrder,
+            "Applicant needs to make changes to the order")).thenReturn(rejectedOrder);
+        when(approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, hearingBundle))
+            .thenReturn(Map.of("hearingOrdersBundlesDrafts", List.of()));
+
+        Map<String, Object> result = reviewAdditionalApplicationService.returnDraftOrderToApplicant(caseData,
+            hearingBundle, draftOrderId, null);
+
+        assertThat(result.get("refusedHearingOrdersLA")).isEqualTo(List.of(rejectedOrder));
+        assertThat(result).doesNotContainKey("refusedHearingOrders");
+        assertThat(result.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of());
+        verify(approveDraftOrdersService).updateHearingDraftOrdersBundle(caseData, hearingBundle);
+    }
+
+    @Test
+    void shouldUseProvidedRequestedChanges() {
+        UUID draftOrderId = UUID.randomUUID();
+        String requestedChanges = "Please amend paragraph 3 and correct child DOB";
+
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrder> rejectedOrder = element(draftOrderId,
+            draftOrder.getValue().toBuilder().status(RETURNED).requestedChanges(requestedChanges).build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(new ArrayList<>(List.of(hearingBundle)))
+            .build();
+
+        when(hearingOrderGenerator.buildRejectedHearingOrder(draftOrder, requestedChanges)).thenReturn(rejectedOrder);
+        when(approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, hearingBundle))
+            .thenReturn(Map.of("hearingOrdersBundlesDrafts", List.of()));
+
+        Map<String, Object> result = reviewAdditionalApplicationService.returnDraftOrderToApplicant(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            requestedChanges
+        );
+
+        assertThat(result.get("refusedHearingOrders")).isEqualTo(List.of(rejectedOrder));
+        verify(hearingOrderGenerator).buildRejectedHearingOrder(eq(draftOrder), eq(requestedChanges));
+        verify(approveDraftOrdersService).updateHearingDraftOrdersBundle(caseData, hearingBundle);
     }
 
     private static C2AdditionalApplicationEventData buildReviewC2AdditionalApplicationEventData(
