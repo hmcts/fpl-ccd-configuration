@@ -29,7 +29,7 @@ variable "jenkins_AAD_objectId" {
 
 variable "appinsights_location" {
   type        = string
-  default     = "UK South"
+  default     = "West Europe"
   description = "Location for Application Insights"
 }
 

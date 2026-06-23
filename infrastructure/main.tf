@@ -50,7 +50,7 @@ module "application_insights_uksouth" {
   name    = "${var.product}-${var.component}-appinsights-uksouth"
 
   resource_group_name = azurerm_resource_group.rg.name
-  location            = var.appinsights_location
+  location            = var.location
   common_tags         = var.common_tags
 }
 
