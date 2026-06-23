@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
@@ -76,16 +77,19 @@ public class ApplicantsListGenerator {
         if (isNotEmpty(caseData.getCaseLocalAuthorityName())) {
             applicantsFullNames.add(InterlocutoryApplicant.builder()
                 .code("applicant")
-                .name((!caseData.isC1Application()) ? caseData.getCaseLocalAuthorityName() + ", Applicant" :
-                    caseData.getCaseLocalAuthorityName() + ", Local Authority").build());
+                .name(caseData.isC1Application() || YesNo.NO.equals(caseData.getIsLocalAuthority())
+                   ? caseData.getCaseLocalAuthorityName() + ", Local Authority" :
+                   caseData.getCaseLocalAuthorityName() + ", Applicant").build());
+
         }
 
         caseData.getSecondaryLocalAuthority()
             .map(LocalAuthority::getName)
             .map(localAuthorityName -> InterlocutoryApplicant.builder()
                 .code("secondaryLocalAuthority")
-                .name((!caseData.isC1Application()) ?  localAuthorityName + ", Secondary LA" :
-                    localAuthorityName + ", Applicant").build())
+                .name(caseData.isC1Application() || YesNo.NO.equals(caseData.getIsLocalAuthority())
+                  ?  localAuthorityName +  ", Applicant" :
+                    localAuthorityName + ", Secondary LA").build())
             .ifPresent(applicantsFullNames::add);
 
         applicantsFullNames.addAll(buildRespondentNameElements(caseData.getAllRespondents()));
