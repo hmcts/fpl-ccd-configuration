@@ -193,6 +193,7 @@
     "PageID": 3,
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/review-additional-application/edit-hearing/mid-event"
   },
   {
@@ -206,6 +207,7 @@
     "PageID": 3,
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "approveAdditionalAppRouter=\"APPLICANT_CHANGE_ORDER\""
   },
   {
