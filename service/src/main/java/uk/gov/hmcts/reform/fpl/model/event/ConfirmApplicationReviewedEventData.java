@@ -53,6 +53,9 @@ public class ConfirmApplicationReviewedEventData {
     YesNo addCoverSheet;
 
     @Temp
+    DocumentReference amendedDraftOrder;
+
+    @Temp
     DocumentReference uploadedDraftOrder;
 
     @Temp
@@ -82,7 +85,8 @@ public class ConfirmApplicationReviewedEventData {
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
-            "reviewAdditionalAppIsConfidential"
+            "reviewAdditionalAppIsConfidential",
+            "amendedDraftOrder"
         );
     }
 }
