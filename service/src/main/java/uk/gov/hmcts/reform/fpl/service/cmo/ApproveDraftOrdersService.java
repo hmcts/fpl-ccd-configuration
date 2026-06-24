@@ -311,8 +311,13 @@ public class ApproveDraftOrdersService {
                         orderElement, reviewDecision.getChangesRequestedByJudge());
 
                     if (orderElement.getValue().isConfidentialOrder()) {
+                        Element<HearingOrder> confidentialRejectedOrder =
+                            element(rejectedOrder.getId(),
+                                rejectedOrder.getValue().toBuilder()
+                                .orderConfidential(null)
+                                .build());
                         data.putAll(addToConfidentialOrderBundle(selectedOrdersBundle, orderElement,
-                            caseData.getConfidentialRefusedOrders(), rejectedOrder));
+                            caseData.getConfidentialRefusedOrders(), confidentialRejectedOrder));
                     }
 
                     ordersToBeSent.add(rejectedOrder);
