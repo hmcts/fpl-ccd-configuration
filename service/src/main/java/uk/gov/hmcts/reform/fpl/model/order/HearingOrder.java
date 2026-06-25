@@ -153,7 +153,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     @Override
     public String asLabel() {
         if (RETURNED.equals(status)) {
-            return format("Refused case management order sent on %s, %s",
+            return format("Refused order sent on %s, %s",
                 formatLocalDateToString(dateSent, DATE),
                 (refusedOrder != null && refusedOrder.getFilename() != null) ? refusedOrder.getFilename() : "");
         }
