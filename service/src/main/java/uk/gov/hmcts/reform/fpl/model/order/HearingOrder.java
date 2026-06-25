@@ -33,6 +33,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
@@ -165,6 +166,12 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
                 return format("Agreed case management order sent on %s, %s",
                     formatLocalDateToString(dateSent, DATE),
                     getDocument().getFilename());
+            }
+
+            if (RETURNED.equals(status)) {
+                return format("Refused case management order sent on %s, %s",
+                    formatLocalDateToString(dateSent, DATE),
+                    (refusedOrder != null && refusedOrder.getFilename() != null) ? refusedOrder.getFilename() : "");
             }
 
             return format("Draft case management order sent on %s, %s",
