@@ -11,8 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
@@ -68,7 +66,12 @@ public class MigrateCaseController extends CallbackController {
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
 
-        caseAccessService.grantCaseAccess(caseId, Set.of("76d29d26-931f-452e-ae8f-dda550aaf505"), LASOLICITOR);
+        caseAccessService.grantCaseAccess(caseId, Set.of(
+            "76d29d26-931f-452e-ae8f-dda550aaf505",
+            "b479e1ef-489f-4cfe-8c27-7ce2b290ddb5",
+            "99ba1478-02ad-4449-8a9b-fb9165bf25b3",
+            "47fcc1ed-40a9-41b7-bda3-2a44b9e16247"
+        ), LASOLICITOR);
 
     }
 }
