@@ -29,6 +29,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ReviewDecision",
+    "ListElementCode": "decisionConcludesProceedings",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DecisionConcludesProceedingsCheckBox",
+    "ElementLabel": "Does the order conclude the proceedings?",
+    "FieldShowCondition": "decision=\"SEND_TO_ALL_PARTIES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewDecision",
     "ListElementCode": "changesRequestedByJudge",
     "FieldType": "TextArea",
     "ElementLabel": "What do they need to change?",

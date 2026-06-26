@@ -1,0 +1,9 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DecisionConcludesProceedingsCheckBox",
+    "ListElementCode": "DECISION_CONCLUDES_PROCEEDINGS",
+    "ListElement": "Yes",
+    "DisplayOrder": 1
+  }
+]
