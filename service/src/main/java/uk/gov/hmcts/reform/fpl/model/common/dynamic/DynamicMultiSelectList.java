@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.common.dynamic;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -9,8 +8,6 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Representation of a CCD Dynamic List which is then converted to a select dropdown list.
