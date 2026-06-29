@@ -224,7 +224,7 @@ public class ChildrenService {
 
     public List<Element<Child>> getSelectedChildrenFromMultiSelectList(CaseData caseData) {
         return getSelectedChildrenFromMultiSelectList(caseData.getAllChildren(),
-            caseData.getChildSelectorForManageOrders(), caseData.getOrderAppliesToAllChildren());
+            caseData.getChildSelectorV2(), caseData.getOrderAppliesToAllChildren());
     }
 
     private List<Element<Child>> getSelectedChildrenFromMultiSelectList(List<Element<Child>> children,

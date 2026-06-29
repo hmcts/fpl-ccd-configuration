@@ -253,7 +253,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             .familyManCaseNumber("CASE_NUMBER")
             .children1(childrenList)
             .orderAppliesToAllChildren("No")
-            .childSelectorForManageOrders(
+            .childSelectorV2(
                 DynamicMultiSelectList.builder()
                     .value(List.of(childEle1, childEle2))
                     .listItems(List.of(childEle1, childEle2, DynamicMultiSelectListElement.builder()

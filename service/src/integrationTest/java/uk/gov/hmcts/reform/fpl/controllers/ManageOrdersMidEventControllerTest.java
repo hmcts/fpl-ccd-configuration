@@ -268,7 +268,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         CaseData responseCaseData = extractCaseData(response);
 
-        assertThat(responseCaseData.getChildSelectorForManageOrders()).isEqualTo(
+        assertThat(responseCaseData.getChildSelectorV2()).isEqualTo(
             DynamicMultiSelectList.builder()
                 .listItems(List.of(
                     DynamicMultiSelectListElement.builder().code(CHILD_1_ID.toString())
@@ -287,7 +287,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void childrenDetailsShouldReturnErrorWhenNoChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
-            .childSelectorForManageOrders(DynamicMultiSelectList.builder()
+            .childSelectorV2(DynamicMultiSelectList.builder()
                 .listItems(List.of(
                     DynamicMultiSelectListElement.builder().code("0").label("First child").build(),
                     DynamicMultiSelectListElement.builder().code("1").label("Second child").build()
@@ -490,7 +490,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "issuing-details");
         assertThat(response.getErrors()).isEmpty();
         assertThat(response.getData())
-            .containsKeys("children_label", "childSelectorForManageOrders", "childrenDetailsSectionSubHeader");
+            .containsKeys("children_label", "childSelectorV2", "childrenDetailsSectionSubHeader");
     }
 
     @Test

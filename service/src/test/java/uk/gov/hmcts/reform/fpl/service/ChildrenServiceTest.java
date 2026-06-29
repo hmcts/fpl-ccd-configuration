@@ -362,7 +362,7 @@ class ChildrenServiceTest {
         void shouldReturnSelectedChildrenOnly() {
             CaseData caseData = CaseData.builder()
                 .children1(childrenList)
-                .childSelectorForManageOrders(childrenMultiSelectListWithSelectedChildren)
+                .childSelectorV2(childrenMultiSelectListWithSelectedChildren)
                 .orderAppliesToAllChildren("No")
                 .build();
 
@@ -375,7 +375,7 @@ class ChildrenServiceTest {
         void shouldReturnEmptyListWhenNoChildrenSelected() {
             CaseData caseData = CaseData.builder()
                 .children1(childrenList)
-                .childSelectorForManageOrders(childrenMultiSelectListWithNoSelectedChildren)
+                .childSelectorV2(childrenMultiSelectListWithNoSelectedChildren)
                 .orderAppliesToAllChildren("No")
                 .build();
 

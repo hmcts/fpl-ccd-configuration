@@ -58,7 +58,7 @@ class WhichChildrenBlockPrePopulatorTest {
 
         final List<Element<Child>> childrenList = List.of(child1, child2);
 
-        final DynamicMultiSelectList childSelectorForManageOrders = DynamicMultiSelectList.builder().listItems(
+        final DynamicMultiSelectList childSelectorV2 = DynamicMultiSelectList.builder().listItems(
             List.of(
                 DynamicMultiSelectListElement.builder().code(child1.getId().toString())
                     .label("first1 last1 (Child 1)").build(),
@@ -72,13 +72,13 @@ class WhichChildrenBlockPrePopulatorTest {
             .build();
 
         when(childrenService.getChildrenLabel(childrenList, false)).thenReturn(CHILDREN_LABEL);
-        when(childrenService.getChildrenMultiSelectList(caseData)).thenReturn(childSelectorForManageOrders);
-        when(childrenService.getChildrenLabelFromMultiSelectList(childSelectorForManageOrders))
+        when(childrenService.getChildrenMultiSelectList(caseData)).thenReturn(childSelectorV2);
+        when(childrenService.getChildrenLabelFromMultiSelectList(childSelectorV2))
             .thenReturn("first1 last1 (Child 1)\nfirst2 last2 (Child 2)");
 
         assertThat(underTest.prePopulate(caseData)).isEqualTo(
             Map.of(
-                "childSelectorForManageOrders", childSelectorForManageOrders,
+                "childSelectorV2", childSelectorV2,
                 "children_label", "first1 last1 (Child 1)\nfirst2 last2 (Child 2)"
             )
         );

@@ -39,7 +39,7 @@ class WhichChildrenValidatorTest {
     void validateSomeChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
-            .childSelectorForManageOrders(DynamicMultiSelectList.builder()
+            .childSelectorV2(DynamicMultiSelectList.builder()
                 .value(List.of(childEle1))
                 .listItems(List.of(childEle1, childEle2)).build())
             .build();
@@ -51,7 +51,7 @@ class WhichChildrenValidatorTest {
     void validateNoChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
-            .childSelectorForManageOrders(DynamicMultiSelectList.builder()
+            .childSelectorV2(DynamicMultiSelectList.builder()
                 .listItems(List.of(childEle1, childEle2)).build())
             .build();
 

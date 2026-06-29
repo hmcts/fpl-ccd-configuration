@@ -25,11 +25,11 @@ public class WhichChildrenBlockPrePopulator implements QuestionBlockOrderPrePopu
 
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
-        final DynamicMultiSelectList childSelectorForManageOrders = childrenService
+        final DynamicMultiSelectList childSelectorV2 = childrenService
             .getChildrenMultiSelectList(caseData);
         return Map.of(
-            "childSelectorForManageOrders", childSelectorForManageOrders,
-            "children_label", childrenService.getChildrenLabelFromMultiSelectList(childSelectorForManageOrders)
+            "childSelectorV2", childSelectorV2,
+            "children_label", childrenService.getChildrenLabelFromMultiSelectList(childSelectorV2)
         );
     }
 }

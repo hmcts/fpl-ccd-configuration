@@ -154,7 +154,7 @@ class ManageOrdersPostSubmitControllerAboutToSubmitTest extends AbstractCallback
 
         assertThat(response.getData()).doesNotContainKeys(
             "judgeAndLegalAdvisor", "manageOrdersApprovalDate", "orderAppliesToAllChildren", "children_label",
-            "childSelectorForManageOrders", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType",
+            "childSelectorV2", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType",
             "orderTempQuestions", "issuingDetailsSectionSubHeader", "hearingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader", "manageOrdersOperation",
             "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase", "manageOrdersChildrenDescription",
@@ -198,7 +198,7 @@ class ManageOrdersPostSubmitControllerAboutToSubmitTest extends AbstractCallback
             .familyManCaseNumber("CASE_NUMBER")
             .children1(CHILDREN)
             .orderAppliesToAllChildren("No")
-            .childSelectorForManageOrders(
+            .childSelectorV2(
                 DynamicMultiSelectList.builder()
                     .value(List.of(childEle1, childEle2))
                     .listItems(List.of(childEle1, childEle2,

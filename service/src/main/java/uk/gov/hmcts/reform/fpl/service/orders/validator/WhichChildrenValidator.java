@@ -22,10 +22,10 @@ public class WhichChildrenValidator implements QuestionBlockOrderValidator {
     @Override
     public List<String> validate(CaseData caseData) {
         String orderAppliesToAllChildren = caseData.getOrderAppliesToAllChildren();
-        DynamicMultiSelectList childSelectorForManageOrders = caseData.getChildSelectorForManageOrders();
+        DynamicMultiSelectList childSelectorV2 = caseData.getChildSelectorV2();
 
-        if (NO.getValue().equals(orderAppliesToAllChildren) && (childSelectorForManageOrders.getValue() == null
-            || childSelectorForManageOrders.getValue().isEmpty())) {
+        if (NO.getValue().equals(orderAppliesToAllChildren) && (childSelectorV2.getValue() == null
+            || childSelectorV2.getValue().isEmpty())) {
             return List.of(MESSAGE);
         }
 
