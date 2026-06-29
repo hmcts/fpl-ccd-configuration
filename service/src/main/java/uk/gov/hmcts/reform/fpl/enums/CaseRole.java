@@ -7,6 +7,7 @@ public enum CaseRole {
     CREATOR,
     LASOLICITOR,
     EPSMANAGING,
+    APPSOLICITOR,
     LAMANAGING,
     LASHARED,
     SOLICITOR,
