@@ -331,8 +331,7 @@ public class RespondentService {
             IncrementalInteger i = new IncrementalInteger(1);
             caseData.getRespondents1().forEach(respondent -> {
                 listItems.add(DynamicMultiSelectListElement.builder().code(respondent.getId().toString())
-                    .label(respondent.getValue().getParty().getFirstName() + " "
-                    + respondent.getValue().getParty().getLastName()
+                    .label(respondent.getValue().getParty().getFullName()
                     + " (Respondent " + i.getAndIncrement() + ")").build());
             });
         }
