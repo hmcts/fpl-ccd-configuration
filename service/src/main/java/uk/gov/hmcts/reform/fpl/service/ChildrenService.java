@@ -207,8 +207,8 @@ public class ChildrenService {
         if (caseData.getChildren1() != null) {
             IncrementalInteger i = new IncrementalInteger(1);
             caseData.getChildren1().forEach(child -> listItems.add(DynamicMultiSelectListElement
-                .builder().code(child.getId().toString()).label(child.getValue().getParty().getFirstName() + " "
-                + child.getValue().getParty().getLastName() + " (Child " + i.getAndIncrement() + ")").build()));
+                .builder().code(child.getId().toString()).label(child.getValue().asLabel() +
+                    " (Child " + i.getAndIncrement() + ")").build()));
         }
         return DynamicMultiSelectList.builder().listItems(listItems).build();
     }
