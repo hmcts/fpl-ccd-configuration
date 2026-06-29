@@ -33,19 +33,4 @@ public class DynamicMultiSelectList {
      */
     @JsonProperty("list_items")
     private List<DynamicMultiSelectListElement> listItems;
-
-    @JsonIgnore
-    public String getValueLabel() {
-        return value == null ? null : value.toString();
-    }
-
-    @JsonIgnore
-    public UUID getValueCodeAsUuid() {
-        return Optional.ofNullable(getValueCode()).map(UUID::fromString).orElse(null);
-    }
-
-    @JsonIgnore
-    public String getValueCode() {
-        return value == null ? null : value.toString();
-    }
 }
