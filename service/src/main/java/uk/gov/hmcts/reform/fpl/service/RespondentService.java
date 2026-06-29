@@ -261,14 +261,7 @@ public class RespondentService {
         if (useAllRespondents(allRespondentsSelected)) {
             return respondents;
         } else {
-            if (isNull(dynamicMultiSelectList) || isEmpty(dynamicMultiSelectList.getValue())) {
-                return Collections.emptyList();
-            }
-
-            return respondents.stream()
-                .filter(respondent -> dynamicMultiSelectList.getValue().stream()
-                    .anyMatch(listValue -> listValue.hasCode(respondent.getId())))
-                .toList();
+            return DynamicMultiSelectList.getSelectedElementFromMultiSelectList(respondents, dynamicMultiSelectList);
         }
     }
 

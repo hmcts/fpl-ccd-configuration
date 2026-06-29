@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -233,13 +232,7 @@ public class ChildrenService {
         if (useAllChildren(appliesToAllChildren)) {
             return children;
         } else {
-            if (isNull(dynamicMultiSelectList) || isEmpty(dynamicMultiSelectList.getValue())) {
-                return Collections.emptyList();
-            }
-            return children.stream()
-                .filter(child -> dynamicMultiSelectList.getValue().stream()
-                    .anyMatch(listValue -> listValue.hasCode(child.getId())))
-                .toList();
+            return DynamicMultiSelectList.getSelectedElementFromMultiSelectList(children, dynamicMultiSelectList);
         }
     }
 }
