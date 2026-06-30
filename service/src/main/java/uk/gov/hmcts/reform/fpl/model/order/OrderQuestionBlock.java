@@ -38,7 +38,7 @@ public enum OrderQuestionBlock {
     APPROVAL_DATE_TIME("approvalDateTime", OrderSection.ISSUING_DETAILS,
         List.of("manageOrdersApprovalDateTime")),
     WHICH_CHILDREN("whichChildren", OrderSection.CHILDREN_DETAILS,
-        List.of("orderAppliesToAllChildren", "children_label", "childSelector")),
+        List.of("orderAppliesToAllChildren", "children_label", "childSelectorForManageOrders")),
     SELECT_SINGLE_CHILD("selectSingleChild", OrderSection.CHILDREN_DETAILS, List.of("whichChildIsTheOrderFor")),
     EPO_INCLUDE_PHRASE("epoIncludePhrase", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersIncludePhrase")),

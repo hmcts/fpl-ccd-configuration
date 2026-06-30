@@ -56,6 +56,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
@@ -499,8 +500,9 @@ public class CaseData extends CaseDataParent {
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
+    private final DynamicMultiSelectList childSelectorForManageOrders;
     private final Selector othersSelector;
-    private final Selector respondentsSelector;
+    private final DynamicMultiSelectList respondentsSelectorV2;
     private final Selector personSelector;
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;

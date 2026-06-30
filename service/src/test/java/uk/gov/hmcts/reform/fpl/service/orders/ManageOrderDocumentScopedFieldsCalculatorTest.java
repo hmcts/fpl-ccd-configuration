@@ -31,7 +31,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersLinkedApplication",
             "orderAppliesToAllChildren",
             "children_label",
-            "childSelector",
+            "childSelectorForManageOrders",
             "appointedGuardians_label",
             "appointedGuardianSelector",
             "additionalAppointedSpecialGuardians",

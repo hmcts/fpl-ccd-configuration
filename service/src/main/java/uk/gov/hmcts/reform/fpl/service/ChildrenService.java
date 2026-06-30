@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
 
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -198,4 +202,44 @@ public class ChildrenService {
             Collections.unmodifiableList(before));
     }
 
+    public DynamicMultiSelectList getChildrenMultiSelectList(CaseData caseData) {
+        List<DynamicMultiSelectListElement> listItems = new ArrayList<>();
+        if (caseData.getChildren1() != null) {
+            IncrementalInteger i = new IncrementalInteger(1);
+            caseData.getChildren1().forEach(child -> listItems.add(DynamicMultiSelectListElement
+                .builder().code(child.getId().toString()).label(child.getValue().getParty().getFirstName() + " "
+                + child.getValue().getParty().getLastName() + " (Child " + i.getAndIncrement() + ")").build()));
+        }
+        return DynamicMultiSelectList.builder().listItems(listItems).build();
+    }
+
+    public String getChildrenLabelFromMultiSelectList(DynamicMultiSelectList children) {
+        if (isEmpty(children.getListItems())) {
+            return "No children in the case";
+        }
+        return children.getListItems().stream()
+            .map(childName -> String.join(" ", childName.getLabel()))
+            .collect(Collectors.joining("\n"));
+    }
+
+    public List<Element<Child>> getSelectedChildrenFromMultiSelectList(CaseData caseData) {
+        return getSelectedChildrenFromMultiSelectList(caseData.getAllChildren(),
+            caseData.getChildSelectorForManageOrders(), caseData.getOrderAppliesToAllChildren());
+    }
+
+    private List<Element<Child>> getSelectedChildrenFromMultiSelectList(List<Element<Child>> children,
+                                                                        DynamicMultiSelectList dynamicMultiSelectList,
+                                                                        String appliesToAllChildren) {
+        if (useAllChildren(appliesToAllChildren)) {
+            return children;
+        } else {
+            if (isNull(dynamicMultiSelectList) || isEmpty(dynamicMultiSelectList.getValue())) {
+                return Collections.emptyList();
+            }
+            return children.stream()
+                .filter(child -> dynamicMultiSelectList.getValue().stream()
+                    .anyMatch(listValue -> listValue.hasCode(child.getId())))
+                .toList();
+        }
+    }
 }

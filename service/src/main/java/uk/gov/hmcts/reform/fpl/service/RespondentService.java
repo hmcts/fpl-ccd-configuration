@@ -20,9 +20,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
 
 import java.util.ArrayList;
@@ -36,7 +38,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -249,22 +250,25 @@ public class RespondentService {
     }
 
     public List<Element<Respondent>> getSelectedRespondents(CaseData caseData, String allRespondentsSelected) {
-        return getSelectedRespondents(caseData.getAllRespondents(), caseData.getRespondentsSelector(),
+        return getSelectedRespondents(caseData.getAllRespondents(), caseData.getRespondentsSelectorV2(),
             allRespondentsSelected);
     }
 
-    public List<Element<Respondent>> getSelectedRespondents(List<Element<Respondent>> respondents, Selector selector,
-                                                  String allRespondentsSelected) {
+    public List<Element<Respondent>> getSelectedRespondents(List<Element<Respondent>> respondents,
+                                                            DynamicMultiSelectList dynamicMultiSelectList,
+                                                            String allRespondentsSelected) {
 
         if (useAllRespondents(allRespondentsSelected)) {
             return respondents;
         } else {
-            if (isNull(selector) || isEmpty(selector.getSelected())) {
+            if (isNull(dynamicMultiSelectList) || isEmpty(dynamicMultiSelectList.getValue())) {
                 return Collections.emptyList();
             }
-            return selector.getSelected().stream()
-                .map(respondents::get)
-                .collect(toList());
+
+            return respondents.stream()
+                .filter(respondent -> dynamicMultiSelectList.getValue().stream()
+                    .anyMatch(listValue -> listValue.hasCode(respondent.getId())))
+                .toList();
         }
     }
 
@@ -326,6 +330,26 @@ public class RespondentService {
             respondents.add(0, respondentLA.toRespondent(Respondent.builder().build()));
         }
         caseDetails.getData().put("respondents1", respondents);
+    }
+
+    public DynamicMultiSelectList getRespondentsMultiSelectList(CaseData caseData) {
+        List<DynamicMultiSelectListElement> listItems = new ArrayList<>();
+        if (caseData.getRespondents1() != null) {
+            IncrementalInteger i = new IncrementalInteger(1);
+            caseData.getRespondents1().forEach(respondent -> {
+                listItems.add(DynamicMultiSelectListElement.builder().code(respondent.getId().toString())
+                    .label(respondent.getValue().getParty().getFirstName() + " "
+                    + respondent.getValue().getParty().getLastName()
+                    + " (Respondent " + i.getAndIncrement() + ")").build());
+            });
+        }
+        return DynamicMultiSelectList.builder().listItems(listItems).build();
+    }
+
+    public String formatRespondentSelector(DynamicMultiSelectList respondentSelector) {
+        return respondentSelector.getListItems().stream()
+            .map(respondentName -> String.join(" ", respondentName.getLabel()))
+            .collect(Collectors.joining("\n"));
     }
 
 }
