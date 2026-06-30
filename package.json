@@ -29,7 +29,7 @@
     "mocha-multi": "^1.1.7",
     "mochawesome": "^6.3.1",
     "moment": "2.30.1",
-    "node-fetch": "^2.6.9",
+    "node-fetch": "^3.0.0",
     "node-gyp": "^9.4.0",
     "pdfjs-dist": "4.2.67",
     "qs": "^6.11.2",
