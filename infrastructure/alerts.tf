@@ -16,8 +16,8 @@ module "fpl-action-group" {
 
 module "fpl-performance-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
-  location                   = var.appinsights_location
-  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  location                   = var.location
+  app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
   alert_name                 = "${var.product}-performance"
   alert_desc                 = "Requests that took longer than 1 seconds to complete"
   app_insights_query         = "requests | where url !contains '/health' and success == 'True' and duration > 6000 | project timestamp, operation_Id, name, duration | sort by duration nulls last"
@@ -35,8 +35,8 @@ module "fpl-performance-alert" {
 
 module "fpl-exceptions-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
-  location                   = var.appinsights_location
-  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  location                   = var.location
+  app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
   alert_name                 = "${var.product}-exceptions"
   alert_desc                 = "All exceptions within FPL"
   app_insights_query         = "exceptions | where operation_Name !contains 'health' and outerMessage !contains '[403 Forbidden] during [GET] to [http://rd-professional-api-prod.service.core-compute-prod.internal/refdata/external/v1/organisations]' and outerMessage !contains '[409 Conflict during [POST] to [http://ccd-data-store' | project timestamp, operation_Id, outerMessage, operation_Name"
@@ -54,8 +54,8 @@ module "fpl-exceptions-alert" {
 
 module "fpl-health-failure-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
-  location                   = var.appinsights_location
-  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  location                   = var.location
+  app_insights_name          = "${var.product}-${var.component}-appinsights--uksouth-${var.env}"
   alert_name                 = "${var.product}-health-failure"
   alert_desc                 = "Failed health requests"
   app_insights_query         = "requests | where url contains 'health' | where resultCode != 200 | project timestamp, operation_Id, resultCode"
@@ -73,8 +73,8 @@ module "fpl-health-failure-alert" {
 
 module "fpl-upcoming-hearings-job-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
-  location                   = var.appinsights_location
-  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  location                   = var.location
+  app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
   alert_name                 = "${var.product}-upcoming-hearings-job-failure"
   alert_desc                 = "Failed 'Upcoming hearings' scheduled job"
   app_insights_query         = "traces | where message contains \"Job 'Upcoming hearings' finished\" | count"
@@ -92,8 +92,8 @@ module "fpl-upcoming-hearings-job-alert" {
 
 module "fpl-summary-tab-job-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
-  location                   = var.appinsights_location
-  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  location                   = var.location
+  app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
   alert_name                 = "${var.product}-summary-tab-job-failure"
   alert_desc                 = "Failed 'Summary tab' scheduled job"
   app_insights_query         = "traces | where message contains \"Job 'Summary tab' finished\" | count"
@@ -111,8 +111,8 @@ module "fpl-summary-tab-job-alert" {
 
 module "fpl-executor-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
-  location                   = var.appinsights_location
-  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  location                   = var.location
+  app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
   alert_name                 = "${var.product}-executor-alert"
   alert_desc                 = "All 10 core executors are active. If this situation continues, executors could be blocked."
   app_insights_query         = "customMetrics | where name == \"executor_active\" | where value >= 10"
