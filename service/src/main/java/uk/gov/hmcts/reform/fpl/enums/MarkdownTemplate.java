@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum MarkdownTemplate {
-    CASE_SUBMISSION("caseSubmission");
+    CASE_SUBMISSION("caseSubmission"),
+    REVIEW_ADDITIONAL_APPLICATION("reviewAdditionalApplication"),
+    REVIEW_ADDITIONAL_APPLICATION_CONFIDENTIAL("reviewAdditionalApplicationConfidential");
 
     private final String file;
 }
