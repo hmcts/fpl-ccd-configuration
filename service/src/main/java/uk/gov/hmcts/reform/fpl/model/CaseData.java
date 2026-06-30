@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
+import uk.gov.hmcts.reform.fpl.model.caseflag.AllPartyFlags;
 import uk.gov.hmcts.reform.fpl.model.caselink.CaseLink;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -204,6 +205,12 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     private final HearingJudgeEventData hearingJudgeEventData = new HearingJudgeEventData();
 
+    @Builder.Default
+    @JsonUnwrapped
+    private AllPartyFlags allPartyFlags = new AllPartyFlags();
+
+    private String caseInterpreterRequiredFlag;
+    private String caseAdditionalSecurityFlag;
 
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());

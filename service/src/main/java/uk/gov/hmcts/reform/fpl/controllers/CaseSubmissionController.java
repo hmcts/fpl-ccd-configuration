@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
@@ -45,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
+@Slf4j
 @RestController
 @RequestMapping("/callback/case-submission")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -55,6 +58,7 @@ public class CaseSubmissionController extends CallbackController {
     private final CaseSubmissionService caseSubmissionService;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
+    private final CaseFlagsService caseFlagsService;
     private final CaseSubmissionMarkdownService markdownService;
     private final CaseSubmissionChecker caseSubmissionChecker;
     private final NoticeOfChangeFieldPopulator nocFieldPopulator;
@@ -144,6 +148,16 @@ public class CaseSubmissionController extends CallbackController {
 
             data.putAll(nocFieldPopulator.generate(caseData, RESPONDENT));
             data.putAll(nocFieldPopulator.generate(caseData, CHILD));
+
+            boolean caseFlagsToggle = featureToggleService.isCaseFlagsEnabled();
+            log.info("Case flags feature flag is {}", caseFlagsToggle);
+
+            if (caseFlagsToggle && caseFlagsService.caseFlagsSetupRequired(caseData)) {
+                caseFlagsService.setupCaseFlags(caseData);
+                caseFlagsService.processNewlySetCaseFlags(caseData);
+            }
+
+            data.putAll(caseFlagsService.generate(caseData));
         }
 
         removeTemporaryFields(caseDetails, DRAFT_APPLICATION_DOCUMENT, "submissionConsentLabel",
