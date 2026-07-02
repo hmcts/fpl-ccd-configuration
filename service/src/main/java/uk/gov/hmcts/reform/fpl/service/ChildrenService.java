@@ -212,15 +212,6 @@ public class ChildrenService {
         return DynamicMultiSelectList.builder().listItems(listItems).build();
     }
 
-    public String getChildrenLabelFromMultiSelectList(DynamicMultiSelectList children) {
-        if (isEmpty(children.getListItems())) {
-            return "No children in the case";
-        }
-        return children.getListItems().stream()
-            .map(childName -> String.join(" ", childName.getLabel()))
-            .collect(Collectors.joining("\n"));
-    }
-
     public List<Element<Child>> getSelectedChildrenFromMultiSelectList(CaseData caseData) {
         return getSelectedChildrenFromMultiSelectList(caseData.getAllChildren(),
             caseData.getChildSelectorV2(), caseData.getOrderAppliesToAllChildren());

@@ -73,13 +73,11 @@ class WhichChildrenBlockPrePopulatorTest {
 
         when(childrenService.getChildrenLabel(childrenList, false)).thenReturn(CHILDREN_LABEL);
         when(childrenService.getChildrenMultiSelectList(caseData)).thenReturn(childSelectorV2);
-        when(childrenService.getChildrenLabelFromMultiSelectList(childSelectorV2))
-            .thenReturn("first1 last1 (Child 1)\nfirst2 last2 (Child 2)");
 
         assertThat(underTest.prePopulate(caseData)).isEqualTo(
             Map.of(
                 "childSelectorV2", childSelectorV2,
-                "children_label", "first1 last1 (Child 1)\nfirst2 last2 (Child 2)"
+                "children_label", childrenService.getChildrenLabel(childrenList, false)
             )
         );
     }
