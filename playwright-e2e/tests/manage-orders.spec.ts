@@ -22,7 +22,7 @@ test.describe('manage orders', () => {
             test(` @xbrowser EPO order created by ${role}`,
 
                 async ({ page, signInPage, orders }) => {
-                    caseName = 'Amend EPO order ' + dateTime.slice(0, 10);
+                    caseName = 'EPO order ' + dateTime.slice(0, 10);
                     expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
                     await signInPage.visit();
                     await signInPage.login(user.email, user.password);
@@ -91,7 +91,6 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Order 1', { exact: true })).toBeVisible();
-        await orders.openOrderDoc(' c23_emergency_protection_order.pdf');
         await expect(page.getByRole('cell', { name: ' c23_emergency_protection_order.pdf', exact: true })).toBeVisible();
 
     });
@@ -111,13 +110,11 @@ test.describe('manage orders', () => {
 
         await orders.uploadsEmergencyProtectionOrder();
 
-        // await orders.clickContinue();
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Order 1', { exact: true })).toBeVisible();
-        await orders.openOrderDoc(' c23_emergency_protection_order.pdf');
         await expect(page.getByRole('cell', { name: ' c23_emergency_protection_order.pdf', exact: true })).toBeVisible();
 
     });
