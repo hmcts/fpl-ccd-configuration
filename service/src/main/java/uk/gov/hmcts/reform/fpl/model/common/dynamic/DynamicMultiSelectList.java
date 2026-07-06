@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 /**
@@ -38,14 +37,12 @@ public class DynamicMultiSelectList {
     private List<DynamicMultiSelectListElement> listItems;
 
     @JsonIgnore
-    public static <T> List<Element<T>> getSelectedElementFromMultiSelectList(
-        List<Element<T>> elements,
-        DynamicMultiSelectList dynamicMultiSelectList) {
-        if (isNull(dynamicMultiSelectList) || isEmpty(dynamicMultiSelectList.getValue())) {
+    public <T> List<Element<T>> getSelectedElementFromMultiSelectList(List<Element<T>> elements) {
+        if (isEmpty(value)) {
             return Collections.emptyList();
         }
-        return elements.stream().filter(element -> dynamicMultiSelectList.getValue().stream()
-            .anyMatch(listValue -> listValue.hasCode(element.getId())))
-        .toList();
+        return elements.stream().filter(element -> value.stream()
+                .anyMatch(listValue -> listValue.hasCode(element.getId())))
+            .toList();
     }
 }

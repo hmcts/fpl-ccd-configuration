@@ -255,13 +255,14 @@ public class RespondentService {
     }
 
     public List<Element<Respondent>> getSelectedRespondents(List<Element<Respondent>> respondents,
-                                                            DynamicMultiSelectList dynamicMultiSelectList,
+                                                            DynamicMultiSelectList respondentsSelectorV2,
                                                             String allRespondentsSelected) {
 
         if (useAllRespondents(allRespondentsSelected)) {
             return respondents;
         } else {
-            return DynamicMultiSelectList.getSelectedElementFromMultiSelectList(respondents, dynamicMultiSelectList);
+            return Optional.ofNullable(respondentsSelectorV2).map(respondentsSelector ->
+                respondentsSelector.getSelectedElementFromMultiSelectList(respondents)).orElse(List.of());
         }
     }
 

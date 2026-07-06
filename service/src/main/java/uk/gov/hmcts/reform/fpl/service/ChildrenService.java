@@ -218,12 +218,12 @@ public class ChildrenService {
     }
 
     private List<Element<Child>> getSelectedChildrenFromMultiSelectList(List<Element<Child>> children,
-                                                                        DynamicMultiSelectList dynamicMultiSelectList,
+                                                                        DynamicMultiSelectList childSelectorV2,
                                                                         String appliesToAllChildren) {
         if (useAllChildren(appliesToAllChildren)) {
             return children;
         } else {
-            return DynamicMultiSelectList.getSelectedElementFromMultiSelectList(children, dynamicMultiSelectList);
+            return childSelectorV2.getSelectedElementFromMultiSelectList(children);
         }
     }
 }
