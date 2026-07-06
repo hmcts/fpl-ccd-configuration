@@ -38,8 +38,9 @@ public class DynamicMultiSelectList {
     private List<DynamicMultiSelectListElement> listItems;
 
     @JsonIgnore
-    public static <T> List<Element<T>> getSelectedElementFromMultiSelectList(List<Element<T>> elements,
-                                                                             DynamicMultiSelectList dynamicMultiSelectList) {
+    public static <T> List<Element<T>> getSelectedElementFromMultiSelectList(
+        List<Element<T>> elements,
+        DynamicMultiSelectList dynamicMultiSelectList) {
         if (isNull(dynamicMultiSelectList) || isEmpty(dynamicMultiSelectList.getValue())) {
             return Collections.emptyList();
         }
