@@ -83,6 +83,16 @@ export class Orders extends BasePage {
     readonly requiredOrder: Locator;
     readonly paragraph: Locator;
     readonly childPlacementApplication: Locator;
+    readonly preventRemovalFromAddress: Locator;
+    readonly isexclusionYes: Locator;
+    readonly excludedPersonInput: Locator;
+    readonly uploadPowerOfArrestIfRequired: Locator;
+    readonly produceChildrenToApplicant
+    readonly endDayTimeDay: Locator;
+    readonly endDayTimeMonth: Locator
+    readonly endDayTimeYear: Locator
+    readonly hour: Locator;
+
 
 
     constructor(page: Page) {
@@ -168,6 +178,15 @@ export class Orders extends BasePage {
         this.requiredOrder = page.getByRole('radio', { name: 'Variation of supervision order' });
         this.paragraph = page.getByRole('textbox', { name: 'Paragraphs' });
         this.childPlacementApplication = page.getByLabel('Child placement application');
+        this.preventRemovalFromAddress = page.getByRole('radio', { name: 'Prevent removal from an' });
+        this.isexclusionYes = page.getByRole('group', { name: 'Is there an exclusion' });
+        this.excludedPersonInput = page.getByRole('textbox', { name: 'Who\'s excluded' });
+        this.uploadPowerOfArrestIfRequired = page.getByRole('button', { name: 'Upload power of arrest, if' });
+        this.produceChildrenToApplicant = page.getByRole('group', { name: 'Include: "Any person who can' });
+        this.endDayTimeDay = page.locator('#manageOrdersEndDateTime-day');
+        this.endDayTimeMonth = page.locator('#manageOrdersEndDateTime-month');
+        this.endDayTimeYear = page.locator('#manageOrdersEndDateTime-year');
+        this.hour = page.getByRole('textbox', { name: 'Hour' });
 
 
     }
@@ -214,6 +233,7 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await expect.soft(this.page.getByText('Case assigned to: Her Honour')).toBeVisible();
         await this.addIssuingJudgeDetails('No');
+
     }
 
     async selectChildInvolved() {
@@ -240,6 +260,7 @@ export class Orders extends BasePage {
             await this.powerOfExclusionStart.getByLabel('Month').fill('3');
             await this.powerOfExclusionStart.getByLabel('Year').fill('2024');
             await this.powerOfExclusionStart.getByLabel('Day').fill('12');
+            await this.uploadPowerOfArrestIfRequired.setInputFiles(config.testPdfFile);
         }
         await this.page.getByRole('group', { name: 'Include: "Any person who can produce the children to the applicant must do so"' }).getByLabel('Yes').click();
         await this.page.getByLabel('Add description of children (').fill('Children description');
@@ -566,6 +587,32 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.finalOrder.getByLabel('No').check();
         await this.paragraph.fill('test');
+        await this.clickContinue();
+
+    }
+    async uploadsEmergencyProtectionOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('No').check();
+        await this.clickContinue();
+        await this.addIssuingJudgeDetails('Yes');
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.preventRemovalFromAddress.check();
+        await this.enterPostCode('EN4');
+        await this.isExclusion.getByLabel('Yes').check();
+        await this.excluded.fill('Sister');
+        await this.powerOfExclusionStart.getByLabel('Day').fill('30');
+        await this.powerOfExclusionStart.getByLabel('Month').fill('06');
+        await this.powerOfExclusionStart.getByLabel('Year').fill('2026');
+        await this.produceChildrenToApplicant.getByLabel('Yes').click();
+        await this.produceChildrenToApplicant.getByLabel('Yes').click();// checkbox not clicking had to work around it
+        await this.endDayTimeDay.fill('07');
+        await this.endDayTimeMonth.fill('07');
+        await this.endDayTimeYear.fill('2026');
+        await this.hour.fill('10');
+        await this.finalOrder.getByLabel('No').click();
         await this.clickContinue();
 
     }
