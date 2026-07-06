@@ -22,7 +22,7 @@ test.describe('manage orders', () => {
             test(` @xbrowser EPO order created by ${role}`,
 
                 async ({ page, signInPage, orders }) => {
-                    caseName = 'Amend EPO order ' + dateTime.slice(0, 10);
+                    caseName = 'EPO order ' + dateTime.slice(0, 10);
                     expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
                     await signInPage.visit();
                     await signInPage.login(user.email, user.password);
