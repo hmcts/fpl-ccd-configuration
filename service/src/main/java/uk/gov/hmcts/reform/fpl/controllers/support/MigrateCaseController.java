@@ -11,13 +11,15 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.Consumer;
+
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 
 @Slf4j
 @RestController
@@ -26,13 +28,11 @@ import java.util.function.Consumer;
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
+    private final CaseAccessService caseAccessService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3227", this::run3227,
-        "DFPL-3048", this::run3048,
-        "DFPL-3047", this::run3047,
-        "DFPL-3101", this::run3101
+        "DFPL-3290", this::run3290
     );
 
     @PostMapping("/about-to-submit")
@@ -59,53 +59,19 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3227(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3227";
-        final long expectedCaseId = 1777547979393690L;
-        final CaseData caseData = getCaseData(caseDetails);
-        final String replacementEmail = caseData.getAllocatedJudge().getJudgeEmailAddress();
-        final JudgeAndLegalAdvisor replacedJudge = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()
-            .toBuilder()
-                .judgeEmailAddress(replacementEmail)
-            .build();
-        Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-
-        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder().toBuilder()
-                .judgeAndLegalAdvisor(replacedJudge)
-            .build());
-    }
-
-    private void run3048(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3048";
-        final Long expectedCaseId = 1769766848334996L;
-
-        Long caseId = caseDetails.getId();
-        final CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        caseDetails.getData().put("hearing",
-            caseData.getHearing().toBuilder().hearingUrgencyDetails("***").build());
-    }
-
-    private void run3047(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3047";
-        final Long expectedCaseId = 1757072393794849L;
-        final String orgId = "CVPRECR";
-
-        Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService
-            .updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 0));
-    }
-
-    private void run3101(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3101";
-        final long expectedCaseId = 1772096689254060L;
+    private void run3290(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3290";
+        final long expectedCaseId = 1780995216446125L;
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeFirstOther(migrationId, getCaseData(caseDetails)));
+        caseAccessService.grantCaseAccess(caseId, Set.of(
+            "76d29d26-931f-452e-ae8f-dda550aaf505",
+            "b479e1ef-489f-4cfe-8c27-7ce2b290ddb5",
+            "99ba1478-02ad-4449-8a9b-fb9165bf25b3",
+            "47fcc1ed-40a9-41b7-bda3-2a44b9e16247"
+        ), LASOLICITOR);
+
     }
 }
