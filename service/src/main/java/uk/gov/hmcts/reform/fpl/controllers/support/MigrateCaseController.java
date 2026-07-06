@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
@@ -32,7 +33,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3290", this::run3290
+        "DFPL-2894", this::run2894
     );
 
     @PostMapping("/about-to-submit")
@@ -74,4 +75,21 @@ public class MigrateCaseController extends CallbackController {
         ), LASOLICITOR);
 
     }
+
+    //run 2894 Migrate function to replace Fleetwood Location with BlackPool Location
+    private void run2894(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2894";
+
+        Long caseId = caseDetails.getId();
+        log.info("Migration {id = {}, case reference = {}} processing", migrationId, caseId);
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        // Calling the service to replace Fleetwood location with Blackpool Location if exists
+        caseDetails.getData().putAll(migrateCaseService.updateCaseManagementLocation(
+            migrationId,
+            caseData
+        ));
+    }
 }
+

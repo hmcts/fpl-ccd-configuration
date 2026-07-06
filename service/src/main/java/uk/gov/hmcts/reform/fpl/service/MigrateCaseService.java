@@ -13,30 +13,12 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.CloseCase;
-import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.Hearing;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
-import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Recipients;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -49,6 +31,25 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -103,6 +104,8 @@ public class MigrateCaseService {
     private final CourtService courtService;
     private static final String CORRECT_COURT_NAME = "Family Court Sitting at West London";
     private static final String ORDER_TYPE = "orderType";
+    private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
+    private static final String CASE_SUMMARY_COURT_NAME = "caseSummaryCourtName";
     public final MigrateRelatingLAService migrateRelatingLAService;
     public final OrganisationService organisationService;
     public final CourtLookUpService courtLookUpService;
@@ -1470,5 +1473,65 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("others", updatedOthers);
+    }
+
+    public Map<String, Object> updateCaseManagementLocation(String migrationId, CaseData caseData) {
+
+        CaseLocation caseManagementLocation = caseData.getCaseManagementLocation();
+        final Court court = caseData.getCourt();
+        final Orders orders = caseData.getOrders();
+
+        //  validation checks
+        if (caseManagementLocation == null) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, caseManagementLocation structure is missing",
+                migrationId, caseData.getId()));
+        }
+
+        if (!"401452".equalsIgnoreCase(caseManagementLocation.getBaseLocation())) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, expected Fleetwood (401452) but found baseLocation: %s",
+                migrationId, caseData.getId(), caseManagementLocation.getBaseLocation()));
+        }
+
+        // Update core location block to Blackpool's epimmsId
+        caseManagementLocation.setBaseLocation("214320");
+
+        // Clone and update the Court object with Blackpool Code from courts.json
+        Court updatedCourt = null;
+        if (court != null) {
+            updatedCourt = court.toBuilder()
+                .code("131") //Replaced Fleetwood's court code 438 with Blackpool 131
+                .name("Family Court sitting at Blackpool")
+                .epimmsId("214320")
+                .build();
+        }
+
+        // Clone and update the Orders object with Blackpool Code
+        Orders updatedOrders = null;
+        if (orders != null) {
+            updatedOrders = orders.toBuilder()
+                .court("131") //Replaced Fleetwood's court code 438 with Blackpool 131
+                .build();
+        }
+
+        // Assemble the payload updates map with all three places updated
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(CASE_MANAGEMENT_LOCATION, caseManagementLocation);
+
+        if (updatedCourt != null) {
+            updates.put(COURT, updatedCourt);
+        }
+        if (updatedOrders != null) {
+            updates.put(ORDERS, updatedOrders);
+        }
+
+        // Replace the DFJ court property string from Fleetwood (438) with Blackpool (131)
+        updates.put(BLACKBURN_LANCASTER_DFJ_COURT, "131");
+
+        //  overwrites caseSummaryCourtName value of Fleetwood with Blackpool
+        updates.put(CASE_SUMMARY_COURT_NAME, "Family Court sitting at Blackpool");
+
+        return updates;
     }
 }
