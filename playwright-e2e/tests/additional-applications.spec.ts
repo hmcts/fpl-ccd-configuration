@@ -35,7 +35,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillOtherApplicationDetails();
 
       // Payment details
-      await expect(page.getByText('£263.00')).toBeVisible();
+      await expect(page.getByText(testConfig.C1)).toBeVisible();
       await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
@@ -80,7 +80,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText('£263.00')).toBeVisible();
+      await expect(page.getByText(testConfig.C2_WITH_OTHER_APPLICATION)).toBeVisible();
       await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
     });
@@ -98,7 +98,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
       await additionalApplications.fillOtherApplicationDetails();
 
-      await expect(page.getByText('£263.00')).toBeVisible();
+      await expect(page.getByText(testConfig.COMBINE_C1_C2)).toBeVisible();
       await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
@@ -127,7 +127,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText('£263.00')).toBeVisible();
+      await expect(page.getByText(testConfig.C2_WITH_OTHER_APPLICATION)).toBeVisible();
       await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
@@ -168,7 +168,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText('£263.00')).toBeVisible();
+      await expect(page.getByText(testConfig.C2_WITH_OTHER_APPLICATION)).toBeVisible();
       await additionalApplications.ctscPayForApplication();
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
@@ -276,7 +276,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText('£263.00')).toBeVisible();
+      await expect(page.getByText(testConfig.C2_WITH_OTHER_APPLICATION)).toBeVisible();
       await additionalApplications.payForApplication(envDataConfig.privateSolicitorOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
