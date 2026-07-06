@@ -48,6 +48,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         givenSystemUser();
         givenFplService();
     }
+
     @Nested
     class Dfpl2894 {
         private static final String MIGRATION_ID = "DFPL-2894";
@@ -56,8 +57,11 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldMigrateCaseManagementLocationFromFleetwoodToBlackpool() {
 
             Map<String, Object> locationStructure = Map.of("baseLocation", "401452", "region", "4");
-            Map<String, Object> courtStructure = Map.of("code", "438", "name", "Family Court sitting at Fleetwood", "epimmsId", "401452");
-            Map<String, Object> ordersStructure = Map.of("court", "438", "address", Map.of("PostCode", "FY7 6AA"));
+            Map<String, Object> courtStructure = Map.of("code", "438",
+                "name", "Family Court sitting at Fleetwood",
+                "epimmsId", "401452");
+            Map<String, Object> ordersStructure = Map.of("court", "438",
+                "address", Map.of("PostCode", "FY7 6AA"));
 
             CaseDetails caseDetails = CaseDetails.builder()
                 .id(1778521486149688L)
