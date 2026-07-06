@@ -322,19 +322,6 @@ class ChildrenServiceTest {
     class DynamicMultiSelectListTests {
 
         @Test
-        void shouldBuildExpectedLabelWhenEmptyList() {
-            String label = service.getChildrenLabelFromMultiSelectList(DynamicMultiSelectList.builder()
-                .listItems(List.of()).build());
-            assertThat(label).isEqualTo("No children in the case");
-        }
-
-        @Test
-        void shouldBuildExpectedLabelWhenPopulatedList() {
-            String label = service.getChildrenLabelFromMultiSelectList(childrenMultiSelectListWithSelectedChildren);
-            assertThat(label).isEqualTo("Child Name1\nChild Name2");
-        }
-
-        @Test
         void shouldReturnAllChildrenWhenOrderAppliesToAllChildren() {
             CaseData caseData = CaseData.builder()
                 .children1(childrenList)

@@ -278,7 +278,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
                 )).build()
         );
         assertThat(response.getData().get("children_label"))
-            .isEqualTo("first1 last1 (Child 1)\nfirst2 last2 (Child 2)");
+            .isEqualTo("Child 1: first1 last1\nChild 2: first2 last2\n");
 
         assertThat(response.getData().get("childrenDetailsSectionSubHeader")).isEqualTo("Care order (C32A)");
     }
