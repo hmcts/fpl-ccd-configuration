@@ -80,7 +80,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText(testConfig.C2_WITH_OTHER_APPLICATION)).toBeVisible();
+      await expect(page.getByText(testConfig.C2_WITH_SUPPLEMENT)).toBeVisible();
       await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
     });
@@ -127,7 +127,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText(testConfig.C2_WITH_OTHER_APPLICATION)).toBeVisible();
+      await expect(page.getByText(testConfig.C2_WITH_SUPPLEMENT)).toBeVisible();
       await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
@@ -168,7 +168,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText(testConfig.C2_WITH_OTHER_APPLICATION)).toBeVisible();
+      await expect(page.getByText(testConfig.C2_WITH_SUPPLEMENT)).toBeVisible();
       await additionalApplications.ctscPayForApplication();
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
@@ -276,7 +276,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.fillC2ApplicationDetails();
 
       // Payment details
-      await expect(page.getByText(testConfig.C2_WITH_OTHER_APPLICATION)).toBeVisible();
+      await expect(page.getByText(testConfig.C2_WITH_SUPPLEMENT)).toBeVisible();
       await additionalApplications.payForApplication(envDataConfig.privateSolicitorOrgPBA);
       await additionalApplications.checkYourAnsAndSubmit();
       await additionalApplications.tabNavigation('Other applications');
