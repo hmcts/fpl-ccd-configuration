@@ -58,7 +58,7 @@
     "install-dependencies": "/usr/bin/yarn install --silent",
     "lint-ui-tests": "/usr/bin/yarn lint",
     "build-container": "docker build -t playwright-container .",
-    "start-container": "docker run --rm -it --network host --ipc=host -v \"$(pwd)\":/playwright -w /playwright playwright /bin/bash"
+    "start-container": "docker run --rm -it --network host --shm-size=4g -v \"$(pwd)\":/playwright -w /playwright playwright /bin/bash"
   },
   "peerDependencies": {
     "debug": "4.4.0",
