@@ -8,7 +8,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
@@ -119,11 +123,88 @@ class ApplicantsListGeneratorTest {
                 CHILD_PARTY_2.getFullName() + ", Child 2");
     }
 
+    @Test
+    void shouldReturnLocalAuthorityAndApplicantLabelsWhenIsC1ApplicationIsTrueWithSecondaryLA() {
+        //  Build the base CaseData with the C1 order configuration
+        CaseData baseCaseData = CaseData.builder()
+            .caseLocalAuthorityName("Swansea local authority")
+            .respondents1(List.of(element(Respondent.builder().party(RESPONDENT_PARTY_1).build())))
+            .localAuthorities(List.of(
+                element(LocalAuthority.builder().name("Swansea local authority").designated("Yes").build()),
+                element(LocalAuthority.builder().name("New secondary authority").designated("No").build())
+            ))
+            .children1(List.of(element(Child.builder().party(CHILD_PARTY_1).build())))
+            .orders(Orders.builder()
+                .orderType(List.of(OrderType.CHILD_ASSESSMENT_ORDER)) // Setting isC1Application() to true
+                .build())
+            .build();
+
+        DynamicList actualDynamicList = underTest.buildApplicantsList(baseCaseData);
+
+        //  Assert that both of your C1 conditional string paths are covered perfectly
+        assertThat(actualDynamicList.getListItems())
+            .extracting(DynamicListElement::getLabel)
+            .contains("Swansea local authority, Local Authority",
+                "New secondary authority, Applicant");
+    }
+
+    @Test
+    void shouldReturnLocalAuthorityAndApplicantLabelsWhenIsLocalAuthorityIsNoWithSecondaryLA() {
+        // Build CaseData where isC1Application is false, but isLocalAuthority is NO
+        CaseData baseCaseData = CaseData.builder()
+            .caseLocalAuthorityName("Swansea local authority")
+            .isLocalAuthority(YesNo.NO)
+            .respondents1(List.of(element(Respondent.builder().party(RESPONDENT_PARTY_1).build())))
+            .localAuthorities(List.of(
+                element(LocalAuthority.builder().name("Swansea local authority").designated("Yes").build()),
+                element(LocalAuthority.builder().name("New secondary authority").designated("No").build())
+            ))
+            .children1(List.of(element(Child.builder().party(CHILD_PARTY_1).build())))
+            .orders(Orders.builder()
+                .orderType(List.of(OrderType.CARE_ORDER))
+                .build())
+            .build();
+
+        DynamicList actualDynamicList = underTest.buildApplicantsList(baseCaseData);
+
+        // Assert that the labels match the expected outputs when the condition is met
+        assertThat(actualDynamicList.getListItems())
+            .extracting(DynamicListElement::getLabel)
+            .contains("Swansea local authority, Local Authority",
+                "New secondary authority, Applicant");
+    }
+
     @ParameterizedTest
     @MethodSource("additionalApplicationBundlesData")
     void shouldReturnApplicantNameAndType(AdditionalApplicationsBundle bundle, String name, ApplicantType type) {
         assertThat(underTest.getApplicant(caseData, bundle))
             .isEqualTo(OrderApplicant.builder().name(name).type(type).build());
+    }
+
+    @Test
+    void shouldReturnApplicantAndSecondaryLABabelsWhenIsLocalAuthorityIsNullWithSecondaryLA() {
+        // Build CaseData where isC1Application is false, and isLocalAuthority is null
+        CaseData baseCaseData = CaseData.builder()
+            .caseLocalAuthorityName("Swansea local authority")
+            .isLocalAuthority(null) // Explicitly testing the null safety path
+            .respondents1(List.of(element(Respondent.builder().party(RESPONDENT_PARTY_1).build())))
+            .localAuthorities(List.of(
+                element(LocalAuthority.builder().name("Swansea local authority").designated("Yes").build()),
+                element(LocalAuthority.builder().name("New secondary authority").designated("No").build())
+            ))
+            .children1(List.of(element(Child.builder().party(CHILD_PARTY_1).build())))
+            .orders(Orders.builder()
+                .orderType(List.of(OrderType.CARE_ORDER)) // Keeps isC1Application() false
+                .build())
+            .build();
+
+        DynamicList actualDynamicList = underTest.buildApplicantsList(baseCaseData);
+
+        // Assert that the labels fall back to the default "Applicant" and "Secondary LA" suffixes
+        assertThat(actualDynamicList.getListItems())
+            .extracting(DynamicListElement::getLabel)
+            .contains("Swansea local authority, Applicant",
+                "New secondary authority, Secondary LA");
     }
 
     private static Stream<Arguments> additionalApplicationBundlesData() {
