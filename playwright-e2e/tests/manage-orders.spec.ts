@@ -92,6 +92,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Order 1', { exact: true })).toBeVisible();
         await expect(page.getByRole('cell', { name: ' c23_emergency_protection_order.pdf', exact: true })).toBeVisible();
+        await orders.openOrderDoc('c23_emergency_protection_order.pdf');
 
     });
 
@@ -116,6 +117,7 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Order 1', { exact: true })).toBeVisible();
         await expect(page.getByRole('cell', { name: ' c23_emergency_protection_order.pdf', exact: true })).toBeVisible();
+        await orders.openOrderDoc('c23_emergency_protection_order.pdf');
 
     });
 
