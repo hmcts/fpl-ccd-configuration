@@ -76,8 +76,8 @@ public class ConfirmApplicationReviewedEventData {
             "c2AdditionalApplicationToBeReview",
             "otherAdditionalApplicationToBeReview",
             "reviewOrderUrgency", "uploadedDraftOrder",
-            "addCoverSheet", "previewApprovedOrder1",
-            "previewApprovedOrderTitle1");
+            "amendedDraftOrder", "addCoverSheet",
+            "previewApprovedOrder1", "previewApprovedOrderTitle1");
     }
 
     public static List<String> postSubmitEventFields() {
@@ -85,8 +85,7 @@ public class ConfirmApplicationReviewedEventData {
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
-            "reviewAdditionalAppIsConfidential",
-            "amendedDraftOrder"
+            "reviewAdditionalAppIsConfidential"
         );
     }
 }

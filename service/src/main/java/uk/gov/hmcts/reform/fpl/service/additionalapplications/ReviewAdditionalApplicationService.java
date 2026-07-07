@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -10,12 +11,16 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -29,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReviewAdditionalApplicationService {
     public static final String ONLY_ONE_APPLICATION = "onlyOneApplicationToBeReviewed";
+    private static final String FILE_NAME_PREFIX = "amended_%s";
 
     private final ApproveDraftOrdersService approveDraftOrdersService;
 
@@ -154,5 +160,117 @@ public class ReviewAdditionalApplicationService {
                 return existingBundle;
             }
         ).collect(Collectors.toList());
+    }
+
+    public Map<String, Object> amendHearingOrdersBundlesDraft(CaseData caseData,
+                                                        DocumentReference amendedOrderDocument) {
+        AdditionalApplicationsBundle selectedAdditionalApplicationsBundle =
+            getSelectedApplicationsToBeReviewed(caseData).getValue();
+
+        boolean isC2Confidential = selectedAdditionalApplicationsBundle.getHasConfidentialC2().equals(YES);
+
+        // Get the current existing draft order on the Application
+        Element<DraftOrder> existingDraftOrder = isC2Confidential ?
+            selectedAdditionalApplicationsBundle.getC2DocumentBundleConfidential().getDraftOrdersBundle().getFirst()
+            : selectedAdditionalApplicationsBundle.getC2DocumentBundle().getDraftOrdersBundle().getFirst();
+
+        Element<HearingOrdersBundle> selectedBundle = getBundleFromDraftOrder(caseData, existingDraftOrder.getId());
+
+        if (isC2Confidential) {
+            //logic to fetch and search for correct confidential collection to put the update bundle in
+
+            return approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, selectedBundle);
+        } else {
+            // find and update the order in the bundle to match the one uploaded
+            selectedBundle.getValue().getOrders().stream()
+                .filter(order -> order.getId().equals(existingDraftOrder.getId()))
+                .findFirst()
+                .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                    "No HearingOrder found with element id: " + existingDraftOrder.getId()
+                ))
+                .getValue().toBuilder()
+                    .amendedDate(LocalDate.now())
+                    .order(amendedOrderDocument.toBuilder()
+                        .filename(String.format(FILE_NAME_PREFIX, existingDraftOrder.getValue().getTitle()))
+                        .build())
+                    .lastUploadedOrder(existingDraftOrder.getValue().getDocument())
+                .build();
+
+            List<Element<HearingOrdersBundle>> amendedHearingOrdersBundlesDrafts = caseData.getHearingOrdersBundlesDrafts()
+                .stream().filter(element -> element.getId() != selectedBundle.getId())
+                .collect(Collectors.toList());
+
+            amendedHearingOrdersBundlesDrafts.add(selectedBundle);
+
+            return Map.of("hearingOrdersBundlesDrafts", amendedHearingOrdersBundlesDrafts);
+        }
+    }
+
+    public Element<HearingOrdersBundle> getBundleFromDraftOrder(CaseData caseData,
+                                                                UUID draftOrderId) {
+        boolean isConfidential =
+            getSelectedApplicationsToBeReviewed(caseData).getValue().getHasConfidentialC2().equals(YES);
+
+        // NEEDS TO BE UPDATED TO INCLUDE LA/CHILD/RESP etc confidential collections!!!!
+        return caseData.getHearingOrdersBundlesDrafts().stream()
+            .filter(bundleElement -> {
+                if (isConfidential) {
+                    return bundleElement.getValue().getOrdersCTSC().stream()
+                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
+                } else {
+                    return bundleElement.getValue().getOrders().stream()
+                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
+                }
+            })
+            .findFirst()
+            .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                "No HearingOrdersBundle found containing order with element id: " + draftOrderId
+            ));
+    }
+
+    public Map<String, Object> amendAdditionalApplicationsBundle(CaseData caseData,
+                                                                 DocumentReference amendedOrderDocument) {
+        AdditionalApplicationsBundle selectedAdditionalApplicationsBundle =
+            getSelectedApplicationsToBeReviewed(caseData).getValue();
+
+        // Get the current existing draft order on the Application
+        Element<DraftOrder> existingDraftOrder = selectedAdditionalApplicationsBundle.getHasConfidentialC2().equals(YES) ?
+            selectedAdditionalApplicationsBundle.getC2DocumentBundleConfidential().getDraftOrdersBundle().getFirst()
+            : selectedAdditionalApplicationsBundle.getC2DocumentBundle().getDraftOrdersBundle().getFirst();
+
+        // Create filtered list of existing additional apps without the selected one
+        List<Element<AdditionalApplicationsBundle>> amendedAdditionalApplications = caseData.getAdditionalApplicationsBundle()
+            .stream()
+            .filter(bundleElement -> bundleElement.getId() != getSelectedApplicationsToBeReviewed(caseData).getId())
+            .collect(Collectors.toList());
+
+        // Add the amended order to the additional application bundle
+        AdditionalApplicationsBundle amendedAdditionalApplicationsBundle =
+            amendDraftOrderInAdditionalAppsBundle(amendedOrderDocument, selectedAdditionalApplicationsBundle, existingDraftOrder);
+
+        // add the amended application back with the same Id
+        amendedAdditionalApplications
+            .add(element(getSelectedApplicationsToBeReviewed(caseData).getId(), amendedAdditionalApplicationsBundle));
+
+        return Map.of("additionalApplicationsBundle",  amendedAdditionalApplications);
+    }
+
+    public AdditionalApplicationsBundle amendDraftOrderInAdditionalAppsBundle(DocumentReference amendedOrderDocument,
+                                                                              AdditionalApplicationsBundle selectedAdditionalApplicationsBundle,
+                                                                              Element<DraftOrder> existingDraftOrder) {
+        DraftOrder amendedDraftOrder = existingDraftOrder.getValue().toBuilder()
+            .document(amendedOrderDocument)
+            .title(FILE_NAME_PREFIX + existingDraftOrder.getValue().getTitle())
+            .build();
+
+        return selectedAdditionalApplicationsBundle.getHasConfidentialC2().equals(YES) ?
+            selectedAdditionalApplicationsBundle.toBuilder()
+            .c2DocumentBundleConfidential(selectedAdditionalApplicationsBundle.getC2DocumentBundle().toBuilder()
+                                          .draftOrdersBundle(List.of(element(existingDraftOrder.getId(), amendedDraftOrder)))
+                                          .build()).build()
+            : selectedAdditionalApplicationsBundle.toBuilder()
+              .c2DocumentBundle(selectedAdditionalApplicationsBundle.getC2DocumentBundle().toBuilder()
+                                .draftOrdersBundle(List.of(element(existingDraftOrder.getId(), amendedDraftOrder)))
+                                .build()).build();
     }
 }

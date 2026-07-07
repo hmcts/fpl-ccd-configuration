@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -102,6 +101,11 @@ public class ReviewAdditionalApplicationController extends CallbackController {
 
                 DocumentReference amendedDraftOrder = eventData.getAmendedDraftOrder();
 
+                caseDetails.getData().putAll(reviewAdditionalApplicationService
+                    .amendHearingOrdersBundlesDraft(caseData, amendedDraftOrder));
+                caseDetails.getData().putAll(reviewAdditionalApplicationService
+                    .amendAdditionalApplicationsBundle(caseData, amendedDraftOrder));
+
                 caseDetails.getData().put("previewApprovedOrder1", hearingOrderGenerator.addCoverSheet(caseData
                         .toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
                             .judgeTitleAndName(approveDraftOrdersService
@@ -168,25 +172,12 @@ public class ReviewAdditionalApplicationController extends CallbackController {
 
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
         UUID draftOrderId = UUID.fromString(eventData.getReviewAdditionalAppDraftOrderId());
-        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
 
-        Element<HearingOrdersBundle> bundleFromDraftOrder = caseData.getHearingOrdersBundlesDrafts().stream()
-            .filter(bundleElement -> {
-                if (isConfidential) {
-                    return bundleElement.getValue().getOrdersCTSC().stream()
-                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
-                } else {
-                    return bundleElement.getValue().getOrders().stream()
-                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
-                }
-            })
-            .findFirst()
-            .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
-                "No HearingOrdersBundle found containing order with element id: " + draftOrderId
-            ));
+        Element<HearingOrdersBundle> bundleFromDraftOrder =
+            reviewAdditionalApplicationService.getBundleFromDraftOrder(caseData, draftOrderId);
 
         switch (caseData.getApproveAdditionalAppRouter()) {
-            case APPROVE_APPLICATION_AND_ORDER: {
+            case APPROVE_APPLICATION_AND_ORDER, APPROVE_APPLICATION_CHANGE_ORDER: {
                 ReviewDecision reviewDecision = ReviewDecision.builder()
                     .decision(SEND_TO_ALL_PARTIES)
                     .build();
