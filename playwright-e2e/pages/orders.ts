@@ -610,7 +610,7 @@ export class Orders extends BasePage {
         await this.powerOfExclusionStart.getByLabel('Year').fill('2026');
         await this.produceChildrenToApplicant.getByLabel('Yes').click();
         await this.produceChildrenToApplicant.getByLabel('Yes').click();// checkbox not clicking had to work around it
-        await this.endDayTimeDay.fill('08');
+        await this.endDayTimeDay.fill('30');
         await this.endDayTimeMonth.fill('07');
         await this.endDayTimeYear.fill('2026');
         await this.hour.fill('10');
