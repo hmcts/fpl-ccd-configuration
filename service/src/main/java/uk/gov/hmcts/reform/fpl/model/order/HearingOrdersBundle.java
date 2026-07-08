@@ -172,13 +172,17 @@ public class HearingOrdersBundle implements ConfidentialOrderBundle<HearingOrder
     }
 
     public void removeOrderElement(Element<HearingOrder> orderToBeRemoved) {
-        if (findElement(orderToBeRemoved.getId(), orders).isPresent()) {
-            orders = removeElementWithUUID(orders, orderToBeRemoved.getId());
+        removeOrderElement(orderToBeRemoved.getId());
+    }
+
+    public void removeOrderElement(UUID orderIdToRemove) {
+        if (findElement(orderIdToRemove, orders).isPresent()) {
+            orders = removeElementWithUUID(orders, orderIdToRemove);
         } else {
             processAllConfidentialOrders((suffix, confidentialOrders) -> {
-                if (findElement(orderToBeRemoved.getId(), confidentialOrders).isPresent()) {
+                if (findElement(orderIdToRemove, confidentialOrders).isPresent()) {
                     setConfidentialOrdersBySuffix(suffix,
-                        removeElementWithUUID(confidentialOrders, orderToBeRemoved.getId()));
+                        removeElementWithUUID(confidentialOrders, orderIdToRemove));
                 }
             });
         }

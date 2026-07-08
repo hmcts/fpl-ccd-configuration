@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -30,7 +31,10 @@ import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkd
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -77,44 +81,18 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
 
         switch (caseData.getApproveAdditionalAppRouter()) {
-            case APPROVE_APPLICATION_AND_ORDER:
+            case APPROVE_APPLICATION_AND_ORDER, APPROVE_APPLICATION_CHANGE_ORDER:
                 caseDetails.getData().put("reviewOrderUrgency", YES);
                 caseDetails.getData().put("addCoverSheet", YES);
 
                 C2DocumentBundle bundle  = eventData.getC2AdditionalApplicationToBeReview().toC2DocumentBundle();
 
                 Element<DraftOrder> draftOrder = bundle.getDraftOrdersBundle().getFirst();
-
-                caseDetails.getData().put("previewApprovedOrder1", hearingOrderGenerator.addCoverSheet(caseData
-                        .toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
-                                .judgeTitleAndName(approveDraftOrdersService
-                                    .getJudgeTitleAndNameOfCurrentUser(caseData))
-                            .build())
-                        .build(),
-                    draftOrder.getValue().getDocument()));
-                caseDetails.getData().put("previewApprovedOrderTitle1", String.format("Order %s",
-                    draftOrder.getValue().getTitle()));
-                break;
-            case APPROVE_APPLICATION_CHANGE_ORDER:
-                caseDetails.getData().put("reviewOrderUrgency", YES);
-                caseDetails.getData().put("addCoverSheet", YES);
-
                 DocumentReference amendedDraftOrder = eventData.getAmendedDraftOrder();
 
-                caseDetails.getData().putAll(reviewAdditionalApplicationService
-                    .amendHearingOrdersBundlesDraft(caseData, amendedDraftOrder));
-                caseDetails.getData().putAll(reviewAdditionalApplicationService
-                    .amendAdditionalApplicationsBundle(caseData, amendedDraftOrder));
+                reviewAdditionalApplicationService.updatePreviewFields(caseDetails,
+                    caseData, eventData.getAmendedDraftOrder() == null ? FALSE : TRUE, amendedDraftOrder, draftOrder);
 
-                caseDetails.getData().put("previewApprovedOrder1", hearingOrderGenerator.addCoverSheet(caseData
-                        .toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
-                            .judgeTitleAndName(approveDraftOrdersService
-                                .getJudgeTitleAndNameOfCurrentUser(caseData))
-                            .build())
-                        .build(),
-                    amendedDraftOrder));
-                caseDetails.getData().put("previewApprovedOrderTitle1", String.format("Order %s",
-                    amendedDraftOrder.getFilename()));
                 break;
             default:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
@@ -172,12 +150,25 @@ public class ReviewAdditionalApplicationController extends CallbackController {
 
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
         UUID draftOrderId = UUID.fromString(eventData.getReviewAdditionalAppDraftOrderId());
+        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
 
-        Element<HearingOrdersBundle> bundleFromDraftOrder =
-            reviewAdditionalApplicationService.getBundleFromDraftOrder(caseData, draftOrderId);
+        Element<HearingOrdersBundle> bundleFromDraftOrder = caseData.getHearingOrdersBundlesDrafts().stream()
+            .filter(bundleElement -> {
+                if (isConfidential) {
+                    return bundleElement.getValue().getAllConfidentialOrders().stream()
+                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
+                } else {
+                    return bundleElement.getValue().getOrders().stream()
+                        .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
+                }
+            })
+            .findFirst()
+            .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                "No HearingOrdersBundle found containing order with element id: " + draftOrderId
+            ));
 
         switch (caseData.getApproveAdditionalAppRouter()) {
-            case APPROVE_APPLICATION_AND_ORDER, APPROVE_APPLICATION_CHANGE_ORDER: {
+            case APPROVE_APPLICATION_AND_ORDER: {
                 ReviewDecision reviewDecision = ReviewDecision.builder()
                     .decision(SEND_TO_ALL_PARTIES)
                     .build();
@@ -189,6 +180,26 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                     bundleFromDraftOrder,
                     draftOrderId,
                     reviewDecision
+                );
+                caseDetails.getData().put("orderCollection", data.get("orderCollection"));
+                caseDetails.getData().putAll(
+                    approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, bundleFromDraftOrder)
+                );
+                break;
+            }
+            case APPROVE_APPLICATION_CHANGE_ORDER: {
+                ReviewDecision reviewDecision = ReviewDecision.builder()
+                    .decision(JUDGE_AMENDS_DRAFT)
+                    .build();
+                approveDraftOrdersService.approveAndSealDraftOrder(
+                    caseData.toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+                        .judgeTitleAndName(eventData.getJudgeNameAndTitle())
+                        .build()).build(),
+                    data,
+                    bundleFromDraftOrder,
+                    draftOrderId,
+                    reviewDecision,
+                    eventData.getAmendedDraftOrder()
                 );
                 caseDetails.getData().put("orderCollection", data.get("orderCollection"));
                 caseDetails.getData().putAll(

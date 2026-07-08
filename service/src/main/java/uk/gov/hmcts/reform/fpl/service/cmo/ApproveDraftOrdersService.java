@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +42,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -72,6 +75,7 @@ public class ApproveDraftOrdersService {
     private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
     private static final String REFUSED_ORDERS = "refusedHearingOrders";
     private static final String DRAFT_ORDERS_REMOVED = "draftOrdersRemoved";
+    private static final String FILE_NAME_PREFIX = "amended_%s";
 
     /**
      * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
@@ -372,7 +376,7 @@ public class ApproveDraftOrdersService {
             .filter(order -> order.getId().equals(draftOrderId))
             .findFirst()
             .orElseGet(() ->
-                selectedOrdersBundle.getValue().getOrdersCTSC().stream()
+                selectedOrdersBundle.getValue().getAllConfidentialOrders().stream()
                     .filter(order -> order.getId().equals(draftOrderId))
                     .findFirst()
                     .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
@@ -380,6 +384,44 @@ public class ApproveDraftOrdersService {
                     ))
             );
         doApproveAndSealDraftOrder(caseData, data, selectedOrdersBundle, orderElement, reviewDecision);
+        selectedOrdersBundle.getValue().removeOrderElement(orderElement);
+    }
+
+    public void approveAndSealDraftOrder(
+        CaseData caseData,
+        Map<String, Object> data,
+        Element<HearingOrdersBundle> selectedOrdersBundle,
+        UUID draftOrderId,
+        ReviewDecision reviewDecision,
+        DocumentReference amendedDraftOrder
+    ) {
+        Element<HearingOrder> orderElement = selectedOrdersBundle.getValue().getOrders().stream()
+            .filter(order -> order.getId().equals(draftOrderId))
+            .findFirst()
+            .orElseGet(() ->
+                selectedOrdersBundle.getValue().getAllConfidentialOrders().stream()
+                    .filter(order -> order.getId().equals(draftOrderId))
+                    .findFirst()
+                    .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                        "No HearingOrder found with element id: " + draftOrderId
+                    ))
+            );
+
+        // Add amended_ prefix to document title
+        DocumentReference amendedOrder = amendedDraftOrder.toBuilder()
+            .filename(String
+                .format(FILE_NAME_PREFIX, orderElement.getValue().getOrderOrOrderConfidential().getFilename()))
+            .build();
+
+        boolean isConfidential = orderElement.getValue().isConfidentialOrder();
+
+        Element<HearingOrder> amendedOrderElement = element(orderElement.getId(), orderElement.getValue().toBuilder()
+            .amendedDate(LocalDate.now())
+            .orderConfidential(isConfidential ? amendedOrder : null)
+            .order(isConfidential ? null : amendedOrder)
+            .build());
+
+        doApproveAndSealDraftOrder(caseData, data, selectedOrdersBundle, amendedOrderElement, reviewDecision);
         selectedOrdersBundle.getValue().removeOrderElement(orderElement);
     }
 
