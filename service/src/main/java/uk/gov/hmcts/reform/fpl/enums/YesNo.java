@@ -43,5 +43,4 @@ public enum YesNo {
     public boolean equalsString(String value) {
         return this.equals(YesNo.fromString(value));
     }
-
 }

@@ -183,4 +183,20 @@ class UserServiceTest {
         assertThat(underTest.isCtscUser()).isFalse();
     }
 
+    @Test
+    void shouldReturnTrueWhenUserRoleExistsInIdamRoles() {
+        Set<String> userRoles = Set.of("caseworker", "caseworker-publiclaw", HMCTS_SUPERUSER.getRoleName(), "payments");
+        when(requestData.userRoles()).thenReturn(userRoles);
+
+        assertThat(underTest.hasAnyIdamRolesFrom(List.of(HMCTS_SUPERUSER, JUDICIARY))).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserRoleDoesNotExistInIdamRoles() {
+        Set<String> userRoles = Set.of("caseworker", "caseworker-publiclaw", HMCTS_ADMIN.getRoleName(), "payments");
+        when(requestData.userRoles()).thenReturn(userRoles);
+
+        assertThat(underTest.hasAnyIdamRolesFrom(List.of(HMCTS_SUPERUSER, JUDICIARY))).isFalse();
+    }
+
 }

@@ -29,7 +29,7 @@ class ConfidentialDetailsHelperTest {
 
         Other confidentialOthers = getConfidentialItemToAdd(others, othersNotConfidential);
 
-        assertThat(confidentialOthers).isEqualToComparingFieldByField(others.get(0).getValue());
+        assertThat(confidentialOthers).usingRecursiveComparison().isEqualTo(others.getFirst().getValue());
     }
 
     @Test
@@ -39,7 +39,7 @@ class ConfidentialDetailsHelperTest {
 
         Other confidentialOthers = getConfidentialItemToAdd(others, othersNotConfidential);
 
-        assertThat(confidentialOthers).isEqualToComparingFieldByField(othersNotConfidential.getValue());
+        assertThat(confidentialOthers).usingRecursiveComparison().isEqualTo(othersNotConfidential.getValue());
     }
 
     private Other.OtherBuilder baseOtherBuilder(String detailsHidden) {

@@ -13,6 +13,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
@@ -58,11 +60,13 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.event.HearingJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
@@ -172,6 +176,7 @@ public class CaseData extends CaseDataParent {
     private OutsourcingType outsourcingType;
     private RepresentativeType representativeType;
     private YesNo isLocalAuthority;
+    private String latestQueryID;
 
     @JsonIgnore
     public boolean checkIfCaseIsSubmittedByLA() {
@@ -191,10 +196,13 @@ public class CaseData extends CaseDataParent {
     @JsonProperty("caseLinks")
     private List<CaseLinksElement<CaseLink>> caseLinks;
 
-    private final JudicialUser judicialUser;
-    private final JudicialUser judicialUserHearingJudge;
-    private final YesNo enterManually;
-    private final YesNo enterManuallyHearingJudge;
+    @Builder.Default
+    @JsonUnwrapped
+    private final AllocateJudgeEventData allocateJudgeEventData = new AllocateJudgeEventData();
+    @Builder.Default
+    @JsonUnwrapped
+    private final HearingJudgeEventData hearingJudgeEventData = new HearingJudgeEventData();
+
 
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());
@@ -264,12 +272,6 @@ public class CaseData extends CaseDataParent {
         groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
     private final Judge allocatedJudge;
 
-    @Temp
-    private final Judge tempAllocatedJudge;
-
-    // Temporary hearing judge field + legal advisor
-    @Temp
-    private final Judge hearingJudge;
     @Temp
     private final String legalAdvisorName;
     @Temp
@@ -373,12 +375,14 @@ public class CaseData extends CaseDataParent {
     }
 
     private LocalDate dateSubmitted;
+    private LocalDate lastSubmittedDate;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
     private final PBAPayment temporaryPbaPayment;
+    private final YesNo isCTSCUser;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
     private final DynamicList applicantsList;
@@ -833,6 +837,8 @@ public class CaseData extends CaseDataParent {
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
+    @Setter
+    private List<Element<HearingOrder>> draftOrdersRemoved;
     @JsonUnwrapped
     @Builder.Default
     private ConfidentialRefusedOrders confidentialRefusedOrders = ConfidentialRefusedOrders.builder().build();
@@ -1042,6 +1048,7 @@ public class CaseData extends CaseDataParent {
     private final List<Element<JudicialMessage>> judicialMessages;
     private final List<Element<JudicialMessage>> closedJudicialMessages;
     private JudicialMessageRoleType latestRoleSent;
+    private WorkAllocationTaskUrgency waTaskUrgencyLevel;
 
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {

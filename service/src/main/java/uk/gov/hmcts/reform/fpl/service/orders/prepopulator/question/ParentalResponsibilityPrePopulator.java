@@ -37,8 +37,6 @@ public class ParentalResponsibilityPrePopulator implements QuestionBlockOrderPre
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
 
-        Map<String, Object> data = new HashMap<>();
-
         if (hasDataAlreadySet(caseData)) {
             return Map.of();
         }
@@ -55,6 +53,8 @@ public class ParentalResponsibilityPrePopulator implements QuestionBlockOrderPre
         if (selectedApplicationId == null || selectedApplicationBundle == null) {
             return Map.of();
         }
+
+        Map<String, Object> data = new HashMap<>();
 
         if (selectedApplicationBundle instanceof C2DocumentBundle
             && ((C2DocumentBundle) selectedApplicationBundle).getC2AdditionalOrdersRequested().contains(

@@ -13,9 +13,14 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.A81PlacementBlankOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
 class A81PlacementBlankOrderDocumentParameterGeneratorTest {
@@ -35,6 +40,9 @@ class A81PlacementBlankOrderDocumentParameterGeneratorTest {
             .manageOrdersCostOrders("cost orders is here")
             .manageOrdersParagraphs("paragraphs is here")
             .build())
+        .respondents1(List.of(element(Respondent.builder()
+            .party(RespondentParty.builder().firstName("Test").lastName("Respondent").build())
+            .build())))
         .build();
     private static final CaseData CASE_DATA_WITHOUT_COST_CODE = CaseData.builder()
         .caseLocalAuthority(LA_CODE)
@@ -45,6 +53,9 @@ class A81PlacementBlankOrderDocumentParameterGeneratorTest {
             .manageOrdersPreamblesText("Preambles Text is here")
             .manageOrdersParagraphs("paragraphs is here")
             .build())
+        .respondents1(List.of(element(Respondent.builder()
+            .party(RespondentParty.builder().firstName("Test").lastName("Respondent").build())
+            .build())))
         .build();
 
     @Mock
@@ -87,7 +98,8 @@ class A81PlacementBlankOrderDocumentParameterGeneratorTest {
             .localAuthorityName(LA_NAME)
             .orderType(TYPE)
             .recitalsOrPreamble("Preambles Text is here")
-            .orderDetails("THE COURT ORDERS THAT:\n\nparagraphs is here\n\ncost orders is here");
+            .orderDetails("THE COURT ORDERS THAT:\n\nparagraphs is here\n\ncost orders is here")
+            .respondentNames("Test Respondent is");
     }
 
     private A81PlacementBlankOrderDocmosisParameters.A81PlacementBlankOrderDocmosisParametersBuilder<?,?>
@@ -98,6 +110,70 @@ class A81PlacementBlankOrderDocumentParameterGeneratorTest {
             .localAuthorityName(LA_NAME)
             .orderType(TYPE)
             .recitalsOrPreamble("Preambles Text is here")
-            .orderDetails("THE COURT ORDERS THAT:\n\nparagraphs is here");
+            .orderDetails("THE COURT ORDERS THAT:\n\nparagraphs is here")
+            .respondentNames("Test Respondent is");
+    }
+
+    @Test
+    void shouldFormatRespondentNamesSingleRespondent() {
+        RespondentParty respondentParty = RespondentParty.builder()
+            .firstName("John")
+            .lastName("Ross")
+            .build();
+        Respondent respondent = Respondent.builder().party(respondentParty).build();
+        CaseData caseData = CASE_DATA.toBuilder()
+            .respondents1(List.of(element(respondent)))
+            .build();
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        A81PlacementBlankOrderDocmosisParameters params =
+            (A81PlacementBlankOrderDocmosisParameters) underTest.generate(caseData);
+        assertThat(params.getRespondentNames()).isEqualTo("John Ross is");
+    }
+
+    @Test
+    void shouldFormatRespondentNamesTwoRespondents() {
+        RespondentParty respondentParty1 = RespondentParty.builder()
+            .firstName("John")
+            .lastName("Ross")
+            .build();
+        RespondentParty respondentParty2 = RespondentParty.builder()
+            .firstName("Julie")
+            .lastName("Ross")
+            .build();
+        Respondent respondent1 = Respondent.builder().party(respondentParty1).build();
+        Respondent respondent2 = Respondent.builder().party(respondentParty2).build();
+        CaseData caseData = CASE_DATA.toBuilder()
+            .respondents1(List.of(element(respondent1), element(respondent2)))
+            .build();
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        A81PlacementBlankOrderDocmosisParameters params =
+            (A81PlacementBlankOrderDocmosisParameters) underTest.generate(caseData);
+        assertThat(params.getRespondentNames()).isEqualTo("John Ross and Julie Ross are");
+    }
+
+    @Test
+    void shouldFormatRespondentNamesThreeRespondents() {
+        RespondentParty respondentParty1 = RespondentParty.builder()
+            .firstName("John")
+            .lastName("Ross")
+            .build();
+        RespondentParty respondentParty2 = RespondentParty.builder()
+            .firstName("Julie")
+            .lastName("Ross")
+            .build();
+        RespondentParty respondentParty3 = RespondentParty.builder()
+            .firstName("Karen")
+            .lastName("Donalds")
+            .build();
+        Respondent respondent1 = Respondent.builder().party(respondentParty1).build();
+        Respondent respondent2 = Respondent.builder().party(respondentParty2).build();
+        Respondent respondent3 = Respondent.builder().party(respondentParty3).build();
+        CaseData caseData = CASE_DATA.toBuilder()
+            .respondents1(List.of(element(respondent1), element(respondent2), element(respondent3)))
+            .build();
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        A81PlacementBlankOrderDocmosisParameters params =
+            (A81PlacementBlankOrderDocmosisParameters) underTest.generate(caseData);
+        assertThat(params.getRespondentNames()).isEqualTo("John Ross, Julie Ross and Karen Donalds are");
     }
 }

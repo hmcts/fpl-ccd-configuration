@@ -13,7 +13,7 @@ export class AddAndRemoveAdminCaseFlag extends BasePage {
     public constructor(page: Page) {
         super(page);
         this.yes =  page.getByLabel('Yes');
-        this.uploadAssessmentForm = page.getByRole('textbox', { name: 'Upload assessment form or' });
+        this.uploadAssessmentForm = page.getByRole('button', { name: 'Upload assessment form or' });
         this.additionalNotes =  page.getByLabel('Additional notes (Optional)');
         this.addOrRemoveFlag =  page.getByRole('link', { name: 'Add or remove case flag' });
         this.no =  page.getByLabel('No', { exact: true });

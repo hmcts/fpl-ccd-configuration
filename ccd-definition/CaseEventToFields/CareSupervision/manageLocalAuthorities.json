@@ -175,7 +175,8 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "transferToSharedLocalAuthority=\"DO NOT SHOW\""
+    "FieldShowCondition": "transferToSharedLocalAuthority=\"DO NOT SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",

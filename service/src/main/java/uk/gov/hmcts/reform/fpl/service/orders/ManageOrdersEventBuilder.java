@@ -52,7 +52,8 @@ public class ManageOrdersEventBuilder {
                     lastGeneratedOrder.getDocument(),
                     lastGeneratedOrder.getTranslationRequirements(),
                     lastGeneratedOrder.asLabel(),
-                    lastGeneratedOrder.getApprovalDate()
+                    lastGeneratedOrder.getApprovalDate(),
+                    lastGeneratedOrder.getOrderType()
                 );
             }
         }

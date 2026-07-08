@@ -26,10 +26,13 @@ Create the following two files (they are already included in .gitignore)
 `service/src/main/resources/application-user-mappings.yaml`:
 ```
 spring:
-  profiles: user-mappings
+  config:
+    activate:
+      on-profile: user-mappings
+
 fpl:
   local_authority_user:
-    mapping: <get from key vault>
+    mapping:  '<get from aat key vault: local-authority-user-mapping-local>'
 ```
 and `service/src/main/resources/application-feature-toggle.yaml`:
 ```
@@ -68,6 +71,25 @@ then you can access XUI on [http://localhost:3000](http://localhost:3000)
 
 (You may be prompted to run `az login` to set up account.)
 
+On first run you may need to log in in with the hmctsprod subscription in order to download cftlib during bootWithCCD:
+```
+az acr login --name hmctsprod --subscription [SUBSCRIPTION ID]
+```
+(Get the DND-CNP-Prod subscription ID from Azure portal under Subscriptions.)
+
+### Work allocation
+Work allocation can be run locally by making use of https://github.com/jthmcts/cftlib-wa/tree/main.
+
+This has been set up for private law but can readily be adapted to work for our service by updating the following in
+import-camunda-definitions.sh.
+```
+DEPLOYMENT_SOURCE="fpl"
+TENANT_ID="publiclaw"
+
+serviceToken="$("$(dirname "$0")/s2s-token.sh" "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal" "fpl_case_service")"
+```
+Follow the README steps in this repository to get up and running.
+
 ### Code Style
 To run code linting enter `yarn lint` in the command line.
 
@@ -99,7 +121,9 @@ Create the file in this location `service/src/integrationTest/resources/applicat
 (it's already included in .gitignore)
 ```
 spring:
-  profiles: email-template-test
+  config:
+    activate:
+      on-profile: email-template-test
 
 integration-test:
   notify-service:

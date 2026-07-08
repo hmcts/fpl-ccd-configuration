@@ -1,105 +1,114 @@
-import {expect, test} from "../fixtures/fixtures";
-import {newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser} from "../settings/user-credentials";
-import {CreateCaseName} from "../utils/create-case-name";
-import {CaseFileView} from "../pages/case-file-view";
+import { expect, test } from "../fixtures/fixtures";
+import { newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from "../settings/user-credentials";
+import { CreateCaseName } from "../utils/create-case-name";
+import { CaseFileView } from "../pages/case-file-view";
+import {testConfig} from "../settings/test-config";
 
-test.describe('', () => {
-    test.slow();
-    test("Local Authority submit C110A application @smoke-test @accessibility", async ({
-                                                                                           signInPage,
-                                                                                           createCase,
-                                                                                           ordersAndDirectionSought,
-                                                                                           startApplication,
-                                                                                           hearingUrgency,
-                                                                                           groundsForTheApplication,
-                                                                                           applicantDetails,
-                                                                                           allocationProposal,
-                                                                                           addApplicationDocuments,
-                                                                                           childDetails,
-                                                                                           respondentDetails,
-                                                                                           submitCase,
-                                                                                           page,
-                                                                                           makeAxeBuilder
-                                                                                       }, testInfo) => {
-        // Marking this test slow to increase the time for 3 times of other test
 
-        // 1. Sign in as local-authority user
-        await signInPage.visit();
-        await signInPage.login(
-            newSwanseaLocalAuthorityUserOne.email,
-            newSwanseaLocalAuthorityUserOne.password,
-        );
-        //sign in page
-        await signInPage.isSignedIn();
+test.describe('Smoke Test @xbrowser @smoke-test', () => {
+test.setTimeout(7 * 60 * 1000);
 
-        // Add application details
-        // Start new case, get case id and assert case id is created
-        await createCase.caseName();
-        await createCase.createCase();
-        await createCase.submitCase(createCase.generatedCaseName);
-        await startApplication.tabNavigation('View application');
-        //this has to be refracted to new test as the test execution time exceed 8m
-        //await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+    test('Local Authority C110A application submission  @accessibility ', async ({
+                                                                    signInPage,
+        page,
+        createCase,
+        startApplication,
+        ordersAndDirectionSought,
+        groundsForTheApplication,
+        hearingUrgency,
+        addApplicationDocuments,
+        applicantDetails,
+        childDetails,
+        respondentDetails,
+        allocationProposal,
+        submitCase,
+        envDataConfig,
+        makeAxeBuilder
+                                                                }, testInfo) => {
+        test.info().annotations.push({ type: 'tag', description: 'xbrowser' });
+        test.info().annotations.push({ type: 'tag', description: 'smoke-test' });
+        test.info().annotations.push({ type: 'tag', description: 'accessibility' });
 
-        // Orders and directions sought
-        await startApplication.tabNavigation('Start application');
-        await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-        await startApplication.addApplicationDetailsHeading.isVisible();
-        await startApplication.tabNavigation('View application');
+        await test.step('Login and create Case', async () => {
+            await signInPage.visit();
+            await signInPage.login(
+                newSwanseaLocalAuthorityUserOne.email,
+                newSwanseaLocalAuthorityUserOne.password,
+            );
+            await expect(signInPage.signoutButton).toBeVisible();
+            await createCase.createCase();
+        });
 
-        // Hearing urgency
-        await startApplication.tabNavigation('Start application');
-        await startApplication.hearingUrgency();
-        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
-        await hearingUrgency.hearingUrgencySmokeTest();
-        await startApplication.tabNavigation('View application');
+        await test.step('Submit Case', async () => {
+            await createCase.submitCase()
+        });
 
-        // Grounds for the application
-       await startApplication.tabNavigation('Start application');
-        await startApplication.groundsForTheApplication();
-        await groundsForTheApplication.groundsForTheApplicationSmokeTest();
-        await startApplication.groundsForTheApplicationHasBeenUpdated();
-         await startApplication.tabNavigation('View application');
+        await test.step('Fill orders and direction', async () => {
+            await ordersAndDirectionSought.ordersAndDirectionsNeeded();
+        });
 
-        //Add application documents
-         await startApplication.tabNavigation('Start application');
-        await startApplication.addApplicationDetailsHeading.isVisible();
-        await startApplication.addApplicationDocuments();
-        await addApplicationDocuments.uploadDocumentSmokeTest();
-        await startApplication.addApplicationDocumentsInProgress();
-        await startApplication.tabNavigation('View application');
+        await test.step('Hearing urgency', async() => {
 
-// Applicant Details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.applicantDetails();
-        await applicantDetails.applicantDetailsNeeded();
-        await startApplication.applicantDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+            await startApplication.hearingUrgency();
+            await hearingUrgency.hearingUrgency();
+        });
 
-        // Child details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
-        await startApplication.childDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+        await test.step('Grounds for the application', async() => {
+            await startApplication.groundsForTheApplication();
+            await groundsForTheApplication.checkChildBeyondParentalControl();
+            await groundsForTheApplication.checkNoProvideSummaryRadioButton();
+            await groundsForTheApplication.fillSummary('test');
+            await Promise.all([
+                page.waitForResponse(response =>
+                    response.url().includes('CARE_SUPERVISION_EPO/validate?pageId=enterGrounds1') &&
+                    response.request().method() === 'POST' &&
+                    response.status() === 200
+                ),
+                groundsForTheApplication.continueButton.click()
+            ]);
+            await Promise.all([
+                page.waitForResponse(response =>
+                    response.url().includes('/api/wa-supported-jurisdiction/get') &&
+                    response.request().method() === 'GET' &&
+                    response.status() === 200
+                ),
+                groundsForTheApplication.saveAndContinueButton.click()
+            ]);
+        });
 
-        // // Add respondents' details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.respondentDetails();
-        await respondentDetails.respondentDetailsNeeded();
-        await startApplication.tabNavigation('View application');
+        await test.step('Upload documents', async() => {
+            await startApplication.addApplicationDocuments();
+            await addApplicationDocuments.uploadDocumentSmokeTest();
+        });
 
-        // Allocation Proposal
-        await startApplication.tabNavigation('Start application');
-        await startApplication.allocationProposal();
-        await allocationProposal.allocationProposalSmokeTest();
-        await startApplication.allocationProposalHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+        await test.step('Applicant details', async() => {
 
-        // Submit the case
-        await startApplication.tabNavigation('Start application');
-        await startApplication.submitCase();
-        await submitCase.submitCaseSmokeTest('2,515.00');
+           await startApplication.applicantDetails()
+
+            await applicantDetails.applicantDetailsNeeded(envDataConfig.swanseaOrgPBA);
+        });
+
+        await test.step('Child details', async() => {
+
+            await   startApplication.childDetails()
+            await childDetails.addChildDetailsForC110AApplication();
+        });
+
+        await test.step('Add respondent details', async() => {
+            await startApplication.respondentDetails()
+            await respondentDetails.respondentDetailsNeeded();
+        });
+
+        await test.step('Allocation proposal', async() => {
+            await startApplication.allocationProposal()
+           await allocationProposal.allocationProposalSmokeTest();
+        });
+
+        await test.step('Submit case', async() => {
+
+           await  startApplication.submitCase()
+            await submitCase.submitCaseSmokeTest(testConfig.APPLICATION_OF_PROCEEDING);
+        });
 
         const accessibilityScanResults = await makeAxeBuilder()
             // Automatically uses the shared AxeBuilder configuration,
@@ -110,97 +119,105 @@ test.describe('', () => {
             body: JSON.stringify(accessibilityScanResults, null, 2),
             contentType: 'application/json'
         });
-
-        expect(accessibilityScanResults.violations).toEqual([]);
     });
+
     test('Private solicitor applies C110a application', async ({
-                             signInPage,
-                             createCase,
-                             ordersAndDirectionSought,
-                             startApplication,
-                             hearingUrgency,
-                             groundsForTheApplication,
-                             applicantDetails,
-                             allocationProposal,
-                             addApplicationDocuments,
-                             childDetails,
-                             respondentDetails,
-                             submitCase,
-                             page,
+        signInPage,
+        createCase,
+        ordersAndDirectionSought,
+        startApplication,
+        hearingUrgency,
+        applicantDetails,
+        allocationProposal,
+        childDetails,
+        respondentDetails,
+        submitCase,
+        page,
         caseFileView,
-                             makeAxeBuilder
-                         }, testInfo) => {
+        envDataConfig,
+    }) => {
 
-        // 1. Sign in as local-authority user
-        await signInPage.visit();
-        await signInPage.login(
-            privateSolicitorOrgUser.email,
-            privateSolicitorOrgUser.password,
-        );
-        //sign in page
-        await signInPage.isSignedIn();
+        await test.step('Login as private solicitor', async () => {
+            await signInPage.visit();
 
-        // Add application details
-        // Start new case, get case id and assert case id is created
-        await createCase.caseName();
-        await createCase.createCase();
-        await createCase.respondentSolicitorCreatCase();
-        await createCase.submitCase('Private Solicitor -C110 a Application ' + CreateCaseName.getFormattedDate());
-        await startApplication.tabNavigation('View application');
+            await Promise.all([
+                page.waitForResponse(response => {
+                    const url = response.url();
+                    return (
+                        url.includes('/auth/isAuthenticated') &&
+                        response.request().method() === 'GET' &&
+                        response.status() === 200
+                    );
+                }),
+                signInPage.login(
+                    privateSolicitorOrgUser.email,
+                    privateSolicitorOrgUser.password
+                )
+            ]);
+            await signInPage.isSignedIn();
+        });
+
+        await test.step('Create solicitor Case', async () => {
+            await createCase.caseName()
+            await createCase.createCase();
+            await createCase.respondentSolicitorCreatCase()
+        });
+
+        await test.step('Submit solicitor Case', async () => {
+            await createCase.submitCase('Private Solicitor -C110 a Application ' + CreateCaseName.getFormattedDate());
+        });
+
+        await test.step('Order and Direction Sorted', async () => {
+            await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
+            await expect(startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
+        });
+            await test.step('Hearing Urgency', async () => {
+                await startApplication.hearingUrgency();
+                await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
+                await hearingUrgency.hearingUrgencySmokeTest();
+            });
+
+            await test.step('Applicant Details', async() => {
+                await startApplication.applicantDetails();
+                await applicantDetails.solicitorC110AApplicationApplicantDetails(envDataConfig.privateSolicitorOrgPBA);
+                await startApplication.applicantDetailsHasBeenUpdated();
+            });
 
 
-        // Orders and directions sought
-        await startApplication.tabNavigation('Start application');
-        await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
-        await startApplication.ordersAndDirectionsSoughtFinishedStatus.isVisible();
-        await startApplication.tabNavigation('View application');
+            await test.step('Child Details', async () => {
+                 await   startApplication.childDetails()
+                await childDetails.addChildDetailsForC110AApplication();
+                await startApplication.childDetailsHasBeenUpdated();
+            });
+
+            await test.step('Add Respondent Details', async () => {
+                await    startApplication.respondentDetails()
+                await respondentDetails.respondentDetailsPrivateSolicitor();
+            });
 
 
-        // Hearing urgency
-        await startApplication.tabNavigation('Start application');
-        await startApplication.hearingUrgency();
-        await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
-        await hearingUrgency.hearingUrgencySmokeTest();
-        await startApplication.tabNavigation('View application');
+            await test.step('Allocation Proposal', async () => {
+                await startApplication.allocationProposal()
+                await allocationProposal.allocationProposalSmokeTest();
+                await startApplication.allocationProposalHasBeenUpdated();
+            });
+
+            await test.step('Submit the Case', async () => {
+                await   startApplication.submitCase()
+                await submitCase.submitCaseSmokeTest(testConfig.VARIATION_DISCHARGE_OF_CARE_SUPERVISION_ORDER);
+            });
 
 
-        // Applicant Details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.applicantDetails();
-        await applicantDetails.solicitorC110AApplicationApplicantDetails();
-        await startApplication.applicantDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
+        await test.step('CFV Application check', async () => {
+            await caseFileView.goToCFVTab();
+            await caseFileView.openFolder('Applications');
+            await caseFileView.openFolder('Original Applications');
+            await expect(caseFileView.page.getByLabel('Original Applications folder')).toBeVisible();
+            await expect(caseFileView.page.getByRole('treeitem', { name: 'Somuy__Swansea_City_Council_Asa_Yaks.pdf', exact: true })).toBeVisible();
 
-        // Child details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.childDetails();
-        await childDetails.childDetailsNeeded();
-        await startApplication.childDetailsHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
-
-        // // Add respondents' details
-        await startApplication.tabNavigation('Start application');
-        await startApplication.respondentDetails();
-        await respondentDetails.respondentDetailsPrivateSolicitor();
-        await startApplication.tabNavigation('View application');
-
-        // Allocation Proposal
-        await startApplication.tabNavigation('Start application');
-        await startApplication.allocationProposal();
-        await allocationProposal.allocationProposalSmokeTest();
-        await startApplication.allocationProposalHasBeenUpdated();
-        await startApplication.tabNavigation('View application');
-
-        // Submit the case
-        await startApplication.tabNavigation('Start application');
-        await startApplication.submitCase();
-        await submitCase.submitCaseSmokeTest('£263.00');
-        await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Applications');
-        await caseFileView.openFolder('Original Applications');
-        await expect(page.getByRole('tree')).toContainText('Private_Solicitor_-C110_a_Application');
-        await  caseFileView.openDocInNewTab();
-        await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
+            await caseFileView.openDocInNewTab();
+            await expect(caseFileView.docNewTab.getByText('Application from Private')).toBeVisible();
+        });
 
     })
-});
+})

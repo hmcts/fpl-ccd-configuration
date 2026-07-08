@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESP
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_7;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_8;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_9;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildDynamicListFromOthers;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
@@ -139,7 +138,7 @@ public abstract class ChangeFromOtherUtils {
         return wrapElements(LocalAuthority.builder()
             .name(LOCAL_AUTHORITY_1_NAME)
             .email(LOCAL_AUTHORITY_1_INBOX)
-            .designated(YES.getValue())
+            .designated(YesNo.YES.getValue())
             .build());
     }
 
@@ -150,8 +149,8 @@ public abstract class ChangeFromOtherUtils {
                 .addressKnow(IsAddressKnowType.YES)
                 .address(buildHiddenAddress("Converting"))
                 .telephoneNumber(Telephone.builder().telephoneNumber("123456789").build())
-                .hideTelephone(YES.getValue())
-                .hideAddress(YES.getValue())
+                .hideTelephone(YesNo.YES.getValue())
+                .hideAddress(YesNo.YES.getValue())
                 .build())
             .build();
     }
@@ -163,8 +162,8 @@ public abstract class ChangeFromOtherUtils {
                 .addressKnow(IsAddressKnowType.YES)
                 .address(buildHiddenAddress(String.format("existing respondent %s", seqNo)))
                 .telephoneNumber(Telephone.builder().telephoneNumber("777777777").build())
-                .hideTelephone(YES.getValue())
-                .hideAddress(YES.getValue())
+                .hideTelephone(YesNo.YES.getValue())
+                .hideAddress(YesNo.YES.getValue())
                 .build())
             .build();
     }
@@ -211,9 +210,9 @@ public abstract class ChangeFromOtherUtils {
                 Other other = otherElm.getValue();
                 if (other.containsConfidentialDetails()) {
                     return element(otherElm.getId(), other.toBuilder()
-                        .telephone(YES.getValue().equals(other.getHideTelephone()) ? "123456789" : null)
-                        .addressKnowV2(YES.getValue().equals(other.getHideAddress()) ? IsAddressKnowType.YES : null)
-                        .address(YES.getValue().equals(other.getHideAddress())
+                        .telephone(YesNo.YES.getValue().equals(other.getHideTelephone()) ? "123456789" : null)
+                        .addressKnowV2(YesNo.YES.getValue().equals(other.getHideAddress()) ? IsAddressKnowType.YES : null)
+                        .address(YesNo.YES.getValue().equals(other.getHideAddress())
                             ? buildHiddenAddress(String.valueOf(i + 1)) : null)
                         .build());
                 }

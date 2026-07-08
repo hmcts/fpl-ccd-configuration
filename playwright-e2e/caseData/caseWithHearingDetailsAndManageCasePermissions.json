@@ -1,0 +1,493 @@
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "hearingOrdersBundlesDrafts": [],
+    "submissionConsent": [
+      "agree"
+    ],
+    "sendToCtsc": "Yes",
+    "caseManagementLocation": {
+      "baseLocation": "234946",
+      "region": "7"
+    },
+    "applicants": [
+      {
+        "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
+        "value": {
+          "leadApplicantIndicator": "Yes",
+          "party": {
+            "organisationName": "Swansea City Council",
+            "telephoneNumber": {
+              "telephoneNumber": "00000000000",
+              "contactDirection": "Jonathon Walker"
+            },
+            "address": {
+              "AddressLine2": "Saffron Central Square 11",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "PostTown": "London",
+              "PostCode": "CR0 2GE",
+              "County": "United Kingdom"
+            },
+            "pbaNumber": "PBA0082848",
+            "clientCode": "8888",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "jobTitle": "Legal adviser",
+            "customerReference": "Example reference",
+            "partyType": "ORGANISATION",
+            "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
+            "email": {
+              "email": "swansea@test.com"
+            }
+          }
+        }
+      }
+    ],
+    "hearingDetails": [
+      {
+        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "value": {
+          "hearingDuration": null,
+          "venue": "96",
+          "allocatedJudgeLabel": null,
+          "endDate": "2050-01-02T16:30:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "legalAdvisorName": "Test Test",
+            "judgeLastName": "Test"
+          },
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "translatedNoticeOfHearing": null,
+          "type": "FURTHER_CASE_MANAGEMENT",
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": "test type details",
+          "hearingNeedsDetails": "Some details",
+          "additionalNotes": null,
+          "presence": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {},
+          "othersNotified": null,
+          "endDateDerived": null,
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": null,
+          "caseManagementOrderId": null,
+          "needTranslation": "NO",
+          "hearingJudgeLabel": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": null,
+          "noticeOfHearing": null,
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2050-01-01T15:15:00",
+          "status": null
+        }
+      },
+      {
+        "id": "b6ae03cf-112e-4042-9a89-36eee35363ee",
+        "value": {
+          "hearingDuration": "1 hours 30 minutes",
+          "venue": "73",
+          "allocatedJudgeLabel": "Her Honour Judge Moley",
+          "endDate": "2026-07-05T02:30:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Moley",
+            "judgeEmailAddress": "moley@example.com"
+          },
+          "hearingNeedsBooked": null,
+          "translatedNoticeOfHearing": null,
+          "type": "CASE_MANAGEMENT",
+          "hearingMinutes": 30,
+          "hearingHours": 1,
+          "typeDetails": null,
+          "hearingNeedsDetails": null,
+          "additionalNotes": null,
+          "presence": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {},
+          "othersNotified": "",
+          "endDateDerived": "Yes",
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": "",
+          "caseManagementOrderId": null,
+          "needTranslation": "NO",
+          "hearingJudgeLabel": "Her Honour Judge Moley",
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": null,
+          "noticeOfHearing": null,
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2026-07-05T01:00:00",
+          "status": null
+        }
+      },
+      {
+        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88",
+        "value": {
+          "hearingDuration": null,
+          "venue": null,
+          "allocatedJudgeLabel": null,
+          "endDate": "2012-11-03T14:34:00",
+          "customPreviousVenue": null,
+          "venueCustomAddress": {},
+          "translationUploadDateTime": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "legalAdvisorName": "Test Test",
+            "judgeLastName": "Test",
+            "judgeEmailAddress": "test@judge.com"
+          },
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "translatedNoticeOfHearing": null,
+          "type": "CASE_MANAGEMENT",
+          "hearingMinutes": null,
+          "hearingHours": null,
+          "typeDetails": null,
+          "hearingNeedsDetails": "Some details",
+          "additionalNotes": null,
+          "presence": null,
+          "others": [],
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {},
+          "othersNotified": null,
+          "endDateDerived": null,
+          "cancellationReason": null,
+          "translationRequirements": "NO",
+          "legalAdvisorLabel": null,
+          "caseManagementOrderId": null,
+          "needTranslation": "NO",
+          "hearingJudgeLabel": null,
+          "housekeepReason": null,
+          "vacatedDate": null,
+          "hearingDays": null,
+          "noticeOfHearing": null,
+          "attendanceDetails": null,
+          "noticeOfHearingVacated": null,
+          "typeReason": null,
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "startDate": "2012-11-03T13:34:00",
+          "status": null
+        }
+      }
+    ],
+    "caseSummaryLAHighCourtCase": "No",
+    "languageRequirement": null,
+    "representativeType": "LOCAL_AUTHORITY",
+    "caseManagementCategory": {
+      "value": {
+        "code": "FPL",
+        "label": "Family Public Law"
+      },
+      "list_items": [
+        {
+          "code": "FPL",
+          "label": "Family Public Law"
+        }
+      ]
+    },
+    "submittedForm": {
+      "upload_timestamp": "2025-07-17T13:36:50.471961123",
+      "document_binary_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "caseName": "CTSC manage hearings 2025-07-17",
+    "hearing": {
+      "respondentsAware": "Yes",
+      "hearingUrgencyDetails": "test reason",
+      "hearingUrgencyType": "SAME_DAY"
+    },
+    "additionalApplicationsBundle": [
+      {
+        "id": "4ae96392-b71d-40a6-9e59-a66d3fd279a5",
+        "value": {
+          "otherApplicationsBundle": {
+            "uploadedDateTime": "25 March 2021, 3:16pm",
+            "applicationType": "C100_CHILD_ARRANGEMENTS",
+            "author": "HMCTS",
+            "document": {
+              "upload_timestamp": "2025-07-17T13:36:50.471961123",
+              "document_binary_url": "${TEST_DOCUMENT_URL}",
+              "document_filename": "Test.txt",
+              "document_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "id": "85bb3a49-e178-4a3a-ad73-165005d8c4bf",
+            "supplementsBundle": [],
+            "supportingEvidenceBundle": []
+          },
+          "uploadedDateTime": "25 March 2021, 3:16pm",
+          "author": "HMCTS",
+          "pbaPayment": {
+            "usePbaPayment": "No"
+          },
+          "c2DocumentBundle": {
+            "uploadedDateTime": "25 March 2021, 3:16pm",
+            "author": "HMCTS",
+            "document": {
+              "upload_timestamp": "2025-07-17T13:36:50.471961123",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
+              "document_filename": "Test.txt",
+              "document_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "id": "2c3d7329-8206-44a1-b1b4-7502ab253b0f",
+            "supplementsBundle": [],
+            "supportingEvidenceBundle": [],
+            "type": "WITHOUT_NOTICE",
+            "c2AdditionalOrdersRequested": [
+              "CHANGE_SURNAME_OR_REMOVE_JURISDICTION"
+            ]
+          }
+        }
+      }
+    ],
+    "localAuthorityPolicy": {
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]",
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      }
+    },
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley"
+    },
+    "dfjArea": "SWANSEA",
+    "respondents1": [
+      {
+        "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
+        "value": {
+          "party": {
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "address": {
+              "AddressLine3": "Church Road",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine1": "Flat 2",
+              "Country": "United Kingdom",
+              "PostTown": "Reading",
+              "PostCode": "RG4 7AA",
+              "County": ""
+            },
+            "gender": "Male",
+            "dateOfBirth": "1980-01-01",
+            "relationshipToChild": "Uncle"
+          }
+        }
+      }
+    ],
+    "displayAmountToPay": "Yes",
+    "solicitor": {
+      "reference": "reference",
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "mobile": "07000000000",
+      "telephone": "00000000000",
+      "email": "solicitor@email.com"
+    },
+    "hasRespondentLA": "NO",
+    "caseLocalAuthority": "SA",
+    "court": {
+      "epimmsId": null,
+      "code": "344",
+      "regionId": null,
+      "name": "Family Court sitting at Swansea",
+      "dateTransferred": null,
+      "region": null,
+      "email": "FamilyPublicLaw+sa@gmail.com"
+    },
+    "dateAndTimeSubmitted": "2025-07-17T13:36:49.891",
+    "caseNameHmctsInternal": "e2e case",
+    "SearchCriteria": {
+      "SearchParties": [
+        {
+          "id": "218933eb-55fb-46b5-b18d-098777aaba95",
+          "value": {
+            "DateOfBirth": "1980-01-01",
+            "AddressLine1": "Flat 2",
+            "PostCode": "RG4 7AA",
+            "Name": "Joe Bloggs"
+          }
+        },
+        {
+          "id": "5a1c4840-1d43-4793-a718-71907d1127f1",
+          "value": {
+            "DateOfBirth": "2015-08-01",
+            "Name": "Timothy Jones"
+          }
+        },
+        {
+          "id": "26761864-fb94-4715-b986-106b98aeb199",
+          "value": {
+            "DateOfBirth": "2016-09-02",
+            "Name": "John Black"
+          }
+        },
+        {
+          "id": "dc1ae39b-f8bd-413c-a32b-ca8de719ffd7",
+          "value": {
+            "DateOfBirth": "2017-10-01",
+            "Name": "William Black"
+          }
+        },
+        {
+          "id": "ad021deb-7a9d-40c8-a6b0-99b16a2e9ab9",
+          "value": {
+            "DateOfBirth": "2010-05-02",
+            "Name": "Sarah Black"
+          }
+        }
+      ]
+    },
+    "grounds": {
+      "thresholdDetails": "mock threshold details",
+      "thresholdReason": [
+        "noCare"
+      ]
+    },
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "children1": [
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
+        "value": {
+          "party": {
+            "firstName": "Timothy",
+            "lastName": "Jones",
+            "gender": "Boy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      },
+      {
+        "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
+        "value": {
+          "party": {
+            "firstName": "John",
+            "lastName": "Black",
+            "gender": "Boy",
+            "dateOfBirth": "2016-09-02"
+          }
+        }
+      },
+      {
+        "id": "d56b23ee-ca80-42cc-bf9f-2e65cec00985",
+        "value": {
+          "party": {
+            "firstName": "William",
+            "lastName": "Black",
+            "gender": "Boy",
+            "dateOfBirth": "2017-10-01"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b05",
+        "value": {
+          "party": {
+            "firstName": "Sarah",
+            "lastName": "Black",
+            "gender": "Girl",
+            "dateOfBirth": "2010-05-02"
+          }
+        }
+      }
+    ],
+    "swanseaDFJCourt": "344",
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "address": {
+            "AddressLine3": "40 Fleet street",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "Country": "United Kingdom",
+            "PostTown": "Swansea",
+            "PostCode": "CR0 2GE",
+            "County": "Swansea"
+          },
+          "designated": "Yes",
+          "phone": "02027725772",
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "notificationRecipient": "Yes",
+                "role": "SOLICITOR",
+                "fullName": "Solicitor 1",
+                "email": "test@test.com"
+              }
+            }
+          ],
+          "name": "Swansea City Council",
+          "email": "test@test.com"
+        }
+      }
+    ],
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
+    },
+    "caseSummaryLATabHidden": "Yes",
+    "caseSummaryLALanguageRequirement": "No",
+    "lastGenuineUpdateTime": "2025-07-17T14:37:12.238987861",
+    "temporaryApplicationDocuments": [
+      {
+        "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+        "value": {
+          "dateTimeUploaded": null,
+          "documentType": "THRESHOLD",
+          "document": {
+            "upload_timestamp": "2025-07-17T13:36:50.471961123",
+            "document_binary_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "documentName": null,
+          "uploadedBy": null,
+          "includedInSWET": null
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA"
+  }
+}

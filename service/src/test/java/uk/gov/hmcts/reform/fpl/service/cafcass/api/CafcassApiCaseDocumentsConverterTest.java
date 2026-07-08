@@ -145,6 +145,8 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
             "data.correspondenceDocList", "data.correspondenceDocListLA",
             "data.noticeOfActingOrIssueList", "data.noticeOfActingOrIssueListLA",
             "data.previousProceedingList", "data.previousProceedingListLA",
+            "data.advocateMeetingMinuteList", "data.advocateMeetingMinuteListLA",
+            "data.witnessTemplateList", "data.witnessTemplateListLA",
             "data.archivedDocumentsList", "data.archivedDocumentsListLA"
         ));
     }

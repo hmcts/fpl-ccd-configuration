@@ -11,7 +11,6 @@ management:
   health:
     case-document-am-api:
       enabled: true
-
 spring:
   application:
     name: fpl-service
@@ -35,6 +34,11 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 11MB
+  jackson:
+    generator:
+      auto-close-json-content: false
+
+
 
 feign:
   client:

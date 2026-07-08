@@ -1,63 +1,38 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "HearingJudge",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingJudge",
+    "CaseFieldID": "hearingManualJudgeDetails",
     "ListElementCode": "judgeTitle",
-    "EventElementLabel": "Judge or magistrate's title",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "HearingJudge",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingJudge",
-    "ListElementCode": "otherTitle",
-    "EventElementLabel": "Title",
+    "CaseFieldID": "hearingManualJudgeDetails",
+    "ListElementCode": "judgeLastName",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "HearingJudge",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingJudge",
-    "ListElementCode": "judgeLastName",
-    "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
-    "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingJudge",
+    "CaseFieldID": "hearingManualJudgeDetails",
     "ListElementCode": "judgeFullName",
-    "EventElementLabel": "Full name",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "HearingJudge",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingJudge",
+    "CaseFieldID": "hearingManualJudgeDetails",
     "ListElementCode": "judgeEmailAddress",
-    "EventElementLabel": "Email Address",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
-    "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingJudge",
-    "ListElementCode": "judgeJudicialUser",
-    "EventElementLabel": "Judicial User",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "READONLY",
-    "FieldShowCondition": "hearingJudge.judgeEmailAddress=\"DO NOT SHOW\""
   }
 ]

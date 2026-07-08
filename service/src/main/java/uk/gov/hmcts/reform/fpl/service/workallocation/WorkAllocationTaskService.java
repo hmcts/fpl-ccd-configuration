@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.Map;
 
@@ -24,6 +26,10 @@ public class WorkAllocationTaskService {
         log.info("Creating work allocation task {} on case {}", taskType.name(), caseData.getId());
         coreCaseDataService.performPostSubmitCallback(caseData.getId(), WORK_ALLOCATION_DUMMY_EVENT,
             caseDetails -> Map.of(WORK_ALLOCATION_DUMMY_CASE_FIELD, taskType));
+    }
+
+    public void setTaskUrgency(CaseDetailsMap caseDetailsMap, WorkAllocationTaskUrgency taskUrgency) {
+        caseDetailsMap.put("waTaskUrgencyLevel", taskUrgency);
     }
 
 }

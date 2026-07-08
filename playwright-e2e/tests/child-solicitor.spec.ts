@@ -18,15 +18,16 @@ test.describe('Manage child representatives ', () => {
     let casename: string;
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
     test('CTSC user can add one legal representative to all children ',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC add one solicitor to represent all children ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseWithMultipleChild);
+            expect(await updateCase(casename, caseNumber, caseWithMultipleChild)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.addRegisteredSOlOrg();
@@ -40,13 +41,13 @@ test.describe('Manage child representatives ', () => {
             await expect(page.getByText('Added representative', {exact: true})).toHaveCount(4);
         });
 
-    test(' CTSC user can add different legal representative to each children',
+    test(' CTSC user can add different legal representative to each children @xbrowser',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC different Child solicitors ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseWithMultipleChild);
+            expect(await updateCase(casename, caseNumber, caseWithMultipleChild)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.addRegisteredSOlOrg();
@@ -68,10 +69,10 @@ test.describe('Manage child representatives ', () => {
     test('CTSC user able to add unregistered solicitor to a child ',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC add unregistered child solicitor ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseWithMultipleChild);
+            expect(await updateCase(casename, caseNumber, caseWithMultipleChild)).toBeTruthy();
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.addUnregisteredSolOrg();
@@ -85,19 +86,19 @@ test.describe('Manage child representatives ', () => {
             await expect(page.getByRole('tab', {name: 'Change of representatives'})).toBeHidden();
         });
 
-    test('CTSC user remove child solicitors',
+    test('CTSC user remove child solicitors @xbrowser',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC change child solicitor ' + dateTime.slice(0, 10);
             if(urlConfig.env=='demo') {
-                await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitorDemo);
+                expect(await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitorDemo)).toBeTruthy();
             }
             else{
-                await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitor);
+                expect(await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitor)).toBeTruthy();
             }
             await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]');
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-            await signInPage.navigateTOCaseDetails(caseNumber);
+            await signInPage.navigateToCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
             await childDetails.removeSolicitor();

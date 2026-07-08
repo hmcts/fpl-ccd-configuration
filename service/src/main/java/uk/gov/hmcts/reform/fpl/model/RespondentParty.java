@@ -125,5 +125,4 @@ public final class RespondentParty extends Party {
         }
         return YesNo.from(YesNo.YES.equalsString(contactDetailsHidden)).getValue();
     }
-
 }

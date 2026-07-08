@@ -4,7 +4,7 @@
     "ID": "PBAPayment",
     "ListElementCode": "usePbaPayment",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Paid with PBA",
+    "ElementLabel": "Do you want to enter PBA details?",
     "SecurityClassification": "Public"
   },
   {
@@ -13,6 +13,15 @@
     "ListElementCode": "pbaNumber",
     "HintText": "For example, PBA1234567",
     "FieldType": "Text",
+    "ElementLabel": "Payment by account (PBA) number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PBAPayment",
+    "ListElementCode": "pbaNumberDynamicList",
+    "HintText": "For example, PBA1234567",
+    "FieldType": "DynamicList",
     "ElementLabel": "Payment by account (PBA) number",
     "SecurityClassification": "Public"
   },

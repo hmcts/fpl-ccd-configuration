@@ -62,6 +62,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -79,6 +80,8 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
     private final String hearing = "Test hearing 21st August 2020";
     private final DocumentReference convertedDocument = DocumentReference.builder().filename("converted").build();
     private final DocumentReference sealedDocument = DocumentReference.builder().filename("sealed").build();
+    private final DocumentReference sealedDocumentWithCoverSheet =
+        DocumentReference.builder().filename("sealed").build();
 
     ApproveDraftOrdersControllerPostAboutToSubmitTest() {
         super("approve-draft-orders/post-submit-callback");
@@ -110,10 +113,11 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
 
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
         assertThat(responseData.getHearingOrdersBundlesDrafts()).isEmpty();
-        assertThat(responseData.getReviewCMODecision()).isEqualTo(reviewDecision);
+        assertThat(responseData.getReviewCMODecision()).isNull();
         assertThat(responseData.getOrdersToBeSent()).containsOnly(
             element(cmoElement.getId(),
-                cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ").build())
+                cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ")
+                    .refusedOrder(cmo.getOrder()).order(null).build())
         );
     }
 
@@ -236,6 +240,8 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         if (SEND_TO_ALL_PARTIES.equals(reviewOutcome)) {
             given(documentSealingService.sealDocument(order, court, SealType.ENGLISH))
                     .willReturn(sealedDocument);
+            given(documentSealingService.sealDocument(sealedDocument, court, SealType.ENGLISH))
+                .willReturn(sealedDocumentWithCoverSheet);
         } else {
             given(documentSealingService.sealDocument(convertedDocument, court, SealType.ENGLISH))
                     .willReturn(sealedDocument);
@@ -315,7 +321,10 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
             .build();
 
         HearingOrder expectedRejectedOrder = draftOrder.toBuilder()
-            .status(RETURNED).requestedChanges("missing data").build();
+            .status(RETURNED).requestedChanges("missing data")
+            .refusedOrder(draftOrder.getOrder()).order(null)
+            .documentAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
+            .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 

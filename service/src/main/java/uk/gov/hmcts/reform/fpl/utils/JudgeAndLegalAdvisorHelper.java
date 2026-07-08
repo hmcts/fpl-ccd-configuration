@@ -56,7 +56,7 @@ public class JudgeAndLegalAdvisorHelper {
 
     private static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                                     Judge allocatedJudge) {
-        JudgeAndLegalAdvisor.JudgeAndLegalAdvisorBuilder builder = JudgeAndLegalAdvisor.builder()
+        JudgeAndLegalAdvisor.JudgeAndLegalAdvisorBuilder<?,?> builder = JudgeAndLegalAdvisor.builder()
             .legalAdvisorName(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getLegalAdvisorName())
             .allocatedJudgeLabel(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getAllocatedJudgeLabel())
             .useAllocatedJudge(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getUseAllocatedJudge());

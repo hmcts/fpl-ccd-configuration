@@ -22,6 +22,9 @@ public class JudicialUserRequest {
     @JsonProperty("ccdServiceName")
     private String ccdServiceName;
 
+    @JsonProperty("sidam_ids")
+    private List<String> idamId;
+
     public static JudicialUserRequest fromPersonalCode(String personalCode) {
         return JudicialUserRequest.builder()
             .personalCode(List.of(personalCode))

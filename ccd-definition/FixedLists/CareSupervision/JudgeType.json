@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeType",
+    "ListElementCode": "SALARIED_JUDGE",
+    "ListElement": "Salaried judge",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeType",
+    "ListElementCode": "FEE_PAID_JUDGE",
+    "ListElement": "Fee paid judge",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeType",
+    "ListElementCode": "LEGAL_ADVISOR",
+    "ListElement": "Legal adviser",
+    "DisplayOrder": 3
+  }
+]

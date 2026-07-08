@@ -63,7 +63,7 @@ import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.resolveOt
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.resolveRespondentRepresentativeRole;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -128,7 +128,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         CaseData caseData = CaseData.builder()
             .localAuthorities(localAuthorities())
             .othersV2(others)
-            .respondents1(wrapElementsWithUUIDs(respondents))
+            .respondents1(wrapElementsWithRandomUUID(respondents))
             .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, SELECTED_OTHER))
             .build();
 
@@ -153,7 +153,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .confidentialOthers(prepareConfidentialOthers(others))
             .localAuthorities(localAuthorities())
             .othersV2(others)
-            .respondents1(wrapElementsWithUUIDs(respondents))
+            .respondents1(wrapElementsWithRandomUUID(respondents))
             .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, SELECTED_OTHER))
             .build();
 
@@ -185,7 +185,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         List<Respondent> respondents = prepareRespondentsTestingData(NUM_RESPONDENTS, true);
         Respondent transformedRespondent = prepareTransformedRespondentTestingData(true);
 
-        List<Element<Respondent>> respondents1 = wrapElementsWithUUIDs(respondents);
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
 
         CaseData caseData = CaseData.builder()
             .confidentialRespondents(prepareConfidentialRespondentsFromRespondents1(respondents1))
@@ -237,7 +237,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         List<Respondent> respondents = prepareRespondentsTestingData(NUM_RESPONDENTS, true);
         Respondent transformedRespondent = prepareTransformedRespondentTestingData(true);
 
-        List<Element<Respondent>> respondents1 = wrapElementsWithUUIDs(respondents);
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
 
         CaseData caseData = CaseData.builder()
             .confidentialRespondents(prepareConfidentialRespondentsFromRespondents1(respondents1))
@@ -289,7 +289,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         transformedRespondent.addRepresentative(representativeForOther.getId());
 
         List<Respondent> respondents = prepareRespondentsTestingData(NUM_RESPONDENTS);
-        List<Element<Respondent>> respondents1 = wrapElementsWithUUIDs(respondents);
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
 
         CaseData caseData = CaseData.builder()
             .representatives(List.of(representativeForOther))
@@ -332,10 +332,10 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         }
 
         Respondent transformedRespondent = prepareTransformedRespondentTestingData(false);
-        representativeIdsInTransformedRespondent.forEach(transformedRespondent::addRepresentative);
+        representativeIdsInTransformedRespondent.forEach(uuid -> transformedRespondent.addRepresentative(uuid));
 
         List<Respondent> respondents = prepareRespondentsTestingData(NUM_RESPONDENTS);
-        List<Element<Respondent>> respondents1 = wrapElementsWithUUIDs(respondents);
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
 
         CaseData caseData = CaseData.builder()
             .representatives(representatives)
@@ -404,10 +404,10 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         }
 
         Respondent transformedRespondent = prepareTransformedRespondentTestingData(true);
-        representativeIdsInTransformedRespondent.forEach(transformedRespondent::addRepresentative);
+        representativeIdsInTransformedRespondent.forEach(uuid -> transformedRespondent.addRepresentative(uuid));
 
         List<Respondent> respondents = prepareRespondentsTestingData(NUM_RESPONDENTS);
-        List<Element<Respondent>> respondents1 = wrapElementsWithUUIDs(respondents);
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
 
         CaseData caseData = CaseData.builder()
             .representatives(representatives)

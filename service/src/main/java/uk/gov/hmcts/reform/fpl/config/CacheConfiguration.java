@@ -25,6 +25,7 @@ public class CacheConfiguration {
     public static final String CAFCASS_API_IDAM_CACHE_MANAGER = "cafcassApiIdamCacheManager";
 
     public static final String ORGANISATION_CACHE = "organisationCache";
+    public static final String JUDICIAL_USER_CACHE = "judicialUserCache";
     public static final String SYS_USER_CACHE = "systemUserCache";
     public static final String CAFCASS_API_IDAM_CACHE = "cafcassApiIdamCache";
 
@@ -36,7 +37,8 @@ public class CacheConfiguration {
     public CacheManager requestScopeCacheManager() {
         final SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
         simpleCacheManager.setCaches(List.of(
-            new ConcurrentMapCache(ORGANISATION_CACHE)));
+            new ConcurrentMapCache(ORGANISATION_CACHE),
+            new ConcurrentMapCache(JUDICIAL_USER_CACHE)));
         simpleCacheManager.initializeCaches();
         return simpleCacheManager;
     }

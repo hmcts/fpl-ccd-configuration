@@ -88,6 +88,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_EXPERT_RE
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_RESPONDENTS_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.ADULT_PSYCHIATRIC_REPORT_ON_PARENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.ADVOCATE_MEETING_MINUTE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.APPLICANTS_OTHER_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.APPLICANTS_WITNESS_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCUMENTS;
@@ -102,7 +103,6 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_AND_VIABILIT
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_EVIDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.HAEMATOLOGIST;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.INDEPENDENT_SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.JUDGEMENTS;
@@ -138,6 +138,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.SKELETON_ARGUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.TOXICOLOGY_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.TRANSCRIPTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.WITNESS_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.buildSubmittedCaseDataWithNewDocumentUploaded;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -426,7 +427,6 @@ class ManageDocumentServiceTest {
                     toPair(RESPONDENTS_STATEMENTS),
                     toPair(RESPONDENTS_WITNESS_STATEMENTS),
                     toPair(GUARDIAN_EVIDENCE),
-                    i == 4 ? toPair(GUARDIAN_REPORT) : Pair.of("", ""),
                     toPair(AA_PARENT_EXPERT_REPORTS),
                     toPair(ADULT_PSYCHIATRIC_REPORT_ON_PARENTS),
                     toPair(FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL),
@@ -457,7 +457,9 @@ class ManageDocumentServiceTest {
                     toPair(COURT_CORRESPONDENCE),
                     toPair(NOTICE_OF_ACTING_OR_ISSUE),
                     toPair(PREVIOUS_PROCEEDING),
-                    b == 0 ? toPair(PLACEMENT_RESPONSES) : Pair.of("", ""));
+                    b == 0 ? toPair(PLACEMENT_RESPONSES) : Pair.of("", ""),
+                    toPair(ADVOCATE_MEETING_MINUTE),
+                    toPair(WITNESS_TEMPLATE));
                 args.add(Arguments.of(i, b == 0, expected.stream()
                     .filter(p -> !Pair.of("", "").equals(p))
                     .collect(Collectors.toList())

@@ -27,7 +27,7 @@ ccd-message-publisher:
 
 java:
   aadIdentityName: family-public-law
-  image: hmctspublic.azurecr.io/fpl/case-service:latest
+  image: hmctsprod.azurecr.io/fpl/case-service:latest
   environment:
     FPL_ENV: '{{ .Values.global.environment }}'
     IDAM_CLIENT_ID: fpl_case_service

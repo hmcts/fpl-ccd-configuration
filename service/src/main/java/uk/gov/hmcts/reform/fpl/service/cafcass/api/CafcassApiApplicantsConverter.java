@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiApplicant;
@@ -44,7 +45,7 @@ public class CafcassApiApplicantsConverter implements CafcassApiCaseDataConverte
                     .colleagues(applicant.getColleagues().stream()
                         .map(Element::getValue)
                         .map(colleague -> CafcassApiColleague.builder()
-                            .role(colleague.getRole().toString())
+                            .role(Optional.ofNullable(colleague.getRole()).map(ColleagueRole::toString).orElse(null))
                             .title(colleague.getTitle())
                             .email(colleague.getEmail())
                             .phone(colleague.getPhone())

@@ -1,0 +1,567 @@
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "submissionConsent": [
+      "agree"
+    ],
+    "sendToCtsc": "Yes",
+    "judgeAndLegalAdvisor": {
+      "useAllocatedJudge": "Yes",
+      "allocatedJudgeLabel": "Case assigned to: Her Honour Judge Moley"
+    },
+    "manageOrdersEpoRemovalAddress": {},
+    "manageOrdersMultiSelectListForC43": [],
+    "familyManCaseNumber": "mockcaseID",
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    },
+    "childSelector": {
+      "option9": [],
+      "option7": [],
+      "option8": [],
+      "option5": [],
+      "option6": [],
+      "optionCount": "1",
+      "option14": [],
+      "option3": [],
+      "option4": [],
+      "option1": [],
+      "option2": [],
+      "option12": [],
+      "option0": [
+        "SELECTED"
+      ],
+      "option13": [],
+      "option10": [],
+      "option11": []
+    },
+    "hearingDetailsSectionSubHeader": "Recovery of a child (C29)",
+    "othersSelector": {
+      "option9": [],
+      "option7": [],
+      "option8": [],
+      "option5": [],
+      "option6": [],
+      "optionCount": "1",
+      "option3": [],
+      "option4": [],
+      "option1": [],
+      "option2": [],
+      "option0": [
+        "SELECTED"
+      ]
+    },
+    "manageOrdersOfficerName": "Officer Barbrady",
+    "manageOrdersOperation": "CREATE",
+    "orderTempQuestions": {
+      "approvalDateTime": "NO",
+      "reasonForSecureAccommodation": "NO",
+      "previewOrder": "YES",
+      "approvalDate": "YES",
+      "manageOrdersExpiryDateWithMonth": "NO",
+      "refuseContactQuestions": "NO",
+      "hearingDetails": "YES",
+      "dischargeOfCareDetails": "NO",
+      "parentResponsible": "NO",
+      "manageOrdersExclusionRequirementDetails": "NO",
+      "orderIsByConsent": "NO",
+      "orderJurisdiction": "NO",
+      "linkApplication": "NO",
+      "isFinalOrder": "YES",
+      "whichOthers": "YES",
+      "orderToAmend": "NO",
+      "manageOrdersVaryOrExtendSupervisionOrder": "NO",
+      "childLegalRepresentation": "NO",
+      "orderTitle": "NO",
+      "manageOrdersExpiryDateWithEndOfProceedings": "NO",
+      "manageOrdersChildAssessment": "NO",
+      "approver": "YES",
+      "selectSingleChild": "NO",
+      "uploadOrderFile": "NO",
+      "manageOrdersEducationSupervision": "NO",
+      "childPlacementApplications": "NO",
+      "whichChildren": "YES",
+      "epoIncludePhrase": "NO",
+      "translationRequirements": "NO",
+      "respondentsRefused": "NO",
+      "orderPlacedChildInCustody": "YES",
+      "childArrangementSpecificIssueProhibitedSteps": "NO",
+      "furtherDirections": "YES",
+      "orderDetails": "NO",
+      "childPlacementQuestions": "NO",
+      "epoChildrenDescription": "NO",
+      "epoExpiryDate": "NO",
+      "needSealing": "NO",
+      "cafcassJurisdictions": "NO",
+      "appointedGuardian": "NO",
+      "epoTypeAndPreventRemoval": "NO",
+      "uploadAmendedOrder": "NO",
+      "closeCase": "YES"
+    },
+    "caseLocalAuthority": "SA",
+    "court": {
+      "name": "Family Court sitting at Swansea",
+      "code": "344",
+      "email": "FamilyPublicLaw+sa@gmail.com"
+    },
+    "children_label": "Child 1: Timothy Jones",
+    "localAuthorities": [
+      {
+        "value": {
+          "address": {
+            "AddressLine3": "40 Fleet street",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "Country": "United Kingdom",
+            "PostTown": "Swansea",
+            "PostCode": "CR0 2GE",
+            "County": "Swansea"
+          },
+          "designated": "Yes",
+          "phone": "02027725772",
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "value": {
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes",
+                "role": "SOLICITOR",
+                "email": "test@test.com"
+              },
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376"
+            }
+          ],
+          "name": "Swansea City Council",
+          "email": "test@test.com"
+        },
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773"
+      }
+    ],
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
+    },
+    "orderAppliesToAllChildren": "No",
+    "sendOrderToAllOthers": "No",
+    "otherPartiesDirections": [
+      {
+        "value": {
+          "directionType": "Object to a request for disclosure",
+          "directionText": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.\n",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "OTHERS"
+        },
+        "id": "a8564c1c-084a-4eb8-b070-95c54d604bdf"
+      }
+    ],
+    "manageOrdersActionsPermittedAddress": {},
+    "taskList": "<div class='width-50'>\n\n<br/>\n\n## Add application details\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add grounds for the application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children<\/a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information<\/span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting<\/a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information<\/span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add application documents\n\n<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information <\/span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add information about the parties\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Local authority's details<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add court requirements\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add additional information\n\n<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete if relevant<\/div>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterInternationalElement'>International element<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/languageSelection'>Welsh language requirements<\/a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Send application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a>Submit application<\/a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/cannot-send-yet.png' title='Cannot send yet'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<\/div>\n\n<details class='govuk-details'>\n\n<summary class='govuk-details__summary'>\n\n<span class='govuk-details__summary-text'>\n\nWhy can't I submit my application?\n\n<\/span>\n\n<\/summary>\n\n<div class='govuk-details__text'>\n\nAdd the orders and directions sought in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought<\/a>\n\nAdd the hearing urgency details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency<\/a>\n\nAdd the grounds for the application in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application<\/a>\n\nAdd local authority's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Local authority's details<\/a>\n\nAdd the child's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details<\/a>\n\nAdd the respondents' details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details<\/a>\n\nAdd the allocation proposal in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal<\/a>\n\n<\/div>\n\n<\/details>",
+    "hearingDetails": [
+      {
+        "value": {
+          "venue": "96",
+          "venueCustomAddress": {},
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "legalAdvisorName": "Rupert Robert",
+            "judgeLastName": "Reed"
+          },
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "hearingNeedsDetails": "Some details",
+          "type": "CASE_MANAGEMENT"
+        },
+        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89"
+      },
+      {
+        "value": {
+          "venue": "96",
+          "venueCustomAddress": {},
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "legalAdvisorName": "Jack Nickolson",
+            "judgeLastName": "Reed",
+            "judgeEmailAddress": "jack.nickolson@judge.com"
+          },
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "hearingNeedsDetails": "Some details",
+          "type": "CASE_MANAGEMENT"
+        },
+        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88"
+      }
+    ],
+    "issuingDetailsSectionSubHeader": "Recovery of a child (C29)",
+    "hearing": {
+      "reason": "test reason",
+      "timeFrame": "Same day"
+    },
+    "manageOrdersIsFinalOrder": "Yes",
+    "displayAmountToPay": "Yes",
+    "courtDirections": [
+      {
+        "value": {
+          "directionType": "Arrange interpreters",
+          "directionText": "At all hearings, the court must arrange an interpreter for [Respondent\u2019s Name] in [Language].",
+          "responses": [],
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "COURT"
+        },
+        "id": "0a36708b-c560-4790-ba04-33929447f352"
+      }
+    ],
+    "children1": [
+      {
+        "value": {
+          "party": {
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "dateOfBirth": "2015-08-01",
+            "gender": "Boy"
+          }
+        },
+        "id": "a8caaf05-e52b-4315-9474-c247ae266164"
+      }
+    ],
+    "others_label": "Other 1: John Doe",
+    "allParties": [
+      {
+        "value": {
+          "directionType": "Request permission for expert evidence",
+          "directionText": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts. ",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "ALL_PARTIES"
+        },
+        "id": "635f3397-e7d9-4557-bf29-da91ef327805"
+      },
+      {
+        "value": {
+          "directionType": "Request help to take part in proceedings",
+          "directionText": "Make an application to the court if you believe any party or witness needs help with:\n\n- understanding proceedings and their role in them in court\n- putting their views to the court\n- instructing their representatives before, during and after the hearing\n- attending the hearing without significant distress\n\nIf possible, include in your application:\n\n- why the party or witness would benefit from help\n- the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n- written confirmation from any relevant witnesses of their view\n",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "ALL_PARTIES"
+        },
+        "id": "924cec79-1655-4487-8fc4-c91ffe6d4f83"
+      },
+      {
+        "value": {
+          "directionType": "Ask for disclosure",
+          "directionText": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.  \n",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "ALL_PARTIES"
+        },
+        "id": "b0c0b2a2-7153-4450-91e6-b7d109d2112b"
+      },
+      {
+        "value": {
+          "directionType": "Attend the pre-hearing and hearing",
+          "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
+          "responses": [],
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "ALL_PARTIES"
+        },
+        "id": "b6458a11-d220-4c28-968f-60968d5a1a2b"
+      },
+      {
+        "value": {
+          "directionType": "Contact alternative carers",
+          "directionText": "Contact anyone who might want to be a carer if your preferred plan proves to be impossible. Give their contact details to the Local Authority.",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "ALL_PARTIES"
+        },
+        "id": "37ed6ef8-a9d4-44ad-ac47-f3a9baf4f79c"
+      }
+    ],
+    "gatekeeperEmails": [
+      {
+        "value": {
+          "email": "familypubliclaw+gatekeeper@gmail.com"
+        },
+        "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb91"
+      }
+    ],
+    "applicants": [
+      {
+        "value": {
+          "party": {
+            "organisationName": "Swansea City Council",
+            "address": {
+              "AddressLine2": "Saffron Central Square 11",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "PostTown": "London",
+              "PostCode": "CR0 2GE",
+              "County": "United Kingdom"
+            },
+            "telephoneNumber": {
+              "contactDirection": "Jonathon Walker",
+              "telephoneNumber": "00000000000"
+            },
+            "pbaNumber": "PBA0082848",
+            "clientCode": "8888",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "jobTitle": "Legal adviser",
+            "customerReference": "Example reference",
+            "partyId": "3a8785c6-178d-4138-bd1a-5eea0debed25",
+            "partyType": "ORGANISATION",
+            "email": {
+              "email": "swansea@test.com"
+            }
+          },
+          "leadApplicantIndicator": "Yes"
+        },
+        "id": "99ceafd0-de4b-4725-b78b-7625342febed"
+      }
+    ],
+    "respondentDirections": [
+      {
+        "value": {
+          "directionType": "Send response to threshold statement to all parties",
+          "directionText": "Send a written statement to the court and all parties, showing:\n\n- the parents' response to the local authority's threshold statement\n- the parents' proposals for placing the children, immediately and long-term\n- whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "PARENTS_AND_RESPONDENTS"
+        },
+        "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
+      }
+    ],
+    "caseName": "e2e test case",
+    "others": {
+      "firstOther": {
+        "birthPlace": "Newry",
+        "address": {
+          "AddressLine2": "Saffron Central Square 11",
+          "AddressLine1": "Flat 12, Pinnacle Apartments",
+          "PostTown": "London",
+          "PostCode": "CR0 2GE",
+          "County": "United Kingdom"
+        },
+        "name": "John Doe",
+        "representedBy": []
+      },
+      "additionalOthers": []
+    },
+    "manageOrdersPlacedUnderOrder": "EMERGENCY_PROTECTION_ORDER",
+    "solicitor": {
+      "name": "John Smith",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000",
+      "dx": "160010 Kingsway 7",
+      "email": "solicitor@email.com"
+    },
+    "appointedGuardianSelector": {},
+    "caseLocalAuthorityName": "Swansea City Council",
+    "orderDetailsSectionSubHeader": "Recovery of a child (C29)",
+    "dateAndTimeSubmitted": "2022-09-16T13:34:48.847",
+    "manageOrdersCloseCase": "No",
+    "manageOrdersApprovedAtHearing": "No",
+    "manageOrdersIsExParte": "Yes",
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "manageOrdersActionsPermitted": [
+      "INFORM",
+      "PRODUCE"
+    ],
+    "localAuthorityDirections": [
+      {
+        "value": {
+          "directionType": "Send documents to all parties",
+          "directionText": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on\n",
+          "responses": [],
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        },
+        "id": "b17227fb-b816-45eb-859e-ec3b1ed6a1b6"
+      },
+      {
+        "value": {
+          "directionType": "Send missing annex documents to the court and all parties",
+          "directionText": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents\n",
+          "responses": [],
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        },
+        "id": "7a534526-9f0a-4faf-9729-847dd7ee231c"
+      },
+      {
+        "value": {
+          "directionType": "Identify alternative carers",
+          "directionText": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        },
+        "id": "97ca5b57-0f89-4e34-bae7-78b9cd4db7d9"
+      },
+      {
+        "value": {
+          "directionType": "Send translated case documents to respondents",
+          "directionText": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
+          "responses": [],
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        },
+        "id": "518fd61e-87ff-483f-8d6e-4e429a9dc2a1"
+      },
+      {
+        "value": {
+          "directionType": "Lodge a bundle",
+          "directionText": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        },
+        "id": "3f327e6f-9e09-4c45-b51c-b7730fde41df"
+      },
+      {
+        "value": {
+          "directionType": "Send case summary to all parties",
+          "directionText": "Send to the court and all parties.",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        },
+        "id": "c082f6be-d42d-401a-948f-a189afe5bf01"
+      },
+      {
+        "value": {
+          "directionType": "Urgently consider jurisdiction and invite any representations",
+          "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.\n",
+          "responses": [],
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "LOCAL_AUTHORITY"
+        },
+        "id": "270c195a-bac4-4587-b937-1d96beac8276"
+      }
+    ],
+    "manageOrdersFullAddressToStayIfKeepAwayFromHome": {},
+    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "manageOrdersType": "C29_RECOVERY_OF_A_CHILD",
+    "respondents1": [
+      {
+        "value": {
+          "party": {
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "placeOfBirth": "London",
+            "address": {
+              "AddressLine3": "Church Road",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine1": "Flat 2",
+              "Country": "United Kingdom",
+              "PostTown": "Reading",
+              "PostCode": "RG4 7AA",
+              "County": ""
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "gender": "Male",
+            "dateOfBirth": "1980-01-01",
+            "relationshipToChild": "Uncle"
+          }
+        },
+        "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090"
+      }
+    ],
+    "childrenDetailsSectionSubHeader": "Recovery of a child (C29)",
+    "cafcassDirections": [
+      {
+        "value": {
+          "directionType": "Arrange an advocates' meeting",
+          "directionText": "All of the advocates who will appear at the related hearing must attend. ",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "CAFCASS"
+        },
+        "id": "7f45fde9-8c95-48df-b4a4-3dd5122ecffd"
+      },
+      {
+        "value": {
+          "directionType": "Send the guardian's analysis to all parties",
+          "directionText": "Send to the court and all parties.",
+          "responses": [],
+          "readOnly": "Yes",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "CAFCASS"
+        },
+        "id": "ab29c06d-5248-432c-8ead-6a41c99da5a9"
+      },
+      {
+        "value": {
+          "directionType": "Appoint a children's guardian",
+          "directionText": "",
+          "responses": [],
+          "readOnly": "No",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "assignee": "CAFCASS"
+        },
+        "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
+      }
+    ]
+  }
+}
