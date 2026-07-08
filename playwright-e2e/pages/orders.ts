@@ -357,6 +357,7 @@ export class Orders extends BasePage {
         await this.approvalDate.getByLabel('Month').fill('2');
         await this.approvalDate.getByLabel('Year').fill('2024');
         await this.clickContinue();
+        await this.clickContinue();// Playwright playing up.Had to work around it
         await this.isAllChildrenInvolved.getByRole('radio', { name: 'Yes' }).check();
         await this.clickContinue();
         await this.orderConsent.getByRole('radio', { name: 'Yes' }).check();
@@ -376,6 +377,7 @@ export class Orders extends BasePage {
         await this.permissionReport.getByLabel('Day').fill('12');
         await this.permissionReport.getByLabel('Month').fill('12');
         await this.permissionReport.getByLabel('Year').fill('2031');
+        await this.clickContinue();
     }
 
     async familyAssistanceOrder() {
