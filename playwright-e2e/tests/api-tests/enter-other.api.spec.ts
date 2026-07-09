@@ -13,69 +13,79 @@ test.describe('Enter other API test @apiTest', () => {
 
     test('Should initialise first other', async ({ callback }) => {
         let caseDetails = await callback.callAboutToStart(EVENT, swanseaOrgCAAUser, caseDetailsBefore);
-        expect(caseDetails.caseData?.others).toEqual({
-            firstOther: null,
-            additionalOthers: []
-        });
+        expect(caseDetails.caseData?.othersV2).toEqual([]);
     });
 
     test('Should extract confidential data', async ({ callback }) => {
         let caseDetails = {
             ...caseDetailsBefore,
             caseData: {
-                ...caseDetailsBefore.caseData, 
-                others: {
-                    firstOther: {
-                        name: "John Smith",
-                        DOB: "2000-07-12",
-                        gender: "Male",
-                        birthPlace: "London",
-                        address: {
-                            AddressLine1: "1st Avenue",
-                            AddressLine2: "5 Saffron Central Square",
-                            AddressLine3: "",
-                            PostTown: "Croydon",
-                            County: "",
-                            PostCode: "CR0 2FT",
-                            Country: "United Kingdom"
-                        },
-                        telephone: null,
-                        childInformation: null,
-                        litigationIssues: "NO",
-                        detailsHidden: "Yes",
-                        addressKnowV2: "Yes"
-                    },
-                    additionalOthers: []
-                }
+                ...caseDetailsBefore.caseData,
+                othersV2: [
+                    {
+                        id: "c721b8c8-dcdd-4b77-a16f-841a47d83e8f",
+                        value: {
+                            name: null,
+                            firstName: "John",
+                            lastName: "Smith",
+                            DOB: "2000-07-12",
+                            gender: "Male",
+                            genderIdentification: null,
+                            birthPlace: "London",
+                            address: {
+                                AddressLine1: "1st Avenue",
+                                AddressLine2: "5 Saffron Central Square",
+                                AddressLine3: "",
+                                PostTown: "Croydon",
+                                County: "",
+                                PostCode: "CR0 2FT",
+                                Country: "United Kingdom"
+                            },
+                            telephone: "0123456789",
+                            childInformation: null,
+                            litigationIssues: "NO",
+                            litigationIssuesDetails: null,
+                            representedBy: [],
+                            addressKnowV2: null,
+                            addressNotKnowReason: null,
+                            whereaboutsUnknownDetails: null,
+                            detailsHidden: null,
+                            detailsHiddenReason: null,
+                            hideAddress: "Yes",
+                            hideTelephone: "Yes"
+                        }
+                    }
+                ]
             }
         };
-        
+
         let caseDetailsAfter = await callback.callAboutToSubmit(EVENT, swanseaOrgCAAUser, caseDetails);
-        expect(caseDetailsAfter.caseData?.others).toEqual({
-            firstOther: {
-                name: "John Smith",
-                gender: "Male",
-                address: null,
-                telephone: null,
-                birthPlace: "London",
-                childInformation: null,
-                genderIdentification: null,
-                litigationIssues: "NO",
-                litigationIssuesDetails: null,
-                detailsHidden: "Yes",
-                addressKnowV2: null,
-                detailsHiddenReason: null,
-                representedBy: [],
-                DOB: "2000-07-12",
-                addressNotKnowReason: null
-            },
-            additionalOthers: []
-        });
+        expect(caseDetailsAfter.caseData?.othersV2).toEqual([
+            {
+                id: "c721b8c8-dcdd-4b77-a16f-841a47d83e8f",
+                value: {
+                    firstName: "John",
+                    lastName: "Smith",
+                    DOB: "2000-07-12",
+                    gender: "Male",
+                    birthPlace: "London",
+                    address: null,
+                    telephone: null,
+                    childInformation: null,
+                    litigationIssues: "NO",
+                    addressKnowV2: "Yes",
+                    addressNotKnowReason: null,
+                    hideAddress: "Yes",
+                    hideTelephone: "Yes"
+                }
+            }
+        ]);
 
         expect(caseDetailsAfter.caseData.confidentialOthers).toBeDefined();
         expect(caseDetailsAfter.caseData.confidentialOthers.length).toEqual(1);
         expect(caseDetailsAfter.caseData.confidentialOthers[0]?.value).toEqual({
-            name: "John Smith",
+            firstName: "John",
+            lastName: "Smith",
             gender: null,
             address: {
                 AddressLine1: "1st Avenue",
@@ -86,7 +96,7 @@ test.describe('Enter other API test @apiTest', () => {
                 PostCode: "CR0 2FT",
                 Country: "United Kingdom"
             },
-            telephone: null,
+            telephone: "0123456789",
             birthPlace: null,
             childInformation: null,
             genderIdentification: null,
@@ -97,7 +107,9 @@ test.describe('Enter other API test @apiTest', () => {
             representedBy: [],
             DOB: null,
             addressKnowV2: "Yes",
-            addressNotKnowReason: null
+            addressNotKnowReason: null,
+            hideAddress: "Yes",
+            hideTelephone: "Yes"
         })
     });
 });
