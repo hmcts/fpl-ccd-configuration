@@ -33,6 +33,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_AND_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_CHANGE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.REFUSE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -85,7 +86,8 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
-            "reviewAdditionalAppIsConfidential"
+            "reviewAdditionalAppIsConfidential",
+            "amendedDraftOrder"
         );
     }
 
@@ -110,7 +112,8 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
-            "reviewAdditionalAppIsConfidential"
+            "reviewAdditionalAppIsConfidential",
+            "amendedDraftOrder"
         );
     }
 

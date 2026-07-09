@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -12,18 +10,13 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
-import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -37,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReviewAdditionalApplicationService {
     public static final String ONLY_ONE_APPLICATION = "onlyOneApplicationToBeReviewed";
-    private static final String FILE_NAME_PREFIX = "amended_%s";
 
     private final HearingOrderGenerator hearingOrderGenerator;
     private final ApproveDraftOrdersService approveDraftOrdersService;
@@ -164,29 +156,5 @@ public class ReviewAdditionalApplicationService {
                 return existingBundle;
             }
         ).collect(Collectors.toList());
-    }
-
-    public void updatePreviewFields(CaseDetails caseDetails,
-                                    CaseData caseData,
-                                    boolean isAmendedOrder,
-                                    DocumentReference amendedOrderDocument,
-                                    Element<DraftOrder> draftOrder) {
-
-        DocumentReference previewOrder = hearingOrderGenerator.addCoverSheet(caseData
-                .toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
-                    .judgeTitleAndName(approveDraftOrdersService
-                        .getJudgeTitleAndNameOfCurrentUser(caseData))
-                    .build())
-                .build(),
-            isAmendedOrder ? amendedOrderDocument : draftOrder.getValue().getDocument());
-
-        caseDetails.getData().put("previewApprovedOrder1", previewOrder);
-        caseDetails.getData().put("previewApprovedOrderTitle1", String.format("Order %s",
-            isAmendedOrder ? String.format(FILE_NAME_PREFIX, draftOrder.getValue().getTitle()) :
-                draftOrder.getValue().getTitle()));
-
-        if (isAmendedOrder) {
-            caseDetails.getData().put("amendedDraftOrder", previewOrder);
-        }
     }
 }

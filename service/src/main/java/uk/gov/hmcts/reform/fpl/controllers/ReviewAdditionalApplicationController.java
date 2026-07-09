@@ -29,10 +29,9 @@ import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkd
 
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -88,10 +87,25 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 C2DocumentBundle bundle  = eventData.getC2AdditionalApplicationToBeReview().toC2DocumentBundle();
 
                 Element<DraftOrder> draftOrder = bundle.getDraftOrdersBundle().getFirst();
-                DocumentReference amendedDraftOrder = eventData.getAmendedDraftOrder();
+                DocumentReference amendedDraftOrderDocument = isEmpty(eventData.getAmendedDraftOrder())
+                    ? null : eventData.getAmendedDraftOrder();
 
-                reviewAdditionalApplicationService.updatePreviewFields(caseDetails,
-                    caseData, eventData.getAmendedDraftOrder() == null ? FALSE : TRUE, amendedDraftOrder, draftOrder);
+                DocumentReference previewOrder = hearingOrderGenerator.addCoverSheet(caseData
+                        .toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
+                            .judgeTitleAndName(approveDraftOrdersService
+                                .getJudgeTitleAndNameOfCurrentUser(caseData))
+                            .build())
+                        .build(),
+                    isEmpty(eventData.getAmendedDraftOrder())
+                        ? draftOrder.getValue().getDocument() : amendedDraftOrderDocument);
+
+                caseDetails.getData().put("previewApprovedOrder1", previewOrder);
+                caseDetails.getData().put("previewApprovedOrderTitle1", String.format("Order %s",
+                    draftOrder.getValue().getTitle()));
+
+                if (!isEmpty(eventData.getAmendedDraftOrder())) {
+                    caseDetails.getData().put("amendedDraftOrder", previewOrder);
+                }
 
                 break;
             default:
