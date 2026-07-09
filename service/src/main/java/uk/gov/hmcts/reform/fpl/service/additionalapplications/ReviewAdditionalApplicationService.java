@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
-import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
@@ -27,9 +26,9 @@ import java.util.UUID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialOrderBundleUtils.addToConfidentialOrderBundle;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -202,25 +201,4 @@ public class ReviewAdditionalApplicationService {
         return updates;
     }
 
-    private <T> Map<String, List<Element<T>>> addToConfidentialOrderBundle(
-        Element<HearingOrdersBundle> draftBundle,
-        Element<HearingOrder> draftOrderElement,
-        ConfidentialOrderBundle<T> targetBundle,
-        Element<T> orderToBeAdded
-    ) {
-        Map<String, List<Element<T>>> updates = new HashMap<>();
-
-        draftBundle.getValue().processAllConfidentialOrders((suffix, selectedDraftOrders) -> {
-            if (isNotEmpty(selectedDraftOrders)
-                && findElement(draftOrderElement.getId(), selectedDraftOrders).isPresent()) {
-                List<Element<T>> confidentialOrders =
-                    defaultIfNull(targetBundle.getConfidentialOrdersBySuffix(suffix), new ArrayList<>());
-                confidentialOrders.add(orderToBeAdded);
-                updates.put(targetBundle.getFieldBaseName() + suffix, confidentialOrders);
-                targetBundle.setConfidentialOrdersBySuffix(suffix, confidentialOrders);
-            }
-        });
-
-        return updates;
-    }
 }
