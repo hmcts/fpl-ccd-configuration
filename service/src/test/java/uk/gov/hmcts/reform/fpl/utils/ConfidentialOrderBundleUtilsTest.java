@@ -81,7 +81,8 @@ class ConfidentialOrderBundleUtilsTest {
     void shouldNotUpdateWhenDraftOrderIsNotInAnyConfidentialCollection() {
         UUID draftOrderId = UUID.randomUUID();
         Element<HearingOrder> draftOrderElement = element(draftOrderId, HearingOrder.builder().title("draft").build());
-        Element<HearingOrder> differentDraftOrder = element(UUID.randomUUID(), HearingOrder.builder().title("other").build());
+        Element<HearingOrder> differentDraftOrder = element(UUID.randomUUID(), HearingOrder.builder().title("other")
+            .build());
 
         Element<HearingOrdersBundle> draftOrdersBundle = element(
             HearingOrdersBundle.builder()
