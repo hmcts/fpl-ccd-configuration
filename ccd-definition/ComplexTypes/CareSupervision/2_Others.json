@@ -27,22 +27,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Others",
-    "ListElementCode": "firstName",
-    "FieldType": "Text",
-    "ElementLabel": "First name",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Others",
-    "ListElementCode": "lastName",
-    "FieldType": "Text",
-    "ElementLabel": "Last name",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Others",
     "ListElementCode": "DOB",
     "FieldType": "Date",
     "ElementLabel": "Date of birth",
