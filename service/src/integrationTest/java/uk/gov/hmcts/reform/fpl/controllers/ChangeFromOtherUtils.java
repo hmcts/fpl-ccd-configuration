@@ -211,7 +211,8 @@ public abstract class ChangeFromOtherUtils {
                 if (other.containsConfidentialDetails()) {
                     return element(otherElm.getId(), other.toBuilder()
                         .telephone(YesNo.YES.getValue().equals(other.getHideTelephone()) ? "123456789" : null)
-                        .addressKnowV2(YesNo.YES.getValue().equals(other.getHideAddress()) ? IsAddressKnowType.YES : null)
+                        .addressKnowV2(YesNo.YES.getValue().equals(other.getHideAddress())
+                            ? IsAddressKnowType.YES : null)
                         .address(YesNo.YES.getValue().equals(other.getHideAddress())
                             ? buildHiddenAddress(String.valueOf(i + 1)) : null)
                         .build());
