@@ -413,15 +413,13 @@ public class ApproveDraftOrdersService {
                 .format(FILE_NAME_PREFIX, orderElement.getValue().getOrderOrOrderConfidential().getFilename()))
             .build();
 
-        boolean isConfidential = orderElement.getValue().isConfidentialOrder();
+        ReviewDecision amendedReviewDecision = reviewDecision.toBuilder().judgeAmendedDocument(amendedOrder).build();
 
         Element<HearingOrder> amendedOrderElement = element(orderElement.getId(), orderElement.getValue().toBuilder()
             .amendedDate(LocalDate.now())
-            .orderConfidential(isConfidential ? amendedOrder : null)
-            .order(isConfidential ? null : amendedOrder)
             .build());
 
-        doApproveAndSealDraftOrder(caseData, data, selectedOrdersBundle, amendedOrderElement, reviewDecision);
+        doApproveAndSealDraftOrder(caseData, data, selectedOrdersBundle, amendedOrderElement, amendedReviewDecision);
         selectedOrdersBundle.getValue().removeOrderElement(orderElement);
     }
 
