@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.lang.Boolean.FALSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -142,8 +141,10 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
             .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
             .build();
 
-        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn("District Judge Example");
-        when(hearingOrderGenerator.addCoverSheet(any(), eq(amendedDraftOrderDocument))).thenReturn(amendedPreviewOrderDocument);
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any()))
+            .thenReturn("District Judge Example");
+        when(hearingOrderGenerator.addCoverSheet(any(), eq(amendedDraftOrderDocument)))
+            .thenReturn(amendedPreviewOrderDocument);
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "edit-hearing");
         CaseData resultCaseData = extractCaseData(response);

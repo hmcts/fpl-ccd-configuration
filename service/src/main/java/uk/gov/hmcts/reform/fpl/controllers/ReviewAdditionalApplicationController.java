@@ -27,9 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkdownService;
 
-
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
