@@ -260,7 +260,6 @@ export class Orders extends BasePage {
             await this.powerOfExclusionStart.getByLabel('Month').fill('3');
             await this.powerOfExclusionStart.getByLabel('Year').fill('2024');
             await this.powerOfExclusionStart.getByLabel('Day').fill('12');
-
         }
         await this.page.getByRole('group', { name: 'Include: "Any person who can produce the children to the applicant must do so"' }).getByLabel('Yes').click();
         await this.page.getByLabel('Add description of children (').fill('Children description');
