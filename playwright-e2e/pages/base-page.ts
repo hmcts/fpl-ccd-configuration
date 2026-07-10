@@ -121,7 +121,7 @@ export class BasePage {
 
   async clickSubmit() {
 
-      await  this.submit.click();
+      await  this.saveAndContinue.click();
 
   }
   async clickSaveAndContinue() {

@@ -84,7 +84,7 @@ export class CreateCase extends BasePage{
   }
 
   async clickSubmit(): Promise<void> {
-      await this.submitButton.click();
+      await this.saveAndContinue.click();
   }
 
   private generateCaseName(value: string = 'Smoke Test'): string {
