@@ -50,8 +50,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     @Nested
-    class Dfpl2894 {
-        private static final String MIGRATION_ID = "DFPL-2894";
+    class Dfpl3213 {
+        private static final String MIGRATION_ID = "DFPL-3213";
 
         @Test
         void shouldMigrateCaseManagementLocationFromFleetwoodToBlackpool() {

@@ -33,7 +33,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2894", this::run2894
+        "DFPL-3213", this::run3213
     );
 
     @PostMapping("/about-to-submit")
@@ -76,9 +76,9 @@ public class MigrateCaseController extends CallbackController {
 
     }
 
-    //run 2894 Migrate function to replace Fleetwood Location with BlackPool Location
-    private void run2894(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2894";
+    //run 3213 Migrate function to replace Fleetwood Location with BlackPool Location
+    private void run3213(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3213";
 
         Long caseId = caseDetails.getId();
         log.info("Migration {id = {}, case reference = {}} processing", migrationId, caseId);

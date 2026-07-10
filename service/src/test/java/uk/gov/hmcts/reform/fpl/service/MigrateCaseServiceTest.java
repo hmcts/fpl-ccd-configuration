@@ -3932,7 +3932,7 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
-    class UpdateCaseManagementLocationDFPL2894 {
+    class UpdateCaseManagementLocationDFPL3213 {
 
         @Test
         void shouldSuccessfullyMigrateFleetwoodToBlackpool() {
@@ -3961,7 +3961,7 @@ class MigrateCaseServiceTest {
                 .orders(orders)
                 .build();
 
-            Map<String, Object> result = underTest.updateCaseManagementLocation("DFPL-2894", caseData);
+            Map<String, Object> result = underTest.updateCaseManagementLocation("DFPL-3213", caseData);
 
             // Assert
             assertThat(result).containsKey("caseManagementLocation");
@@ -3994,7 +3994,7 @@ class MigrateCaseServiceTest {
                 .caseManagementLocation(null)
                 .build();
 
-            assertThatThrownBy(() -> underTest.updateCaseManagementLocation("DFPL-2894", caseData))
+            assertThatThrownBy(() -> underTest.updateCaseManagementLocation("DFPL-3213", caseData))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("caseManagementLocation structure is missing");
         }
@@ -4011,7 +4011,7 @@ class MigrateCaseServiceTest {
                 .caseManagementLocation(location)
                 .build();
 
-            assertThatThrownBy(() -> underTest.updateCaseManagementLocation("DFPL-2894", caseData))
+            assertThatThrownBy(() -> underTest.updateCaseManagementLocation("DFPL-3213", caseData))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("expected Fleetwood (401452) but found baseLocation: 111111");
         }
