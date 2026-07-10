@@ -50,7 +50,7 @@ test.describe('Admin application management', () => {
             await expect.soft(page.getByText('Add note detail, including relevant dates and people involved')).toBeVisible();
 
             await caseNote.enterCaseNote('This application is classified as priority due to the vulnerability of the child involved.');
-            await caseNote.clickSubmit();
+            await caseNote.clickSaveAndContinue();
             await caseNote.clickSaveAndContinue();
             await caseNote.tabNavigation('Notes');
             await expect(page.getByText('This application is classified as priority due to the vulnerability of the child involved.')).toBeVisible();
@@ -81,7 +81,7 @@ test.describe('Admin application management', () => {
             await expertReport.orderApprovedYes(1);
             await expertReport.enterApprovedDate(await subtractMonthDate(1), 1);
             await expertReport.checkDateValidationPass();
-            await expertReport.clickSubmit();
+            await expertReport.clickSaveAndContinue();
             await expertReport.clickSaveAndContinue();
             await expertReport.tabNavigation('Expert Reports');
 
@@ -155,7 +155,7 @@ test.describe('Admin application management', () => {
         await sendOrderRemainder.gotoNextStep('Send order reminder');
         await expect.soft(sendOrderRemainder.page.getByText('These concluded hearings do not have CMOs attached (in draft or sealed):')).toBeVisible();
         await sendOrderRemainder.sendOrderRemainder('Yes');
-        await sendOrderRemainder.clickSubmit();
+        await sendOrderRemainder.clickSendOrderRemainder();
         await sendOrderRemainder.gotoHistoryTab();
         await expect(sendOrderRemainder.page.getByRole('cell', { name: 'Send order reminder', exact: true })).toBeVisible();
 
