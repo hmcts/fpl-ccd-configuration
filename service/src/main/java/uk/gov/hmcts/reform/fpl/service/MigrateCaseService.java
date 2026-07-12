@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,6 +110,7 @@ public class MigrateCaseService {
     public final CourtLookUpService courtLookUpService;
 
     private static final Map<String, HearingType>  HEARING_TYPE_DETAILS_MAPPING = initialiseHearingMapping();
+    private final ObjectMapper mapper;
 
 
     private static Map<String, HearingType> initialiseHearingMapping() {
@@ -1471,4 +1474,89 @@ public class MigrateCaseService {
 
         return Map.of("others", updatedOthers);
     }
+
+    public boolean removeSolicitorEmailFromPlacementNotices(CaseDetails caseDetails, String targetEmail) {
+        // Flag to track if modifications happen anywhere across the three fields
+        boolean dynamicModified = false;
+
+        // Process standard placements
+        if (caseDetails.getData().get(PLACEMENT) != null) {
+            List<Element<Placement>> placements = getPlacementList(caseDetails, PLACEMENT);
+            if (processPlacementsList(placements, targetEmail)) {
+                caseDetails.getData().put(PLACEMENT, placements);
+                dynamicModified = true;
+            }
+        }
+
+        // Process placementsNonConfidentialNotices
+        if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL_NOTICES) != null) {
+            List<Element<Placement>> notices = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+            if (processPlacementsList(notices, targetEmail)) {
+                caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, notices);
+                dynamicModified = true;
+            }
+        }
+
+        // Process placementsNonConfidential
+        if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL) != null) {
+            List<Element<Placement>> nonConf = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL);
+            if (processPlacementsList(nonConf, targetEmail)) {
+                caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConf);
+                dynamicModified = true;
+            }
+        }
+
+        return dynamicModified;
+    }
+
+
+    private List<Element<Placement>> getPlacementList(CaseDetails caseDetails, String key) {
+        return mapper.convertValue(caseDetails.getData().get(key), new TypeReference<>() {
+        });
+    }
+
+    private boolean processPlacementsList(List<Element<Placement>> placements, String targetEmail) {
+        boolean modified = false;
+
+        for (Element<Placement> placementElement : placements) {
+            Placement placement = placementElement.getValue();
+
+            if (placement != null && placement.getPlacementRespondentsToNotify() != null) {
+                List<Element<Respondent>> originalList = placement.getPlacementRespondentsToNotify();
+                List<Element<Respondent>> filteredList = filterRespondentsBySolicitor(originalList, targetEmail);
+
+                if (filteredList.size() != originalList.size()) {
+                    placement.setPlacementRespondentsToNotify(filteredList);
+                    modified = true;
+                }
+            }
+        }
+
+        return modified;
+    }
+
+    private List<Element<Respondent>> filterRespondentsBySolicitor(List<Element<Respondent>> respondents,
+                                                                   String targetEmail) {
+        List<Element<Respondent>> updatedRespondents = new ArrayList<>();
+
+        for (Element<Respondent> respondentEl : respondents) {
+            if (shouldKeepRespondentSolicitor(respondentEl, targetEmail)) {
+                updatedRespondents.add(respondentEl);
+            }
+        }
+
+        return updatedRespondents;
+    }
+
+    private boolean shouldKeepRespondentSolicitor(Element<Respondent> respondentEl, String targetEmail) {
+        if (respondentEl.getValue() == null
+            || respondentEl.getValue().getSolicitor() == null
+            || respondentEl.getValue().getSolicitor().getEmail() == null) {
+            return true;
+        }
+
+        String currentEmail = respondentEl.getValue().getSolicitor().getEmail();
+        return !targetEmail.equalsIgnoreCase(currentEmail);
+    }
+
 }

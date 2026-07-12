@@ -114,6 +114,10 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.mockito.Mockito;
+
 
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -135,6 +139,9 @@ class MigrateCaseServiceTest {
 
     @Mock
     private CaseNoteService caseNoteService;
+
+    @Mock
+    private com.fasterxml.jackson.databind.ObjectMapper mapper;
 
     @InjectMocks
     private MigrateCaseService underTest;
@@ -3928,6 +3935,261 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () -> underTest.removeFirstOther(MIGRATION_ID, caseData));
+        }
+    }
+
+    @Nested
+    class RemoveSolicitorEmailFromPlacementNotices {
+        private static final String TARGET_EMAIL = "test-solicitor@example.com";
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldReturnTrueAndRemoveMatchingRespondentFromAllThreePlacementFields() {
+            // Set up a matching respondent
+            RespondentSolicitor targetSolicitor = RespondentSolicitor.builder()
+                .email(TARGET_EMAIL)
+                .build();
+
+            Respondent targetRespondent = Respondent.builder()
+                .solicitor(targetSolicitor)
+                .build();
+
+            Element<Respondent> matchingElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(targetRespondent)
+                .build();
+
+            // Set up a non-matching respondent
+            RespondentSolicitor keepSolicitor = RespondentSolicitor.builder()
+                .email("keep-me@test.com")
+                .build();
+
+            Respondent keepRespondent = Respondent.builder()
+                .solicitor(keepSolicitor)
+                .build();
+
+            Element<Respondent> keepElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(keepRespondent)
+                .build();
+
+            // Assemble the placements list containing both items
+            Placement placementValue = Placement.builder()
+                .placementRespondentsToNotify(List.of(matchingElement, keepElement))
+                .build();
+
+            Element<Placement> placementElement = Element.<Placement>builder()
+                .id(UUID.randomUUID())
+                .value(placementValue)
+                .build();
+
+            List<Element<Placement>> mockPlacementList = List.of(placementElement);
+
+            //  return  mocked placement list
+            Mockito.when(mapper.convertValue(
+                Mockito.any(),
+                Mockito.any(TypeReference.class)
+            )).thenReturn(mockPlacementList);
+
+
+            Map<String, Object> placementDataMock = new HashMap<>();
+            placementDataMock.put("id", UUID.randomUUID().toString());
+            placementDataMock.put("value", new HashMap<>());
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", new ArrayList<>(List.of(placementDataMock)));
+            caseDataMap.put("placementsNonConfidential", new ArrayList<>(List.of(placementDataMock)));
+            caseDataMap.put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementDataMock)));
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1234567890123456L)
+                .data(caseDataMap)
+                .build();
+
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_EMAIL);
+
+            //Assert
+            assertThat(isModified).isTrue();
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldReturnFalseWhenNoMatchingEmailIsFound() {
+            // Arrange
+            Map<String, Object> solicitor = Map.of("email", "different@test.com");
+            Map<String, Object> respondent = Map.of("solicitor", solicitor);
+            List<Map<String, Object>> placementRespondents = List.of(Map.of("id", UUID.randomUUID().toString(),
+                "value", respondent));
+            Map<String, Object> placementElement = Map.of("id", UUID.randomUUID().toString(), "value",
+                Map.of("placementRespondentsToNotify", placementRespondents));
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", List.of(placementElement));
+            caseDataMap.put("placementsNonConfidential", List.of(placementElement));
+            caseDataMap.put("placementsNonConfidentialNotices", List.of(placementElement));
+
+            CaseDetails testCaseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            // prevent NullPointerException
+            RespondentSolicitor diffSolicitor = RespondentSolicitor.builder()
+                .email("different@test.com")
+                .build();
+
+            Respondent diffRespondent = Respondent.builder()
+                .solicitor(diffSolicitor)
+                .build();
+
+            Element<Respondent> respElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(diffRespondent)
+                .build();
+
+            Placement placementValue = Placement.builder()
+                .placementRespondentsToNotify(List.of(respElement))
+                .build();
+
+            Element<Placement> placementWrap = Element.<Placement>builder()
+                .id(UUID.randomUUID())
+                .value(placementValue)
+                .build();
+
+            List<Element<Placement>> mockPlacementList = List.of(placementWrap);
+
+            // Stub the mapper
+            Mockito.when(mapper.convertValue(
+                Mockito.any(),
+                Mockito.any(TypeReference.class)
+            )).thenReturn(mockPlacementList);
+
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_EMAIL);
+
+            // Assert
+            assertThat(isModified).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldReturnTrueWhenRespondentOrSolicitorOrEmailIsNull() {
+            //  Element value is null
+            Element<Respondent> nullValueElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(null)
+                .build();
+
+            // Solicitor is null
+            Respondent nullSolicitorRespondent = Respondent.builder()
+                .solicitor(null)
+                .build();
+            Element<Respondent> nullSolicitorElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(nullSolicitorRespondent)
+                .build();
+
+            //  Solicitor email is null
+            RespondentSolicitor nullEmailSolicitor = RespondentSolicitor.builder()
+                .email(null)
+                .build();
+            Respondent nullEmailRespondent = Respondent.builder()
+                .solicitor(nullEmailSolicitor)
+                .build();
+            Element<Respondent> nullEmailElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(nullEmailRespondent)
+                .build();
+
+            Placement corruptPlacementValue = Placement.builder()
+                .placementRespondentsToNotify(List.of(nullValueElement, nullSolicitorElement, nullEmailElement))
+                .build();
+
+            Element<Placement> placementElement = Element.<Placement>builder()
+                .id(UUID.randomUUID())
+                .value(corruptPlacementValue)
+                .build();
+
+            List<Element<Placement>> mockPlacementList = List.of(placementElement);
+
+            // Stub the mapper
+            Mockito.when(mapper.convertValue(
+                Mockito.any(),
+                Mockito.any(TypeReference.class)
+            )).thenReturn(mockPlacementList);
+
+
+            Map<String, Object> placementDataMock = new HashMap<>();
+            placementDataMock.put("id", UUID.randomUUID().toString());
+            placementDataMock.put("value", new HashMap<>());
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", new ArrayList<>(List.of(placementDataMock)));
+            caseDataMap.put("placementsNonConfidential", new ArrayList<>(List.of(placementDataMock)));
+            caseDataMap.put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementDataMock)));
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1234567890123456L)
+                .data(caseDataMap)
+                .build();
+
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_EMAIL);
+
+            // Assert
+            assertThat(isModified).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseAndSkipProcessingWhenAllPlacementFieldsAreNull() {
+
+            Map<String, Object> emptyCaseDataMap = new HashMap<>();
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1234567890123456L)
+                .data(emptyCaseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_EMAIL);
+
+            //  Assert
+            assertThat(isModified).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldForceTrueBranchExecutionForAllInnerPlacementBlocks() {
+
+            // Create elements containing the target email
+            java.util.function.Supplier<List<Element<Placement>>> matchSupplier = () -> {
+                RespondentSolicitor targetSolicitor = RespondentSolicitor.builder().email(TARGET_EMAIL).build();
+                Respondent targetRespondent = Respondent.builder().solicitor(targetSolicitor).build();
+                Element<Respondent> matchingElement = Element.<Respondent>builder().id(UUID.randomUUID())
+                    .value(targetRespondent).build();
+                Placement matchingPlacement = Placement.builder()
+                    .placementRespondentsToNotify(List.of(matchingElement)).build();
+                return List.of(Element.<Placement>builder().id(UUID.randomUUID()).value(matchingPlacement).build());
+            };
+
+
+            Mockito.when(mapper.convertValue(Mockito.any(), Mockito.any(TypeReference.class)))
+                .thenReturn(matchSupplier.get())  //get ("placements")
+                .thenReturn(matchSupplier.get())  // get ("placementsNonConfidentialNotices")
+                .thenReturn(matchSupplier.get()); // get ("placementsNonConfidential")
+
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidential", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidentialNotices", new ArrayList<>(List.of(new HashMap<>())));
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1234567890123456L)
+                .data(caseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_EMAIL);
+
+            //Assert
+            assertThat(isModified).isTrue();
         }
     }
 }

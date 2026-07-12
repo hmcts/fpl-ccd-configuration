@@ -32,7 +32,17 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3290", this::run3290
+        "DFPL-3290", this::run3290,
+        "DFPL-3296", caseDetails -> {
+            String caseIdProp = System.getProperty("migration.targetCaseId");
+            String targetEmail = System.getProperty("migration.targetEmail");
+
+            if (caseIdProp != null && targetEmail != null) {
+                run3296(caseDetails, Long.parseLong(caseIdProp), targetEmail);
+            } else {
+                log.error("Migration DFPL-3296 failed: Missing system properties for target case or email.");
+            }
+        }
     );
 
     @PostMapping("/about-to-submit")
@@ -74,4 +84,23 @@ public class MigrateCaseController extends CallbackController {
         ), LASOLICITOR);
 
     }
+
+    private void run3296(CaseDetails caseDetails, Long expectedCaseId, String targetEmail) {
+        final String migrationId = "DFPL-3296";
+
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+
+        log.info("Migration {} started for case {}", migrationId, caseId);
+
+        boolean isModified = migrateCaseService.removeSolicitorEmailFromPlacementNotices(caseDetails, targetEmail);
+
+        if (isModified) {
+            log.info("Migration {} successfully removed target email from placement notification list on case {}",
+                migrationId, caseId);
+        } else {
+            log.info("Migration {} skipped: Target email not found in any placement records.", migrationId);
+        }
+    }
+
 }
