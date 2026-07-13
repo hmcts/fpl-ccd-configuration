@@ -33,16 +33,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
         "DFPL-3290", this::run3290,
-        "DFPL-3296", caseDetails -> {
-            String caseIdProp = System.getProperty("migration.targetCaseId");
-            String targetEmail = System.getProperty("migration.targetEmail");
-
-            if (caseIdProp != null && targetEmail != null) {
-                run3296(caseDetails, Long.parseLong(caseIdProp), targetEmail);
-            } else {
-                log.error("Migration DFPL-3296 failed: Missing system properties for target case or email.");
-            }
-        }
+        "DFPL-3296", this::run3296
     );
 
     @PostMapping("/about-to-submit")
@@ -85,21 +76,27 @@ public class MigrateCaseController extends CallbackController {
 
     }
 
-    private void run3296(CaseDetails caseDetails, Long expectedCaseId, String targetEmail) {
+    private void run3296(CaseDetails caseDetails) {
         final String migrationId = "DFPL-3296";
+        final long expectedCaseId = 1767800818952560L;
+        final String Target_Migration_Id = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
 
         Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
 
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
         log.info("Migration {} started for case {}", migrationId, caseId);
 
-        boolean isModified = migrateCaseService.removeSolicitorEmailFromPlacementNotices(caseDetails, targetEmail);
+
+        boolean isModified = migrateCaseService
+                                .removeSolicitorEmailFromPlacementNotices(caseDetails, Target_Migration_Id);
 
         if (isModified) {
-            log.info("Migration {} successfully removed target email from placement notification list on case {}",
+            log.info("Migration {} successfully removed target solicitor entry"
+                    + " by ID from placement notification list on case {}",
                 migrationId, caseId);
         } else {
-            log.info("Migration {} skipped: Target email not found in any placement records.", migrationId);
+            log.info("Migration {} skipped: Target ID {} not found "
+                + "in any placement records.", migrationId, Target_Migration_Id);
         }
     }
 

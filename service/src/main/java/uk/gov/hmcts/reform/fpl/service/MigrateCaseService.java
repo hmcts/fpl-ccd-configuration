@@ -1475,14 +1475,14 @@ public class MigrateCaseService {
         return Map.of("others", updatedOthers);
     }
 
-    public boolean removeSolicitorEmailFromPlacementNotices(CaseDetails caseDetails, String targetEmail) {
+    public boolean removeSolicitorEmailFromPlacementNotices(CaseDetails caseDetails, String targetId) {
         // Flag to track if modifications happen anywhere across the three fields
         boolean dynamicModified = false;
 
         // Process standard placements
         if (caseDetails.getData().get(PLACEMENT) != null) {
             List<Element<Placement>> placements = getPlacementList(caseDetails, PLACEMENT);
-            if (processPlacementsList(placements, targetEmail)) {
+            if (processPlacementsList(placements, targetId)) {
                 caseDetails.getData().put(PLACEMENT, placements);
                 dynamicModified = true;
             }
@@ -1491,7 +1491,7 @@ public class MigrateCaseService {
         // Process placementsNonConfidentialNotices
         if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL_NOTICES) != null) {
             List<Element<Placement>> notices = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL_NOTICES);
-            if (processPlacementsList(notices, targetEmail)) {
+            if (processPlacementsList(notices, targetId)) {
                 caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, notices);
                 dynamicModified = true;
             }
@@ -1500,7 +1500,7 @@ public class MigrateCaseService {
         // Process placementsNonConfidential
         if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL) != null) {
             List<Element<Placement>> nonConf = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL);
-            if (processPlacementsList(nonConf, targetEmail)) {
+            if (processPlacementsList(nonConf, targetId)) {
                 caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConf);
                 dynamicModified = true;
             }
@@ -1509,13 +1509,11 @@ public class MigrateCaseService {
         return dynamicModified;
     }
 
-
     private List<Element<Placement>> getPlacementList(CaseDetails caseDetails, String key) {
-        return mapper.convertValue(caseDetails.getData().get(key), new TypeReference<>() {
-        });
+        return mapper.convertValue(caseDetails.getData().get(key), new TypeReference<>() {});
     }
 
-    private boolean processPlacementsList(List<Element<Placement>> placements, String targetEmail) {
+    private boolean processPlacementsList(List<Element<Placement>> placements, String targetId) {
         boolean modified = false;
 
         for (Element<Placement> placementElement : placements) {
@@ -1523,7 +1521,7 @@ public class MigrateCaseService {
 
             if (placement != null && placement.getPlacementRespondentsToNotify() != null) {
                 List<Element<Respondent>> originalList = placement.getPlacementRespondentsToNotify();
-                List<Element<Respondent>> filteredList = filterRespondentsBySolicitor(originalList, targetEmail);
+                List<Element<Respondent>> filteredList = filterRespondentsById(originalList, targetId);
 
                 if (filteredList.size() != originalList.size()) {
                     placement.setPlacementRespondentsToNotify(filteredList);
@@ -1535,12 +1533,11 @@ public class MigrateCaseService {
         return modified;
     }
 
-    private List<Element<Respondent>> filterRespondentsBySolicitor(List<Element<Respondent>> respondents,
-                                                                   String targetEmail) {
+    private List<Element<Respondent>> filterRespondentsById(List<Element<Respondent>> respondents, String targetId) {
         List<Element<Respondent>> updatedRespondents = new ArrayList<>();
 
         for (Element<Respondent> respondentEl : respondents) {
-            if (shouldKeepRespondentSolicitor(respondentEl, targetEmail)) {
+            if (shouldKeepRespondent(respondentEl, targetId)) {
                 updatedRespondents.add(respondentEl);
             }
         }
@@ -1548,15 +1545,13 @@ public class MigrateCaseService {
         return updatedRespondents;
     }
 
-    private boolean shouldKeepRespondentSolicitor(Element<Respondent> respondentEl, String targetEmail) {
-        if (respondentEl.getValue() == null
-            || respondentEl.getValue().getSolicitor() == null
-            || respondentEl.getValue().getSolicitor().getEmail() == null) {
+    private boolean shouldKeepRespondent(Element<Respondent> respondentEl, String targetId) {
+        if (respondentEl == null || respondentEl.getId() == null) {
             return true;
         }
 
-        String currentEmail = respondentEl.getValue().getSolicitor().getEmail();
-        return !targetEmail.equalsIgnoreCase(currentEmail);
-    }
+        String currentElementId = String.valueOf(respondentEl.getId());
 
+        return !targetId.equalsIgnoreCase(currentElementId);
+    }
 }

@@ -68,161 +68,150 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldFilterPlacementEmailsWhenMigrationIdMatches() throws Exception {
+    void shouldFilterPlacementRespondentWhenMigrationIdAndTargetIdMatches() throws Exception {
         String migrationId = "DFPL-3296";
-        String targetEmail = "test-solicitor@example.com";
-        long targetCaseId = 1234567890123456L;
-
-
-        System.setProperty("migration.targetCaseId", String.valueOf(targetCaseId));
-        System.setProperty("migration.targetEmail", targetEmail);
+        long targetCaseId = 1767800818952560L;
+        String targetElementId = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
 
         RespondentSolicitor solicitor = RespondentSolicitor.builder()
-            .email(targetEmail)
+            .email("test@test.com")
             .build();
 
-            try {
-                    Respondent respondent = Respondent.builder()
-                        .solicitor(solicitor)
-                        .build();
+        Respondent respondent = Respondent.builder()
+            .solicitor(solicitor)
+            .build();
 
-                    Map<String, Object> respondentElement = Map.of(
-                        "id", UUID.randomUUID().toString(),
-                        "value", respondent
-                    );
 
-                    Map<String, Object> placementValue = new HashMap<>();
-                    placementValue.put("placementChildName", "test child");
-                    placementValue.put("placementRespondentsToNotify", List.of(respondentElement));
+        Map<String, Object> respondentElement = Map.of(
+            "id", targetElementId,
+            "value", respondent
+        );
 
-                    Map<String, Object> placementElement = Map.of(
-                        "id", UUID.randomUUID().toString(),
-                        "value", placementValue
-                    );
+        Map<String, Object> placementValue = new HashMap<>();
+        placementValue.put("placementChildName", "test child");
+        placementValue.put("placementRespondentsToNotify", List.of(respondentElement));
 
-                    // Wrap within CaseDetails
-                    CaseData caseData = CaseData.builder().id(1234567890123456L).build();
-                    CaseDetails caseDetails = asCaseDetails(caseData);
+        Map<String, Object> placementElement = Map.of(
+            "id", UUID.randomUUID().toString(),
+            "value", placementValue
+        );
 
-                    caseDetails.getData().put("migrationId", migrationId);
-                    caseDetails.getData().put("placements", new ArrayList<>(List.of(placementElement)));
-                    caseDetails.getData().put("placementsNonConfidential", new ArrayList<>(List.of(placementElement)));
-                    caseDetails.getData().put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementElement)));
 
-                    //  Construct raw callback request
-                    CallbackRequest callbackRequest = CallbackRequest.builder()
-                        .caseDetails(caseDetails)
-                        .eventId("migrate-case")
-                        .build();
+        CaseData caseData = CaseData.builder().id(targetCaseId).build();
+        CaseDetails caseDetails = asCaseDetails(caseData);
 
-                    // MockMvc to simulate rest call
-                    String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/callback/migrate-case/about-to-submit")
-                            .header("authorization", "Bearer token")
-                            .header("user-id", "1")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(new ObjectMapper().writeValueAsString(callbackRequest)))
-                        .andExpect(MockMvcResultMatchers.status().isOk())
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString();
+        caseDetails.getData().put("migrationId", migrationId);
+        caseDetails.getData().put("placements", new ArrayList<>(List.of(placementElement)));
+        caseDetails.getData().put("placementsNonConfidential", new ArrayList<>(List.of(placementElement)));
+        caseDetails.getData().put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementElement)));
 
-                    // setting up Jackson and raw JSON content dynamically
-                    ObjectMapper testMapper = new ObjectMapper();
-                    testMapper.registerModule(new JavaTimeModule());
 
-                    Map<String, Object> responseMap = testMapper.readValue(responseContent, new TypeReference<>() {
-                    });
-                    Map<String, Object> dataField = (Map<String, Object>) responseMap.get("data");
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .eventId("migrate-case")
+            .build();
 
-                    // Assertions
-                    assertThat(dataField).containsKeys(
-                        "placements", "placementsNonConfidential", "placementsNonConfidentialNotices");
+        // MockMvc execution to simulate endpoint invocation
+        String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/callback/migrate-case/about-to-submit")
+                .header("authorization", "Bearer token")
+                .header("user-id", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(callbackRequest)))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
 
-                    List<Map<String, Object>> noticesList = (List<Map<String, Object>>) dataField
-                        .get("placementsNonConfidentialNotices");
-                    assertThat(noticesList).hasSize(1);
+        // Map and extract response payload
+        ObjectMapper testMapper = new ObjectMapper();
+        testMapper.registerModule(new JavaTimeModule());
 
-                    Map<String, Object> innerValue = (Map<String, Object>) noticesList.getFirst().get("value");
-                    List<?> respondentsToNotify = (List<?>) innerValue.get("placementRespondentsToNotify");
+        Map<String, Object> responseMap = testMapper.readValue(responseContent, new TypeReference<>() {});
+        Map<String, Object> dataField = (Map<String, Object>) responseMap.get("data");
 
-                    assertThat(respondentsToNotify).isEmpty();
-                }
-                finally {
-                    System.clearProperty("migration.targetCaseId");
-                    System.clearProperty("migration.targetEmail");
-                }
-            }
+        // Assertions
+        assertThat(dataField).containsKeys("placements", "placementsNonConfidential",
+                                                   "placementsNonConfidentialNotices");
 
-            @Test
-            @SuppressWarnings("unchecked")
-            void shouldLogSkipMessageWhenMigrationIdMatchesButTargetEmailIsNotFound() throws Exception {
-            String migrationId = "DFPL-3296";
+        List<Map<String, Object>> noticesList = (List<Map<String, Object>>) dataField
+                                                .get("placementsNonConfidentialNotices");
+        assertThat(noticesList).hasSize(1);
 
-            // Create a respondent with a completely different email address
-            RespondentSolicitor solicitor = RespondentSolicitor.builder()
-                .email("completely-different-email@test.com")
-                .build();
+        Map<String, Object> innerValue = (Map<String, Object>) noticesList.getFirst().get("value");
+        List<?> respondentsToNotify = (List<?>) innerValue.get("placementRespondentsToNotify");
 
-            Respondent respondent = Respondent.builder()
-                .solicitor(solicitor)
-                .build();
+        // Verification: The element matching the target UUID was successfully dropped!
+        assertThat(respondentsToNotify).isEmpty();
+    }
 
-            Map<String, Object> respondentElement = Map.of(
-                "id", UUID.randomUUID().toString(),
-                "value", respondent
-            );
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldLogSkipMessageWhenCaseMatchesButTargetIdIsNotFound() throws Exception {
+        String migrationId = "DFPL-3296";
+        long targetCaseId = 1767800818952560L;
 
-            Map<String, Object> placementValue = new HashMap<>();
-            placementValue.put("placementChildName", "test child");
-            placementValue.put("placementRespondentsToNotify", List.of(respondentElement));
+        RespondentSolicitor solicitor = RespondentSolicitor.builder()
+            .email("test@test.com")
+            .build();
 
-            Map<String, Object> placementElement = Map.of(
-                "id", UUID.randomUUID().toString(),
-                "value", placementValue
-            );
+        Respondent respondent = Respondent.builder()
+            .solicitor(solicitor)
+            .build();
 
-            // Wrap within CaseDetails using the exact expected Case ID
-            CaseData caseData = CaseData.builder().id(1234567890123456L).build();
-            CaseDetails caseDetails = asCaseDetails(caseData);
+        Map<String, Object> respondentElement = Map.of(
+            "id", UUID.randomUUID().toString(),
+            "value", respondent
+        );
 
-            caseDetails.getData().put("migrationId", migrationId);
-            caseDetails.getData().put("placements", new ArrayList<>(List.of(placementElement)));
-            caseDetails.getData().put("placementsNonConfidential", new ArrayList<>(List.of(placementElement)));
-            caseDetails.getData().put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementElement)));
+        Map<String, Object> placementValue = new HashMap<>();
+        placementValue.put("placementChildName", "test child");
+        placementValue.put("placementRespondentsToNotify", List.of(respondentElement));
 
-            //  callback request
-            CallbackRequest callbackRequest = CallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .eventId("migrate-case")
-                .build();
+        Map<String, Object> placementElement = Map.of(
+            "id", UUID.randomUUID().toString(),
+            "value", placementValue
+        );
 
-            //  Hit MockMvc endpoint
-            String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/callback/migrate-case/about-to-submit")
-                    .header("authorization", "Bearer token")
-                    .header("user-id", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(new ObjectMapper().writeValueAsString(callbackRequest)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
 
-            //  Check response
-            ObjectMapper testMapper = new ObjectMapper();
-            testMapper.registerModule(new JavaTimeModule());
+        CaseData caseData = CaseData.builder().id(targetCaseId).build();
+        CaseDetails caseDetails = asCaseDetails(caseData);
 
-            Map<String, Object> responseMap = testMapper.readValue(responseContent, new TypeReference<>() {
-            });
-            Map<String, Object> dataField = (Map<String, Object>) responseMap.get("data");
+        caseDetails.getData().put("migrationId", migrationId);
+        caseDetails.getData().put("placements", new ArrayList<>(List.of(placementElement)));
+        caseDetails.getData().put("placementsNonConfidential", new ArrayList<>(List.of(placementElement)));
+        caseDetails.getData().put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementElement)));
 
-            //  Assertions
-            List<Map<String, Object>> noticesList = (List<Map<String, Object>>) dataField
-                .get("placementsNonConfidentialNotices");
-            Map<String, Object> innerValue = (Map<String, Object>) noticesList.getFirst().get("value");
-            List<?> respondentsToNotify = (List<?>) innerValue.get("placementRespondentsToNotify");
+        // Callback request
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .eventId("migrate-case")
+            .build();
 
-            assertThat(respondentsToNotify).hasSize(1);
-        }
+        // Hit MockMvc endpoint
+        String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/callback/migrate-case/about-to-submit")
+                .header("authorization", "Bearer token")
+                .header("user-id", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(callbackRequest)))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
 
+        // Check response
+        ObjectMapper testMapper = new ObjectMapper();
+        testMapper.registerModule(new JavaTimeModule());
+
+        Map<String, Object> responseMap = testMapper.readValue(responseContent, new TypeReference<>() {});
+        Map<String, Object> dataField = (Map<String, Object>) responseMap.get("data");
+
+        // Assertions
+        List<Map<String, Object>> noticesList = (List<Map<String, Object>>) dataField
+                                                    .get("placementsNonConfidentialNotices");
+        Map<String, Object> innerValue = (Map<String, Object>) noticesList.getFirst().get("value");
+        List<?> respondentsToNotify = (List<?>) innerValue.get("placementRespondentsToNotify");
+
+        assertThat(respondentsToNotify).hasSize(1);
+    }
 }
 
