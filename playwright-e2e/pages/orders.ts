@@ -378,6 +378,7 @@ export class Orders extends BasePage {
         await this.permissionReport.getByLabel('Day').fill('12');
         await this.permissionReport.getByLabel('Month').fill('12');
         await this.permissionReport.getByLabel('Year').fill('2031');
+        await this.page.press('body', 'Tab'); //exui throws date validation error before entering all the date value
     }
 
     async familyAssistanceOrder() {
