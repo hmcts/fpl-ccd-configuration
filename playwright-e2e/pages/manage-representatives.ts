@@ -28,6 +28,6 @@ export class ManageRepresentatives extends BasePage {
         await this.enterPostCode('sk3 8pp');
         await this.byEmail.click();
         await this.whoAreThey.selectOption('5: REPRESENTING_RESPONDENT_1');
-        await this.clickSubmit();
+        await this.clickSaveAndContinue();
     }
 };
