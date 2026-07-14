@@ -46,7 +46,7 @@ test.describe('Enter other API test @apiTest', () => {
                             litigationIssues: "NO",
                             litigationIssuesDetails: null,
                             representedBy: [],
-                            addressKnowV2: null,
+                            addressKnowV2: "Yes",
                             addressNotKnowReason: null,
                             whereaboutsUnknownDetails: null,
                             detailsHidden: null,
@@ -64,19 +64,26 @@ test.describe('Enter other API test @apiTest', () => {
             {
                 id: "c721b8c8-dcdd-4b77-a16f-841a47d83e8f",
                 value: {
+                    name: null,
                     firstName: "John",
                     lastName: "Smith",
                     DOB: "2000-07-12",
                     gender: "Male",
+                    genderIdentification: null,
                     birthPlace: "London",
                     address: null,
                     telephone: null,
                     childInformation: null,
                     litigationIssues: "NO",
-                    addressKnowV2: "Yes",
+                    litigationIssuesDetails: null,
+                    addressKnowV2: null,
                     addressNotKnowReason: null,
+                    whereaboutsUnknownDetails: null,
                     hideAddress: "Yes",
-                    hideTelephone: "Yes"
+                    hideTelephone: "Yes",
+                    detailsHidden: null,
+                    detailsHiddenReason: null,
+                    representedBy: []
                 }
             }
         ]);
@@ -84,6 +91,7 @@ test.describe('Enter other API test @apiTest', () => {
         expect(caseDetailsAfter.caseData.confidentialOthers).toBeDefined();
         expect(caseDetailsAfter.caseData.confidentialOthers.length).toEqual(1);
         expect(caseDetailsAfter.caseData.confidentialOthers[0]?.value).toEqual({
+            name: null,
             firstName: "John",
             lastName: "Smith",
             gender: null,
@@ -108,6 +116,7 @@ test.describe('Enter other API test @apiTest', () => {
             DOB: null,
             addressKnowV2: "Yes",
             addressNotKnowReason: null,
+            whereaboutsUnknownDetails: null,
             hideAddress: "Yes",
             hideTelephone: "Yes"
         })
