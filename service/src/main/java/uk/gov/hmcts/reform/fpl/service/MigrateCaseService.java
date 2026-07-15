@@ -1363,7 +1363,6 @@ public class MigrateCaseService {
             othersV2.addAll(othersToBeMigrated.getAdditionalOthers());
         }
 
-        caseDetailsMap.remove("others");
         caseDetailsMap.put("othersV2", othersV2);
 
         return caseDetailsMap;
