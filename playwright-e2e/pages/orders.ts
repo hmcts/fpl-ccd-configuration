@@ -260,7 +260,7 @@ export class Orders extends BasePage {
             await this.powerOfExclusionStart.getByLabel('Month').fill('3');
             await this.powerOfExclusionStart.getByLabel('Year').fill('2024');
             await this.powerOfExclusionStart.getByLabel('Day').fill('12');
-            
+
         }
         await this.page.getByRole('group', { name: 'Include: "Any person who can produce the children to the applicant must do so"' }).getByLabel('Yes').click();
         await this.page.getByLabel('Add description of children (').fill('Children description');
@@ -352,7 +352,8 @@ export class Orders extends BasePage {
     async addAuthorityToRefuseContactWithAChildInCareDetails() {
         await this.clickContinue();
         await this.judgeMagistrateRadioButton.check();
-        await this.judgeLastName.getByText('Dean');
+        await this.judgeLastName.fill('Dean');
+        await this.judgeEmail.fill('email@email.comLegal');
         await this.approvalDate.getByLabel('Day').fill('2');
         await this.approvalDate.getByLabel('Month').fill('2');
         await this.approvalDate.getByLabel('Year').fill('2024');
@@ -377,7 +378,7 @@ export class Orders extends BasePage {
         await this.permissionReport.getByLabel('Day').fill('12');
         await this.permissionReport.getByLabel('Month').fill('12');
         await this.permissionReport.getByLabel('Year').fill('2031');
-        await this.clickContinue();
+        await this.page.press('body', 'Tab'); //exui throws date validation error before entering all the date value
     }
 
     async familyAssistanceOrder() {
@@ -516,7 +517,7 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.orderApproved.getByLabel('No').check();
         await this.clickContinue();
-        await this.orderApplication.getByLabel('Yes').check();
+        await this.orderApplication.getByLabel('No').check();
         await this.clickContinue();
         await this.issuingJudge.getByLabel('Yes').click();
         await this.clickContinue();
