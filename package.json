@@ -54,7 +54,7 @@
     "test:api-test": "yarn playwright test --project=APITest --config=playwright.api.config.ts",
     "test:functional-cafcassAPI": "yarn playwright install chromium && yarn playwright test --project=cafcassAPITest --config=playwright.api.config.ts --repeat-each 3",
     "prepare": "husky install",
-    "yarn-update": "yarn set version 3.x",
+    "yarn-update": "yarn set version 4.x",
     "install-dependencies": "/usr/bin/yarn install --silent",
     "lint-ui-tests": "/usr/bin/yarn lint",
     "build-container": "docker build -t playwright-container .",
