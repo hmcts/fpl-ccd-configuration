@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
+import uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -99,6 +100,10 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 caseDetails.getData().put("reviewOrderUrgency", YES);
                 caseDetails.getData().put("addCoverSheet", NO);
                 break;
+            case APPLICANT_CHANGE_ORDER:
+                caseDetails.getData().put("reviewOrderUrgency", NO);
+                caseDetails.getData().put("addCoverSheet", NO);
+                break;
             default:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
                 caseDetails.getData().put("addCoverSheet", NO);
@@ -134,11 +139,14 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         }
 
         CaseData caseData = getCaseData(caseDetails);
-        ConfirmApplicationReviewedEventData oldEventData = getCaseData(oldCaseDetails)
-            .getConfirmApplicationReviewedEventData();
+        CaseData oldCaseData = getCaseData(oldCaseDetails);
+        ConfirmApplicationReviewedEventData oldEventData = oldCaseData.getConfirmApplicationReviewedEventData();
         boolean isConfidential = YES.equals(oldEventData.getReviewAdditionalAppIsConfidential());
+        ApproveAdditionalAppOptions selectedOption = oldCaseData.getApproveAdditionalAppRouter();
 
-        MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName(), isConfidential);
+        MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName(),
+            isConfidential,
+            selectedOption);
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(markdownData.getHeader())
@@ -160,7 +168,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         Element<HearingOrdersBundle> bundleFromDraftOrder = caseData.getHearingOrdersBundlesDrafts().stream()
             .filter(bundleElement -> {
                 if (isConfidential) {
-                    return bundleElement.getValue().getOrdersCTSC().stream()
+                    return bundleElement.getValue().getAllConfidentialOrders().stream()
                         .anyMatch(orderElement -> orderElement.getId().equals(draftOrderId));
                 } else {
                     return bundleElement.getValue().getOrders().stream()
@@ -192,6 +200,14 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 );
                 break;
             }
+            case APPLICANT_CHANGE_ORDER:
+                caseDetails.getData().putAll(reviewAdditionalApplicationService.returnDraftOrderToApplicant(
+                    caseData,
+                    bundleFromDraftOrder,
+                    draftOrderId,
+                    eventData.getReviewAdditionalAppRequestedChanges()
+                ));
+                break;
             default:
                 break;
         }

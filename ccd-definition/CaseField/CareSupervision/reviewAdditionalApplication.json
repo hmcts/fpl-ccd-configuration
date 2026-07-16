@@ -113,6 +113,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewAdditionalAppRequestedChanges",
+    "FieldType": "TextArea",
+    "Label": "What does the applicant need to change?",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field for applicant requested order changes"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "reviewOrderUrgency",
     "Label": " ",
     "FieldType": "YesOrNo",
