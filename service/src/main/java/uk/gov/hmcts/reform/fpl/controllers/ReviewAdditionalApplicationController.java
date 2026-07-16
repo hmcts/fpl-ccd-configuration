@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationRefusalOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkdownService;
@@ -46,6 +47,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
     private final ReviewAdditionalApplicationMarkdownService markdownService;
     private final ReviewAdditionalApplicationService reviewAdditionalApplicationService;
     private final HearingOrderGenerator hearingOrderGenerator;
+    private final ApplicationRefusalOrderService refusalOrderService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -187,6 +189,17 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                     reviewDecision
                 );
                 caseDetails.getData().put("orderCollection", data.get("orderCollection"));
+                caseDetails.getData().putAll(
+                    approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, bundleFromDraftOrder)
+                );
+                break;
+            }
+            case REFUSE: {
+                caseDetails.getData().putAll(reviewAdditionalApplicationService.addRefusalOrders(
+                    caseData,
+                    bundleFromDraftOrder,
+                    draftOrderId
+                ));
                 caseDetails.getData().putAll(
                     approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, bundleFromDraftOrder)
                 );

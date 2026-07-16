@@ -1301,4 +1301,9 @@ public class CaseData extends CaseDataParent {
             return Optional.empty();
         }
     }
+
+    @JsonIgnore
+    public Language getCaseLanguage() {
+        return Optional.ofNullable(getC110A().getLanguageRequirementApplication()).orElse(Language.ENGLISH);
+    }
 }

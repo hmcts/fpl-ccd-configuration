@@ -10,14 +10,20 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationRefusalOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -31,6 +37,7 @@ public class ReviewAdditionalApplicationService {
     public static final String ONLY_ONE_APPLICATION = "onlyOneApplicationToBeReviewed";
 
     private final ApproveDraftOrdersService approveDraftOrdersService;
+    private final ApplicationRefusalOrderService refusalOrderService;
 
     public Map<String, Object> initEventField(CaseData caseData) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -154,5 +161,50 @@ public class ReviewAdditionalApplicationService {
                 return existingBundle;
             }
         ).collect(Collectors.toList());
+    }
+
+    public Map<String, Object> addRefusalOrders(CaseData caseData,
+                                                Element<HearingOrdersBundle> selectedOrdersBundle,
+                                                UUID draftOrderId) {
+        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+        Element<AdditionalApplicationsBundle> selectedApplication = getSelectedApplicationsToBeReviewed(caseData);
+
+        boolean isConfidential = false;
+//        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
+
+        Element<GeneratedOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(caseData,
+            eventData.getJudgeNameAndTitle(),
+            selectedApplication.getValue().getUploadedDateTime(),
+            eventData.getReviewAdditionalAppRefusalReason(),
+            isConfidential);
+
+        // TODO TBC confidential?
+
+        Element<HearingOrder> draftOrder = findElement(draftOrderId, selectedOrdersBundle.getValue()
+            .getAllOrdersAndConfidentialOrders()).orElseThrow();
+
+        Map<String, Object> updates = new HashMap<>();
+        Element<HearingOrder> rejectedDraftOrder = approveDraftOrdersService.rejectDraftOrderWithRequestedChanges(
+            caseData,
+            updates,
+            selectedOrdersBundle,
+            draftOrder,
+            eventData.getReviewAdditionalAppRefusalReason()
+        );
+
+        if (!rejectedDraftOrder.getValue().isConfidentialOrder()) {
+            List<Element<HearingOrder>> rejectedOrders =
+                defaultIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
+            rejectedOrders.add(rejectedDraftOrder);
+            updates.put("refusedHearingOrders", rejectedOrders);
+        }
+
+        selectedOrdersBundle.getValue().removeOrderElement(draftOrder);
+
+        List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
+        orderCollection.add(refusalOrderDoc);
+        updates.put("orderCollection", orderCollection);
+
+        return updates;
     }
 }

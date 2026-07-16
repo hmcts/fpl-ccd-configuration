@@ -65,6 +65,9 @@ public class ConfirmApplicationReviewedEventData {
     @JsonDeserialize(using = YesNoDeserializer.class)
     YesNo reviewAdditionalAppIsConfidential;
 
+    @Temp
+    String reviewAdditionalAppRefusalReason;
+
     public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
@@ -74,7 +77,8 @@ public class ConfirmApplicationReviewedEventData {
             "otherAdditionalApplicationToBeReview",
             "reviewOrderUrgency", "uploadedDraftOrder",
             "addCoverSheet", "previewApprovedOrder1",
-            "previewApprovedOrderTitle1");
+            "previewApprovedOrderTitle1",
+            "reviewAdditionalAppRefusalReason");
     }
 
     public static List<String> postSubmitEventFields() {
