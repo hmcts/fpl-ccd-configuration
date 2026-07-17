@@ -1,45 +1,11 @@
 [ {
   "CaseEventID" : "uploadCMO",
   "CaseFieldID" : "currentHearingOrderDrafts",
-  "ListElementCode" : "title",
-  "ID" : "UploadedCaseManagementOrder",
-  "FieldDisplayOrder" : 1
-}, {
-  "CaseEventID" : "uploadCMO",
-  "CaseFieldID" : "currentHearingOrderDrafts",
-  "ListElementCode" : "order",
-  "ID" : "UploadedCaseManagementOrder",
-  "FieldDisplayOrder" : 2
-}, {
-  "CaseEventID" : "uploadCMO",
-  "CaseFieldID" : "currentHearingOrderDrafts",
   "ListElementCode" : "documentAcknowledgeLabel",
-  "ID" : "UploadedCaseManagementOrder",
-  "FieldDisplayOrder" : 3,
   "ShowSummaryChangeOption" : "Y"
-}, {
-  "CaseEventID" : "uploadCMO",
-  "CaseFieldID" : "currentHearingOrderDrafts",
-  "ListElementCode" : "documentAcknowledgeLabelForCYA",
-  "ID" : "UploadedCaseManagementOrder",
-  "FieldDisplayOrder" : 3
 }, {
   "CaseEventID" : "uploadCMO",
   "CaseFieldID" : "currentHearingOrderDrafts",
   "ListElementCode" : "documentAcknowledge",
-  "ID" : "UploadedCaseManagementOrder",
-  "FieldDisplayOrder" : 4,
   "ShowSummaryChangeOption" : "Y"
-}, {
-  "CaseEventID" : "uploadCMO",
-  "CaseFieldID" : "currentHearingOrderDrafts",
-  "ListElementCode" : "status",
-  "ID" : "UploadedCaseManagementOrder",
-  "FieldDisplayOrder" : 5
-}, {
-  "CaseEventID" : "uploadCMO",
-  "CaseFieldID" : "currentHearingOrderDrafts",
-  "ListElementCode" : "dateSent",
-  "ID" : "UploadedCaseManagementOrder",
-  "FieldDisplayOrder" : 5
 } ]

@@ -1,57 +1,7 @@
 [ {
   "CaseEventID" : "manageOrders",
   "CaseFieldID" : "judgeAndLegalAdvisor",
-  "ListElementCode" : "allocatedJudgeLabel",
-  "ID" : "JudgeAndLegalAdvisorComplexType",
-  "FieldDisplayOrder" : 1
-}, {
-  "CaseEventID" : "manageOrders",
-  "CaseFieldID" : "judgeAndLegalAdvisor",
-  "ListElementCode" : "useAllocatedJudge",
-  "ID" : "JudgeAndLegalAdvisorComplexType",
-  "FieldDisplayOrder" : 2
-}, {
-  "CaseEventID" : "manageOrders",
-  "CaseFieldID" : "judgeAndLegalAdvisor",
   "ListElementCode" : "judgeSubHeading",
-  "ID" : "JudgeAndLegalAdvisor",
   "ElementLabel" : "Who is issuing the order?",
-  "FieldDisplayOrder" : 3,
   "SecurityClassification" : "Public"
-}, {
-  "CaseEventID" : "manageOrders",
-  "CaseFieldID" : "judgeAndLegalAdvisor",
-  "ListElementCode" : "judgeTitle",
-  "ID" : "JudgeAndLegalAdvisorComplexType",
-  "FieldDisplayOrder" : 4
-}, {
-  "CaseEventID" : "manageOrders",
-  "CaseFieldID" : "judgeAndLegalAdvisor",
-  "ListElementCode" : "otherTitle",
-  "ID" : "JudgeAndLegalAdvisorComplexType",
-  "FieldDisplayOrder" : 5
-}, {
-  "CaseEventID" : "manageOrders",
-  "CaseFieldID" : "judgeAndLegalAdvisor",
-  "ListElementCode" : "judgeLastName",
-  "ID" : "JudgeAndLegalAdvisorComplexType",
-  "FieldDisplayOrder" : 6
-}, {
-  "CaseEventID" : "manageOrders",
-  "CaseFieldID" : "judgeAndLegalAdvisor",
-  "ListElementCode" : "judgeFullName",
-  "ID" : "JudgeAndLegalAdvisorComplexType",
-  "FieldDisplayOrder" : 7
-}, {
-  "CaseEventID" : "manageOrders",
-  "CaseFieldID" : "judgeAndLegalAdvisor",
-  "ListElementCode" : "judgeEmailAddress",
-  "ID" : "JudgeAndLegalAdvisorComplexType",
-  "FieldDisplayOrder" : 8
-}, {
-  "CaseEventID" : "manageOrders",
-  "CaseFieldID" : "judgeAndLegalAdvisor",
-  "ListElementCode" : "legalAdvisorName",
-  "ID" : "JudgeAndLegalAdvisorComplexType",
-  "FieldDisplayOrder" : 9
 } ]

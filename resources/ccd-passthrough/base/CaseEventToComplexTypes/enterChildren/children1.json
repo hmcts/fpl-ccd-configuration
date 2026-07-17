@@ -1,275 +1,36 @@
 [ {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
-  "ListElementCode" : "party.firstName",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 1
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.lastName",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 2
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.dateOfBirth",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 3
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.gender",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 4
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.genderIdentification",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 5
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.livingSituation",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 6
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.addressAutoConfidentialLabel",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 7
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.address",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 8
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.address.AddressLine1",
-  "ID" : "EnterChildren"
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.address.AddressLine2",
-  "ID" : "EnterChildren"
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.address.AddressLine3",
-  "ID" : "EnterChildren"
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.address.PostTown",
-  "ID" : "EnterChildren"
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.address.County",
-  "ID" : "EnterChildren"
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.address.PostCode",
-  "ID" : "EnterChildren"
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.address.Country",
-  "ID" : "EnterChildren"
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.isAddressConfidential",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 9
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.livingSituationDetails",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 10
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.livingWithDetails",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 11
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.addressChangeDate",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 12
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.datePowersEnd",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 13
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.careStartDate",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 14
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.dischargeDate",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 15
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
   "ListElementCode" : "party.detailsHidden",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 16,
   "Comment" : "Deprecated"
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.detailsHiddenReason",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 17,
   "Comment" : "Deprecated"
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.careAndContactPlan",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 18
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.keyDates",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 19
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.additionalNeeds",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 20
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.additionalNeedsDetails",
-  "ID" : "EnterChildren",
-  "SecurityClassification" : "Public",
-  "FieldDisplayOrder" : 21
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.mothersName",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 22
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.fathersName",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 23
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.adoption",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 24
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.placementOrderApplication",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 25
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.placementCourt",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 26
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.socialWorkerName",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 27
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.socialWorkerTelephoneNumber",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 28
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.socialWorkerTelephoneNumber.telephoneNumber",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 29
+  "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.socialWorkerTelephoneNumber.contactDirection",
-  "ID" : "EnterChildren",
   "Comment" : "Deprecated"
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
-  "ListElementCode" : "party.socialWorkerEmail",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 30
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.socialWorkerDetailsHidden",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 31
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "party.socialWorkerDetailsHiddenReason",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 32
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
   "ListElementCode" : "party.proceedingsLabel",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 33,
   "Comment" : "Deprecated"
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.litigationIssues",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 34,
   "Comment" : "Deprecated"
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.litigationIssuesDetails",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 35,
   "Comment" : "Deprecated"
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "representative",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 36
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "solicitor",
-  "ID" : "EnterChildren",
-  "FieldDisplayOrder" : 37
-}, {
-  "CaseEventID" : "enterChildren",
-  "CaseFieldID" : "children1",
-  "ListElementCode" : "legalCounsellors",
-  "ID" : "EnterChildren"
 } ]

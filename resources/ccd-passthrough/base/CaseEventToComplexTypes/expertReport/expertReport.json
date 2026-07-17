@@ -2,24 +2,16 @@
   "CaseEventID" : "expertReport",
   "CaseFieldID" : "expertReport",
   "ListElementCode" : "expertReportList",
-  "ID" : "ExpertReport",
   "ElementLabel" : "Label",
   "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "expertReport",
   "CaseFieldID" : "expertReport",
   "ListElementCode" : "expertReportDateRequested",
-  "ID" : "ExpertReport",
   "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "expertReport",
   "CaseFieldID" : "expertReport",
   "ListElementCode" : "reportApproval",
-  "ID" : "ExpertReport",
   "SecurityClassification" : "Public"
-}, {
-  "CaseEventID" : "expertReport",
-  "CaseFieldID" : "expertReport",
-  "ListElementCode" : "reportApprovalDate",
-  "ID" : "ExpertReport"
 } ]

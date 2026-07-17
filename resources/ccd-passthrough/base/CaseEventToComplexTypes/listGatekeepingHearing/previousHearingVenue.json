@@ -1,63 +1,16 @@
 [ {
   "CaseEventID" : "listGatekeepingHearing",
   "CaseFieldID" : "previousHearingVenue",
-  "ListElementCode" : "previousVenue",
-  "ID" : "ManageHearings",
-  "FieldDisplayOrder" : 1
-}, {
-  "CaseEventID" : "listGatekeepingHearing",
-  "CaseFieldID" : "previousHearingVenue",
-  "ListElementCode" : "usePreviousVenue",
-  "ID" : "ManageHearings",
-  "FieldDisplayOrder" : 2
-}, {
-  "CaseEventID" : "listGatekeepingHearing",
-  "CaseFieldID" : "previousHearingVenue",
-  "ListElementCode" : "newVenue",
-  "ID" : "ManageHearings",
-  "FieldDisplayOrder" : 3
-}, {
-  "CaseEventID" : "listGatekeepingHearing",
-  "CaseFieldID" : "previousHearingVenue",
   "ListElementCode" : "newVenueCustomAddress",
-  "ID" : "ManageHearings",
-  "SecurityClassification" : "Public",
-  "FieldDisplayOrder" : 4
-}, {
-  "CaseEventID" : "listGatekeepingHearing",
-  "CaseFieldID" : "previousHearingVenue",
-  "ListElementCode" : "newVenueCustomAddress.AddressLine1",
-  "ID" : "ManageHearings"
-}, {
-  "CaseEventID" : "listGatekeepingHearing",
-  "CaseFieldID" : "previousHearingVenue",
-  "ListElementCode" : "newVenueCustomAddress.AddressLine2",
-  "ID" : "ManageHearings"
-}, {
-  "CaseEventID" : "listGatekeepingHearing",
-  "CaseFieldID" : "previousHearingVenue",
-  "ListElementCode" : "newVenueCustomAddress.AddressLine3",
-  "ID" : "ManageHearings"
-}, {
-  "CaseEventID" : "listGatekeepingHearing",
-  "CaseFieldID" : "previousHearingVenue",
-  "ListElementCode" : "newVenueCustomAddress.PostTown",
-  "ID" : "ManageHearings"
+  "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "listGatekeepingHearing",
   "CaseFieldID" : "previousHearingVenue",
   "ListElementCode" : "newVenueCustomAddress.County",
-  "ID" : "ManageHearings",
   "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "listGatekeepingHearing",
   "CaseFieldID" : "previousHearingVenue",
   "ListElementCode" : "newVenueCustomAddress.PostCode",
-  "ID" : "ManageHearings",
   "SecurityClassification" : "Public"
-}, {
-  "CaseEventID" : "listGatekeepingHearing",
-  "CaseFieldID" : "previousHearingVenue",
-  "ListElementCode" : "newVenueCustomAddress.Country",
-  "ID" : "ManageHearings"
 } ]

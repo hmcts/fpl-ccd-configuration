@@ -2,7 +2,5 @@
   "CaseEventID" : "reviewCMO",
   "CaseFieldID" : "manualJudgeDetails",
   "ListElementCode" : "judgeFullName",
-  "ID" : "ReviewCaseManagementOrder",
-  "FieldDisplayOrder" : 1,
   "Comment" : "Reusing existing Legal advisor input field"
 } ]

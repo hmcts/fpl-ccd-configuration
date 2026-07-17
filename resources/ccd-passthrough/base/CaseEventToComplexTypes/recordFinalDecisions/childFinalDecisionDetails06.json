@@ -2,20 +2,17 @@
   "CaseEventID" : "recordFinalDecisions",
   "CaseFieldID" : "childFinalDecisionDetails06",
   "ListElementCode" : "childFinalDecisionDetailsSubHeadingLabel",
-  "ID" : "CloseCase",
   "FieldType" : "Label"
 }, {
   "CaseEventID" : "recordFinalDecisions",
   "CaseFieldID" : "childFinalDecisionDetails06",
   "ListElementCode" : "childNameLabel",
-  "ID" : "CloseCase",
   "FieldType" : "Text",
   "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "recordFinalDecisions",
   "CaseFieldID" : "childFinalDecisionDetails06",
   "ListElementCode" : "finalDecisionReason",
-  "ID" : "CloseCase",
   "FieldType" : "FixedRadioList",
   "FieldTypeParameter" : "ChildFinalDecision",
   "SecurityClassification" : "Public"

@@ -1,44 +1,6 @@
 [ {
   "CaseEventID" : "nocRequest",
   "CaseFieldID" : "changeOrganisationRequestField",
-  "ListElementCode" : "OrganisationToAdd.OrganisationID",
-  "ID" : "ChangeOrganisationRequest",
-  "FieldDisplayOrder" : "1"
-}, {
-  "CaseEventID" : "nocRequest",
-  "CaseFieldID" : "changeOrganisationRequestField",
-  "ListElementCode" : "OrganisationToAdd.OrganisationName",
-  "ID" : "ChangeOrganisationRequest",
-  "FieldDisplayOrder" : "2"
-}, {
-  "CaseEventID" : "nocRequest",
-  "CaseFieldID" : "changeOrganisationRequestField",
-  "ListElementCode" : "OrganisationToRemove.OrganisationID",
-  "ID" : "ChangeOrganisationRequest",
-  "FieldDisplayOrder" : "3"
-}, {
-  "CaseEventID" : "nocRequest",
-  "CaseFieldID" : "changeOrganisationRequestField",
-  "ListElementCode" : "OrganisationToRemove.OrganisationName",
-  "ID" : "ChangeOrganisationRequest",
-  "FieldDisplayOrder" : "4"
-}, {
-  "CaseEventID" : "nocRequest",
-  "CaseFieldID" : "changeOrganisationRequestField",
-  "ListElementCode" : "CaseRoleId",
-  "ID" : "ChangeOrganisationRequest",
-  "FieldDisplayOrder" : "5"
-}, {
-  "CaseEventID" : "nocRequest",
-  "CaseFieldID" : "changeOrganisationRequestField",
-  "ListElementCode" : "RequestTimestamp",
-  "ID" : "ChangeOrganisationRequest",
-  "FieldDisplayOrder" : "6"
-}, {
-  "CaseEventID" : "nocRequest",
-  "CaseFieldID" : "changeOrganisationRequestField",
   "ListElementCode" : "ApprovalStatus",
-  "ID" : "ChangeOrganisationRequest",
-  "DefaultValue" : "1",
-  "FieldDisplayOrder" : "7"
+  "DefaultValue" : "1"
 } ]
