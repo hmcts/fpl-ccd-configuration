@@ -1,0 +1,5 @@
+[ {
+  "ID" : "changeCaseName",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
+} ]

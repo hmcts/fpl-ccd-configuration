@@ -1,0 +1,6 @@
+[ {
+  "ID" : "listGatekeepingHearing",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/submitted"
+} ]

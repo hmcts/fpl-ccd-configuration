@@ -1,0 +1,37 @@
+[ {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "direction-APPOINT_CHILDREN_GUARDIAN",
+  "ListElementCode" : "title",
+  "ID" : "direction-config-APPOINT_CHILDREN_GUARDIAN",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "direction-APPOINT_CHILDREN_GUARDIAN",
+  "ListElementCode" : "description",
+  "ID" : "direction-config-APPOINT_CHILDREN_GUARDIAN",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "direction-APPOINT_CHILDREN_GUARDIAN",
+  "ListElementCode" : "assignee",
+  "ID" : "direction-config-APPOINT_CHILDREN_GUARDIAN",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "direction-APPOINT_CHILDREN_GUARDIAN",
+  "ListElementCode" : "dueDateType",
+  "ID" : "direction-config-APPOINT_CHILDREN_GUARDIAN",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "direction-APPOINT_CHILDREN_GUARDIAN",
+  "ListElementCode" : "dateToBeCompletedBy",
+  "ID" : "direction-config-APPOINT_CHILDREN_GUARDIAN",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "direction-APPOINT_CHILDREN_GUARDIAN",
+  "ListElementCode" : "daysBeforeHearing",
+  "ID" : "direction-config-APPOINT_CHILDREN_GUARDIAN",
+  "FieldDisplayOrder" : 5
+} ]

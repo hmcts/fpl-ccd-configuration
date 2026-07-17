@@ -1,0 +1,32 @@
+[ {
+  "CaseEventID" : "hearingNeeded",
+  "CaseFieldID" : "hearing",
+  "ListElementCode" : "hearingUrgencyType",
+  "ID" : "hearing",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "hearingNeeded",
+  "CaseFieldID" : "hearing",
+  "ListElementCode" : "hearingUrgencyDetails",
+  "ID" : "hearing"
+}, {
+  "CaseEventID" : "hearingNeeded",
+  "CaseFieldID" : "hearing",
+  "ListElementCode" : "withoutNotice",
+  "ID" : "hearing"
+}, {
+  "CaseEventID" : "hearingNeeded",
+  "CaseFieldID" : "hearing",
+  "ListElementCode" : "withoutNoticeReason",
+  "ID" : "hearing"
+}, {
+  "CaseEventID" : "hearingNeeded",
+  "CaseFieldID" : "hearing",
+  "ListElementCode" : "respondentsAware",
+  "ID" : "hearing"
+}, {
+  "CaseEventID" : "hearingNeeded",
+  "CaseFieldID" : "hearing",
+  "ListElementCode" : "respondentsAwareReason",
+  "ID" : "hearing"
+} ]

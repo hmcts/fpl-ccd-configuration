@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "hasJudicialMessages",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/reply-message-judge/mid-event"
+} ]

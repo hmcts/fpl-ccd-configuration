@@ -1,0 +1,67 @@
+[ {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "optionCount",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option0",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option1",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option2",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option3",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option4",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 6
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option5",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 7
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option6",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 8
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option7",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 9
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option8",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 10
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "othersSelector",
+  "ListElementCode" : "option9",
+  "ID" : "OthersSelector",
+  "FieldDisplayOrder" : 11
+} ]

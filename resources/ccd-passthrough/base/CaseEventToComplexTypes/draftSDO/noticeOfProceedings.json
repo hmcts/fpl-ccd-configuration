@@ -1,0 +1,7 @@
+[ {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "noticeOfProceedings",
+  "ListElementCode" : "proceedingTypes",
+  "ID" : "NoticeOfProceedingsSDO",
+  "FieldDisplayOrder" : 1
+} ]

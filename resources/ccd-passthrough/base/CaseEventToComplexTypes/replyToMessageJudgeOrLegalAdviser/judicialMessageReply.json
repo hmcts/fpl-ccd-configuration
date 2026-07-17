@@ -1,0 +1,110 @@
+[ {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "relatedDocumentFileNames",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "relatedDocuments",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "recipient",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "recipientLabel",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "requestedBy",
+  "ID" : "JudicialMessageReply",
+  "SecurityClassification" : "Public",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "urgency",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "messageHistoryTemp",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "isReplying",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 7
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "senderType",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 8
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "replyFrom",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 9
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "recipientType",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 10
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "recipientDynamicList",
+  "ID" : "JudicialMessageMetaData",
+  "FieldDisplayOrder" : 11
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "otherJudgeWarningLabel",
+  "ID" : "JudicialMessageMetaData",
+  "FieldDisplayOrder" : 12
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "replyTo",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 13
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "isJudicialMessageUrgent",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 14
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "latestMessage",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 15
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "closureNote",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 16
+}, {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "closeMessageLabel",
+  "ID" : "JudicialMessageReply",
+  "FieldDisplayOrder" : 17
+} ]

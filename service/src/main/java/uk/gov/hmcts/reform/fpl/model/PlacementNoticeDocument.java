@@ -18,21 +18,50 @@ import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlacementNoticeDocument implements WithDocument {
 
+    @CCD(
+            label = "Recipient type",
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "PlacementNoticeRecipientType"
+    )
     private RecipientType type;
+    @CCD(
+            label = "Notice of placement response",
+            categoryID = "placementApplicationsAndResponses",
+            typeOverride = FieldType.Document
+    )
     private DocumentReference response;
+    @CCD(label = "Notice of placement response description", typeOverride = FieldType.TextArea)
     private String responseDescription;
+    @CCD(label = "Party")
     private String recipientName;
+    @CCD(label = "Respondent id", showCondition = "response=\"DO NOT SHOW\"", typeOverride = FieldType.Text)
     private UUID respondentId;
+    @CCD(
+            label = "Tick to confirm this document is related to this case",
+            searchable = false,
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "DocumentAcknowledge"
+    )
     private List<String> documentAcknowledge;
+    @CCD(
+            label = "Document Uploader Type",
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "DocumentUploaderType"
+    )
     private DocumentUploaderType uploaderType;
+    @CCD(label = "Document Uploader Case Roles")
     private List<CaseRole> uploaderCaseRoles;
+    @CCD(label = "Reason for removal", typeOverride = FieldType.TextArea)
     private String removalReason;
+    @CCD(ignore = true)
     private LanguageTranslationRequirement translationRequirements;
 
     @JsonIgnore
@@ -68,4 +97,10 @@ public class PlacementNoticeDocument implements WithDocument {
         return this.documentAcknowledge;
     }
 
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String documentAcknowledgeLabel;
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String documentAcknowledgeLabelForCYA;
+  // ==== end synthesised definition-only fields ====
 }

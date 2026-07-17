@@ -1,0 +1,5 @@
+[ {
+  "ID" : "reviewListingAction",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/review-listing-action/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/review-listing-action/about-to-submit"
+} ]

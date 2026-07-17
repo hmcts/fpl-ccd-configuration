@@ -23,6 +23,11 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.DocumentAcknowledge;
+import uk.gov.hmcts.reform.fpl.model.C1SupportingEvidenceBundle;
 
 @Data
 @Builder(toBuilder = true)
@@ -30,16 +35,54 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OtherApplicationsBundle implements ApplicationsBundle {
+    @CCD(label = " ", showCondition = "applicationType=\"DO NOT SHOW\"", typeOverride = FieldType.Text)
     private final UUID id;
+    @CCD(
+            label = "Application type",
+            searchable = false,
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "OtherApplicationType"
+    )
     private final OtherApplicationType applicationType;
+    @CCD(label = "Please state how soon you want the judge to consider your application?", searchable = false)
     private final UrgencyTimeFrameType urgencyTimeFrameType;
+    @CCD(label = "Who's seeking parental responsibility?", searchable = false)
     private final ParentalResponsibilityType parentalResponsibilityType;
+    @CCD(
+            label = "File",
+            regex = ".doc,.docx,.pdf",
+            categoryID = "c1AndOtherApplications",
+            searchable = false,
+            typeOverride = FieldType.Document
+    )
     private final DocumentReference document;
+    @CCD(label = "Date and time of upload", searchable = false)
     private final String uploadedDateTime;
+    @CCD(label = "Uploaded by", searchable = false)
     private final String author;
+    @CCD(
+            label = "Supporting documents",
+            searchable = false,
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "C1SupportingEvidenceBundle"
+    )
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+    @CCD(
+            label = "Supplements",
+            searchable = false,
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "C1Supplement"
+    )
     private final List<Element<Supplement>> supplementsBundle;
+    @CCD(label = "Applicant", searchable = false)
     private final String applicantName;
+    @CCD(
+            label = " ",
+            showCondition = "applicationType=\"DO NOT SHOW\"",
+            searchable = false,
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "RespondentNew"
+    )
     private final List<Element<Respondent>> respondents;
 
     public String toLabel() {
@@ -106,4 +149,21 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
     public DocumentReference getApplication() {
         return document;
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = "People notified")
+  private String othersNotified;
+  @CCD(label = " ", showCondition = "applicationType=\"DO NOT SHOW\"")
+  private java.util.List<uk.gov.hmcts.ccd.sdk.type.ListValue<Others>> others;
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String documentAcknowledgeLabel;
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String documentAcknowledgeLabelForCYA;
+  @CCD(label = "Tick to confirm this document is related to this case", searchable = false)
+  private java.util.Set<DocumentAcknowledge> documentAcknowledge;
+  @CCD(label = "Supporting documents", searchable = false)
+  private java.util.List<uk.gov.hmcts.ccd.sdk.type.ListValue<C1SupportingEvidenceBundle>> supportingEvidenceLA;
+  @CCD(label = "Supporting documents", searchable = false)
+  private java.util.List<uk.gov.hmcts.ccd.sdk.type.ListValue<C1SupportingEvidenceBundle>> supportingEvidenceNC;
+  // ==== end synthesised definition-only fields ====
 }

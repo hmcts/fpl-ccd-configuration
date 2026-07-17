@@ -1,0 +1,5 @@
+[ {
+  "ID" : "amendChildren-PREPARE_FOR_HEARING",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/about-to-submit"
+} ]

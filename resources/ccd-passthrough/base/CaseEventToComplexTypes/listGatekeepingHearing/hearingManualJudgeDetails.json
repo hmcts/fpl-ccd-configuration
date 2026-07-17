@@ -1,0 +1,25 @@
+[ {
+  "CaseEventID" : "listGatekeepingHearing",
+  "CaseFieldID" : "hearingManualJudgeDetails",
+  "ListElementCode" : "judgeTitle",
+  "ID" : "HearingJudge",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "listGatekeepingHearing",
+  "CaseFieldID" : "hearingManualJudgeDetails",
+  "ListElementCode" : "judgeLastName",
+  "ID" : "HearingJudge",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "listGatekeepingHearing",
+  "CaseFieldID" : "hearingManualJudgeDetails",
+  "ListElementCode" : "judgeFullName",
+  "ID" : "HearingJudge",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "listGatekeepingHearing",
+  "CaseFieldID" : "hearingManualJudgeDetails",
+  "ListElementCode" : "judgeEmailAddress",
+  "ID" : "HearingJudge",
+  "FieldDisplayOrder" : 4
+} ]

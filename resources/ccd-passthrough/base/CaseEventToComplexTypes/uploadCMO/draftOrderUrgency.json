@@ -1,0 +1,13 @@
+[ {
+  "CaseEventID" : "uploadCMO",
+  "CaseFieldID" : "draftOrderUrgency",
+  "ListElementCode" : "urgency",
+  "ID" : "UploadedCaseManagementOrder",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "uploadCMO",
+  "CaseFieldID" : "draftOrderUrgency",
+  "ListElementCode" : "urgencyLabel",
+  "ID" : "UploadedCaseManagementOrder",
+  "FieldDisplayOrder" : 2
+} ]

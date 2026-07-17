@@ -1,0 +1,5 @@
+[ {
+  "ID" : "queryManagementRaiseQuery",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/raise-query/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/raise-query/about-to-submit"
+} ]

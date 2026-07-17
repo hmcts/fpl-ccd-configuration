@@ -1,0 +1,19 @@
+[ {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "direction-ARRANGE_INTERPRETERS_IMMEDIATE",
+  "ListElementCode" : "title",
+  "ID" : "direction-config-ARRANGE_INTERPRETERS_IMMEDIATE",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "direction-ARRANGE_INTERPRETERS_IMMEDIATE",
+  "ListElementCode" : "description",
+  "ID" : "direction-config-ARRANGE_INTERPRETERS_IMMEDIATE",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "direction-ARRANGE_INTERPRETERS_IMMEDIATE",
+  "ListElementCode" : "assignee",
+  "ID" : "direction-config-ARRANGE_INTERPRETERS_IMMEDIATE",
+  "FieldDisplayOrder" : 3
+} ]

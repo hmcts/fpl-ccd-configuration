@@ -1,0 +1,67 @@
+[ {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "optionCount",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option0",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option1",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option2",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option3",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option4",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 6
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option5",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 7
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option6",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 8
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option7",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 9
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option8",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 10
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "respondentsSelector",
+  "ListElementCode" : "option9",
+  "ID" : "RespondentsSelector",
+  "FieldDisplayOrder" : 11
+} ]

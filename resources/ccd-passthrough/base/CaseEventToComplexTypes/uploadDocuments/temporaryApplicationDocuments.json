@@ -1,0 +1,37 @@
+[ {
+  "CaseEventID" : "uploadDocuments",
+  "CaseFieldID" : "temporaryApplicationDocuments",
+  "ListElementCode" : "document",
+  "ID" : "UploadApplicationDocuments",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "uploadDocuments",
+  "CaseFieldID" : "temporaryApplicationDocuments",
+  "ListElementCode" : "documentType",
+  "ID" : "UploadApplicationDocuments",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "uploadDocuments",
+  "CaseFieldID" : "temporaryApplicationDocuments",
+  "ListElementCode" : "documentName",
+  "ID" : "UploadApplicationDocuments",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "uploadDocuments",
+  "CaseFieldID" : "temporaryApplicationDocuments",
+  "ListElementCode" : "includedInSWET",
+  "ID" : "UploadApplicationDocuments",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "uploadDocuments",
+  "CaseFieldID" : "temporaryApplicationDocuments",
+  "ListElementCode" : "dateTimeUploaded",
+  "ID" : "UploadApplicationDocuments",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "uploadDocuments",
+  "CaseFieldID" : "temporaryApplicationDocuments",
+  "ListElementCode" : "uploadedBy",
+  "ID" : "UploadApplicationDocuments",
+  "FieldDisplayOrder" : 6
+} ]

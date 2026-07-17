@@ -1,0 +1,19 @@
+[ {
+  "CaseEventID" : "addColleaguesToNotify",
+  "CaseFieldID" : "colleaguesToNotify",
+  "ListElementCode" : "title",
+  "ID" : "Colleague",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "addColleaguesToNotify",
+  "CaseFieldID" : "colleaguesToNotify",
+  "ListElementCode" : "fullName",
+  "ID" : "Colleague",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "addColleaguesToNotify",
+  "CaseFieldID" : "colleaguesToNotify",
+  "ListElementCode" : "email",
+  "ID" : "Colleague",
+  "FieldDisplayOrder" : 3
+} ]

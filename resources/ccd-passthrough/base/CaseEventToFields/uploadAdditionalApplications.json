@@ -1,0 +1,13 @@
+[ {
+  "CaseFieldID" : "additionalApplicationsLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/initial-choice/mid-event"
+}, {
+  "CaseFieldID" : "temporaryC2Document",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/populate-data/mid-event"
+}, {
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/populate-data/mid-event"
+}, {
+  "CaseFieldID" : "displayAmountToPay",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/validate/mid-event"
+} ]

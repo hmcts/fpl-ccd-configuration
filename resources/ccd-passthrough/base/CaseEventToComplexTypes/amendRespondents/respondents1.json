@@ -1,0 +1,311 @@
+[ {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.firstName",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.lastName",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.dateOfBirth",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.gender",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.genderIdentification",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.addressKnow",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 6
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.addressNotKnowReason",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 7
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.addressAutoConfidentialLabel",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 7
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.address",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 8
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.address.AddressLine1",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.address.AddressLine2",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.address.AddressLine3",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.address.PostTown",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.address.County",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.address.PostCode",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.address.Country",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.hideAddress",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 9
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.telephoneNumber",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 10
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.telephoneNumber.telephoneNumber",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.telephoneNumber.contactDirection",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.hideTelephone",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 11
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.contactDetailsHidden",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 12
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.contactDetailsHiddenReason",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 13
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.relationshipLabel",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 14
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.relationshipToChild",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 15
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.proceedingsLabel",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 16
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.litigationIssues",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 17
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "party.litigationIssuesDetails",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 18
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "legalRepresentationLabel",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "legalRepresentation",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.firstName",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.lastName",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.email",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.organisation",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.organisation.OrganisationName",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 6
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.signUpRequestHeader",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.signupRequestLabel",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.name",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.address",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.address.AddressLine1",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.address.AddressLine2",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.address.AddressLine3",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.address.PostTown",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.address.County",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.address.PostCode",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.unregisteredOrganisation.address.Country",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.regionalOfficeAddress",
+  "ID" : "AmendRespondents",
+  "FieldDisplayOrder" : 10
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.regionalOfficeAddress.AddressLine1",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.regionalOfficeAddress.AddressLine2",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.regionalOfficeAddress.AddressLine3",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.regionalOfficeAddress.PostTown",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.regionalOfficeAddress.County",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.regionalOfficeAddress.PostCode",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.regionalOfficeAddress.Country",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "legalCounsellors",
+  "ID" : "AmendRespondents"
+}, {
+  "CaseEventID" : "amendRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "solicitor.telephoneNumber.telephoneNumber",
+  "ID" : "AmendRespondents"
+} ]

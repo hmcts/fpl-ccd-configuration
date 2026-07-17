@@ -1,0 +1,4 @@
+[ {
+  "ID" : "nocRequest",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_AAC_URL}/noc/check-noc-approval"
+} ]

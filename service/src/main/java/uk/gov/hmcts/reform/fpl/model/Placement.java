@@ -24,39 +24,64 @@ import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Placement implements SelectableItem {
 
+    @CCD(label = "Children id", showCondition = "placementApplication=\"DO_NOT_SHOW\"", typeOverride = FieldType.Text)
     @JsonProperty("placementChildId")
     private UUID childId;
 
+    @CCD(label = "Name")
     @JsonProperty("placementChildName")
     private String childName;
 
+    @CCD(
+            label = "Application document",
+            categoryID = "placementApplicationsAndResponses",
+            typeOverride = FieldType.Document
+    )
     @JsonProperty("placementApplication")
     public DocumentReference application;
 
+    @CCD(label = "Supporting document")
     @JsonProperty("placementSupportingDocuments")
     private List<Element<PlacementSupportingDocument>> supportingDocuments;
 
+    @CCD(label = "Confidential document")
     @JsonProperty("placementConfidentialDocuments")
     private List<Element<PlacementConfidentialDocument>> confidentialDocuments;
 
+    @CCD(label = "Notice of placement response")
     @JsonProperty("placementNoticeDocuments")
     private List<Element<PlacementNoticeDocument>> noticeDocuments;
 
+    @CCD(label = "Notice of placement response (Removed)")
     @JsonProperty("placementNoticeDocumentsRemoved")
     private List<Element<PlacementNoticeDocument>> noticeDocumentsRemoved;
 
+    @CCD(label = "Application submission date", showCondition = "isSubmitted = \"YES\"")
     @JsonProperty("placementUploadDateTime")
     public LocalDateTime placementUploadDateTime;
 
+    @CCD(
+            label = "Notice of hearing for placement",
+            categoryID = "placementApplicationsAndResponses",
+            typeOverride = FieldType.Document
+    )
     @JsonProperty("placementNotice")
     private DocumentReference placementNotice;
 
+    @CCD(
+            label = "Respondent to notify",
+            showCondition = "isSubmitted = \"DO_NOT_SHOW\"",
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "RespondentNew"
+    )
     @JsonProperty("placementRespondentsToNotify")
     private List<Element<Respondent>> placementRespondentsToNotify;
 
@@ -112,4 +137,11 @@ public class Placement implements SelectableItem {
             .map(time -> formatLocalDateTimeBaseUsingFormat(time, DATE_TIME))
             .orElse(null);
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = " ", showCondition = "placementSupportingDocuments = \"DO NOT SHOW\"")
+  private uk.gov.hmcts.ccd.sdk.type.YesOrNo isSubmitted;
+  @CCD(label = "Application document", showCondition = "isSubmitted = \"DO_NOT_SHOW\"")
+  private uk.gov.hmcts.ccd.sdk.type.Document placementApplicationCopy;
+  // ==== end synthesised definition-only fields ====
 }

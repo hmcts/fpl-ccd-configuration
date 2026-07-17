@@ -1,0 +1,112 @@
+[ {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.partyId",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.partyType",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.organisationName",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.legalTeamManager",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.pbaNumber",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.clientCode",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.customerReference",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.address",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.address.AddressLine1",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.address.AddressLine2",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.address.AddressLine3",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.address.PostTown",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.address.County",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.address.PostCode",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.address.Country",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.telephoneNumber",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.telephoneNumber.telephoneNumber",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.telephoneNumber.contactDirection",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.jobTitle",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.mobileNumber.telephoneNumber",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "party.email.email",
+  "ID" : "Applicants"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "leadApplicantIndicator",
+  "ID" : "Applicants",
+  "SecurityClassification" : "Public"
+} ]

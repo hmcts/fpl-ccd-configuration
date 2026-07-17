@@ -1,0 +1,36 @@
+[ {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "solicitor",
+  "ListElementCode" : "solicitorLabel",
+  "ID" : "Solicitor"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "solicitor",
+  "ListElementCode" : "name",
+  "ID" : "Solicitor"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "solicitor",
+  "ListElementCode" : "mobile",
+  "ID" : "Solicitor"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "solicitor",
+  "ListElementCode" : "telephone",
+  "ID" : "Solicitor"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "solicitor",
+  "ListElementCode" : "email",
+  "ID" : "Solicitor"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "solicitor",
+  "ListElementCode" : "dx",
+  "ID" : "Solicitor"
+}, {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "solicitor",
+  "ListElementCode" : "reference",
+  "ID" : "Solicitor"
+} ]

@@ -1,0 +1,84 @@
+[ {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "name",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "email",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "pbaNumberDynamicList",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "pbaNumber",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "applicationDetailsLabel",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 6
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "customerReference",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 7
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "legalTeamManager",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 8
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "address",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 9
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "address.AddressLine1",
+  "ID" : "EnterApplicantLa"
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "address.AddressLine2",
+  "ID" : "EnterApplicantLa"
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "address.AddressLine3",
+  "ID" : "EnterApplicantLa"
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "address.PostTown",
+  "ID" : "EnterApplicantLa"
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "address.County",
+  "ID" : "EnterApplicantLa"
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "address.PostCode",
+  "ID" : "EnterApplicantLa"
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "localAuthority",
+  "ListElementCode" : "address.Country",
+  "ID" : "EnterApplicantLa"
+} ]

@@ -1,0 +1,4 @@
+[ {
+  "ID" : "attachScannedDocs",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/render-documents/about-to-submit"
+} ]

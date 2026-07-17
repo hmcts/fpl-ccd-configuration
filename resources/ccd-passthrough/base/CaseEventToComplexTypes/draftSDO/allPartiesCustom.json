@@ -1,0 +1,19 @@
+[ {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "allPartiesCustom",
+  "ListElementCode" : "directionType",
+  "ID" : "AllPartiesCustomDirections",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "allPartiesCustom",
+  "ListElementCode" : "directionText",
+  "ID" : "AllPartiesCustomDirections",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "allPartiesCustom",
+  "ListElementCode" : "dateToBeCompletedBy",
+  "ID" : "AllPartiesCustomDirections",
+  "FieldDisplayOrder" : 3
+} ]

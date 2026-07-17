@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 
 @Data
@@ -13,10 +14,12 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmailAddress {
+    @CCD(label = "Email", hint = "Case notifications will not go to this email address")
     @Email(
         message = "Enter a valid email address",
         regexp = "^[_A-Za-z0-9-']+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
     @NotBlank(message = "Enter an email address for the contact")
     private final String email;
+    @CCD(ignore = true)
     private final String emailUsageType;
 }

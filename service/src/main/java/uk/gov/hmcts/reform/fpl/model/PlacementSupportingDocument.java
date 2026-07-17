@@ -6,14 +6,24 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlacementSupportingDocument {
+    @CCD(
+            label = "Document type",
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "PlacementSupportingDocumentType"
+    )
     private Type type;
+    @CCD(label = "Custom document type")
     private String otherDocTypeName;
+    @CCD(label = "Document", categoryID = "placementApplicationsAndResponses", typeOverride = FieldType.Document)
     private DocumentReference document;
+    @CCD(label = "Description", typeOverride = FieldType.TextArea)
     private String description;
 
     @Getter

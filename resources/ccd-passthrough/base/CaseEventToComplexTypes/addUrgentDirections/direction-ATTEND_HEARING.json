@@ -1,0 +1,37 @@
+[ {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "direction-ATTEND_HEARING",
+  "ListElementCode" : "title",
+  "ID" : "direction-config-ATTEND_HEARING",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "direction-ATTEND_HEARING",
+  "ListElementCode" : "description",
+  "ID" : "direction-config-ATTEND_HEARING",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "direction-ATTEND_HEARING",
+  "ListElementCode" : "assignee",
+  "ID" : "direction-config-ATTEND_HEARING",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "direction-ATTEND_HEARING",
+  "ListElementCode" : "dueDateType",
+  "ID" : "direction-config-ATTEND_HEARING",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "direction-ATTEND_HEARING",
+  "ListElementCode" : "dateToBeCompletedBy",
+  "ID" : "direction-config-ATTEND_HEARING",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "direction-ATTEND_HEARING",
+  "ListElementCode" : "daysBeforeHearing",
+  "ID" : "direction-config-ATTEND_HEARING",
+  "FieldDisplayOrder" : 5
+} ]

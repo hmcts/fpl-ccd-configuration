@@ -30,6 +30,8 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.REFUSE_CONTACT_WITH_CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SECURE_ACCOMMODATION_ORDER;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @Builder(toBuilder = true)
@@ -38,29 +40,117 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.SECURE_ACCOMMODATION_ORDER
 @HasEnteredEPOExcluded
 @Jacksonized
 public class Orders {
+    @CCD(label = "Which orders do you need?")
     @NotNull(message = "Select at least one type of order")
     @Size(min = 1, message = "Select at least one type of order")
     private final List<OrderType> orderType;
+    @CCD(
+            label = "Do you need any of these related orders?",
+            showCondition = "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "EmergencyProtectionOrderType"
+    )
     private final List<EmergencyProtectionOrdersType> emergencyProtectionOrders;
+    @CCD(label = "Do you need any other directions?", typeOverride = FieldType.YesOrNo)
     private final String directions;
+    @CCD(
+            label = "Do you need any of these directions?",
+            showCondition = "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "EmergencyProtectionOrderDirectionType"
+    )
     private final List<EmergencyProtectionOrderDirectionsType> emergencyProtectionOrderDirections;
+    @CCD(
+            label = "Which order do you need?",
+            showCondition = "orderType CONTAINS \"OTHER\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String otherOrder;
+    @CCD(
+            label = "Give details",
+            showCondition = "emergencyProtectionOrders CONTAINS \"OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String emergencyProtectionOrderDetails;
+    @CCD(
+            label = "Give details",
+            showCondition = "emergencyProtectionOrderDirections CONTAINS \"OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String emergencyProtectionOrderDirectionDetails;
+    @CCD(label = "Give details", showCondition = "directions=\"Yes\"", typeOverride = FieldType.TextArea)
     private final String directionDetails;
+    @CCD(
+            label = "What type of EPO are you requesting?",
+            showCondition = "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\""
+    )
     private final EPOType epoType;
+    @CCD(
+            label = "Who's excluded?",
+            showCondition = "emergencyProtectionOrderDirections CONTAINS \"EXCLUSION_REQUIREMENT\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\""
+    )
     private final String excluded;
+    @CCD(
+            label = "Address",
+            showCondition = "epoType=\"PREVENT_REMOVAL\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\""
+    )
     private final Address address;
+    @CCD(
+            label = "Under which section are you applying?",
+            showCondition = "orderType CONTAINS \"SECURE_ACCOMMODATION_ORDER\""
+    )
     @NotNull(message = "Select under which section are you applying", groups = SecureAccommodationGroup.class)
     private final SecureAccommodationOrderSection secureAccommodationOrderSection;
+    @CCD(
+            label = "Which court are you issuing for?",
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "Court"
+    )
     private final String court;
+    @CCD(
+            label = "The direction(s) sought in respect of the assessment",
+            showCondition = "orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String childAssessmentOrderAssessmentDirections;
+    @CCD(
+            label = "The direction(s) sought in respect of contact",
+            showCondition = "orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String childAssessmentOrderContactDirections;
+    @CCD(
+            label = "The orders and directions applied for",
+            showCondition = "orderType CONTAINS \"CHILD_RECOVERY_ORDER\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String childRecoveryOrderDirectionsAppliedFor;
+    @CCD(
+            label = "State whether the child[ren] [is] [are]",
+            showCondition = "orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
+    )
     private final List<ParticularsOfChildren> particularsOfChildren;
+    @CCD(
+            label = "Details that will identify the child",
+            showCondition = "orderType CONTAINS \"CHILD_RECOVERY_ORDER\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String particularsOfChildrenDetails;
+    @CCD(
+            label = "The orders and directions applied for",
+            showCondition = "orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String educationSupervisionOrderDirectionsAppliedFor;
+    @CCD(
+            label = "State the name of any other local authority which has been consulted",
+            showCondition = "orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\""
+    )
     private final String educationSupervisionOrderPriorConsultationOtherLA;
+    @CCD(
+            label = " ",
+            showCondition = "orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" AND educationSupervisionOrderPriorConsultationOtherLA != \"\""
+    )
     private final List<PriorConsultationType> educationSupervisionOrderPriorConsultationType;
 
     @JsonIgnore
@@ -152,4 +242,45 @@ public class Orders {
     public boolean isEPOCombinedWithICO() {
         return isNotEmpty(orderType) && containsInterimCareOrder() && orderContainsEPO();
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(
+          label = "## Emergency protection order",
+          showCondition = "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+          typeOverride = FieldType.Label
+  )
+  private String emergencyProtectionOrderLabel;
+  @CCD(
+          label = "## Variation of supervision order or discharge of care order",
+          showCondition = "orderType CONTAINS \"OTHER\"",
+          typeOverride = FieldType.Label
+  )
+  private String otherOrderLabel;
+  @CCD(
+          label = "## Child Assessment Order",
+          showCondition = "orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+          typeOverride = FieldType.Label
+  )
+  private String childAssessmentOrderLabel;
+  @CCD(
+          label = "## Education Supervision Order",
+          showCondition = "orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\"",
+          typeOverride = FieldType.Label
+  )
+  private String educationSupervisionOrderLabel;
+  @CCD(label = "## Directions", showCondition = "orderType = \"DO_NOT_SHOW\"", typeOverride = FieldType.Label)
+  private String directionLabel;
+  @CCD(
+          label = "## Secure accommodation order",
+          showCondition = "orderType CONTAINS \"SECURE_ACCOMMODATION_ORDER\"",
+          typeOverride = FieldType.Label
+  )
+  private String secureAccommodationOrderLabel;
+  @CCD(
+          label = "## Child recovery order",
+          showCondition = "orderType CONTAINS \"CHILD_RECOVERY_ORDER\"",
+          typeOverride = FieldType.Label
+  )
+  private String childRecoveryOrderLabel;
+  // ==== end synthesised definition-only fields ====
 }

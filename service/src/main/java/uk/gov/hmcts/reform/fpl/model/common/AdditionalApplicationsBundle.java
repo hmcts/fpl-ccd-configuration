@@ -11,48 +11,85 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import java.lang.reflect.Field;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AdditionalApplicationsBundle {
+    @CCD(label = "Date and time of upload", showCondition = "c2DocumentBundle=\"DO NOT SHOW\"", searchable = false)
     private final String uploadedDateTime;
+    @CCD(label = "Uploaded by", showCondition = "c2DocumentBundle=\"Do Not Show\"", searchable = false)
     private final String author;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundle;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleConfidential;
 
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleLA;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp0;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp1;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp2;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp3;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp4;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp5;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp6;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp7;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp8;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleResp9;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild0;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild1;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild2;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild3;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild4;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild5;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild6;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild7;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild8;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild9;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild10;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild11;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild12;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild13;
+    @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild14;
 
+    @CCD(label = "Other applications", searchable = false)
     private OtherApplicationsBundle otherApplicationsBundle;
+    @CCD(label = "PBA Payment", searchable = false)
     private PBAPayment pbaPayment;
+    @CCD(label = "Reason for removal", searchable = false)
     private String removalReason;
+    @CCD(label = "Amount to pay", showCondition = "c2DocumentBundle=\"DO NOT SHOW\"", searchable = false)
     private String amountToPay;
+    @CCD(label = "Application Reviewed by Judge", searchable = false, typeOverride = FieldType.YesOrNo)
     private YesNo applicationReviewed;
 
     @JsonIgnore
@@ -115,4 +152,16 @@ public class AdditionalApplicationsBundle {
                || isNotEmpty(c2DocumentBundleChild12) || isNotEmpty(c2DocumentBundleChild13)
                || isNotEmpty(c2DocumentBundleChild14);
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = "hasConfidentialC2", showCondition = "c2DocumentBundle=\"Do Not Show\"", searchable = false)
+  private uk.gov.hmcts.ccd.sdk.type.YesOrNo hasConfidentialC2;
+  @CCD(
+          label = "This is a confidential application and restricted viewing applies",
+          showCondition = "hasConfidentialC2=\"YES\" AND c2DocumentBundleConfidential!=\"*\" AND c2DocumentBundleLA!=\"*\" AND c2DocumentBundleResp0!=\"*\" AND c2DocumentBundleResp1!=\"*\" AND c2DocumentBundleResp2!=\"*\" AND c2DocumentBundleResp3!=\"*\" AND c2DocumentBundleResp4!=\"*\" AND c2DocumentBundleResp5!=\"*\" AND c2DocumentBundleResp6!=\"*\" AND c2DocumentBundleResp7!=\"*\" AND c2DocumentBundleResp8!=\"*\" AND c2DocumentBundleResp9!=\"*\" AND c2DocumentBundleChild0!=\"*\" AND c2DocumentBundleChild1!=\"*\" AND c2DocumentBundleChild2!=\"*\" AND c2DocumentBundleChild3!=\"*\" AND c2DocumentBundleChild4!=\"*\" AND c2DocumentBundleChild5!=\"*\" AND c2DocumentBundleChild6!=\"*\" AND c2DocumentBundleChild7!=\"*\" AND c2DocumentBundleChild8!=\"*\" AND c2DocumentBundleChild9!=\"*\" AND c2DocumentBundleChild10!=\"*\" AND c2DocumentBundleChild11!=\"*\" AND c2DocumentBundleChild12!=\"*\" AND c2DocumentBundleChild13!=\"*\" AND c2DocumentBundleChild14!=\"*\"",
+          searchable = false,
+          typeOverride = FieldType.Label
+  )
+  private String confidentialC2RestrictedLabel;
+  // ==== end synthesised definition-only fields ====
 }

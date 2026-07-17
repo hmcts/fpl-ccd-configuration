@@ -1,0 +1,97 @@
+[ {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "optionCount",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option0",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option1",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option2",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option3",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option4",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 6
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option5",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 7
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option6",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 8
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option7",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 9
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option8",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 10
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option9",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 11
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option10",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 12
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option11",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 13
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option12",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 14
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option13",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 15
+}, {
+  "CaseEventID" : "manageOrders",
+  "CaseFieldID" : "respondentsRefusedSelector",
+  "ListElementCode" : "option14",
+  "ID" : "ManageOrdersRespondentsRefusedSelector",
+  "FieldDisplayOrder" : 16
+} ]

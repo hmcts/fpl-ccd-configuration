@@ -1,0 +1,5 @@
+[ {
+  "ID" : "hearingBookingDetails-PREPARE_FOR_HEARING",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/about-to-submit"
+} ]

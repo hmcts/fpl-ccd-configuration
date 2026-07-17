@@ -1,0 +1,5 @@
+[ {
+  "ID" : "uploadC2-PREPARE_FOR_HEARING",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/submitted"
+} ]

@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "caseName",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/mid-event"
+} ]

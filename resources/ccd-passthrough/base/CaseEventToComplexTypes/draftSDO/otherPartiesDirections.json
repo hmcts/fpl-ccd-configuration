@@ -1,0 +1,37 @@
+[ {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "otherPartiesDirections",
+  "ListElementCode" : "readOnly",
+  "ID" : "OtherPartiesDirections",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "otherPartiesDirections",
+  "ListElementCode" : "directionRemovable",
+  "ID" : "OtherPartiesDirections",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "otherPartiesDirections",
+  "ListElementCode" : "directionType",
+  "ID" : "OtherPartiesDirections",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "otherPartiesDirections",
+  "ListElementCode" : "directionNeeded",
+  "ID" : "OtherPartiesDirections",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "otherPartiesDirections",
+  "ListElementCode" : "directionText",
+  "ID" : "OtherPartiesDirections",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "otherPartiesDirections",
+  "ListElementCode" : "dateToBeCompletedBy",
+  "ID" : "OtherPartiesDirections",
+  "FieldDisplayOrder" : 6
+} ]

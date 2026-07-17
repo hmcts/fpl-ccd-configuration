@@ -1,0 +1,37 @@
+[ {
+  "CaseEventID" : "amendAttendingHearing",
+  "CaseFieldID" : "hearingPreferences",
+  "ListElementCode" : "whichCourtServices",
+  "ID" : "HearingPreferences",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "amendAttendingHearing",
+  "CaseFieldID" : "hearingPreferences",
+  "ListElementCode" : "interpreterDetails",
+  "ID" : "HearingPreferences",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "amendAttendingHearing",
+  "CaseFieldID" : "hearingPreferences",
+  "ListElementCode" : "intermediaryDetails",
+  "ID" : "HearingPreferences",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "amendAttendingHearing",
+  "CaseFieldID" : "hearingPreferences",
+  "ListElementCode" : "disabilityAssistanceDetails",
+  "ID" : "HearingPreferences",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "amendAttendingHearing",
+  "CaseFieldID" : "hearingPreferences",
+  "ListElementCode" : "extraSecurityMeasuresDetails",
+  "ID" : "HearingPreferences",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "amendAttendingHearing",
+  "CaseFieldID" : "hearingPreferences",
+  "ListElementCode" : "somethingElseDetails",
+  "ID" : "HearingPreferences",
+  "FieldDisplayOrder" : 6
+} ]

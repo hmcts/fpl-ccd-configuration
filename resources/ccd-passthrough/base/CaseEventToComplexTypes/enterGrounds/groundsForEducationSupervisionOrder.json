@@ -1,0 +1,11 @@
+[ {
+  "CaseEventID" : "enterGrounds",
+  "CaseFieldID" : "groundsForEducationSupervisionOrder",
+  "ListElementCode" : "groundHeader",
+  "ID" : "GroundsForEducationSupervisionOrder"
+}, {
+  "CaseEventID" : "enterGrounds",
+  "CaseFieldID" : "groundsForEducationSupervisionOrder",
+  "ListElementCode" : "groundDetails",
+  "ID" : "GroundsForEducationSupervisionOrder"
+} ]

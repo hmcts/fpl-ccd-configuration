@@ -20,25 +20,97 @@ import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import java.time.LocalDate;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonDeserialize(builder = RespondentParty.RespondentPartyBuilder.class)
 public final class RespondentParty extends Party {
+    @CCD(
+            label = "What is the respondent's gender?",
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "GenderList"
+    )
     private final String gender;
+    @CCD(label = "What gender do they identify with?", showCondition = "gender=\"They identify in another way\"")
     private final String genderIdentification;
+    @CCD(label = "Place of birth", hint = "For example, town or city")
     private final String placeOfBirth;
+    @CCD(
+            label = "Which children does the respondent have parental responsibility for and what is their relationship?",
+            typeOverride = FieldType.TextArea
+    )
     private final String relationshipToChild;
+    @CCD(
+            label = "Do you need contact details hidden from other parties?",
+            showCondition = "addressKnow!=\"LIVE_IN_REFUGE\"",
+            typeOverride = FieldType.YesOrNo
+    )
     private final String contactDetailsHidden;
+    @CCD(
+            label = "Give reason",
+            showCondition = "contactDetailsHidden=\"Yes\" AND addressKnow!=\"LIVE_IN_REFUGE\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String contactDetailsHiddenReason;
+    @CCD(
+            label = "Do you believe this person will have difficulty understanding what's happening with the case?",
+            typeOverride = FieldType.FixedRadioList,
+            typeParameterOverride = "LitigationCapacityIssues"
+    )
     private final String litigationIssues;
+    @CCD(
+            label = "Give details, including assessment outcomes and referrals to health services",
+            showCondition = "litigationIssues=\"YES\"",
+            typeOverride = FieldType.TextArea
+    )
     private final String litigationIssuesDetails;
+    @CCD(
+            label = "Why is this address unknown?",
+            showCondition = "addressKnow=\"No\"",
+            typeOverride = FieldType.FixedRadioList,
+            typeParameterOverride = "AddressNotKnowType"
+    )
     private final String addressNotKnowReason;
+    @CCD(label = "Current address known?")
     private final IsAddressKnowType addressKnow;
+    @CCD(
+            label = "Do you need to keep the address confidential?",
+            showCondition = "addressKnow=\"Yes\"",
+            typeOverride = FieldType.YesOrNo
+    )
     private final String hideAddress;
+    @CCD(label = "Do you need to keep the contact number confidential?", typeOverride = FieldType.YesOrNo)
     private final String hideTelephone;
 
+    // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+    @CCD(
+            label = "## This address is automatically made confidential",
+            showCondition = "addressKnow=\"LIVE_IN_REFUGE\"",
+            typeOverride = FieldType.Label
+    )
+    private String addressAutoConfidentialLabel;
+    @CCD(
+            label = "Give more details",
+            showCondition = "addressKnow=\"No\" AND addressNotKnowReason=\"Whereabouts unknown\"",
+            typeOverride = FieldType.TextArea
+    )
+    private String whereaboutsUnknownDetails;
+    @CCD(
+            label = "## Relationship to child",
+            showCondition = "relationshipLabel=\"HIDE_LABEL\"",
+            typeOverride = FieldType.Label
+    )
+    private String relationshipLabel;
+    @CCD(
+            label = "## Ability to take part in proceedings",
+            showCondition = "proceedingsLabel=\"HIDE_LABEL\"",
+            typeOverride = FieldType.Label
+    )
+    private String proceedingsLabel;
+    // ==== end synthesised definition-only fields ====
 
     @Override
     @NotBlank(message = "Enter the respondent's full name")

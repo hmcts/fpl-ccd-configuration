@@ -6,6 +6,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDateTime;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 @Value
 @Builder
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NextHearingDetails {
 
+    @CCD(label = "Next hearing date", searchable = false)
     LocalDateTime hearingDateTime;
 
 }

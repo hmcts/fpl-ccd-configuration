@@ -1,0 +1,5 @@
+[ {
+  "ID" : "changeOtherToRespondent",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/change-from-other/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/change-from-other/about-to-submit"
+} ]

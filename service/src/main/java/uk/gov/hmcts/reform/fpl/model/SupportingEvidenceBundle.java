@@ -33,6 +33,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @JsonSubTypes({
     @JsonSubTypes.Type(value = RespondentStatementV2.class)
@@ -42,25 +44,74 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocument, WithDocument {
+    @CCD(label = "Document name", regex = "^(?!.*<[^>\\d]+>*).*")
     private final String name;
+    @CCD(label = "Notes", typeOverride = FieldType.TextArea)
     private final String notes;
+    @CCD(label = "Date and time received", hint = "For example, 31 3 2016  2 30 00")
     @PastOrPresentDate(message = "Date received cannot be in the future")
     private final LocalDateTime dateTimeReceived;
+    @CCD(label = "Date and time uploaded")
     private LocalDateTime dateTimeUploaded;
+    @CCD(label = "File", categoryID = "respondentsOwnStatements", typeOverride = FieldType.Document)
     private final DocumentReference document;
+    @CCD(
+            label = "Document Uploader Type",
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "DocumentUploaderType"
+    )
     private DocumentUploaderType uploaderType;
+    @CCD(label = "Document Uploader Case Roles")
     private List<CaseRole> uploaderCaseRoles;
+    @CCD(label = "Uploaded by")
     private String uploadedBy;
+    @CCD(
+            label = " ",
+            showCondition = "confidentialWarningLabel=\"DO_NOT_SHOW\"",
+            searchable = false,
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "ConfidentialDocument"
+    )
     private List<String> confidential;
+    @CCD(
+            label = "Choose a further evidence document type",
+            showCondition = "confidential=\"DO_NOT_SHOW\"",
+            searchable = false
+    )
     private FurtherEvidenceType type;
+    @CCD(
+            label = " ",
+            showCondition = "confidential=\"DO_NOT_SHOW\"",
+            searchable = false,
+            typeOverride = FieldType.YesOrNo
+    )
     private String uploadedBySolicitor;
+    @CCD(label = "Translated document", categoryID = "parent_respondentsStatements", typeOverride = FieldType.Document)
     private final DocumentReference translatedDocument;
+    @CCD(label = "Welsh translation upload time", showCondition = "translatedDocument=\"DO_NOT_SHOW\"")
     private final LocalDateTime translationUploadDateTime;
+    @CCD(label = "Is translation needed?", showCondition = "confidential=\"DO_NOT_SHOW\"", searchable = false)
     private final LanguageTranslationRequirement translationRequirements;
+    @CCD(label = "Document contains a confidential address?", searchable = false, typeOverride = FieldType.YesOrNo)
     private String hasConfidentialAddress;
+    @CCD(
+            label = "Choose an expert report type",
+            showCondition = "type=\"EXPERT_REPORTS\"",
+            searchable = false,
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "ExpertReportList"
+    )
     private ExpertReportType expertReportType;
+    @CCD(
+            label = "Tick to confirm this document is related to this case",
+            searchable = false,
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "DocumentAcknowledge"
+    )
     private List<String> documentAcknowledge;
+    @CCD(label = "Reason for removal", typeOverride = FieldType.TextArea)
     private String removalReason;
+    @CCD(label = "Is confidential?", typeOverride = FieldType.YesOrNo)
     private String markAsConfidential;
 
     public String getHasConfidentialAddress() {
@@ -147,4 +198,18 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
         return this.documentAcknowledge;
     }
 
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String documentAcknowledgeLabel;
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String documentAcknowledgeLabelForCYA;
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String confidentialWarningLabel;
+  @CCD(label = " ", showCondition = "confidential CONTAINS \"CONFIDENTIAL\"", searchable = false)
+  private String confidentialTabLabel;
+  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"", searchable = false)
+  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String hasConfidentialAddressLabel;
+  // ==== end synthesised definition-only fields ====
 }

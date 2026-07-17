@@ -1,0 +1,54 @@
+[ {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "name",
+  "ID" : "LocalAuthority",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "email",
+  "ID" : "LocalAuthority",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "address",
+  "ID" : "LocalAuthority",
+  "FieldDisplayOrder" : 8
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "address.AddressLine1",
+  "ID" : "LocalAuthority"
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "address.AddressLine2",
+  "ID" : "LocalAuthority"
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "address.AddressLine3",
+  "ID" : "LocalAuthority"
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "address.PostTown",
+  "ID" : "LocalAuthority"
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "address.County",
+  "ID" : "LocalAuthority"
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "address.PostCode",
+  "ID" : "LocalAuthority"
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "ListElementCode" : "address.Country",
+  "ID" : "LocalAuthority"
+} ]

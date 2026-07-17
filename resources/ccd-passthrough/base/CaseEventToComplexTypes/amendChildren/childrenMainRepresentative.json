@@ -1,0 +1,138 @@
+[ {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "firstName",
+  "ID" : "AmendChildren",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "lastName",
+  "ID" : "AmendChildren",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "email",
+  "ID" : "AmendChildren",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "telephoneNumber.telephoneNumber",
+  "ID" : "AmendChildren",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "organisation",
+  "ID" : "AmendChildren",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "organisation.OrganisationName",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation",
+  "ID" : "AmendChildren",
+  "FieldDisplayOrder" : 6
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.signUpRequestHeader",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.signupRequestLabel",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.name",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.address",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.address.AddressLine1",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.address.AddressLine2",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.address.AddressLine3",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.address.PostTown",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.address.County",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.address.PostCode",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "unregisteredOrganisation.address.Country",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "regionalOfficeAddress",
+  "ID" : "AmendChildren",
+  "FieldDisplayOrder" : 10
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "regionalOfficeAddress.AddressLine1",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "regionalOfficeAddress.AddressLine2",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "regionalOfficeAddress.AddressLine3",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "regionalOfficeAddress.PostTown",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "regionalOfficeAddress.County",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "regionalOfficeAddress.PostCode",
+  "ID" : "AmendChildren"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "childrenMainRepresentative",
+  "ListElementCode" : "regionalOfficeAddress.Country",
+  "ID" : "AmendChildren"
+} ]

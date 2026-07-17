@@ -17,6 +17,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.reform.fpl.ccd.access.EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess;
+import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCruCaseworkerPubliclawJudiciaryCrudAccess;
+import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerApproverCruAccess;
+import uk.gov.hmcts.reform.fpl.ccd.access.EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess;
+import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerApproverCrudPlus2RolesUjhfjmAccess;
 
 @Value
 @Builder
@@ -24,41 +31,133 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnot
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChildrenEventData {
     // page 2
+    @CCD(
+            label = "Do you know if any of the children have legal representation?",
+            searchable = false,
+            typeOverride = FieldType.YesOrNo,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawCourtadminCruCaseworkerPubliclawJudiciaryCrudAccess.class}
+    )
     String childrenHaveRepresentation;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawCourtadminCruCaseworkerPubliclawJudiciaryCrudAccess.class, CaseworkerApproverCruAccess.class}
+    )
     @Temp
     RespondentSolicitor childrenMainRepresentative;
 
     // page 3
+    @CCD(
+            label = "Do all the children have this Cafcass legal representative?",
+            searchable = false,
+            typeOverride = FieldType.YesOrNo,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawCourtadminCruCaseworkerPubliclawJudiciaryCrudAccess.class, CaseworkerApproverCruAccess.class}
+    )
     @Temp
     String childrenHaveSameRepresentation;
+    @CCD(
+            label = "Child 1",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails0;
+    @CCD(
+            label = "Child 2",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails1;
+    @CCD(
+            label = "Child 3",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails2;
+    @CCD(
+            label = "Child 4",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails3;
+    @CCD(
+            label = "Child 5",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails4;
+    @CCD(
+            label = "Child 6",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails5;
+    @CCD(
+            label = "Child 7",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails6;
+    @CCD(
+            label = "Child 8",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails7;
+    @CCD(
+            label = "Child 9",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails8;
+    @CCD(
+            label = "Child 10",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails9;
+    @CCD(
+            label = "Child 11",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails10;
+    @CCD(
+            label = "Child 12",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails11;
+    @CCD(
+            label = "Child 13",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails12;
+    @CCD(
+            label = "Child 14",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails13;
+    @CCD(
+            label = "Child 15",
+            searchable = false,
+            access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCrudAccess.class, CaseworkerApproverCrudPlus2RolesUjhfjmAccess.class}
+    )
     @Temp
     ChildRepresentationDetails childRepresentationDetails14;
 

@@ -1,0 +1,7 @@
+[ {
+  "CaseFieldID" : "hasExistingPlacements",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placementNotice/placement-application/mid-event"
+}, {
+  "CaseFieldID" : "placementChildNameLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placementNotice/notice-details/mid-event"
+} ]

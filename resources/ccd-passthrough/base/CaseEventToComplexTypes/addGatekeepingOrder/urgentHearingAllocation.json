@@ -1,0 +1,43 @@
+[ {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "allocationDecision_Label",
+  "ID" : "AllocationDecision",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "allocationDecision_LabelReason",
+  "ID" : "AllocationDecision",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "missingAllocationDecision_Label",
+  "ID" : "AllocationDecision",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "judgeLevelRadio",
+  "ID" : "AllocationDecision",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "proposalV2",
+  "ID" : "AllocationDecision",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "proposalReason",
+  "ID" : "AllocationDecision",
+  "FieldDisplayOrder" : 6
+}, {
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "allocationProposalPresent",
+  "ID" : "AllocationDecision",
+  "FieldDisplayOrder" : 7
+} ]

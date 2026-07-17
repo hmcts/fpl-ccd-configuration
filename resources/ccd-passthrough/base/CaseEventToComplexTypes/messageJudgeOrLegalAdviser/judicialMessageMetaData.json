@@ -1,0 +1,51 @@
+[ {
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "senderType",
+  "ID" : "JudicialMessageMetaData",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "sender",
+  "ID" : "JudicialMessageMetaData",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "recipientType",
+  "ID" : "JudicialMessageMetaData",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "recipientDynamicList",
+  "ID" : "JudicialMessageMetaData",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "otherJudgeWarningLabel",
+  "ID" : "JudicialMessageMetaData",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "recipient",
+  "ID" : "JudicialMessageMetaData",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "requestedBy",
+  "ID" : "JudicialMessageMetaData",
+  "SecurityClassification" : "Public",
+  "FieldDisplayOrder" : 6,
+  "Comment" : "Used for subject"
+}, {
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "isJudicialMessageUrgent",
+  "ID" : "JudicialMessageMetaData",
+  "FieldDisplayOrder" : 7
+} ]

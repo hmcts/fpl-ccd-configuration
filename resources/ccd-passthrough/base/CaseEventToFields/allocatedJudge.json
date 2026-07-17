@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "judgeType",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/allocated-judge/mid-event"
+} ]

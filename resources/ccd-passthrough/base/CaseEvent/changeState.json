@@ -1,0 +1,5 @@
+[ {
+  "ID" : "changeState",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/change-state/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/change-state/about-to-submit"
+} ]

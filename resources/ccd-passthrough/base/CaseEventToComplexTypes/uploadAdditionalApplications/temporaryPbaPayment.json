@@ -1,0 +1,32 @@
+[ {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryPbaPayment",
+  "ListElementCode" : "usePbaPayment",
+  "ID" : "PBAPaymentComplexType",
+  "FieldDisplayOrder" : "1",
+  "DefaultValue" : "Yes"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryPbaPayment",
+  "ListElementCode" : "pbaNumber",
+  "ID" : "PBAPaymentComplexType",
+  "FieldDisplayOrder" : "2"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryPbaPayment",
+  "ListElementCode" : "pbaNumberDynamicList",
+  "ID" : "PBAPaymentComplexType",
+  "FieldDisplayOrder" : "2"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryPbaPayment",
+  "ListElementCode" : "clientCode",
+  "ID" : "PBAPaymentComplexType",
+  "FieldDisplayOrder" : "3"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryPbaPayment",
+  "ListElementCode" : "fileReference",
+  "ID" : "PBAPaymentComplexType",
+  "FieldDisplayOrder" : "4"
+} ]

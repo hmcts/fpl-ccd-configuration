@@ -1,0 +1,19 @@
+[ {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "cafcassDirectionsCustom",
+  "ListElementCode" : "directionType",
+  "ID" : "CafcassDirectionsCustom",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "cafcassDirectionsCustom",
+  "ListElementCode" : "directionText",
+  "ID" : "CafcassDirectionsCustom",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "cafcassDirectionsCustom",
+  "ListElementCode" : "dateToBeCompletedBy",
+  "ID" : "CafcassDirectionsCustom",
+  "FieldDisplayOrder" : 3
+} ]

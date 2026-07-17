@@ -1,0 +1,7 @@
+[ {
+  "CaseFieldID" : "documentTypesDynamicList",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/populate-lists/mid-event"
+}, {
+  "CaseFieldID" : "attachDocumentLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/populate-document-labels/mid-event"
+} ]

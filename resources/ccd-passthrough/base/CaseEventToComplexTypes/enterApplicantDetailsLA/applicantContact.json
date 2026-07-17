@@ -1,0 +1,31 @@
+[ {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "applicantContact",
+  "ListElementCode" : "firstName",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "applicantContact",
+  "ListElementCode" : "lastName",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "applicantContact",
+  "ListElementCode" : "phone",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "applicantContact",
+  "ListElementCode" : "alternativePhone",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "enterApplicantDetailsLA",
+  "CaseFieldID" : "applicantContact",
+  "ListElementCode" : "email",
+  "ID" : "EnterApplicantLa",
+  "FieldDisplayOrder" : 5
+} ]

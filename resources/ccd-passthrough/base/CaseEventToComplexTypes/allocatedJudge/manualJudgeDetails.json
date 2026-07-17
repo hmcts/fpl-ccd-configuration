@@ -1,0 +1,25 @@
+[ {
+  "CaseEventID" : "allocatedJudge",
+  "CaseFieldID" : "manualJudgeDetails",
+  "ListElementCode" : "judgeTitle",
+  "ID" : "AllocatedJudge",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "allocatedJudge",
+  "CaseFieldID" : "manualJudgeDetails",
+  "ListElementCode" : "judgeLastName",
+  "ID" : "AllocatedJudge",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "allocatedJudge",
+  "CaseFieldID" : "manualJudgeDetails",
+  "ListElementCode" : "judgeFullName",
+  "ID" : "AllocatedJudge",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "allocatedJudge",
+  "CaseFieldID" : "manualJudgeDetails",
+  "ListElementCode" : "judgeEmailAddress",
+  "ID" : "AllocatedJudge",
+  "FieldDisplayOrder" : 4
+} ]

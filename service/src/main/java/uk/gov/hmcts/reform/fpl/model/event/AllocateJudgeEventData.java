@@ -11,18 +11,36 @@ import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class AllocateJudgeEventData {
+    @CCD(
+            label = "What type of judge do you want to allocate:",
+            searchable = false,
+            access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
+    )
     @Temp
     private final JudgeType judgeType;
+    @CCD(
+            label = "Select judge title",
+            searchable = false,
+            access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
+    )
     @Temp
     private final JudgeOrMagistrateTitle feePaidJudgeTitle;
+    @CCD(
+            label = "Search for Judge",
+            searchable = false,
+            access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
+    )
     @Temp
     private final JudicialUser judicialUser;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class})
     @Temp
     private final Judge manualJudgeDetails;
 

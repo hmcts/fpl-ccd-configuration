@@ -1,0 +1,36 @@
+[ {
+  "CaseEventID" : "addOrRemoveLegalCounsel",
+  "CaseFieldID" : "legalCounsellors",
+  "ListElementCode" : "firstName",
+  "ID" : "LegalCounsellor",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "addOrRemoveLegalCounsel",
+  "CaseFieldID" : "legalCounsellors",
+  "ListElementCode" : "lastName",
+  "ID" : "LegalCounsellor",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "addOrRemoveLegalCounsel",
+  "CaseFieldID" : "legalCounsellors",
+  "ListElementCode" : "email",
+  "ID" : "LegalCounsellor",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "addOrRemoveLegalCounsel",
+  "CaseFieldID" : "legalCounsellors",
+  "ListElementCode" : "telephoneNumber",
+  "ID" : "LegalCounsellor",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "addOrRemoveLegalCounsel",
+  "CaseFieldID" : "legalCounsellors",
+  "ListElementCode" : "organisation",
+  "ID" : "LegalCounsellor",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "addOrRemoveLegalCounsel",
+  "CaseFieldID" : "legalCounsellors",
+  "ListElementCode" : "organisation.OrganisationName",
+  "ID" : "LegalCounsellor"
+} ]

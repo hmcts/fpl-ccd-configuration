@@ -1,0 +1,49 @@
+[ {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "gatekeepingOrderIssuingJudge",
+  "ListElementCode" : "allocatedJudgeLabel",
+  "ID" : "JudgeAndLegalAdvisorComplexType",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "gatekeepingOrderIssuingJudge",
+  "ListElementCode" : "useAllocatedJudge",
+  "ID" : "JudgeAndLegalAdvisorComplexType",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "gatekeepingOrderIssuingJudge",
+  "ListElementCode" : "judgeTitle",
+  "ID" : "JudgeAndLegalAdvisorComplexType",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "gatekeepingOrderIssuingJudge",
+  "ListElementCode" : "otherTitle",
+  "ID" : "JudgeAndLegalAdvisorComplexType",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "gatekeepingOrderIssuingJudge",
+  "ListElementCode" : "judgeLastName",
+  "ID" : "JudgeAndLegalAdvisorComplexType",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "gatekeepingOrderIssuingJudge",
+  "ListElementCode" : "judgeFullName",
+  "ID" : "JudgeAndLegalAdvisorComplexType",
+  "FieldDisplayOrder" : 6
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "gatekeepingOrderIssuingJudge",
+  "ListElementCode" : "judgeEmailAddress",
+  "ID" : "JudgeAndLegalAdvisorComplexType",
+  "FieldDisplayOrder" : 7
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "gatekeepingOrderIssuingJudge",
+  "ListElementCode" : "legalAdvisorName",
+  "ID" : "JudgeAndLegalAdvisorComplexType",
+  "FieldDisplayOrder" : 8
+} ]

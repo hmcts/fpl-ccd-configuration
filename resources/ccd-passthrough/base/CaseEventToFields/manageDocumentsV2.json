@@ -1,0 +1,10 @@
+[ {
+  "CaseFieldID" : "manageDocumentActionLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/manage-document-action-selection/mid-event"
+}, {
+  "CaseFieldID" : "manageDocumentUploadNewDocInstructionLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/manage-document-upload-new-doc/mid-event"
+}, {
+  "CaseFieldID" : "manageDocumentRemoveDocInstructionLabelOne",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/manage-document-type-selection/mid-event"
+} ]

@@ -1,0 +1,5 @@
+[ {
+  "ID" : "languageSelection",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/language-selection/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
+} ]

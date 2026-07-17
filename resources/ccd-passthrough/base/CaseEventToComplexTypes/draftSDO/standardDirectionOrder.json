@@ -1,0 +1,13 @@
+[ {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "standardDirectionOrder",
+  "ListElementCode" : "orderDoc",
+  "ID" : "StandardDirectionOrder",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "standardDirectionOrder",
+  "ListElementCode" : "orderStatus",
+  "ID" : "StandardDirectionOrder",
+  "FieldDisplayOrder" : 2
+} ]

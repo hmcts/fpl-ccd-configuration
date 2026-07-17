@@ -1,0 +1,19 @@
+[ {
+  "CaseEventID" : "otherProposal",
+  "CaseFieldID" : "allocationProposal",
+  "ListElementCode" : "proposalV2",
+  "ID" : "AllocationProposal",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "otherProposal",
+  "CaseFieldID" : "allocationProposal",
+  "ListElementCode" : "reasonLabel1",
+  "ID" : "AllocationProposal",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "otherProposal",
+  "CaseFieldID" : "allocationProposal",
+  "ListElementCode" : "proposalReason",
+  "ID" : "AllocationProposal",
+  "FieldDisplayOrder" : 3
+} ]

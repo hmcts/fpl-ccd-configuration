@@ -1,0 +1,19 @@
+[ {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "respondentDirectionsCustom",
+  "ListElementCode" : "directionType",
+  "ID" : "ParentsAndRespondentsCustom",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "respondentDirectionsCustom",
+  "ListElementCode" : "directionText",
+  "ID" : "ParentsAndRespondentsCustom",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "respondentDirectionsCustom",
+  "ListElementCode" : "dateToBeCompletedBy",
+  "ID" : "ParentsAndRespondentsCustom",
+  "FieldDisplayOrder" : 3
+} ]

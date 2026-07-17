@@ -1,0 +1,37 @@
+[ {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "customDirections",
+  "ListElementCode" : "title",
+  "ID" : "StandardDirectionOrder",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "customDirections",
+  "ListElementCode" : "description",
+  "ID" : "StandardDirectionOrder",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "customDirections",
+  "ListElementCode" : "assignee",
+  "ID" : "StandardDirectionOrder",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "customDirections",
+  "ListElementCode" : "dueDateType",
+  "ID" : "StandardDirectionOrder",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "customDirections",
+  "ListElementCode" : "dateToBeCompletedBy",
+  "ID" : "StandardDirectionOrder",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "addUrgentDirections",
+  "CaseFieldID" : "customDirections",
+  "ListElementCode" : "daysBeforeHearing",
+  "ID" : "StandardDirectionOrder",
+  "FieldDisplayOrder" : 5
+} ]

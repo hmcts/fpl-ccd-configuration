@@ -1,0 +1,19 @@
+[ {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransferSolicitor",
+  "ListElementCode" : "fullName",
+  "ID" : "LocalAuthority",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransferSolicitor",
+  "ListElementCode" : "email",
+  "ID" : "LocalAuthority",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "manageLocalAuthorities",
+  "CaseFieldID" : "localAuthorityToTransferSolicitor",
+  "ListElementCode" : "mainContact",
+  "ID" : "LocalAuthority",
+  "FieldDisplayOrder" : 8
+} ]

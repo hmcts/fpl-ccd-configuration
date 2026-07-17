@@ -1,0 +1,138 @@
+[ {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "applicationType",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "1"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "parentalResponsibilityType",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "2"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "document",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "3"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "documentAcknowledgeLabel",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "documentAcknowledgeLabelForCYA",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "documentAcknowledge",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "urgencyTimeFrameType",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "6"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supplementsBundle",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "7"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supplementsBundle.name",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "8"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supplementsBundle.secureAccommodationType",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "9"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supplementsBundle.notes",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "10"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supplementsBundle.document",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "11"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supplementsBundle.documentAcknowledgeLabel",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "12"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supplementsBundle.documentAcknowledgeLabelForCYA",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "12"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supplementsBundle.documentAcknowledge",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "13"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supportingEvidenceBundle",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "14"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supportingEvidenceBundle.name",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "15"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supportingEvidenceBundle.notes",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "16"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supportingEvidenceBundle.dateTimeReceived",
+  "ID" : "OtherDocumentBundleComplexType"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supportingEvidenceBundle.document",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "17"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supportingEvidenceBundle.documentAcknowledgeLabel",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "18"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supportingEvidenceBundle.documentAcknowledgeLabelForCYA",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "18"
+}, {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryOtherApplicationsBundle",
+  "ListElementCode" : "supportingEvidenceBundle.documentAcknowledge",
+  "ID" : "OtherDocumentBundleComplexType",
+  "FieldDisplayOrder" : "19"
+} ]

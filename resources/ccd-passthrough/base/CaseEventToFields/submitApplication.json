@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "downloadApplicationForReviewHintLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-submission/mid-event"
+} ]

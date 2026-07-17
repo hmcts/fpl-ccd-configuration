@@ -1,0 +1,4 @@
+[ {
+  "ID" : "addStatementOfService-PREPARE_FOR_HEARING",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/statement-of-service/about-to-start"
+} ]

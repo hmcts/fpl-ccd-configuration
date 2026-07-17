@@ -1,0 +1,37 @@
+[ {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "courtDirections",
+  "ListElementCode" : "readOnly",
+  "ID" : "CourtDirections",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "courtDirections",
+  "ListElementCode" : "directionRemovable",
+  "ID" : "CourtDirections",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "courtDirections",
+  "ListElementCode" : "directionType",
+  "ID" : "CourtDirections",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "courtDirections",
+  "ListElementCode" : "directionNeeded",
+  "ID" : "CourtDirections",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "courtDirections",
+  "ListElementCode" : "directionText",
+  "ID" : "CourtDirections",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "courtDirections",
+  "ListElementCode" : "dateToBeCompletedBy",
+  "ID" : "CourtDirections",
+  "FieldDisplayOrder" : 6
+} ]

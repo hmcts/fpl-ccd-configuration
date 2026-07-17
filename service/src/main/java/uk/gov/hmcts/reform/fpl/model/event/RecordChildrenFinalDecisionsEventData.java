@@ -16,44 +16,62 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCruAccess;
 
 @Value
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecordChildrenFinalDecisionsEventData {
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @PastOrPresent(message = "The close case date must be in the past",
         groups = RecordChildrenFinalDecisionsEventData.class)
     LocalDate finalDecisionDate;
 
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails00;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails01;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails02;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails03;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails04;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails05;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails06;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails07;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails08;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails09;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails10;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails11;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails12;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails13;
+    @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCruAccess.class})
     @Temp
     ChildFinalDecisionDetails childFinalDecisionDetails14;
 

@@ -1,0 +1,37 @@
+[ {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "cafcassDirections",
+  "ListElementCode" : "readOnly",
+  "ID" : "CafcassDirections",
+  "FieldDisplayOrder" : 1
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "cafcassDirections",
+  "ListElementCode" : "directionRemovable",
+  "ID" : "CafcassDirections",
+  "FieldDisplayOrder" : 2
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "cafcassDirections",
+  "ListElementCode" : "directionType",
+  "ID" : "CafcassDirections",
+  "FieldDisplayOrder" : 3
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "cafcassDirections",
+  "ListElementCode" : "directionNeeded",
+  "ID" : "CafcassDirections",
+  "FieldDisplayOrder" : 4
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "cafcassDirections",
+  "ListElementCode" : "directionText",
+  "ID" : "CafcassDirections",
+  "FieldDisplayOrder" : 5
+}, {
+  "CaseEventID" : "draftSDO",
+  "CaseFieldID" : "cafcassDirections",
+  "ListElementCode" : "dateToBeCompletedBy",
+  "ID" : "CafcassDirections",
+  "FieldDisplayOrder" : 6
+} ]

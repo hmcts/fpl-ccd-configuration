@@ -1,0 +1,4 @@
+[ {
+  "ID" : "deleteApplication",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-deletion/about-to-submit"
+} ]
