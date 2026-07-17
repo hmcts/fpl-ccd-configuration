@@ -1958,5 +1958,12 @@
     "CaseFieldID": "legalRepresentatives",
     "UserRole": "[LABARRISTER]",
     "CRUD": "RD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isUrgentListingRequest",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "CRUD"
   }
 ]

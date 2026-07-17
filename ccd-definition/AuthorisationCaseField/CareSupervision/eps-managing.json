@@ -2567,5 +2567,12 @@
     "CaseFieldID": "guardians",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isUrgentListingRequest",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "R"
   }
 ]

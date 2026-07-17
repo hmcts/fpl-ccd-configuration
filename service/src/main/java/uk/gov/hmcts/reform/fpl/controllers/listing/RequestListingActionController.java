@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ListingActionRequest;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -52,21 +54,31 @@ public class RequestListingActionController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        YesNo isUrgentInput = caseData.getIsUrgentListingRequest();
+
+        WorkAllocationTaskUrgency urgencyLevel = YesNo.YES.equals(isUrgentInput)
+            ? WorkAllocationTaskUrgency.URGENT
+            : WorkAllocationTaskUrgency.STANDARD;
+
+
         List<Element<ListingActionRequest>> listingRequests = Optional.ofNullable(caseData.getListingRequests())
             .orElse(new ArrayList<>());
 
         ListingActionRequest newRequest = ListingActionRequest.builder()
             .type(caseData.getSelectListingActions())
             .details(caseData.getListingDetails())
+            .isUrgent(isUrgentInput)
             .dateSent(time.now())
             .build();
 
-        listingRequests.add(0, element(newRequest));
+        listingRequests.addFirst(element(newRequest));
 
+        caseDetails.getData().put("waTaskUrgencyLevel", urgencyLevel);
         caseDetails.getData().put("listingRequests", listingRequests);
         caseDetails.getData().put("lastListingRequestType", newRequest.getTypesLabel().replace(", ", ";"));
 
-        removeTemporaryFields(caseDetails, "selectListingActions", "listingDetails");
+        removeTemporaryFields(caseDetails, "selectListingActions", "listingDetails", "isUrgentListingRequest");
+
         return respond(caseDetails);
     }
 
