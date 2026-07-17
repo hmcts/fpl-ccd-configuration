@@ -1,0 +1,5 @@
+[ {
+  "ID" : "internal-change-approve-order",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/approve-draft-orders/post-submit-callback/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/approve-draft-orders/post-submit-callback/submitted"
+} ]

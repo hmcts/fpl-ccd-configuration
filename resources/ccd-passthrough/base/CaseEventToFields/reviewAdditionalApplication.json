@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "hasApplicationToBeReviewed",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/review-additional-application/mid-event"
+} ]

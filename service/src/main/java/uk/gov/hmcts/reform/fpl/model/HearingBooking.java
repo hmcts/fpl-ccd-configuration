@@ -53,53 +53,141 @@ import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
 @HasEndDateAfterStartDate(groups = HearingBookingDetailsGroup.class)
 public class HearingBooking implements TranslatableItem {
+    @CCD(label = "Type of hearing", showCondition = "type!=\"OTHER\"", searchable = false)
     private HearingType type;
+    @CCD(label = "Status", showCondition = "status=\"DO NOT SHOW\"", searchable = false)
     private HearingStatus status;
+    @CCD(
+            label = "Type of hearing",
+            showCondition = "type=\"OTHER\"",
+            searchable = false,
+            typeOverride = FieldType.TextArea
+    )
     private final String typeDetails;
+    @CCD(
+            label = "Reason",
+            showCondition = "type=\"ACCELERATED_DISCHARGE_OF_CARE\"",
+            searchable = false,
+            typeOverride = FieldType.TextArea
+    )
     private final String typeReason;
+    @CCD(
+            label = "Court",
+            searchable = false,
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "HearingVenue"
+    )
     private final String venue;
+    @CCD(label = "Hearing address", searchable = false)
     private final String customPreviousVenue;
+    @CCD(label = "Court address", searchable = false)
     private final Address venueCustomAddress;
+    @CCD(label = "In person or remote", showCondition = "attendance != \"*\"", searchable = false)
     private final HearingPresence presence;
+    @CCD(label = "Hearing attendance", searchable = false)
     private final List<HearingAttendance> attendance;
+    @CCD(label = "Hearing attendance details", searchable = false, typeOverride = FieldType.TextArea)
     private final String attendanceDetails;
+    @CCD(label = "Pre-hearing attendance", searchable = false)
     private final String preAttendanceDetails;
+    @CCD(label = "Start date and time", hint = "Use 24 hour format")
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingBookingDetailsGroup.class)
     private final LocalDateTime startDate;
+    @CCD(label = "End date and time", hint = "Use 24 hour format", showCondition = "endDateDerived=\"No\"")
     @TimeNotMidnight(message = "Enter a valid end time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter an end date in the future", groups = HearingBookingDetailsGroup.class)
     private final LocalDateTime endDate;
+    @CCD(label = "Vacated date", searchable = false)
     private final LocalDate vacatedDate;
+    @CCD(label = "Hearing duration", showCondition = "endDateDerived=\"Yes\"", searchable = false)
     private final String hearingDuration;
+    @CCD(label = "Derived end date", showCondition = "startDate=\"DO_NOT_SHOW\"", searchable = false)
     private final String endDateDerived;
+    @CCD(label = "days", showCondition = "startDate=\"DO_NOT_SHOW\"", searchable = false)
     private final Integer hearingDays;
+    @CCD(label = "minutes", showCondition = "startDate=\"DO_NOT_SHOW\"", searchable = false)
     private final Integer hearingMinutes;
+    @CCD(label = "hours", showCondition = "startDate=\"DO_NOT_SHOW\"", searchable = false)
     private final Integer hearingHours;
+    @CCD(label = "Hearing needs booked", searchable = false)
     private final List<HearingNeedsBooked> hearingNeedsBooked;
+    @CCD(
+            label = "Give details",
+            showCondition = "hearingNeedsBooked!=\"NONE\"",
+            searchable = false,
+            typeOverride = FieldType.TextArea
+    )
     private final String hearingNeedsDetails;
+    @CCD(
+            label = "Additional notes",
+            hint = "This will be printed on the notice of hearing, if issued",
+            searchable = false,
+            typeOverride = FieldType.TextArea
+    )
     private final String additionalNotes;
+    @CCD(label = "Allocated judge or magistrate", searchable = false)
     private final String allocatedJudgeLabel;
+    @CCD(label = "Hearing judge or magistrate", searchable = false)
     private final String hearingJudgeLabel;
+    @CCD(label = "Justices' Legal Adviser's full name", searchable = false)
     private final String legalAdvisorLabel;
     //judgeAndLegalAdvisor field not shown in tab for new hearings but shown for hearings before FPLA-2030
+    @CCD(
+            label = "Judge and Justices' Legal Adviser",
+            showCondition = "hearingJudgeLabel!=\"*\" AND allocatedJudgeLabel!=\"*\"",
+            searchable = false
+    )
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    @CCD(
+            label = " ",
+            showCondition = "type = \"DO NOT SHOW\"",
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "Others"
+    )
     private final List<Element<Other>> others;
+    @CCD(label = "Others notified")
     private final String othersNotified;
+    @CCD(
+            label = "Id of the Case Management Order for this hearing",
+            showCondition = "judgeAndLegalAdvisor=\"DO NOT SHOW\"",
+            searchable = false,
+            typeOverride = FieldType.Text
+    )
     private UUID caseManagementOrderId;
+    @CCD(
+            label = "Notice of hearing",
+            categoryID = "hearingNotices",
+            searchable = false,
+            typeOverride = FieldType.Document
+    )
     private DocumentReference noticeOfHearing;
+    @CCD(
+            label = "Translated document",
+            categoryID = "hearingNotices",
+            searchable = false,
+            typeOverride = FieldType.Document
+    )
     private final DocumentReference translatedNoticeOfHearing;
+    @CCD(label = "Welsh translation upload time", showCondition = "translationRequirements=\"DO_NOT_SHOW\"")
     private final LocalDateTime translationUploadDateTime;
+    @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"", typeOverride = FieldType.Text)
     private LanguageTranslationRequirement translationRequirements;
+    @CCD(label = " ", showCondition = "previousHearingVenue=\"DO NOT SHOW\"", searchable = false)
     private final PreviousHearingVenue previousHearingVenue;
+    @CCD(label = " ", showCondition = "status=\"DO NOT SHOW\"", searchable = false)
     private String cancellationReason;
+    @CCD(label = " ", showCondition = "status=\"DO NOT SHOW\"", searchable = false)
     private String housekeepReason;
+    @CCD(label = " ", showCondition = "type=\"DO NOT SHOW\"", typeOverride = FieldType.Document)
     private DocumentReference noticeOfHearingVacated;
 
     public boolean hasDatesOnSameDay() {
@@ -265,4 +353,15 @@ public class HearingBooking implements TranslatableItem {
     public List<Element<Other>> getSelectedOthers() {
         return defaultIfNull(this.getOthers(), new ArrayList<>());
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"")
+  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
+  @CCD(
+          label = "Sent for translation",
+          showCondition = "needTranslation=\"YES\" AND translatedNoticeOfHearing!=\"*\"",
+          typeOverride = FieldType.Label
+  )
+  private String sentForTranslationLabel;
+  // ==== end synthesised definition-only fields ====
 }

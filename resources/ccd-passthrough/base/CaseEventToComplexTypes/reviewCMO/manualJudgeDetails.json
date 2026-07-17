@@ -1,0 +1,6 @@
+[ {
+  "CaseEventID" : "reviewCMO",
+  "CaseFieldID" : "manualJudgeDetails",
+  "ListElementCode" : "judgeFullName",
+  "Comment" : "Reusing existing Legal advisor input field"
+} ]

@@ -39,6 +39,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Slf4j
 @Data
@@ -46,41 +48,117 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTi
 public class GeneratedOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
 
     // this is the new type
+    @CCD(label = "Type of order", showCondition = "orderType=\"DO_NOT_SHOW\"")
     private final String orderType;
+    @CCD(label = "Type of order")
     private final String type;
+    @CCD(label = "Order title")
     private final String title;
+    @CCD(label = "Order details", showCondition = "date!=\"*\"", typeOverride = FieldType.TextArea)
     private final String details;
+    @CCD(
+            label = "Order document",
+            showCondition = "date=\"*\" OR dateTimeIssued=\"*\"",
+            categoryID = "orders",
+            typeOverride = FieldType.Document
+    )
     private final DocumentReference document;
+    @CCD(
+            label = "Confidential Order document",
+            showCondition = "date=\"*\" OR dateTimeIssued=\"*\"",
+            categoryID = "ordersConfidential",
+            typeOverride = FieldType.Document
+    )
     private final DocumentReference documentConfidential;
+    @CCD(label = "Translated document", categoryID = "orders", typeOverride = FieldType.Document)
     private final DocumentReference translatedDocument;
+    @CCD(
+            label = "Unsealed document copy",
+            showCondition = "unsealedDocumentCopy=\"DO_NOT_SHOW\"",
+            typeOverride = FieldType.Document
+    )
     private final DocumentReference unsealedDocumentCopy;
+    @CCD(label = "Welsh translation upload time", showCondition = "translatedDocument=\"DO_NOT_SHOW\"")
     private final LocalDateTime translationUploadDateTime;
+    @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"", typeOverride = FieldType.Text)
     private final LanguageTranslationRequirement translationRequirements;
+    @CCD(label = "Amended")
     private final LocalDate amendedDate;
+    @CCD(label = "Starts on")
     private final String dateOfIssue;
+    @CCD(label = "Date and time issued", showCondition = "dateTimeIssued=\"DO_NOT_SHOW\"")
     private final LocalDateTime dateTimeIssued;
+    @CCD(label = "Approval date")
     private final LocalDate approvalDate;
+    @CCD(label = "Approval date")
     private final LocalDateTime approvalDateTime;
+    @CCD(label = "Date and time of upload")
     private final String date;
+    @CCD(label = "Judge and Justices' Legal Adviser", showCondition = "type = \"DO NOT SHOW\"")
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    @CCD(label = "Directions")
     private final FurtherDirections furtherDirections;
+    @CCD(label = "Ends on")
     private final String expiryDate;
+    @CCD(label = " ", showCondition = "type = \"DO NOT SHOW\"")
     private final String courtName;
+    @CCD(label = "Uploaded by")
     private final String uploader;
+    @CCD(label = "Order description", typeOverride = FieldType.TextArea)
     private final String uploadedOrderDescription;
+    @CCD(
+            label = " ",
+            showCondition = "type = \"DO NOT SHOW\"",
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "BasicChild"
+    )
     @JsonSerialize(contentConverter = BasicChildConverter.class)
     private final List<Element<Child>> children;
+    @CCD(
+            label = " ",
+            showCondition = "type = \"DO NOT SHOW\"",
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "Others"
+    )
     private final List<Element<Other>> others;
+    @CCD(label = "Children")
     private final String childrenDescription;
+    @CCD(label = "Special guardians")
     private final String specialGuardians;
+    @CCD(label = "Others notified")
     private final String othersNotified;
+    @CCD(label = "Reason for removal", typeOverride = FieldType.TextArea)
     private String removalReason;
+    @CCD(label = "Linked application", showCondition = "type = \"DO NOT SHOW\"")
     private String linkedApplicationId;
+    @CCD(label = "Is the order final?", showCondition = "type = \"DO NOT SHOW\"", typeOverride = FieldType.YesOrNo)
     private String markedFinal;
+    @CCD(
+            label = "Notification document",
+            showCondition = "notificationDocument!=\"\"",
+            categoryID = "orders",
+            typeOverride = FieldType.Document
+    )
     private final DocumentReference notificationDocument;
+    @CCD(
+            label = "Child to live with order details (C43)",
+            showCondition = "date!=\"*\"",
+            typeOverride = FieldType.TextArea
+    )
     private String childArrangementsLiveWithDetails;
+    @CCD(
+            label = "Contact with child order details (C43)",
+            showCondition = "date!=\"*\"",
+            typeOverride = FieldType.TextArea
+    )
     private String childArrangementsContactWithDetails;
+    @CCD(label = "Specific issue order details (C43)", showCondition = "date!=\"*\"", typeOverride = FieldType.TextArea)
     private String specificIssueOrderDetails;
+    @CCD(
+            label = "Prohibited steps order details (C43)",
+            showCondition = "date!=\"*\"",
+            typeOverride = FieldType.TextArea
+    )
     private String prohibitedStepsOrderDetails;
 
     @JsonIgnore
@@ -201,4 +279,15 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     public DocumentReference getDocumentOrDocumentConfidential() {
         return (isConfidential()) ? documentConfidential : document;
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"")
+  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
+  @CCD(
+          label = "Sent for translation",
+          showCondition = "needTranslation=\"YES\" AND translatedDocument!=\"*\"",
+          typeOverride = FieldType.Label
+  )
+  private String sentForTranslationLabel;
+  // ==== end synthesised definition-only fields ====
 }

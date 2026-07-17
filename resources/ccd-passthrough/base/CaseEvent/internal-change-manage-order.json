@@ -1,0 +1,4 @@
+[ {
+  "ID" : "internal-change-manage-order",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/post-submit-callback/about-to-submit"
+} ]

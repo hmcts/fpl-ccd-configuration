@@ -1,0 +1,6 @@
+[ {
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "requestedBy",
+  "SecurityClassification" : "Public"
+} ]

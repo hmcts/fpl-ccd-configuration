@@ -1,0 +1,17 @@
+[ {
+  "CaseEventID" : "expertReport",
+  "CaseFieldID" : "expertReport",
+  "ListElementCode" : "expertReportList",
+  "ElementLabel" : "Label",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "expertReport",
+  "CaseFieldID" : "expertReport",
+  "ListElementCode" : "expertReportDateRequested",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "expertReport",
+  "CaseFieldID" : "expertReport",
+  "ListElementCode" : "reportApproval",
+  "SecurityClassification" : "Public"
+} ]

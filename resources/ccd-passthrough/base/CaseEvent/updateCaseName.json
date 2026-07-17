@@ -1,0 +1,5 @@
+[ {
+  "ID" : "updateCaseName",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-case-name/about-to-start",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-case-name/submitted"
+} ]

@@ -1,0 +1,13 @@
+[ {
+  "CaseFieldID" : "gatekeepingOrderIssuingJudge",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/prepare-decision/mid-event"
+}, {
+  "CaseFieldID" : "preparedSDO",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/prepare-decision/mid-event"
+}, {
+  "CaseFieldID" : "currentSDO",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/prepare-decision/mid-event"
+}, {
+  "CaseFieldID" : "selectDirectionsLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/direction-selection/mid-event"
+} ]

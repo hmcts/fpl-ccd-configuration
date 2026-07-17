@@ -1,0 +1,16 @@
+[ {
+  "CaseFieldID" : "hearingOrderDraftKind",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-initial-data/mid-event"
+}, {
+  "CaseFieldID" : "showCMOsSentToJudge",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-drafts-info/mid-event"
+}, {
+  "CaseFieldID" : "showReplacementCMO",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-drafts-info/mid-event"
+}, {
+  "CaseFieldID" : "hearingsForHearingOrderDrafts",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-drafts-info/mid-event"
+}, {
+  "CaseFieldID" : "currentHearingOrderDrafts",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-drafts-info/mid-event"
+} ]

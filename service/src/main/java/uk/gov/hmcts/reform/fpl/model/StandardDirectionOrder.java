@@ -35,6 +35,8 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Slf4j
 @Data
@@ -44,23 +46,56 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     public static final UUID COLLECTION_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     public static final UUID UDO_COLLECTION_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
 
+    @CCD(label = "The date of the hearing", typeOverride = FieldType.Date)
     private final String hearingDate;
+    @CCD(label = "Date of issue")
     private final String dateOfIssue;
+    @CCD(label = "Do you want to send the order now?", showCondition = "directions=\"DO NOT SHOW\"")
     private final OrderStatus orderStatus;
+    @CCD(label = "Judge and Justices' Legal Adviser")
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    @CCD(label = "Date uploaded")
     private final LocalDate dateOfUpload;
+    @CCD(label = "Uploaded by")
     private final String uploader;
+    @CCD(label = "Amended")
     private final LocalDate amendedDate;
+    @CCD(
+            label = "Unsealed copy",
+            showCondition = "orderStatus=\"DO_NOT_SHOW\"",
+            categoryID = "orders",
+            typeOverride = FieldType.Document
+    )
     private final DocumentReference unsealedDocumentCopy;
+    @CCD(label = "Custom directions", showCondition = "orderStatus=\"DO_NOT_SHOW\"")
     private final List<Element<CustomDirection>> customDirections;
+    @CCD(label = "Standard directions", showCondition = "orderStatus=\"DO_NOT_SHOW\"")
     private final List<Element<StandardDirection>> standardDirections;
+    @CCD(label = "Directions", showCondition = "orderStatus=\"DO_NOT_SHOW\"")
     private List<Element<Direction>> directions;
+    @CCD(label = "File", categoryID = "orders", typeOverride = FieldType.Document)
     private DocumentReference orderDoc;
+    @CCD(label = "Translated document", categoryID = "orders", typeOverride = FieldType.Document)
     private DocumentReference translatedOrderDoc;
+    @CCD(
+            label = "File",
+            showCondition = "orderStatus=\"DO_NOT_SHOW\"",
+            categoryID = "orders",
+            typeOverride = FieldType.Document
+    )
     private DocumentReference lastUploadedOrder;
+    @CCD(label = "Reason for removal", typeOverride = FieldType.TextArea)
     private String removalReason;
+    @CCD(
+            label = " ",
+            showCondition = "standardDirections = \"DO NOT SHOW\"",
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "Others"
+    )
     private final List<Element<Other>> others;
+    @CCD(label = "Welsh translation upload time", showCondition = "translatedOrderDoc=\"DO_NOT_SHOW\"")
     private final LocalDateTime translationUploadDateTime;
+    @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"", typeOverride = FieldType.Text)
     private final LanguageTranslationRequirement translationRequirements;
 
     @JsonIgnore
@@ -165,5 +200,16 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     public List<Element<Other>> getSelectedOthers() {
         return defaultIfNull(this.getOthers(), new ArrayList<>());
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"")
+  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
+  @CCD(
+          label = "Sent for translation",
+          showCondition = "needTranslation=\"YES\" AND translatedOrderDoc!=\"*\" AND orderStatus=\"SEALED\"",
+          typeOverride = FieldType.Label
+  )
+  private String sentForTranslationLabel;
+  // ==== end synthesised definition-only fields ====
 }
 

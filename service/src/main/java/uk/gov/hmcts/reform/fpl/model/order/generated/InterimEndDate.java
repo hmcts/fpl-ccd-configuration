@@ -10,13 +10,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 @Data
 @Builder
 public class InterimEndDate {
+    @CCD(label = " ")
     private final InterimEndDateType type;
+    @CCD(label = " ", showCondition = "type = \"NAMED_DATE\"")
     @Future(message = "Enter an end date in the future", groups = InterimEndDateGroup.class)
     private final LocalDate endDate;
+    @CCD(
+            label = " ",
+            hint = "Use 24 hour clock, for example 15 30 00",
+            showCondition = "type = \"SPECIFIC_TIME_NAMED_DATE\""
+    )
     @Future(message = "Enter an end date in the future", groups = InterimEndDateGroup.class)
     private final LocalDateTime endDateTime;
 

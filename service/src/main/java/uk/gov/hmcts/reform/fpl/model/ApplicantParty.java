@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasContactDirection;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasTelephoneOrMobile;
 
 import java.time.LocalDate;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -26,14 +27,23 @@ import java.time.LocalDate;
 @ToString(callSuper = true)
 public class ApplicantParty extends Party implements TelephoneContacts {
 
+    @CCD(label = "Mobile number")
     private final Telephone mobileNumber;
+    @CCD(label = "Job title", hint = "For example, legal adviser")
     @NotBlank(message = "Enter a job title for the contact")
     private final String jobTitle;
+    @CCD(label = "Payment by account (PBA) number", hint = "For example, PBA1234567")
     @ToString.Exclude
     @NotBlank(message = "Enter a PBA number for the contact")
     private final String pbaNumber;
+    @CCD(label = "Client code")
     private final String clientCode;
+    @CCD(label = "Customer reference")
     private final String customerReference;
+    @CCD(
+            label = "Name of legal team manager or authorising officer",
+            hint = "The statement of truth will be signed in this person's name"
+    )
     private final String legalTeamManager;
 
     @Override

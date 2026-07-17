@@ -1,0 +1,19 @@
+[ {
+  "CaseFieldID" : "isLaSolicitor",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-local-authorities/action-selection/mid-event"
+}, {
+  "CaseFieldID" : "localAuthorityEmailLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-local-authorities/add/la-details/mid-event"
+}, {
+  "CaseFieldID" : "localAuthoritiesToTransfer",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-local-authorities/transfer/la-selection/mid-event"
+}, {
+  "CaseFieldID" : "localAuthorityToTransferLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-local-authorities/transfer/la-selection/mid-event"
+}, {
+  "CaseFieldID" : "localAuthorityToTransfer",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-local-authorities/transfer/la-details/mid-event"
+}, {
+  "CaseFieldID" : "currentCourtNameWithoutTransferLA",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-local-authorities/transfer-court/court-selection/mid-event"
+} ]

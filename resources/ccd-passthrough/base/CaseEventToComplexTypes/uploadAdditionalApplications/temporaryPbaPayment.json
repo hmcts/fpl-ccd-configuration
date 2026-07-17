@@ -1,0 +1,6 @@
+[ {
+  "CaseEventID" : "uploadAdditionalApplications",
+  "CaseFieldID" : "temporaryPbaPayment",
+  "ListElementCode" : "usePbaPayment",
+  "DefaultValue" : "Yes"
+} ]

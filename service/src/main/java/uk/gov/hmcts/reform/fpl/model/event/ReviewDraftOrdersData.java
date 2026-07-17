@@ -10,50 +10,236 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.reform.fpl.ccd.access.DefaultAccess;
+import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess;
 
 @Value
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ReviewDraftOrdersData {
+    @CCD(label = "Title and name of the judge who approved the order", searchable = false)
     @Temp
     String judgeTitleAndName;
 
+    @CCD(
+            label = "Bundle contains a draft CMO for approval",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftCMOExists;
+    @CCD(
+            label = "Number of draft C21 Orders ready for approval",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftBlankOrdersCount;
 
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision1;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision2;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision3;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision4;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision5;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision6;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision7;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision8;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision9;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     ReviewDecision reviewDecision10;
 
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String cmoDraftOrderTitle;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder1Title;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder2Title;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder3Title;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder4Title;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder5Title;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder6Title;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder7Title;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder8Title;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder9Title;
+    @CCD(
+            label = " ",
+            searchable = false,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     String draftOrder10Title;
 
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference cmoDraftOrderDocument;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder1Document;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder2Document;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder3Document;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder4Document;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder5Document;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder6Document;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder7Document;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder8Document;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder9Document;
+    @CCD(
+            label = " ",
+            searchable = false,
+            typeOverride = FieldType.Document,
+            access = {DefaultAccess.class, CaseworkerPubliclawMagistrateRPlus2RolesQqgmyhAccess.class}
+    )
     DocumentReference draftOrder10Document;
 
     public static String[] transientFields() {

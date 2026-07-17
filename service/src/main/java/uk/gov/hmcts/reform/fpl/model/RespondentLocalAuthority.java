@@ -20,6 +20,8 @@ import java.util.UUID;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @Builder(toBuilder = true)
@@ -29,18 +31,34 @@ public class RespondentLocalAuthority {
 
     public static UUID DUMMY_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
+    @CCD(label = "Local authority name")
     private final String name;
+    @CCD(
+            label = "Email address",
+            hint = "This should be the email to receive notifications about the application.",
+            typeOverride = FieldType.Email
+    )
     private final String email;
+    @CCD(label = "Phone number", typeOverride = FieldType.PhoneUK)
     private final String phoneNumber;
+    @CCD(label = "Lawyer first name")
     private final String representativeFirstName;
+    @CCD(label = "Lawyer last name")
     private final String representativeLastName;
+    @CCD(label = "Local authority address")
     private final Address address;
 
+    @CCD(
+            label = "Is this Local Authority outsourcing their work on this case to a separate organisation?",
+            typeOverride = FieldType.YesOrNo
+    )
     @JsonSerialize(using = YesNoSerializer.class)
     @JsonDeserialize(using = YesNoDeserializer.class)
     private final YesNo usingOtherOrg;
 
+    @CCD(label = "Outsourcing organisation", showCondition = "usingOtherOrg=\"Yes\"")
     private Organisation organisation;
+    @CCD(label = "Counsel", showCondition = "organisation = \"DO_NOT_SHOW\"")
     private List<Element<LegalCounsellor>> legalCounsellors;
 
     public static RespondentLocalAuthority toRespondentLocalAuthority(String name, String email) {

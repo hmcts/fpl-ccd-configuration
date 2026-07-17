@@ -1,0 +1,7 @@
+[ {
+  "ID" : "uploadAdditionalApplications",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/submitted",
+  "RetriesTimeoutURLSubmittedEvent" : "0"
+} ]

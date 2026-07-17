@@ -1,0 +1,4 @@
+[ {
+  "ID" : "createCaseLink",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/generic-update/about-to-submit"
+} ]

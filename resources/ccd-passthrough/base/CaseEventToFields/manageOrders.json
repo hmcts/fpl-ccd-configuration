@@ -1,0 +1,28 @@
+[ {
+  "CaseFieldID" : "orderTempQuestions",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/initial-selection/mid-event"
+}, {
+  "CaseFieldID" : "manageOrdersState",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/order-selection/mid-event"
+}, {
+  "CaseFieldID" : "issuingDetailsSectionHeader",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/issuing-details/mid-event"
+}, {
+  "CaseFieldID" : "hearingDetailsSectionHeader",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/hearing-details/mid-event"
+}, {
+  "CaseFieldID" : "childrenDetailsSectionHeader",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/children-details/mid-event"
+}, {
+  "CaseFieldID" : "orderDetailsSectionHeader",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/order-details/mid-event"
+}, {
+  "CaseFieldID" : "orderPreviewSectionHeader",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/review/mid-event"
+}, {
+  "CaseFieldID" : "amendmentUploadSectionHeader",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/amend-upload/mid-event"
+}, {
+  "CaseFieldID" : "otherDetailsSectionHeader",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/other-details/mid-event"
+} ]

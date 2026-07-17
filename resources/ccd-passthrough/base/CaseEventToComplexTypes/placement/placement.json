@@ -1,0 +1,89 @@
+[ {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementChildId",
+  "ElementLabel" : "Child id",
+  "SecurityClassification" : "Public",
+  "RetainHiddenValue" : "Yes"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementChildName",
+  "SecurityClassification" : "Public",
+  "RetainHiddenValue" : "Yes"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "isSubmitted",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementUploadDateTime",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementApplication",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementApplicationCopy",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementSupportingDocuments",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementConfidentialDocuments",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementNotice",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementConfidentialDocuments.type",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementConfidentialDocuments.otherDocTypeName",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementConfidentialDocuments.document",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementConfidentialDocuments.description",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementSupportingDocuments.type",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementSupportingDocuments.otherDocTypeName",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementSupportingDocuments.document",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "placement",
+  "CaseFieldID" : "placement",
+  "ListElementCode" : "placementSupportingDocuments.description",
+  "SecurityClassification" : "Public"
+} ]

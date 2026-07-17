@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "nationalArea",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-progression-report/fetch-data/mid-event"
+} ]

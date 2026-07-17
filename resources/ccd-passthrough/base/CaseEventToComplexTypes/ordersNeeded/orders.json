@@ -1,0 +1,11 @@
+[ {
+  "CaseEventID" : "ordersNeeded",
+  "CaseFieldID" : "orders",
+  "ListElementCode" : "emergencyProtectionOrders",
+  "FieldTypeParameter" : "EmergencyProtectionOrderType"
+}, {
+  "CaseEventID" : "ordersNeeded",
+  "CaseFieldID" : "orders",
+  "ListElementCode" : "emergencyProtectionOrderDirections",
+  "FieldTypeParameter" : "EmergencyProtectionOrderDirectionType"
+} ]

@@ -23,6 +23,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Value
 @Builder(toBuilder = true)
@@ -30,14 +32,32 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     public static final UUID COLLECTION_ID = UUID.fromString("5d05d011-5d01-5d01-5d01-5d05d05d05d0");
 
+    @CCD(label = "Order", categoryID = "orders", typeOverride = FieldType.Document)
     DocumentReference order;
+    @CCD(label = "Translated document", categoryID = "orders", typeOverride = FieldType.Document)
     DocumentReference translatedOrder;
+    @CCD(label = "Unsealed order", showCondition = "order=\"DO_NOT_SHOW\"", typeOverride = FieldType.Document)
     DocumentReference unsealedOrder;
+    @CCD(
+            label = "Allocation decision",
+            typeOverride = FieldType.FixedRadioList,
+            typeParameterOverride = "AllocationProposalList"
+    )
     String allocation;
+    @CCD(label = "Date added")
     LocalDate dateAdded;
+    @CCD(label = "Amended")
     LocalDate amendedDate;
+    @CCD(
+            label = " ",
+            showCondition = "dateAdded = \"DO NOT SHOW\"",
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "Others"
+    )
     List<Element<Other>> others;
+    @CCD(label = "Welsh translation upload time", showCondition = "translatedOrder=\"DO_NOT_SHOW\"")
     LocalDateTime translationUploadDateTime;
+    @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"", typeOverride = FieldType.Text)
     LanguageTranslationRequirement translationRequirements;
 
     @Override
@@ -89,4 +109,15 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     public List<Element<Other>> getSelectedOthers() {
         return defaultIfNull(this.getOthers(), new ArrayList<>());
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"")
+  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
+  @CCD(
+          label = "Sent for translation",
+          showCondition = "needTranslation=\"YES\" AND translatedOrder!=\"*\"",
+          typeOverride = FieldType.Label
+  )
+  private String sentForTranslationLabel;
+  // ==== end synthesised definition-only fields ====
 }

@@ -1,0 +1,16 @@
+[ {
+  "CaseFieldID" : "sdoRouteInfo",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/pre-populate/mid-event"
+}, {
+  "CaseFieldID" : "dateOfIssue_label",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/date-of-issue/mid-event"
+}, {
+  "CaseFieldID" : "courtDirectionsHearingDate",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/service-route/mid-event"
+}, {
+  "CaseFieldID" : "preparedSDO",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/upload-route/mid-event"
+}, {
+  "CaseFieldID" : "currentSDO",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/upload-route/mid-event"
+} ]

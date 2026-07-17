@@ -13,23 +13,33 @@ import uk.gov.hmcts.reform.fpl.model.Recipient;
 import java.time.LocalDate;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class Party implements Recipient {
+    @CCD(label = "Party ID", showCondition = "partyType=\"DO_NOT_SHOW\"")
     protected final String partyId;
+    @CCD(label = " ", showCondition = "partyType=\"DO_NOT_SHOW\"")
     protected final PartyType partyType;
+    @CCD(label = "First name")
     protected final String firstName;
+    @CCD(label = "Last name")
     protected final String lastName;
+    @CCD(label = "Name of applicant", hint = "Local authority or authorised person")
     protected final String organisationName;
+    @CCD(label = "Date of birth", hint = "For example, 31 3 1980")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     protected final LocalDate dateOfBirth;
+    @CCD(label = "Current address", showCondition = "addressKnow=\"Yes\" OR addressKnow=\"LIVE_IN_REFUGE\"")
     protected final Address address;
 
 
+    @CCD(label = "Email")
     @Valid
     protected final EmailAddress email;
+    @CCD(label = " ")
     protected final Telephone telephoneNumber;
 
     @JsonIgnore

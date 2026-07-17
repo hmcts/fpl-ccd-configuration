@@ -1,0 +1,4 @@
+[ {
+  "ID" : "enterParentingFactors",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
+} ]

@@ -1,0 +1,16 @@
+[ {
+  "CaseEventID" : "manageHearings",
+  "CaseFieldID" : "previousHearingVenue",
+  "ListElementCode" : "newVenueCustomAddress",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "manageHearings",
+  "CaseFieldID" : "previousHearingVenue",
+  "ListElementCode" : "newVenueCustomAddress.County",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "manageHearings",
+  "CaseFieldID" : "previousHearingVenue",
+  "ListElementCode" : "newVenueCustomAddress.PostCode",
+  "SecurityClassification" : "Public"
+} ]

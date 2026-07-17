@@ -8,12 +8,14 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 
 import java.util.List;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 @Data
 @SuperBuilder(toBuilder = true)
 @Jacksonized
 @EqualsAndHashCode(callSuper = true)
 public class CourtBundle extends HearingDocument {
+    @CCD(ignore = true)
     private List<String> confidential;
 
     @JsonIgnore

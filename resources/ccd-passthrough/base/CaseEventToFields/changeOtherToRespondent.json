@@ -1,0 +1,7 @@
+[ {
+  "CaseFieldID" : "othersList",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/change-from-other/enter-respondent/mid-event"
+}, {
+  "CaseFieldID" : "transformedRespondent",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/change-from-other/mid-event"
+} ]

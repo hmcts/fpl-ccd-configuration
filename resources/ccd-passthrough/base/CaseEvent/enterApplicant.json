@@ -1,0 +1,6 @@
+[ {
+  "ID" : "enterApplicant",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-applicant/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-applicant/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-applicant/submitted"
+} ]

@@ -1,0 +1,7 @@
+[ {
+  "ID" : "manageOrders",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/submitted",
+  "RetriesTimeoutURLSubmittedEvent" : "0"
+} ]

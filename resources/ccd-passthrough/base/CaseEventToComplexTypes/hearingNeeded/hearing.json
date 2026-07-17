@@ -1,0 +1,6 @@
+[ {
+  "CaseEventID" : "hearingNeeded",
+  "CaseFieldID" : "hearing",
+  "ListElementCode" : "hearingUrgencyType",
+  "Publish" : "Y"
+} ]

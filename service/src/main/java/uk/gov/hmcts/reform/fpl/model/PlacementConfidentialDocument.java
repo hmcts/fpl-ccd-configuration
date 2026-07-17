@@ -11,15 +11,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlacementConfidentialDocument {
+    @CCD(
+            label = "Document type",
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "PlacementConfidentialDocumentType"
+    )
     private Type type;
+    @CCD(label = "Custom document type")
     private String otherDocTypeName;
+    @CCD(
+            label = "Document",
+            categoryID = "placementApplicationsAndResponsesConfidential",
+            typeOverride = FieldType.Document
+    )
     private DocumentReference document;
+    @CCD(label = "Description", typeOverride = FieldType.TextArea)
     private String description;
+    @CCD(
+            label = "Tick to confirm this document is related to this case",
+            searchable = false,
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "DocumentAcknowledge"
+    )
     private List<String> documentAcknowledge;
 
     @Getter
@@ -42,4 +62,8 @@ public class PlacementConfidentialDocument {
         return this.documentAcknowledge;
     }
 
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = "<div class='govuk-tag govuk-tag--red'>Confidential</div>", typeOverride = FieldType.Label)
+  private String tag;
+  // ==== end synthesised definition-only fields ====
 }

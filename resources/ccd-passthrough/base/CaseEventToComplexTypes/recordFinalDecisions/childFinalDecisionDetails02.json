@@ -1,0 +1,19 @@
+[ {
+  "CaseEventID" : "recordFinalDecisions",
+  "CaseFieldID" : "childFinalDecisionDetails02",
+  "ListElementCode" : "childFinalDecisionDetailsSubHeadingLabel",
+  "FieldType" : "Label"
+}, {
+  "CaseEventID" : "recordFinalDecisions",
+  "CaseFieldID" : "childFinalDecisionDetails02",
+  "ListElementCode" : "childNameLabel",
+  "FieldType" : "Text",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "recordFinalDecisions",
+  "CaseFieldID" : "childFinalDecisionDetails02",
+  "ListElementCode" : "finalDecisionReason",
+  "FieldType" : "FixedRadioList",
+  "FieldTypeParameter" : "ChildFinalDecision",
+  "SecurityClassification" : "Public"
+} ]

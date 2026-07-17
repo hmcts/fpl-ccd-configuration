@@ -1,0 +1,11 @@
+[ {
+  "CaseEventID" : "uploadCMO",
+  "CaseFieldID" : "currentHearingOrderDrafts",
+  "ListElementCode" : "documentAcknowledgeLabel",
+  "ShowSummaryChangeOption" : "Y"
+}, {
+  "CaseEventID" : "uploadCMO",
+  "CaseFieldID" : "currentHearingOrderDrafts",
+  "ListElementCode" : "documentAcknowledge",
+  "ShowSummaryChangeOption" : "Y"
+} ]

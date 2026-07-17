@@ -1,0 +1,13 @@
+[ {
+  "CaseFieldID" : "placementRespondentsSectionHeader",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/notices-respondents/mid-event"
+}, {
+  "CaseFieldID" : "placementChildrenCardinality",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/child-selection/mid-event"
+}, {
+  "CaseFieldID" : "placementChildName",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/documents-upload/mid-event"
+}, {
+  "CaseFieldID" : "placementChildNameLabel3",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/payment-details/mid-event"
+} ]

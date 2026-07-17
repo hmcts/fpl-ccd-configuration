@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "uploadTranslationsIntro",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-translations/select-document/mid-event"
+} ]

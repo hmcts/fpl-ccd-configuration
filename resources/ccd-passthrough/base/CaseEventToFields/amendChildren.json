@@ -1,0 +1,10 @@
+[ {
+  "CaseFieldID" : "children1",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/validate-collection/mid-event"
+}, {
+  "CaseFieldID" : "childrenHaveRepresentation",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/representation-details/mid-event"
+}, {
+  "CaseFieldID" : "optionCount",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/representation-validation/mid-event"
+} ]

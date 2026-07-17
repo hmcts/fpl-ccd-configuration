@@ -1,0 +1,7 @@
+[ {
+  "ID" : "placementNotice",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placementNotice/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placementNotice/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placementNotice/submitted",
+  "RetriesTimeoutURLSubmittedEvent" : "0"
+} ]

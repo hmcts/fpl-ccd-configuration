@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "respondents_label",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-representatives/mid-event"
+} ]

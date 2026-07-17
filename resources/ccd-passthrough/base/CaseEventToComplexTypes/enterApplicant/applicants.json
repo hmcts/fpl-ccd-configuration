@@ -1,0 +1,6 @@
+[ {
+  "CaseEventID" : "enterApplicant",
+  "CaseFieldID" : "applicants",
+  "ListElementCode" : "leadApplicantIndicator",
+  "SecurityClassification" : "Public"
+} ]

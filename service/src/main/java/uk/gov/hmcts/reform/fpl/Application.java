@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-@SpringBootApplication(scanBasePackages = {"uk.gov.hmcts.reform.fpl"},
+@SpringBootApplication(scanBasePackages = {"uk.gov.hmcts.reform.fpl", "uk.gov.hmcts.ccd.sdk"},
     scanBasePackageClasses = {DocumentUploadClientApi.class, IdamClient.class})
 @EnableFeignClients(basePackages = {
     "uk.gov.hmcts.reform.idam.client",

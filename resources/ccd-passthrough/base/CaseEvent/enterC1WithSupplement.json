@@ -1,0 +1,6 @@
+[ {
+  "ID" : "enterC1WithSupplement",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-c1-with-supplement/about-to-start",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-c1-with-supplement/about-to-submit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
+} ]

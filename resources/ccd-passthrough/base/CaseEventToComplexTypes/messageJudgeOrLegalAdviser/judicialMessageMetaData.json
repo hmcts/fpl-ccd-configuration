@@ -1,0 +1,7 @@
+[ {
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "requestedBy",
+  "SecurityClassification" : "Public",
+  "Comment" : "Used for subject"
+} ]

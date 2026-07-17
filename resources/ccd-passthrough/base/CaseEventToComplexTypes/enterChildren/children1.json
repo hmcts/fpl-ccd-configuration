@@ -1,0 +1,36 @@
+[ {
+  "CaseEventID" : "enterChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.detailsHidden",
+  "Comment" : "Deprecated"
+}, {
+  "CaseEventID" : "enterChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.detailsHiddenReason",
+  "Comment" : "Deprecated"
+}, {
+  "CaseEventID" : "enterChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.additionalNeedsDetails",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "enterChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.socialWorkerTelephoneNumber.contactDirection",
+  "Comment" : "Deprecated"
+}, {
+  "CaseEventID" : "enterChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.proceedingsLabel",
+  "Comment" : "Deprecated"
+}, {
+  "CaseEventID" : "enterChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.litigationIssues",
+  "Comment" : "Deprecated"
+}, {
+  "CaseEventID" : "enterChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.litigationIssuesDetails",
+  "Comment" : "Deprecated"
+} ]

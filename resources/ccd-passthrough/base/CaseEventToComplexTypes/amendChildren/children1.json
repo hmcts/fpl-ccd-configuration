@@ -1,0 +1,21 @@
+[ {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.detailsHidden",
+  "Comment" : "Deprecated"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.detailsHiddenReason",
+  "Comment" : "Deprecated"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.additionalNeedsDetails",
+  "SecurityClassification" : "Public"
+}, {
+  "CaseEventID" : "amendChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "party.socialWorkerTelephoneNumber.contactDirection",
+  "Comment" : "Deprecated"
+} ]

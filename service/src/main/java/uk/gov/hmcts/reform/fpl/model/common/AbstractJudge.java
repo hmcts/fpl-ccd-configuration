@@ -20,6 +20,8 @@ import java.util.Arrays;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Judge.class),
@@ -31,17 +33,39 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 @NoArgsConstructor(force = true)
 @SuperBuilder(toBuilder = true)
 public class AbstractJudge {
+    @CCD(label = "Judge or magistrate's type")
     private final JudgeType judgeType;
+    @CCD(
+            label = "Judge or Magistrate's title",
+            showCondition = "useAllocatedJudge=\"No\" OR allocatedJudgeLabel!=\"*\""
+    )
     private JudgeOrMagistrateTitle judgeTitle;
+    @CCD(label = "Title", showCondition = "judgeTitle=\"OTHER\" AND useAllocatedJudge!=\"Yes\"")
     private String otherTitle;
+    @CCD(
+            label = "Last name",
+            showCondition = "judgeTitle!=\"MAGISTRATES\" AND judgeTitle!=\"\" AND useAllocatedJudge!=\"Yes\""
+    )
     private final String judgeLastName;
+    @CCD(label = "Full name", showCondition = "judgeTitle=\"MAGISTRATES\" AND useAllocatedJudge!=\"Yes\"")
     private final String judgeFullName;
+    @CCD(
+            label = "Email Address",
+            showCondition = "judgeTitle!=\"\" AND useAllocatedJudge!=\"Yes\"",
+            typeOverride = FieldType.Email
+    )
     private final String judgeEmailAddress;
 
+    @CCD(
+            label = "Add legal adviser details",
+            showCondition = "judgeEmailAddress=\"DO_NOT_SHOW\"",
+            typeOverride = FieldType.YesOrNo
+    )
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Deprecated
     private final YesNo judgeEnterManually;
 
+    @CCD(label = "Search for Judge", showCondition = "judgeEmailAddress=\"DO_NOT_SHOW\"")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private final JudicialUser judgeJudicialUser;
 

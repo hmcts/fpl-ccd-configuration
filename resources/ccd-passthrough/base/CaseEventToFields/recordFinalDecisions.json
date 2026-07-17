@@ -1,0 +1,7 @@
+[ {
+  "CaseFieldID" : "optionCount",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/record-final-decisions/pre-populate/mid-event"
+}, {
+  "CaseFieldID" : "finalDecisionDate",
+  "CallBackURLMidEvent" : "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/record-final-decisions/validate/mid-event"
+} ]

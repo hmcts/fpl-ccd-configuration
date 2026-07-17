@@ -6,13 +6,17 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 @SuperBuilder(toBuilder = true)
 public class DocumentMetaData {
+    @CCD(ignore = true)
     protected final DocumentReference typeOfDocument;
+    @CCD(label = "Date and time uploaded")
     protected LocalDateTime dateTimeUploaded;
+    @CCD(label = "Uploaded by")
     protected String uploadedBy;
 }

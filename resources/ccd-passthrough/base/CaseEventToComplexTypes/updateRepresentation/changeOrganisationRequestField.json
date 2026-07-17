@@ -1,0 +1,6 @@
+[ {
+  "CaseEventID" : "updateRepresentation",
+  "CaseFieldID" : "changeOrganisationRequestField",
+  "ListElementCode" : "ApprovalStatus",
+  "DefaultValue" : "1"
+} ]

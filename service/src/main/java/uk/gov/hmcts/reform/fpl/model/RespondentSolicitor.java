@@ -13,19 +13,29 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
 @Valid
 public class RespondentSolicitor {
+    @CCD(label = "Representative's first name")
     private String firstName;
+    @CCD(label = "Representative's last name")
     private String lastName;
+    @CCD(label = "Telephone number")
     private Telephone telephoneNumber;
+    @CCD(label = "Email address", typeOverride = FieldType.Email)
     private String email;
+    @CCD(label = "Organisation")
     private Organisation organisation;
+    @CCD(label = "Managing office", showCondition = "organisation.OrganisationName!=\"\"")
     private Address regionalOfficeAddress;
+    @CCD(label = "Organisation (unregistered)", showCondition = "unregisteredOrganisation.name!=\"\"")
     private UnregisteredOrganisation unregisteredOrganisation;
+    @CCD(label = "Colleagues to be notified", showCondition = "unregisteredOrganisation = \"DO_NOT_SHOW\"")
     private List<Element<Colleague>> colleaguesToBeNotified;
 
     @JsonIgnore
