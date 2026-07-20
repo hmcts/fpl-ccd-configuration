@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORC;
 
 @Slf4j
 @RestController
@@ -32,7 +33,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3290", this::run3290,
+        "DFPL-3290", this::run3306,
         "DFPL-3296", this::run3296
     );
 
@@ -60,20 +61,13 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3290(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3290";
-        final long expectedCaseId = 1780995216446125L;
+    private void run3306(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3306";
+        final long expectedCaseId = 1753883480919014L;
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-
-        caseAccessService.grantCaseAccess(caseId, Set.of(
-            "76d29d26-931f-452e-ae8f-dda550aaf505",
-            "b479e1ef-489f-4cfe-8c27-7ce2b290ddb5",
-            "99ba1478-02ad-4449-8a9b-fb9165bf25b3",
-            "47fcc1ed-40a9-41b7-bda3-2a44b9e16247"
-        ), LASOLICITOR);
-
+        caseAccessService.grantCaseAccess(caseId, Set.of("b0016258-02fa-4d57-8766-dc23b2411f01"), SOLICITORC);
     }
 
     private void run3296(CaseDetails caseDetails) {
