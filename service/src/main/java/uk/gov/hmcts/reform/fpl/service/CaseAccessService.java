@@ -94,7 +94,7 @@ public class CaseAccessService {
             .collect(Collectors.toSet());
     }
 
-    private void grantCaseAccess(Long caseId, Set<String> users, CaseRole caseRole) {
+    public void grantCaseAccess(Long caseId, Set<String> users, CaseRole caseRole) {
         try {
             final String userToken = systemUserService.getSysUserToken();
             final String serviceToken = authTokenGenerator.generate();
