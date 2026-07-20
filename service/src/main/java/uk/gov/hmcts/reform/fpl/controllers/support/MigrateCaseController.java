@@ -34,7 +34,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-log", this::runLog,
         "DFPL-2421", this::run2421,
         "DFPL-2421-rollback", this::rollback2421,
-        "DFPL-3290", this::run3290
+        "DFPL-3290", this::run3290,
+        "DFPL-3296", this::run3296
     );
 
     @PostMapping("/about-to-submit")
@@ -86,4 +87,29 @@ public class MigrateCaseController extends CallbackController {
         final String migrationId = "DFPL-2421-rollback";
         migrateCaseService.rollbackOthersV2ToOthers(getCaseData(caseDetails), caseDetails.getData(), migrationId);
     }
+
+    private void run3296(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3296";
+        final long expectedCaseId = 1767800818952560L;
+        final String Target_Migration_Id = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
+
+        Long caseId = caseDetails.getId();
+
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        log.info("Migration {} started for case {}", migrationId, caseId);
+
+
+        boolean isModified = migrateCaseService
+                                .removeSolicitorEmailFromPlacementNotices(caseDetails, Target_Migration_Id);
+
+        if (isModified) {
+            log.info("Migration {} successfully removed target solicitor entry"
+                    + " by ID from placement notification list on case {}",
+                migrationId, caseId);
+        } else {
+            log.info("Migration {} skipped: Target ID {} not found "
+                + "in any placement records.", migrationId, Target_Migration_Id);
+        }
+    }
+
 }

@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -110,6 +112,7 @@ public class MigrateCaseService {
     public final CourtLookUpService courtLookUpService;
 
     private static final Map<String, HearingType>  HEARING_TYPE_DETAILS_MAPPING = initialiseHearingMapping();
+    private final ObjectMapper mapper;
 
 
     private static Map<String, HearingType> initialiseHearingMapping() {
@@ -1532,5 +1535,85 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("others", updatedOthers);
+    }
+
+    public boolean removeSolicitorEmailFromPlacementNotices(CaseDetails caseDetails, String targetId) {
+        // Flag to track if modifications happen anywhere across the three fields
+        boolean dynamicModified = false;
+
+        // Process standard placements
+        if (caseDetails.getData().get(PLACEMENT) != null) {
+            List<Element<Placement>> placements = getPlacementList(caseDetails, PLACEMENT);
+            if (processPlacementsList(placements, targetId)) {
+                caseDetails.getData().put(PLACEMENT, placements);
+                dynamicModified = true;
+            }
+        }
+
+        // Process placementsNonConfidentialNotices
+        if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL_NOTICES) != null) {
+            List<Element<Placement>> notices = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+            if (processPlacementsList(notices, targetId)) {
+                caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, notices);
+                dynamicModified = true;
+            }
+        }
+
+        // Process placementsNonConfidential
+        if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL) != null) {
+            List<Element<Placement>> nonConf = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL);
+            if (processPlacementsList(nonConf, targetId)) {
+                caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConf);
+                dynamicModified = true;
+            }
+        }
+
+        return dynamicModified;
+    }
+
+    private List<Element<Placement>> getPlacementList(CaseDetails caseDetails, String key) {
+        return mapper.convertValue(caseDetails.getData().get(key), new TypeReference<>() {});
+    }
+
+    private boolean processPlacementsList(List<Element<Placement>> placements, String targetId) {
+        boolean modified = false;
+
+        for (Element<Placement> placementElement : placements) {
+            Placement placement = placementElement.getValue();
+
+            if (placement != null && placement.getPlacementRespondentsToNotify() != null) {
+                List<Element<Respondent>> originalList = placement.getPlacementRespondentsToNotify();
+                List<Element<Respondent>> filteredList = filterRespondentsById(originalList, targetId);
+
+                if (filteredList.size() != originalList.size()) {
+                    placement.setPlacementRespondentsToNotify(filteredList);
+                    modified = true;
+                }
+            }
+        }
+
+        return modified;
+    }
+
+    private List<Element<Respondent>> filterRespondentsById(List<Element<Respondent>> respondents, String targetId) {
+        List<Element<Respondent>> updatedRespondents = new ArrayList<>();
+
+        for (Element<Respondent> respondentEl : respondents) {
+            if (shouldKeepRespondent(respondentEl, targetId)) {
+                updatedRespondents.add(respondentEl);
+            }
+        }
+
+        return updatedRespondents;
+    }
+
+    private boolean shouldKeepRespondent(Element<Respondent> respondentEl, String targetId) {
+        if (respondentEl == null || respondentEl.getId() == null) {
+            return true;
+        }
+
+        String currentElementId = String.valueOf(respondentEl.getId());
+
+        return !targetId.equalsIgnoreCase(currentElementId);
     }
 }
