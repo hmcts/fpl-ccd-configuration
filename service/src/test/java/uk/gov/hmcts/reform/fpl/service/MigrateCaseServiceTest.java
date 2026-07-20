@@ -3682,7 +3682,7 @@ class MigrateCaseServiceTest {
             Map<String, Object> migratedCaseDetails =
                 underTest.migrateOthersToOthersV2(caseData, caseDetailsMap, MIGRATION_ID);
 
-            assertThat(migratedCaseDetails).doesNotContainKey("others");
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(others);
 
             List<Element<Other>> othersV2 = (List<Element<Other>>) migratedCaseDetails.get("othersV2");
             assertThat(othersV2).hasSize(4);
@@ -3710,7 +3710,7 @@ class MigrateCaseServiceTest {
             Map<String, Object> migratedCaseDetails =
                 underTest.migrateOthersToOthersV2(caseData, caseDetailsMap, MIGRATION_ID);
 
-            assertThat(migratedCaseDetails).doesNotContainKey("others");
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(others);
 
             List<Element<Other>> othersV2 = (List<Element<Other>>) migratedCaseDetails.get("othersV2");
             assertThat(othersV2).isEqualTo(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3));
@@ -3739,7 +3739,7 @@ class MigrateCaseServiceTest {
             Map<String, Object> migratedCaseDetails =
                 underTest.migrateOthersToOthersV2(caseData, caseDetailsMap, MIGRATION_ID);
 
-            assertThat(migratedCaseDetails).doesNotContainKey("others");
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(others);
             assertThat(migratedCaseDetails).extracting("confidentialOthers")
                 .isEqualTo(confidentialOthers);
             assertThat(migratedCaseDetails).extracting("othersV2")
@@ -3749,7 +3749,7 @@ class MigrateCaseServiceTest {
         @SuppressWarnings("unchecked")
         @Test
         void shouldRollbackOthersV2ToOthers() {
-            List<Element<Other>> othersV2 = 
+            List<Element<Other>> othersV2 =
                 List.of(FIRST_OTHER, ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3);
 
             Map<String, Object> caseDetailsMap = new HashMap<>();
@@ -3762,7 +3762,7 @@ class MigrateCaseServiceTest {
 
             Map<String, Object> migratedCaseDetails =
                 underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
-            
+
             assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
 
             Others actualOthers = (Others) migratedCaseDetails.get("others");
