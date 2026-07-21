@@ -22,7 +22,7 @@ export class OtherPeopleInCase extends BasePage {
 
   public constructor(page: Page) {
     super(page);
-    this.otherPeopleHeading = page.getByRole("heading", { name: 'Other people to be given notice', exact: true });
+    this.otherPeopleHeading = page.getByRole("heading", { name: 'Others to be given notice', exact: true });
     this.firstName = page.getByLabel('First name');
     this.lastName = page.getByLabel('Last name');
     this.dobDay = page.getByLabel('Day');
