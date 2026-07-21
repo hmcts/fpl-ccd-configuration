@@ -12,16 +12,24 @@ import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.UUID;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialOrderBundleUtils.addToConfidentialOrderBundle;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -30,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReviewAdditionalApplicationService {
     public static final String ONLY_ONE_APPLICATION = "onlyOneApplicationToBeReviewed";
+    private static final String APPLICANT_CHANGES_REQUESTED = "Applicant needs to make changes to the order";
 
     private final HearingOrderGenerator hearingOrderGenerator;
     private final ApproveDraftOrdersService approveDraftOrdersService;
@@ -157,4 +166,40 @@ public class ReviewAdditionalApplicationService {
             }
         ).collect(Collectors.toList());
     }
+
+    public Map<String, Object> returnDraftOrderToApplicant(CaseData caseData,
+                                                            Element<HearingOrdersBundle> hearingOrdersBundle,
+                                                            UUID draftOrderId,
+                                                            String requestedChanges) {
+        Map<String, Object> updates = new HashMap<>();
+
+        Element<HearingOrder> orderElement = hearingOrdersBundle.getValue().getAllOrdersAndConfidentialOrders().stream()
+            .filter(order -> order.getId().equals(draftOrderId))
+            .findFirst()
+            .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                "No HearingOrder found with element id: " + draftOrderId
+            ));
+
+        Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
+            orderElement,
+            isBlank(requestedChanges) ? APPLICANT_CHANGES_REQUESTED : requestedChanges
+        );
+
+        if (orderElement.getValue().isConfidentialOrder()) {
+            updates.putAll(addToConfidentialOrderBundle(hearingOrdersBundle, orderElement,
+                caseData.getConfidentialRefusedOrders(), rejectedOrder));
+        } else {
+            List<Element<HearingOrder>> refusedOrders = defaultIfNull(caseData.getRefusedHearingOrders(),
+                new ArrayList<>());
+            refusedOrders.add(rejectedOrder);
+            updates.put("refusedHearingOrders", refusedOrders);
+        }
+
+        hearingOrdersBundle.getValue().removeOrderElement(orderElement);
+        updates.putAll(approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, hearingOrdersBundle));
+
+
+        return updates;
+    }
+
 }

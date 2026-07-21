@@ -68,6 +68,9 @@ public class ConfirmApplicationReviewedEventData {
     @JsonDeserialize(using = YesNoDeserializer.class)
     YesNo reviewAdditionalAppIsConfidential;
 
+    @Temp
+    String reviewAdditionalAppRequestedChanges;
+
     public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
@@ -85,6 +88,7 @@ public class ConfirmApplicationReviewedEventData {
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
             "reviewAdditionalAppIsConfidential",
+            "reviewAdditionalAppRequestedChanges",
             "amendedDraftOrder"
         );
     }
