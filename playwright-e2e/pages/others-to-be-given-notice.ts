@@ -19,6 +19,7 @@ export class OthersToBeGivenNotice extends BasePage {
     readonly difficultyCapacity: Locator;
     readonly giveDetails: Locator;
     readonly litigation: Locator;
+    readonly confidentialAddress: Locator;
 
     public constructor(page: Page) {
         super(page);
@@ -34,11 +35,12 @@ export class OthersToBeGivenNotice extends BasePage {
         this.telephoneNumber = page.getByLabel('Telephone number (Optional)');
         this.numberConfidential = page.getByRole('group', { name: 'Do you need to keep the' });
         this.relationshipToChild = page.getByText('What is this person\'s');
-        this.contactDetailsHidden = page.getByRole('group', { name: 'Do you need contact details' });
+        this.contactDetailsHidden = page.getByRole('group', { name: 'Do you need to keep the contact number confidential? (Optional)' });
         this.difficultyCapacity = page.getByRole('group', { name: 'Do you believe this person' });
         this.litigation = page.getByRole('group', { name: 'Do you believe this person' }).getByLabel('No', { exact: true });
         this.addNew = page.getByRole('button', { name: 'Add new' });
         this.giveDetails = page.getByRole('textbox', { name: 'Give details, including' });
+        this.confidentialAddress = page.getByRole('group', { name: 'Do you need to keep the' });
     }
 
     async othersToBeGivenNotice() {
@@ -48,28 +50,29 @@ export class OthersToBeGivenNotice extends BasePage {
         await this.inputDobDay.fill('12')
         await this.inputDobMonth.fill('05');
         await this.inputDobYear.fill('1988');
-        await this.currentAddress.getByLabel('No').click();
-        await this.currentAddress.getByLabel('No').click();
-        await this.currentAddressNo.click();
-        await this.currentAddressNo.click();
-        await this.addressUnknown.click();
-        await this.giveMoreDetails.fill('testing');
+        await this.currentAddress.getByLabel('Yes').click();
+        await this.currentAddress.getByLabel('Yes').click();//playwright playing up. had to work around it
+        await this.enterPostCode('SW1A 0AA');
+        await this.confidentialAddress.getByLabel('Yes').check();
+        await this.confidentialAddress.getByLabel('Yes').check();//playwright playing up. had to work around it
         await this.telephoneNumber.fill('03456789000');
-        await this.numberConfidential.getByLabel('No').check();
+        await this.numberConfidential.getByLabel('Yes').check();
+        await this.contactDetailsHidden.getByLabel('No').check();
         await this.relationshipToChild.fill('uncle')
         await this.difficultyCapacity.getByLabel('No', { exact: true }).check();
-       await this.addNew.nth(1).click();
+        await this.addNew.nth(1).click();
         await this.page.locator('#othersV2_1_firstName').fill('Tim');
         await this.page.locator('#othersV2_1_lastName').fill('kim');
         await this.page.locator('#DOB-day').nth(1).fill('4');
         await this.page.locator('#DOB-month').nth(1).fill('4');
         await this.page.locator('#DOB-year').nth(1).fill('1980');
-        await this.page.locator ('#othersV2_1_addressKnowV2-No').click();
-        await this.page.locator ('#othersV2_1_addressKnowV2-No').click();
+        await this.page.locator('#othersV2_1_addressKnowV2-No').click();
+        await this.page.locator('#othersV2_1_addressKnowV2-No').click();
         await this.page.locator('[id="othersV2_1_addressNotKnowReason-No\\ fixed\\ abode"]').click();
         await this.page.locator('#othersV2_1_telephone').fill('00000000000');
         await this.page.locator('#othersV2_1_childInformation').fill('Uncle');
         await this.page.locator('#othersV2_1_litigationIssues-NO').dblclick();
+        await this.clickContinue();
         await this.clickSaveAndContinue();
         await this.checkYourAnsAndSubmit();
     }
