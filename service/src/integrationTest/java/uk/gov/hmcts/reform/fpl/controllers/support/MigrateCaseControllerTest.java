@@ -29,7 +29,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.controllers.support.MigrateCaseController.MIGRATION_ID_KEY;
 
 
@@ -94,7 +93,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     "caseSummaryCourtName", "Family Court sitting at Fleetwood"
                 )))
                 .build();
-
 
             CaseData mutatedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
