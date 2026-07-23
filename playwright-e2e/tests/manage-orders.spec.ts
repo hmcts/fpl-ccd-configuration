@@ -1,8 +1,8 @@
 import { test } from '../fixtures/create-fixture';
 import { CTSCUser, judgeUser, newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
-import caseData from '../caseData/caseWithHearingDetails.json' assert {type: 'json'};
-import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' assert {type: 'json'};
-import caseDataWithPlacementApplication from '../caseData/caseWithPlacementApplication.json' assert {type: 'json'};
+import caseData from '../caseData/caseWithHearingDetails.json' with {type: 'json'};
+import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' with {type: 'json'};
+import caseDataWithPlacementApplication from '../caseData/caseWithPlacementApplication.json' with {type: 'json'};
 import { expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
 
@@ -22,7 +22,7 @@ test.describe('manage orders', () => {
             test(` @xbrowser EPO order created by ${role}`,
 
                 async ({ page, signInPage, orders }) => {
-                    caseName = 'EPO order by ' + role + ' ' + dateTime.slice(0, 10);
+                    caseName = 'EPO order ' + dateTime.slice(0, 10);
                     expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
                     await signInPage.visit();
                     await signInPage.login(user.email, user.password);
@@ -68,7 +68,58 @@ test.describe('manage orders', () => {
                     await expect(page.getByText('Timothy Jones, John Black, Sarah Black', { exact: true })).toBeVisible();
 
                 });
-        })
+
+        });
+
+    test('CTSC creates Emergency protection order', async ({ page, signInPage, orders }) => {
+        caseName = 'Emergency protection order (C23) ' + dateTime.slice(0, 10);
+        expect(await updateCase(caseName, caseNumber, caseWithOrderData)).toBeTruthy();
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+        await orders.selectOrder('Emergency protection order (C23)');
+        await orders.clickContinue();
+
+        await orders.uploadsEmergencyProtectionOrder();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByText('Order 1', { exact: true })).toBeVisible();
+        await expect(page.getByRole('cell', { name: ' c23_emergency_protection_order.pdf', exact: true })).toBeVisible();
+        await orders.openOrderDoc('c23_emergency_protection_order.pdf');
+
+    });
+
+    test('Judge creates Emergency protection order', async ({ page, signInPage, orders }) => {
+        caseName = 'Emergency protection order (C23) ' + dateTime.slice(0, 10);
+        expect(await updateCase(caseName, caseNumber, caseWithOrderData)).toBeTruthy();
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await orders.gotoNextStep('Manage orders');
+
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+        await orders.selectOrder('Emergency protection order (C23)');
+        await orders.clickContinue();
+
+        await orders.uploadsEmergencyProtectionOrder();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByText('Order 1', { exact: true })).toBeVisible();
+        await expect(page.getByRole('cell', { name: ' c23_emergency_protection_order.pdf', exact: true })).toBeVisible();
+        await orders.openOrderDoc('c23_emergency_protection_order.pdf');
+
+    });
 
     test('Amend order under slip rule', async ({ signInPage, orders }) => {
         caseName = 'Amend EPO order ' + dateTime.slice(0, 10);
@@ -371,7 +422,6 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await orders.addAuthorityToRefuseContactWithAChildInCareDetails();
-
         await orders.clickContinue();
 
         await orders.clickSaveAndContinue();

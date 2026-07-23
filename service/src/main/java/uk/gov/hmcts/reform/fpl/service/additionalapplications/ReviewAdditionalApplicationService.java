@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationRefusalOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
+import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +27,10 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialOrderBundleUtils.addToConfidentialOrderBundle;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -35,8 +39,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReviewAdditionalApplicationService {
     public static final String ONLY_ONE_APPLICATION = "onlyOneApplicationToBeReviewed";
+    private static final String APPLICANT_CHANGES_REQUESTED = "Applicant needs to make changes to the order";
 
     private final ApproveDraftOrdersService approveDraftOrdersService;
+    private final HearingOrderGenerator hearingOrderGenerator;
     private final ApplicationRefusalOrderService refusalOrderService;
 
     public Map<String, Object> initEventField(CaseData caseData) {
@@ -161,6 +167,41 @@ public class ReviewAdditionalApplicationService {
                 return existingBundle;
             }
         ).collect(Collectors.toList());
+    }
+
+    public Map<String, Object> returnDraftOrderToApplicant(CaseData caseData,
+                                                            Element<HearingOrdersBundle> hearingOrdersBundle,
+                                                            UUID draftOrderId,
+                                                            String requestedChanges) {
+        Map<String, Object> updates = new HashMap<>();
+
+        Element<HearingOrder> orderElement = hearingOrdersBundle.getValue().getAllOrdersAndConfidentialOrders().stream()
+            .filter(order -> order.getId().equals(draftOrderId))
+            .findFirst()
+            .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                "No HearingOrder found with element id: " + draftOrderId
+            ));
+
+        Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
+            orderElement,
+            isBlank(requestedChanges) ? APPLICANT_CHANGES_REQUESTED : requestedChanges
+        );
+
+        if (orderElement.getValue().isConfidentialOrder()) {
+            updates.putAll(addToConfidentialOrderBundle(hearingOrdersBundle, orderElement,
+                caseData.getConfidentialRefusedOrders(), rejectedOrder));
+        } else {
+            List<Element<HearingOrder>> refusedOrders = defaultIfNull(caseData.getRefusedHearingOrders(),
+                new ArrayList<>());
+            refusedOrders.add(rejectedOrder);
+            updates.put("refusedHearingOrders", refusedOrders);
+        }
+
+        hearingOrdersBundle.getValue().removeOrderElement(orderElement);
+        updates.putAll(approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, hearingOrdersBundle));
+
+
+        return updates;
     }
 
     public Map<String, Object> addRefusalOrders(CaseData caseData,

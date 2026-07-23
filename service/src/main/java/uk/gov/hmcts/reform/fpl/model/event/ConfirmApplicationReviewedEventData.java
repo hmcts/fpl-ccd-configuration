@@ -66,6 +66,9 @@ public class ConfirmApplicationReviewedEventData {
     YesNo reviewAdditionalAppIsConfidential;
 
     @Temp
+    String reviewAdditionalAppRequestedChanges;
+
+    @Temp
     String reviewAdditionalAppRefusalReason;
 
     public static List<String> eventFields() {
@@ -86,7 +89,8 @@ public class ConfirmApplicationReviewedEventData {
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
-            "reviewAdditionalAppIsConfidential"
+            "reviewAdditionalAppIsConfidential",
+            "reviewAdditionalAppRequestedChanges"
         );
     }
 }

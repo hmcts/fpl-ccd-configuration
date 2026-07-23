@@ -63,7 +63,7 @@ export class OthersToBeGivenNotice extends BasePage {
             await this.page.locator('#others_additionalOthers_0_telephone').fill("0000000000");
             await this.page.locator('#others_additionalOthers_0_childInformation').fill('test');
             await this.page.locator('#others_additionalOthers_0_litigationIssues-NO').check();
-            await this.submit.click();
+            await this.saveAndContinue.click();
             await this.saveAndContinue.click();
     }
 };

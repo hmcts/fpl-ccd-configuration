@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +37,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -47,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialOrderBundleUtils.addToConfidentialOrderBundle;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -290,13 +288,18 @@ public class ApproveDraftOrdersService {
                     ordersToBeSent = defaultIfNull((List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT),
                         newArrayList());
                 } else if (JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    Element<HearingOrder> rejectedOrder = rejectDraftOrderWithRequestedChanges(
-                        caseData,
-                        data,
-                        selectedOrdersBundle,
-                        orderElement,
-                        reviewDecision.getChangesRequestedByJudge()
-                    );
+                    Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
+                        orderElement, reviewDecision.getChangesRequestedByJudge());
+
+                    if (orderElement.getValue().isConfidentialOrder()) {
+                        Element<HearingOrder> confidentialRejectedOrder =
+                            element(rejectedOrder.getId(),
+                                rejectedOrder.getValue().toBuilder()
+                                .orderConfidential(null)
+                                .build());
+                        data.putAll(addToConfidentialOrderBundle(selectedOrdersBundle, orderElement,
+                            caseData.getConfidentialRefusedOrders(), confidentialRejectedOrder));
+                    }
 
                     ordersToBeSent.add(rejectedOrder);
                 } else {
@@ -367,7 +370,7 @@ public class ApproveDraftOrdersService {
             .filter(order -> order.getId().equals(draftOrderId))
             .findFirst()
             .orElseGet(() ->
-                selectedOrdersBundle.getValue().getOrdersCTSC().stream()
+                selectedOrdersBundle.getValue().getAllConfidentialOrders().stream()
                     .filter(order -> order.getId().equals(draftOrderId))
                     .findFirst()
                     .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
@@ -376,31 +379,6 @@ public class ApproveDraftOrdersService {
             );
         doApproveAndSealDraftOrder(caseData, data, selectedOrdersBundle, orderElement, reviewDecision);
         selectedOrdersBundle.getValue().removeOrderElement(orderElement);
-    }
-
-    public Element<HearingOrder> rejectDraftOrderWithRequestedChanges(
-        CaseData caseData,
-        Map<String, Object> data,
-        Element<HearingOrdersBundle> selectedOrdersBundle,
-        Element<HearingOrder> orderElement,
-        String changesRequestedByJudge
-    ) {
-        Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
-            orderElement,
-            changesRequestedByJudge
-        );
-
-        if (orderElement.getValue().isConfidentialOrder()) {
-            Element<HearingOrder> confidentialRejectedOrder = element(rejectedOrder.getId(),
-                rejectedOrder.getValue().toBuilder()
-                    .orderConfidential(null)
-                    .build());
-
-            data.putAll(addToConfidentialOrderBundle(selectedOrdersBundle, orderElement,
-                caseData.getConfidentialRefusedOrders(), confidentialRejectedOrder));
-        }
-
-        return rejectedOrder;
     }
 
     private <T> Map<String, List<Element<T>>> addToConfidentialOrderBundle(Element<HearingOrdersBundle>

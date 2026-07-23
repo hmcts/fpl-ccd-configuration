@@ -2,6 +2,7 @@ import { expect, test } from "../fixtures/fixtures";
 import { newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from "../settings/user-credentials";
 import { CreateCaseName } from "../utils/create-case-name";
 import { CaseFileView } from "../pages/case-file-view";
+import {testConfig} from "../settings/test-config";
 
 
 test.describe('Smoke Test @xbrowser @smoke-test', () => {
@@ -106,7 +107,7 @@ test.setTimeout(7 * 60 * 1000);
         await test.step('Submit case', async() => {
 
            await  startApplication.submitCase()
-            await submitCase.submitCaseSmokeTest('2,515.00');
+            await submitCase.submitCaseSmokeTest(testConfig.APPLICATION_OF_PROCEEDING);
         });
 
         const accessibilityScanResults = await makeAxeBuilder()
@@ -203,7 +204,7 @@ test.setTimeout(7 * 60 * 1000);
 
             await test.step('Submit the Case', async () => {
                 await   startApplication.submitCase()
-                await submitCase.submitCaseSmokeTest('£263.00');
+                await submitCase.submitCaseSmokeTest(testConfig.VARIATION_DISCHARGE_OF_CARE_SUPERVISION_ORDER);
             });
 
 
