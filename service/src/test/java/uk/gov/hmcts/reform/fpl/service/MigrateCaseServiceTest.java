@@ -4022,7 +4022,8 @@ class MigrateCaseServiceTest {
                 .hasMessageContaining("expected Fleetwood (401452) but found baseLocation: 111111");
         }
     }
-  
+
+    @Nested
     class RemoveSolicitorEmailFromPlacementNotices {
 
         private static final String TARGET_ID = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
