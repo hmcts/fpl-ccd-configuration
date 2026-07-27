@@ -102,11 +102,6 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 caseDetails.getData().put("previewApprovedOrder1", previewOrder);
                 caseDetails.getData().put("previewApprovedOrderTitle1", String.format("Order %s",
                     draftOrder.getValue().getTitle()));
-
-                if (!isEmpty(eventData.getAmendedDraftOrder())) {
-                    caseDetails.getData().put("amendedDraftOrder", previewOrder);
-                }
-
                 break;
             case APPLICANT_CHANGE_ORDER:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
