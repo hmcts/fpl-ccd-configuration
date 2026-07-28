@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.cmo;
+package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static java.lang.String.format;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.REFUSAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -59,6 +58,14 @@ public class ApplicationRefusalOrderService {
     }
 
     public DocumentReference buildApplicationRefusalOrderDocument(CaseData caseData, String judgeTitleAndName,
+                                                                  String applicationDate,
+                                                                  String refusalReason, boolean requireSealing) {
+        return buildApplicationRefusalOrderDocument(caseData, judgeTitleAndName,
+            formatLocalDateToString(time.now().toLocalDate(), DATE, caseData.getCaseLanguage()), applicationDate,
+            refusalReason, requireSealing);
+    }
+
+    public DocumentReference buildApplicationRefusalOrderDocument(CaseData caseData, String judgeTitleAndName,
                                                                   String dateOfRefusal, String applicationDate,
                                                                   String refusalReason, boolean requireSealing) {
         DocmosisDocument docmosisDocument = generateApplicationRefusalOrderPDF(caseData,
@@ -69,7 +76,7 @@ public class ApplicationRefusalOrderService {
             : docmosisDocument.getBytes();
 
         return DocumentReference.buildFromDocument(
-            documentUploadService.uploadPDF(documentBytes, getRefusalOrderTitle(applicationDate)));
+            documentUploadService.uploadPDF(documentBytes, REFUSAL_ORDER.getFileName()));
     }
 
     public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
@@ -89,7 +96,7 @@ public class ApplicationRefusalOrderService {
 
         GeneratedOrder.GeneratedOrderBuilder refusalOrderBuilder = GeneratedOrder.builder()
             .type(REFUSAL_ORDER.getLabel())
-            .title(getRefusalOrderTitle(applicationDate))
+            .title(format("%s for application date %s", REFUSAL_ORDER.getLabel(), applicationDate))
             .dateOfIssue(dateOfRefusal)
             .judgeAndLegalAdvisor(null)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
@@ -102,9 +109,5 @@ public class ApplicationRefusalOrderService {
         }
 
         return element(refusalOrderBuilder.build());
-    }
-
-    private String getRefusalOrderTitle(String applicationDate) {
-        return format("%s for application date %s", REFUSAL_ORDER.getLabel(), applicationDate);
     }
 }

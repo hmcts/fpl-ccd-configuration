@@ -335,6 +335,7 @@ class ReviewAdditionalApplicationServiceTest {
             .draftOrdersBundle(c2ToBeReviewed.getDraftOrdersBundle())
             .supplementsBundle(c2ToBeReviewed.getSupplementsBundle())
             .supportingEvidenceBundle(c2ToBeReviewed.getSupportingEvidenceBundle())
+            .uploadedDateTime(c2ToBeReviewed.getUploadedDateTime())
             .build();
     }
 }

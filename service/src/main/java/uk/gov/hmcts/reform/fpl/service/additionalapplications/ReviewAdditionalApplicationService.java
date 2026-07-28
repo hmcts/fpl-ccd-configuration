@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationRefusalOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
@@ -110,6 +109,7 @@ public class ReviewAdditionalApplicationService {
                 .draftOrdersBundle(c2ToBeReviewed.getDraftOrdersBundle())
                 .supplementsBundle(c2ToBeReviewed.getSupplementsBundle())
                 .supportingEvidenceBundle(c2ToBeReviewed.getSupportingEvidenceBundle())
+                .uploadedDateTime(c2ToBeReviewed.getUploadedDateTime())
                 .build());
         } else {
             resultMap.put("hasC2ToBeReview", NO);
@@ -145,7 +145,7 @@ public class ReviewAdditionalApplicationService {
             getApplicationsToBeReviewed(caseData);
 
         if (applicationsBundlesToBeReviewed.size() == 1) {
-            return applicationsBundlesToBeReviewed.get(0);
+            return applicationsBundlesToBeReviewed.getFirst();
         } else {
             ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
 
@@ -208,14 +208,13 @@ public class ReviewAdditionalApplicationService {
                                                 Element<HearingOrdersBundle> selectedOrdersBundle,
                                                 UUID draftOrderId) {
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
-        Element<AdditionalApplicationsBundle> selectedApplication = getSelectedApplicationsToBeReviewed(caseData);
 
         boolean isConfidential = false;
-//        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
+        // boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
 
         Element<GeneratedOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(caseData,
             eventData.getJudgeNameAndTitle(),
-            selectedApplication.getValue().getUploadedDateTime(),
+            eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
             eventData.getReviewAdditionalAppRefusalReason(),
             isConfidential);
 

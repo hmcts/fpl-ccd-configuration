@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationRefusalOrderService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationRefusalOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkdownService;
@@ -76,13 +76,13 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                                                                                     callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
 
         switch (caseData.getApproveAdditionalAppRouter()) {
             case APPROVE_APPLICATION_AND_ORDER:
                 caseDetails.getData().put("reviewOrderUrgency", YES);
                 caseDetails.getData().put("addCoverSheet", YES);
 
-                ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
                 C2DocumentBundle bundle  = eventData.getC2AdditionalApplicationToBeReview().toC2DocumentBundle();
 
                 Element<DraftOrder> draftOrder = bundle.getDraftOrdersBundle().getFirst();
@@ -104,6 +104,15 @@ public class ReviewAdditionalApplicationController extends CallbackController {
             case APPLICANT_CHANGE_ORDER:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
                 caseDetails.getData().put("addCoverSheet", NO);
+                break;
+            case REFUSE:
+                caseDetails.getData().put("reviewOrderUrgency", NO);
+                caseDetails.getData().put("addCoverSheet", NO);
+
+                caseDetails.getData().put("previewApprovedOrder1",
+                    refusalOrderService.buildApplicationRefusalOrderDocument(caseData, eventData.getJudgeNameAndTitle(),
+                        eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
+                        eventData.getReviewAdditionalAppRefusalReason(), false));
                 break;
             default:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
