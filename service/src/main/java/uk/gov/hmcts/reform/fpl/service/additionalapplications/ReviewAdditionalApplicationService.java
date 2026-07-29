@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions;
+import uk.gov.hmcts.reform.fpl.events.cmo.C2ApplicationRejectedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.ReviewCMOEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -25,6 +28,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -43,6 +47,7 @@ public class ReviewAdditionalApplicationService {
     private final ApproveDraftOrdersService approveDraftOrdersService;
     private final HearingOrderGenerator hearingOrderGenerator;
     private final ApplicationRefusalOrderService refusalOrderService;
+    // private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
 
     public Map<String, Object> initEventField(CaseData caseData) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -209,17 +214,19 @@ public class ReviewAdditionalApplicationService {
                                                 UUID draftOrderId) {
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
 
-        boolean isConfidential = false;
-        // boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
+        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
 
+        // generate refusal order and add it to orderCollection
         Element<GeneratedOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(caseData,
             eventData.getJudgeNameAndTitle(),
             eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
             eventData.getReviewAdditionalAppRefusalReason(),
             isConfidential);
 
-        // TODO TBC confidential?
+        List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
+        orderCollection.add(refusalOrderDoc);
 
+        // update the draft order as rejected and move them to refused
         Element<HearingOrder> draftOrder = findElement(draftOrderId, selectedOrdersBundle.getValue()
             .getAllOrdersAndConfidentialOrders()).orElseThrow();
 
@@ -232,19 +239,36 @@ public class ReviewAdditionalApplicationService {
             eventData.getReviewAdditionalAppRefusalReason()
         );
 
-        if (!rejectedDraftOrder.getValue().isConfidentialOrder()) {
-            List<Element<HearingOrder>> rejectedOrders =
-                defaultIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
-            rejectedOrders.add(rejectedDraftOrder);
-            updates.put("refusedHearingOrders", rejectedOrders);
-        }
+        List<Element<HearingOrder>> rejectedOrders = getIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
+        rejectedOrders.add(rejectedDraftOrder);
+        updates.put("refusedHearingOrders", rejectedOrders);
 
         selectedOrdersBundle.getValue().removeOrderElement(draftOrder);
 
-        List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
-        orderCollection.add(refusalOrderDoc);
         updates.put("orderCollection", orderCollection);
 
         return updates;
+    }
+
+    public List<ReviewCMOEvent> buildEventsToPublish(CaseData caseData, CaseData oldCaseData) {
+        ConfirmApplicationReviewedEventData oldEventData = oldCaseData.getConfirmApplicationReviewedEventData();
+        Element<AdditionalApplicationsBundle> selectedBundle = getSelectedApplicationsToBeReviewed(caseData);
+        C2DocumentBundle rejectedC2Bundle = oldEventData.getC2AdditionalApplicationToBeReview();
+
+        List<ReviewCMOEvent> eventsToPublish = new ArrayList<>();
+
+        if (ApproveAdditionalAppOptions.REFUSE.equals(oldCaseData.getApproveAdditionalAppRouter())) {
+            eventsToPublish.add(C2ApplicationRejectedEvent.builder()
+                .caseData(caseData)
+                .selectedAdditionalApplicationBundle(selectedBundle.getValue())
+                .c2DocumentRefused(rejectedC2Bundle)
+                .refusalOrderTitle(refusalOrderService.getRefusalOrderTitle(rejectedC2Bundle.getUploadedDateTime()))
+                .build());
+        } else {
+            // TBC
+            // eventsToPublish.addAll(draftOrdersEventNotificationBuilder.buildEventsToPublish(caseData));
+        }
+
+        return eventsToPublish;
     }
 }

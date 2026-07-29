@@ -96,7 +96,7 @@ public class ApplicationRefusalOrderService {
 
         GeneratedOrder.GeneratedOrderBuilder refusalOrderBuilder = GeneratedOrder.builder()
             .type(REFUSAL_ORDER.getLabel())
-            .title(format("%s for application date %s", REFUSAL_ORDER.getLabel(), applicationDate))
+            .title(getRefusalOrderTitle(applicationDate))
             .dateOfIssue(dateOfRefusal)
             .judgeAndLegalAdvisor(null)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
@@ -109,5 +109,9 @@ public class ApplicationRefusalOrderService {
         }
 
         return element(refusalOrderBuilder.build());
+    }
+
+    public String getRefusalOrderTitle(String applicationDate) {
+        return format("%s for application date %s", REFUSAL_ORDER.getLabel(), applicationDate);
     }
 }
