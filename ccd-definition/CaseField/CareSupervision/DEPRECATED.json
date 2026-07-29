@@ -939,6 +939,7 @@
     "Label": "Add legal adviser details",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Deprecated"
   }
 ]

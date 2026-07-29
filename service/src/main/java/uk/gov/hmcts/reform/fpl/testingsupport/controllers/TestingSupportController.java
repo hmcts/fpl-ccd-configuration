@@ -89,7 +89,7 @@ public class TestingSupportController {
 
     @PostMapping(value = "/testing-support/case/create", produces = APPLICATION_JSON_VALUE)
     public Map createCase(@RequestBody Map<String, Object> requestBody) {
-
+        // go through CCD event, openCase, to create a case
         StartEventResponse startEventResponse = coreCaseDataApi.startCase(
             requestData.authorisation(),
             authToken.generate(),
