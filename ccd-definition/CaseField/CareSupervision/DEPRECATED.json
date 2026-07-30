@@ -961,5 +961,7 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Temporary field for review additional application"
+    "Searchable": "N",
+    "Comment": "Deprecated"
   }
 ]
