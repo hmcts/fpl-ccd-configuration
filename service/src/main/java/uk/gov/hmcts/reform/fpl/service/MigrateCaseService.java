@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,7 +62,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -108,6 +112,7 @@ public class MigrateCaseService {
     public final CourtLookUpService courtLookUpService;
 
     private static final Map<String, HearingType>  HEARING_TYPE_DETAILS_MAPPING = initialiseHearingMapping();
+    private final ObjectMapper mapper;
 
 
     private static Map<String, HearingType> initialiseHearingMapping() {
@@ -1343,6 +1348,66 @@ public class MigrateCaseService {
         return Map.of(ORDERS, caseData.getOrders().toBuilder().address(null).build());
     }
 
+    public Map<String, Object> migrateOthersToOthersV2(CaseData caseData, Map<String, Object> caseDetailsMap,
+                                                       String migrationId) {
+        Others othersToBeMigrated = caseData.getOthers();
+
+        if (othersToBeMigrated == null) {
+            throw new AssertionError(format("Migration {id = %s}, there is no others in case %s", migrationId,
+                caseData.getId()));
+        }
+
+        List<Element<Other>> othersV2 = new ArrayList<>();
+        if (othersToBeMigrated.getFirstOther() != null) {
+            Element<Other> firstOther = element(getFirstOtherId(caseData), othersToBeMigrated.getFirstOther());
+            othersV2.add(firstOther);
+        }
+        if (isNotEmpty(othersToBeMigrated.getAdditionalOthers())) {
+            othersV2.addAll(othersToBeMigrated.getAdditionalOthers());
+        }
+
+        caseDetailsMap.put("othersV2", othersV2);
+
+        return caseDetailsMap;
+    }
+
+    private UUID getFirstOtherId(CaseData caseData) {
+        // Copied from respondentController
+        // if firstOther exists confidentialOthers, it should return its uuid in confidentialOthers
+        // otherwise, it returns a random UUID
+        Set<UUID> additionalOtherIds = nullSafeList(caseData.getOthers().getAdditionalOthers())
+            .stream().map(Element::getId).collect(Collectors.toSet());
+        return caseData.getConfidentialOthers().stream().map(Element::getId)
+            .filter(co -> !additionalOtherIds.contains(co)).findFirst()
+            .orElse(UUID.randomUUID());
+    }
+
+    public Map<String, Object> rollbackOthersV2ToOthers(CaseData caseData, Map<String, Object> caseDetailsMap,
+                                                       String migrationId) {
+        List<Element<Other>> othersV2ToBeMigrated = caseData.getOthersV2();
+
+        if (othersV2ToBeMigrated == null) {
+            throw new AssertionError(format("Migration {id = %s}, there is no othersV2 in case %s", migrationId,
+                caseData.getId()));
+        }
+
+        int othersV2Size = othersV2ToBeMigrated.size();
+        
+        Other firstOther = (othersV2Size > 0) ? othersV2ToBeMigrated.get(0).getValue() : null;
+        List<Element<Other>> additionalOthers =  (othersV2Size > 1) 
+            ? othersV2ToBeMigrated.subList(1, othersV2Size) : null;
+
+        Others others = Others.builder()
+            .firstOther(firstOther)
+            .additionalOthers(additionalOthers)
+            .build();
+
+        caseDetailsMap.remove("othersV2");
+        caseDetailsMap.put("others", others);
+
+        return caseDetailsMap;
+    }
+
     public Map<String, Object> removeDraftOrderFromAdditionalApplication(CaseData caseData, String migrationId,
                                                                          UUID bundleId, UUID orderId) {
         Element<AdditionalApplicationsBundle> bundle = caseData.getAdditionalApplicationsBundle()
@@ -1470,5 +1535,85 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("others", updatedOthers);
+    }
+
+    public boolean removeSolicitorEmailFromPlacementNotices(CaseDetails caseDetails, String targetId) {
+        // Flag to track if modifications happen anywhere across the three fields
+        boolean dynamicModified = false;
+
+        // Process standard placements
+        if (caseDetails.getData().get(PLACEMENT) != null) {
+            List<Element<Placement>> placements = getPlacementList(caseDetails, PLACEMENT);
+            if (processPlacementsList(placements, targetId)) {
+                caseDetails.getData().put(PLACEMENT, placements);
+                dynamicModified = true;
+            }
+        }
+
+        // Process placementsNonConfidentialNotices
+        if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL_NOTICES) != null) {
+            List<Element<Placement>> notices = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+            if (processPlacementsList(notices, targetId)) {
+                caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, notices);
+                dynamicModified = true;
+            }
+        }
+
+        // Process placementsNonConfidential
+        if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL) != null) {
+            List<Element<Placement>> nonConf = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL);
+            if (processPlacementsList(nonConf, targetId)) {
+                caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConf);
+                dynamicModified = true;
+            }
+        }
+
+        return dynamicModified;
+    }
+
+    private List<Element<Placement>> getPlacementList(CaseDetails caseDetails, String key) {
+        return mapper.convertValue(caseDetails.getData().get(key), new TypeReference<>() {});
+    }
+
+    private boolean processPlacementsList(List<Element<Placement>> placements, String targetId) {
+        boolean modified = false;
+
+        for (Element<Placement> placementElement : placements) {
+            Placement placement = placementElement.getValue();
+
+            if (placement != null && placement.getPlacementRespondentsToNotify() != null) {
+                List<Element<Respondent>> originalList = placement.getPlacementRespondentsToNotify();
+                List<Element<Respondent>> filteredList = filterRespondentsById(originalList, targetId);
+
+                if (filteredList.size() != originalList.size()) {
+                    placement.setPlacementRespondentsToNotify(filteredList);
+                    modified = true;
+                }
+            }
+        }
+
+        return modified;
+    }
+
+    private List<Element<Respondent>> filterRespondentsById(List<Element<Respondent>> respondents, String targetId) {
+        List<Element<Respondent>> updatedRespondents = new ArrayList<>();
+
+        for (Element<Respondent> respondentEl : respondents) {
+            if (shouldKeepRespondent(respondentEl, targetId)) {
+                updatedRespondents.add(respondentEl);
+            }
+        }
+
+        return updatedRespondents;
+    }
+
+    private boolean shouldKeepRespondent(Element<Respondent> respondentEl, String targetId) {
+        if (respondentEl == null || respondentEl.getId() == null) {
+            return true;
+        }
+
+        String currentElementId = String.valueOf(respondentEl.getId());
+
+        return !targetId.equalsIgnoreCase(currentElementId);
     }
 }
