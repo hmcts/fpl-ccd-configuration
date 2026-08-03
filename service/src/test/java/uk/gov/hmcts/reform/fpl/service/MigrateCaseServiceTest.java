@@ -114,6 +114,9 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.mockito.Mockito;
+
 
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -135,6 +138,9 @@ class MigrateCaseServiceTest {
 
     @Mock
     private CaseNoteService caseNoteService;
+
+    @Mock
+    private com.fasterxml.jackson.databind.ObjectMapper mapper;
 
     @InjectMocks
     private MigrateCaseService underTest;
@@ -3650,6 +3656,166 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
+    class MigrateOthersToOthersV2 {
+        private static final Element<Other> FIRST_OTHER = element(Other.builder().firstName("first").build());
+
+        private static final Element<Other> ADDTIONAL_OTHER_1 = element(Other.builder().firstName("1").build());
+        private static final Element<Other> ADDTIONAL_OTHER_2 = element(Other.builder().firstName("2").build());
+        private static final Element<Other> ADDTIONAL_OTHER_3 = element(Other.builder().firstName("3").build());
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldMigrateOthersToOthersV2() {
+            Others others = Others.builder()
+                .firstOther(FIRST_OTHER.getValue())
+                .additionalOthers(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3))
+                .build();
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("others", others);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .others(others)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.migrateOthersToOthersV2(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(others);
+
+            List<Element<Other>> othersV2 = (List<Element<Other>>) migratedCaseDetails.get("othersV2");
+            assertThat(othersV2).hasSize(4);
+            assertThat(othersV2.get(0).getValue()).isEqualTo(FIRST_OTHER.getValue());
+            assertThat(othersV2.get(1)).isEqualTo(ADDTIONAL_OTHER_1);
+            assertThat(othersV2.get(2)).isEqualTo(ADDTIONAL_OTHER_2);
+            assertThat(othersV2.get(3)).isEqualTo(ADDTIONAL_OTHER_3);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldMigrateOthersToOthersV2IfFirstOtherNotExist() {
+            Others others = Others.builder()
+                .additionalOthers(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3))
+                .build();
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("others", others);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .others(others)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.migrateOthersToOthersV2(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(others);
+
+            List<Element<Other>> othersV2 = (List<Element<Other>>) migratedCaseDetails.get("othersV2");
+            assertThat(othersV2).isEqualTo(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldGetFirstOtherIdIfConfidentialFirstOtherExist() {
+            Others others = Others.builder()
+                .firstOther(FIRST_OTHER.getValue())
+                .additionalOthers(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3))
+                .build();
+
+            List<Element<Other>> confidentialOthers = List.of(FIRST_OTHER, ADDTIONAL_OTHER_2);
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("others", others);
+            caseDetailsMap.put("confidentialOthers", confidentialOthers);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .others(others)
+                .confidentialOthers(confidentialOthers)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.migrateOthersToOthersV2(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(others);
+            assertThat(migratedCaseDetails).extracting("confidentialOthers")
+                .isEqualTo(confidentialOthers);
+            assertThat(migratedCaseDetails).extracting("othersV2")
+                .isEqualTo(List.of(FIRST_OTHER, ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldRollbackOthersV2ToOthers() {
+            List<Element<Other>> othersV2 =
+                List.of(FIRST_OTHER, ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3);
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("othersV2", othersV2);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .othersV2(othersV2)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
+
+            Others actualOthers = (Others) migratedCaseDetails.get("others");
+            assertThat(actualOthers.getFirstOther()).isEqualTo(FIRST_OTHER.getValue());
+            assertThat(actualOthers.getAdditionalOthers()).hasSize(3);
+            assertThat(actualOthers.getAdditionalOthers())
+                .isEqualTo(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldRollbackOthersV2ToOthersIfOnlyOneOtherExist() {
+            List<Element<Other>> othersV2 = List.of(FIRST_OTHER);
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("othersV2", othersV2);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .othersV2(othersV2)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
+
+            Others actualOthers = (Others) migratedCaseDetails.get("others");
+            assertThat(actualOthers.getFirstOther()).isEqualTo(FIRST_OTHER.getValue());
+            assertThat(actualOthers.getAdditionalOthers()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldRollbackOthersV2ToOthersIfNoOtherExist() {
+            List<Element<Other>> othersV2 = List.of();
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("othersV2", othersV2);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .othersV2(othersV2)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(Others.builder().build());
+        }
+    }
+
+    @Nested
     class RemoveDraftOrderFromAdditionalApplicationBundle {
 
         private final UUID bundleId = UUID.randomUUID();
@@ -3928,6 +4094,196 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () -> underTest.removeFirstOther(MIGRATION_ID, caseData));
+        }
+    }
+
+    @Nested
+    class RemoveSolicitorEmailFromPlacementNotices {
+
+        private static final String TARGET_ID = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldReturnTrueAndRemoveMatchingRespondentFromAllThreePlacementFields() {
+            Element<Respondent> matchingElement = Element.<Respondent>builder()
+                .id(UUID.fromString(TARGET_ID))
+                .value(Respondent.builder().build())
+                .build();
+
+            Element<Respondent> keepElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(Respondent.builder().build())
+                .build();
+
+            Placement placementValue = Placement.builder()
+                .placementRespondentsToNotify(List.of(matchingElement, keepElement))
+                .build();
+
+            Element<Placement> placementElement = Element.<Placement>builder()
+                .id(UUID.randomUUID())
+                .value(placementValue)
+                .build();
+
+            List<Element<Placement>> mockPlacementList = List.of(placementElement);
+
+            // Stub the mapper to return our mock placement list
+            Mockito.when(mapper.convertValue(
+                Mockito.any(),
+                Mockito.any(TypeReference.class)
+            )).thenReturn(mockPlacementList);
+
+            Map<String, Object> placementDataMock = new HashMap<>();
+            placementDataMock.put("id", UUID.randomUUID().toString());
+            placementDataMock.put("value", new HashMap<>());
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", new ArrayList<>(List.of(placementDataMock)));
+            caseDataMap.put("placementsNonConfidential", new ArrayList<>(List.of(placementDataMock)));
+            caseDataMap.put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementDataMock)));
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1767800818952560L)
+                .data(caseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isTrue();
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldReturnFalseWhenNoMatchingIdIsFound() {
+            Element<Respondent> respElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(Respondent.builder().build())
+                .build();
+
+            Placement placementValue = Placement.builder()
+                .placementRespondentsToNotify(List.of(respElement))
+                .build();
+
+            Element<Placement> placementWrap = Element.<Placement>builder()
+                .id(UUID.randomUUID())
+                .value(placementValue)
+                .build();
+
+            List<Element<Placement>> mockPlacementList = List.of(placementWrap);
+
+            // Stub the mapper
+            Mockito.when(mapper.convertValue(
+                Mockito.any(),
+                Mockito.any(TypeReference.class)
+            )).thenReturn(mockPlacementList);
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", List.of(new HashMap<>()));
+            caseDataMap.put("placementsNonConfidential", List.of(new HashMap<>()));
+            caseDataMap.put("placementsNonConfidentialNotices", List.of(new HashMap<>()));
+
+            CaseDetails testCaseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldReturnFalseWhenRespondentElementOrElementIdIsNull() {
+
+            Element<Respondent> nullElement = null;
+            Element<Respondent> nullIdElement = Element.<Respondent>builder()
+                .id(null)
+                .value(Respondent.builder().build())
+                .build();
+
+            List<Element<Respondent>> testList = new ArrayList<>();
+            testList.add(nullElement);
+            testList.add(nullIdElement);
+
+            Placement corruptPlacementValue = Placement.builder()
+                .placementRespondentsToNotify(testList)
+                .build();
+
+            Element<Placement> placementElement = Element.<Placement>builder()
+                .id(UUID.randomUUID())
+                .value(corruptPlacementValue)
+                .build();
+
+            List<Element<Placement>> mockPlacementList = List.of(placementElement);
+
+            // Stub the mapper
+            Mockito.when(mapper.convertValue(
+                Mockito.any(),
+                Mockito.any(TypeReference.class)
+            )).thenReturn(mockPlacementList);
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidential", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidentialNotices", new ArrayList<>(List.of(new HashMap<>())));
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1767800818952560L)
+                .data(caseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseAndSkipProcessingWhenAllPlacementFieldsAreNull() {
+            Map<String, Object> emptyCaseDataMap = new HashMap<>();
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1767800818952560L)
+                .data(emptyCaseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldForceTrueBranchExecutionForAllInnerPlacementBlocks() {
+            java.util.function.Supplier<List<Element<Placement>>> matchSupplier = () -> {
+                Element<Respondent> matchingElement = Element.<Respondent>builder()
+                    .id(UUID.fromString(TARGET_ID))
+                    .value(Respondent.builder().build())
+                    .build();
+                Placement matchingPlacement = Placement.builder()
+                    .placementRespondentsToNotify(List.of(matchingElement)).build();
+                return List.of(Element.<Placement>builder().id(UUID.randomUUID()).value(matchingPlacement).build());
+            };
+
+            Mockito.when(mapper.convertValue(Mockito.any(), Mockito.any(TypeReference.class)))
+                .thenReturn(matchSupplier.get())  // get ("placements")
+                .thenReturn(matchSupplier.get())  // get ("placementsNonConfidentialNotices")
+                .thenReturn(matchSupplier.get()); // get ("placementsNonConfidential")
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidential", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidentialNotices", new ArrayList<>(List.of(new HashMap<>())));
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1767800818952560L)
+                .data(caseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isTrue();
         }
     }
 }

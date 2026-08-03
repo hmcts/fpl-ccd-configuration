@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORC;
 
 @Slf4j
 @RestController
@@ -32,7 +33,11 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3290", this::run3290
+        "DFPL-2421", this::run2421,
+        "DFPL-2421-rollback", this::rollback2421,
+        "DFPL-3306", this::run3306,
+        "DFPL-3292", this::run3292,
+        "DFPL-3296", this::run3296
     );
 
     @PostMapping("/about-to-submit")
@@ -59,19 +64,56 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3290(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3290";
-        final long expectedCaseId = 1780995216446125L;
+    private void run3306(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3306";
+        final long expectedCaseId = 1753883480919014L;
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-
-        caseAccessService.grantCaseAccess(caseId, Set.of(
-            "76d29d26-931f-452e-ae8f-dda550aaf505",
-            "b479e1ef-489f-4cfe-8c27-7ce2b290ddb5",
-            "99ba1478-02ad-4449-8a9b-fb9165bf25b3",
-            "47fcc1ed-40a9-41b7-bda3-2a44b9e16247"
-        ), LASOLICITOR);
-
+        caseAccessService.grantCaseAccess(caseId, Set.of("b0016258-02fa-4d57-8766-dc23b2411f01"), SOLICITORC);
     }
+
+    private void run3292(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3292";
+        final long expectedCaseId = 1773832351122360L;
+
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        caseAccessService.grantCaseAccess(caseId, Set.of("ad13c0f2-dac2-4e66-bff2-cd4be1b3a889"), LASOLICITOR);
+    }
+
+    private void run2421(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2421";
+        migrateCaseService.migrateOthersToOthersV2(getCaseData(caseDetails), caseDetails.getData(), migrationId);
+    }
+
+    private void rollback2421(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2421-rollback";
+        migrateCaseService.rollbackOthersV2ToOthers(getCaseData(caseDetails), caseDetails.getData(), migrationId);
+    }
+
+    private void run3296(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3296";
+        final long expectedCaseId = 1767800818952560L;
+        final String Target_Migration_Id = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
+
+        Long caseId = caseDetails.getId();
+
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        log.info("Migration {} started for case {}", migrationId, caseId);
+
+
+        boolean isModified = migrateCaseService
+                                .removeSolicitorEmailFromPlacementNotices(caseDetails, Target_Migration_Id);
+
+        if (isModified) {
+            log.info("Migration {} successfully removed target solicitor entry"
+                    + " by ID from placement notification list on case {}",
+                migrationId, caseId);
+        } else {
+            log.info("Migration {} skipped: Target ID {} not found "
+                + "in any placement records.", migrationId, Target_Migration_Id);
+        }
+    }
+
 }
