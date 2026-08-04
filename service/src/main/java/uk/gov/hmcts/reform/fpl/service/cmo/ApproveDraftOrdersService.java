@@ -330,7 +330,7 @@ public class ApproveDraftOrdersService {
         Element<HearingOrder> orderElement,
         ReviewDecision reviewDecision
     ) {
-        List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+        List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getOthersV2(),
             caseData.getOthersSelector(), NO.getValue());
 
         Element<HearingOrder> reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
