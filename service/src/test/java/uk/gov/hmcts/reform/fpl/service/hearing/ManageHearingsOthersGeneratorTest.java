@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
@@ -42,10 +41,10 @@ class ManageHearingsOthersGeneratorTest {
 
     @Test
     void shouldGenerateFieldsWhenOthersInCaseAndHearingBooking() {
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(OTHER).build()).build();
+        CaseData caseData = CaseData.builder().othersV2(wrapElements(OTHER)).build();
         HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(OTHER)).build();
 
-        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getOthersV2()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
 
@@ -63,10 +62,10 @@ class ManageHearingsOthersGeneratorTest {
 
     @Test
     void shouldGenerateFieldsWhenOthersInCaseAndNotHearingBooking() {
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(OTHER).build()).build();
+        CaseData caseData = CaseData.builder().othersV2(wrapElements(OTHER)).build();
         HearingBooking hearingBooking = HearingBooking.builder().build();
 
-        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getOthersV2()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
 
@@ -84,10 +83,10 @@ class ManageHearingsOthersGeneratorTest {
 
     @Test
     void shouldGenerateFieldsWhenOthersIsEmptyInHearingBooking() {
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(OTHER).build()).build();
+        CaseData caseData = CaseData.builder().othersV2(wrapElements(OTHER)).build();
         HearingBooking hearingBooking = HearingBooking.builder().others(Collections.emptyList()).build();
 
-        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getOthersV2()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
 
@@ -106,12 +105,12 @@ class ManageHearingsOthersGeneratorTest {
     @Test
     void shouldNotGenerateSomeFieldsWhenNewHearingType() {
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(OTHER).build())
+            .othersV2(wrapElements(OTHER))
             .hearingOption(NEW_HEARING)
             .build();
         HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(OTHER)).build();
 
-        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getOthersV2()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
 

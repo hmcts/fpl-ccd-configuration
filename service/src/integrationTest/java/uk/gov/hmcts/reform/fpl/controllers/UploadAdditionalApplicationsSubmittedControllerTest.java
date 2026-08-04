@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -189,7 +188,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         .representedBy(wrapElements(REPRESENTATIVE_WITH_POST_PREFERENCE.getId()))
         .build());
 
-    private final Other other = Other.builder().address(testAddress()).name("Emily Jones").build();
+    private final Other other = Other.builder().address(testAddress()).firstName("Emily Jones").build();
 
     UploadAdditionalApplicationsSubmittedControllerTest() {
         super("upload-additional-applications");
@@ -238,10 +237,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .respondents1(respondents)
             .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
                 REPRESENTATIVE_WITH_POST_PREFERENCE))
-            .others(Others.builder().firstOther(other).build())
             .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
                 .additionalApplicationType(List.of(C2_ORDER))
                 .build())
+            .othersV2(wrapElements(other))
+            .additionalApplicationType(List.of(C2_ORDER))
             .sendToCtsc("No")
             .additionalApplicationsBundle(wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
                 .pbaPayment(PBAPayment.builder().usePbaPayment("Yes").build())
@@ -407,9 +407,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .lastName(RESPONDENT_SURNAME)
                     .build())
                 .build())))
-            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
-                .additionalApplicationType(List.of(C2_ORDER))
-                .build())
+            .additionalApplicationType(List.of(C2_ORDER))
             .additionalApplicationsBundle(wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(null)

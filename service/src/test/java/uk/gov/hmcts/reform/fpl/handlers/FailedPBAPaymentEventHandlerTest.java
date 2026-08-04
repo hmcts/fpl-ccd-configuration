@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -105,7 +104,7 @@ class FailedPBAPaymentEventHandlerTest {
                     .solicitor(RespondentSolicitor.builder().build()).build(),
                 Respondent.builder().party(RespondentParty.builder().firstName("Timothy").lastName("Jones").build())
                     .build()))
-            .others(Others.builder().firstOther(Other.builder().name("Joe Bloggs").build()).build())
+            .othersV2(wrapElements(Other.builder().firstName("Joe Bloggs").build()))
             .build();
 
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
@@ -173,7 +172,7 @@ class FailedPBAPaymentEventHandlerTest {
                     .solicitor(RespondentSolicitor.builder().build()).build(),
                 Respondent.builder().party(RespondentParty.builder().firstName("Timothy").lastName("Jones").build())
                     .build()))
-            .others(Others.builder().firstOther(Other.builder().name("Joe Bloggs").build()).build())
+            .othersV2(wrapElements(Other.builder().name("Joe Bloggs").build()))
             .build();
 
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
