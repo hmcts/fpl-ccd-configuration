@@ -55,7 +55,7 @@ module "fpl-exceptions-alert" {
 module "fpl-health-failure-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = var.location
-  app_insights_name          = "${var.product}-${var.component}-appinsights--uksouth-${var.env}"
+  app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
   alert_name                 = "${var.product}-health-failure"
   alert_desc                 = "Failed health requests"
   app_insights_query         = "requests | where url contains 'health' | where resultCode != 200 | project timestamp, operation_Id, resultCode"
