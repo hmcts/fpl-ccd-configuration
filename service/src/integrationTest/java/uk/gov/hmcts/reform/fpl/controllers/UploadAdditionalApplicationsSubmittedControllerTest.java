@@ -241,7 +241,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                 .additionalApplicationType(List.of(C2_ORDER))
                 .build())
             .othersV2(wrapElements(other))
-            .additionalApplicationType(List.of(C2_ORDER))
             .sendToCtsc("No")
             .additionalApplicationsBundle(wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
                 .pbaPayment(PBAPayment.builder().usePbaPayment("Yes").build())
@@ -407,7 +406,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .lastName(RESPONDENT_SURNAME)
                     .build())
                 .build())))
-            .additionalApplicationType(List.of(C2_ORDER))
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .build())
             .additionalApplicationsBundle(wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(null)
