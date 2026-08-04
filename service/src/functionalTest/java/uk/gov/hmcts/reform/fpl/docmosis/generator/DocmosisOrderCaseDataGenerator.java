@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -96,8 +95,7 @@ public class DocmosisOrderCaseDataGenerator {
                 .build())
             .respondents1(wrapElements(Respondent.builder().party(RespondentParty.builder()
                 .firstName("Remy").lastName("Respondy").build()).build()))
-            .others(Others.builder().additionalOthers(wrapElements(
-                Other.builder().name("Otto Otherman").build())).build())
+            .othersV2(wrapElements(Other.builder().name("Otto Otherman").build()))
             .familyManCaseNumber("FamilyManCaseNumber113")
             .localAuthorities(wrapElements(LOCAL_AUTHORITY))
             .caseLocalAuthority(LA_CODE)

@@ -9,12 +9,8 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisOtherParty {
     private final String name;
-    private final String gender;
     private final String dateOfBirth;
-    private final String placeOfBirth;
     private final String address;
-    private final String detailsHidden;
-    private final String detailsHiddenReason;
     private final String telephoneNumber;
     private final String relationshipToChild;
     private final String litigationIssuesDetails;
