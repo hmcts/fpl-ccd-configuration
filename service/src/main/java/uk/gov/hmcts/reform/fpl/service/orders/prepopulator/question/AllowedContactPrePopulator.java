@@ -36,10 +36,10 @@ public class AllowedContactPrePopulator implements QuestionBlockOrderPrePopulato
                 .code(r.getId())
                 .label(r.getValue().getParty().getFullName())
                 .build()));
-        if (!caseData.getAllOthers().isEmpty()) {
+        if (!caseData.getOthersV2().isEmpty()) {
             allowedContacts.getListItems().add(DynamicListElement.builder()
                 .code("").label("-- Others to be given notice --").build());
-            DynamicList otherList = othersListGenerator.buildOthersList(caseData.getAllOthers());
+            DynamicList otherList = othersListGenerator.buildOthersList(caseData.getOthersV2());
             allowedContacts.getListItems().addAll(otherList.getListItems());
         }
 
