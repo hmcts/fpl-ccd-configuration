@@ -213,6 +213,9 @@ public class ChildrenService {
     }
 
     public List<Element<Child>> getSelectedChildrenFromMultiSelectList(CaseData caseData) {
+        if (caseData == null) {
+            return Collections.emptyList();
+        }
         return getSelectedChildrenFromMultiSelectList(caseData.getAllChildren(),
             caseData.getChildSelectorV2(), caseData.getOrderAppliesToAllChildren());
     }
