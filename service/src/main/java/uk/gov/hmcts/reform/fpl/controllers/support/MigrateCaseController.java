@@ -33,6 +33,8 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-2421", this::run2421,
+        "DFPL-2421-rollback", this::rollback2421,
         "DFPL-3306", this::run3306,
         "DFPL-3292", this::run3292,
         "DFPL-3296", this::run3296
@@ -78,6 +80,16 @@ public class MigrateCaseController extends CallbackController {
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
         caseAccessService.grantCaseAccess(caseId, Set.of("ad13c0f2-dac2-4e66-bff2-cd4be1b3a889"), LASOLICITOR);
+    }
+
+    private void run2421(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2421";
+        migrateCaseService.migrateOthersToOthersV2(getCaseData(caseDetails), caseDetails.getData(), migrationId);
+    }
+
+    private void rollback2421(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2421-rollback";
+        migrateCaseService.rollbackOthersV2ToOthers(getCaseData(caseDetails), caseDetails.getData(), migrationId);
     }
 
     private void run3296(CaseDetails caseDetails) {

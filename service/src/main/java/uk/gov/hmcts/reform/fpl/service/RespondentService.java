@@ -279,12 +279,14 @@ public class RespondentService {
             .addressNotKnowReason(other.getAddressNotKnowReason())
             .contactDetailsHidden(other.getDetailsHidden())
             .contactDetailsHiddenReason(other.getDetailsHiddenReason())
+            .hideAddress(other.getHideAddress())
+            .hideTelephone(other.getHideTelephone())
             .dateOfBirth(other.toParty().getDateOfBirth())
             .email(other.toParty().getEmail())
-            .firstName(other.getName()) // other does not have first name, use other.getName() instead
+            .firstName(isEmpty(other.getFirstName()) ? other.getName() : other.getFirstName())
+            .lastName(other.getLastName())
             .gender(other.getGender())
             .genderIdentification(other.getGenderIdentification())
-            //.lastName() // other does not have last name
             .litigationIssuesDetails(other.getLitigationIssuesDetails())
             .litigationIssues(other.getLitigationIssues())
             .organisationName(other.toParty().getOrganisationName())
