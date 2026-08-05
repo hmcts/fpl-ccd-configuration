@@ -39,7 +39,7 @@
     "ID": "ListingActionRequest",
     "ListElementCode": "isUrgent",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is urgent?",
+    "ElementLabel": "Is this urgent?",
     "SecurityClassification": "Public"
   }
 ]
