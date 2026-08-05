@@ -102,6 +102,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "amendedDraftOrder",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Upload amended order",
+    "FieldType": "Document",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "approveAdditionalAppRouter",
     "FieldType": "FixedRadioList",
