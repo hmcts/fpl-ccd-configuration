@@ -11,12 +11,6 @@ variable "location" {
   default = "UK South"
 }
 
-variable "alert_location" {
-  type        = string
-  default     = "West Europe"
-  description = "Location for Action Groups"
-}
-
 variable "env" {
   type = string
 }
