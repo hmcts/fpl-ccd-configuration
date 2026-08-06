@@ -23,11 +23,11 @@ import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -155,7 +156,7 @@ class RepresentativesServiceTest {
 
         CaseData caseData = caseWithRepresentatives(representative1, representative2, representative3).toBuilder()
             .respondents1(wrapElements(Respondent.builder().build()))
-            .others(Others.from(wrapElements(testOther(), testOther())))
+            .othersV2(wrapElements(testOther(), testOther()))
             .build();
 
         List<String> validationErrors = representativesService.validateRepresentatives(caseData);
@@ -432,7 +433,7 @@ class RepresentativesServiceTest {
                 representative2Element,
                 representative3Element,
                 representative4Element))
-            .others(Others.builder().firstOther(other).build())
+            .othersV2(wrapElements(other))
             .build();
 
         CaseData originalCaseData = CaseData.builder()
@@ -441,7 +442,7 @@ class RepresentativesServiceTest {
                 representative1Element,
                 representative2Element,
                 representative3Element))
-            .others(Others.builder().firstOther(other).build())
+            .othersV2(wrapElements(other))
             .build();
 
         when(representativesCaseRoleService.calculateCaseRoleUpdates(
@@ -490,10 +491,7 @@ class RepresentativesServiceTest {
                 responded1Representative1,
                 responded1Representative2,
                 responded2Representative))
-            .others(Others.builder()
-                .firstOther(otherPerson1)
-                .additionalOthers(wrapElements(otherPerson2))
-                .build())
+            .othersV2(wrapElements(otherPerson1, otherPerson2))
             .respondents1(wrapElements(respondent1, respondent2))
             .build();
 
@@ -680,27 +678,15 @@ class RepresentativesServiceTest {
             ))
             .build();
 
-        Other targetOther = Other.builder().name("TARGET OTHER").build();
+        Other targetOther = Other.builder().firstName("TARGET OTHER").build();
         targetOther.addRepresentative(UUID.randomUUID(), representativeId);
 
-        Others.OthersBuilder builder = Others.builder();
-        if (targetOtherPos == 1) {
-            builder.firstOther(targetOther);
-        } else {
-            builder.firstOther(Other.builder().name("ANY OTHER").build());
-        }
+        final int targetOtherIdx = targetOtherPos - 1;
+        List<Element<Other>> others = IntStream.range(0, 10)
+            .mapToObj(idx -> (idx == targetOtherIdx) ? targetOther : Other.builder().firstName("ANY OTHER").build())
+            .map(ElementUtils::element)
+            .toList();
 
-        List<Element<Other>> additionalOthers = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            if (targetOtherPos == (i + 2)) {
-                additionalOthers.add(element(targetOther));
-            } else {
-                additionalOthers.add(element(Other.builder().name("ANY OTHER").build()));
-            }
-        }
-        builder.additionalOthers(additionalOthers);
-
-        Others others = builder.build();
         representativesService.updateRepresentativeRoleForOthers(caseData, others);
         assertThat(unwrapElements(caseData.getRepresentatives())
             .stream().map(Representative::getRole).collect(Collectors.toSet()))
