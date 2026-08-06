@@ -1,0 +1,51 @@
+[ {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "EnterC1WithSupplement",
+  "CaseEventID" : "enterC1WithSupplement",
+  "CaseFieldID" : "submittedC1WithSupplement",
+  "ListElementCode" : "documentAcknowledgeLabel",
+  "FieldDisplayOrder" : 4,
+  "DisplayContext" : "READONLY",
+  "EventElementLabel" : "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
+  "FieldShowCondition" : "documentAcknowledge!=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "EnterC1WithSupplement",
+  "CaseEventID" : "enterC1WithSupplement",
+  "CaseFieldID" : "submittedC1WithSupplement",
+  "ListElementCode" : "documentAcknowledgeLabelForCYA",
+  "FieldDisplayOrder" : 4,
+  "DisplayContext" : "READONLY",
+  "EventElementLabel" : "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
+  "FieldShowCondition" : "documentAcknowledge=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "EnterC1WithSupplement",
+  "CaseEventID" : "enterC1WithSupplement",
+  "CaseFieldID" : "submittedC1WithSupplement",
+  "ListElementCode" : "documentAcknowledge",
+  "FieldDisplayOrder" : 5,
+  "DisplayContext" : "MANDATORY",
+  "EventElementLabel" : "Tick to confirm this document is related to this case",
+  "FieldShowCondition" : "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "EnterC1WithSupplement",
+  "CaseEventID" : "enterC1WithSupplement",
+  "CaseFieldID" : "submittedC1WithSupplement",
+  "ListElementCode" : "supplementsBundle.documentAcknowledgeLabel",
+  "FieldDisplayOrder" : "12",
+  "DisplayContext" : "READONLY",
+  "EventElementLabel" : "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
+  "FieldShowCondition" : "documentAcknowledge!=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "EnterC1WithSupplement",
+  "CaseEventID" : "enterC1WithSupplement",
+  "CaseFieldID" : "submittedC1WithSupplement",
+  "ListElementCode" : "supplementsBundle.documentAcknowledgeLabelForCYA",
+  "FieldDisplayOrder" : "12",
+  "DisplayContext" : "READONLY",
+  "EventElementLabel" : "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
+  "FieldShowCondition" : "documentAcknowledge=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
+} ]

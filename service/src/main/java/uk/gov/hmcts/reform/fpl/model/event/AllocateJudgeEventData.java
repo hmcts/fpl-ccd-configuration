@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Temp;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess;
 
 @Data
@@ -36,6 +37,7 @@ public class AllocateJudgeEventData {
     @CCD(
             label = "Search for Judge",
             searchable = false,
+            typeOverride = FieldType.JudicialUser,
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
     )
     @Temp

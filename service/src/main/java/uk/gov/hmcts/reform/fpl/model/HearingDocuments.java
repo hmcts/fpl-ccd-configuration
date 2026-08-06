@@ -191,7 +191,7 @@ public class HearingDocuments {
             typeParameterOverride = "PositionStatement",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    private final List<Element<ManagedDocument>> posStmtListRemoved;
+    private final List<Element<PositionStatement>> posStmtListRemoved;
 
     @CCD(label = "Skeleton argument", searchable = false, access = {BARRISTERCruPlus40RolesRcmaiaAccess.class})
     private final List<Element<SkeletonArgument>> skeletonArgumentList;

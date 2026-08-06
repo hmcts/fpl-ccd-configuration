@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.reform.fpl.model.C2DocumentBundleConfidential;
 
 @Data
 @Builder(toBuilder = true)
@@ -31,25 +32,25 @@ public class AdditionalApplicationsBundle {
     @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleLA;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp0;
+    private C2DocumentBundleConfidential c2DocumentBundleResp0;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp1;
+    private C2DocumentBundleConfidential c2DocumentBundleResp1;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp2;
+    private C2DocumentBundleConfidential c2DocumentBundleResp2;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp3;
+    private C2DocumentBundleConfidential c2DocumentBundleResp3;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp4;
+    private C2DocumentBundleConfidential c2DocumentBundleResp4;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp5;
+    private C2DocumentBundleConfidential c2DocumentBundleResp5;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp6;
+    private C2DocumentBundleConfidential c2DocumentBundleResp6;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp7;
+    private C2DocumentBundleConfidential c2DocumentBundleResp7;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp8;
+    private C2DocumentBundleConfidential c2DocumentBundleResp8;
     @CCD(label = "C2 application", searchable = false)
-    private C2DocumentBundle c2DocumentBundleResp9;
+    private C2DocumentBundleConfidential c2DocumentBundleResp9;
     @CCD(label = "C2 application", searchable = false)
     private C2DocumentBundle c2DocumentBundleChild0;
     @CCD(label = "C2 application", searchable = false)

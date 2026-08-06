@@ -289,6 +289,7 @@ public class ManageOrdersEventData {
     @CCD(
             label = "Address",
             searchable = false,
+            typeOverride = FieldType.AddressUK,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess.class}
     )
     Address manageOrdersEpoRemovalAddress;
@@ -518,6 +519,7 @@ public class ManageOrdersEventData {
     @CCD(
             label = "Add address to be accessed",
             searchable = false,
+            typeOverride = FieldType.AddressUK,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess.class}
     )
     Address manageOrdersActionsPermittedAddress;
@@ -574,6 +576,7 @@ public class ManageOrdersEventData {
     @CCD(
             label = "Full address",
             searchable = false,
+            typeOverride = FieldType.AddressUK,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess.class}
     )
     Address manageOrdersFullAddressToStayIfKeepAwayFromHome;

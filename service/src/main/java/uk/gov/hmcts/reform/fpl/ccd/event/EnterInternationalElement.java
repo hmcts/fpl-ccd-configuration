@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.UserRole;
 
 /**
@@ -40,5 +41,14 @@ public class EnterInternationalElement implements CCDConfig<CaseData, State, Use
             .fields();
         fields.page("1");
         fields.mandatory(CaseData::getInternationalElement);
+        fields.complexScope(CaseData::getInternationalElement)
+                    .readonly(InternationalElement::getInternationalElementNotice)
+                    .eventLabel("<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete this section if there is an international element to this application.</div>")
+                    .mandatory(InternationalElement::getWhichCountriesInvolved)
+                    .eventLabel("Which other countries are involved?")
+                    .mandatory(InternationalElement::getOutsideHagueConvention)
+                    .eventLabel("Are any of these countries outside of the Hague Convention?")
+                    .mandatory(InternationalElement::getImportantDetails)
+                    .eventLabel("Provide all important details").done();
     }
 }

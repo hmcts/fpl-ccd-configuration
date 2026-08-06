@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.UserRole;
 
 /**
@@ -41,5 +42,12 @@ public class EnterRiskHarm implements CCDConfig<CaseData, State, UserRole> {
             .fields();
         fields.page("1");
         fields.mandatory(CaseData::getRisks);
+        fields.complexScope(CaseData::getRisks)
+                    .mandatory(Risks::getWhatKindOfRiskAndHarmToChildren)
+                    .eventLabel("What kind of harm is the child at risk of?")
+                    .mandatory(Risks::getFactorsAffectingParenting)
+                    .eventLabel("Is there anything affecting any respondent's ability to parent?")
+                    .mandatory(Risks::getAnythingElseAffectingParenting)
+                    .eventLabel("Tell us what else is affecting their ability to parent").done();
     }
 }

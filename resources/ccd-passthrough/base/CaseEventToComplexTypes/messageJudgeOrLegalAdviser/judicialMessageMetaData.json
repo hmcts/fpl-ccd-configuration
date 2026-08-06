@@ -1,7 +1,73 @@
 [ {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "senderType",
+  "FieldDisplayOrder" : 1,
+  "DisplayContext" : "MANDATORY",
+  "FieldShowCondition" : "isJudiciary=\"DO_NOT_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "sender",
+  "FieldDisplayOrder" : 2,
+  "DisplayContext" : "MANDATORY",
+  "FieldShowCondition" : "judicialMessageMetaData.senderType=\"DO_NOT_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "recipientType",
+  "FieldDisplayOrder" : 3,
+  "DisplayContext" : "MANDATORY",
+  "FieldShowCondition" : "judicialMessageMetaData.senderType=\"DO_NOT_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "recipientDynamicList",
+  "FieldDisplayOrder" : 3,
+  "DisplayContext" : "MANDATORY"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "otherJudgeWarningLabel",
+  "FieldDisplayOrder" : 4,
+  "FieldShowCondition" : "judicialMessageMetaData.recipientDynamicList = \"OTHER\" AND isSendingEmailsInCourt = \"NO\"",
+  "DisplayContext" : "MANDATORY"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "recipient",
+  "FieldDisplayOrder" : 5,
+  "DisplayContext" : "MANDATORY",
+  "FieldShowCondition" : "(judicialMessageMetaData.recipientDynamicList=\"LOCAL_COURT_ADMIN\" OR judicialMessageMetaData.recipientDynamicList=\"OTHER\") AND isSendingEmailsInCourt=\"YES\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
   "CaseEventID" : "messageJudgeOrLegalAdviser",
   "CaseFieldID" : "judicialMessageMetaData",
   "ListElementCode" : "requestedBy",
   "SecurityClassification" : "Public",
+  "FieldDisplayOrder" : 6,
+  "DisplayContext" : "MANDATORY",
   "Comment" : "Used for subject"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
+  "CaseEventID" : "messageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageMetaData",
+  "ListElementCode" : "isJudicialMessageUrgent",
+  "EventElementLabel" : "Is this urgent? (is there any action that needs to be taken within 24 hours?)",
+  "FieldDisplayOrder" : 7,
+  "DisplayContext" : "MANDATORY"
 } ]

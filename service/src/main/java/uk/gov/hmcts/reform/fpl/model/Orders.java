@@ -92,7 +92,8 @@ public class Orders {
     private final String excluded;
     @CCD(
             label = "Address",
-            showCondition = "epoType=\"PREVENT_REMOVAL\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\""
+            showCondition = "epoType=\"PREVENT_REMOVAL\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+            typeOverride = FieldType.AddressUK
     )
     private final Address address;
     @CCD(

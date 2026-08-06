@@ -1,6 +1,176 @@
 [ {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "relatedDocumentFileNames",
+  "FieldDisplayOrder" : 1,
+  "EventElementLabel" : "Related documents",
+  "DisplayContext" : "READONLY",
+  "FieldShowCondition" : "judicialMessageReply.relatedDocumentFileNames=\"DO_NOT_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "relatedDocuments",
+  "FieldDisplayOrder" : 1,
+  "EventElementLabel" : "Related documents",
+  "DisplayContext" : "READONLY",
+  "FieldShowCondition" : "judicialMessageReply.relatedDocuments=\"*\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "recipient",
+  "FieldDisplayOrder" : 2,
+  "EventElementLabel" : "Message from",
+  "DisplayContext" : "READONLY",
+  "FieldShowCondition" : "recipient=\"DO_NOT_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "recipientLabel",
+  "FieldDisplayOrder" : 2,
+  "EventElementLabel" : "Message from",
+  "DisplayContext" : "READONLY"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
   "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
   "CaseFieldID" : "judicialMessageReply",
   "ListElementCode" : "requestedBy",
-  "SecurityClassification" : "Public"
+  "SecurityClassification" : "Public",
+  "FieldDisplayOrder" : 3,
+  "EventElementLabel" : "Message subject",
+  "DisplayContext" : "READONLY",
+  "FieldShowCondition" : "recipient!=\"ALWAYS_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "urgency",
+  "FieldDisplayOrder" : 4,
+  "DisplayContext" : "READONLY"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "messageHistoryTemp",
+  "FieldDisplayOrder" : 5,
+  "DisplayContext" : "READONLY",
+  "EventElementLabel" : "Message history",
+  "FieldShowCondition" : "messageHistory!=\"ALWAYS_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "isReplying",
+  "FieldDisplayOrder" : 7,
+  "DisplayContext" : "MANDATORY",
+  "EventElementLabel" : "Do you need to reply?"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "senderType",
+  "FieldDisplayOrder" : 8,
+  "DisplayContext" : "MANDATORY",
+  "EventElementLabel" : "Sender",
+  "FieldShowCondition" : "judicialMessageReply.isReplying=\"DO_NOT_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "replyFrom",
+  "FieldDisplayOrder" : 9,
+  "DisplayContext" : "MANDATORY",
+  "EventElementLabel" : "Sender's email address",
+  "FieldShowCondition" : "judicialMessageReply.isReplying=\"DO_NOT_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "recipientType",
+  "FieldDisplayOrder" : 10,
+  "DisplayContext" : "MANDATORY",
+  "EventElementLabel" : "Recipient",
+  "FieldShowCondition" : "judicialMessageReply.isReplying=\"DO_NOT_SHOW\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "recipientDynamicList",
+  "FieldDisplayOrder" : 11,
+  "DisplayContext" : "MANDATORY",
+  "FieldShowCondition" : "judicialMessageReply.isReplying=\"Yes\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageMetaData",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "otherJudgeWarningLabel",
+  "FieldDisplayOrder" : 12,
+  "FieldShowCondition" : "judicialMessageReply.recipientDynamicList = \"OTHER\" AND isSendingEmailsInCourt = \"NO\" AND judicialMessageReply.isReplying=\"Yes\"",
+  "DisplayContext" : "MANDATORY"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "replyTo",
+  "FieldDisplayOrder" : 13,
+  "DisplayContext" : "MANDATORY",
+  "EventElementLabel" : "Recipient's email address",
+  "FieldShowCondition" : "(judicialMessageReply.recipientDynamicList=\"LOCAL_COURT_ADMIN\" OR judicialMessageReply.recipientDynamicList=\"OTHER\") AND isSendingEmailsInCourt = \"YES\" AND judicialMessageReply.isReplying=\"Yes\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "isJudicialMessageUrgent",
+  "EventElementLabel" : "Is this urgent? (is there any action that needs to be taken within 24 hours?)",
+  "FieldDisplayOrder" : 14,
+  "DisplayContext" : "MANDATORY",
+  "FieldShowCondition" : "judicialMessageReply.isReplying=\"Yes\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "latestMessage",
+  "FieldDisplayOrder" : 15,
+  "DisplayContext" : "MANDATORY",
+  "EventElementLabel" : "Reply",
+  "FieldShowCondition" : "judicialMessageReply.isReplying=\"Yes\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "closureNote",
+  "EventElementLabel" : "Add closure note",
+  "FieldDisplayOrder" : 16,
+  "DisplayContext" : "OPTIONAL",
+  "FieldShowCondition" : "judicialMessageReply.isReplying=\"No\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "JudicialMessageReply",
+  "CaseEventID" : "replyToMessageJudgeOrLegalAdviser",
+  "CaseFieldID" : "judicialMessageReply",
+  "ListElementCode" : "closeMessageLabel",
+  "EventElementLabel" : "This message will now be marked as closed",
+  "FieldDisplayOrder" : 17,
+  "DisplayContext" : "READONLY",
+  "FieldShowCondition" : "judicialMessageReply.isReplying=\"No\""
 } ]

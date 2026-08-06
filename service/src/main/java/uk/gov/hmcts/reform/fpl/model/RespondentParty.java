@@ -85,32 +85,6 @@ public final class RespondentParty extends Party {
     @CCD(label = "Do you need to keep the contact number confidential?", typeOverride = FieldType.YesOrNo)
     private final String hideTelephone;
 
-    // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
-    @CCD(
-            label = "## This address is automatically made confidential",
-            showCondition = "addressKnow=\"LIVE_IN_REFUGE\"",
-            typeOverride = FieldType.Label
-    )
-    private String addressAutoConfidentialLabel;
-    @CCD(
-            label = "Give more details",
-            showCondition = "addressKnow=\"No\" AND addressNotKnowReason=\"Whereabouts unknown\"",
-            typeOverride = FieldType.TextArea
-    )
-    private String whereaboutsUnknownDetails;
-    @CCD(
-            label = "## Relationship to child",
-            showCondition = "relationshipLabel=\"HIDE_LABEL\"",
-            typeOverride = FieldType.Label
-    )
-    private String relationshipLabel;
-    @CCD(
-            label = "## Ability to take part in proceedings",
-            showCondition = "proceedingsLabel=\"HIDE_LABEL\"",
-            typeOverride = FieldType.Label
-    )
-    private String proceedingsLabel;
-    // ==== end synthesised definition-only fields ====
 
     @Override
     @NotBlank(message = "Enter the respondent's full name")
@@ -197,4 +171,31 @@ public final class RespondentParty extends Party {
         }
         return YesNo.from(YesNo.YES.equalsString(contactDetailsHidden)).getValue();
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(
+          label = "## This address is automatically made confidential",
+          showCondition = "addressKnow=\"LIVE_IN_REFUGE\"",
+          typeOverride = FieldType.Label
+  )
+  private String addressAutoConfidentialLabel;
+  @CCD(
+          label = "Give more details",
+          showCondition = "addressKnow=\"No\" AND addressNotKnowReason=\"Whereabouts unknown\"",
+          typeOverride = FieldType.TextArea
+  )
+  private String whereaboutsUnknownDetails;
+  @CCD(
+          label = "## Relationship to the child",
+          showCondition = "relationshipLabel=\"HIDE_LABEL\"",
+          typeOverride = FieldType.Label
+  )
+  private String relationshipLabel;
+  @CCD(
+          label = "## Ability to take part in proceedings",
+          showCondition = "proceedingsLabel=\"HIDE_LABEL\"",
+          typeOverride = FieldType.Label
+  )
+  private String proceedingsLabel;
+  // ==== end synthesised definition-only fields ====
 }

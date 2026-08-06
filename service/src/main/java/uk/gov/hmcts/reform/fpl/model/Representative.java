@@ -25,7 +25,7 @@ public class Representative implements Recipient {
     @CCD(label = "Phone number")
     private final String telephoneNumber;
 
-    @CCD(label = " ", hint = "Address")
+    @CCD(label = " ", hint = "Address", typeOverride = FieldType.AddressUK)
     private final Address address;
 
     @CCD(label = "How do they want to get case information?")

@@ -35,7 +35,7 @@ public final class ManageOrdersChildrenDetailsPage {
                     .fieldShowCondition("orderTempQuestions.whichChildren=\"YES\"");
         fields.readonlyNoSummary(CaseData::getChildren_label)
                     .fieldShowCondition("orderAppliesToAllChildren=\"No\"");
-        fields.readonly(CaseData::getChildSelector)
+        fields.complex(CaseData::getChildSelector, false).done()
                     .fieldShowCondition("orderAppliesToAllChildren=\"No\"");
         fields.complex(CaseData::getManageOrdersEventData)
                     .mandatory(ManageOrdersEventData::getWhichChildIsTheOrderFor)

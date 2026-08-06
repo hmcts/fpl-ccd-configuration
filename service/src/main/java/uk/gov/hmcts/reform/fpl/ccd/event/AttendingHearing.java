@@ -43,7 +43,6 @@ public class AttendingHearing implements CCDConfig<CaseData, State, UserRole> {
         fields.complex(CaseData::getHearingPreferences)
                     .optional(HearingPreferences::getWhichCourtServices)
                     .eventLabel("Choose which court services you need to be considered before first hearing")
-                    .noHintText()
                     .mandatory(HearingPreferences::getInterpreterDetails)
                     .eventLabel("Interpreter details")
                     .mandatory(HearingPreferences::getIntermediaryDetails)

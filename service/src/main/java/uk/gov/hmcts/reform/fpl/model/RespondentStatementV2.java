@@ -35,8 +35,6 @@ public class RespondentStatementV2 extends SupportingEvidenceBundle implements N
   private String confidentialWarningLabel;
   @CCD(label = " ", showCondition = "confidential CONTAINS \"CONFIDENTIAL\"", searchable = false)
   private String confidentialTabLabel;
-  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"", searchable = false)
-  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
   @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
   private String documentAcknowledgeLabel;
   @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)

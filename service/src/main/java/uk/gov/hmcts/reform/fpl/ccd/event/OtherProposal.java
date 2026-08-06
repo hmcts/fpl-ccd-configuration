@@ -43,8 +43,6 @@ public class OtherProposal implements CCDConfig<CaseData, State, UserRole> {
         fields.complex(CaseData::getAllocationProposal)
                     .mandatory(Allocation::getProposalV2)
                     .eventLabel("Which level of judge do you recommend for this case?")
-                    .readonly(Allocation::getReasonLabel1)
-                    .eventLabel("Give case specific reasons for your recommendation, including details of any previous proceedings. You should refer to the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and to the [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf). This will help the court appoint an appropriate judge to the case.")
                     .mandatory(Allocation::getProposalReason).done();
     }
 }

@@ -1,0 +1,28 @@
+[ {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "AllocationDecision",
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "allocationDecision_Label",
+  "FieldDisplayOrder" : 1,
+  "DisplayContext" : "READONLY",
+  "FieldShowCondition" : "urgentHearingAllocation.allocationProposalPresent=\"Yes\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "AllocationDecision",
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "allocationDecision_LabelReason",
+  "FieldDisplayOrder" : 2,
+  "DisplayContext" : "READONLY",
+  "FieldShowCondition" : "urgentHearingAllocation.allocationProposalPresent=\"Yes\""
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "AllocationDecision",
+  "CaseEventID" : "addGatekeepingOrder",
+  "CaseFieldID" : "urgentHearingAllocation",
+  "ListElementCode" : "missingAllocationDecision_Label",
+  "FieldDisplayOrder" : 3,
+  "DisplayContext" : "READONLY",
+  "FieldShowCondition" : "urgentHearingAllocation.allocationProposalPresent=\"No\""
+} ]

@@ -27,7 +27,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.DocumentAcknowledge;
-import uk.gov.hmcts.reform.fpl.model.C1SupportingEvidenceBundle;
 
 @Data
 @Builder(toBuilder = true)
@@ -161,9 +160,5 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
   private String documentAcknowledgeLabelForCYA;
   @CCD(label = "Tick to confirm this document is related to this case", searchable = false)
   private java.util.Set<DocumentAcknowledge> documentAcknowledge;
-  @CCD(label = "Supporting documents", searchable = false)
-  private java.util.List<uk.gov.hmcts.ccd.sdk.type.ListValue<C1SupportingEvidenceBundle>> supportingEvidenceLA;
-  @CCD(label = "Supporting documents", searchable = false)
-  private java.util.List<uk.gov.hmcts.ccd.sdk.type.ListValue<C1SupportingEvidenceBundle>> supportingEvidenceNC;
   // ==== end synthesised definition-only fields ====
 }

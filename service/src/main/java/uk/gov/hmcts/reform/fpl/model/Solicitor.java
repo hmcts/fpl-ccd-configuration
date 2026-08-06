@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 
 @Data
@@ -26,13 +24,4 @@ public class Solicitor {
     private final String mobile;
     private final String reference;
     private final String telephone;
-
-    // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
-    @CCD(
-            label = "# Solicitor's details",
-            showCondition = "solicitorLabel=\"HIDE_LABEL\"",
-            typeOverride = FieldType.Label
-    )
-    private String solicitorLabel;
-    // ==== end synthesised definition-only fields ====
 }

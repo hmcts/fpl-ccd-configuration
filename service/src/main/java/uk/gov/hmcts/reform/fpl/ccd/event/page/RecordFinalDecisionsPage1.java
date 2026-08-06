@@ -32,7 +32,7 @@ public final class RecordFinalDecisionsPage1 {
         fields.readonlyNoSummary(CaseData::getChildren_label)
                     .fieldShowCondition("orderAppliesToAllChildren=\"No\"")
                     .caseEventFieldLabel("Children in the case");
-        fields.readonly(CaseData::getChildSelector)
+        fields.complex(CaseData::getChildSelector, false).done()
                     .fieldShowCondition("orderAppliesToAllChildren=\"No\"")
                     .caseEventFieldLabel("Select those who have a final order or other decision");
     }

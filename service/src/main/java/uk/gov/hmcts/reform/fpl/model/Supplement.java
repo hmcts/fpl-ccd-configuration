@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -38,11 +36,4 @@ public class Supplement {
         }
         return this.documentAcknowledge;
     }
-
-    // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
-    @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
-    private String documentAcknowledgeLabel;
-    @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
-    private String documentAcknowledgeLabelForCYA;
-    // ==== end synthesised definition-only fields ====
 }

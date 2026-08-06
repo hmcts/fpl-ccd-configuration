@@ -34,23 +34,17 @@ public final class DraftSDOCourtDirectionsPage {
                     .eventLabel(" ")
                     .readonly(Direction::getDirectionType)
                     .eventLabel(" ")
-                    .noHintText()
                     .mandatory(Direction::getDirectionNeeded)
                     .fieldShowCondition("courtDirections.directionRemovable=\"Yes\"")
                     .eventLabel(" ")
                     .optional(Direction::getDirectionText)
                     .fieldShowCondition("courtDirections.readOnly!=\"Yes\" AND courtDirections.directionNeeded!=\"No\"")
-                    .noHintText()
-                    .optional(Direction::getDateToBeCompletedBy)
-                    .noHintText().done();
+                    .optional(Direction::getDateToBeCompletedBy).done();
         fields.complex(CaseData::getCourtDirectionsCustom, false).done();
         fields.complex(CaseData::getCourtDirectionsCustom, Direction.class)
                     .mandatory(Direction::getDirectionType)
                     .eventLabel(" ")
-                    .noHintText()
                     .optional(Direction::getDirectionText)
-                    .noHintText()
-                    .optional(Direction::getDateToBeCompletedBy)
-                    .noHintText().done();
+                    .optional(Direction::getDateToBeCompletedBy).done();
     }
 }

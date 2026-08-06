@@ -39,7 +39,7 @@ public final class PlacementNoticesPage {
         fields.mandatory(CaseData::getSendPlacementNoticeToAllRespondents)
                     .caseEventFieldLabel("Send the notice to all respondents on the case?")
                     .publish(false);
-        fields.readonly(CaseData::getRespondentsSelector)
+        fields.complex(CaseData::getRespondentsSelector).done()
                     .fieldShowCondition("sendPlacementNoticeToAllRespondents=\"No\"");
         fields.complex(CaseData::getPlacementEventData)
                     .readonly(PlacementEventData::getPlacementPaymentRequired)

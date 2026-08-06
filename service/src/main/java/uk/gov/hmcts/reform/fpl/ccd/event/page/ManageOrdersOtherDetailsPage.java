@@ -29,7 +29,7 @@ public final class ManageOrdersOtherDetailsPage {
         fields.readonlyNoSummary(CaseData::getOthersTitle);
         fields.readonlyNoSummary(CaseData::getOthers_label);
         fields.mandatory(CaseData::getSendOrderToAllOthers);
-        fields.readonly(CaseData::getOthersSelector)
+        fields.complex(CaseData::getOthersSelector).done()
                     .fieldShowCondition("sendOrderToAllOthers=\"No\"");
     }
 }

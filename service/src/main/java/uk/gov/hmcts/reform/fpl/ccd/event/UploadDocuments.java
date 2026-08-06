@@ -6,8 +6,8 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.TemporaryApplicationDocuments;
 import uk.gov.hmcts.reform.fpl.model.UserRole;
 
 /**
@@ -41,18 +41,16 @@ public class UploadDocuments implements CCDConfig<CaseData, State, UserRole> {
             .fields();
         fields.page("addApplicationDocuments");
         fields.complex(CaseData::getTemporaryApplicationDocuments).done();
-        fields.complex(CaseData::getTemporaryApplicationDocuments, TemporaryApplicationDocuments.class)
-                    .mandatory(TemporaryApplicationDocuments::getDocument)
+        fields.complex(CaseData::getTemporaryApplicationDocuments, ApplicationDocument.class)
+                    .mandatory(ApplicationDocument::getDocument)
                     .eventLabel("Upload a file")
-                    .mandatory(TemporaryApplicationDocuments::getDocumentType)
-                    .mandatory(TemporaryApplicationDocuments::getDocumentName)
-                    .noHintText()
-                    .optional(TemporaryApplicationDocuments::getIncludedInSWET)
+                    .mandatory(ApplicationDocument::getDocumentType)
+                    .mandatory(ApplicationDocument::getDocumentName)
+                    .optional(ApplicationDocument::getIncludedInSWET)
                     .eventLabel("Let us know what you are including in your SWET")
-                    .noHintText()
-                    .optional(TemporaryApplicationDocuments::getDateTimeUploaded)
+                    .optional(ApplicationDocument::getDateTimeUploaded)
                     .fieldShowCondition("temporaryApplicationDocuments=\"DO NOT SHOW\"")
-                    .optional(TemporaryApplicationDocuments::getUploadedBy)
+                    .optional(ApplicationDocument::getUploadedBy)
                     .fieldShowCondition("temporaryApplicationDocuments=\"DO NOT SHOW\"").done();
         fields.optional(CaseData::getApplicationDocumentsToFollowReason)
                     .caseEventFieldLabel("Give details of any documents you will upload at a later date.");

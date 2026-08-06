@@ -207,8 +207,6 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
   private String confidentialWarningLabel;
   @CCD(label = " ", showCondition = "confidential CONTAINS \"CONFIDENTIAL\"", searchable = false)
   private String confidentialTabLabel;
-  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"", searchable = false)
-  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
   @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
   private String hasConfidentialAddressLabel;
   // ==== end synthesised definition-only fields ====

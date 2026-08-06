@@ -1,0 +1,7 @@
+[ {
+  "ID" : "ChangeOtherToRespondent",
+  "CaseEventID" : "changeOtherToRespondent",
+  "CaseFieldID" : "transformedRespondent",
+  "ListElementCode" : "legalRepresentationLabel",
+  "DisplayContext" : "READONLY"
+} ]

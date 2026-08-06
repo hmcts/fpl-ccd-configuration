@@ -202,8 +202,6 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     }
 
   // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
-  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"")
-  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
   @CCD(
           label = "Sent for translation",
           showCondition = "needTranslation=\"YES\" AND translatedOrderDoc!=\"*\" AND orderStatus=\"SEALED\"",

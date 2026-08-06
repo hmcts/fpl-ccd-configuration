@@ -34,23 +34,17 @@ public final class DraftSDOCafcassDirectionsPage {
                     .eventLabel(" ")
                     .readonly(Direction::getDirectionType)
                     .eventLabel(" ")
-                    .noHintText()
                     .mandatory(Direction::getDirectionNeeded)
                     .fieldShowCondition("cafcassDirections.directionRemovable=\"Yes\"")
                     .eventLabel(" ")
                     .optional(Direction::getDirectionText)
                     .fieldShowCondition("cafcassDirections.readOnly!=\"Yes\" AND cafcassDirections.directionNeeded!=\"No\"")
-                    .noHintText()
-                    .optional(Direction::getDateToBeCompletedBy)
-                    .noHintText().done();
+                    .optional(Direction::getDateToBeCompletedBy).done();
         fields.complex(CaseData::getCafcassDirectionsCustom, false).done();
         fields.complex(CaseData::getCafcassDirectionsCustom, Direction.class)
                     .mandatory(Direction::getDirectionType)
                     .eventLabel(" ")
-                    .noHintText()
                     .optional(Direction::getDirectionText)
-                    .noHintText()
-                    .optional(Direction::getDateToBeCompletedBy)
-                    .noHintText().done();
+                    .optional(Direction::getDateToBeCompletedBy).done();
     }
 }

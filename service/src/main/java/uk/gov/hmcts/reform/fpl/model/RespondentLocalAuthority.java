@@ -45,7 +45,7 @@ public class RespondentLocalAuthority {
     private final String representativeFirstName;
     @CCD(label = "Lawyer last name")
     private final String representativeLastName;
-    @CCD(label = "Local authority address")
+    @CCD(label = "Local authority address", typeOverride = FieldType.AddressUK)
     private final Address address;
 
     @CCD(

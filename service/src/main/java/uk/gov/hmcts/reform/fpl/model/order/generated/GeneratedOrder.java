@@ -281,8 +281,6 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     }
 
   // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
-  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"")
-  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
   @CCD(
           label = "Sent for translation",
           showCondition = "needTranslation=\"YES\" AND translatedDocument!=\"*\"",

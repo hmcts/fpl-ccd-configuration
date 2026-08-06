@@ -34,23 +34,17 @@ public final class DraftSDOParentsAndRespondentsDirectionsPage {
                     .eventLabel(" ")
                     .readonly(Direction::getDirectionType)
                     .eventLabel(" ")
-                    .noHintText()
                     .mandatory(Direction::getDirectionNeeded)
                     .fieldShowCondition("respondentDirections.directionRemovable=\"Yes\"")
                     .eventLabel(" ")
                     .optional(Direction::getDirectionText)
                     .fieldShowCondition("respondentDirections.readOnly!=\"Yes\" AND respondentDirections.directionNeeded!=\"No\"")
-                    .noHintText()
-                    .optional(Direction::getDateToBeCompletedBy)
-                    .noHintText().done();
+                    .optional(Direction::getDateToBeCompletedBy).done();
         fields.complex(CaseData::getRespondentDirectionsCustom, false).done();
         fields.complex(CaseData::getRespondentDirectionsCustom, Direction.class)
                     .mandatory(Direction::getDirectionType)
                     .eventLabel(" ")
-                    .noHintText()
                     .optional(Direction::getDirectionText)
-                    .noHintText()
-                    .optional(Direction::getDateToBeCompletedBy)
-                    .noHintText().done();
+                    .optional(Direction::getDateToBeCompletedBy).done();
     }
 }

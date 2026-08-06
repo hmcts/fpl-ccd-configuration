@@ -42,15 +42,12 @@ public final class UploadAdditionalApplicationsPage5 {
                     .fieldShowCondition("displayAmountToPay=\"Yes\"")
                     .mandatory(PBAPayment::getPbaNumber)
                     .fieldShowCondition("displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\" AND isCTSCUser=\"Yes\"")
-                    .noHintText()
                     .mandatory(PBAPayment::getPbaNumberDynamicList)
                     .fieldShowCondition("displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\" AND isCTSCUser!=\"Yes\"")
-                    .noHintText()
                     .optional(PBAPayment::getClientCode)
                     .fieldShowCondition("displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\"")
                     .mandatory(PBAPayment::getFileReference)
-                    .fieldShowCondition("displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\"")
-                    .noHintText().done();
+                    .fieldShowCondition("displayAmountToPay=\"Yes\" AND temporaryPbaPayment.usePbaPayment!=\"No\"").done();
         fields.mandatoryNoSummary(CaseData::getLatestRoleSent)
                     .fieldShowCondition("c2Type=\"DO_NOT_SHOW\"")
                     .retainHiddenValue();

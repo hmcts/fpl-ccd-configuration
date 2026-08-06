@@ -96,7 +96,7 @@ public class CaseDataParent {
             typeParameterOverride = "GuardianReportConfidential",
             access = {CHILDSOLICITORARPlus24RolesXmdwczAccess.class, CAFCASSSOLICITORRPlus10RolesOsrbexAccess.class}
     )
-    protected final List<Element<ManagedDocument>> guardianReportsListLA;
+    protected final List<Element<GuardianReportConfidential>> guardianReportsListLA;
     @CCD(
             label = "Guardian report",
             searchable = false,
@@ -104,7 +104,7 @@ public class CaseDataParent {
             typeParameterOverride = "GuardianReportConfidential",
             access = {CHILDSOLICITORARPlus24RolesXmdwczAccess.class, CAFCASSSOLICITORRPlus10RolesOsrbexAccess.class}
     )
-    protected final List<Element<ManagedDocument>> guardianReportsListCTSC;
+    protected final List<Element<GuardianReportConfidential>> guardianReportsListCTSC;
     @CCD(
             label = "Guardian report",
             searchable = false,
@@ -112,7 +112,7 @@ public class CaseDataParent {
             typeParameterOverride = "GuardianReport",
             access = {CAFCASSSOLICITORUPlus35RolesTjesuxAccess.class}
     )
-    protected final List<Element<ManagedDocument>> guardianReportsListRemoved;
+    protected final List<Element<GuardianReport>> guardianReportsListRemoved;
     @CCD(label = "Respondent statements", searchable = false, access = {BARRISTERRuPlus39RolesPwbitcAccess.class})
     protected final List<Element<RespondentStatementV2>> respStmtList;
     @CCD(
@@ -212,7 +212,7 @@ public class CaseDataParent {
             typeParameterOverride = "ApplicantWitnessStatement",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> applicantWitnessStmtList;
+    protected final List<Element<ApplicantWitnessStatement>> applicantWitnessStmtList;
     @CCD(
             label = "Witness statements",
             searchable = false,
@@ -220,7 +220,7 @@ public class CaseDataParent {
             typeParameterOverride = "ApplicantWitnessStatementConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> applicantWitnessStmtListLA;
+    protected final List<Element<ApplicantWitnessStatementConfidential>> applicantWitnessStmtListLA;
     @CCD(
             label = "Witness statements",
             searchable = false,
@@ -228,7 +228,7 @@ public class CaseDataParent {
             typeParameterOverride = "ApplicantWitnessStatementConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> applicantWitnessStmtListCTSC;
+    protected final List<Element<ApplicantWitnessStatementConfidential>> applicantWitnessStmtListCTSC;
     @CCD(
             label = "Witness statements",
             searchable = false,
@@ -236,7 +236,7 @@ public class CaseDataParent {
             typeParameterOverride = "ApplicantWitnessStatement",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> applicantWitnessStmtListRemoved;
+    protected final List<Element<ApplicantWitnessStatement>> applicantWitnessStmtListRemoved;
     @CCD(
             label = "Guardian's evidence",
             searchable = false,
@@ -244,7 +244,7 @@ public class CaseDataParent {
             typeParameterOverride = "GuardianEvidence",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> guardianEvidenceList;
+    protected final List<Element<GuardianEvidence>> guardianEvidenceList;
     @CCD(
             label = "Guardian's evidence",
             searchable = false,
@@ -252,7 +252,7 @@ public class CaseDataParent {
             typeParameterOverride = "GuardianEvidenceConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> guardianEvidenceListLA;
+    protected final List<Element<GuardianEvidenceConfidential>> guardianEvidenceListLA;
     @CCD(
             label = "Guardian's evidence",
             searchable = false,
@@ -260,7 +260,7 @@ public class CaseDataParent {
             typeParameterOverride = "GuardianEvidenceConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> guardianEvidenceListCTSC;
+    protected final List<Element<GuardianEvidenceConfidential>> guardianEvidenceListCTSC;
     @CCD(
             label = "Guardian's evidence",
             searchable = false,
@@ -268,7 +268,7 @@ public class CaseDataParent {
             typeParameterOverride = "GuardianEvidence",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> guardianEvidenceListRemoved;
+    protected final List<Element<GuardianEvidence>> guardianEvidenceListRemoved;
     @CCD(
             label = "Drug and alcohol reports",
             searchable = false,
@@ -276,7 +276,7 @@ public class CaseDataParent {
             typeParameterOverride = "DrugAndAlcoholReport",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> drugAndAlcoholReportList;
+    protected final List<Element<DrugAndAlcoholReport>> drugAndAlcoholReportList;
     @CCD(
             label = "Drug and alcohol reports",
             searchable = false,
@@ -284,7 +284,7 @@ public class CaseDataParent {
             typeParameterOverride = "DrugAndAlcoholReportConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> drugAndAlcoholReportListLA;
+    protected final List<Element<DrugAndAlcoholReportConfidential>> drugAndAlcoholReportListLA;
     @CCD(
             label = "Drug and alcohol reports",
             searchable = false,
@@ -292,7 +292,7 @@ public class CaseDataParent {
             typeParameterOverride = "DrugAndAlcoholReportConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> drugAndAlcoholReportListCTSC;
+    protected final List<Element<DrugAndAlcoholReportConfidential>> drugAndAlcoholReportListCTSC;
     @CCD(
             label = "Drug and alcohol reports",
             searchable = false,
@@ -300,7 +300,7 @@ public class CaseDataParent {
             typeParameterOverride = "DrugAndAlcoholReport",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> drugAndAlcoholReportListRemoved;
+    protected final List<Element<DrugAndAlcoholReport>> drugAndAlcoholReportListRemoved;
     @CCD(
             label = "Letters of instructions/referrals",
             searchable = false,
@@ -308,7 +308,7 @@ public class CaseDataParent {
             typeParameterOverride = "LettersOfInstruction",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> lettersOfInstructionList;
+    protected final List<Element<LettersOfInstruction>> lettersOfInstructionList;
     @CCD(
             label = "Letters of instructions/referrals",
             searchable = false,
@@ -316,7 +316,7 @@ public class CaseDataParent {
             typeParameterOverride = "LettersOfInstructionConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> lettersOfInstructionListLA;
+    protected final List<Element<LettersOfInstructionConfidential>> lettersOfInstructionListLA;
     @CCD(
             label = "Letters of instructions/referrals",
             searchable = false,
@@ -324,7 +324,7 @@ public class CaseDataParent {
             typeParameterOverride = "LettersOfInstructionConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> lettersOfInstructionListCTSC;
+    protected final List<Element<LettersOfInstructionConfidential>> lettersOfInstructionListCTSC;
     @CCD(
             label = "Letters of instructions/referrals",
             searchable = false,
@@ -332,7 +332,7 @@ public class CaseDataParent {
             typeParameterOverride = "LettersOfInstruction",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> lettersOfInstructionListRemoved;
+    protected final List<Element<LettersOfInstruction>> lettersOfInstructionListRemoved;
     @CCD(
             label = "Adult Psychiatric Report On Parent(s)",
             searchable = false,
@@ -340,7 +340,7 @@ public class CaseDataParent {
             typeParameterOverride = "AdultPsychiatricReportOnParents",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> adultPsychRepParentsList;
+    protected final List<Element<AdultPsychiatricReportOnParents>> adultPsychRepParentsList;
     @CCD(
             label = "Adult Psychiatric Report On Parent(s)",
             searchable = false,
@@ -348,7 +348,7 @@ public class CaseDataParent {
             typeParameterOverride = "AdultPsychiatricReportOnParentsConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> adultPsychRepParentsListLA;
+    protected final List<Element<AdultPsychiatricReportOnParentsConfidential>> adultPsychRepParentsListLA;
     @CCD(
             label = "Adult Psychiatric Report On Parent(s)",
             searchable = false,
@@ -356,7 +356,7 @@ public class CaseDataParent {
             typeParameterOverride = "AdultPsychiatricReportOnParentsConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> adultPsychRepParentsListCTSC;
+    protected final List<Element<AdultPsychiatricReportOnParentsConfidential>> adultPsychRepParentsListCTSC;
     @CCD(
             label = "Adult Psychiatric Report On Parent(s)",
             searchable = false,
@@ -364,7 +364,7 @@ public class CaseDataParent {
             typeParameterOverride = "AdultPsychiatricReportOnParents",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> adultPsychRepParentsListRemoved;
+    protected final List<Element<AdultPsychiatricReportOnParents>> adultPsychRepParentsListRemoved;
     @CCD(
             label = "Family Centre Assessments - Non-Residential",
             searchable = false,
@@ -372,7 +372,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyCentreAssessmentsNonResidential",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> famCentreAssessNonResList;
+    protected final List<Element<FamilyCentreAssessmentsNonResidential>> famCentreAssessNonResList;
     @CCD(
             label = "Family Centre Assessments - Non-Residential",
             searchable = false,
@@ -380,7 +380,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyCentreAssessmentsNonResidentialConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> famCentreAssessNonResListLA;
+    protected final List<Element<FamilyCentreAssessmentsNonResidentialConfidential>> famCentreAssessNonResListLA;
     @CCD(
             label = "Family Centre Assessments - Non-Residential",
             searchable = false,
@@ -388,7 +388,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyCentreAssessmentsNonResidentialConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> famCentreAssessNonResListCTSC;
+    protected final List<Element<FamilyCentreAssessmentsNonResidentialConfidential>> famCentreAssessNonResListCTSC;
     @CCD(
             label = "Family Centre Assessments - Non-Residential",
             searchable = false,
@@ -396,7 +396,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyCentreAssessmentsNonResidential",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> famCentreAssessNonResListRemoved;
+    protected final List<Element<FamilyCentreAssessmentsNonResidential>> famCentreAssessNonResListRemoved;
     @CCD(
             label = "Family Centre Assessments - Residential",
             searchable = false,
@@ -404,7 +404,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyCentreAssessmentResidential",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> familyCentreAssesResList;
+    protected final List<Element<FamilyCentreAssessmentResidential>> familyCentreAssesResList;
     @CCD(
             label = "Family Centre Assessments - Residential",
             searchable = false,
@@ -412,7 +412,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyCentreAssessmentResidentialConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> familyCentreAssesResListLA;
+    protected final List<Element<FamilyCentreAssessmentResidentialConfidential>> familyCentreAssesResListLA;
     @CCD(
             label = "Family Centre Assessments - Residential",
             searchable = false,
@@ -420,7 +420,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyCentreAssessmentResidentialConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> familyCentreAssesResListCTSC;
+    protected final List<Element<FamilyCentreAssessmentResidentialConfidential>> familyCentreAssesResListCTSC;
     @CCD(
             label = "Family Centre Assessments - Residential",
             searchable = false,
@@ -428,7 +428,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyCentreAssessmentResidential",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> familyCentreAssesResListRemoved;
+    protected final List<Element<FamilyCentreAssessmentResidential>> familyCentreAssesResListRemoved;
     @CCD(
             label = "Haematologist",
             searchable = false,
@@ -436,7 +436,7 @@ public class CaseDataParent {
             typeParameterOverride = "Haematologist",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> haematologistList;
+    protected final List<Element<Haematologist>> haematologistList;
     @CCD(
             label = "Haematologist",
             searchable = false,
@@ -444,7 +444,7 @@ public class CaseDataParent {
             typeParameterOverride = "HaematologistConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> haematologistListLA;
+    protected final List<Element<HaematologistConfidential>> haematologistListLA;
     @CCD(
             label = "Haematologist",
             searchable = false,
@@ -452,7 +452,7 @@ public class CaseDataParent {
             typeParameterOverride = "HaematologistConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> haematologistListCTSC;
+    protected final List<Element<HaematologistConfidential>> haematologistListCTSC;
     @CCD(
             label = "Haematologist",
             searchable = false,
@@ -460,7 +460,7 @@ public class CaseDataParent {
             typeParameterOverride = "Haematologist",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> haematologistListRemoved;
+    protected final List<Element<Haematologist>> haematologistListRemoved;
     @CCD(
             label = "Independent Social Worker",
             searchable = false,
@@ -468,7 +468,7 @@ public class CaseDataParent {
             typeParameterOverride = "IndependentSocialWorker",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> indepSocialWorkerList;
+    protected final List<Element<IndependentSocialWorker>> indepSocialWorkerList;
     @CCD(
             label = "Independent Social Worker",
             searchable = false,
@@ -476,7 +476,7 @@ public class CaseDataParent {
             typeParameterOverride = "IndependentSocialWorkerConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> indepSocialWorkerListLA;
+    protected final List<Element<IndependentSocialWorkerConfidential>> indepSocialWorkerListLA;
     @CCD(
             label = "Independent Social Worker",
             searchable = false,
@@ -484,7 +484,7 @@ public class CaseDataParent {
             typeParameterOverride = "IndependentSocialWorkerConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> indepSocialWorkerListCTSC;
+    protected final List<Element<IndependentSocialWorkerConfidential>> indepSocialWorkerListCTSC;
     @CCD(
             label = "Independent Social Worker",
             searchable = false,
@@ -492,7 +492,7 @@ public class CaseDataParent {
             typeParameterOverride = "IndependentSocialWorker",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> indepSocialWorkerListRemoved;
+    protected final List<Element<IndependentSocialWorker>> indepSocialWorkerListRemoved;
     @CCD(
             label = "Multi Disciplinary Assessment",
             searchable = false,
@@ -500,7 +500,7 @@ public class CaseDataParent {
             typeParameterOverride = "MultiDisciplinaryAssessment",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> multiDisciplinAssessList;
+    protected final List<Element<MultiDisciplinaryAssessment>> multiDisciplinAssessList;
     @CCD(
             label = "Multi Disciplinary Assessment",
             searchable = false,
@@ -508,7 +508,7 @@ public class CaseDataParent {
             typeParameterOverride = "MultiDisciplinaryAssessmentConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> multiDisciplinAssessListLA;
+    protected final List<Element<MultiDisciplinaryAssessmentConfidential>> multiDisciplinAssessListLA;
     @CCD(
             label = "Multi Disciplinary Assessment",
             searchable = false,
@@ -516,7 +516,7 @@ public class CaseDataParent {
             typeParameterOverride = "MultiDisciplinaryAssessmentConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> multiDisciplinAssessListCTSC;
+    protected final List<Element<MultiDisciplinaryAssessmentConfidential>> multiDisciplinAssessListCTSC;
     @CCD(
             label = "Multi Disciplinary Assessment",
             searchable = false,
@@ -524,7 +524,7 @@ public class CaseDataParent {
             typeParameterOverride = "MultiDisciplinaryAssessment",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> multiDisciplinAssessListRemoved;
+    protected final List<Element<MultiDisciplinaryAssessment>> multiDisciplinAssessListRemoved;
     @CCD(
             label = "Neurosurgeon",
             searchable = false,
@@ -532,7 +532,7 @@ public class CaseDataParent {
             typeParameterOverride = "NeuroSurgeon",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> neuroSurgeonList;
+    protected final List<Element<NeuroSurgeon>> neuroSurgeonList;
     @CCD(
             label = "Neurosurgeon",
             searchable = false,
@@ -540,7 +540,7 @@ public class CaseDataParent {
             typeParameterOverride = "NeuroSurgeonConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> neuroSurgeonListLA;
+    protected final List<Element<NeuroSurgeonConfidential>> neuroSurgeonListLA;
     @CCD(
             label = "Neurosurgeon",
             searchable = false,
@@ -548,7 +548,7 @@ public class CaseDataParent {
             typeParameterOverride = "NeuroSurgeonConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> neuroSurgeonListCTSC;
+    protected final List<Element<NeuroSurgeonConfidential>> neuroSurgeonListCTSC;
     @CCD(
             label = "Neurosurgeon",
             searchable = false,
@@ -556,7 +556,7 @@ public class CaseDataParent {
             typeParameterOverride = "NeuroSurgeon",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> neuroSurgeonListRemoved;
+    protected final List<Element<NeuroSurgeon>> neuroSurgeonListRemoved;
     @CCD(
             label = "Ophthalmologist",
             searchable = false,
@@ -564,7 +564,7 @@ public class CaseDataParent {
             typeParameterOverride = "Ophthalmologist",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> ophthalmologistList;
+    protected final List<Element<Ophthalmologist>> ophthalmologistList;
     @CCD(
             label = "Ophthalmologist",
             searchable = false,
@@ -572,7 +572,7 @@ public class CaseDataParent {
             typeParameterOverride = "OphthalmologistConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> ophthalmologistListLA;
+    protected final List<Element<OphthalmologistConfidential>> ophthalmologistListLA;
     @CCD(
             label = "Ophthalmologist",
             searchable = false,
@@ -580,7 +580,7 @@ public class CaseDataParent {
             typeParameterOverride = "OphthalmologistConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> ophthalmologistListCTSC;
+    protected final List<Element<OphthalmologistConfidential>> ophthalmologistListCTSC;
     @CCD(
             label = "Ophthalmologist",
             searchable = false,
@@ -588,7 +588,7 @@ public class CaseDataParent {
             typeParameterOverride = "Ophthalmologist",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> ophthalmologistListRemoved;
+    protected final List<Element<Ophthalmologist>> ophthalmologistListRemoved;
     @CCD(
             label = "Other Expert Report",
             searchable = false,
@@ -596,7 +596,7 @@ public class CaseDataParent {
             typeParameterOverride = "OtherExpertReport",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> otherExpertReportList;
+    protected final List<Element<OtherExpertReport>> otherExpertReportList;
     @CCD(
             label = "Other Expert Report",
             searchable = false,
@@ -604,7 +604,7 @@ public class CaseDataParent {
             typeParameterOverride = "OtherExpertReportConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> otherExpertReportListLA;
+    protected final List<Element<OtherExpertReportConfidential>> otherExpertReportListLA;
     @CCD(
             label = "Other Expert Report",
             searchable = false,
@@ -612,7 +612,7 @@ public class CaseDataParent {
             typeParameterOverride = "OtherExpertReportConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> otherExpertReportListCTSC;
+    protected final List<Element<OtherExpertReportConfidential>> otherExpertReportListCTSC;
     @CCD(
             label = "Other Expert Report",
             searchable = false,
@@ -620,7 +620,7 @@ public class CaseDataParent {
             typeParameterOverride = "OtherExpertReport",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> otherExpertReportListRemoved;
+    protected final List<Element<OtherExpertReport>> otherExpertReportListRemoved;
     @CCD(
             label = "Other Medical Report",
             searchable = false,
@@ -628,7 +628,7 @@ public class CaseDataParent {
             typeParameterOverride = "OtherMedicalReport",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> otherMedicalReportList;
+    protected final List<Element<OtherMedicalReport>> otherMedicalReportList;
     @CCD(
             label = "Other Medical Report",
             searchable = false,
@@ -636,7 +636,7 @@ public class CaseDataParent {
             typeParameterOverride = "OtherMedicalReportConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> otherMedicalReportListLA;
+    protected final List<Element<OtherMedicalReportConfidential>> otherMedicalReportListLA;
     @CCD(
             label = "Other Medical Report",
             searchable = false,
@@ -644,7 +644,7 @@ public class CaseDataParent {
             typeParameterOverride = "OtherMedicalReportConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> otherMedicalReportListCTSC;
+    protected final List<Element<OtherMedicalReportConfidential>> otherMedicalReportListCTSC;
     @CCD(
             label = "Other Medical Report",
             searchable = false,
@@ -652,7 +652,7 @@ public class CaseDataParent {
             typeParameterOverride = "OtherMedicalReport",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> otherMedicalReportListRemoved;
+    protected final List<Element<OtherMedicalReport>> otherMedicalReportListRemoved;
     @CCD(
             label = "Pediatric",
             searchable = false,
@@ -660,7 +660,7 @@ public class CaseDataParent {
             typeParameterOverride = "Pediatric",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> pediatricList;
+    protected final List<Element<Pediatric>> pediatricList;
     @CCD(
             label = "Pediatric",
             searchable = false,
@@ -668,7 +668,7 @@ public class CaseDataParent {
             typeParameterOverride = "PediatricConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> pediatricListLA;
+    protected final List<Element<PediatricConfidential>> pediatricListLA;
     @CCD(
             label = "Pediatric",
             searchable = false,
@@ -676,7 +676,7 @@ public class CaseDataParent {
             typeParameterOverride = "PediatricConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> pediatricListCTSC;
+    protected final List<Element<PediatricConfidential>> pediatricListCTSC;
     @CCD(
             label = "Pediatric",
             searchable = false,
@@ -684,7 +684,7 @@ public class CaseDataParent {
             typeParameterOverride = "Pediatric",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> pediatricListRemoved;
+    protected final List<Element<Pediatric>> pediatricListRemoved;
     @CCD(
             label = "Pediatric Radiologist",
             searchable = false,
@@ -692,7 +692,7 @@ public class CaseDataParent {
             typeParameterOverride = "PediatricRadiologist",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> pediatricRadiologistList;
+    protected final List<Element<PediatricRadiologist>> pediatricRadiologistList;
     @CCD(
             label = "Pediatric Radiologist",
             searchable = false,
@@ -700,7 +700,7 @@ public class CaseDataParent {
             typeParameterOverride = "PediatricRadiologistConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> pediatricRadiologistListLA;
+    protected final List<Element<PediatricRadiologistConfidential>> pediatricRadiologistListLA;
     @CCD(
             label = "Pediatric Radiologist",
             searchable = false,
@@ -708,7 +708,7 @@ public class CaseDataParent {
             typeParameterOverride = "PediatricRadiologistConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> pediatricRadiologistListCTSC;
+    protected final List<Element<PediatricRadiologistConfidential>> pediatricRadiologistListCTSC;
     @CCD(
             label = "Pediatric Radiologist",
             searchable = false,
@@ -716,7 +716,7 @@ public class CaseDataParent {
             typeParameterOverride = "PediatricRadiologist",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> pediatricRadiologistListRemoved;
+    protected final List<Element<PediatricRadiologist>> pediatricRadiologistListRemoved;
     @CCD(
             label = "Professional: DNA Testing",
             searchable = false,
@@ -724,7 +724,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalDNATesting",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> profDNATestingList;
+    protected final List<Element<ProfessionalDNATesting>> profDNATestingList;
     @CCD(
             label = "Professional: DNA Testing",
             searchable = false,
@@ -732,7 +732,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalDNATestingConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> profDNATestingListLA;
+    protected final List<Element<ProfessionalDNATestingConfidential>> profDNATestingListLA;
     @CCD(
             label = "Professional: DNA Testing",
             searchable = false,
@@ -740,7 +740,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalDNATestingConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> profDNATestingListCTSC;
+    protected final List<Element<ProfessionalDNATestingConfidential>> profDNATestingListCTSC;
     @CCD(
             label = "Professional: DNA Testing",
             searchable = false,
@@ -748,7 +748,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalDNATesting",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> profDNATestingListRemoved;
+    protected final List<Element<ProfessionalDNATesting>> profDNATestingListRemoved;
     @CCD(
             label = "Professional: Drug/Alcohol",
             searchable = false,
@@ -756,7 +756,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalDrugAndAlcohol",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> profDrugAlcoholList;
+    protected final List<Element<ProfessionalDrugAndAlcohol>> profDrugAlcoholList;
     @CCD(
             label = "Professional: Drug/Alcohol",
             searchable = false,
@@ -764,7 +764,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalDrugAndAlcoholConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> profDrugAlcoholListLA;
+    protected final List<Element<ProfessionalDrugAndAlcoholConfidential>> profDrugAlcoholListLA;
     @CCD(
             label = "Professional: Drug/Alcohol",
             searchable = false,
@@ -772,7 +772,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalDrugAndAlcoholConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> profDrugAlcoholListCTSC;
+    protected final List<Element<ProfessionalDrugAndAlcoholConfidential>> profDrugAlcoholListCTSC;
     @CCD(
             label = "Professional: Drug/Alcohol",
             searchable = false,
@@ -780,7 +780,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalDrugAndAlcohol",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> profDrugAlcoholListRemoved;
+    protected final List<Element<ProfessionalDrugAndAlcohol>> profDrugAlcoholListRemoved;
     @CCD(
             label = "Professional: Hair Strand",
             searchable = false,
@@ -788,7 +788,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalHairStrand",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> professionalHairStrandList;
+    protected final List<Element<ProfessionalHairStrand>> professionalHairStrandList;
     @CCD(
             label = "Professional: Hair Strand",
             searchable = false,
@@ -796,7 +796,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalHairStrandConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> professionalHairStrandListLA;
+    protected final List<Element<ProfessionalHairStrandConfidential>> professionalHairStrandListLA;
     @CCD(
             label = "Professional: Hair Strand",
             searchable = false,
@@ -804,7 +804,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalHairStrandConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> professionalHairStrandListCTSC;
+    protected final List<Element<ProfessionalHairStrandConfidential>> professionalHairStrandListCTSC;
     @CCD(
             label = "Professional: Hair Strand",
             searchable = false,
@@ -812,7 +812,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalHairStrand",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> professionalHairStrandListRemoved;
+    protected final List<Element<ProfessionalHairStrand>> professionalHairStrandListRemoved;
     @CCD(
             label = "Professional: Other",
             searchable = false,
@@ -820,7 +820,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalOther",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> professionalOtherList;
+    protected final List<Element<ProfessionalOther>> professionalOtherList;
     @CCD(
             label = "Professional: Other",
             searchable = false,
@@ -828,7 +828,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalOtherConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> professionalOtherListLA;
+    protected final List<Element<ProfessionalOtherConfidential>> professionalOtherListLA;
     @CCD(
             label = "Professional: Other",
             searchable = false,
@@ -836,7 +836,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalOtherConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> professionalOtherListCTSC;
+    protected final List<Element<ProfessionalOtherConfidential>> professionalOtherListCTSC;
     @CCD(
             label = "Professional: Other",
             searchable = false,
@@ -844,7 +844,7 @@ public class CaseDataParent {
             typeParameterOverride = "ProfessionalOther",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> professionalOtherListRemoved;
+    protected final List<Element<ProfessionalOther>> professionalOtherListRemoved;
     @CCD(
             label = "Psychiatric - On child only",
             searchable = false,
@@ -852,7 +852,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychiatricChildOnly",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychiatricChildOnlyList;
+    protected final List<Element<PsychiatricChildOnly>> psychiatricChildOnlyList;
     @CCD(
             label = "Psychiatric - On child only",
             searchable = false,
@@ -860,7 +860,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychiatricChildOnlyConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychiatricChildOnlyListLA;
+    protected final List<Element<PsychiatricChildOnlyConfidential>> psychiatricChildOnlyListLA;
     @CCD(
             label = "Psychiatric - On child only",
             searchable = false,
@@ -868,7 +868,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychiatricChildOnlyConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychiatricChildOnlyListCTSC;
+    protected final List<Element<PsychiatricChildOnlyConfidential>> psychiatricChildOnlyListCTSC;
     @CCD(
             label = "Psychiatric - On child only",
             searchable = false,
@@ -876,7 +876,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychiatricChildOnly",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychiatricChildOnlyListRemoved;
+    protected final List<Element<PsychiatricChildOnly>> psychiatricChildOnlyListRemoved;
     @CCD(
             label = "Psychiatric - On child and Parent(s)/carers",
             searchable = false,
@@ -884,7 +884,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychiatricOnChildAndParentCarers",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassRAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychChildParentCarersList;
+    protected final List<Element<PsychiatricOnChildAndParentCarers>> psychChildParentCarersList;
     @CCD(
             label = "Psychiatric - On child and Parent(s)/carers",
             searchable = false,
@@ -892,7 +892,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychiatricOnChildAndParentCarersConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychChildParentCarersListLA;
+    protected final List<Element<PsychiatricOnChildAndParentCarersConfidential>> psychChildParentCarersListLA;
     @CCD(
             label = "Psychiatric - On child and Parent(s)/carers",
             searchable = false,
@@ -900,7 +900,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychiatricOnChildAndParentCarersConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychChildParentCarersListCTSC;
+    protected final List<Element<PsychiatricOnChildAndParentCarersConfidential>> psychChildParentCarersListCTSC;
     @CCD(
             label = "Psychiatric - On child and Parent(s)/carers",
             searchable = false,
@@ -908,7 +908,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychiatricOnChildAndParentCarers",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychChildParentCarersListRemoved;
+    protected final List<Element<PsychiatricOnChildAndParentCarers>> psychChildParentCarersListRemoved;
     @CCD(
             label = "Psychological Report on Child Only - Clinical",
             searchable = false,
@@ -916,7 +916,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnChildOnlyClinical",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psycReportChildClinList;
+    protected final List<Element<PsychologicalReportOnChildOnlyClinical>> psycReportChildClinList;
     @CCD(
             label = "Psychological Report on Child Only - Clinical",
             searchable = false,
@@ -924,7 +924,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnChildOnlyClinicalConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psycReportChildClinListLA;
+    protected final List<Element<PsychologicalReportOnChildOnlyClinicalConfidential>> psycReportChildClinListLA;
     @CCD(
             label = "Psychological Report on Child Only - Clinical",
             searchable = false,
@@ -932,7 +932,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnChildOnlyClinicalConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psycReportChildClinListCTSC;
+    protected final List<Element<PsychologicalReportOnChildOnlyClinicalConfidential>> psycReportChildClinListCTSC;
     @CCD(
             label = "Psychological Report on Child Only - Clinical",
             searchable = false,
@@ -940,7 +940,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnChildOnlyClinical",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psycReportChildClinListRemoved;
+    protected final List<Element<PsychologicalReportOnChildOnlyClinical>> psycReportChildClinListRemoved;
     @CCD(
             label = "Psychological Report on Child Only - Educational",
             searchable = false,
@@ -948,7 +948,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnChildOnlyEducational",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psycReportChildOnlyEdList;
+    protected final List<Element<PsychologicalReportOnChildOnlyEducational>> psycReportChildOnlyEdList;
     @CCD(
             label = "Psychological Report on Child Only - Educational",
             searchable = false,
@@ -956,7 +956,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnChildOnlyEducationalConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psycReportChildOnlyEdListLA;
+    protected final List<Element<PsychologicalReportOnChildOnlyEducationalConfidential>> psycReportChildOnlyEdListLA;
     @CCD(
             label = "Psychological Report on Child Only - Educational",
             searchable = false,
@@ -964,7 +964,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnChildOnlyEducationalConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psycReportChildOnlyEdListCTSC;
+    protected final List<Element<PsychologicalReportOnChildOnlyEducationalConfidential>> psycReportChildOnlyEdListCTSC;
     @CCD(
             label = "Psychological Report on Child Only - Educational",
             searchable = false,
@@ -972,7 +972,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnChildOnlyEducational",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psycReportChildOnlyEdListRemoved;
+    protected final List<Element<PsychologicalReportOnChildOnlyEducational>> psycReportChildOnlyEdListRemoved;
     @CCD(
             label = "Psychological Report on Parent(s) and child",
             searchable = false,
@@ -980,7 +980,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentAndChild",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychReportParentChildList;
+    protected final List<Element<PsychologicalReportOnParentAndChild>> psychReportParentChildList;
     @CCD(
             label = "Psychological Report on Parent(s) and child",
             searchable = false,
@@ -988,7 +988,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentAndChildConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychReportParentChildListLA;
+    protected final List<Element<PsychologicalReportOnParentAndChildConfidential>> psychReportParentChildListLA;
     @CCD(
             label = "Psychological Report on Parent(s) and child",
             searchable = false,
@@ -996,7 +996,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentAndChildConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychReportParentChildListCTSC;
+    protected final List<Element<PsychologicalReportOnParentAndChildConfidential>> psychReportParentChildListCTSC;
     @CCD(
             label = "Psychological Report on Parent(s) and child",
             searchable = false,
@@ -1004,7 +1004,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentAndChild",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychReportParentChildListRemoved;
+    protected final List<Element<PsychologicalReportOnParentAndChild>> psychReportParentChildListRemoved;
     @CCD(
             label = "Psychological Report on Parent(s) - full cognitive",
             searchable = false,
@@ -1012,7 +1012,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentFullCognitive",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychRepParentFullCogList;
+    protected final List<Element<PsychologicalReportOnParentFullCognitive>> psychRepParentFullCogList;
     @CCD(
             label = "Psychological Report on Parent(s) - full cognitive",
             searchable = false,
@@ -1020,7 +1020,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentFullCognitiveConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychRepParentFullCogListLA;
+    protected final List<Element<PsychologicalReportOnParentFullCognitiveConfidential>> psychRepParentFullCogListLA;
     @CCD(
             label = "Psychological Report on Parent(s) - full cognitive",
             searchable = false,
@@ -1028,7 +1028,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentFullCognitiveConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychRepParentFullCogListCTSC;
+    protected final List<Element<PsychologicalReportOnParentFullCognitiveConfidential>> psychRepParentFullCogListCTSC;
     @CCD(
             label = "Psychological Report on Parent(s) - full cognitive",
             searchable = false,
@@ -1036,7 +1036,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentFullCognitive",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychRepParentFullCogListRemoved;
+    protected final List<Element<PsychologicalReportOnParentFullCognitive>> psychRepParentFullCogListRemoved;
     @CCD(
             label = "Psychological Report on Parent(s) - functioning",
             searchable = false,
@@ -1044,7 +1044,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentFunctioning",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychRepParentFuncList;
+    protected final List<Element<PsychologicalReportOnParentFunctioning>> psychRepParentFuncList;
     @CCD(
             label = "Psychological Report on Parent(s) - functioning",
             searchable = false,
@@ -1052,7 +1052,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentFunctioningConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychRepParentFuncListLA;
+    protected final List<Element<PsychologicalReportOnParentFunctioningConfidential>> psychRepParentFuncListLA;
     @CCD(
             label = "Psychological Report on Parent(s) - functioning",
             searchable = false,
@@ -1060,7 +1060,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentFunctioningConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychRepParentFuncListCTSC;
+    protected final List<Element<PsychologicalReportOnParentFunctioningConfidential>> psychRepParentFuncListCTSC;
     @CCD(
             label = "Psychological Report on Parent(s) - functioning",
             searchable = false,
@@ -1068,7 +1068,7 @@ public class CaseDataParent {
             typeParameterOverride = "PsychologicalReportOnParentFunctioning",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> psychRepParentFuncListRemoved;
+    protected final List<Element<PsychologicalReportOnParentFunctioning>> psychRepParentFuncListRemoved;
     @CCD(
             label = "Toxicology report/statement",
             searchable = false,
@@ -1076,7 +1076,7 @@ public class CaseDataParent {
             typeParameterOverride = "ToxicologyReportStatement",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> toxicologyStatementList;
+    protected final List<Element<ToxicologyReportStatement>> toxicologyStatementList;
     @CCD(
             label = "Toxicology report/statement",
             searchable = false,
@@ -1084,7 +1084,7 @@ public class CaseDataParent {
             typeParameterOverride = "ToxicologyReportStatementConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> toxicologyStatementListLA;
+    protected final List<Element<ToxicologyReportStatementConfidential>> toxicologyStatementListLA;
     @CCD(
             label = "Toxicology report/statement",
             searchable = false,
@@ -1092,7 +1092,7 @@ public class CaseDataParent {
             typeParameterOverride = "ToxicologyReportStatementConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> toxicologyStatementListCTSC;
+    protected final List<Element<ToxicologyReportStatementConfidential>> toxicologyStatementListCTSC;
     @CCD(
             label = "Toxicology report/statement",
             searchable = false,
@@ -1100,7 +1100,7 @@ public class CaseDataParent {
             typeParameterOverride = "ToxicologyReportStatement",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> toxicologyStatementListRemoved;
+    protected final List<Element<ToxicologyReportStatement>> toxicologyStatementListRemoved;
     @CCD(
             label = "Expert reports",
             searchable = false,
@@ -1108,7 +1108,7 @@ public class CaseDataParent {
             typeParameterOverride = "ExpertReport",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> expertReportList;
+    protected final List<Element<ExpertReport>> expertReportList;
     @CCD(
             label = "Expert reports",
             searchable = false,
@@ -1116,7 +1116,7 @@ public class CaseDataParent {
             typeParameterOverride = "ExpertReportConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> expertReportListLA;
+    protected final List<Element<ExpertReportConfidential>> expertReportListLA;
     @CCD(
             label = "Expert reports",
             searchable = false,
@@ -1124,7 +1124,7 @@ public class CaseDataParent {
             typeParameterOverride = "ExpertReportConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> expertReportListCTSC;
+    protected final List<Element<ExpertReportConfidential>> expertReportListCTSC;
     @CCD(
             label = "Expert reports",
             searchable = false,
@@ -1132,7 +1132,7 @@ public class CaseDataParent {
             typeParameterOverride = "ExpertReport",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> expertReportListRemoved;
+    protected final List<Element<ExpertReport>> expertReportListRemoved;
     @CCD(
             label = "Police disclosure",
             searchable = false,
@@ -1140,7 +1140,7 @@ public class CaseDataParent {
             typeParameterOverride = "PoliceDisclosure",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> policeDisclosureList;
+    protected final List<Element<PoliceDisclosure>> policeDisclosureList;
     @CCD(
             label = "Police disclosure",
             searchable = false,
@@ -1148,7 +1148,7 @@ public class CaseDataParent {
             typeParameterOverride = "PoliceDisclosureConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> policeDisclosureListLA;
+    protected final List<Element<PoliceDisclosureConfidential>> policeDisclosureListLA;
     @CCD(
             label = "Police disclosure",
             searchable = false,
@@ -1156,7 +1156,7 @@ public class CaseDataParent {
             typeParameterOverride = "PoliceDisclosureConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> policeDisclosureListCTSC;
+    protected final List<Element<PoliceDisclosureConfidential>> policeDisclosureListCTSC;
     @CCD(
             label = "Police disclosure",
             searchable = false,
@@ -1164,7 +1164,7 @@ public class CaseDataParent {
             typeParameterOverride = "PoliceDisclosure",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> policeDisclosureListRemoved;
+    protected final List<Element<PoliceDisclosure>> policeDisclosureListRemoved;
     @CCD(
             label = "Medical Records",
             searchable = false,
@@ -1172,7 +1172,7 @@ public class CaseDataParent {
             typeParameterOverride = "MedicalRecord",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> medicalRecordList;
+    protected final List<Element<MedicalRecord>> medicalRecordList;
     @CCD(
             label = "Medical Records",
             searchable = false,
@@ -1180,7 +1180,7 @@ public class CaseDataParent {
             typeParameterOverride = "MedicalRecordConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> medicalRecordListLA;
+    protected final List<Element<MedicalRecordConfidential>> medicalRecordListLA;
     @CCD(
             label = "Medical Records",
             searchable = false,
@@ -1188,7 +1188,7 @@ public class CaseDataParent {
             typeParameterOverride = "MedicalRecordConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> medicalRecordListCTSC;
+    protected final List<Element<MedicalRecordConfidential>> medicalRecordListCTSC;
     @CCD(
             label = "Medical Records",
             searchable = false,
@@ -1196,7 +1196,7 @@ public class CaseDataParent {
             typeParameterOverride = "MedicalRecord",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> medicalRecordListRemoved;
+    protected final List<Element<MedicalRecord>> medicalRecordListRemoved;
     @CCD(
             label = "Notice of acting / Notice of issue",
             searchable = false,
@@ -1204,7 +1204,7 @@ public class CaseDataParent {
             typeParameterOverride = "NoticeOfActingOrIssue",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> noticeOfActingOrIssueList;
+    protected final List<Element<NoticeOfActingOrIssue>> noticeOfActingOrIssueList;
     @CCD(
             label = "Notice of acting / Notice of issue",
             searchable = false,
@@ -1212,7 +1212,7 @@ public class CaseDataParent {
             typeParameterOverride = "NoticeOfActingOrIssue",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListLA;
+    protected final List<Element<NoticeOfActingOrIssue>> noticeOfActingOrIssueListLA;
     @CCD(
             label = "Notice of acting / Notice of issue",
             searchable = false,
@@ -1220,7 +1220,7 @@ public class CaseDataParent {
             typeParameterOverride = "NoticeOfActingOrIssue",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListCTSC;
+    protected final List<Element<NoticeOfActingOrIssue>> noticeOfActingOrIssueListCTSC;
     @CCD(
             label = "Notice of acting / Notice of issue",
             searchable = false,
@@ -1228,7 +1228,7 @@ public class CaseDataParent {
             typeParameterOverride = "NoticeOfActingOrIssue",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListRemoved;
+    protected final List<Element<NoticeOfActingOrIssue>> noticeOfActingOrIssueListRemoved;
 
     @CCD(
             label = "Parent assessments",
@@ -1237,7 +1237,7 @@ public class CaseDataParent {
             typeParameterOverride = "ParentAssessment",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, LABARRISTERCruPlus7RolesYczlabAccess.class, BARRISTERRSOLICITORCruCaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> parentAssessmentList;
+    protected final List<Element<ParentAssessment>> parentAssessmentList;
     @CCD(
             label = "Parent assessments",
             searchable = false,
@@ -1245,7 +1245,7 @@ public class CaseDataParent {
             typeParameterOverride = "ParentAssessmentConfidential",
             access = {LABARRISTERCruPlus7RolesYczlabAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> parentAssessmentListLA;
+    protected final List<Element<ParentAssessmentConfidential>> parentAssessmentListLA;
     @CCD(
             label = "Parent assessments",
             searchable = false,
@@ -1253,14 +1253,14 @@ public class CaseDataParent {
             typeParameterOverride = "ParentAssessmentConfidential",
             access = {CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawGatekeeperRPlus3RolesWbcsaxAccess.class}
     )
-    protected final List<Element<ManagedDocument>> parentAssessmentListCTSC;
+    protected final List<Element<ParentAssessmentConfidential>> parentAssessmentListCTSC;
     @CCD(
             label = "Parent assessments",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "ParentAssessment"
     )
-    protected final List<Element<ManagedDocument>> parentAssessmentListRemoved;
+    protected final List<Element<ParentAssessment>> parentAssessmentListRemoved;
     @CCD(
             label = "Family and viability assessments",
             searchable = false,
@@ -1268,7 +1268,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyAndViabilityAssessment",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, LABARRISTERCruPlus7RolesYczlabAccess.class, BARRISTERRSOLICITORCruCaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> famAndViabilityList;
+    protected final List<Element<FamilyAndViabilityAssessment>> famAndViabilityList;
     @CCD(
             label = "Family and viability assessments",
             searchable = false,
@@ -1276,7 +1276,7 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyAndViabilityAssessmentConfidential",
             access = {LABARRISTERCruPlus7RolesYczlabAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> famAndViabilityListLA;
+    protected final List<Element<FamilyAndViabilityAssessmentConfidential>> famAndViabilityListLA;
     @CCD(
             label = "Family and viability assessments",
             searchable = false,
@@ -1284,14 +1284,14 @@ public class CaseDataParent {
             typeParameterOverride = "FamilyAndViabilityAssessmentConfidential",
             access = {CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawGatekeeperRPlus3RolesWbcsaxAccess.class}
     )
-    protected final List<Element<ManagedDocument>> famAndViabilityListCTSC;
+    protected final List<Element<FamilyAndViabilityAssessmentConfidential>> famAndViabilityListCTSC;
     @CCD(
             label = "Family and viability assessments",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "FamilyAndViabilityAssessment"
     )
-    protected final List<Element<ManagedDocument>> famAndViabilityListRemoved;
+    protected final List<Element<FamilyAndViabilityAssessment>> famAndViabilityListRemoved;
     @CCD(
             label = "Applicant's other documents",
             searchable = false,
@@ -1299,7 +1299,7 @@ public class CaseDataParent {
             typeParameterOverride = "ApplicantsOtherDocument",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, LABARRISTERCruPlus7RolesYczlabAccess.class, BARRISTERRSOLICITORCruCaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> applicantOtherDocList;
+    protected final List<Element<ApplicantsOtherDocument>> applicantOtherDocList;
     @CCD(
             label = "Applicant's other documents",
             searchable = false,
@@ -1307,7 +1307,7 @@ public class CaseDataParent {
             typeParameterOverride = "ApplicantsOtherDocumentConfidential",
             access = {LABARRISTERCruPlus7RolesYczlabAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> applicantOtherDocListLA;
+    protected final List<Element<ApplicantsOtherDocumentConfidential>> applicantOtherDocListLA;
     @CCD(
             label = "Applicant's other documents",
             searchable = false,
@@ -1315,14 +1315,14 @@ public class CaseDataParent {
             typeParameterOverride = "ApplicantsOtherDocumentConfidential",
             access = {CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawGatekeeperRPlus3RolesWbcsaxAccess.class}
     )
-    protected final List<Element<ManagedDocument>> applicantOtherDocListCTSC;
+    protected final List<Element<ApplicantsOtherDocumentConfidential>> applicantOtherDocListCTSC;
     @CCD(
             label = "Applicant's other documents",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "ApplicantsOtherDocument"
     )
-    protected final List<Element<ManagedDocument>> applicantOtherDocListRemoved;
+    protected final List<Element<ApplicantsOtherDocument>> applicantOtherDocListRemoved;
     @CCD(
             label = "Meeting notes",
             searchable = false,
@@ -1330,7 +1330,7 @@ public class CaseDataParent {
             typeParameterOverride = "MeetingNote",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, LABARRISTERCruPlus7RolesYczlabAccess.class, BARRISTERRSOLICITORCruCaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> meetingNoteList;
+    protected final List<Element<MeetingNote>> meetingNoteList;
     @CCD(
             label = "Meeting notes",
             searchable = false,
@@ -1338,7 +1338,7 @@ public class CaseDataParent {
             typeParameterOverride = "MeetingNoteConfidential",
             access = {LABARRISTERCruPlus7RolesYczlabAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> meetingNoteListLA;
+    protected final List<Element<MeetingNoteConfidential>> meetingNoteListLA;
     @CCD(
             label = "Meeting notes",
             searchable = false,
@@ -1346,14 +1346,14 @@ public class CaseDataParent {
             typeParameterOverride = "MeetingNoteConfidential",
             access = {CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawGatekeeperRPlus3RolesWbcsaxAccess.class}
     )
-    protected final List<Element<ManagedDocument>> meetingNoteListCTSC;
+    protected final List<Element<MeetingNoteConfidential>> meetingNoteListCTSC;
     @CCD(
             label = "Meeting notes",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "MeetingNote"
     )
-    protected final List<Element<ManagedDocument>> meetingNoteListRemoved;
+    protected final List<Element<MeetingNote>> meetingNoteListRemoved;
     @CCD(
             label = "Contact notes",
             searchable = false,
@@ -1361,7 +1361,7 @@ public class CaseDataParent {
             typeParameterOverride = "ContactNote",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, LABARRISTERCruPlus7RolesYczlabAccess.class, BARRISTERRSOLICITORCruCaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> contactNoteList;
+    protected final List<Element<ContactNote>> contactNoteList;
     @CCD(
             label = "Contact notes",
             searchable = false,
@@ -1369,7 +1369,7 @@ public class CaseDataParent {
             typeParameterOverride = "ContactNoteConfidential",
             access = {LABARRISTERCruPlus7RolesYczlabAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawSystemupdateCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> contactNoteListLA;
+    protected final List<Element<ContactNoteConfidential>> contactNoteListLA;
     @CCD(
             label = "Contact notes",
             searchable = false,
@@ -1377,14 +1377,14 @@ public class CaseDataParent {
             typeParameterOverride = "ContactNoteConfidential",
             access = {CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawGatekeeperRPlus3RolesWbcsaxAccess.class}
     )
-    protected final List<Element<ManagedDocument>> contactNoteListCTSC;
+    protected final List<Element<ContactNoteConfidential>> contactNoteListCTSC;
     @CCD(
             label = "Contact notes",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "ContactNote"
     )
-    protected final List<Element<ManagedDocument>> contactNoteListRemoved;
+    protected final List<Element<ContactNote>> contactNoteListRemoved;
     @CCD(
             label = "Judgments/facts and reasons",
             searchable = false,
@@ -1392,7 +1392,7 @@ public class CaseDataParent {
             typeParameterOverride = "JudgementFactsAndReasons",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, LABARRISTERCruPlus7RolesYczlabAccess.class, BARRISTERRSOLICITORCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> judgementList;
+    protected final List<Element<JudgementFactsAndReasons>> judgementList;
     @CCD(
             label = "Judgments/facts and reasons",
             searchable = false,
@@ -1400,7 +1400,7 @@ public class CaseDataParent {
             typeParameterOverride = "JudgementFactsAndReasons",
             access = {LABARRISTERCruPlus7RolesYczlabAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> judgementListLA;
+    protected final List<Element<JudgementFactsAndReasons>> judgementListLA;
     @CCD(
             label = "Judgments/facts and reasons",
             searchable = false,
@@ -1408,14 +1408,14 @@ public class CaseDataParent {
             typeParameterOverride = "JudgementFactsAndReasons",
             access = {CaseworkerPubliclawGatekeeperRPlus3RolesWbcsaxAccess.class, CaseworkerPubliclawCourtadminCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> judgementListCTSC;
+    protected final List<Element<JudgementFactsAndReasons>> judgementListCTSC;
     @CCD(
             label = "Judgments/facts and reasons",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "JudgementFactsAndReasons"
     )
-    protected final List<Element<ManagedDocument>> judgementListRemoved;
+    protected final List<Element<JudgementFactsAndReasons>> judgementListRemoved;
     @CCD(
             label = "Transcripts",
             searchable = false,
@@ -1423,7 +1423,7 @@ public class CaseDataParent {
             typeParameterOverride = "Transcript",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, LABARRISTERCruPlus7RolesYczlabAccess.class, BARRISTERRSOLICITORCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> transcriptList;
+    protected final List<Element<Transcript>> transcriptList;
     @CCD(
             label = "Transcripts",
             searchable = false,
@@ -1431,7 +1431,7 @@ public class CaseDataParent {
             typeParameterOverride = "TranscriptConfidential",
             access = {LABARRISTERCruPlus7RolesYczlabAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> transcriptListLA;
+    protected final List<Element<TranscriptConfidential>> transcriptListLA;
     @CCD(
             label = "Transcripts",
             searchable = false,
@@ -1439,14 +1439,14 @@ public class CaseDataParent {
             typeParameterOverride = "TranscriptConfidential",
             access = {CaseworkerPubliclawGatekeeperRPlus3RolesWbcsaxAccess.class, CaseworkerPubliclawCourtadminCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> transcriptListCTSC;
+    protected final List<Element<TranscriptConfidential>> transcriptListCTSC;
     @CCD(
             label = "Transcripts",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "Transcript"
     )
-    protected final List<Element<ManagedDocument>> transcriptListRemoved;
+    protected final List<Element<Transcript>> transcriptListRemoved;
     @CCD(
             label = "Witness statements",
             searchable = false,
@@ -1454,7 +1454,7 @@ public class CaseDataParent {
             typeParameterOverride = "RespondentWitnessStatement",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, LABARRISTERCruPlus7RolesYczlabAccess.class, BARRISTERRSOLICITORCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> respWitnessStmtList;
+    protected final List<Element<RespondentWitnessStatement>> respWitnessStmtList;
     @CCD(
             label = "Witness statements",
             searchable = false,
@@ -1462,7 +1462,7 @@ public class CaseDataParent {
             typeParameterOverride = "RespondentWitnessStatementConfidential",
             access = {LABARRISTERCruPlus7RolesYczlabAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> respWitnessStmtListLA;
+    protected final List<Element<RespondentWitnessStatementConfidential>> respWitnessStmtListLA;
     @CCD(
             label = "Witness statements",
             searchable = false,
@@ -1470,14 +1470,14 @@ public class CaseDataParent {
             typeParameterOverride = "RespondentWitnessStatementConfidential",
             access = {CaseworkerPubliclawGatekeeperRPlus3RolesWbcsaxAccess.class, CaseworkerPubliclawCourtadminCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> respWitnessStmtListCTSC;
+    protected final List<Element<RespondentWitnessStatementConfidential>> respWitnessStmtListCTSC;
     @CCD(
             label = "Witness statements",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "RespondentWitnessStatement"
     )
-    protected final List<Element<ManagedDocument>> respWitnessStmtListRemoved;
+    protected final List<Element<RespondentWitnessStatement>> respWitnessStmtListRemoved;
     @CCD(
             label = "Previous Proceedings",
             searchable = false,
@@ -1485,7 +1485,7 @@ public class CaseDataParent {
             typeParameterOverride = "PreviousProceeding",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, LABARRISTERCruPlus7RolesYczlabAccess.class, BARRISTERRSOLICITORCruAccess.class, CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> previousProceedingList;
+    protected final List<Element<PreviousProceeding>> previousProceedingList;
     @CCD(
             label = "Previous Proceedings",
             searchable = false,
@@ -1493,7 +1493,7 @@ public class CaseDataParent {
             typeParameterOverride = "PreviousProceedingConfidential",
             access = {LABARRISTERCruPlus7RolesYczlabAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> previousProceedingListLA;
+    protected final List<Element<PreviousProceedingConfidential>> previousProceedingListLA;
     @CCD(
             label = "Previous Proceedings",
             searchable = false,
@@ -1501,7 +1501,7 @@ public class CaseDataParent {
             typeParameterOverride = "PreviousProceedingConfidential",
             access = {CaseworkerPubliclawGatekeeperRPlus3RolesWbcsaxAccess.class, CaseworkerPubliclawCourtadminCruPlus1RolesOtdddfAccess.class}
     )
-    protected final List<Element<ManagedDocument>> previousProceedingListCTSC;
+    protected final List<Element<PreviousProceedingConfidential>> previousProceedingListCTSC;
     @CCD(
             label = "Previous Proceedings",
             searchable = false,
@@ -1509,7 +1509,7 @@ public class CaseDataParent {
             typeParameterOverride = "PreviousProceeding",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> previousProceedingListRemoved;
+    protected final List<Element<PreviousProceeding>> previousProceedingListRemoved;
     @CCD(
             label = "Threshold",
             searchable = false,
@@ -1533,14 +1533,14 @@ public class CaseDataParent {
             typeParameterOverride = "ThresholdConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateRPlus1RolesJpsblzAccess.class}
     )
-    protected final List<Element<ManagedDocument>> thresholdListCTSC;
+    protected final List<Element<ThresholdConfidential>> thresholdListCTSC;
     @CCD(
             label = "Threshold",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "Threshold"
     )
-    protected final List<Element<ManagedDocument>> thresholdListRemoved;
+    protected final List<Element<Threshold>> thresholdListRemoved;
     @CCD(
             label = "Documents filed on issue",
             searchable = false,
@@ -1564,14 +1564,14 @@ public class CaseDataParent {
             typeParameterOverride = "DocumentsFiledOnIssueConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateRPlus1RolesJpsblzAccess.class}
     )
-    protected final List<Element<ManagedDocument>> documentsFiledOnIssueListCTSC;
+    protected final List<Element<DocumentsFiledOnIssueConfidential>> documentsFiledOnIssueListCTSC;
     @CCD(
             label = "Documents filed on issue",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "DocumentsFiledOnIssue"
     )
-    protected final List<Element<ManagedDocument>> documentsFiledOnIssueListRemoved;
+    protected final List<Element<DocumentsFiledOnIssue>> documentsFiledOnIssueListRemoved;
     @CCD(
             label = "Care plan",
             searchable = false,
@@ -1595,14 +1595,14 @@ public class CaseDataParent {
             typeParameterOverride = "CarePlanConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateRPlus1RolesJpsblzAccess.class}
     )
-    protected final List<Element<ManagedDocument>> carePlanListCTSC;
+    protected final List<Element<CarePlanConfidential>> carePlanListCTSC;
     @CCD(
             label = "Care plan",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "CarePlan"
     )
-    protected final List<Element<ManagedDocument>> carePlanListRemoved;
+    protected final List<Element<CarePlan>> carePlanListRemoved;
 
     @CCD(
             label = "Correspondence",
@@ -1611,7 +1611,7 @@ public class CaseDataParent {
             typeParameterOverride = "CorrespondenceDocument",
             access = {BARRISTERRPlus40RolesJbdulqAccess.class}
     )
-    protected final List<Element<ManagedDocument>> correspondenceDocList;
+    protected final List<Element<CorrespondenceDocument>> correspondenceDocList;
     @CCD(
             label = "Correspondence (Confidential)",
             searchable = false,
@@ -1619,7 +1619,7 @@ public class CaseDataParent {
             typeParameterOverride = "CorrespondenceDocumentConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORRAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class, LABARRISTERCruPlus2RolesBskdreAccess.class, CaseworkerPubliclawRparobotCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> correspondenceDocListLA;
+    protected final List<Element<CorrespondenceDocumentConfidential>> correspondenceDocListLA;
     @CCD(
             label = "Correspondence (Restricted to CTSC only)",
             searchable = false,
@@ -1627,14 +1627,14 @@ public class CaseDataParent {
             typeParameterOverride = "CorrespondenceDocumentConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class, CaseworkerPubliclawRparobotCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> correspondenceDocListCTSC;
+    protected final List<Element<CorrespondenceDocumentConfidential>> correspondenceDocListCTSC;
     @CCD(
             label = "Correspondence (Removed)",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "CorrespondenceDocument"
     )
-    protected final List<Element<ManagedDocument>> correspondenceDocListRemoved;
+    protected final List<Element<CorrespondenceDocument>> correspondenceDocListRemoved;
 
     @CCD(
             label = "Archived migrated data",
@@ -1643,7 +1643,7 @@ public class CaseDataParent {
             typeParameterOverride = "ArchivedDocument",
             access = {CaseworkerPubliclawCourtadminCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> archivedDocumentsList;
+    protected final List<Element<ArchivedDocument>> archivedDocumentsList;
     @CCD(
             label = "Archived migrated data",
             searchable = false,
@@ -1651,7 +1651,7 @@ public class CaseDataParent {
             typeParameterOverride = "ArchivedDocument",
             access = {CaseworkerPubliclawCourtadminCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> archivedDocumentsListLA;
+    protected final List<Element<ArchivedDocument>> archivedDocumentsListLA;
     @CCD(
             label = "Archived migrated data",
             searchable = false,
@@ -1659,7 +1659,7 @@ public class CaseDataParent {
             typeParameterOverride = "ArchivedDocument",
             access = {CaseworkerPubliclawCourtadminCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> archivedDocumentsListCTSC;
+    protected final List<Element<ArchivedDocument>> archivedDocumentsListCTSC;
     @CCD(
             label = "Archived migrated data",
             searchable = false,
@@ -1667,7 +1667,7 @@ public class CaseDataParent {
             typeParameterOverride = "ArchivedDocument",
             access = {CaseworkerPubliclawCourtadminUAccess.class}
     )
-    protected final List<Element<ManagedDocument>> archivedDocumentsListRemoved;
+    protected final List<Element<ArchivedDocument>> archivedDocumentsListRemoved;
 
 
     @CCD(
@@ -1677,7 +1677,7 @@ public class CaseDataParent {
             typeParameterOverride = "C1ApplicationDocument",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, BARRISTERLABARRISTERSOLICITORCaseworkerPubliclawCourtadminCruAccess.class, CaseworkerPubliclawGatekeeperRuPlus2RolesOrmxlgAccess.class, CAFCASSSOLICITORCaseworkerPubliclawCafcassCruAccess.class, CaseworkerPubliclawCafcasssystemupdateRPlus1RolesQakbhsAccess.class}
     )
-    protected final List<Element<ManagedDocument>> c1ApplicationDocList;
+    protected final List<Element<C1ApplicationDocument>> c1ApplicationDocList;
     @CCD(
             label = "C1 Application Document",
             searchable = false,
@@ -1685,7 +1685,7 @@ public class CaseDataParent {
             typeParameterOverride = "C1ApplicationDocumentConfidential",
             access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawCourtadminCruPlus1RolesOtdddfAccess.class, CaseworkerPubliclawGatekeeperRuPlus2RolesOrmxlgAccess.class, LABARRISTERCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> c1ApplicationDocListLA;
+    protected final List<Element<C1ApplicationDocumentConfidential>> c1ApplicationDocListLA;
     @CCD(
             label = "C1 Application Document",
             searchable = false,
@@ -1693,14 +1693,14 @@ public class CaseDataParent {
             typeParameterOverride = "C1ApplicationDocumentConfidential",
             access = {CaseworkerPubliclawCourtadminCruPlus1RolesOtdddfAccess.class, CaseworkerPubliclawGatekeeperRuPlus2RolesOrmxlgAccess.class}
     )
-    protected final List<Element<ManagedDocument>> c1ApplicationDocListCTSC;
+    protected final List<Element<C1ApplicationDocumentConfidential>> c1ApplicationDocListCTSC;
     @CCD(
             label = "C1 Application Document",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "C1ApplicationDocument"
     )
-    protected final List<Element<ManagedDocument>> c1ApplicationDocListRemoved;
+    protected final List<Element<C1ApplicationDocument>> c1ApplicationDocListRemoved;
     @CCD(
             label = "C2 Application Document",
             searchable = false,
@@ -1708,7 +1708,7 @@ public class CaseDataParent {
             typeParameterOverride = "C2ApplicationDocument",
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, BARRISTERLABARRISTERSOLICITORCaseworkerPubliclawCourtadminCruAccess.class, CaseworkerPubliclawGatekeeperRuPlus2RolesOrmxlgAccess.class, CAFCASSSOLICITORCaseworkerPubliclawCafcassCruAccess.class, CaseworkerPubliclawCafcasssystemupdateRPlus1RolesQakbhsAccess.class}
     )
-    protected final List<Element<ManagedDocument>> c2ApplicationDocList;
+    protected final List<Element<C2ApplicationDocument>> c2ApplicationDocList;
     @CCD(
             label = "C2 Application Document",
             searchable = false,
@@ -1716,7 +1716,7 @@ public class CaseDataParent {
             typeParameterOverride = "C2ApplicationDocumentConfidential",
             access = {EPSMANAGINGLAMANAGINGLASHAREDLASOLICITORCruAccess.class, CaseworkerPubliclawCourtadminCruPlus1RolesOtdddfAccess.class, CaseworkerPubliclawGatekeeperRuPlus2RolesOrmxlgAccess.class, LABARRISTERCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> c2ApplicationDocListLA;
+    protected final List<Element<C2ApplicationDocumentConfidential>> c2ApplicationDocListLA;
     @CCD(
             label = "C2 Application Document",
             searchable = false,
@@ -1724,14 +1724,14 @@ public class CaseDataParent {
             typeParameterOverride = "C2ApplicationDocumentConfidential",
             access = {CaseworkerPubliclawCourtadminCruPlus1RolesOtdddfAccess.class, CaseworkerPubliclawGatekeeperRuPlus2RolesOrmxlgAccess.class}
     )
-    protected final List<Element<ManagedDocument>> c2ApplicationDocListCTSC;
+    protected final List<Element<C2ApplicationDocumentConfidential>> c2ApplicationDocListCTSC;
     @CCD(
             label = "C2 Application Document",
             searchable = false,
             typeOverride = FieldType.Collection,
             typeParameterOverride = "C2ApplicationDocument"
     )
-    protected final List<Element<ManagedDocument>> c2ApplicationDocListRemoved;
+    protected final List<Element<C2ApplicationDocument>> c2ApplicationDocListRemoved;
 
     @CCD(
             label = "Advocate Meeting Minutes",
@@ -1740,7 +1740,7 @@ public class CaseDataParent {
             typeParameterOverride = "AdvocateMeetingMinute",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> advocateMeetingMinuteList;
+    protected final List<Element<AdvocateMeetingMinute>> advocateMeetingMinuteList;
     @CCD(
             label = "Advocate Meeting Minutes",
             searchable = false,
@@ -1748,7 +1748,7 @@ public class CaseDataParent {
             typeParameterOverride = "AdvocateMeetingMinuteConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> advocateMeetingMinuteListLA;
+    protected final List<Element<AdvocateMeetingMinuteConfidential>> advocateMeetingMinuteListLA;
     @CCD(
             label = "Advocate Meeting Minutes",
             searchable = false,
@@ -1756,7 +1756,7 @@ public class CaseDataParent {
             typeParameterOverride = "AdvocateMeetingMinuteConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> advocateMeetingMinuteListCTSC;
+    protected final List<Element<AdvocateMeetingMinuteConfidential>> advocateMeetingMinuteListCTSC;
     @CCD(
             label = "Advocate Meeting Minutes",
             searchable = false,
@@ -1764,7 +1764,7 @@ public class CaseDataParent {
             typeParameterOverride = "AdvocateMeetingMinuteConfidential",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> advocateMeetingMinuteListRemoved;
+    protected final List<Element<AdvocateMeetingMinuteConfidential>> advocateMeetingMinuteListRemoved;
 
     @CCD(
             label = "Witness Template",
@@ -1773,7 +1773,7 @@ public class CaseDataParent {
             typeParameterOverride = "WitnessTemplate",
             access = {BARRISTERRPlus38RolesGedyfhAccess.class, CaseworkerPubliclawCafcassCruAccess.class}
     )
-    protected final List<Element<ManagedDocument>> witnessTemplateList;
+    protected final List<Element<WitnessTemplate>> witnessTemplateList;
     @CCD(
             label = "Witness Template",
             searchable = false,
@@ -1781,7 +1781,7 @@ public class CaseDataParent {
             typeParameterOverride = "WitnessTemplateConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, EPSMANAGINGRPlus8RolesQbtompAccess.class}
     )
-    protected final List<Element<ManagedDocument>> witnessTemplateListLA;
+    protected final List<Element<WitnessTemplateConfidential>> witnessTemplateListLA;
     @CCD(
             label = "Witness Template",
             searchable = false,
@@ -1789,7 +1789,7 @@ public class CaseDataParent {
             typeParameterOverride = "WitnessTemplateConfidential",
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateCaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> witnessTemplateListCTSC;
+    protected final List<Element<WitnessTemplateConfidential>> witnessTemplateListCTSC;
     @CCD(
             label = "Witness Template",
             searchable = false,
@@ -1797,7 +1797,7 @@ public class CaseDataParent {
             typeParameterOverride = "WitnessTemplateConfidential",
             access = {CaseworkerPubliclawSystemupdateCrudAccess.class}
     )
-    protected final List<Element<ManagedDocument>> witnessTemplateListRemoved;
+    protected final List<Element<WitnessTemplateConfidential>> witnessTemplateListRemoved;
 
     @CCD(
             label = "How are there grounds for a secure accommodation order?",

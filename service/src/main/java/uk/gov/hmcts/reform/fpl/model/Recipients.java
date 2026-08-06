@@ -16,7 +16,12 @@ public class Recipients {
     private final String name;
     @CCD(label = "Do you have the recipient's address?", typeOverride = FieldType.YesOrNo)
     private final String addressCheck;
-    @CCD(label = "Recipient's address", hint = "Enter a UK postcode", showCondition = "addressCheck=\"Yes\"")
+    @CCD(
+            label = "Recipient's address",
+            hint = "Enter a UK postcode",
+            showCondition = "addressCheck=\"Yes\"",
+            typeOverride = FieldType.AddressUK
+    )
     private final Address address;
     @CCD(label = "Documents", hint = "For example, standard directions order or c6", typeOverride = FieldType.TextArea)
     private final String documents;
@@ -28,12 +33,18 @@ public class Recipients {
     private final String sentBy;
     @CCD(label = "Recipient's email address", showCondition = "sentBy=\"EMAIL\"", typeOverride = FieldType.Email)
     private final String email;
-    @CCD(label = "Post office address", hint = "Enter a UK postcode", showCondition = "sentBy=\"POST\"")
+    @CCD(
+            label = "Post office address",
+            hint = "Enter a UK postcode",
+            showCondition = "sentBy=\"POST\"",
+            typeOverride = FieldType.AddressUK
+    )
     private final Address postOfficeAddress;
     @CCD(
             label = "Where did you serve the documents to the recipient?",
             hint = "Enter a UK postcode",
-            showCondition = "sentBy=\"GIVEN_IN_PERSON\""
+            showCondition = "sentBy=\"GIVEN_IN_PERSON\"",
+            typeOverride = FieldType.AddressUK
     )
     private final Address givenInPerson;
 }

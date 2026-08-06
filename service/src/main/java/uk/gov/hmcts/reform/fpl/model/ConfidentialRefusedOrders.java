@@ -21,7 +21,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersCTSC;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersCTSC;
     @CCD(
             label = "Refused Order (Uploaded by LA)",
             searchable = false,
@@ -29,7 +29,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersLA;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersLA;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 1)",
             searchable = false,
@@ -37,7 +37,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp0;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp0;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 2)",
             searchable = false,
@@ -45,7 +45,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp1;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp1;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 3)",
             searchable = false,
@@ -53,7 +53,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp2;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp2;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 4)",
             searchable = false,
@@ -61,7 +61,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp3;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp3;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 5)",
             searchable = false,
@@ -69,7 +69,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp4;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp4;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 6)",
             searchable = false,
@@ -77,7 +77,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp5;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp5;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 7)",
             searchable = false,
@@ -85,7 +85,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp6;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp6;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 8)",
             searchable = false,
@@ -93,7 +93,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp7;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp7;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 9)",
             searchable = false,
@@ -101,7 +101,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp8;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp8;
     @CCD(
             label = "Refused Order (Uploaded by Respondent 10)",
             searchable = false,
@@ -109,7 +109,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersResp9;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersResp9;
     @CCD(
             label = "Refused Order (Uploaded by Child 1)",
             searchable = false,
@@ -117,7 +117,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild0;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild0;
     @CCD(
             label = "Refused Order (Uploaded by Child 2)",
             searchable = false,
@@ -125,7 +125,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild1;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild1;
     @CCD(
             label = "Refused Order (Uploaded by Child 3)",
             searchable = false,
@@ -133,7 +133,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild2;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild2;
     @CCD(
             label = "Refused Order (Uploaded by Child 4)",
             searchable = false,
@@ -141,7 +141,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild3;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild3;
     @CCD(
             label = "Refused Order (Uploaded by Child 5)",
             searchable = false,
@@ -149,7 +149,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild4;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild4;
     @CCD(
             label = "Refused Order (Uploaded by Child 6)",
             searchable = false,
@@ -157,7 +157,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild5;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild5;
     @CCD(
             label = "Refused Order (Uploaded by Child 7)",
             searchable = false,
@@ -165,7 +165,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild6;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild6;
     @CCD(
             label = "Refused Order (Uploaded by Child 8)",
             searchable = false,
@@ -173,7 +173,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild7;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild7;
     @CCD(
             label = "Refused Order (Uploaded by Child 9)",
             searchable = false,
@@ -181,7 +181,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild8;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild8;
     @CCD(
             label = "Refused Order (Uploaded by Child 10)",
             searchable = false,
@@ -189,7 +189,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild9;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild9;
     @CCD(
             label = "Refused Order (Uploaded by Child 11)",
             searchable = false,
@@ -197,7 +197,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild10;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild10;
     @CCD(
             label = "Refused Order (Uploaded by Child 12)",
             searchable = false,
@@ -205,7 +205,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild11;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild11;
     @CCD(
             label = "Refused Order (Uploaded by Child 13)",
             searchable = false,
@@ -213,7 +213,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild12;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild12;
     @CCD(
             label = "Refused Order (Uploaded by Child 14)",
             searchable = false,
@@ -221,7 +221,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild13;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild13;
     @CCD(
             label = "Refused Order (Uploaded by Child 15)",
             searchable = false,
@@ -229,7 +229,7 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
             typeParameterOverride = "UploadedCaseManagementOrder",
             access = {CaseworkerPubliclawCourtadminCuPlus4RolesRenpooAccess.class}
     )
-    private List<Element<HearingOrder>> refusedHearingOrdersChild14;
+    private List<Element<UploadedCaseManagementOrder>> refusedHearingOrdersChild14;
 
     @Override
     public String getFieldBaseName() {

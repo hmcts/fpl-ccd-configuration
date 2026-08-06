@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.GroundsForChildRecoveryOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEducationSupervisionOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
+import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.UserRole;
 
 /**
@@ -56,7 +57,6 @@ public class EnterGrounds implements CCDConfig<CaseData, State, UserRole> {
         fields.complex(CaseData::getGrounds)
                     .mandatory(Grounds::getThresholdReason)
                     .eventLabel("What is the reason behind the child suffering or being likely to suffer significant harm?")
-                    .noHintText()
                     .mandatory(Grounds::getHasThresholdDocument)
                     .eventLabel("Do you have the threshold document?")
                     .mandatory(Grounds::getThresholdDetails)
@@ -74,7 +74,11 @@ public class EnterGrounds implements CCDConfig<CaseData, State, UserRole> {
                     .eventLabel("State your reason(s) for believing the grounds exist. If you are relying on a report or other documentary evidence, state the date(s) and author(s) and attach a copy in the \"Upload documents\" section.").done()
                     .fieldShowCondition("orders.orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"")
                     .caseEventFieldLabel("How are there grounds for a child assessment order?");
-        fields.complex(CaseData::getGroundsForSecureAccommodationOrder).done()
+        fields.complex(CaseData::getGroundsForSecureAccommodationOrder)
+                    .mandatory(GroundsForSecureAccommodationOrder::getGrounds)
+                    .eventLabel("The grounds are")
+                    .mandatory(GroundsForSecureAccommodationOrder::getReasonAndLength)
+                    .eventLabel("The reason(s) for the application and length of order applied for").done()
                     .fieldShowCondition("secureAccommodationOrderType=\"YES\"")
                     .caseEventFieldLabel("The grounds for the application");
         fields.readonlyNoSummary(CaseData::getSecureAccommodationOrderType)

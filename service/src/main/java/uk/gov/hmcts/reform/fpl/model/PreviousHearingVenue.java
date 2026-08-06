@@ -19,6 +19,10 @@ public class PreviousHearingVenue {
             typeParameterOverride = "HearingVenue"
     )
     private final String newVenue;
-    @CCD(label = "Court address", showCondition = "usePreviousVenue=\"No\" AND newVenue=\"OTHER\"")
+    @CCD(
+            label = "Court address",
+            showCondition = "usePreviousVenue=\"No\" AND newVenue=\"OTHER\"",
+            typeOverride = FieldType.AddressUK
+    )
     private final Address newVenueCustomAddress;
 }

@@ -35,7 +35,7 @@ public class LocalAuthority {
     private String email;
     @CCD(label = "Phone number")
     private String phone;
-    @CCD(label = "Address")
+    @CCD(label = "Address", typeOverride = FieldType.AddressUK)
     private Address address;
     @CCD(
             label = "Legal team manager's name and last name",

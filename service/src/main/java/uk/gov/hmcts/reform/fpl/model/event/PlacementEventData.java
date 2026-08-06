@@ -187,6 +187,7 @@ public class PlacementEventData {
     @CCD(
             label = "Hearing duration (hours)",
             searchable = false,
+            typeOverride = FieldType.Number,
             access = {CaseworkerPubliclawCourtadminCrudAccess.class}
     )
     @Temp

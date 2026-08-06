@@ -65,7 +65,11 @@ public class AbstractJudge {
     @Deprecated
     private final YesNo judgeEnterManually;
 
-    @CCD(label = "Search for Judge", showCondition = "judgeEmailAddress=\"DO_NOT_SHOW\"")
+    @CCD(
+            label = "Search for Judge",
+            showCondition = "judgeEmailAddress=\"DO_NOT_SHOW\"",
+            typeOverride = FieldType.JudicialUser
+    )
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private final JudicialUser judgeJudicialUser;
 

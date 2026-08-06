@@ -1,9 +1,4 @@
 package uk.gov.hmcts.reform.fpl.model;
-import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
-import uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence;
-import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
-import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,10 +10,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.api.ComplexType;
+import uk.gov.hmcts.ccd.sdk.type.AddressUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
+import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 /**
@@ -86,7 +87,7 @@ public class CancelledHearingBooking {
             label = "Venue address",
             showCondition = "type=\"DO NOT SHOW\""
     )
-    private Address venueCustomAddress;
+    private AddressUK venueCustomAddress;
 
     @CCD(
             label = "In person or remote",

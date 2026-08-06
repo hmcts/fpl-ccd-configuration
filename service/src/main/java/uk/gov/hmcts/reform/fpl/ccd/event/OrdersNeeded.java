@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.UserRole;
@@ -111,7 +111,48 @@ public class OrdersNeeded implements CCDConfig<CaseData, State, UserRole> {
                     .mandatory(Orders::getEducationSupervisionOrderPriorConsultationType)
                     .eventLabel(" ").done()
                     .fieldShowCondition("representativeType = \"LOCAL_AUTHORITY\" OR representativeType = \"\"");
-        fields.complex(CaseData::getOrdersSolicitor).done()
+        fields.complex(CaseData::getOrdersSolicitor)
+                    .mandatory(Orders::getOrderType)
+                    .eventLabel("Which orders are you asking for?")
+                    .optional(Orders::getEmergencyProtectionOrderLabel)
+                    .mandatory(Orders::getEpoType)
+                    .eventLabel("What type of EPO are you requesting?")
+                    .mandatory(Orders::getAddress)
+                    .eventLabel("Address")
+                    .complex(Orders::getAddress)
+                    .mandatory(Address::getAddressLine1).done()
+                    .complex(Orders::getAddress)
+                    .optional(Address::getAddressLine2).done()
+                    .complex(Orders::getAddress)
+                    .optional(Address::getAddressLine3).done()
+                    .complex(Orders::getAddress)
+                    .mandatory(Address::getPostTown).done()
+                    .complex(Orders::getAddress)
+                    .mandatory(Address::getCounty).done()
+                    .complex(Orders::getAddress)
+                    .mandatory(Address::getPostcode).done()
+                    .complex(Orders::getAddress)
+                    .mandatory(Address::getCountry).done()
+                    .optional(Orders::getEmergencyProtectionOrders)
+                    .eventHint("Select all that apply")
+                    .mandatory(Orders::getEmergencyProtectionOrderDetails)
+                    .eventLabel("Give details")
+                    .optional(Orders::getEmergencyProtectionOrderDirections)
+                    .eventHint("Select all that apply")
+                    .mandatory(Orders::getExcluded)
+                    .eventLabel("Who is excluded?")
+                    .mandatory(Orders::getEmergencyProtectionOrderDirectionDetails)
+                    .eventLabel("Give details")
+                    .optional(Orders::getOtherOrderLabel)
+                    .eventLabel("## Variation of supervision order or discharge of care order")
+                    .mandatory(Orders::getOtherOrder)
+                    .eventLabel("Which order do you need?")
+                    .mandatory(Orders::getDirections)
+                    .eventLabel("Do you need any other directions?")
+                    .mandatory(Orders::getDirectionDetails)
+                    .eventLabel("Please provide more details")
+                    .mandatory(Orders::getCourt)
+                    .eventLabel("Which court are you issuing for?").done()
                     .fieldShowCondition("representativeType = \"CHILD_SOLICITOR\" OR representativeType = \"RESPONDENT_SOLICITOR\"");
     }
 }

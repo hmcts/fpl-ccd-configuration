@@ -88,7 +88,7 @@ public class HearingBooking implements TranslatableItem {
     private final String venue;
     @CCD(label = "Hearing address", searchable = false)
     private final String customPreviousVenue;
-    @CCD(label = "Court address", searchable = false)
+    @CCD(label = "Court address", searchable = false, typeOverride = FieldType.AddressUK)
     private final Address venueCustomAddress;
     @CCD(label = "In person or remote", showCondition = "attendance != \"*\"", searchable = false)
     private final HearingPresence presence;
@@ -355,8 +355,6 @@ public class HearingBooking implements TranslatableItem {
     }
 
   // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
-  @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"")
-  private uk.gov.hmcts.reform.fpl.enums.YesNo needTranslation;
   @CCD(
           label = "Sent for translation",
           showCondition = "needTranslation=\"YES\" AND translatedNoticeOfHearing!=\"*\"",

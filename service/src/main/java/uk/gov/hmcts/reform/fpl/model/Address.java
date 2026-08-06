@@ -22,14 +22,21 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Address {
+    @JsonProperty("AddressLine1")
     @NotBlank(message = "Enter a valid address for the contact", groups = { Default.class, EPOAddressGroup.class })
     private final String addressLine1;
+    @JsonProperty("AddressLine2")
     private final String addressLine2;
+    @JsonProperty("AddressLine3")
     private final String addressLine3;
+    @JsonProperty("PostTown")
     private final String postTown;
+    @JsonProperty("County")
     private final String county;
+    @JsonProperty("PostCode")
     @NotBlank(message = "Enter a postcode for the contact", groups = { Default.class, EPOAddressGroup.class })
     private final String postcode;
+    @JsonProperty("Country")
     private final String country;
 
     @JsonCreator

@@ -31,7 +31,11 @@ public class RespondentSolicitor {
     private String email;
     @CCD(label = "Organisation")
     private Organisation organisation;
-    @CCD(label = "Managing office", showCondition = "organisation.OrganisationName!=\"\"")
+    @CCD(
+            label = "Managing office",
+            showCondition = "organisation.OrganisationName!=\"\"",
+            typeOverride = FieldType.AddressUK
+    )
     private Address regionalOfficeAddress;
     @CCD(label = "Organisation (unregistered)", showCondition = "unregisteredOrganisation.name!=\"\"")
     private UnregisteredOrganisation unregisteredOrganisation;

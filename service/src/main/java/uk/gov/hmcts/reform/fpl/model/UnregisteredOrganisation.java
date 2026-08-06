@@ -12,7 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 public class UnregisteredOrganisation {
     @CCD(label = "Organisation name")
     private String name;
-    @CCD(label = "Organisation address")
+    @CCD(label = "Organisation address", typeOverride = FieldType.AddressUK)
     private Address address;
 
   // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====

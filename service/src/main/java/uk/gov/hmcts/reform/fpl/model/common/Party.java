@@ -14,6 +14,7 @@ import java.time.LocalDate;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @AllArgsConstructor
@@ -32,7 +33,11 @@ public class Party implements Recipient {
     @CCD(label = "Date of birth", hint = "For example, 31 3 1980")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     protected final LocalDate dateOfBirth;
-    @CCD(label = "Current address", showCondition = "addressKnow=\"Yes\" OR addressKnow=\"LIVE_IN_REFUGE\"")
+    @CCD(
+            label = "Current address",
+            showCondition = "addressKnow=\"Yes\" OR addressKnow=\"LIVE_IN_REFUGE\"",
+            typeOverride = FieldType.AddressUK
+    )
     protected final Address address;
 
 

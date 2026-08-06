@@ -203,21 +203,6 @@ public final class ChildParty extends Party {
     @CCD(label = "Reason for extending completion date")
     private final CaseExtensionReasonList extensionReason;
 
-    // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
-    @CCD(
-            label = "## This address is automatically made confidential",
-            showCondition = "livingSituation=\"Living in a refuge\"",
-            typeOverride = FieldType.Label
-    )
-    private String addressAutoConfidentialLabel;
-    @CCD(
-            label = "## Ability to take part in proceedings",
-            showCondition = "proceedingsLabel=\"DO_NOT_SHOW\"",
-            typeOverride = FieldType.Label
-    )
-    private String proceedingsLabel;
-    // ==== end synthesised definition-only fields ====
-
     @Override
     @NotBlank(message = "Tell us the names of all children in the case")
     public String getFirstName() {
@@ -338,4 +323,21 @@ public final class ChildParty extends Party {
         this.completionDate = completionDate;
         this.extensionReason = extensionReason;
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(
+          label = "## This address is automatically made confidential",
+          showCondition = "livingSituation=\"Living in a refuge\"",
+          typeOverride = FieldType.Label
+  )
+  private String addressAutoConfidentialLabel;
+  @CCD(label = "Why is this case being extended?")
+  private CaseExtensionReasonList caseExtensionReasonList;
+  @CCD(
+          label = "## Ability to take part in proceedings",
+          showCondition = "proceedingsLabel=\"DO_NOT_SHOW\"",
+          typeOverride = FieldType.Label
+  )
+  private String proceedingsLabel;
+  // ==== end synthesised definition-only fields ====
 }

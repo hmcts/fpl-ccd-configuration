@@ -404,6 +404,7 @@ import uk.gov.hmcts.reform.fpl.model.LeicesterDFJCourts;
 import uk.gov.hmcts.reform.fpl.model.LincolnDFJCourts;
 import uk.gov.hmcts.reform.fpl.model.NorthamptonDFJCourts;
 import uk.gov.hmcts.reform.fpl.model.NottinghamDFJCourts;
+import uk.gov.hmcts.reform.fpl.model.StokeOnTrentDFJCourts;
 import uk.gov.hmcts.reform.fpl.model.WolverhamptonDFJCourts;
 import uk.gov.hmcts.reform.fpl.model.WorcesterDFJCourts;
 import uk.gov.hmcts.reform.fpl.model.ClevelandAndSouthDurhamDFJCourts;
@@ -1295,7 +1296,7 @@ public class CaseData extends CaseDataParent {
             searchable = false,
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
     )
-    private final Selector newHearingSelector;
+    private final HearingSelector newHearingSelector;
     @CCD(
             label = "Who's the appointed guardian?",
             searchable = false,
@@ -1502,6 +1503,7 @@ public class CaseData extends CaseDataParent {
     @CCD(
             label = "Address",
             searchable = false,
+            typeOverride = FieldType.AddressUK,
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class, CaseworkerPubliclawMagistrateRAccess.class}
     )
     @Valid
@@ -1751,30 +1753,6 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     @Builder.Default
     private final HearingDocuments hearingDocuments = HearingDocuments.builder().build();
-
-    public List<Element<HearingCourtBundle>> getCourtBundleListV2() {
-        return hearingDocuments.getCourtBundleListV2();
-    }
-
-    public List<Element<HearingCourtBundle>> getCourtBundleListCTSC() {
-        return hearingDocuments.getCourtBundleListCTSC();
-    }
-
-    public List<Element<HearingCourtBundle>> getCourtBundleListLA() {
-        return hearingDocuments.getCourtBundleListLA();
-    }
-
-    public Placement getPlacement() {
-        return placementEventData.getPlacement();
-    }
-
-    public List<Element<Placement>> getPlacements() {
-        return placementEventData.getPlacements();
-    }
-
-    public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
-        return removalToolData.getHiddenApplicationsBundle();
-    }
 
     public DynamicList buildDynamicChildrenList(UUID selected) {
         return buildDynamicChildrenList(getAllChildren(), selected);
@@ -2174,6 +2152,7 @@ public class CaseData extends CaseDataParent {
     @CCD(
             label = "Court address",
             searchable = false,
+            typeOverride = FieldType.AddressUK,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCruAccess.class}
     )
     private final Address hearingVenueCustom;
@@ -2379,7 +2358,7 @@ public class CaseData extends CaseDataParent {
             typeParameterOverride = "ProceedingType",
             access = {CaseworkerPubliclawCourtadminCruAccess.class}
     )
-    private final List<ProceedingType> proceedingType;
+    private final List<ProceedingType2> proceedingType;
     @CCD(label = "Change status", searchable = false, access = {CaseworkerPubliclawSuperuserCruAccess.class})
     private final State closedStateRadioList;
 
@@ -3131,6 +3110,7 @@ public class CaseData extends CaseDataParent {
   @CCD(
           label = "Search for Judge",
           searchable = false,
+          typeOverride = FieldType.JudicialUser,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
   )
   private String judicialUserHearingJudge;
@@ -3267,6 +3247,7 @@ public class CaseData extends CaseDataParent {
   @CCD(
           label = "Search for Judge",
           searchable = false,
+          typeOverride = FieldType.JudicialUser,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
   )
   private String hearingJudicialUser;
@@ -3323,7 +3304,12 @@ public class CaseData extends CaseDataParent {
           access = {CaseworkerPubliclawSolicitorCrudAccess.class}
   )
   private String shareCaseWarningMessageNotShared;
-  @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCuPlus2RolesKlflrfAccess.class})
+  @CCD(
+          label = " ",
+          searchable = false,
+          typeOverride = FieldType.CaseHistoryViewer,
+          access = {CaseworkerPubliclawCourtadminCuPlus2RolesKlflrfAccess.class}
+  )
   private String caseHistory;
   @CCD(
           label = "EPO Reason show or hide",
@@ -4084,7 +4070,7 @@ public class CaseData extends CaseDataParent {
           typeParameterOverride = "Stoke-on-TrentDFJCourts",
           access = {CaseworkerPubliclawSolicitorCuCaseworkerPubliclawSystemupdateCudAccess.class}
   )
-  private String stoke_on_TrentDFJCourt;
+  private StokeOnTrentDFJCourts stoke_on_TrentDFJCourt;
   @CCD(
           label = "wolverhamptonDFJCourt :",
           typeOverride = FieldType.FixedList,
@@ -5651,204 +5637,238 @@ public class CaseData extends CaseDataParent {
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CaseworkerPubliclawCafcassCrudAccess.class}
   )
   private String qmCaseQueriesCollectionCafcass;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, LASOLICITORCrudCaseworkerPubliclawSystemupdateCuAccess.class}
   )
   private String qmCaseQueriesCollectionLASol;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, EPSMANAGINGCrudAccess.class}
   )
   private String qmCaseQueriesCollectionEPSManaging;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, LAMANAGINGCrudAccess.class}
   )
   private String qmCaseQueriesCollectionLAManaging;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, LABARRISTERCrudAccess.class}
   )
   private String qmCaseQueriesCollectionLABarrister;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, LASHAREDCrudAccess.class}
   )
   private String qmCaseQueriesCollectionLAShared;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, BARRISTERCrudAccess.class}
   )
   private String qmCaseQueriesCollectionBarrister;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORCrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitor;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORACrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorA;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORBCrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorB;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORCCrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorC;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORDCrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorD;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORECrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorE;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORFCrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorF;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORGCrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorG;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORHCrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorH;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORICrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorI;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, SOLICITORJCrudAccess.class}
   )
   private String qmCaseQueriesCollectionSolicitorJ;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORACrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolA;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORBCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolB;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORCCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolC;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORDCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolD;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORECrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolE;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORFCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolF;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORGCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolG;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORHCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolH;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORICrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolI;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORJCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolJ;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORKCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolK;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORLCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolL;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORMCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolM;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITORNCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolN;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CHILDSOLICITOROCrudAccess.class}
   )
   private String qmCaseQueriesCollectionChildSolO;
   @CCD(
           label = "Queries",
           searchable = false,
+          typeOverride = FieldType.CaseQueriesCollection,
           access = {CaseworkerPubliclawCourtadminCrudPlus2RolesDwddutAccess.class, CAFCASSSOLICITORCrudAccess.class}
   )
   private String qmCaseQueriesCollectionCafcassSol;
@@ -6008,5 +6028,32 @@ public class CaseData extends CaseDataParent {
           access = {CaseworkerPubliclawSystemupdateCruAccess.class}
   )
   private WorkAllocationTaskType lastCreatedWATask;
+  // ==== end synthesised definition-only fields ====
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @JsonIgnore
+  public Object getHiddenApplicationsBundle() {
+    return getRemovalToolData().getHiddenApplicationsBundle();
+  }
+  @JsonIgnore
+  public Object getCourtBundleListV2() {
+    return getHearingDocuments().getCourtBundleListV2();
+  }
+  @JsonIgnore
+  public Object getCourtBundleListCTSC() {
+    return getHearingDocuments().getCourtBundleListCTSC();
+  }
+  @JsonIgnore
+  public Object getCourtBundleListLA() {
+    return getHearingDocuments().getCourtBundleListLA();
+  }
+  @JsonIgnore
+  public Object getPlacement() {
+    return getPlacementEventData().getPlacement();
+  }
+  @JsonIgnore
+  public Object getPlacements() {
+    return getPlacementEventData().getPlacements();
+  }
   // ==== end synthesised definition-only fields ====
 }

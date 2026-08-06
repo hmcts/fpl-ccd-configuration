@@ -2,15 +2,15 @@
   "CaseEventID" : "placement",
   "CaseFieldID" : "placement",
   "ListElementCode" : "placementChildId",
+  "FieldShowCondition" : "placementChildName = \"DO NOT SHOW\"",
   "ElementLabel" : "Child id",
-  "SecurityClassification" : "Public",
-  "RetainHiddenValue" : "Yes"
+  "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "placement",
   "CaseFieldID" : "placement",
   "ListElementCode" : "placementChildName",
-  "SecurityClassification" : "Public",
-  "RetainHiddenValue" : "Yes"
+  "FieldShowCondition" : "placementChildId = \"DO NOT SHOW\"",
+  "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "placement",
   "CaseFieldID" : "placement",
@@ -45,6 +45,7 @@
   "CaseEventID" : "placement",
   "CaseFieldID" : "placement",
   "ListElementCode" : "placementNotice",
+  "FieldShowCondition" : "placementChildId = \"DO NOT SHOW\"",
   "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "placement",
@@ -55,6 +56,7 @@
   "CaseEventID" : "placement",
   "CaseFieldID" : "placement",
   "ListElementCode" : "placementConfidentialDocuments.otherDocTypeName",
+  "FieldShowCondition" : "placement.placementConfidentialDocuments.type=\"OTHER_CONFIDENTIAL_DOCUMENTS\"",
   "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "placement",
@@ -75,6 +77,7 @@
   "CaseEventID" : "placement",
   "CaseFieldID" : "placement",
   "ListElementCode" : "placementSupportingDocuments.otherDocTypeName",
+  "FieldShowCondition" : "placement.placementSupportingDocuments.type=\"OTHER_DOCUMENT_TYPE\"",
   "SecurityClassification" : "Public"
 }, {
   "CaseEventID" : "placement",

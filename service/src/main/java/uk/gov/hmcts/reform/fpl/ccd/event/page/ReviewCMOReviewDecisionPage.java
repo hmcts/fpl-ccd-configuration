@@ -4,6 +4,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.FieldCollection;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.UserRole;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 
@@ -52,6 +53,10 @@ public final class ReviewCMOReviewDecisionPage {
         fields.optional(CaseData::getReviewCMODecision)
                     .fieldShowCondition("draftCMOExists=\"Y\"")
                     .publish(false);
+        fields.complexScope(CaseData::getReviewCMODecision)
+                    .mandatory(ReviewDecision::getDecision)
+                    .mandatory(ReviewDecision::getChangesRequestedByJudge)
+                    .mandatory(ReviewDecision::getJudgeAmendedDocument).done();
         fields.readonlyNoSummary(CaseData::getDraftBlankOrdersTitle)
                     .fieldShowCondition("draftBlankOrdersCount=\"1*\"")
                     .publish(false);

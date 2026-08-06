@@ -29,12 +29,6 @@ public final class AddGatekeepingOrderAllocationDecisionPage {
         fields.readonly(CaseData::getAllocationProposal)
                     .fieldShowCondition("allocationDecision=\"DO_NOT_SHOW\"");
         fields.complex(CaseData::getAllocationDecision)
-                    .readonly(Allocation::getAllocationDecisionLabel)
-                    .fieldShowCondition("allocationDecision.allocationProposalPresent=\"Yes\"")
-                    .readonly(Allocation::getAllocationDecisionLabelReason)
-                    .fieldShowCondition("allocationDecision.allocationProposalPresent=\"Yes\"")
-                    .readonly(Allocation::getMissingAllocationDecisionLabel)
-                    .fieldShowCondition("allocationDecision.allocationProposalPresent=\"No\"")
                     .mandatory(Allocation::getJudgeLevelRadio)
                     .fieldShowCondition("allocationDecision.allocationProposalPresent=\"Yes\"")
                     .mandatory(Allocation::getProposalV2)

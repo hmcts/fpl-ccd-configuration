@@ -24,7 +24,7 @@ plugins {
   id 'idea'
   id 'info.solidsoft.pitest' version '1.19.0-rc.2'
   id 'com.github.hmcts.rse-cft-lib' version '0.19.2018'
-  id 'hmcts.ccd.sdk' version 'json-definition-converter-96.1-ff547414'
+  id 'hmcts.ccd.sdk' version 'json-definition-converter-111.1-d92837c5'
 }
 
 apply plugin: 'org.springframework.boot'

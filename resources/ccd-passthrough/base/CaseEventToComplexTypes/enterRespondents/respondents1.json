@@ -1,0 +1,8 @@
+[ {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "EnterRespondents",
+  "CaseEventID" : "enterRespondents",
+  "CaseFieldID" : "respondents1",
+  "ListElementCode" : "legalRepresentationLabel",
+  "DisplayContext" : "READONLY"
+} ]

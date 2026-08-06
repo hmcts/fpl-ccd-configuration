@@ -2,11 +2,13 @@
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.detailsHidden",
+  "FieldShowCondition" : "party=\"DO_NOT_SHOW\"",
   "Comment" : "Deprecated"
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.detailsHiddenReason",
+  "FieldShowCondition" : "party=\"DO_NOT_SHOW\"",
   "Comment" : "Deprecated"
 }, {
   "CaseEventID" : "enterChildren",
@@ -17,20 +19,33 @@
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.socialWorkerTelephoneNumber.contactDirection",
+  "FieldShowCondition" : "party=\"DO_NOT_SHOW\"",
   "Comment" : "Deprecated"
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.proceedingsLabel",
+  "FieldShowCondition" : "party=\"DO_NOT_SHOW\"",
   "Comment" : "Deprecated"
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.litigationIssues",
+  "FieldShowCondition" : "party=\"DO_NOT_SHOW\"",
   "Comment" : "Deprecated"
 }, {
   "CaseEventID" : "enterChildren",
   "CaseFieldID" : "children1",
   "ListElementCode" : "party.litigationIssuesDetails",
+  "FieldShowCondition" : "party=\"DO_NOT_SHOW\"",
   "Comment" : "Deprecated"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "ID" : "EnterChildren",
+  "CaseEventID" : "enterChildren",
+  "CaseFieldID" : "children1",
+  "ListElementCode" : "representative",
+  "FieldDisplayOrder" : 36,
+  "DisplayContext" : "READONLY",
+  "FieldShowCondition" : "party=\"DO_NOT_SHOW\""
 } ]

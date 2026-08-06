@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.UserRole;
 import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 
@@ -51,5 +52,11 @@ public class AllocatedJudge implements CCDConfig<CaseData, State, UserRole> {
         fields.complex(CaseData::getAllocateJudgeEventData)
                     .optional(AllocateJudgeEventData::getManualJudgeDetails)
                     .fieldShowCondition("judgeType = \"LEGAL_ADVISOR\"").done();
+        fields.complex(CaseData::getAllocateJudgeEventData)
+                    .complexScope(AllocateJudgeEventData::getManualJudgeDetails)
+                    .mandatory(Judge::getJudgeTitle)
+                    .mandatory(Judge::getJudgeLastName)
+                    .mandatory(Judge::getJudgeFullName)
+                    .mandatory(Judge::getJudgeEmailAddress).done().done();
     }
 }

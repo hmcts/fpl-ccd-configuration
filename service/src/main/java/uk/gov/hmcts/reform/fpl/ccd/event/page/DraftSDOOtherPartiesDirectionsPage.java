@@ -34,23 +34,17 @@ public final class DraftSDOOtherPartiesDirectionsPage {
                     .eventLabel(" ")
                     .readonly(Direction::getDirectionType)
                     .eventLabel(" ")
-                    .noHintText()
                     .mandatory(Direction::getDirectionNeeded)
                     .fieldShowCondition("otherPartiesDirections.directionRemovable=\"Yes\"")
                     .eventLabel(" ")
                     .optional(Direction::getDirectionText)
                     .fieldShowCondition("otherPartiesDirections.readOnly!=\"Yes\" AND otherPartiesDirections.directionNeeded!=\"No\"")
-                    .noHintText()
-                    .optional(Direction::getDateToBeCompletedBy)
-                    .noHintText().done();
+                    .optional(Direction::getDateToBeCompletedBy).done();
         fields.complex(CaseData::getOtherPartiesDirectionsCustom, false).done();
         fields.complex(CaseData::getOtherPartiesDirectionsCustom, Direction.class)
                     .mandatory(Direction::getDirectionType)
                     .eventLabel(" ")
-                    .noHintText()
                     .optional(Direction::getDirectionText)
-                    .noHintText()
-                    .optional(Direction::getDateToBeCompletedBy)
-                    .noHintText().done();
+                    .optional(Direction::getDateToBeCompletedBy).done();
     }
 }
