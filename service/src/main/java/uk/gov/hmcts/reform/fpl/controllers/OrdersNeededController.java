@@ -53,6 +53,15 @@ public class OrdersNeededController extends CallbackController {
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         final CaseData caseData = getCaseData(callbackrequest);
+
+        CaseDetails caseDetailsIfFleetWood = callbackrequest.getCaseDetails();
+        if (isFleetwoodCase(caseData)) {
+            return respond(caseDetailsIfFleetWood, List.of(
+                "Fleetwood is currently being removed and Blackpool should be selected as the issuing court"
+            ));
+        }
+
+
         final RepresentativeType representativeType = Objects.nonNull(caseData.getRepresentativeType())
             ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
         final String ordersFieldName = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY)
@@ -78,6 +87,16 @@ public class OrdersNeededController extends CallbackController {
         @RequestBody CallbackRequest callbackrequest) {
         final String showEpoFieldId = "EPO_REASONING_SHOW";
         final CaseData caseData = getCaseData(callbackrequest);
+        CaseDetails caseDetailsIfFleetWood = callbackrequest.getCaseDetails();
+
+
+        if (isFleetwoodCase(caseData)) {
+            return respond(caseDetailsIfFleetWood, List.of(
+                "Fleetwood is currently being removed and Blackpool should be selected as the issuing court"
+            ));
+        }
+
+
         final RepresentativeType representativeType = Objects.nonNull(caseData.getRepresentativeType())
             ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
         final String ordersFieldName = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY)
@@ -178,6 +197,24 @@ public class OrdersNeededController extends CallbackController {
         }
 
         return respond(caseDetails);
+    }
+
+
+    private boolean isFleetwoodCase(CaseData caseData) {
+        if (caseData == null) {
+            return false;
+        }
+
+        boolean isFleetwoodLocation = caseData.getCaseManagementLocation() != null
+            && "401452".equalsIgnoreCase(caseData.getCaseManagementLocation().getBaseLocation());
+
+        boolean isFleetwoodCourtCode = caseData.getCourt() != null
+            && "438".equalsIgnoreCase(caseData.getCourt().getCode());
+
+        boolean isFleetwoodOrdersCourt = caseData.getOrders() != null
+            && "438".equalsIgnoreCase(caseData.getOrders().getCourt());
+
+        return isFleetwoodLocation || isFleetwoodCourtCode || isFleetwoodOrdersCourt;
     }
 
     @SuppressWarnings("unchecked")
