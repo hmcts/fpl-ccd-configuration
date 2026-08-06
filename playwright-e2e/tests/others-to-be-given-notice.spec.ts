@@ -1,7 +1,7 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
-import caseData from '../caseData/caseSentToGatekeeper.json' assert { type: "json" };
-import { newSwanseaLocalAuthorityUserOne, CTSCUser} from "../settings/user-credentials";
+import caseData from '../caseData/caseSentToGatekeeper.json' with { type: "json" };
+import { newSwanseaLocalAuthorityUserOne, CTSCUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
 test.describe('Others to be given notice', () => {
@@ -24,8 +24,14 @@ test.describe('Others to be given notice', () => {
 
             await othersToBeGivenNotice.gotoNextStep('Others to be given notice');
             await othersToBeGivenNotice.othersToBeGivenNotice();
+
             await othersToBeGivenNotice.tabNavigation('People in the case');
-            await expect(page.getByText('Person 1',{exact: true})).toBeVisible();
-            await expect(page.getByText('John Doe')).toBeVisible();
+
+            await page.getByText('Others to be given notice 1').click();
+            await page.getByText('Others to be given notice 2').click();
+
+            await expect(page.getByText('Others to be given notice 1')).toBeVisible();
+            await expect(page.getByText('Others to be given notice 2')).toBeVisible();
+
         })
 });
