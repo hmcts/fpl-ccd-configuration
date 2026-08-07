@@ -264,9 +264,6 @@ public class ReviewAdditionalApplicationService {
                 .c2DocumentRefused(rejectedC2Bundle)
                 .refusalOrderTitle(refusalOrderService.getRefusalOrderTitle(rejectedC2Bundle.getUploadedDateTime()))
                 .build());
-        } else {
-            // TBC
-            // eventsToPublish.addAll(draftOrdersEventNotificationBuilder.buildEventsToPublish(caseData));
         }
 
         return eventsToPublish;
