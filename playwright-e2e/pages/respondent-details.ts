@@ -109,24 +109,8 @@ export class RespondentDetails extends BasePage {
       await this.difficultyCapacityReason.fill('test');
       await this.legalRepresentation.getByRole('radio', { name: 'No' }).click();
 
-      await Promise.all([
-          this.page.waitForResponse(response =>
-              response.url().includes('validate') &&
-              response.request().method() === 'POST' &&
-              response.status() === 200
-          ),
-           this.clickContinue()
-      ]);
-
-      /*await Promise.all([
-          this.page.waitForResponse(response =>
-              response.url().includes('/get') &&
-              response.request().method() === 'GET' &&
-              response.status() === 200
-          ),
-          this.checkYourAnsAndSubmit()
-      ]);*/
-
+      await this.page.waitForTimeout(300); // this needs to be removed once EXUI resolves issue
+      await this.clickContinue();
       await this.checkYourAnsAndSubmit();
       await expect(this.page.getByText('has been updated with event:')).toBeVisible();
   }
