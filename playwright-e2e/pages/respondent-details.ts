@@ -118,14 +118,17 @@ export class RespondentDetails extends BasePage {
            this.clickContinue()
       ]);
 
-      await Promise.all([
+      /*await Promise.all([
           this.page.waitForResponse(response =>
               response.url().includes('/get') &&
               response.request().method() === 'GET' &&
               response.status() === 200
           ),
           this.checkYourAnsAndSubmit()
-      ]);
+      ]);*/
+
+      await this.checkYourAnsAndSubmit();
+      await expect(this.page.getByText('has been updated with event:')).toBeVisible();
   }
 
   async respondentDetailsPrivateSolicitor() {
