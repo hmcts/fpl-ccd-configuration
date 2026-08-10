@@ -1,15 +1,22 @@
 package uk.gov.hmcts.reform.fpl.config.utils;
 
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 
+@ComplexType(name = "EmergencyProtectionOrderType", generate = true)
 public enum EmergencyProtectionOrdersType {
 
+    @CCD(label = "Information on the whereabouts of the child")
     CHILD_WHEREABOUTS("Information on the whereabouts of the child",
         "Gwybodaeth am leoliad y plentyn"),
+    @CCD(label = "Authorisation for entry of premises")
     ENTRY_PREMISES("Authorisation for entry of premises",
         "Awdurdod i gael mynediad i fangre"),
+    @CCD(label = "Authorisation to search for another child on the premises")
     SEARCH_FOR_CHILD("Authorisation to search for another child on the premises",
         "Awdurdod i chwilio am blentyn arall ar y safle"),
+    @CCD(label = "Other order under section 48 of the Children Act 1989")
     OTHER("Other order under section 48 of the Children Act 1989",
         "Gorchymyn arall o dan adran 48 o Ddeddf Plant 1989");
 

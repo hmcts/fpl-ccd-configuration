@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.reform.fpl.model.AllocationProposalList;
 
 @Value
 @Builder(toBuilder = true)
@@ -41,7 +42,8 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     @CCD(
             label = "Allocation decision",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "AllocationProposalList"
+            typeParameterOverride = "AllocationProposalList",
+            typeParameterClass = AllocationProposalList.class
     )
     String allocation;
     @CCD(label = "Date added")

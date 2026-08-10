@@ -15,6 +15,7 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 
 /**
@@ -32,7 +33,7 @@ public class UploadedCaseManagementOrder {
             label = "Type",
             showCondition = "status=\"DO_NOT_SHOW\""
     )
-    private DraftOrderType type;
+    private HearingOrderType type;
 
     @CCD(
             label = "Title"

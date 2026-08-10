@@ -1,7 +1,13 @@
 package uk.gov.hmcts.reform.fpl.enums;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 public enum Cardinality {
-    ZERO, ONE, MANY;
+    @CCD(label = "Zero")
+    ZERO,
+    @CCD(label = "One")
+    ONE,
+    @CCD(label = "Many")
+    MANY;
 
     public static Cardinality from(int amount) {
 

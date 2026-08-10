@@ -4,7 +4,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.FieldCollection;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ManualLegalAdvisorDetail;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.UserRole;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
@@ -44,10 +44,10 @@ public final class ListGatekeepingHearingListGatekeepingHearingJudgeInformationP
                     .fieldShowCondition("(allocatedJudgeLabel=\"\" OR useAllocatedJudge=\"No\") AND hearingJudgeType=\"LEGAL_ADVISOR\"")
                     .publish(false);
         fields.complex(CaseData::getHearingManualJudgeDetails)
-                    .mandatory(ManualLegalAdvisorDetail::getJudgeTitle)
-                    .mandatory(ManualLegalAdvisorDetail::getJudgeLastName)
-                    .mandatory(ManualLegalAdvisorDetail::getJudgeFullName)
-                    .mandatory(ManualLegalAdvisorDetail::getJudgeEmailAddress).done()
+                    .mandatory(Judge::getJudgeTitle)
+                    .mandatory(Judge::getJudgeLastName)
+                    .mandatory(Judge::getJudgeFullName)
+                    .mandatory(Judge::getJudgeEmailAddress).done()
                     .fieldShowCondition("(allocatedJudgeLabel=\"\" OR useAllocatedJudge=\"No\") AND hearingJudgeType=\"LEGAL_ADVISOR\"");
         fields.optional(CaseData::getLegalAdvisorName)
                     .publish(false);

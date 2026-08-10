@@ -5,12 +5,17 @@ import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
 import java.util.stream.Stream;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 
+@ComplexType(name = "ChildGenderList", generate = true)
 @RequiredArgsConstructor
 public enum ChildGender {
 
+    @CCD(label = "Male")
     @JsonProperty("Boy")
     BOY("Male", "Gwryw", "he", "himself"),
+    @CCD(label = "Female")
     @JsonProperty("Girl")
     GIRL("Female", "Benyw", "she", "herself"),
     @JsonProperty("They identify in another way")

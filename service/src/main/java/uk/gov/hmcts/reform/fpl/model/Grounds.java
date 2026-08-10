@@ -20,7 +20,8 @@ public class Grounds {
             label = "What is the reason behind the child suffering or being likely to suffer significant harm?",
             hint = "Select all that apply",
             typeOverride = FieldType.MultiSelectList,
-            typeParameterOverride = "GroundsList"
+            typeParameterOverride = "GroundsList",
+            typeParameterClass = GroundsList.class
     )
     @NotNull(message = "Select at least one option for how this case meets the threshold criteria")
     @Size(min = 1, message = "Select at least one option for how this case meets the threshold criteria")
@@ -29,7 +30,8 @@ public class Grounds {
     @CCD(
             label = "Do you have the threshold document?",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "ThresholdDocumentList"
+            typeParameterOverride = "ThresholdDocumentList",
+            typeParameterClass = ThresholdDocumentList.class
     )
     private final String hasThresholdDocument;
     @CCD(

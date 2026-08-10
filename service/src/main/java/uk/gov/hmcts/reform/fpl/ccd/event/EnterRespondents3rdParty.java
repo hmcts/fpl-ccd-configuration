@@ -161,6 +161,7 @@ public class EnterRespondents3rdParty implements CCDConfig<CaseData, State, User
                     .optional(RespondentParty::getLitigationIssues).done()
                     .complex(Respondent::getParty)
                     .optional(RespondentParty::getLitigationIssuesDetails).done()
+                    .readonly(Respondent::getLegalRepresentationLabel)
                     .mandatory(Respondent::getLegalRepresentation)
                     .eventLabel("Do they have legal representation?")
                     .complex(Respondent::getSolicitor)

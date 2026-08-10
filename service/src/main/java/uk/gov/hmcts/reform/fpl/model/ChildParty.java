@@ -42,7 +42,8 @@ public final class ChildParty extends Party {
     @CCD(
             label = "Child's current living situation",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "LivingSituationList"
+            typeParameterOverride = "LivingSituationList",
+            typeParameterClass = LivingSituationList.class
     )
     private final String livingSituation;
     @CCD(
@@ -121,7 +122,8 @@ public final class ChildParty extends Party {
     @CCD(
             label = "Does the father have parental responsibility?",
             typeOverride = FieldType.FixedList,
-            typeParameterOverride = "FathersResponsibilityList"
+            typeParameterOverride = "FathersResponsibilityList",
+            typeParameterClass = FathersResponsibilityList.class
     )
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String fathersResponsibility;
@@ -176,7 +178,8 @@ public final class ChildParty extends Party {
             label = "Do you believe this child will have problems with litigation capacity (understanding what's happening in the case)?",
             showCondition = "livingSituation=\"DO_NOT_SHOW\"",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "LitigationCapacityIssues"
+            typeParameterOverride = "LitigationCapacityIssues",
+            typeParameterClass = LitigationCapacityIssues.class
     )
     @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;

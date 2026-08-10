@@ -12,7 +12,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Data
 @Builder(toBuilder = true)
 public class ScannedDocument {
-    @CCD(label = "Document type", typeOverride = FieldType.FixedList, typeParameterOverride = "ScannedDocumentType")
+    @CCD(
+            label = "Document type",
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "ScannedDocumentType",
+            typeParameterClass = ScannedDocumentType.class
+    )
     private final String type;
     @CCD(label = "Document subtype")
     private final String subtype;

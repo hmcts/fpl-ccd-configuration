@@ -31,31 +31,61 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 
+@ComplexType(name = "RespondentNew", generate = true)
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Respondent implements Representable, WithSolicitor, ConfidentialParty<Respondent> {
+    @CCD(label = " ")
     @Valid
     @NotNull(message = "You need to add details to respondents")
     private final RespondentParty party;
+    @CCD(
+            label = "Is this the first respondent?",
+            showCondition = "party=\"DO_NOT_SHOW\"",
+            typeOverride = FieldType.YesOrNo
+    )
     private final String leadRespondentIndicator;
+    @CCD(label = " ", showCondition = "party=\"DO_NOT_SHOW\"", typeOverride = FieldType.YesOrNo)
     @Deprecated(since = "FPLA-2428")
     private String persistRepresentedBy;
+    @CCD(
+            label = "Represented by",
+            showCondition = "persistRepresentedBy=\"Yes\"",
+            typeOverride = FieldType.Collection,
+            typeParameterOverride = "Text"
+    )
     @Builder.Default
     private List<Element<UUID>> representedBy = new ArrayList<>();
 
+    @CCD(label = "Do they have legal representation?", typeOverride = FieldType.YesOrNo)
     private String legalRepresentation;
 
+    @CCD(label = "Representative", showCondition = "legalRepresentation=\"Yes\"")
     private RespondentSolicitor solicitor;
+    @CCD(label = "Counsel")
     private List<Element<LegalCounsellor>> legalCounsellors;
 
     // Utilised for Respondent Local Authorities ONLY
+    @CCD(
+            label = "Is this Local Authority outsourcing their work on this case to a separate organisation?",
+            showCondition = "legalCounsellors = \"DO_NOT_SHOW\"",
+            typeOverride = FieldType.YesOrNo
+    )
     @JsonSerialize(using = YesNoSerializer.class)
     @JsonDeserialize(using = YesNoDeserializer.class)
     private YesNo usingOtherOrg;
 
+    @CCD(
+            label = "Is this actually a Local Authority?",
+            showCondition = "legalCounsellors = \"DO_NOT_SHOW\"",
+            typeOverride = FieldType.YesOrNo
+    )
     @Builder.Default
     @JsonDeserialize(using = YesNoDeserializer.class)
     private YesNo isLocalAuthority = YesNo.NO;
@@ -164,5 +194,14 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
                && (AddressNotKnowReason.DECEASED.getType().equals(party.getAddressNotKnowReason())
                         || AddressNotKnowReason.NO_FIXED_ABODE.getType().equals(party.getAddressNotKnowReason()));
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(
+          label = "## Legal representation",
+          showCondition = "legalRepresentationLabel=\"HIDE_LABEL\"",
+          typeOverride = FieldType.Label
+  )
+  private String legalRepresentationLabel;
+  // ==== end synthesised definition-only fields ====
 }
 

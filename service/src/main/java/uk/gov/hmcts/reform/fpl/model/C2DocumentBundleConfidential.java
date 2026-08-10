@@ -158,7 +158,7 @@ public class C2DocumentBundleConfidential {
             showCondition = "type=\"DO NOT SHOW\"",
             searchable = false
     )
-    private List<ListValue<RespondentNew>> respondents;
+    private List<ListValue<Respondent>> respondents;
 
     @CCD(
             label = " ",

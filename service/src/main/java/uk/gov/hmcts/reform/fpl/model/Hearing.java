@@ -50,7 +50,8 @@ public class Hearing {
     @CCD(
             label = "What type of hearing do you need?",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "HearingTypeFixedList"
+            typeParameterOverride = "HearingTypeFixedList",
+            typeParameterClass = HearingTypeFixedList.class
     )
     @Deprecated(since = "DFPL-2304")
     private final String type;
@@ -73,7 +74,8 @@ public class Hearing {
     @CCD(
             label = "When do you need a hearing?",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "TimeFrameList"
+            typeParameterOverride = "TimeFrameList",
+            typeParameterClass = TimeFrameList.class
     )
     @Deprecated(since = "DFPL-2304")
     private final String timeFrame;

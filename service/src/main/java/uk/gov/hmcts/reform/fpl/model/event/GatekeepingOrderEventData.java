@@ -40,6 +40,18 @@ import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawGatekeeperCaseworke
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCruPlus1RolesOtdddfAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawGatekeeperCrudCaseworkerPubliclawJudiciaryCruAccess;
+import uk.gov.hmcts.reform.fpl.model.DirectionTypesForAllParties;
+import uk.gov.hmcts.reform.fpl.model.DirectionTypesForCourt;
+import uk.gov.hmcts.reform.fpl.model.DirectionTypesForCourtUpdated;
+import uk.gov.hmcts.reform.fpl.model.DirectionTypesForLocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.DirectionTypesForCafcass;
+import uk.gov.hmcts.reform.fpl.model.DirectionTypesForCafcassUpdated;
+import uk.gov.hmcts.reform.fpl.model.DirectionTypesForRespondents;
+import uk.gov.hmcts.reform.fpl.model.DirectionTypesForOthers;
+import uk.gov.hmcts.reform.fpl.model.UrgentDirectionTypesForAllParties;
+import uk.gov.hmcts.reform.fpl.model.UrgentDirectionTypesForLocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.UrgentDirectionTypesForCafcass;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingListOrSendToAdmin;
 
 @Data
 @Builder(toBuilder = true)
@@ -90,6 +102,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DirectionTypesForAllParties",
+            typeParameterClass = DirectionTypesForAllParties.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> directionsForAllParties;
@@ -98,6 +111,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DirectionTypesForCourt",
+            typeParameterClass = DirectionTypesForCourt.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> directionsForCourt;
@@ -106,6 +120,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DirectionTypesForCourtUpdated",
+            typeParameterClass = DirectionTypesForCourtUpdated.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> directionsForCourtUpdated;
@@ -114,6 +129,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DirectionTypesForLocalAuthority",
+            typeParameterClass = DirectionTypesForLocalAuthority.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> directionsForLocalAuthority;
@@ -122,6 +138,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DirectionTypesForCafcass",
+            typeParameterClass = DirectionTypesForCafcass.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> directionsForCafcass;
@@ -130,6 +147,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DirectionTypesForCafcassUpdated",
+            typeParameterClass = DirectionTypesForCafcassUpdated.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> directionsForCafcassUpdated;
@@ -138,6 +156,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DirectionTypesForRespondents",
+            typeParameterClass = DirectionTypesForRespondents.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> directionsForRespondents;
@@ -146,6 +165,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DirectionTypesForOthers",
+            typeParameterClass = DirectionTypesForOthers.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> directionsForOthers;
@@ -155,6 +175,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "UrgentDirectionTypesForAllParties",
+            typeParameterClass = UrgentDirectionTypesForAllParties.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> urgentDirectionsForAllParties;
@@ -163,6 +184,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "UrgentDirectionTypesForLocalAuthority",
+            typeParameterClass = UrgentDirectionTypesForLocalAuthority.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> urgentDirectionsForLocalAuthority;
@@ -171,6 +193,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "UrgentDirectionTypesForCafcass",
+            typeParameterClass = UrgentDirectionTypesForCafcass.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     List<DirectionType> urgentDirectionsForCafcass;
@@ -203,6 +226,7 @@ public class GatekeepingOrderEventData {
             searchable = false,
             typeOverride = FieldType.FixedRadioList,
             typeParameterOverride = "GatekeepingListOrSendToAdmin",
+            typeParameterClass = GatekeepingListOrSendToAdmin.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCruPlus1RolesOtdddfAccess.class, CaseworkerPubliclawSuperuserCruAccess.class}
     )
     String gatekeepingOrderListOrSendToAdmin;

@@ -16,7 +16,8 @@ public class PlacementSupportingDocument {
     @CCD(
             label = "Document type",
             typeOverride = FieldType.FixedList,
-            typeParameterOverride = "PlacementSupportingDocumentType"
+            typeParameterOverride = "PlacementSupportingDocumentType",
+            typeParameterClass = PlacementSupportingDocumentType.class
     )
     private Type type;
     @CCD(label = "Custom document type")

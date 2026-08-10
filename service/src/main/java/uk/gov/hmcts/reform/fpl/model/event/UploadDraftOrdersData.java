@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.ccd.access.BARRISTERLABARRISTERSOLICITORCaseworke
 import uk.gov.hmcts.reform.fpl.ccd.access.LABARRISTERCaseworkerPubliclawCourtadminCruAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.BARRISTERCrudAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.SOLICITORCruAccess;
+import uk.gov.hmcts.reform.fpl.model.DocumentAcknowledge;
 
 @Value
 @Builder(toBuilder = true)
@@ -338,6 +339,7 @@ public class UploadDraftOrdersData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DocumentAcknowledge",
+            typeParameterClass = DocumentAcknowledge.class,
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, BARRISTERLABARRISTERSOLICITORCaseworkerPubliclawCourtadminCruAccess.class}
     )
     @Temp

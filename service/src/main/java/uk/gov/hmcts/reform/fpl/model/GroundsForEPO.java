@@ -21,7 +21,8 @@ public class GroundsForEPO {
             label = " ",
             hint = "Select all that apply",
             typeOverride = FieldType.MultiSelectList,
-            typeParameterOverride = "EPOReasons"
+            typeParameterOverride = "EPOReasons",
+            typeParameterClass = EPOReasons.class
     )
     @NotNull(message = "Select at least one option for how this case meets grounds for an emergency protection order",
         groups = EPOGroup.class)

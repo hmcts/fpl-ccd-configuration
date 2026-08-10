@@ -7,13 +7,14 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 @SuperBuilder(toBuilder = true)
 public class DocumentMetaData {
-    @CCD(ignore = true)
+    @CCD(label = "Upload a file", categoryID = "archivedDocuments", typeOverride = FieldType.Document)
     protected final DocumentReference typeOfDocument;
     @CCD(label = "Date and time uploaded")
     protected LocalDateTime dateTimeUploaded;

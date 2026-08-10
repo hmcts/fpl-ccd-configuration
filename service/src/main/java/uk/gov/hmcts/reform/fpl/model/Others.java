@@ -18,7 +18,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.reform.fpl.model.GenderList;
-import uk.gov.hmcts.reform.fpl.model.IsAddressKnowList;
+import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.AddressNotKnowType;
 import uk.gov.hmcts.reform.fpl.model.LitigationCapacityIssues;
 
@@ -68,7 +68,7 @@ public class Others {
   @CCD(label = "*Current address known?", showCondition = "addressKnow=\"*\"")
   private uk.gov.hmcts.ccd.sdk.type.YesOrNo addressKnow;
   @CCD(label = "*Current address known?")
-  private IsAddressKnowList addressKnowV2;
+  private IsAddressKnowType addressKnowV2;
   @CCD(
           label = "## This address is automatically made confidential",
           showCondition = "addressKnowV2=\"LIVE_IN_REFUGE\"",

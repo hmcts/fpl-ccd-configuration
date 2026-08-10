@@ -386,7 +386,7 @@ import uk.gov.hmcts.reform.fpl.model.ManageDocumentTypeLA;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.model.FeePaidJudgeTitle;
-import uk.gov.hmcts.reform.fpl.model.ManualLegalAdvisorDetail;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.ShowHide;
 import uk.gov.hmcts.reform.fpl.model.Consent;
 import uk.gov.hmcts.reform.fpl.model.DeletionConsent;
@@ -442,6 +442,7 @@ import uk.gov.hmcts.reform.fpl.model.EditableStandardDirection;
 import uk.gov.hmcts.reform.fpl.model.ImmediateStandardDirection;
 import uk.gov.hmcts.reform.fpl.model.ReviewedListingAction;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
+import uk.gov.hmcts.reform.fpl.enums.HearingDuration;
 
 @Data
 @SuperBuilder(toBuilder = true)
@@ -476,6 +477,7 @@ public class CaseData extends CaseDataParent {
             label = "Local Authority :",
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "AuthorityFixedList",
+            typeParameterClass = AuthorityFixedList.class,
             access = {CaseworkerPubliclawSolicitorCuCaseworkerPubliclawSystemupdateCudAccess.class}
     )
     private String caseLocalAuthority;
@@ -542,6 +544,7 @@ public class CaseData extends CaseDataParent {
             searchable = false,
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "AuthorityFixedList",
+            typeParameterClass = AuthorityFixedList.class,
             access = {CaseworkerPubliclawSolicitorCrudAccess.class, CaseworkerPubliclawSystemupdateRAccess.class}
     )
     private String relatingLA;
@@ -558,6 +561,7 @@ public class CaseData extends CaseDataParent {
             label = "DFJ Area :",
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "DFJArea",
+            typeParameterClass = DFJArea.class,
             access = {CaseworkerPubliclawSolicitorCuCaseworkerPubliclawSystemupdateCudAccess.class}
     )
     private String dfjArea;
@@ -1296,7 +1300,7 @@ public class CaseData extends CaseDataParent {
             searchable = false,
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
     )
-    private final HearingSelector newHearingSelector;
+    private final Selector newHearingSelector;
     @CCD(
             label = "Who's the appointed guardian?",
             searchable = false,
@@ -2312,6 +2316,7 @@ public class CaseData extends CaseDataParent {
             searchable = false,
             typeOverride = FieldType.FixedRadioList,
             typeParameterOverride = "HearingDuration",
+            typeParameterClass = HearingDuration.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCruAccess.class}
     )
     private final String hearingDuration;
@@ -2415,6 +2420,7 @@ public class CaseData extends CaseDataParent {
             searchable = false,
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "JudicialMessageRoleTypes",
+            typeParameterClass = JudicialMessageRoleTypes.class,
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, DefaultAccess.class, BARRISTERLABARRISTERSOLICITORCaseworkerPubliclawCourtadminCruAccess.class}
     )
     private JudicialMessageRoleType latestRoleSent;
@@ -3276,7 +3282,7 @@ public class CaseData extends CaseDataParent {
   )
   private FeePaidJudgeTitle hearingFeePaidJudgeTitle;
   @CCD(label = " ", searchable = false, access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class})
-  private ManualLegalAdvisorDetail hearingManualJudgeDetails;
+  private Judge hearingManualJudgeDetails;
   @CCD(label = "Case name", searchable = false, access = {CaseworkerPubliclawSystemupdateCudAccess.class})
   private String taskList;
   @CCD(

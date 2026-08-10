@@ -18,14 +18,22 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 
+@ComplexType(name = "NoticeOfProceedingsBundle", generate = true)
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
 public class DocumentBundle implements TranslatableItem {
+    @CCD(label = "File name", categoryID = "hearingNotices", typeOverride = FieldType.Document)
     private final DocumentReference document;
+    @CCD(label = "Translated document", categoryID = "hearingNotices", typeOverride = FieldType.Document)
     private final DocumentReference translatedDocument;
+    @CCD(label = "Welsh translation upload time", showCondition = "translatedDocument=\"DO_NOT_SHOW\"")
     private final LocalDateTime translationUploadDateTime;
+    @CCD(label = " ", showCondition = "translationRequirements=\"DO_NOT_SHOW\"", typeOverride = FieldType.Text)
     private final LanguageTranslationRequirement translationRequirements;
 
     @Override
@@ -64,4 +72,13 @@ public class DocumentBundle implements TranslatableItem {
     public List<Element<Other>> getSelectedOthers() {
         return new ArrayList<>();
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(
+          label = "Sent for translation",
+          showCondition = "needTranslation=\"YES\" AND translatedDocument!=\"*\"",
+          typeOverride = FieldType.Label
+  )
+  private String sentForTranslationLabel;
+  // ==== end synthesised definition-only fields ====
 }

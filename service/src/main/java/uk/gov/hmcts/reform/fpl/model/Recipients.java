@@ -29,7 +29,12 @@ public class Recipients {
     private final LocalDate date;
     @CCD(label = "Time sent", hint = "For example, 2:30pm")
     private final String timeSent;
-    @CCD(label = "How were they sent?", typeOverride = FieldType.FixedRadioList, typeParameterOverride = "SentBy")
+    @CCD(
+            label = "How were they sent?",
+            typeOverride = FieldType.FixedRadioList,
+            typeParameterOverride = "SentBy",
+            typeParameterClass = SentBy.class
+    )
     private final String sentBy;
     @CCD(label = "Recipient's email address", showCondition = "sentBy=\"EMAIL\"", typeOverride = FieldType.Email)
     private final String email;

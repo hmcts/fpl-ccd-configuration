@@ -35,25 +35,15 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 public class AbstractJudge {
     @CCD(label = "Judge or magistrate's type")
     private final JudgeType judgeType;
-    @CCD(
-            label = "Judge or Magistrate's title",
-            showCondition = "useAllocatedJudge=\"No\" OR allocatedJudgeLabel!=\"*\""
-    )
+    @CCD(label = "Judge or Magistrate's title")
     private JudgeOrMagistrateTitle judgeTitle;
     @CCD(label = "Title", showCondition = "judgeTitle=\"OTHER\" AND useAllocatedJudge!=\"Yes\"")
     private String otherTitle;
-    @CCD(
-            label = "Last name",
-            showCondition = "judgeTitle!=\"MAGISTRATES\" AND judgeTitle!=\"\" AND useAllocatedJudge!=\"Yes\""
-    )
+    @CCD(label = "Last name", showCondition = "judgeTitle!=\"MAGISTRATES\"")
     private final String judgeLastName;
-    @CCD(label = "Full name", showCondition = "judgeTitle=\"MAGISTRATES\" AND useAllocatedJudge!=\"Yes\"")
+    @CCD(label = "Full name", showCondition = "judgeTitle=\"MAGISTRATES\"")
     private final String judgeFullName;
-    @CCD(
-            label = "Email Address",
-            showCondition = "judgeTitle!=\"\" AND useAllocatedJudge!=\"Yes\"",
-            typeOverride = FieldType.Email
-    )
+    @CCD(label = "Email Address", typeOverride = FieldType.Email)
     private final String judgeEmailAddress;
 
     @CCD(

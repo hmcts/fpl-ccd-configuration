@@ -439,11 +439,6 @@
   "overwriteColumns" : [ ],
   "columnsOnly" : false
 }, {
-  "relativePath" : "CaseEventToComplexTypes/changeOtherToRespondent/transformedRespondent.json",
-  "primaryKeys" : [ "ID", "CaseEventID", "CaseFieldID", "ListElementCode", "FieldShowCondition" ],
-  "overwriteColumns" : [ ],
-  "columnsOnly" : false
-}, {
   "relativePath" : "CaseEventToComplexTypes/uploadAdditionalApplications/personSelector.json",
   "primaryKeys" : [ "ID", "CaseEventID", "CaseFieldID", "ListElementCode", "FieldShowCondition" ],
   "overwriteColumns" : [ ],
@@ -461,26 +456,6 @@
 }, {
   "relativePath" : "CaseEventToComplexTypes/placementNotice/placement.json",
   "primaryKeys" : [ "CaseEventID", "CaseFieldID", "ListElementCode", "FieldShowCondition" ],
-  "overwriteColumns" : [ ],
-  "columnsOnly" : false
-}, {
-  "relativePath" : "CaseEventToComplexTypes/amendRespondents/respondents1.json",
-  "primaryKeys" : [ "ID", "CaseEventID", "CaseFieldID", "ListElementCode", "FieldShowCondition" ],
-  "overwriteColumns" : [ ],
-  "columnsOnly" : false
-}, {
-  "relativePath" : "CaseEventToComplexTypes/amendRespondents3rdParty/respondents1.json",
-  "primaryKeys" : [ "ID", "CaseEventID", "CaseFieldID", "ListElementCode", "FieldShowCondition" ],
-  "overwriteColumns" : [ ],
-  "columnsOnly" : false
-}, {
-  "relativePath" : "CaseEventToComplexTypes/enterRespondents/respondents1.json",
-  "primaryKeys" : [ "ID", "CaseEventID", "CaseFieldID", "ListElementCode", "FieldShowCondition" ],
-  "overwriteColumns" : [ ],
-  "columnsOnly" : false
-}, {
-  "relativePath" : "CaseEventToComplexTypes/enterRespondents3rdParty/respondents1.json",
-  "primaryKeys" : [ "ID", "CaseEventID", "CaseFieldID", "ListElementCode", "FieldShowCondition" ],
   "overwriteColumns" : [ ],
   "columnsOnly" : false
 }, {

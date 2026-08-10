@@ -21,7 +21,8 @@ public class PlacementConfidentialDocument {
     @CCD(
             label = "Document type",
             typeOverride = FieldType.FixedList,
-            typeParameterOverride = "PlacementConfidentialDocumentType"
+            typeParameterOverride = "PlacementConfidentialDocumentType",
+            typeParameterClass = PlacementConfidentialDocumentType.class
     )
     private Type type;
     @CCD(label = "Custom document type")
@@ -38,7 +39,8 @@ public class PlacementConfidentialDocument {
             label = "Tick to confirm this document is related to this case",
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
-            typeParameterOverride = "DocumentAcknowledge"
+            typeParameterOverride = "DocumentAcknowledge",
+            typeParameterClass = DocumentAcknowledge.class
     )
     private List<String> documentAcknowledge;
 

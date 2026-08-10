@@ -156,6 +156,7 @@ public class AmendRespondents3rdParty implements CCDConfig<CaseData, State, User
                     .optional(RespondentParty::getLitigationIssues).done()
                     .complex(Respondent::getParty)
                     .optional(RespondentParty::getLitigationIssuesDetails).done()
+                    .readonly(Respondent::getLegalRepresentationLabel)
                     .optional(Respondent::getLegalRepresentation)
                     .complex(Respondent::getSolicitor)
                     .optional(RespondentSolicitor::getFirstName).done()

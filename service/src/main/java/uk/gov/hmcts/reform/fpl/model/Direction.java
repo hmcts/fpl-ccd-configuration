@@ -27,7 +27,8 @@ public class Direction {
             label = "For",
             showCondition = "directionNeeded!=\"No\"",
             typeOverride = FieldType.FixedList,
-            typeParameterOverride = "DirectionAssignees"
+            typeParameterOverride = "DirectionAssignees",
+            typeParameterClass = DirectionAssignees.class
     )
     private DirectionAssignee assignee;
     @CCD(

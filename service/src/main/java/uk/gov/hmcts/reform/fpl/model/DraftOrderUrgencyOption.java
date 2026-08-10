@@ -13,7 +13,12 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder(toBuilder = true)
 @Jacksonized
 public class DraftOrderUrgencyOption {
-    @CCD(label = " ", typeOverride = FieldType.MultiSelectList, typeParameterOverride = "DraftOrderApprovalUrgency")
+    @CCD(
+            label = " ",
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "DraftOrderApprovalUrgency",
+            typeParameterClass = DraftOrderApprovalUrgency.class
+    )
     private final List<YesNo> urgency;
 
   // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====

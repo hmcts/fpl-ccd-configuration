@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCrudPlus3
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawSystemupdateCrudAccess;
+import uk.gov.hmcts.reform.fpl.model.CafcassJurisdictionRegion;
 
 @Value
 @Builder(toBuilder = true)
@@ -369,6 +370,7 @@ public class ManageOrdersEventData {
             searchable = false,
             typeOverride = FieldType.FixedRadioList,
             typeParameterOverride = "CafcassJurisdictionRegion",
+            typeParameterClass = CafcassJurisdictionRegion.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess.class}
     )
     String manageOrdersCafcassRegion;

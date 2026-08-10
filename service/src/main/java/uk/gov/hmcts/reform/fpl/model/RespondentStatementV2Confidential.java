@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 
 /**
@@ -141,7 +142,7 @@ public class RespondentStatementV2Confidential {
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "ExpertReportList"
     )
-    private ExpertReportList expertReportType;
+    private ExpertReportType expertReportType;
 
     @CCD(
             label = " ",

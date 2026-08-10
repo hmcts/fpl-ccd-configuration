@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.ccd.access.CHILDSOLICITORACruPlus28RolesNrpimkAcc
 import uk.gov.hmcts.reform.fpl.ccd.access.DefaultAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.BARRISTERLABARRISTERSOLICITORCaseworkerPubliclawCourtadminCruAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.CAFCASSSOLICITORCruPlus4RolesConemxAccess;
+import uk.gov.hmcts.reform.fpl.model.DocumentAcknowledge;
 
 @Value
 @Jacksonized
@@ -83,6 +84,7 @@ public class ManageDocumentEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "DocumentAcknowledge",
+            typeParameterClass = DocumentAcknowledge.class,
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, DefaultAccess.class, BARRISTERLABARRISTERSOLICITORCaseworkerPubliclawCourtadminCruAccess.class, CAFCASSSOLICITORCruPlus4RolesConemxAccess.class}
     )
     @Temp

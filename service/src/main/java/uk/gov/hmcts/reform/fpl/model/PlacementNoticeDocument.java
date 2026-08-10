@@ -20,6 +20,7 @@ import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.reform.fpl.enums.PlacementNoticeRecipientType;
 
 @Data
 @Builder(toBuilder = true)
@@ -29,7 +30,8 @@ public class PlacementNoticeDocument implements WithDocument {
     @CCD(
             label = "Recipient type",
             typeOverride = FieldType.FixedList,
-            typeParameterOverride = "PlacementNoticeRecipientType"
+            typeParameterOverride = "PlacementNoticeRecipientType",
+            typeParameterClass = PlacementNoticeRecipientType.class
     )
     private RecipientType type;
     @CCD(
@@ -48,7 +50,8 @@ public class PlacementNoticeDocument implements WithDocument {
             label = "Tick to confirm this document is related to this case",
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
-            typeParameterOverride = "DocumentAcknowledge"
+            typeParameterOverride = "DocumentAcknowledge",
+            typeParameterClass = DocumentAcknowledge.class
     )
     private List<String> documentAcknowledge;
     @CCD(

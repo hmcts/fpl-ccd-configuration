@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.Objects;
+import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 
+@ComplexType(name = "ManualLegalAdvisorDetail", generate = true)
 @Jacksonized
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder(toBuilder = true)

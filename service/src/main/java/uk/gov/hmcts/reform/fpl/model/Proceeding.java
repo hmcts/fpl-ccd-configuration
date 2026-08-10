@@ -21,14 +21,16 @@ public class Proceeding {
             label = "Are there any past or ongoing proceedings relevant to this case?",
             hint = "This should include any criminal proceedings involving respondents",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "RelevantProceedings"
+            typeParameterOverride = "RelevantProceedings",
+            typeParameterClass = RelevantProceedings.class
     )
     private final String onGoingProceeding;
     @CCD(
             label = "Are these previous or ongoing proceedings?",
             showCondition = "onGoingProceeding=\"Yes\"",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "ProceedingStatus"
+            typeParameterOverride = "ProceedingStatus",
+            typeParameterClass = ProceedingStatus.class
     )
     private final String proceedingStatus;
     @CCD(label = "Case number", showCondition = "onGoingProceeding=\"Yes\"")

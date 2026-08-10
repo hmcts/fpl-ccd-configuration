@@ -2,42 +2,77 @@ package uk.gov.hmcts.reform.fpl.enums;
 
 import java.util.List;
 import java.util.stream.Stream;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 public enum CaseRole {
+    @CCD(label = "Creator")
     CREATOR,
+    @CCD(label = "LA Solicitor")
     LASOLICITOR,
+    @CCD(label = "EPS Managing")
     EPSMANAGING,
+    @CCD(label = "LA Managing")
     LAMANAGING,
+    @CCD(label = "LA Shared")
     LASHARED,
+    @CCD(label = "Solicitor")
     SOLICITOR,
+    @CCD(label = "Solicitor A")
     SOLICITORA,
+    @CCD(label = "Solicitor B")
     SOLICITORB,
+    @CCD(label = "Solicitor C")
     SOLICITORC,
+    @CCD(label = "Solicitor D")
     SOLICITORD,
+    @CCD(label = "Solicitor E")
     SOLICITORE,
+    @CCD(label = "Solicitor F")
     SOLICITORF,
+    @CCD(label = "Solicitor G")
     SOLICITORG,
+    @CCD(label = "Solicitor H")
     SOLICITORH,
+    @CCD(label = "Solicitor I")
     SOLICITORI,
+    @CCD(label = "Solicitor J")
     SOLICITORJ,
+    @CCD(label = "La Barrister")
     LABARRISTER,
+    @CCD(label = "Barrister")
     BARRISTER,
+    @CCD(label = "Cafcass Solicitor")
     CAFCASSSOLICITOR,
     // Child representative solicitors
+    @CCD(label = "Child Solicitor A")
     CHILDSOLICITORA,
+    @CCD(label = "Child Solicitor B")
     CHILDSOLICITORB,
+    @CCD(label = "Child Solicitor C")
     CHILDSOLICITORC,
+    @CCD(label = "Child Solicitor D")
     CHILDSOLICITORD,
+    @CCD(label = "Child Solicitor E")
     CHILDSOLICITORE,
+    @CCD(label = "Child Solicitor F")
     CHILDSOLICITORF,
+    @CCD(label = "Child Solicitor G")
     CHILDSOLICITORG,
+    @CCD(label = "Child Solicitor H")
     CHILDSOLICITORH,
+    @CCD(label = "Child Solicitor I")
     CHILDSOLICITORI,
+    @CCD(label = "Child Solicitor J")
     CHILDSOLICITORJ,
+    @CCD(label = "Child Solicitor K")
     CHILDSOLICITORK,
+    @CCD(label = "Child Solicitor L")
     CHILDSOLICITORL,
+    @CCD(label = "Child Solicitor M")
     CHILDSOLICITORM,
+    @CCD(label = "Child Solicitor N")
     CHILDSOLICITORN,
+    @CCD(label = "Child Solicitor O")
     CHILDSOLICITORO;
 
     private final String formattedName;

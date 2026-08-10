@@ -14,6 +14,7 @@ import java.util.List;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawJudiciaryCaseworkerPubliclawMagistrateCrudAccess;
+import uk.gov.hmcts.reform.fpl.model.ConfirmApplicationReviewedCheckBox;
 
 @Value
 @Builder
@@ -57,6 +58,7 @@ public class ConfirmApplicationReviewedEventData {
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
             typeParameterOverride = "ConfirmApplicationReviewedCheckBox",
+            typeParameterClass = ConfirmApplicationReviewedCheckBox.class,
             access = {CaseworkerPubliclawJudiciaryCaseworkerPubliclawMagistrateCrudAccess.class}
     )
     List<String> confirmApplicationReviewed;

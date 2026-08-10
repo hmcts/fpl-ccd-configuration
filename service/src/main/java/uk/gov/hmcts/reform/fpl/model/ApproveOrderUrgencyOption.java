@@ -15,7 +15,12 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Jacksonized
 public class ApproveOrderUrgencyOption {
 
-    @CCD(label = " ", typeOverride = FieldType.MultiSelectList, typeParameterOverride = "ReviewUrgency")
+    @CCD(
+            label = " ",
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "ReviewUrgency",
+            typeParameterClass = ReviewUrgency.class
+    )
     @Builder.Default
     private final List<YesNo> urgency = new ArrayList<>();
 

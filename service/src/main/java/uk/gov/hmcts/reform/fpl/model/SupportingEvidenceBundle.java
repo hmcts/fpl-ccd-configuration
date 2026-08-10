@@ -70,7 +70,8 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
             showCondition = "confidentialWarningLabel=\"DO_NOT_SHOW\"",
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
-            typeParameterOverride = "ConfidentialDocument"
+            typeParameterOverride = "ConfidentialDocument",
+            typeParameterClass = ConfidentialDocument.class
     )
     private List<String> confidential;
     @CCD(
@@ -106,7 +107,8 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
             label = "Tick to confirm this document is related to this case",
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
-            typeParameterOverride = "DocumentAcknowledge"
+            typeParameterOverride = "DocumentAcknowledge",
+            typeParameterClass = DocumentAcknowledge.class
     )
     private List<String> documentAcknowledge;
     @CCD(label = "Reason for removal", typeOverride = FieldType.TextArea)

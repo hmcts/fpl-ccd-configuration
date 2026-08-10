@@ -31,7 +31,8 @@ public final class RespondentParty extends Party {
     @CCD(
             label = "What is the respondent's gender?",
             typeOverride = FieldType.FixedList,
-            typeParameterOverride = "GenderList"
+            typeParameterOverride = "GenderList",
+            typeParameterClass = GenderList.class
     )
     private final String gender;
     @CCD(label = "What gender do they identify with?", showCondition = "gender=\"They identify in another way\"")
@@ -58,7 +59,8 @@ public final class RespondentParty extends Party {
     @CCD(
             label = "Do you believe this person will have difficulty understanding what's happening with the case?",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "LitigationCapacityIssues"
+            typeParameterOverride = "LitigationCapacityIssues",
+            typeParameterClass = LitigationCapacityIssues.class
     )
     private final String litigationIssues;
     @CCD(
@@ -71,7 +73,8 @@ public final class RespondentParty extends Party {
             label = "Why is this address unknown?",
             showCondition = "addressKnow=\"No\"",
             typeOverride = FieldType.FixedRadioList,
-            typeParameterOverride = "AddressNotKnowType"
+            typeParameterOverride = "AddressNotKnowType",
+            typeParameterClass = AddressNotKnowType.class
     )
     private final String addressNotKnowReason;
     @CCD(label = "Current address known?")

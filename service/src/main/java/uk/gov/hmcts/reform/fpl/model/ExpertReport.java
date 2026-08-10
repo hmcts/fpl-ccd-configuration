@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 
 /**
@@ -31,7 +32,7 @@ public class ExpertReport {
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "ExpertReportList"
     )
-    private ExpertReportList expertReportList;
+    private ExpertReportType expertReportList;
 
     @CCD(
             label = "Date requested",

@@ -17,24 +17,69 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 
+@ComplexType(name = "TemporaryApplicationDocuments", generate = true)
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 public class ApplicationDocument implements FurtherDocument, WithDocument {
+    @CCD(label = "Allow marking document confidential", typeOverride = FieldType.YesOrNo)
     private String allowMarkDocumentConfidential;
+    @CCD(label = "File", typeOverride = FieldType.Document)
     private final DocumentReference document;
+    @CCD(
+            label = "Document Uploader Type",
+            typeOverride = FieldType.FixedList,
+            typeParameterOverride = "DocumentUploaderType"
+    )
     private DocumentUploaderType uploaderType;
+    @CCD(label = "Document Uploader Case Roles")
     private List<CaseRole> uploaderCaseRoles;
+    @CCD(label = "Document type", typeOverride = FieldType.FixedList, typeParameterOverride = "ApplicationDocumentType")
     private final ApplicationDocumentType documentType;
+    @CCD(label = "Date and time uploaded")
     protected LocalDateTime dateTimeUploaded;
+    @CCD(label = "Uploaded by")
     private String uploadedBy;
+    @CCD(
+            label = "Document name",
+            hint = "Use a meaningful name. For example, medical report",
+            showCondition = "documentType=\"OTHER\"",
+            regex = "^(?!.*<[^>\\d]+>*).*"
+    )
     private String documentName;
+    @CCD(
+            label = "Included in SWET",
+            hint = "Use a meaningful name. For example, Genogram",
+            showCondition = "documentType=\"SWET\"",
+            typeOverride = FieldType.TextArea
+    )
     private String includedInSWET;
+    @CCD(
+            label = "Tick to confirm this document is related to this case",
+            searchable = false,
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "DocumentAcknowledge",
+            typeParameterClass = DocumentAcknowledge.class
+    )
     private List<String> documentAcknowledge;
+    @CCD(
+            label = "Tick to restrict to the LA, Cafcass and HMCTS staff",
+            showCondition = "confidentialWarningLabel=\"DO_NOT_SHOW\"",
+            searchable = false,
+            typeOverride = FieldType.MultiSelectList,
+            typeParameterOverride = "ConfidentialDocument",
+            typeParameterClass = ConfidentialDocument.class
+    )
     private List<String> confidential;
+    @CCD(label = "Reason for removal")
     private String removalReason;
+    @CCD(label = "Is confidential?", typeOverride = FieldType.YesOrNo)
     private String markAsConfidential;
+    @CCD(label = "Is translation needed?")
     private final LanguageTranslationRequirement translationRequirements;
 
     @JsonIgnore
@@ -61,4 +106,13 @@ public class ApplicationDocument implements FurtherDocument, WithDocument {
         }
         return this.documentAcknowledge;
     }
+
+  // ==== ccd-definition-converter: synthesised definition-only fields (retrofit) ====
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String confidentialWarningLabel;
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String documentAcknowledgeLabel;
+  @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
+  private String documentAcknowledgeLabelForCYA;
+  // ==== end synthesised definition-only fields ====
 }

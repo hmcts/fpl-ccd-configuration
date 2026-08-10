@@ -52,7 +52,8 @@ public class HearingDocument extends DocumentMetaData implements WithDocument, N
             label = "Tick to confirm this document is related to this case",
             searchable = false,
             typeOverride = FieldType.MultiSelectList,
-            typeParameterOverride = "DocumentAcknowledge"
+            typeParameterOverride = "DocumentAcknowledge",
+            typeParameterClass = DocumentAcknowledge.class
     )
     protected List<String> documentAcknowledge;
     @CCD(
