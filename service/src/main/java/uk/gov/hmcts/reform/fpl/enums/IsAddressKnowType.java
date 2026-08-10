@@ -10,10 +10,8 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Getter
 @RequiredArgsConstructor
 public enum IsAddressKnowType {
-    @CCD(label = "Yes")
     @JsonProperty("Yes")
     YES,
-    @CCD(label = "No")
     @JsonProperty("No")
     NO,
     @CCD(label = "They are living in a refuge")

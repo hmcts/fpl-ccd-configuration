@@ -18,6 +18,7 @@ public enum ChildGender {
     @CCD(label = "Female")
     @JsonProperty("Girl")
     GIRL("Female", "Benyw", "she", "herself"),
+    @CCD(label = "Indeterminate")
     @JsonProperty("They identify in another way")
     OTHER("Indeterminate", "Maent yn uniaethu mewn ffordd arall", "they", "themselves");
 

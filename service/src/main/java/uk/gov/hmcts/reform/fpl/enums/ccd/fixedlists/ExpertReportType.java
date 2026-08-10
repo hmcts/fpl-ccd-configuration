@@ -72,9 +72,11 @@ public enum ExpertReportType {
     @JsonProperty("independentSocialWorker")
     INDEPENDENT_SOCIAL_WORKER("independentSocialWorker", "Independent social worker"),
 
+    @CCD(label = "Haematologist")
     @JsonProperty("haematologist")
     HAEMATOLOGISTS("haematologist", "Haematologist"),
 
+    @CCD(label = "Ophthalmologist")
     @JsonProperty("opthamologist")
     OPHTHALMOLOGIST("opthamologist", "Ophthalmologist"),
 
