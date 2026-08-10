@@ -13,6 +13,8 @@ public class ManageHearingHousekeepEventData {
     @CCD(
             label = "Is this for Housekeeping?",
             searchable = false,
+            typeParameterOverride = "HearingHousekeepOptions",
+            typeParameterClass = HearingHousekeepOptions.class,
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
     )
     private YesNo hearingHousekeepOption;

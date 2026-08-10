@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageSenderRoleTypes;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessageRoleTypes;
 
 @Data
 @SuperBuilder(toBuilder = true)
@@ -31,12 +30,7 @@ public class JudicialMessageMetaData {
     private final JudicialMessageRoleType senderType;
     @CCD(label = "Sender's email address", typeOverride = FieldType.Email)
     private final String sender;
-    @CCD(
-            label = "Recipient",
-            typeOverride = FieldType.FixedList,
-            typeParameterOverride = "JudicialMessageRoleTypes",
-            typeParameterClass = JudicialMessageRoleTypes.class
-    )
+    @CCD(label = "Recipient", typeOverride = FieldType.FixedList, typeParameterOverride = "JudicialMessageRoleTypes")
     private final JudicialMessageRoleType recipientType;
     @CCD(label = "Recipient", typeOverride = FieldType.DynamicList)
     @JsonDeserialize(using = DynamicListDeserializer.class)

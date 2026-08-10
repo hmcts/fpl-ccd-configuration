@@ -50,7 +50,7 @@ application {
 
 ccd {
   configDir = file('build/definitions')
-  rootPackage = 'uk.gov.hmcts.reform.fpl'
+  rootPackage = 'uk.gov.hmcts.reform.fpl.ccd'
   caseType = 'CARE_SUPERVISION_EPO'
 }
 
@@ -554,4 +554,11 @@ bootWithCCD {
 
 configurations.all {
   exclude group: 'com.vaadin.external.google', module: 'android-json'
+}
+
+// The generator's Spring context has no web tier: run it with no embedded server. The generated
+// entry point takes no autoconfiguration, so nothing supplies a ServletWebServerFactory and Boot
+// would otherwise fail on deducing a servlet application from the service's classpath.
+tasks.named('generateCCDConfig') {
+    systemProperty 'spring.main.web-application-type', 'none'
 }

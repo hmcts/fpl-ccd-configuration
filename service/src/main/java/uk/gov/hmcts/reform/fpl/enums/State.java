@@ -8,9 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Stream;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 
-@ComplexType(name = "ChangeClosedStateList", generate = true)
 @RequiredArgsConstructor
 @Getter
 public enum State {

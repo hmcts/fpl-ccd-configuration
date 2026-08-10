@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
+import uk.gov.hmcts.reform.fpl.model.LegalAdvisorTitle;
 
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Judge.class),
@@ -35,7 +36,11 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 public class AbstractJudge {
     @CCD(label = "Judge or magistrate's type")
     private final JudgeType judgeType;
-    @CCD(label = "Judge or Magistrate's title")
+    @CCD(
+            label = "Judge or Magistrate's title",
+            typeParameterOverride = "LegalAdvisorTitle",
+            typeParameterClass = LegalAdvisorTitle.class
+    )
     private JudgeOrMagistrateTitle judgeTitle;
     @CCD(label = "Title", showCondition = "judgeTitle=\"OTHER\" AND useAllocatedJudge!=\"Yes\"")
     private String otherTitle;

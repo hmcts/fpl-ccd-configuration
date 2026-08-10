@@ -9,12 +9,10 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
  */
 @RequiredArgsConstructor
 @Getter
-public enum ManageOrdersOperation implements HasLabel {
-    CREATE("Create an order"),
+public enum ChangeClosedStateList implements HasLabel {
+    PREPARE_FOR_HEARING("Case management"),
 
-    UPLOAD("Upload an order"),
-
-    AMEND("Amend order under the slip rule");
+    FINAL_HEARING("Final hearing");
 
     private final String label;
 }

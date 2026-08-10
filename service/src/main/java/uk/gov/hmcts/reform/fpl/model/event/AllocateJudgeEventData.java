@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess;
+import uk.gov.hmcts.reform.fpl.model.FeePaidJudgeTitle;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -30,6 +31,8 @@ public class AllocateJudgeEventData {
     @CCD(
             label = "Select judge title",
             searchable = false,
+            typeParameterOverride = "FeePaidJudgeTitle",
+            typeParameterClass = FeePaidJudgeTitle.class,
             access = {CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess.class}
     )
     @Temp

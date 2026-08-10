@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.ccd.access.LASOLICITORCaseworkerPubliclawCourtadm
 import uk.gov.hmcts.reform.fpl.ccd.access.LASOLICITORCruAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCruAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCrudAccess;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthorityActionLA;
 
 @Data
 @Builder(toBuilder = true)
@@ -47,6 +48,8 @@ public class LocalAuthoritiesEventData {
     @CCD(
             label = "What do you want to do?",
             searchable = false,
+            typeParameterOverride = "LocalAuthorityActionLA",
+            typeParameterClass = LocalAuthorityActionLA.class,
             access = {LASOLICITORCaseworkerPubliclawCourtadminCrudAccess.class}
     )
     @Temp

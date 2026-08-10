@@ -736,6 +736,8 @@ public class CaseData extends CaseDataParent {
             label = "What do you want to do?",
             hint = "You can upload the final order to send to all parties now, or just upload it and save.",
             searchable = false,
+            typeParameterOverride = "SDORoutes",
+            typeParameterClass = SDORoutes.class,
             access = {DefaultAccess.class}
     )
     private GatekeepingOrderRoute sdoRouter;
@@ -2364,7 +2366,13 @@ public class CaseData extends CaseDataParent {
             access = {CaseworkerPubliclawCourtadminCruAccess.class}
     )
     private final List<ProceedingType2> proceedingType;
-    @CCD(label = "Change status", searchable = false, access = {CaseworkerPubliclawSuperuserCruAccess.class})
+    @CCD(
+            label = "Change status",
+            searchable = false,
+            typeParameterOverride = "ChangeClosedStateList",
+            typeParameterClass = ChangeClosedStateList.class,
+            access = {CaseworkerPubliclawSuperuserCruAccess.class}
+    )
     private final State closedStateRadioList;
 
     @CCD(
@@ -2420,7 +2428,6 @@ public class CaseData extends CaseDataParent {
             searchable = false,
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "JudicialMessageRoleTypes",
-            typeParameterClass = JudicialMessageRoleTypes.class,
             access = {CHILDSOLICITORACruPlus28RolesNrpimkAccess.class, DefaultAccess.class, BARRISTERLABARRISTERSOLICITORCaseworkerPubliclawCourtadminCruAccess.class}
     )
     private JudicialMessageRoleType latestRoleSent;

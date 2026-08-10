@@ -46,6 +46,11 @@ import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCrudPlus3
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCaseworkerPubliclawSystemupdateCruAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawCourtadminCrudPlus2RolesEssjlqAccess;
 import uk.gov.hmcts.reform.fpl.ccd.access.CaseworkerPubliclawSystemupdateCrudAccess;
+import uk.gov.hmcts.reform.fpl.model.ManageOrdersOperationClosedState;
+import uk.gov.hmcts.reform.fpl.model.ManageOrdersUploadType;
+import uk.gov.hmcts.reform.fpl.model.ManageOrdersType;
+import uk.gov.hmcts.reform.fpl.model.ManageOrdersEndDateTypeWithMonth;
+import uk.gov.hmcts.reform.fpl.model.ManageOrdersEndDateTypeWithEndOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.CafcassJurisdictionRegion;
 
 @Value
@@ -62,6 +67,8 @@ public class ManageOrdersEventData {
     @CCD(
             label = "What do you want to do?",
             searchable = false,
+            typeParameterOverride = "ManageOrdersOperationClosedState",
+            typeParameterClass = ManageOrdersOperationClosedState.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess.class}
     )
     OrderOperation manageOrdersOperationClosedState;
@@ -74,6 +81,8 @@ public class ManageOrdersEventData {
     @CCD(
             label = "Select order",
             searchable = false,
+            typeParameterOverride = "ManageOrdersUploadType",
+            typeParameterClass = ManageOrdersUploadType.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess.class}
     )
     Order manageOrdersUploadType;
@@ -86,6 +95,8 @@ public class ManageOrdersEventData {
     @CCD(
             label = "Select order",
             searchable = false,
+            typeParameterOverride = "ManageOrdersType",
+            typeParameterClass = ManageOrdersType.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess.class}
     )
     Order manageOrdersType;
@@ -303,12 +314,16 @@ public class ManageOrdersEventData {
     @CCD(
             label = "When does the order end?",
             searchable = false,
+            typeParameterOverride = "ManageOrdersEndDateTypeWithMonth",
+            typeParameterClass = ManageOrdersEndDateTypeWithMonth.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess.class}
     )
     ManageOrdersEndDateType manageOrdersEndDateTypeWithMonth;
     @CCD(
             label = "When does the order end?",
             searchable = false,
+            typeParameterOverride = "ManageOrdersEndDateTypeWithEndOfProceedings",
+            typeParameterClass = ManageOrdersEndDateTypeWithEndOfProceedings.class,
             access = {DefaultAccess.class, CaseworkerPubliclawCourtadminCrudPlus1RolesUzkhikAccess.class}
     )
     ManageOrdersEndDateType manageOrdersEndDateTypeWithEndOfProceedings;

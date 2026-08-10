@@ -9,16 +9,18 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
  */
 @RequiredArgsConstructor
 @Getter
-public enum JudicialMessageRoleTypes implements HasLabel {
-    CTSC("CTSC"),
+public enum ChildFinalDecision implements HasLabel {
+    WITHDRAWN("Application withdrawn"),
 
-    JUDICIARY("Allocated Judge"),
+    REFUSAL("Application refused"),
 
-    LOCAL_COURT_ADMIN("Local Court Admin"),
+    NO_ORDER("No order made"),
 
-    OTHER("Legal Adviser"),
+    FINAL_ORDER("Final order issued"),
 
-    HEARING_JUDGE("Hearing Judge");
+    HOUSEKEEPING("Housekeeping"),
+
+    CONSOLIDATED("Case consolidated");
 
     private final String label;
 }

@@ -1855,6 +1855,8 @@ public class CaseDataParent {
     @CCD(
             label = "Would you like to remind the applicant to upload the CMO for these hearings?",
             searchable = false,
+            typeParameterOverride = "YesOrNoFixedList",
+            typeParameterClass = YesOrNoFixedList.class,
             access = {CaseworkerPubliclawCourtadminCruAccess.class}
     )
     protected final YesNo shouldSendOrderReminder;
