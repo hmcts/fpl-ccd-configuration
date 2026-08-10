@@ -34,6 +34,7 @@ export class StartApplication extends BasePage {
     readonly returnApplicationLink: Locator;
     readonly  ordersAndDirectionsSoughtFinishedStatus: Locator;
     readonly childDetailsHeading: Locator;
+    readonly applicantDetailsHeading: Locator;
 
     // readonly logExpertReportLink: Locator;
     public constructor(page: Page) {
@@ -70,6 +71,7 @@ export class StartApplication extends BasePage {
         this.returnApplicationLink = page.getByRole('link', { name: 'Return application'});
         this.ordersAndDirectionsSoughtFinishedStatus = page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img');
         this.childDetailsHeading = page.getByRole("heading", { name: "Child's details", });
+        this.applicantDetailsHeading = page.getByRole("heading", { name: "Applicant's details", });
     }
 
     async groundsForTheApplication() {
@@ -106,6 +108,7 @@ export class StartApplication extends BasePage {
     async applicantDetails(): Promise<void> {
         await expect(this.applicantDetailsLink).toBeVisible();
         await this.gotoNextStep('Applicant\'s details');
+        // await expect(this.applicantDetailsHeading).toBeVisible();
     }
 
     async applicantDetailsHasBeenUpdated() {
@@ -113,9 +116,9 @@ export class StartApplication extends BasePage {
     }
 
     async childDetails() {
-        expect(this.childDetailsLink).toBeVisible();
+        await expect(this.childDetailsLink).toBeVisible();
         await this.gotoNextStep('Child\'s details');
-        expect(this.childDetailsHeading).toBeVisible();
+        await expect(this.childDetailsHeading).toBeVisible();
     }
 
     async childDetailsHasBeenUpdated() {
@@ -123,12 +126,12 @@ export class StartApplication extends BasePage {
     }
 
     async respondentDetails() {
-        expect(this.respondentsDetailsLink).toBeVisible();
-            await this.gotoNextStep('Respondents\' details');
+        await expect(this.respondentsDetailsLink).toBeVisible();
+        await this.gotoNextStep('Respondents\' details');
     }
 
     async allocationProposal() {
-        expect(this.allocationProposalLink).toBeVisible();
+        await expect(this.allocationProposalLink).toBeVisible();
         await this.gotoNextStep('Allocation proposal');
     }
 
@@ -145,7 +148,7 @@ export class StartApplication extends BasePage {
     }
 
     async welshLanguageReqUpdated() {
-        await expect(this.welshLanguageReqFinished).toBeVisible;
+        await expect(this.welshLanguageReqFinished).toBeVisible();
     }
 
     async internationalElementReqUpdated() {
@@ -169,7 +172,7 @@ export class StartApplication extends BasePage {
     }
 
     async submitCase() {
-        expect(this.submitApplicationLink).toBeVisible();
+        await expect(this.submitApplicationLink).toBeVisible();
         await this.gotoNextStep('Submit application');
     }
 }
