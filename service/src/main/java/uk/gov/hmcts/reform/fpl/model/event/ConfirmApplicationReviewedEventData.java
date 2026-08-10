@@ -79,8 +79,7 @@ public class ConfirmApplicationReviewedEventData {
             "otherAdditionalApplicationToBeReview",
             "reviewOrderUrgency", "uploadedDraftOrder",
             "addCoverSheet", "previewApprovedOrder1",
-            "previewApprovedOrderTitle1",
-            "reviewAdditionalAppRefusalReason");
+            "previewApprovedOrderTitle1");
     }
 
     public static List<String> postSubmitEventFields() {
@@ -90,7 +89,8 @@ public class ConfirmApplicationReviewedEventData {
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
             "reviewAdditionalAppIsConfidential",
-            "reviewAdditionalAppRequestedChanges"
+            "reviewAdditionalAppRequestedChanges",
+            "reviewAdditionalAppRefusalReason"
         );
     }
 }
