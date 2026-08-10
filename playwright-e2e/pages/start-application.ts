@@ -57,7 +57,7 @@ export class StartApplication extends BasePage {
         this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
         this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
         this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' });
-        this.childDetailsLink = page.getByRole("link", { name: 'Child\'s Details', });
+        this.childDetailsLink = page.getByRole("link", { name: 'Child\'s details' });
         this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
         this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
         this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
