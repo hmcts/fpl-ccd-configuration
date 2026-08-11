@@ -11,11 +11,14 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderService;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +28,13 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialOrderBundleUtils.addToConfidentialOrderBundle;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -40,6 +46,8 @@ public class ReviewAdditionalApplicationService {
     private static final String APPLICANT_CHANGES_REQUESTED = "Applicant needs to make changes to the order";
 
     private final ApproveDraftOrdersService approveDraftOrdersService;
+    private final ApplicationRefusalOrderService refusalOrderService;
+    private final ApplicationListNextHearingOrderService applicationListNextHearingOrderService;
     private final HearingOrderGenerator hearingOrderGenerator;
 
     public Map<String, Object> initEventField(CaseData caseData) {
@@ -107,6 +115,7 @@ public class ReviewAdditionalApplicationService {
                 .draftOrdersBundle(c2ToBeReviewed.getDraftOrdersBundle())
                 .supplementsBundle(c2ToBeReviewed.getSupplementsBundle())
                 .supportingEvidenceBundle(c2ToBeReviewed.getSupportingEvidenceBundle())
+                .uploadedDateTime(c2ToBeReviewed.getUploadedDateTime())
                 .build());
         } else {
             resultMap.put("hasC2ToBeReview", NO);
@@ -166,6 +175,21 @@ public class ReviewAdditionalApplicationService {
         ).collect(Collectors.toList());
     }
 
+    private Element<AdditionalApplicationsBundle> getSelectedApplicationByDraftOrderId(CaseData caseData,
+                                                                                        UUID draftOrderId) {
+        return caseData.getAdditionalApplicationsBundle().stream()
+            .filter(bundleElement -> {
+                C2DocumentBundle c2Bundle = getRelevantC2DocumentBundle(bundleElement.getValue());
+                return !isEmpty(c2Bundle)
+                    && !isEmpty(c2Bundle.getDraftOrdersBundle())
+                    && c2Bundle.getDraftOrdersBundle().stream().anyMatch(order -> draftOrderId.equals(order.getId()));
+            })
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException(
+                "Cannot list application at next hearing because selected application bundle is missing"
+            ));
+    }
+
     public Map<String, Object> returnDraftOrderToApplicant(CaseData caseData,
                                                             Element<HearingOrdersBundle> hearingOrdersBundle,
                                                             UUID draftOrderId,
@@ -197,6 +221,130 @@ public class ReviewAdditionalApplicationService {
         hearingOrdersBundle.getValue().removeOrderElement(orderElement);
         updates.putAll(approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, hearingOrdersBundle));
 
+
+        return updates;
+    }
+
+    public Map<String, Object> addRefusalOrders(CaseData caseData,
+                                                Element<HearingOrdersBundle> selectedOrdersBundle,
+                                                UUID draftOrderId) {
+        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+
+        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
+
+        Element<GeneratedOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(
+            caseData,
+            eventData.getJudgeNameAndTitle(),
+            eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
+            eventData.getReviewAdditionalAppRefusalReason(),
+            isConfidential
+        );
+
+        List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
+        orderCollection.add(refusalOrderDoc);
+
+        Element<HearingOrder> draftOrder = findElement(draftOrderId,
+            selectedOrdersBundle.getValue().getAllOrdersAndConfidentialOrders()).orElseThrow();
+
+        Map<String, Object> updates = new HashMap<>();
+        Element<HearingOrder> rejectedDraftOrder = approveDraftOrdersService.rejectDraftOrderWithRequestedChanges(
+            caseData,
+            updates,
+            selectedOrdersBundle,
+            draftOrder,
+            eventData.getReviewAdditionalAppRefusalReason()
+        );
+
+        List<Element<HearingOrder>> rejectedOrders = getIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
+        rejectedOrders.add(rejectedDraftOrder);
+        updates.put("refusedHearingOrders", rejectedOrders);
+
+        selectedOrdersBundle.getValue().removeOrderElement(draftOrder);
+        updates.put("orderCollection", orderCollection);
+
+        return updates;
+    }
+
+    private String getNextHearingDate(CaseData caseData) {
+        return caseData.getNextHearingAfter(LocalDateTime.now())
+            .map(hearing -> hearing.getStartDate().toLocalDate())
+            .map(date -> formatLocalDateToString(date, DATE))
+            .orElseThrow(() -> new IllegalStateException(
+                "Cannot list application at next hearing because no future hearing exists"
+            ));
+    }
+
+    public boolean hasFutureHearing(CaseData caseData) {
+        return caseData.getNextHearingAfter(LocalDateTime.now()).isPresent();
+    }
+
+    private String getApplicationDateOrThrow(Element<AdditionalApplicationsBundle> selectedApplication) {
+        String applicationDate = selectedApplication.getValue().getUploadedDateTime();
+        if (isEmpty(applicationDate)) {
+            throw new IllegalStateException(
+                "Cannot list application at next hearing because reviewed application date is missing"
+            );
+        }
+
+        return applicationDate;
+    }
+
+    private void addGeneratedOrderToCorrectCollection(Map<String, Object> updates,
+                                                      CaseData caseData,
+                                                      Element<HearingOrdersBundle> hearingOrdersBundle,
+                                                      UUID draftOrderId,
+                                                      Element<GeneratedOrder> generatedOrder,
+                                                      boolean isConfidential) {
+        if (isConfidential) {
+            Element<HearingOrder> draftOrderElement = hearingOrdersBundle.getValue().getAllOrdersAndConfidentialOrders().stream()
+                .filter(orderElement -> orderElement.getId().equals(draftOrderId))
+                .findFirst()
+                .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                    "No HearingOrder found with element id: " + draftOrderId
+                ));
+
+            updates.putAll(addToConfidentialOrderBundle(
+                hearingOrdersBundle,
+                draftOrderElement,
+                caseData.getConfidentialOrders(),
+                generatedOrder
+            ));
+        } else {
+            List<Element<GeneratedOrder>> orderCollection = new ArrayList<>(caseData.getOrderCollection());
+            orderCollection.add(generatedOrder);
+            updates.put("orderCollection", orderCollection);
+        }
+    }
+
+    public Map<String, Object> listApplicationAtNextHearing(CaseData caseData,
+                                                             Element<HearingOrdersBundle> hearingOrdersBundle,
+                                                             UUID draftOrderId,
+                                                             ConfirmApplicationReviewedEventData eventData) {
+        Map<String, Object> updates = new HashMap<>();
+        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
+        Element<AdditionalApplicationsBundle> selectedApplication =
+            getSelectedApplicationByDraftOrderId(caseData, draftOrderId);
+
+        String nextHearingDate = getNextHearingDate(caseData);
+
+        String applicationDate = getApplicationDateOrThrow(selectedApplication);
+
+        Element<GeneratedOrder> listedOrder = applicationListNextHearingOrderService.buildListAtNextHearingOrder(
+            caseData,
+            eventData.getJudgeNameAndTitle(),
+            applicationDate,
+            nextHearingDate,
+            isConfidential
+        );
+
+        addGeneratedOrderToCorrectCollection(
+            updates,
+            caseData,
+            hearingOrdersBundle,
+            draftOrderId,
+            listedOrder,
+            isConfidential
+        );
 
         return updates;
     }

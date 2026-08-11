@@ -22,12 +22,15 @@ import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationRefusalOrderService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkdownService;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -47,6 +50,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
     private final ReviewAdditionalApplicationMarkdownService markdownService;
     private final ReviewAdditionalApplicationService reviewAdditionalApplicationService;
     private final HearingOrderGenerator hearingOrderGenerator;
+    private final ApplicationRefusalOrderService refusalOrderService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -75,13 +79,14 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                                                                                     callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+        List<String> errors = new ArrayList<>();
 
         switch (caseData.getApproveAdditionalAppRouter()) {
             case APPROVE_APPLICATION_AND_ORDER:
                 caseDetails.getData().put("reviewOrderUrgency", YES);
                 caseDetails.getData().put("addCoverSheet", YES);
 
-                ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
                 C2DocumentBundle bundle  = eventData.getC2AdditionalApplicationToBeReview().toC2DocumentBundle();
 
                 Element<DraftOrder> draftOrder = bundle.getDraftOrdersBundle().getFirst();
@@ -104,12 +109,28 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 caseDetails.getData().put("reviewOrderUrgency", NO);
                 caseDetails.getData().put("addCoverSheet", NO);
                 break;
+            case LIST:
+                if (!reviewAdditionalApplicationService.hasFutureHearing(caseData)) {
+                    errors.add("Cannot list application at next hearing because no future hearing exists");
+                }
+                caseDetails.getData().put("reviewOrderUrgency", NO);
+                caseDetails.getData().put("addCoverSheet", NO);
+                break;
+            case REFUSE:
+                caseDetails.getData().put("reviewOrderUrgency", NO);
+                caseDetails.getData().put("addCoverSheet", NO);
+
+                caseDetails.getData().put("previewApprovedOrder1",
+                    refusalOrderService.buildApplicationRefusalOrderDocument(caseData, eventData.getJudgeNameAndTitle(),
+                        eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
+                        eventData.getReviewAdditionalAppRefusalReason(), false));
+                break;
             default:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
                 caseDetails.getData().put("addCoverSheet", NO);
         }
 
-        return respond(caseDetails);
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
@@ -206,6 +227,25 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                     bundleFromDraftOrder,
                     draftOrderId,
                     eventData.getReviewAdditionalAppRequestedChanges()
+                ));
+                break;
+            case REFUSE: {
+                caseDetails.getData().putAll(reviewAdditionalApplicationService.addRefusalOrders(
+                    caseData,
+                    bundleFromDraftOrder,
+                    draftOrderId
+                ));
+                caseDetails.getData().putAll(
+                    approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, bundleFromDraftOrder)
+                );
+                break;
+            }
+            case LIST:
+                caseDetails.getData().putAll(reviewAdditionalApplicationService.listApplicationAtNextHearing(
+                    caseData,
+                    bundleFromDraftOrder,
+                    draftOrderId,
+                    eventData
                 ));
                 break;
             default:

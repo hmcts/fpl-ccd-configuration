@@ -17,10 +17,13 @@ import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +50,9 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Mock
     private HearingOrderGenerator hearingOrderGenerator;
+
+    @Mock
+    private ApplicationListNextHearingOrderService applicationListNextHearingOrderService;
 
     @InjectMocks
     private ReviewAdditionalApplicationService reviewAdditionalApplicationService;
@@ -312,6 +318,402 @@ class ReviewAdditionalApplicationServiceTest {
         verify(approveDraftOrdersService).updateHearingDraftOrdersBundle(caseData, hearingBundle);
     }
 
+    @Test
+    void shouldCreateRefusalOrderAndKeepDraftWhenListedAtNextHearingForNonConfidentialApplication() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        LocalDateTime nextHearingDate = LocalDateTime.now().plusDays(3);
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .applicationReviewed(NO)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .draftOrdersBundle(List.of(element(draftOrderId, uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                    .build())
+                .build())))
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+                .startDate(nextHearingDate)
+                .build())))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(NO)
+            .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .build())
+            .build();
+
+        Element<GeneratedOrder> refusalOrder = element(GeneratedOrder.builder().title("Refusal order").build());
+        when(applicationListNextHearingOrderService.buildListAtNextHearingOrder(any(), any(), any(), any(), eq(false)))
+            .thenReturn(refusalOrder);
+
+        Map<String, Object> result = reviewAdditionalApplicationService.listApplicationAtNextHearing(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            eventData
+        );
+
+        assertThat(result.get("orderCollection")).isEqualTo(List.of(refusalOrder));
+        assertThat(hearingBundle.getValue().getOrders()).extracting(Element::getId).containsExactly(draftOrderId);
+    }
+
+    @Test
+    void shouldResolveSelectedApplicationFromDynamicListWhenListing() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        Element<AdditionalApplicationsBundle> nonMatchingBundle = element(AdditionalApplicationsBundle.builder()
+            .uploadedDateTime("1 January 2020, 10:00am")
+            .applicationReviewed(NO)
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .draftOrdersBundle(List.of(element(UUID.randomUUID(), uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                .build())
+            .build());
+
+        Element<AdditionalApplicationsBundle> matchingBundle = element(AdditionalApplicationsBundle.builder()
+            .uploadedDateTime("1 January 2021, 12:00pm")
+            .applicationReviewed(NO)
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .draftOrdersBundle(List.of(element(draftOrderId, uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                .build())
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(nonMatchingBundle, matchingBundle))
+            .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
+                .additionalApplicationToBeReviewedList(asDynamicList(List.of(nonMatchingBundle, matchingBundle),
+                    matchingBundle.getId(), AdditionalApplicationsBundle::toLabel))
+                .build())
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build())))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(NO)
+            .additionalApplicationToBeReviewedList(asDynamicList(List.of(nonMatchingBundle, matchingBundle),
+                matchingBundle.getId(), AdditionalApplicationsBundle::toLabel))
+            .build();
+
+        Element<GeneratedOrder> refusalOrder = element(GeneratedOrder.builder().title("Refusal order").build());
+        when(applicationListNextHearingOrderService.buildListAtNextHearingOrder(any(), any(), any(), any(), eq(false)))
+            .thenReturn(refusalOrder);
+
+        reviewAdditionalApplicationService.listApplicationAtNextHearing(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            eventData
+        );
+
+        verify(applicationListNextHearingOrderService).buildListAtNextHearingOrder(
+            eq(caseData),
+            eq("District Judge Example"),
+            eq("1 January 2021, 12:00pm"),
+            any(),
+            eq(false)
+        );
+    }
+
+    @Test
+    void shouldCreateRefusalOrderInMatchingConfidentialCollectionWhenListedAtNextHearing() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .orderConfidential(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>())
+            .ordersCTSC(new ArrayList<>())
+            .ordersLA(new ArrayList<>(List.of(draftOrder)))
+            .build());
+
+        LocalDateTime nextHearingDate = LocalDateTime.now().plusDays(2);
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .applicationReviewed(NO)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .draftOrdersBundle(List.of(element(draftOrderId, uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                    .build())
+                .build())))
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+                .startDate(nextHearingDate)
+                .build())))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(YES)
+            .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .build())
+            .build();
+
+        Element<GeneratedOrder> refusalOrder = element(GeneratedOrder.builder().title("Refusal order").build());
+        when(applicationListNextHearingOrderService.buildListAtNextHearingOrder(any(), any(), any(), any(), eq(true)))
+            .thenReturn(refusalOrder);
+
+        Map<String, Object> result = reviewAdditionalApplicationService.listApplicationAtNextHearing(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            eventData
+        );
+
+        assertThat(result.get("orderCollectionLA")).isEqualTo(List.of(refusalOrder));
+        assertThat(hearingBundle.getValue().getAllConfidentialOrders()).extracting(Element::getId)
+            .containsExactly(draftOrderId);
+    }
+
+    @Test
+    void shouldThrowWhenListingAtNextHearingAndNoFutureHearingExists() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .applicationReviewed(NO)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .draftOrdersBundle(List.of(element(draftOrderId, uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                    .build())
+                .build())))
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(NO)
+            .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .build())
+            .build();
+
+        assertThatThrownBy(() -> reviewAdditionalApplicationService.listApplicationAtNextHearing(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            eventData
+        ))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Cannot list application at next hearing because no future hearing exists");
+    }
+
+    @Test
+    void shouldThrowWhenListingAtNextHearingAndReviewedApplicationDateIsMissing() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
+                .applicationReviewed(NO)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .draftOrdersBundle(List.of(element(draftOrderId, uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                    .build())
+                .build())))
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build())))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(NO)
+            .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder().build())
+            .build();
+
+        assertThatThrownBy(() -> reviewAdditionalApplicationService.listApplicationAtNextHearing(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            eventData
+        ))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Cannot list application at next hearing because reviewed application date is missing");
+    }
+
+    @Test
+    void shouldReportFutureHearingExists() {
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build())))
+            .build();
+
+        assertThat(reviewAdditionalApplicationService.hasFutureHearing(caseData)).isTrue();
+    }
+
+    @Test
+    void shouldReportFutureHearingMissing() {
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build())))
+            .build();
+
+        assertThat(reviewAdditionalApplicationService.hasFutureHearing(caseData)).isFalse();
+    }
+
+    @Test
+    void shouldResolveSelectedApplicationFromAllBundlesWhenItIsAlreadyMarkedReviewed() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        Element<AdditionalApplicationsBundle> selectedReviewedBundle = element(AdditionalApplicationsBundle.builder()
+            .uploadedDateTime("1 January 2021, 12:00pm")
+            .applicationReviewed(YES)
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .draftOrdersBundle(List.of(element(draftOrderId,
+                    uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                .build())
+            .build());
+
+        Element<AdditionalApplicationsBundle> pendingBundle = element(AdditionalApplicationsBundle.builder()
+            .uploadedDateTime("1 January 2020, 10:00am")
+            .applicationReviewed(NO)
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .draftOrdersBundle(List.of(element(UUID.randomUUID(),
+                    uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                .build())
+            .build());
+
+        var selectedApplicationList = asDynamicList(List.of(selectedReviewedBundle, pendingBundle),
+            selectedReviewedBundle.getId(), AdditionalApplicationsBundle::toLabel);
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(selectedReviewedBundle, pendingBundle))
+            .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
+                .additionalApplicationToBeReviewedList(selectedApplicationList)
+                .build())
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build())))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(NO)
+            .additionalApplicationToBeReviewedList(selectedApplicationList)
+            .build();
+
+        Element<GeneratedOrder> refusalOrder = element(GeneratedOrder.builder().title("Refusal order").build());
+        when(applicationListNextHearingOrderService.buildListAtNextHearingOrder(any(), any(), any(), any(), eq(false)))
+            .thenReturn(refusalOrder);
+
+        reviewAdditionalApplicationService.listApplicationAtNextHearing(caseData, hearingBundle, draftOrderId, eventData);
+
+        verify(applicationListNextHearingOrderService).buildListAtNextHearingOrder(
+            eq(caseData),
+            eq("District Judge Example"),
+            eq("1 January 2021, 12:00pm"),
+            any(),
+            eq(false)
+        );
+    }
+
+    @Test
+    void shouldFallbackToDraftOrderLookupWhenDynamicSelectionIsMissing() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        Element<AdditionalApplicationsBundle> targetBundle = element(AdditionalApplicationsBundle.builder()
+            .uploadedDateTime("1 January 2021, 12:00pm")
+            .applicationReviewed(YES)
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .draftOrdersBundle(List.of(element(draftOrderId,
+                    uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                .build())
+            .build());
+
+        Element<AdditionalApplicationsBundle> otherPendingBundle = element(AdditionalApplicationsBundle.builder()
+            .uploadedDateTime("1 January 2020, 10:00am")
+            .applicationReviewed(NO)
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .draftOrdersBundle(List.of(element(UUID.randomUUID(),
+                    uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                .build())
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(targetBundle, otherPendingBundle))
+            .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder().build())
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build())))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(NO)
+            .build();
+
+        Element<GeneratedOrder> refusalOrder = element(GeneratedOrder.builder().title("Refusal order").build());
+        when(applicationListNextHearingOrderService.buildListAtNextHearingOrder(any(), any(), any(), any(), eq(false)))
+            .thenReturn(refusalOrder);
+
+        Map<String, Object> result = reviewAdditionalApplicationService.listApplicationAtNextHearing(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            eventData
+        );
+
+        assertThat(result.get("orderCollection")).isEqualTo(List.of(refusalOrder));
+        verify(applicationListNextHearingOrderService).buildListAtNextHearingOrder(
+            eq(caseData),
+            eq("District Judge Example"),
+            eq("1 January 2021, 12:00pm"),
+            any(),
+            eq(false)
+        );
+    }
+
     private static C2AdditionalApplicationEventData buildReviewC2AdditionalApplicationEventData(
             AdditionalApplicationsBundle bundle) {
         boolean isC2Confidential = YES.equals(bundle.getHasConfidentialC2());
@@ -335,6 +737,7 @@ class ReviewAdditionalApplicationServiceTest {
             .draftOrdersBundle(c2ToBeReviewed.getDraftOrdersBundle())
             .supplementsBundle(c2ToBeReviewed.getSupplementsBundle())
             .supportingEvidenceBundle(c2ToBeReviewed.getSupportingEvidenceBundle())
+            .uploadedDateTime(c2ToBeReviewed.getUploadedDateTime())
             .build();
     }
 }
