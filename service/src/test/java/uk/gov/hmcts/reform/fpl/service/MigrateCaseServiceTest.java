@@ -4105,6 +4105,7 @@ class MigrateCaseServiceTest {
         private static final String BLACKPOOL_COURT_CODE = "131";
         private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
         private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
+
         @Test
         void shouldSuccessfullyMigrateFleetwoodToBlackpool() {
             CaseLocation location = CaseLocation.builder()
