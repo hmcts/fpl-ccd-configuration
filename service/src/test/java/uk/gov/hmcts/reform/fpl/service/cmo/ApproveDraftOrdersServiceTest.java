@@ -17,36 +17,42 @@ import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -63,6 +69,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REMOVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -77,6 +84,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.EMPTY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -124,6 +132,9 @@ class ApproveDraftOrdersServiceTest {
     @Mock
     private OthersService othersService;
 
+    @Mock
+    private JudicialService judicialService;
+
     @InjectMocks
     private ApproveDraftOrdersService underTest;
 
@@ -137,7 +148,8 @@ class ApproveDraftOrdersServiceTest {
             draftOrdersBundleHearingSelector,
             blankOrderGenerator,
             hearingOrderGenerator,
-            othersService
+            othersService,
+            judicialService
         );
     }
 
@@ -433,8 +445,8 @@ class ApproveDraftOrdersServiceTest {
                 .draftCmos(emptyList())
                 .build()
         );
-        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified,
-            SealType.ENGLISH, caseData.getCourt()))
+        given(hearingOrderGenerator.buildSealedHearingOrder(caseData, reviewDecision, agreedCMO, others,
+            othersNotified, false))
             .willReturn(element(agreedCMO.getId(), expectedCmo));
 
         Map<String, Object> actualData = underTest.reviewCMO(caseData, ordersBundleElement);
@@ -509,6 +521,41 @@ class ApproveDraftOrdersServiceTest {
     }
 
     @Test
+    void shouldRemoveCMOWhenJudgeRemoveCMO() {
+        Element<HearingOrder> agreedCMO = agreedCMO(HEARING_1);
+
+        Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(HEARING_1, newArrayList(agreedCMO));
+
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(JUDGE_REMOVED)
+            .changesRequestedByJudge("requested changes text").build();
+
+        CaseData caseData = CaseData.builder()
+            .state(State.CASE_MANAGEMENT)
+            .draftUploadedCMOs(newArrayList(agreedCMO))
+            .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
+            .reviewCMODecision(reviewDecision)
+            .build();
+
+        when(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class)))
+            .thenReturn(HearingOrdersBundles.builder()
+                .agreedCmos(emptyList())
+                .draftCmos(emptyList())
+                .build()
+            );
+
+        Map<String, Object> expectedData = Map.of(
+            "draftUploadedCMOs", emptyList(),
+            "hearingOrdersBundlesDrafts", emptyList(),
+            "hearingOrdersBundlesDraftReview", emptyList()
+        );
+
+        Map<String, Object> actualData = underTest.reviewCMO(caseData, ordersBundleElement);
+
+        assertThat(actualData).containsAllEntriesOf(expectedData)
+            .doesNotContainKeys("selectedCMOs", "state", "ordersToBeSent");
+    }
+
+    @Test
     void shouldSealTheDraftOrderAndCreateBlankOrderWhenJudgeApproves() {
         Element<HearingOrder> draftOrder1 = buildBlankOrder("test order1", HEARING_1);
 
@@ -518,7 +565,6 @@ class ApproveDraftOrdersServiceTest {
         ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
 
         Map<String, Object> data = new HashMap<>();
-        data.put("reviewDecision1", Map.of("decision", reviewDecision));
 
         CaseData caseData = CaseData.builder()
             .court(Court.builder()
@@ -529,9 +575,8 @@ class ApproveDraftOrdersServiceTest {
             .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
             .reviewCMODecision(reviewDecision)
             .orderCollection(newArrayList())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
             .build();
-
-        given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
 
         Element<HearingOrder> expectedSealedOrder = element(
             draftOrder1.getId(), draftOrder1.getValue().toBuilder().status(APPROVED).build());
@@ -539,8 +584,8 @@ class ApproveDraftOrdersServiceTest {
         Element<GeneratedOrder> expectedBlankOrder = element(UUID.randomUUID(),
             GeneratedOrder.builder().type(String.valueOf(C21)).build());
 
-        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), "",
-            SealType.ENGLISH, caseData.getCourt()))
+        given(hearingOrderGenerator.buildSealedHearingOrder(caseData, reviewDecision, draftOrder1, emptyList(), "",
+            true))
             .willReturn(expectedSealedOrder);
         given(blankOrderGenerator.buildBlankOrder(
             caseData, ordersBundleElement, expectedSealedOrder, emptyList(), ""))
@@ -567,7 +612,6 @@ class ApproveDraftOrdersServiceTest {
             .changesRequestedByJudge("some change").build();
 
         Map<String, Object> data = new HashMap<>();
-        data.put("reviewDecision1", Map.of("decision", JUDGE_REQUESTED_CHANGES));
 
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
@@ -576,8 +620,6 @@ class ApproveDraftOrdersServiceTest {
             .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
             .orderCollection(newArrayList())
             .build();
-
-        given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
 
         Element<HearingOrder> rejectedOrderToReturn = element(draftOrder1.getId(),
             draftOrder1.getValue().toBuilder().status(RETURNED).requestedChanges("some change").build());
@@ -646,6 +688,37 @@ class ApproveDraftOrdersServiceTest {
     }
 
     @Test
+    void shouldRemoveOrderWhenJudgeRemoveTheOrder() {
+        Element<HearingOrder> draftOrder1 = buildBlankOrder("test order1", HEARING_1);
+
+        Element<HearingOrdersBundle> ordersBundleElement =
+            buildDraftOrdersBundle(HEARING_1, newArrayList(draftOrder1));
+
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(JUDGE_REMOVED)
+            .changesRequestedByJudge("some change").build();
+
+        Map<String, Object> data = new HashMap<>();
+
+        CaseData caseData = CaseData.builder()
+            .state(State.CASE_MANAGEMENT)
+            .draftUploadedCMOs(newArrayList(draftOrder1))
+            .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
+            .orderCollection(newArrayList())
+            .build();
+
+        Map<String, Object> expectedData = Map.of(
+            "orderCollection", emptyList(),
+            "hearingOrdersBundlesDrafts", emptyList()
+        );
+
+        underTest.reviewC21Orders(caseData, data, ordersBundleElement);
+        assertThat(data).containsAllEntriesOf(expectedData);
+        assertThat(data).doesNotContainKey("ordersToBeSent");
+        verifyNoInteractions(blankOrderGenerator);
+    }
+
+    @Test
     void shouldThrowAnExceptionWhenNoUpcomingHearingsAreAvailable() {
         Element<HearingOrder> agreedCMO = agreedCMO(HEARING_2);
         Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(HEARING_2, newArrayList(agreedCMO));
@@ -661,8 +734,8 @@ class ApproveDraftOrdersServiceTest {
             .hearingDetails(emptyList())
             .build();
 
-        given(hearingOrderGenerator.buildSealedHearingOrder(any(), eq(agreedCMO), eq(emptyList()), eq(""),
-            eq(SealType.ENGLISH), eq(caseData.getCourt())))
+        given(hearingOrderGenerator.buildSealedHearingOrder(eq(caseData), any(), eq(agreedCMO), eq(emptyList()),
+            eq(""), eq(false)))
             .willReturn(element(agreedCMO.getId(), agreedCMO.getValue().toBuilder().status(APPROVED).build()));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -712,6 +785,52 @@ class ApproveDraftOrdersServiceTest {
     }
 
     @Test
+    void shouldReturnSelectedDraftOrderHearingId() {
+        UUID selectedHearingOrdersBundleId = UUID.randomUUID();
+        UUID selectedHearingId = UUID.randomUUID();
+
+        Element<HearingOrder> draftOrder1 = element(HearingOrder.builder().hearingId(selectedHearingId)
+            .title("Draft C21 Order 1").type(HearingOrderType.C21).hearing("Hearing 1").status(SEND_TO_JUDGE).build());
+
+        Element<HearingOrdersBundle> ordersBundle = element(selectedHearingOrdersBundleId, HearingOrdersBundle
+            .builder().hearingId(selectedHearingId).orders(new ArrayList<>((List.of(draftOrder1)))).build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(ordersBundle))
+            .selectedHearingId(selectedHearingOrdersBundleId)
+            .allocateJudgeEventData(new AllocateJudgeEventData(LEGAL_ADVISOR, null, null,
+                Judge.builder().judgeFullName("Judge John").build())).build();
+
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willReturn(ordersBundle);
+
+        assertThat(underTest.getSelectedHearingDraftOrderId(caseData)).isEqualTo(Optional.of(selectedHearingId));
+    }
+
+    @Test
+    void shouldReturnExceptionWhenNoHearingId() {
+        UUID selectedHearingOrdersBundleId = UUID.randomUUID();
+
+        Element<HearingOrder> draftOrder1 = element(HearingOrder.builder()
+            .title("Draft C21 Order 1").type(HearingOrderType.C21).hearing("Hearing 1").status(SEND_TO_JUDGE).build());
+
+        Element<HearingOrdersBundle> ordersBundle = element(selectedHearingOrdersBundleId, HearingOrdersBundle
+            .builder().orders(new ArrayList<>((List.of(draftOrder1)))).build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(ordersBundle))
+            .selectedHearingId(selectedHearingOrdersBundleId)
+            .allocateJudgeEventData(new AllocateJudgeEventData(LEGAL_ADVISOR, null, null,
+                Judge.builder().judgeFullName("Judge John").build())).build();
+
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willThrow(new HearingOrdersBundleNotFoundException("Could not find hearing draft orders bundle with id"
+                + UUID.randomUUID()));
+
+        assertThat(underTest.getSelectedHearingDraftOrderId(caseData)).isEqualTo(Optional.empty());
+    }
+
+    @Test
     void shouldGetLatestSealedCMOFromSealedCMOsList() {
         Element<HearingOrder> cmo1 = agreedCMO(HEARING_1);
         Element<HearingOrder> cmo2 = agreedCMO(HEARING_2);
@@ -740,7 +859,6 @@ class ApproveDraftOrdersServiceTest {
             ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
 
             Map<String, Object> data = new HashMap<>();
-            data.put("reviewDecision1", Map.of("decision", reviewDecision));
 
             CaseData caseData = CaseData.builder()
                 .court(Court.builder()
@@ -749,11 +867,9 @@ class ApproveDraftOrdersServiceTest {
                 .state(State.CASE_MANAGEMENT)
                 .draftUploadedCMOs(newArrayList(draftOrder1))
                 .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
-                .reviewCMODecision(reviewDecision)
+                .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
                 .orderCollection(newArrayList())
                 .build();
-
-            given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
 
             Element<HearingOrder> expectedSealedOrder = element(
                 draftOrder1.getId(), draftOrder1.getValue().toBuilder().status(APPROVED).build());
@@ -761,8 +877,8 @@ class ApproveDraftOrdersServiceTest {
             Element<GeneratedOrder> expectedBlankOrder = element(UUID.randomUUID(),
                 GeneratedOrder.builder().type(String.valueOf(C21)).build());
 
-            given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), "",
-                SealType.ENGLISH, caseData.getCourt()))
+            given(hearingOrderGenerator.buildSealedHearingOrder(caseData, reviewDecision, draftOrder1, emptyList(),
+                "", true))
                 .willReturn(expectedSealedOrder);
             given(blankOrderGenerator.buildBlankOrder(
                 caseData, ordersBundleElement, expectedSealedOrder, emptyList(), ""))
@@ -778,7 +894,6 @@ class ApproveDraftOrdersServiceTest {
             assertThat(data).containsAllEntriesOf(expectedData);
         }
 
-
         @Test
         void shouldNotCreateBlankOrderWhenJudgeRequestsChangesOnConfidentialOrder() {
             Element<HearingOrder> draftOrder1 = buildConfidentialBlankOrder("test order1", HEARING_1);
@@ -790,7 +905,6 @@ class ApproveDraftOrdersServiceTest {
                 .changesRequestedByJudge("some change").build();
 
             Map<String, Object> data = new HashMap<>();
-            data.put("reviewDecision1", Map.of("decision", JUDGE_REQUESTED_CHANGES));
 
             CaseData caseData = CaseData.builder()
                 .state(State.CASE_MANAGEMENT)
@@ -800,10 +914,12 @@ class ApproveDraftOrdersServiceTest {
                 .orderCollection(newArrayList())
                 .build();
 
-            given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
-
             Element<HearingOrder> rejectedOrderToReturn = element(draftOrder1.getId(),
-                draftOrder1.getValue().toBuilder().status(RETURNED).requestedChanges("some change").build());
+                draftOrder1.getValue().toBuilder()
+                    .status(RETURNED)
+                    .requestedChanges("some change")
+                    .orderRemoved(draftOrder1.getValue().getOrderConfidential())
+                    .build());
 
             given(hearingOrderGenerator.buildRejectedHearingOrder(
                 draftOrder1, reviewDecision.getChangesRequestedByJudge())).willReturn(rejectedOrderToReturn);
@@ -812,11 +928,45 @@ class ApproveDraftOrdersServiceTest {
                 "orderCollection", emptyList(),
                 "hearingOrdersBundlesDrafts", emptyList(),
                 "ordersToBeSent", List.of(rejectedOrderToReturn),
-                "refusedHearingOrdersCTSC", List.of(rejectedOrderToReturn)
+                "refusedHearingOrdersCTSC", List.of(element(rejectedOrderToReturn.getId(),
+                    rejectedOrderToReturn.getValue().toBuilder()
+                        .orderConfidential(null)
+                        .build()))
             );
 
             underTest.reviewC21Orders(caseData, data, ordersBundleElement);
             assertThat(data).containsAllEntriesOf(expectedData);
+            verifyNoInteractions(blankOrderGenerator);
+        }
+
+        @Test
+        void shouldRemoveOrderWhenJudgeRemovedConfidentialDraftOrder() {
+            Element<HearingOrder> draftOrder1 = buildConfidentialBlankOrder("test order1", HEARING_1);
+
+            Element<HearingOrdersBundle> ordersBundleElement = buildConfidentialDraftOrdersBundle(HEARING_1,
+                newArrayList(draftOrder1), ConfidentialOrderBundle.SUFFIX_CTSC);
+
+            ReviewDecision reviewDecision = ReviewDecision.builder().decision(JUDGE_REMOVED)
+                .changesRequestedByJudge("some change").build();
+
+            Map<String, Object> data = new HashMap<>();
+
+            CaseData caseData = CaseData.builder()
+                .state(State.CASE_MANAGEMENT)
+                .draftUploadedCMOs(newArrayList(draftOrder1))
+                .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
+                .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
+                .orderCollection(newArrayList())
+                .build();
+
+            Map<String, Object> expectedData = Map.of(
+                "orderCollection", emptyList(),
+                "hearingOrdersBundlesDrafts", emptyList()
+            );
+
+            underTest.reviewC21Orders(caseData, data, ordersBundleElement);
+            assertThat(data).containsAllEntriesOf(expectedData);
+            assertThat(data).doesNotContainKeys("ordersToBeSent", "refusedHearingOrdersCTSC");
             verifyNoInteractions(blankOrderGenerator);
         }
 
@@ -836,6 +986,46 @@ class ApproveDraftOrdersServiceTest {
             order.getValue().setOrder(null);
             return order;
         }
+    }
+
+    @Test
+    void shouldReturnSalariedJudgeTitleAndNameOfCurrentUser() {
+        when(judicialService.getJudgeTitleAndNameOfCurrentUser(null)).thenReturn("Judge John Smith");
+
+        AllocateJudgeEventData eventData = new AllocateJudgeEventData(JudgeType.SALARIED_JUDGE, null, null, null);
+
+        CaseData caseData = CaseData.builder()
+            .allocateJudgeEventData(eventData)
+            .build();
+        assertThat(underTest.getJudgeTitleAndNameOfCurrentUser(caseData)).isEqualTo("Judge John Smith");
+
+    }
+
+    @Test
+    void shouldReturnFeePaidJudgeTitleAndNameOfCurrentUser() {
+        when(judicialService.getJudgeTitleAndNameOfCurrentUser(JudgeOrMagistrateTitle.RECORDER))
+            .thenReturn("Recorder John Smith");
+
+        AllocateJudgeEventData eventData = new AllocateJudgeEventData(JudgeType.FEE_PAID_JUDGE,
+            JudgeOrMagistrateTitle.RECORDER, null, null);
+
+        CaseData caseData = CaseData.builder()
+            .allocateJudgeEventData(eventData)
+            .build();
+        assertThat(underTest.getJudgeTitleAndNameOfCurrentUser(caseData)).isEqualTo("Recorder John Smith");
+
+    }
+
+    @Test
+    void shouldReturnLegalNameFromMaunalInput() {
+        AllocateJudgeEventData eventData = new AllocateJudgeEventData(LEGAL_ADVISOR,
+            JudgeOrMagistrateTitle.RECORDER, null, Judge.builder().judgeFullName("Legal Advisor John Smith").build());
+
+        CaseData caseData = CaseData.builder()
+            .allocateJudgeEventData(eventData)
+            .build();
+        assertThat(underTest.getJudgeTitleAndNameOfCurrentUser(caseData)).isEqualTo("Legal Advisor John Smith");
+
     }
 
     private static Element<HearingOrder> draftCMO(String hearing) {

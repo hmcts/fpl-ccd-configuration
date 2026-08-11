@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageReply;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.List;
@@ -44,6 +45,7 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends MessageJudgeControl
     private static final String MESSAGE_REQUESTED_BY = "request review from some court";
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
+    private static final UUID ORIGINAL_MESSAGE_ID = UUID.randomUUID();
 
     ReplyToMessageJudgeControllerAboutToSubmitTest() {
         super("reply-message-judge");
@@ -83,6 +85,10 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends MessageJudgeControl
                 element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(originalDateSent, MESSAGE))))
             .build();
 
+        when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
+
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
         JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_RECIPIENT)
             .senderType(RECIPIENT_TYPE)
@@ -94,14 +100,27 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends MessageJudgeControl
             .fromLabel("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
             .toLabel("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
             .latestMessage(REPLY)
-            .messageHistory(String.format("%s (%s) - %s", SENDER_TYPE.getLabel(), SENDER, MESSAGE) + "\n \n"
-                + String.format("%s (%s) - %s", RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT, REPLY))
+            .judicialMessageReplies(List.of(
+                element(responseCaseData.getJudicialMessages().get(0).getValue().getJudicialMessageReplies()
+                    .get(0).getId(),
+                    JudicialMessageReply.builder()
+                        .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
+                        .updatedTime(now())
+                        .message(REPLY)
+                        .replyFrom("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
+                        .replyTo("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
+                        .build()),
+                element(ORIGINAL_MESSAGE_ID,
+                    JudicialMessageReply.builder()
+                        .dateSent(formatLocalDateTimeBaseUsingFormat(now().minusDays(2), DATE_TIME_AT))
+                        .updatedTime(now().minusDays(2))
+                        .message(MESSAGE)
+                        .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
+                        .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
+                        .build())
+                ))
             .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
             .build();
-
-        when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
-
-        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseCaseData.getJudicialMessages())
             .first()
@@ -201,7 +220,14 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends MessageJudgeControl
             .status(OPEN)
             .subject(MESSAGE_REQUESTED_BY)
             .latestMessage(latestMessage)
-            .messageHistory(String.format("%s (%s) - %s", SENDER_TYPE.getLabel(), SENDER, MESSAGE))
+            .judicialMessageReplies(List.of(element(ORIGINAL_MESSAGE_ID,
+                JudicialMessageReply.builder()
+                    .dateSent(formatLocalDateTimeBaseUsingFormat(now().minusDays(2), DATE_TIME_AT))
+                    .updatedTime(now().minusDays(2))
+                    .message(MESSAGE)
+                    .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
+                    .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
+                    .build())))
             .dateSent(dateSent)
             .build();
     }

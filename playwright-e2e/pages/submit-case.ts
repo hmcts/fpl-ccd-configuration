@@ -26,13 +26,20 @@ export class SubmitCase extends BasePage{
     this.paymentAmountText = page.getByText('£');
   }
 
-  async submitCaseSmokeTest(amount:string= '2,437.00') {
+  async submitCaseSmokeTest(amount:string) {
     //first page
     await expect(this.declarationHeading).toBeVisible();
     await expect(this.teamManagerNameText).toBeVisible();
     await this.statementAgree.check();
     await expect(this.paymentAmountLocator).toBeVisible();
-    await this.clickSubmit();
+    await Promise.all([
+        this.page.waitForResponse(response =>
+            response.url().includes('validate') &&
+            response.request().method() === 'POST' &&
+            response.status() === 200
+        ),
+        this.clickSubmit()
+    ]);
 
     //second page
     await expect(this.checkYourAnswersHeader).toBeVisible();

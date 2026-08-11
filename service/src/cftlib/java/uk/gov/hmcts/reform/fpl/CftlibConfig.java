@@ -19,6 +19,7 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-publiclaw-judiciary",
             "caseworker-publiclaw-bulkscan",
             "caseworker-publiclaw-bulkscansystemupdate",
+            "caseworker-publiclaw-rparobot",
             "caseworker-publiclaw-solicitor",
             "caseworker-publiclaw-superuser",
             "caseworker-publiclaw-magistrate",
@@ -35,7 +36,17 @@ public class CftlibConfig implements CFTLibConfigurer {
             "TTL_profile",
             "ctsc",
             "hearing-centre-admin",
-            "legal-adviser"
+            "legal-adviser",
+            "allocated-judge",
+            "hearing-judge",
+            "allocated-legal-adviser",
+            "hearing-legal-adviser",
+            "judge",
+            "tribunal-caseworker",
+            "specific-access-approver-legal-ops",
+            "specific-access-approver-ctsc",
+            "specific-access-approver-judiciary",
+            "specific-access-approver-admin"
         };
         lib.createRoles(roles);
 

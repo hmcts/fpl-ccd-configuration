@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -122,6 +123,15 @@ public class CaseInitiationController extends CallbackController {
         if (Objects.nonNull(updatedCaseData.getDfjArea())) {
             caseDetails.putIfNotEmpty("dfjArea", updatedCaseData.getDfjArea());
             caseDetails.putIfNotEmpty(updatedCaseData.getCourtField(), updatedCaseData.getCourt().getCode());
+        }
+
+        if (!RepresentativeType.LOCAL_AUTHORITY.equals(updatedCaseData.getRepresentativeType())) {
+            // if we're a 3rd party app, prepopulate the respondentLocalAuthority field
+            caseDetails.putIfNotEmpty("respondentLocalAuthority",
+                caseInitiationService.getRespondentLocalAuthorityDetails(caseData));
+            caseDetails.putIfNotEmpty("hasRespondentLA", YesNo.YES);
+        } else {
+            caseDetails.putIfNotEmpty("hasRespondentLA", YesNo.NO);
         }
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs", "sharingWithUsers", "isOutsourcedCase");

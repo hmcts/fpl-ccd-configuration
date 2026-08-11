@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -26,11 +27,13 @@ class PlacementPaymentDetailsMidEventTest extends AbstractPlacementControllerTes
             .placementEventData(PlacementEventData.builder()
                 .placementPayment(paymentDetails)
                 .build())
+            .isCTSCUser(YesNo.YES)
             .build();
 
         final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "payment-details");
 
-        assertThat(response.getErrors()).containsExactly("Payment by account (PBA) number must include 7 numbers");
+        assertThat(response.getErrors())
+            .containsExactly("Payment by account (PBA) number must include 7 numbers and the PBA prefix");
     }
 
     @Test
@@ -44,6 +47,7 @@ class PlacementPaymentDetailsMidEventTest extends AbstractPlacementControllerTes
             .placementEventData(PlacementEventData.builder()
                 .placementPayment(paymentDetails)
                 .build())
+            .isCTSCUser(YesNo.YES)
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "payment-details"));

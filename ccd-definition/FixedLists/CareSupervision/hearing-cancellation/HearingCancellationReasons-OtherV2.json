@@ -1,0 +1,100 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT1",
+    "ListElement": "Case transferred",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT2",
+    "ListElement": "Need for an interim contested hearing",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT3",
+    "ListElement": "Other non compliance with directions",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT4",
+    "ListElement": "Consolidation with other family proceedings",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT5",
+    "ListElement": "Parallel proceedings",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT6",
+    "ListElement": "New baby/pregnancy",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT7",
+    "ListElement": "New Party joined",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "IN1",
+    "ListElement": "Immigration and international difficulties",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT8",
+    "ListElement": "Severe weather",
+    "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT9",
+    "ListElement": "Industrial action",
+    "DisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT11",
+    "ListElement": "Party has complied with the directions",
+    "DisplayOrder": 12
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT12",
+    "ListElement": "Case settled at an earlier hearing",
+    "DisplayOrder": 13
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT13",
+    "ListElement": "Consent Order Filed",
+    "DisplayOrder": 14
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-OtherV2",
+    "ListElementCode": "OT14",
+    "ListElement": "Case concluded",
+    "DisplayOrder": 15
+  }
+]

@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Component
 public class UpdateCMOHearing {
@@ -23,8 +24,16 @@ public class UpdateCMOHearing {
         if (hearingBooking.isEmpty()) {
             List<Element<HearingBooking>> matchingLabel = caseData.getAllHearings()
                 .stream()
-                .filter(hearing -> hearing.getValue().toLabel().equals(cmo.getHearing()))
-                .collect(Collectors.toList());
+                .filter(hearing -> {
+                    if (!isEmpty(cmo.getHearingId())) {
+                        // hearing id is added to CMO since 2023
+                        return hearing.getId().equals(cmo.getHearingId());
+                    } else {
+                        // keep this bit for older CMOs where hearing id is not set
+                        return hearing.getValue().toLabel().equals(cmo.getHearing());
+                    }
+                })
+                .toList();
 
             if (matchingLabel.size() != 1) {
                 throw new UnexpectedNumberOfCMOsRemovedException(

@@ -1278,5 +1278,85 @@
     "Label": "Medical Records",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "advocateMeetingMinuteList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdvocateMeetingMinute",
+    "Label": "Advocate Meeting Minutes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "advocateMeetingMinuteListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdvocateMeetingMinuteConfidential",
+    "Label": "Advocate Meeting Minutes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "advocateMeetingMinuteListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdvocateMeetingMinuteConfidential",
+    "Label": "Advocate Meeting Minutes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "advocateMeetingMinuteListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdvocateMeetingMinuteConfidential",
+    "Label": "Advocate Meeting Minutes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "witnessTemplateList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "WitnessTemplate",
+    "Label": "Witness Template",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "witnessTemplateListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "WitnessTemplateConfidential",
+    "Label": "Witness Template",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "witnessTemplateListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "WitnessTemplateConfidential",
+    "Label": "Witness Template",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "witnessTemplateListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "WitnessTemplateConfidential",
+    "Label": "Witness Template",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

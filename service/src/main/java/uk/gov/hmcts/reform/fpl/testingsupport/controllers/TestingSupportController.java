@@ -12,21 +12,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
+import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
-import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.model.payment.Payments;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -35,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.testingsupport.pojos.TestingSupportAmRoleRequest;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -42,16 +45,19 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.NotificationList;
 
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.resolve;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 
 @Slf4j
 @RestController
@@ -67,7 +73,7 @@ public class TestingSupportController {
     private final RequestData requestData;
     private final AuthTokenGenerator authToken;
 
-    private final CaseAccessDataStoreApi caseAccess;
+    private final CaseAssignmentApi caseAssignmentApi;
     private final CoreCaseDataApi coreCaseDataApi;
     private final CoreCaseDataApiV2 coreCaseDataApiV2;
     private final CoreCaseDataService coreCaseDataService;
@@ -83,7 +89,7 @@ public class TestingSupportController {
 
     @PostMapping(value = "/testing-support/case/create", produces = APPLICATION_JSON_VALUE)
     public Map createCase(@RequestBody Map<String, Object> requestBody) {
-
+        // go through CCD event, openCase, to create a case
         StartEventResponse startEventResponse = coreCaseDataApi.startCase(
             requestData.authorisation(),
             authToken.generate(),
@@ -140,7 +146,8 @@ public class TestingSupportController {
     @PostMapping("/testing-support/user")
     public UserDetails getUser(@RequestBody Map<String, String> requestBody) {
         final String token = idamClient.getAccessToken(requestBody.get(EMAIL), requestBody.get("password"));
-        return idamClient.getUserDetails(token);
+        final String userId = idamClient.getUserInfo(token).getUid();
+        return idamClient.getUserByUserId(token, userId);
     }
 
     @GetMapping("/testing-support/document")
@@ -177,17 +184,17 @@ public class TestingSupportController {
         log.info("About to grant {} to user {} to case {}", role, email, caseId);
 
         final String token = idamClient.getAccessToken(email, password);
-        final String userId = idamClient.getUserDetails(token).getId();
+        final String userId = idamClient.getUserInfo(token).getUid();
 
-        final AddCaseAssignedUserRolesRequest accessRequest = AddCaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(CaseAssignedUserRoleWithOrganisation.builder()
+        final CaseAssignmentUserRolesRequest accessRequest = CaseAssignmentUserRolesRequest.builder()
+            .caseAssignmentUserRolesWithOrganisation(List.of(CaseAssignmentUserRoleWithOrganisation.builder()
                 .caseDataId(caseId.toString())
                 .userId(userId)
                 .caseRole(role)
                 .build()))
             .build();
 
-        caseAccess.addCaseUserRoles(userToken, authToken.generate(), accessRequest);
+        caseAssignmentApi.addCaseUserRoles(userToken, authToken.generate(), accessRequest);
 
         log.info("Role {} granted to user {} to case {}", role, email, caseId);
     }
@@ -207,5 +214,22 @@ public class TestingSupportController {
     @GetMapping("/testing-support/assign-system-role")
     public void assignSystemUserRole() {
         roleAssignmentService.assignSystemUserRole();
+    }
+
+    @PostMapping("/testing-support/case/{caseId}/am-role")
+    public void assignAmRole(@PathVariable("caseId") Long caseId, @RequestBody TestingSupportAmRoleRequest request) {
+        RoleCategory roleCategory = request.getRoleCategory();
+        if (LegalAdviserRole.ALLOCATED_LEGAL_ADVISER.getRoleName().equals(request.getRole())) {
+            roleCategory = RoleCategory.LEGAL_OPERATIONS;
+        } else if (LegalAdviserRole.HEARING_LEGAL_ADVISER.getRoleName().equals(request.getRole())) {
+            roleCategory = RoleCategory.JUDICIAL;
+        }
+
+        roleAssignmentService.assignCaseRole(caseId,
+            (!isEmpty(request.getUserIds()) ? request.getUserIds() : List.of()),
+            request.getRole(),
+            roleCategory,
+            (!isEmpty(request.getStartTime()) ? request.getStartTime() : ZonedDateTime.now(LONDON_TIMEZONE)),
+            request.getEndTime());
     }
 }

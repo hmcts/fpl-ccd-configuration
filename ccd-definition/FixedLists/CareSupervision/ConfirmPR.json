@@ -1,0 +1,9 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ConfirmPR",
+    "ListElementCode": "confirm",
+    "ListElement": "I confirm that each person added as a respondent has parental responsibility for one or more children in the application. Any person in the case who does not have parental responsibility will be added to 'Other people in the case'.",
+    "DisplayOrder": 1
+  }
+]

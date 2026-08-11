@@ -210,34 +210,33 @@
       "judgeLastName": "Moley",
       "judgeEmailAddress": "moley@example.com"
     },
-    "judicialMessages":
-    [
+    "judicialMessages": [
       {
-        "id": "65d197bb-d8f1-4ae0-94b4-e793a812be95",
+        "id": "a285ed58-eb62-44a6-baea-38c67e16ebca",
         "value": {
-          "updatedTime": "2023-12-01T14:41:54.989344849",
-          "applicationType": "C2, 25 March 2021, 3:16pm",
-          "requestedBy": "Subject 1",
-          "recipientType": "CTSC",
-          "sender": "judiciary-only@mailnesia.com",
-          "urgency": "High",
-          "relatedDocumentFileNames": "Test.txt",
-          "messageHistory": "FamilyPublicLaw+ctsc@gmail.com - Some note\n \njudiciary-only@mailnesia.com - This is a reply",
-          "recipient": "FamilyPublicLaw+ctsc@gmail.com",
-          "relatedDocuments": [
+          "sender": "FamilyPublicLaw+ctsc@gmail.com",
+          "status": "OPEN",
+          "toLabel": "Other Judge/Legal Adviser",
+          "urgency": "Not urgent",
+          "dateSent": "4 November 2025 at 10:38am",
+          "fromLabel": "CTSC",
+          "senderType": "CTSC",
+          "requestedBy": "Hearing urgency -reg",
+          "updatedTime": "2025-11-04T10:38:10.814408516",
+          "latestMessage": "Clarification need about the urgency of the hearing. The interpreter requested by the applicant is not yet arranged",
+          "recipientType": "OTHER",
+          "judicialMessageReplies": [
             {
-              "id": "8ec0d7b4-914c-4c7a-996f-317759d1d0fe",
+              "id": "88c5a28f-55a0-4714-a551-663a9e7d3034",
               "value": {
-                "document_binary_url":"${TEST_DOCUMENT_BINARY_URL}",
-                "document_filename": "Test.txt",
-                "document_url": "${TEST_DOCUMENT_URL}"
+                "message": "Clarification need about the urgency of the hearing. The interpreter requested by the applicant is not yet arranged",
+                "replyTo": "Other Judge/Legal Adviser",
+                "dateSent": "4 November 2025 at 10:38am",
+                "replyFrom": "CTSC",
+                "updatedTime": "2025-11-04T10:38:10.814384839"
               }
             }
-          ],
-          "senderType": "JUDICIARY",
-          "latestMessage": "This is a reply",
-          "dateSent": "1 December 2023 at 2:41pm",
-          "status": "OPEN"
+          ]
         }
       }
     ],

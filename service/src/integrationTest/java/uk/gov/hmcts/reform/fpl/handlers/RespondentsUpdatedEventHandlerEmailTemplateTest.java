@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
@@ -48,7 +49,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     FixedTimeConfiguration.class
 })
 @MockBeans({
-    @MockBean(CafcassNotificationService.class)
+    @MockBean(CafcassNotificationService.class),
+    @MockBean(LocalAuthorityService.class)
 })
 class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 

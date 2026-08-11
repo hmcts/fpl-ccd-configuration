@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
@@ -71,16 +72,23 @@ public class PastHearingDatesValidatorService {
         return localDateTime.toLocalTime().equals(MIDNIGHT);
     }
 
-    private boolean isInvalidField(Object s) {
+    private Optional<Integer> parseInteger(Object s) {
         if (s == null) {
-            return false;
+            return Optional.empty();
         }
         try {
-            Integer.parseInt(s.toString());
-            return false;
+            return Optional.of(Integer.parseInt(s.toString()));
         } catch (NumberFormatException ex) {
-            return true;
+            return Optional.empty();
         }
+    }
+
+    private boolean isInvalidField(Object s) {
+        return s != null && parseInteger(s).isEmpty();
+    }
+
+    private boolean isInvalidMinuteRange(Object s) {
+        return parseInteger(s).map(i -> i >= 60).orElse(false);
     }
 
     public List<String> validateHearingIntegers(CaseDetails caseDetails) {
@@ -90,6 +98,9 @@ public class PastHearingDatesValidatorService {
         }
         if (isInvalidField(caseDetails.getData().get("hearingMinutes"))) {
             errors.add("Hearing length, in minutes should be a whole number");
+        }
+        if (isInvalidMinuteRange(caseDetails.getData().get("hearingMinutes"))) {
+            errors.add("Hearing length, in minutes, cannot exceed 59");
         }
         if (isInvalidField(caseDetails.getData().get("hearingDays"))) {
             errors.add("Hearing length, in days should be a whole number");

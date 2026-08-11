@@ -1,0 +1,58 @@
+import { defineConfig, devices } from "@playwright/test";
+
+/**
+ * Read environment variables from file.
+ * https://github.com/motdotla/dotenv
+ */
+// require('dotenv').config();
+
+/**
+ * See https://playwright.dev/docs/test-configuration.
+ */
+export default defineConfig({
+
+  testDir: "./playwright-e2e",
+  testMatch:'*api.spec.ts',
+  /* Run tests in files in parallel */
+  fullyParallel: false,
+
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  forbidOnly: !!process.env.CI,
+  /* Retry on CI only */
+  retries: process.env.CI ? 2 : 0,
+  /* Opt out of parallel tests on CI. */
+  workers: process.env.CI ? 2 : undefined,
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: [['html', { outputFolder: 'test-results/functional' }],
+             ['junit', { outputFile: 'test-results/functional/results.xml' }]
+  ],
+    outputDir: 'test-artifacts',
+
+  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  use: {
+    // Record trace only when retrying a test for the first time.
+    trace: 'on-first-retry'
+  },
+
+  /* Configure projects */
+  projects: [
+      {
+          name: 'GlobalSetupCafcassAPI',
+          testMatch: '/settings/global-setup-cafcassAPI.ts',
+
+      },
+    {
+      name: "APITest",
+      testMatch: /.*.api.spec.ts/,
+      fullyParallel: false,
+    },
+      {
+        name: "cafcassAPITest",
+          use: { ...devices['edge'] },
+        testMatch: /.*.cafcassAPI.spec.ts/,
+        fullyParallel: true,
+          timeout: 100000,
+        dependencies: ['GlobalSetupCafcassAPI']
+      }
+  ],
+});

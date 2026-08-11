@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.ReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.ReturnApplicationService;
 
 @RestController
@@ -19,8 +20,11 @@ import uk.gov.hmcts.reform.fpl.service.ReturnApplicationService;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReturnApplicationController extends CallbackController {
     public static final String RETURN_APPLICATION = "returnApplication";
+    public static final String DATE_SUBMITTED = "dateSubmitted";
+    public static final String LAST_SUBMITTED_DATE = "lastSubmittedDate";
 
     private final ReturnApplicationService returnApplicationService;
+    private final ApplicationDocumentsService applicationDocumentsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -45,6 +49,12 @@ public class ReturnApplicationController extends CallbackController {
         ));
 
         caseDetails.getData().remove("submittedForm");
+        caseDetails.getData().put(DATE_SUBMITTED, null);
+        caseDetails.getData().put(LAST_SUBMITTED_DATE, caseData.getDateSubmitted());
+
+        // Rebuild the temporaryApplicationDocuments as they may need to modify those documents
+        caseDetails.getData().put("temporaryApplicationDocuments",
+            applicationDocumentsService.rebuildTemporaryApplicationDocuments(caseData));
 
         return respond(caseDetails);
     }

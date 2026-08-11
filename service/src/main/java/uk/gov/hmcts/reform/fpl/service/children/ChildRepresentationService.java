@@ -65,7 +65,7 @@ public class ChildRepresentationService {
                         && LIVE_IN_REFUGE.getValue().equalsIgnoreCase(
                             childElement.getValue().getParty().getLivingSituation())) {
                         childBuilder = childBuilder.party(childElement.getValue().getParty().toBuilder()
-                            .detailsHidden(YES.getValue()).build());
+                            .isAddressConfidential(YES.getValue()).build());
                     }
 
                     return element(childElement.getId(), childBuilder.build());

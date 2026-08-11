@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -19,16 +20,21 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasGender;
 
 import java.time.LocalDate;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @HasGender(groups = {Default.class, SealedSDOGroup.class})
+@SuppressWarnings({"java:S1133","java:S1874"})
 public final class ChildParty extends Party {
     private final ChildGender gender;
     private final String genderIdentification;
     private final String livingSituation;
     private final String livingSituationDetails;
+    private final String isAddressConfidential;
+    private final String livingWithDetails;
     private final LocalDate addressChangeDate;
     private final LocalDate datePowersEnd;
     private final LocalDate careStartDate;
@@ -40,15 +46,48 @@ public final class ChildParty extends Party {
     private final String placementCourt;
     private final String mothersName;
     private final String fathersName;
+    /**
+     * No longer used as part of C110a flow and template DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String fathersResponsibility;
     private final String socialWorkerName;
     private final Telephone socialWorkerTelephoneNumber;
+    private final String socialWorkerEmail;
+    private final String socialWorkerDetailsHidden;
+    private final String socialWorkerDetailsHiddenReason;
     private final String additionalNeeds;
     private final String additionalNeedsDetails;
+    /**
+     * Replaced by isAddressConfidential and socialWorkerDetailHidden DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHidden;
+    /**
+     * No longer used, replaced by socialWorkerDetailsHiddenReason DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String detailsHiddenReason;
+    /**
+     * No longer used as part of C110a flow and template DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssues;
+    /**
+     * No longer required as part of C110a flow and template DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String litigationIssuesDetails;
+    /**
+     * Replaced by isAddressConfidential but kept backwards compatability DFPL-2362.
+     * @deprecated (DFPL-2362, historical field)
+     */
+    @Deprecated(since = "DFPL-2362 06/03/25")
     private final String showAddressInConfidentialTab;
     private final LocalDate completionDate;
     private final CaseExtensionReasonList extensionReason;
@@ -73,6 +112,26 @@ public final class ChildParty extends Party {
         return super.getDateOfBirth();
     }
 
+    public String getIsAddressConfidential() {
+        if (isNotEmpty(isAddressConfidential)) {
+            return isAddressConfidential;
+        } else if (isNotEmpty(detailsHidden)) {
+            return YesNo.from(YesNo.YES.equalsString(getDetailsHidden())).getValue();
+        } else {
+            return null;
+        }
+    }
+
+    public String getSocialWorkerDetailsHidden() {
+        if (isNotEmpty(socialWorkerDetailsHidden)) {
+            return socialWorkerDetailsHidden;
+        } else if (isNotEmpty(detailsHidden)) {
+            return YesNo.from(YesNo.YES.equalsString(getDetailsHidden())).getValue();
+        } else {
+            return null;
+        }
+    }
+
     @Builder(toBuilder = true)
     @SuppressWarnings("java:S107")
     public ChildParty(String partyId,
@@ -88,6 +147,8 @@ public final class ChildParty extends Party {
                       String genderIdentification,
                       String livingSituation,
                       String livingSituationDetails,
+                      String isAddressConfidential,
+                      String livingWithDetails,
                       LocalDate addressChangeDate,
                       LocalDate datePowersEnd,
                       LocalDate careStartDate,
@@ -102,6 +163,9 @@ public final class ChildParty extends Party {
                       String fathersResponsibility,
                       String socialWorkerName,
                       Telephone socialWorkerTelephoneNumber,
+                      String socialWorkerEmail,
+                      String socialWorkerDetailsHidden,
+                      String socialWorkerDetailsHiddenReason,
                       String additionalNeeds,
                       String additionalNeedsDetails,
                       String detailsHidden,
@@ -117,6 +181,9 @@ public final class ChildParty extends Party {
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;
         this.livingSituationDetails = livingSituationDetails;
+        this.isAddressConfidential = isNotEmpty(isAddressConfidential) ? isAddressConfidential :
+            isNotEmpty(detailsHidden) ? YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue() : null;
+        this.livingWithDetails = livingWithDetails;
         this.addressChangeDate = addressChangeDate;
         this.datePowersEnd = datePowersEnd;
         this.careStartDate = careStartDate;
@@ -131,6 +198,10 @@ public final class ChildParty extends Party {
         this.fathersResponsibility = fathersResponsibility;
         this.socialWorkerName = socialWorkerName;
         this.socialWorkerTelephoneNumber = socialWorkerTelephoneNumber;
+        this.socialWorkerEmail = socialWorkerEmail;
+        this.socialWorkerDetailsHidden = isNotEmpty(socialWorkerDetailsHidden) ? socialWorkerDetailsHidden :
+            isNotEmpty(detailsHidden) ? YesNo.from(YesNo.YES.equalsString(detailsHidden)).getValue() : null;
+        this.socialWorkerDetailsHiddenReason = socialWorkerDetailsHiddenReason;
         this.additionalNeeds = additionalNeeds;
         this.additionalNeedsDetails = additionalNeedsDetails;
         this.detailsHidden = detailsHidden;

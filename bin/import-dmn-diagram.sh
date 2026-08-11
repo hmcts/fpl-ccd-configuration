@@ -8,7 +8,7 @@ product=${3}
 s2sSecret=${FPL_S2S_SECRET:-AABBCCDDEEFFGGHH}
 
 serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh fpl_case_service \
-  $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${s2sSecret}))
+  $(docker run --rm hmctsprod.azurecr.io/imported/toolbelt/oathtool --totp -b ${s2sSecret}))
 
 camundaFilepath="$(realpath $workspace)/camunda"
 if [ ! -d ${camundaFilepath} ]; then

@@ -3,25 +3,31 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
+import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
 import java.util.List;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -40,10 +46,17 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
     private final String validateDecisionEventPath = "validate-review-decision";
     private final String hearing = "Test hearing 21st August 2020";
     private final DocumentReference order = testDocumentReference();
+    private final DocumentReference orderWithCoverSheet = testDocumentReference();
 
     private final Element<HearingOrder> agreedCMO = element(buildDraftOrder(AGREED_CMO));
     private final Element<HearingOrder> draftOrder1 = element(buildDraftOrder(C21));
     private final Element<HearingOrder> draftOrder2 = element(buildDraftOrder(C21));
+
+    @MockBean
+    private JudicialService judicialService;
+
+    @MockBean
+    private HearingOrderGenerator hearingOrderGenerator;
 
     ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest() {
         super("approve-draft-orders");
@@ -61,7 +74,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(Other.builder().name("test1").build()).build())
+            .othersV2(wrapElements(Other.builder().firstName("test1").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -90,6 +103,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .cmoToReviewList(hearingOrdersBundleId.toString())
             .reviewDraftOrdersData(reviewDraftOrdersData).build();
 
+        given(judicialService.isCurrentUserFeePaidJudge()).willReturn(Boolean.FALSE);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).containsOnly("Add what the LA needs to change on the draft order 2");
@@ -114,6 +128,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .cmoToReviewList(hearingOrdersBundleId.toString())
             .reviewDraftOrdersData(reviewDraftOrdersData).build();
 
+        given(judicialService.isCurrentUserFeePaidJudge()).willReturn(Boolean.FALSE);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors())
@@ -125,25 +140,28 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
-            hearingOrdersBundleId, newArrayList(draftOrder1, draftOrder2));
+            hearingOrdersBundleId, newArrayList(draftOrder1, draftOrder2), null);
 
         ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder()
-            .reviewDecision2(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
+            .draftOrder1Document(order)
+            .judgeTitleAndName("Judge Title and Name")
+            .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
-                .build())
+            .othersV2(wrapElements(Other.builder().name("test1").build(), Other.builder().name("test2").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
             .reviewDraftOrdersData(reviewDraftOrdersData).build();
 
+        when(judicialService.isCurrentUserFeePaidJudge()).thenReturn(Boolean.FALSE);
+        when(hearingOrderGenerator.addCoverSheet(any(), eq(order))).thenReturn(orderWithCoverSheet);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getData().get("previewApprovedOrder1")).isNotNull();
+        assertThat(callbackResponse.getData().get("previewApprovedOrderTitle1")).isNotNull();
     }
 
     @Test
@@ -159,15 +177,96 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .cmoToReviewList(hearingOrdersBundleId.toString())
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
 
+        given(judicialService.isCurrentUserFeePaidJudge()).willReturn(Boolean.FALSE);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
+    @Test
+    void shouldSetFeePaidJudgeTypeIfFeePaidJudgeApproving() {
+        UUID hearingOrdersBundleId = UUID.randomUUID();
+
+        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
+            hearingOrdersBundleId, newArrayList(draftOrder1, draftOrder2));
+
+        ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder()
+            .draftOrder1Document(order)
+            .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .othersV2(wrapElements(
+                Other.builder().firstName("test1").lastName("lastname1").build(),
+                Other.builder().firstName("test2").lastName("lastname2").build()))
+            .draftUploadedCMOs(newArrayList(agreedCMO))
+            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .cmoToReviewList(hearingOrdersBundleId.toString())
+            .reviewDraftOrdersData(reviewDraftOrdersData).build();
+
+        when(judicialService.isCurrentUserFeePaidJudge()).thenReturn(Boolean.TRUE);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getData().get("judgeType")).isEqualTo("FEE_PAID_JUDGE");
+    }
+
+    @Test
+    void shouldSetLegalAdvisorTypeIfLegalAdvisorApproving() {
+        UUID hearingOrdersBundleId = UUID.randomUUID();
+
+        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
+            hearingOrdersBundleId, newArrayList(draftOrder1, draftOrder2));
+
+        ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder()
+            .draftOrder1Document(order)
+            .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .othersV2(wrapElements(
+                Other.builder().firstName("test1").lastName("lastname1").build(),
+                Other.builder().firstName("test2").lastName("lastname2").build()))
+            .draftUploadedCMOs(newArrayList(agreedCMO))
+            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .cmoToReviewList(hearingOrdersBundleId.toString())
+            .reviewDraftOrdersData(reviewDraftOrdersData).build();
+
+        when(judicialService.isCurrentUserFeePaidJudge()).thenThrow(new RuntimeException("Not found"));
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getData().get("judgeType")).isEqualTo("LEGAL_ADVISOR");
+    }
+
+    @Test
+    void shouldReturnNullIfOrderHasNoHearingId() {
+        UUID hearingOrdersBundleId = UUID.randomUUID();
+
+        Element<HearingOrder> draftOrder1 = element(HearingOrder.builder().title("Draft C21 Order 1")
+            .type(HearingOrderType.C21).hearing("Hearing 1").status(SEND_TO_JUDGE).build());
+
+        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
+            hearingOrdersBundleId, newArrayList(draftOrder1));
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
+
+        assertThat(callbackResponse.getData().get("selectedHearingIdDraft")).isNull();
+    }
+
     private Element<HearingOrdersBundle> buildHearingOrdersBundle(
         UUID hearingOrdersBundle1, List<Element<HearingOrder>> orders) {
+        return buildHearingOrdersBundle(hearingOrdersBundle1, orders, UUID.randomUUID());
+    }
+
+    private Element<HearingOrdersBundle> buildHearingOrdersBundle(
+        UUID hearingOrdersBundle1, List<Element<HearingOrder>> orders, UUID hearingId) {
         return element(hearingOrdersBundle1,
-            HearingOrdersBundle.builder().hearingId(UUID.randomUUID())
+            HearingOrdersBundle.builder().hearingId(hearingId)
                 .orders(orders)
                 .hearingName(hearing).build());
     }

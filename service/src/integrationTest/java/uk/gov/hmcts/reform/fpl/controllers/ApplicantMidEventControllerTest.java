@@ -26,7 +26,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 @Import({PbaNumberService.class, ValidateEmailService.class})
 class ApplicantMidEventControllerTest extends AbstractCallbackTest {
-    private static final String ERROR_MESSAGE = "Payment by account (PBA) number must include 7 numbers";
+    private static final String ERROR_MESSAGE =
+        "Payment by account (PBA) number must include 7 numbers and the PBA prefix";
 
     @MockBean
     private ApplicantService applicantService;

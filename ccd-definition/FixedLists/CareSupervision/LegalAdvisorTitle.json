@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalAdvisorTitle",
+    "ListElementCode": "MAGISTRATES",
+    "ListElement": "Magistrates (JP)",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalAdvisorTitle",
+    "ListElementCode": "LEGAL_ADVISOR",
+    "ListElement": "Legal Adviser",
+    "DisplayOrder": 2
+  }
+]

@@ -1,5 +1,21 @@
 [
   {
+    "email": "fpl-system-update@mailnesia.com",
+    "id": "13935614-2f65-4793-a4d8-decec19687b7",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "case-allocator",
+        "grantType": "STANDARD",
+        "roleCategory": "SYSTEM",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {"region": "7", "substantive": "N", "jurisdiction": "PUBLICLAW", "caseType": "CARE_SUPERVISION_EPO"},
+        "authorisations": ["294","315","316","317"]
+      }
+    ]
+  },
+  {
     "email": "fpl-ctsc-admin@justice.gov.uk",
     "id": "900a7ad4-3295-4e00-bf7b-20a7e4ea52a6",
     "roleAssignments": [
@@ -10,7 +26,7 @@
         "roleCategory": "CTSC",
         "classification": "PUBLIC",
         "readOnly": false,
-        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "substantive": "Y", "primaryLocation": "765324" },
         "authorisations": []
       },
       {
@@ -20,7 +36,7 @@
         "roleCategory": "CTSC",
         "classification": "PUBLIC",
         "readOnly": false,
-        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "substantive": "Y", "primaryLocation": "765324" },
         "authorisations": []
       }
     ],
@@ -37,7 +53,7 @@
         "roleCategory": "CTSC",
         "classification": "PUBLIC",
         "readOnly": false,
-        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "substantive": "Y", "primaryLocation": "765324" },
         "authorisations": []
       },
       {
@@ -47,7 +63,7 @@
         "roleCategory": "CTSC",
         "classification": "PUBLIC",
         "readOnly": false,
-        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "substantive": "Y", "primaryLocation": "765324" },
         "authorisations": []
       },
       {
@@ -57,7 +73,7 @@
         "roleCategory": "CTSC",
         "classification": "PUBLIC",
         "readOnly": false,
-        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "substantive": "Y", "primaryLocation": "765324" },
         "authorisations": []
       },
       {
@@ -67,7 +83,7 @@
         "roleCategory": "CTSC",
         "classification": "PUBLIC",
         "readOnly": false,
-        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "765324" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "substantive": "Y", "primaryLocation": "765324" },
         "authorisations": []
       }
     ],
@@ -84,7 +100,7 @@
         "roleCategory": "JUDICIAL",
         "classification": "PUBLIC",
         "readOnly": false,
-        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "234946", "region": "7" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "substantive": "Y", "primaryLocation": "234946", "region": "7" },
         "authorisations": ["316"]
       },
       {
@@ -94,8 +110,18 @@
         "roleCategory": "JUDICIAL",
         "classification": "PRIVATE",
         "readOnly": false,
-        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "234946", "region": "7" },
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "substantive": "Y", "primaryLocation": "234946", "region": "7" },
         "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "case-allocator",
+        "grantType": "STANDARD",
+        "roleCategory": "JUDICIAL",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {"region": "7", "substantive": "N", "contractType": "Salaried", "jurisdiction": "PUBLICLAW", "primaryLocation": "234946"},
+        "authorisations": ["294","315","316","317"]
       }
     ],
     "overrideAll": true
@@ -123,6 +149,16 @@
         "readOnly": false,
         "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584", "region": "1" },
         "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "case-allocator",
+        "grantType": "STANDARD",
+        "roleCategory": "JUDICIAL",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {"region": "1", "substantive": "N", "contractType": "Salaried", "jurisdiction": "PUBLICLAW", "primaryLocation": "373584"},
+        "authorisations": ["294","315","316","317"]
       }
     ],
     "overrideAll": true
@@ -230,6 +266,33 @@
         "classification": "PRIVATE",
         "readOnly": false,
         "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "185657", "region": "5" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "judge-south-west@ejudiciary.net",
+    "id": "533ef651-3729-4eb0-85e4-d79c2c49a785",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "judge",
+        "grantType": "STANDARD",
+        "roleCategory": "JUDICIAL",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "735217", "region": "6" },
+        "authorisations": ["316"]
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-judiciary",
+        "grantType": "BASIC",
+        "roleCategory": "JUDICIAL",
+        "classification": "PRIVATE",
+        "readOnly": false,
+        "attributes": { "caseType": "CARE_SUPERVISION_EPO", "jurisdiction": "PUBLICLAW", "primaryLocation": "735217", "region": "6" },
         "authorisations": []
       }
     ],

@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS_3RD_PARTY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
@@ -46,6 +47,9 @@ public class EventsChecker {
 
     @Autowired
     private RespondentsChecker respondentsChecker;
+
+    @Autowired
+    private Respondents3rdPartyChecker respondents3rdPartyChecker;
 
     @Autowired
     private HearingUrgencyChecker hearingUrgencyChecker;
@@ -106,6 +110,7 @@ public class EventsChecker {
         eventCheckers.put(CASE_NAME, caseNameChecker);
         eventCheckers.put(CHILDREN, childrenChecker);
         eventCheckers.put(RESPONDENTS, respondentsChecker);
+        eventCheckers.put(RESPONDENTS_3RD_PARTY, respondents3rdPartyChecker);
         eventCheckers.put(HEARING_URGENCY, hearingUrgencyChecker);
         eventCheckers.put(ORDERS_SOUGHT, ordersSoughtChecker);
         eventCheckers.put(GROUNDS, groundsChecker);

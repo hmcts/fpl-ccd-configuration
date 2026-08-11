@@ -63,6 +63,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthority",
+    "ListElementCode": "pbaNumberDynamicList",
+    "FieldType": "DynamicList",
+    "ElementLabel": "PBA number",
+    "HintText": "For example, PBA1234567",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
     "ListElementCode": "customerReference",
     "FieldType": "Text",
     "ElementLabel": "Customer reference",

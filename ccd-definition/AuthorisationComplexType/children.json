@@ -1,0 +1,98 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "children1",
+    "ListElementCode": "party",
+    "AccessControl": [
+      {
+        "UserRoles": ["[BARRISTER]"],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "children1",
+    "ListElementCode": "representative",
+    "AccessControl": [
+      {
+        "UserRoles": ["[BARRISTER]"],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "children1",
+    "ListElementCode": "solicitor",
+    "AccessControl": [
+      {
+        "UserRoles": ["[BARRISTER]"],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "children1",
+    "ListElementCode": "finalOrderIssued",
+    "AccessControl": [
+      {
+        "UserRoles": ["[BARRISTER]"],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "children1",
+    "ListElementCode": "finalOrderIssuedType",
+    "AccessControl": [
+      {
+        "UserRoles": ["[BARRISTER]"],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "children1",
+    "ListElementCode": "finalDecisionReason",
+    "AccessControl": [
+      {
+        "UserRoles": ["[BARRISTER]"],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "children1",
+    "ListElementCode": "finalDecisionDate",
+    "AccessControl": [
+      {
+        "UserRoles": ["[BARRISTER]"],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "children1",
+    "ListElementCode": "legalCounsellors",
+    "AccessControl": [
+      {
+        "UserRoles": ["[BARRISTER]"],
+        "CRUD": "CRUD"
+      }
+    ]
+  }
+]

@@ -1,0 +1,78 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentLocalAuthority",
+    "ListElementCode": "name",
+    "FieldType": "Text",
+    "ElementLabel": "Local authority name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentLocalAuthority",
+    "ListElementCode": "email",
+    "FieldType": "Email",
+    "ElementLabel": "Email address",
+    "HintText": "This should be the email to receive notifications about the application.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentLocalAuthority",
+    "ListElementCode": "phoneNumber",
+    "FieldType": "PhoneUK",
+    "ElementLabel": "Phone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentLocalAuthority",
+    "ListElementCode": "representativeFirstName",
+    "FieldType": "Text",
+    "ElementLabel": "Lawyer first name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentLocalAuthority",
+    "ListElementCode": "representativeLastName",
+    "FieldType": "Text",
+    "ElementLabel": "Lawyer last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentLocalAuthority",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Local authority address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentLocalAuthority",
+    "ListElementCode": "usingOtherOrg",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this Local Authority outsourcing their work on this case to a separate organisation?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentLocalAuthority",
+    "ListElementCode": "organisation",
+    "FieldType": "Organisation",
+    "ElementLabel": "Outsourcing organisation",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "usingOtherOrg=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentLocalAuthority",
+    "ListElementCode": "legalCounsellors",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LegalCounsellor",
+    "ElementLabel": "Counsel",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "organisation = \"DO_NOT_SHOW\""
+  }
+]

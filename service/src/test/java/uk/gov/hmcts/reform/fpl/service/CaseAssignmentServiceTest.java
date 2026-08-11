@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
+import uk.gov.hmcts.reform.aac.client.NocApi;
 import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -51,7 +51,7 @@ class CaseAssignmentServiceTest {
     private SystemUserService systemUserService;
 
     @Mock
-    private CaseAssignmentApi caseAssignmentApi;
+    private NocApi nocApi;
 
     @Mock
     private AboutToStartOrSubmitCallbackResponse expectedResponse;
@@ -63,7 +63,7 @@ class CaseAssignmentServiceTest {
     void shouldCallCaseAssignmentAsLoggedUser() {
         when(requestData.authorisation()).thenReturn(USER_TOKEN);
         when(tokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(caseAssignmentApi.applyDecision(any(), any(), any())).thenReturn(expectedResponse);
+        when(nocApi.applyDecision(any(), any(), any())).thenReturn(expectedResponse);
 
         final CaseDetails caseDetails = caseDetails();
 
@@ -71,14 +71,14 @@ class CaseAssignmentServiceTest {
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
 
-        verify(caseAssignmentApi).applyDecision(USER_TOKEN, SERVICE_TOKEN, decisionRequest(caseDetails));
+        verify(nocApi).applyDecision(USER_TOKEN, SERVICE_TOKEN, decisionRequest(caseDetails));
     }
 
     @Test
     void shouldCallCaseAssignmentAsSystemUser() {
         when(systemUserService.getSysUserToken()).thenReturn(SYSTEM_TOKEN);
         when(tokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(caseAssignmentApi.applyDecision(any(), any(), any())).thenReturn(expectedResponse);
+        when(nocApi.applyDecision(any(), any(), any())).thenReturn(expectedResponse);
 
         final CaseDetails caseDetails = caseDetails();
 
@@ -86,14 +86,14 @@ class CaseAssignmentServiceTest {
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
 
-        verify(caseAssignmentApi).applyDecision(SYSTEM_TOKEN, SERVICE_TOKEN, decisionRequest(caseDetails));
+        verify(nocApi).applyDecision(SYSTEM_TOKEN, SERVICE_TOKEN, decisionRequest(caseDetails));
     }
 
     @Test
     void shouldBuildReplacementRequestsAndCallCaseAssignmentAsSystemUser() {
         when(systemUserService.getSysUserToken()).thenReturn(SYSTEM_TOKEN);
         when(tokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(caseAssignmentApi.applyDecision(any(), any(), any())).thenReturn(expectedResponse);
+        when(nocApi.applyDecision(any(), any(), any())).thenReturn(expectedResponse);
 
         final CaseDetails caseDetails = caseDetails();
         final Organisation organisationToAdd = organisation("ORG1");
@@ -104,7 +104,7 @@ class CaseAssignmentServiceTest {
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
 
-        verify(caseAssignmentApi).applyDecision(SYSTEM_TOKEN, SERVICE_TOKEN, decisionRequest(caseDetails));
+        verify(nocApi).applyDecision(SYSTEM_TOKEN, SERVICE_TOKEN, decisionRequest(caseDetails));
 
         final DynamicListElement expectedRoleItem = DynamicListElement.builder()
             .code("[LASHARED]")

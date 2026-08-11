@@ -12,17 +12,18 @@ test.describe('Placement', () => {
   let caseName: string;
   test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    expect(caseNumber).toBeDefined();
   });
 
-  test('Check Placement Application High Court WA Task',
+  test('Check Placement Application High Court WA Task @xbrowser',
     async ({ page, signInPage, placement,
       caseFileView }) => {
       caseName = 'Placement Application High Court WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
-      await updateCase(caseName, caseNumber, caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
       await signInPage.visit();
       await signInPage.login(CTSCUser.email, CTSCUser.password)
-      await signInPage.navigateTOCaseDetails(caseNumber);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
       await placement.gotoNextStep('Placement');
       await placement.submitPlacementOrder();
@@ -41,7 +42,7 @@ test.describe('Placement', () => {
         //Test WA Task exists
         await signInPage.visit();
         await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
+        await signInPage.navigateToCaseDetails(caseNumber);
         await placement.tabNavigation('Tasks');
         await placement.waitForTask('Check Placement Application (High Court)');
 
@@ -53,5 +54,23 @@ test.describe('Placement', () => {
         // Should be no more tasks on the page
         await expect(page.getByText('Check Placement Application (High Court)')).toHaveCount(0);
       }
+
     });
+
+  test('CTSC actions notice of placement @xbrowser',
+    async ({ page, signInPage, placement,
+      caseFileView }) => {
+      caseName = 'CTSC actions notice of placement' + dateTime.slice(0, 10);
+      setHighCourt(caseData);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+      await signInPage.visit();
+      await signInPage.login(CTSCUser.email, CTSCUser.password)
+      await signInPage.navigateToCaseDetails(caseNumber);
+
+      await placement.gotoNextStep('Placement');
+      await placement.noticeOfPlacement();
+
+      await placement.tabNavigation('Placement');
+      await expect(page.getByText(' Notice of hearing for placement ')).toBeVisible();
+    })
 });

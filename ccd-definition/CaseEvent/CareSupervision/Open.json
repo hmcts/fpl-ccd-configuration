@@ -68,5 +68,22 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/select-court/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted",
     "EventEnablingCondition": "multiCourts=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "changeCaseName",
+    "Name": "Change draft case name",
+    "Description": "Change draft case name",
+    "DisplayOrder": 20,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "N",
+    "Publish": "Y",
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
   }
 ]

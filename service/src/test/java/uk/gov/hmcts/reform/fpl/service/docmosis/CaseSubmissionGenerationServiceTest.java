@@ -44,7 +44,6 @@ import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.RepresentingDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -101,6 +100,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -116,6 +116,7 @@ class CaseSubmissionGenerationServiceTest {
     private static final Language LANGUAGE = ENGLISH;
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
+    private static final String FORMATTED_DATE_WEL = formatLocalDateToString(NOW, DATE, WELSH);
     private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
 
     @Mock
@@ -1354,6 +1355,25 @@ class CaseSubmissionGenerationServiceTest {
         }
 
         @Test
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsInHospitalSoonToBeDischargedWel() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(HOSPITAL_SOON_TO_BE_DISCHARGED.getValue())
+                        .dischargeDate(NOW)
+                        .build())
+                    .build()))
+                .c110A(C110A.builder().languageRequirementApplication(WELSH).build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "In hospital and soon to be discharged\nDyddiad diddymu: "
+                + FORMATTED_DATE_WEL;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
         void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsInHospitalSoonToBeDischarged() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
@@ -1391,6 +1411,25 @@ class CaseSubmissionGenerationServiceTest {
         }
 
         @Test
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsRemovedByPolicePowerEndsWel() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(REMOVED_BY_POLICE_POWER_ENDS.getValue())
+                        .datePowersEnd(NOW)
+                        .build())
+                    .build()))
+                .c110A(C110A.builder().languageRequirementApplication(WELSH).build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Removed by Police, powers ending soon\nDyddiad y daw’r pwerau i ben: "
+                + FORMATTED_DATE_WEL;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
         void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsRemovedByPolicePowerEnds() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
@@ -1424,6 +1463,25 @@ class CaseSubmissionGenerationServiceTest {
         }
 
         @Test
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsVoluntarySectionCareOrderWel() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(VOLUNTARILY_SECTION_CARE_ORDER.getValue())
+                        .careStartDate(NOW)
+                        .build())
+                    .build()))
+                .c110A(C110A.builder().languageRequirementApplication(WELSH).build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Voluntarily in section 20 care order\nDyddiad y bu i hyn gychwyn: "
+                + FORMATTED_DATE_WEL;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
         void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsVoluntarySectionCareOrder() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
@@ -1436,6 +1494,24 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "Voluntarily in section 20 care order";
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
+        void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsUnderCareOfLa() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation("Under the care of local authority")
+                        .careStartDate(NOW)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Under the care of local authority\nDate this began: "
+                + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
         }
 
@@ -1457,6 +1533,24 @@ class CaseSubmissionGenerationServiceTest {
         }
 
         @Test
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsOtherWel() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation("Other")
+                        .addressChangeDate(NOW)
+                        .build())
+                    .build()))
+                .c110A(C110A.builder().languageRequirementApplication(WELSH).build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Other\nDyddiad y bu i hyn gychwyn: " + FORMATTED_DATE_WEL;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
         void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsOther() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
@@ -1469,6 +1563,45 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "Other";
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
+        void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsLivingWithFamilyOrFriends() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation("Living with other family or friends")
+                        .livingWithDetails("Uncle Test")
+                        .addressChangeDate(NOW)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Living with other family or friends\n"
+                + "Who are they living with: Uncle Test\nDate this began: " + FORMATTED_DATE;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
+        void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsLivingWithFamilyOrFriendsWel() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation("Living with other family or friends")
+                        .livingWithDetails("Uncle Test")
+                        .addressChangeDate(NOW)
+                        .build())
+                    .build()))
+                .c110A(C110A.builder().languageRequirementApplication(WELSH).build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Living with other family or friends\n"
+                + "Gyda phwy maen nhw'n byw: Uncle Test\nDyddiad y bu i hyn gychwyn: " + FORMATTED_DATE_WEL;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
         }
     }
@@ -1912,16 +2045,16 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldNotReturnOtherPartyConfidentialDetailsWhenDetailsHiddenIsSetToYes() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
+                .othersV2(wrapElements(
+                    Other.builder()
                         .address(Address.builder()
                             .addressLine1("Flat 13")
                             .postcode("SL11GF")
                             .build())
-                        .detailsHidden("yes")
+                        .hideAddress("Yes")
+                        .hideTelephone("Yes")
                         .telephone("090-0999000")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1934,16 +2067,16 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyAddressAndTelephoneDetailsWhenDetailsHiddenIsSetToNo() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
+                .othersV2(wrapElements(
+                    Other.builder()
                         .address(Address.builder()
                             .addressLine1("Flat 13")
                             .postcode("SL11GF")
                             .build())
-                        .detailsHidden("no")
+                        .hideTelephone("No")
+                        .hideAddress("No")
                         .telephone("090-0999000")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1956,11 +2089,10 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsNull() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
-                        .name("John")
-                        .build())
-                    .build())
+                .othersV2(wrapElements(
+                    Other.builder()
+                        .firstName("John")
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1972,12 +2104,11 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
-                        .name("test")
+                .othersV2(wrapElements(
+                    Other.builder()
+                        .firstName("test")
                         .dateOfBirth("")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
@@ -1989,35 +2120,16 @@ class CaseSubmissionGenerationServiceTest {
         @Test
         void shouldReturnOtherPartyFormattedDOBAsWhenDOBIsGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
+                .othersV2(wrapElements(
+                    Other.builder()
                         .dateOfBirth("1999-02-02")
-                        .build())
-                    .build())
+                        .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("2 February 1999");
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        void shouldReturnOtherPartyGenderAsMaleWhenNoGenderIdentificationIsNullOrEmpty(String genderIdentification) {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .others(Others.builder()
-                    .firstOther(Other.builder()
-                        .gender("Male")
-                        .genderIdentification(genderIdentification)
-                        .build())
-                    .build())
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getOthers()).hasSize(1);
-            assertThat(caseSubmission.getOthers().get(0).getGender()).isEqualTo("Male");
         }
     }
 

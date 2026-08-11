@@ -7,25 +7,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
-import uk.gov.hmcts.reform.fpl.service.JudicialService;
+import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
-import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
-import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.Set;
 import java.util.function.Consumer;
+
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORC;
 
 @Slf4j
 @RestController
@@ -34,22 +29,16 @@ import java.util.function.Consumer;
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
-    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
-    private final RoleAssignmentService roleAssignmentService;
+    private final CaseAccessService caseAccessService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
         "DFPL-2423", this::run2423,
         "DFPL-2423-rollback", this::run2423Rollback,
-        "DFPL-2572", this::run2572,
-        "DFPL-2487", this::run2487,
-        "DFPL-2740", this::run2740,
-        "DFPL-2744", this::run2744,
-        "DFPL-2739", this::run2739,
-        "DFPL-2733", this::run2733
+        "DFPL-3306", this::run3306,
+        "DFPL-3292", this::run3292,
+        "DFPL-3296", this::run3296
     );
-    private final CaseConverter caseConverter;
-    private final JudicialService judicialService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -75,8 +64,22 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2572(CaseDetails caseDetails) {
-        //Required to run migration for TTL
+    private void run3306(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3306";
+        final long expectedCaseId = 1753883480919014L;
+
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        caseAccessService.grantCaseAccess(caseId, Set.of("b0016258-02fa-4d57-8766-dc23b2411f01"), SOLICITORC);
+    }
+
+    private void run3292(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3292";
+        final long expectedCaseId = 1773832351122360L;
+
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        caseAccessService.grantCaseAccess(caseId, Set.of("ad13c0f2-dac2-4e66-bff2-cd4be1b3a889"), LASOLICITOR);
     }
 
     private void run2423(CaseDetails caseDetails) {
@@ -90,70 +93,28 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.rollbackOtherProceedings(caseDetails, getCaseData(caseDetails), migrationId);
     }
 
-    private void run2733(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2733";
-        final long expectedCaseId = 1718621798109264L;
-        final String orgId = "NTJRIVB";
+    private void run3296(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3296";
+        final long expectedCaseId = 1767800818952560L;
+        final String Target_Migration_Id = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        Long caseId = caseDetails.getId();
 
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, null));
-    }
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        log.info("Migration {} started for case {}", migrationId, caseId);
 
-    private void run2487(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
 
-        judicialService.cleanupHearingRoles(caseData.getId());
+        boolean isModified = migrateCaseService
+                                .removeSolicitorEmailFromPlacementNotices(caseDetails, Target_Migration_Id);
 
-        List<RoleAssignment> rolesToAssign = judicialService.getHearingJudgeRolesForMigration(caseData);
-
-        log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
-        judicialService.migrateJudgeRoles(rolesToAssign);
-    }
-
-    private void run2740(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743167066103323L, "DFPL-2740");
-
-        List<Element<ChangeOfRepresentation>> changes = caseData.getChangeOfRepresentatives();
-        List<Element<ChangeOfRepresentation>> after = changes.stream().map(element -> {
-            ChangeOfRepresentation value = element.getValue();
-            if (element.getId().equals(UUID.fromString("625f113c-5673-4b35-bbf1-6507fcf9ec43"))) {
-                element.setValue(value.toBuilder()
-                    .child(value.getChild().substring(0, 5))
-                    .build());
-            }
-            return element;
-        }).toList();
-
-        caseDetails.getData().put("changeOfRepresentatives", after);
-        caseDetails.getData().remove("noticeOfProceedingsBundle");
-    }
-
-    private void run2744(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1743174504422687L, "DFPL-2744");
-
-        if (caseData.getHearingOrdersBundlesDrafts().size() == 1
-            && caseData.getHearingOrdersBundlesDrafts().get(0).getId()
-                .equals(UUID.fromString("cff80b00-7300-4cd5-b0cb-f9f7a2ecd862"))) {
-            caseDetails.getData().remove("hearingOrdersBundlesDrafts");
+        if (isModified) {
+            log.info("Migration {} successfully removed target solicitor entry"
+                    + " by ID from placement notification list on case {}",
+                migrationId, caseId);
         } else {
-            throw new AssertionError("Different numbers of hearingOrdersBundlesDrafts or different UUID");
+            log.info("Migration {} skipped: Target ID {} not found "
+                + "in any placement records.", migrationId, Target_Migration_Id);
         }
     }
 
-    private void run2739(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1726944362364630L, "DFPL-2739");
-
-        caseDetails.getData().putAll(migrateCaseService.removeDraftOrderFromAdditionalApplication(caseData,
-            "DFPL-2739",
-            UUID.fromString("3ef67b37-17ee-48ca-9d32-58c887a6918d"),
-            UUID.fromString("dbe742bb-f7a1-4373-8100-52261c81ef34")));
-    }
 }

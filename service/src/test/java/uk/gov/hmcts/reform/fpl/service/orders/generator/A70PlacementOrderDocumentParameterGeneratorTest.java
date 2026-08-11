@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import org.apache.commons.lang3.tuple.Pair;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,11 +14,12 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
@@ -93,6 +97,9 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
                     .manageOrdersPlacementOrderOtherDetails("testPlacementOrderOtherDetails")
                     .build()
             )
+            .respondents1(List.of(element(Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test").lastName("Respondent").build())
+                .build())))
             .build();
         when(placementService.getPlacementById(caseData, placementElement.getId()))
             .thenReturn(placementElement.getValue());
@@ -144,6 +151,9 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
                         buildDynamicList(0, Pair.of(placementElement.getId(), "My placement")))
                     .build()
             )
+            .respondents1(List.of(element(Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test").lastName("Respondent").build())
+                .build())))
             .build();
         when(placementService.getPlacementById(caseData, placementElement.getId()))
             .thenReturn(placementElement.getValue());
@@ -162,6 +172,92 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
     @Test
     void template() {
         assertThat(parameterGenerator.template()).isEqualTo(DocmosisTemplates.A70);
+    }
+
+    @Test
+    void shouldFormatRespondentNamesSingleRespondent() {
+        RespondentParty respondentParty = RespondentParty.builder()
+            .firstName("John")
+            .lastName("Ross")
+            .build();
+        Respondent respondent = Respondent.builder().party(respondentParty).build();
+        Element<Child> placementChild = element(Child.builder().party(ChildParty.builder().build()).build());
+        Element<Placement> placementElement = element(Placement.builder()
+            .childId(placementChild.getId())
+            .placementUploadDateTime(LocalDate.now().atStartOfDay())
+            .build());
+        UUID placementId = placementElement.getId();
+        DynamicList placementList = buildDynamicList(0, Pair.of(placementId, "My placement"));
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(element(respondent)))
+            .children1(List.of(placementChild))
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersChildPlacementApplication(placementList)
+                .build())
+            .build();
+        when(placementService.getPlacementById(caseData, placementId)).thenReturn(placementElement.getValue());
+        when(placementService.getChildByPlacementId(caseData, placementId)).thenReturn(placementChild);
+        when(courtService.isHighCourtCase(caseData)).thenReturn(false);
+        A70PlacementOrderDocmosisParameters params = parameterGenerator.generate(caseData);
+        assertThat(params.getRespondentNames()).isEqualTo("John Ross is");
+    }
+
+    @Test
+    void shouldFormatRespondentNamesTwoRespondents() {
+        RespondentParty respondentParty1 = RespondentParty.builder()
+            .firstName("John").lastName("Ross").build();
+        RespondentParty respondentParty2 = RespondentParty.builder()
+            .firstName("Julie").lastName("Ross").build();
+        Respondent respondent1 = Respondent.builder().party(respondentParty1).build();
+        Respondent respondent2 = Respondent.builder().party(respondentParty2).build();
+        Element<Child> placementChild = element(Child.builder().party(ChildParty.builder().build()).build());
+        Element<Placement> placementElement = element(Placement.builder()
+            .childId(placementChild.getId())
+            .placementUploadDateTime(LocalDate.now().atStartOfDay())
+            .build());
+        UUID placementId = placementElement.getId();
+        DynamicList placementList = buildDynamicList(0, Pair.of(placementId, "My placement"));
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(element(respondent1), element(respondent2)))
+            .children1(List.of(placementChild))
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersChildPlacementApplication(placementList)
+                .build())
+            .build();
+        when(placementService.getPlacementById(caseData, placementId)).thenReturn(placementElement.getValue());
+        when(placementService.getChildByPlacementId(caseData, placementId)).thenReturn(placementChild);
+        when(courtService.isHighCourtCase(caseData)).thenReturn(false);
+        A70PlacementOrderDocmosisParameters params = parameterGenerator.generate(caseData);
+        assertThat(params.getRespondentNames()).isEqualTo("John Ross and Julie Ross are");
+    }
+
+    @Test
+    void shouldFormatRespondentNamesThreeRespondents() {
+        RespondentParty respondentParty1 = RespondentParty.builder().firstName("John").lastName("Ross").build();
+        RespondentParty respondentParty2 = RespondentParty.builder().firstName("Julie").lastName("Ross").build();
+        RespondentParty respondentParty3 = RespondentParty.builder().firstName("Karen").lastName("Donalds").build();
+        Respondent respondent1 = Respondent.builder().party(respondentParty1).build();
+        Respondent respondent2 = Respondent.builder().party(respondentParty2).build();
+        Respondent respondent3 = Respondent.builder().party(respondentParty3).build();
+        Element<Child> placementChild = element(Child.builder().party(ChildParty.builder().build()).build());
+        Element<Placement> placementElement = element(Placement.builder()
+            .childId(placementChild.getId())
+            .placementUploadDateTime(LocalDate.now().atStartOfDay())
+            .build());
+        UUID placementId = placementElement.getId();
+        DynamicList placementList = buildDynamicList(0, Pair.of(placementId, "My placement"));
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(element(respondent1), element(respondent2), element(respondent3)))
+            .children1(List.of(placementChild))
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersChildPlacementApplication(placementList)
+                .build())
+            .build();
+        when(placementService.getPlacementById(caseData, placementId)).thenReturn(placementElement.getValue());
+        when(placementService.getChildByPlacementId(caseData, placementId)).thenReturn(placementChild);
+        when(courtService.isHighCourtCase(caseData)).thenReturn(false);
+        A70PlacementOrderDocmosisParameters params = parameterGenerator.generate(caseData);
+        assertThat(params.getRespondentNames()).isEqualTo("John Ross, Julie Ross and Karen Donalds are");
     }
 
 }

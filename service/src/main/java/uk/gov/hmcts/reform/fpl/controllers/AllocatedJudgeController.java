@@ -10,22 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewAllocatedJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
-import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.util.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Slf4j
@@ -41,7 +35,10 @@ public class AllocatedJudgeController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        caseDetails.getData().put("enterManually", NO.getValue());
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData()
+            .putAll(judicialService.populateEventDataMapFromJudge(caseData.getAllocatedJudge()));
         return respond(caseDetails);
     }
 
@@ -49,8 +46,9 @@ public class AllocatedJudgeController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        AllocateJudgeEventData eventData = caseData.getAllocateJudgeEventData();
 
-        Optional<String> error = judicialService.validateAllocatedJudge(caseData);
+        Optional<String> error = judicialService.validateAllocatedJudge(eventData);
 
         if (error.isPresent()) {
             return respond(caseDetails, List.of(error.get()));
@@ -63,47 +61,17 @@ public class AllocatedJudgeController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        AllocateJudgeEventData eventData = caseData.getAllocateJudgeEventData();
 
-        // Fill in judge details
-        if (caseData.getEnterManually().equals(YesNo.NO)) {
+        Optional<String> error = judicialService.validateAllocatedJudge(eventData);
 
-            if (isEmpty(caseData.getJudicialUser()) || isEmpty(caseData.getJudicialUser().getPersonalCode())) {
-                return respond(caseDetails,
-                    List.of("You must search for a judge or enter their details manually"));
-            }
-
-            Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
-            if (jup.isPresent()) {
-                caseDetails.getData().put(ALLOCATED_JUDGE, Judge.fromJudicialUserProfile(jup.get()));
-            } else {
-                return respond(caseDetails,
-                    List.of("Could not fetch Judge details from JRD, please try again in a few minutes."));
-            }
-        } else {
-            // entering manually, check against our lookup tables, they may be a legal adviser
-            Optional<String> possibleId = judicialService
-                .getJudgeUserIdFromEmail(caseData.getAllocatedJudge().getJudgeEmailAddress());
-
-            // if they are in our maps - add their UUID extra info to the case
-            possibleId.ifPresentOrElse(s -> caseDetails.getData().put(ALLOCATED_JUDGE,
-                caseData.getAllocatedJudge().toBuilder()
-                    .judgeJudicialUser(JudicialUser.builder()
-                        .idamId(s)
-                        .build())
-                    .build()),
-                () -> {
-                    Judge allocatedJudge = caseData.getAllocatedJudge();
-                    if (JudgeOrMagistrateTitle.MAGISTRATES.equals(allocatedJudge.getJudgeTitle())) {
-                        allocatedJudge = allocatedJudge.toBuilder().judgeLastName(null).build();
-                    } else {
-                        allocatedJudge = allocatedJudge.toBuilder().judgeFullName(null).build();
-                    }
-
-                    caseDetails.getData().put(ALLOCATED_JUDGE, allocatedJudge);
-                });
+        if (error.isPresent()) {
+            return respond(caseDetails, List.of(error.get()));
         }
 
-        removeTemporaryFields(caseDetails, "judicialUser", "enterManually");
+        caseDetails.getData().put(ALLOCATED_JUDGE, judicialService.buildAllocatedJudgeFromEventData(eventData));
+
+        removeTemporaryFields(caseDetails, AllocateJudgeEventData.class);
         return respond(caseDetails);
     }
 

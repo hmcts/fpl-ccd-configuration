@@ -44,4 +44,7 @@ public enum YesNo {
         return language == Language.WELSH ? welshValue : value;
     }
 
+    public boolean equalsString(String value) {
+        return this.equals(YesNo.fromString(value));
+    }
 }

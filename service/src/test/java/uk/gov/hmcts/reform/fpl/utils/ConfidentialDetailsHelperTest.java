@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -12,7 +11,6 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
-import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialOtherToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class ConfidentialDetailsHelperTest {
@@ -31,7 +29,7 @@ class ConfidentialDetailsHelperTest {
 
         Other confidentialOthers = getConfidentialItemToAdd(others, othersNotConfidential);
 
-        assertThat(confidentialOthers).isEqualToComparingFieldByField(others.get(0).getValue());
+        assertThat(confidentialOthers).usingRecursiveComparison().isEqualTo(others.getFirst().getValue());
     }
 
     @Test
@@ -41,34 +39,8 @@ class ConfidentialDetailsHelperTest {
 
         Other confidentialOthers = getConfidentialItemToAdd(others, othersNotConfidential);
 
-        assertThat(confidentialOthers).isEqualToComparingFieldByField(othersNotConfidential.getValue());
+        assertThat(confidentialOthers).usingRecursiveComparison().isEqualTo(othersNotConfidential.getValue());
     }
-
-    @Test
-    void shouldReturnOtherByNameIfNoUUIDMatch() {
-        List<Element<Other>> others = List.of(element(UUID.randomUUID(),
-            Other.builder().name("John Smith").addressKnowV2(IsAddressKnowType.LIVE_IN_REFUGE).build()));
-
-        Other confidentialOther = getConfidentialOtherToAdd(others,
-            element(UUID.randomUUID(), Other.builder().name("John Smith").build()));
-
-        assertThat(confidentialOther).extracting("addressKnowV2")
-            .isEqualTo(IsAddressKnowType.LIVE_IN_REFUGE);
-    }
-
-    @Test
-    void shouldReturnOtherIfUUIDMatch() {
-        UUID id = UUID.randomUUID();
-        List<Element<Other>> others = List.of(element(id,
-            Other.builder().name("John Smith").addressKnowV2(IsAddressKnowType.LIVE_IN_REFUGE).build()));
-
-        Other confidentialOther = getConfidentialOtherToAdd(others,
-            element(id, Other.builder().name("John Smith").build()));
-
-        assertThat(confidentialOther).extracting("addressKnowV2")
-            .isEqualTo(IsAddressKnowType.LIVE_IN_REFUGE);
-    }
-
 
     private Other.OtherBuilder baseOtherBuilder(String detailsHidden) {
         return Other.builder()

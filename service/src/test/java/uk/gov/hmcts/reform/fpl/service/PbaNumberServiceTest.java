@@ -17,7 +17,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class PbaNumberServiceTest {
 
-    private static final String VALIDATION_ERROR_MESSAGE = "Payment by account (PBA) number must include 7 numbers";
+    private static final String VALIDATION_ERROR_MESSAGE =
+        "Payment by account (PBA) number must include 7 numbers and the PBA prefix";
     private static final String PBA_PREFIX = "PBA";
     private static final String FIRST_NUMBER = "1234567";
     private static final String SECOND_NUMBER = "9876543";

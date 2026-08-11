@@ -45,6 +45,11 @@
     "dfjArea": "BLACKBURN_LANCASTER"
   },
   {
+    "courtCode": "438",
+    "courtField": "blackburnLancasterDFJCourt",
+    "dfjArea": "BLACKBURN_LANCASTER"
+  },
+  {
     "courtCode": "139",
     "courtField": "bournemouthAndDorsetDFJCourt",
     "dfjArea": "BOURNEMOUTH_AND_DORSET"
