@@ -211,6 +211,7 @@ public class ReviewAdditionalApplicationService {
     public Map<String, Object> addRefusalOrders(CaseData caseData,
                                                 Element<HearingOrdersBundle> selectedOrdersBundle,
                                                 UUID draftOrderId) {
+        Map<String, Object> updates = new HashMap<>();
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
 
         // generate refusal order and add it to orderCollection
@@ -219,12 +220,14 @@ public class ReviewAdditionalApplicationService {
             eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
             eventData.getReviewAdditionalAppRefusalReason());
 
+        List<Element<GeneratedOrder>> refusalOrders = getIfNull(caseData.getRefusalOrders(), new ArrayList<>());
+        refusalOrders.add(refusalOrderDoc);
+        updates.put("refusalOrders", refusalOrders);
 
         // update the draft order as rejected and move them to refused
         Element<HearingOrder> draftOrder = findElement(draftOrderId, selectedOrdersBundle.getValue()
             .getAllOrdersAndConfidentialOrders()).orElseThrow();
 
-        Map<String, Object> updates = new HashMap<>();
         Element<HearingOrder> rejectedDraftOrder = approveDraftOrdersService.rejectDraftOrderWithRequestedChanges(
             caseData,
             updates,
@@ -238,10 +241,6 @@ public class ReviewAdditionalApplicationService {
         updates.put("refusedHearingOrders", rejectedOrders);
 
         selectedOrdersBundle.getValue().removeOrderElement(draftOrder);
-
-        List<Element<GeneratedOrder>> refusalOrders = getIfNull(caseData.getRefusalOrders(), new ArrayList<>());
-        refusalOrders.add(refusalOrderDoc);
-        updates.put("refusalOrders", refusalOrders);
 
         return updates;
     }
