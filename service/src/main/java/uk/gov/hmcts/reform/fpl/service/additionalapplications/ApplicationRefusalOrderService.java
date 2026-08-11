@@ -80,16 +80,15 @@ public class ApplicationRefusalOrderService {
     }
 
     public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
-                                                     String applicationDate, String refusalReason,
-                                                     boolean isConfidential) {
+                                                     String applicationDate, String refusalReason) {
         return buildRefusalOrder(caseData, judgeTitleAndName,
             formatLocalDateToString(time.now().toLocalDate(), DATE, caseData.getCaseLanguage()),
-            applicationDate, refusalReason, isConfidential);
+            applicationDate, refusalReason);
     }
 
     public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
                                                      String dateOfRefusal, String applicationDate,
-                                                     String refusalReason, boolean isConfidential) {
+                                                     String refusalReason) {
 
         DocumentReference refusalOrderDoc = buildApplicationRefusalOrderDocument(caseData, judgeTitleAndName,
             dateOfRefusal, applicationDate, refusalReason, true);
@@ -100,13 +99,8 @@ public class ApplicationRefusalOrderService {
             .dateOfIssue(dateOfRefusal)
             .judgeAndLegalAdvisor(null)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
-            .children(caseData.getAllChildren());
-
-        if (isConfidential) {
-            refusalOrderBuilder = refusalOrderBuilder.documentConfidential(refusalOrderDoc);
-        } else {
-            refusalOrderBuilder = refusalOrderBuilder.document(refusalOrderDoc);
-        }
+            .children(caseData.getAllChildren())
+            .refusedDocument(refusalOrderDoc);
 
         return element(refusalOrderBuilder.build());
     }

@@ -525,6 +525,8 @@ public class CaseData extends CaseDataParent {
             .toList();
     }
 
+    private final List<Element<GeneratedOrder>> refusalOrders;
+
     @JsonUnwrapped
     @Builder.Default
     private final RemovalToolData removalToolData = RemovalToolData.builder().build();

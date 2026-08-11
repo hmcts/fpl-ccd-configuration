@@ -214,17 +214,12 @@ public class ReviewAdditionalApplicationService {
                                                 UUID draftOrderId) {
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
 
-        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
-
         // generate refusal order and add it to orderCollection
         Element<GeneratedOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(caseData,
             eventData.getJudgeNameAndTitle(),
             eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
-            eventData.getReviewAdditionalAppRefusalReason(),
-            isConfidential);
+            eventData.getReviewAdditionalAppRefusalReason());
 
-        List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
-        orderCollection.add(refusalOrderDoc);
 
         // update the draft order as rejected and move them to refused
         Element<HearingOrder> draftOrder = findElement(draftOrderId, selectedOrdersBundle.getValue()
@@ -245,7 +240,9 @@ public class ReviewAdditionalApplicationService {
 
         selectedOrdersBundle.getValue().removeOrderElement(draftOrder);
 
-        updates.put("orderCollection", orderCollection);
+        List<Element<GeneratedOrder>> refusalOrders = getIfNull(caseData.getRefusalOrders(), new ArrayList<>());
+        refusalOrders.add(refusalOrderDoc);
+        updates.put("refusalOrders", refusalOrders);
 
         return updates;
     }

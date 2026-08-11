@@ -167,7 +167,7 @@ public class ApplicationRefusalOrderServiceTest {
     }
 
     @Test
-    void shouldBuildNonConfidentialRefusalOrder() {
+    void shouldBuildRefusalOrder() {
         CaseData caseData = getCaseData();
 
         when(time.now()).thenReturn(NOW);
@@ -181,8 +181,7 @@ public class ApplicationRefusalOrderServiceTest {
             JUDGE_TITLE_AND_NAME,
             DATE_OF_REFUSAL,
             APPLICATION_DATE,
-            REFUSAL_REASON,
-            false
+            REFUSAL_REASON
         );
 
         GeneratedOrder order = refusalOrder.getValue();
@@ -193,41 +192,7 @@ public class ApplicationRefusalOrderServiceTest {
             .judgeAndLegalAdvisor(null)
             .date(formatLocalDateTimeBaseUsingFormat(NOW, TIME_DATE))
             .children(caseData.getAllChildren())
-            .document(DocumentReference.buildFromDocument(REFUSAL_ORDER_DOC))
-            .documentConfidential(null)
-            .build());
-        verify(documentSealingService).sealDocument(DOCMOSIS_BYTES, caseData.getCourt(), ENGLISH);
-    }
-
-    @Test
-    void shouldBuildConfidentialRefusalOrder() {
-        CaseData caseData = getCaseData();
-
-        when(time.now()).thenReturn(NOW);
-        when(documentSealingService.sealDocument(DOCMOSIS_BYTES, caseData.getCourt(), ENGLISH))
-            .thenReturn(SEALED_BYTES);
-        when(documentUploadService.uploadPDF(SEALED_BYTES, REFUSAL_ORDER.getFileName()))
-            .thenReturn(REFUSAL_ORDER_DOC);
-
-        Element<GeneratedOrder> refusalOrder = underTest.buildRefusalOrder(
-            caseData,
-            JUDGE_TITLE_AND_NAME,
-            DATE_OF_REFUSAL,
-            APPLICATION_DATE,
-            REFUSAL_REASON,
-            true
-        );
-
-        GeneratedOrder order = refusalOrder.getValue();
-        assertThat(order).isEqualTo(GeneratedOrder.builder()
-            .type(REFUSAL_ORDER.getLabel())
-            .title(format("%s for application date %s", REFUSAL_ORDER.getLabel(), APPLICATION_DATE))
-            .dateOfIssue(DATE_OF_REFUSAL)
-            .judgeAndLegalAdvisor(null)
-            .date(formatLocalDateTimeBaseUsingFormat(NOW, TIME_DATE))
-            .children(caseData.getAllChildren())
-            .document(null)
-            .documentConfidential(DocumentReference.buildFromDocument(REFUSAL_ORDER_DOC))
+            .refusedDocument(DocumentReference.buildFromDocument(REFUSAL_ORDER_DOC))
             .build());
         verify(documentSealingService).sealDocument(DOCMOSIS_BYTES, caseData.getCourt(), ENGLISH);
     }
@@ -246,8 +211,7 @@ public class ApplicationRefusalOrderServiceTest {
             caseData,
             JUDGE_TITLE_AND_NAME,
             APPLICATION_DATE,
-            REFUSAL_REASON,
-            false
+            REFUSAL_REASON
         );
 
         String expectedDateOfRefusal = formatLocalDateToString(NOW.toLocalDate(), DATE, caseData.getCaseLanguage());
