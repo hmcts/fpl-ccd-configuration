@@ -54,6 +54,11 @@ public class OrdersNeededController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         final CaseData caseData = getCaseData(callbackrequest);
 
+        /*
+         * Temporary validation while Fleetwood court is being migrated (DFPL-3213).
+         * Users must select Blackpool as the issuing court instead.
+         * This validation should be removed once the court migration is complete.
+         */
         CaseDetails caseDetailsIfFleetWood = callbackrequest.getCaseDetails();
         if (isFleetwoodCase(caseData)) {
             return respond(caseDetailsIfFleetWood, List.of(
@@ -201,10 +206,6 @@ public class OrdersNeededController extends CallbackController {
 
 
     private boolean isFleetwoodCase(CaseData caseData) {
-        if (caseData == null) {
-            return false;
-        }
-
         boolean isFleetwoodLocation = caseData.getCaseManagementLocation() != null
             && "401452".equalsIgnoreCase(caseData.getCaseManagementLocation().getBaseLocation());
 

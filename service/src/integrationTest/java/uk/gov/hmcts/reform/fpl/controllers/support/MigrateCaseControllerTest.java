@@ -133,7 +133,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             // Assert
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .hasRootCauseInstanceOf(AssertionError.class)
-                .hasMessageContaining("expected Fleetwood (401452) but found baseLocation: 111111");
+                .hasMessageContaining("expected base location 401452 but found: 111111");
         }
     }
 

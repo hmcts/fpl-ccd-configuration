@@ -108,7 +108,6 @@ public class MigrateCaseService {
     private final CourtService courtService;
     private static final String CORRECT_COURT_NAME = "Family Court Sitting at West London";
     private static final String ORDER_TYPE = "orderType";
-    private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
     private static final String CASE_SUMMARY_COURT_NAME = "caseSummaryCourtName";
     public final MigrateRelatingLAService migrateRelatingLAService;
     public final OrganisationService organisationService;
@@ -1540,8 +1539,16 @@ public class MigrateCaseService {
         return Map.of("others", updatedOthers);
     }
 
-    public Map<String, Object> updateCaseManagementLocation(String migrationId, CaseData caseData) {
 
+    public Map<String, Object> updateCaseManagementLocation(
+        String migrationId,
+        CaseData caseData,
+        String expectedBaseLocation,
+        String targetBaseLocation,
+        String targetCourtCode,
+        String targetCourtName,
+        String dfjAreaFieldKey
+    ) {
         CaseLocation caseManagementLocation = caseData.getCaseManagementLocation();
         final Court court = caseData.getCourt();
         final Orders orders = caseData.getOrders();
@@ -1553,34 +1560,34 @@ public class MigrateCaseService {
                 migrationId, caseData.getId()));
         }
 
-        if (!"401452".equalsIgnoreCase(caseManagementLocation.getBaseLocation())) {
+        if (!expectedBaseLocation.equalsIgnoreCase(caseManagementLocation.getBaseLocation())) {
             throw new AssertionError(String.format(
-                "Migration {id = %s, case reference = %s}, expected Fleetwood (401452) but found baseLocation: %s",
-                migrationId, caseData.getId(), caseManagementLocation.getBaseLocation()));
+                "Migration {id = %s, case reference = %s}, expected base location %s but found: %s",
+                migrationId, caseData.getId(), expectedBaseLocation, caseManagementLocation.getBaseLocation()));
         }
 
-        // Update core location block to Blackpool's epimmsId
-        caseManagementLocation.setBaseLocation("214320");
+        // Update core location block
+        caseManagementLocation.setBaseLocation(targetBaseLocation);
 
-        // Clone and update the Court object with Blackpool Code from courts.json
+        // Clone and update the Court object
         Court updatedCourt = null;
         if (court != null) {
             updatedCourt = court.toBuilder()
-                .code("131") //Replaced Fleetwood's court code 438 with Blackpool 131
-                .name("Family Court sitting at Blackpool")
-                .epimmsId("214320")
+                .code(targetCourtCode)
+                .name(targetCourtName)
+                .epimmsId(targetBaseLocation)
                 .build();
         }
 
-        // Clone and update the Orders object with Blackpool Code
+        // Clone and update the Orders object
         Orders updatedOrders = null;
         if (orders != null) {
             updatedOrders = orders.toBuilder()
-                .court("131") //Replaced Fleetwood's court code 438 with Blackpool 131
+                .court(targetCourtCode)
                 .build();
         }
 
-        // Assemble the payload updates map with all three places updated
+        // Assemble payload updates map
         Map<String, Object> updates = new HashMap<>();
         updates.put(CASE_MANAGEMENT_LOCATION, caseManagementLocation);
 
@@ -1591,11 +1598,13 @@ public class MigrateCaseService {
             updates.put(ORDERS, updatedOrders);
         }
 
-        // Replace the DFJ court property string from Fleetwood (438) with Blackpool (131)
-        updates.put(BLACKBURN_LANCASTER_DFJ_COURT, "131");
+        // Dynamic DFJ court property update
+        if (dfjAreaFieldKey != null) {
+            updates.put(dfjAreaFieldKey, targetCourtCode);
+        }
 
-        //  overwrites caseSummaryCourtName value of Fleetwood with Blackpool
-        updates.put(CASE_SUMMARY_COURT_NAME, "Family Court sitting at Blackpool");
+        // Case summary court name
+        updates.put(CASE_SUMMARY_COURT_NAME, targetCourtName);
 
         return updates;
     }

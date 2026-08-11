@@ -31,6 +31,11 @@ public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
     private final CaseAccessService caseAccessService;
+    private static final String FLEETWOOD_EPIMMS_ID = "401452";
+    private static final String BLACKPOOL_EPIMMS_ID = "214320";
+    private static final String BLACKPOOL_COURT_CODE = "131";
+    private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
+    private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
@@ -130,7 +135,12 @@ public class MigrateCaseController extends CallbackController {
         // Calling the service to replace Fleetwood location with Blackpool Location if exists
         caseDetails.getData().putAll(migrateCaseService.updateCaseManagementLocation(
             migrationId,
-            caseData
+            caseData,
+            FLEETWOOD_EPIMMS_ID,
+            BLACKPOOL_EPIMMS_ID,
+            BLACKPOOL_COURT_CODE,
+            BLACKPOOL_COURT_NAME,
+            BLACKBURN_LANCASTER_DFJ_COURT
         ));
     }
 }

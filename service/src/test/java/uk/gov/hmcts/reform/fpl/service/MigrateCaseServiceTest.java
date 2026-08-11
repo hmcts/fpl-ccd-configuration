@@ -4100,6 +4100,11 @@ class MigrateCaseServiceTest {
     @Nested
     class UpdateCaseManagementLocationDFPL3213 {
 
+        private static final String FLEETWOOD_EPIMMS_ID = "401452";
+        private static final String BLACKPOOL_EPIMMS_ID = "214320";
+        private static final String BLACKPOOL_COURT_CODE = "131";
+        private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
+        private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
         @Test
         void shouldSuccessfullyMigrateFleetwoodToBlackpool() {
             CaseLocation location = CaseLocation.builder()
@@ -4127,7 +4132,15 @@ class MigrateCaseServiceTest {
                 .orders(orders)
                 .build();
 
-            Map<String, Object> result = underTest.updateCaseManagementLocation("DFPL-3213", caseData);
+            Map<String, Object> result = underTest.updateCaseManagementLocation(
+                "DFPL-3213",
+                caseData,
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
+            );
 
             // Assert
             assertThat(result).containsKey("caseManagementLocation");
@@ -4160,7 +4173,15 @@ class MigrateCaseServiceTest {
                 .caseManagementLocation(null)
                 .build();
 
-            assertThatThrownBy(() -> underTest.updateCaseManagementLocation("DFPL-3213", caseData))
+            assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
+                "DFPL-3213",
+                caseData,
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
+            ))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("caseManagementLocation structure is missing");
         }
@@ -4177,9 +4198,17 @@ class MigrateCaseServiceTest {
                 .caseManagementLocation(location)
                 .build();
 
-            assertThatThrownBy(() -> underTest.updateCaseManagementLocation("DFPL-3213", caseData))
+            assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
+                "DFPL-3213",
+                caseData,
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
+            ))
                 .isInstanceOf(AssertionError.class)
-                .hasMessageContaining("expected Fleetwood (401452) but found baseLocation: 111111");
+                .hasMessageContaining("expected base location 401452 but found: 111111");
         }
     }
 
