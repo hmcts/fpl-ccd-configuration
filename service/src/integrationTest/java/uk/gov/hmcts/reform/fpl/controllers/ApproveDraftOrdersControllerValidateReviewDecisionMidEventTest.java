@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -75,7 +74,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(Other.builder().name("test1").build()).build())
+            .othersV2(wrapElements(Other.builder().firstName("test1").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -150,10 +149,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
-                .build())
+            .othersV2(wrapElements(Other.builder().name("test1").build(), Other.builder().name("test2").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -200,10 +196,9 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
-                .build())
+            .othersV2(wrapElements(
+                Other.builder().firstName("test1").lastName("lastname1").build(),
+                Other.builder().firstName("test2").lastName("lastname2").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -229,10 +224,9 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
-                .build())
+            .othersV2(wrapElements(
+                Other.builder().firstName("test1").lastName("lastname1").build(),
+                Other.builder().firstName("test2").lastName("lastname2").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())

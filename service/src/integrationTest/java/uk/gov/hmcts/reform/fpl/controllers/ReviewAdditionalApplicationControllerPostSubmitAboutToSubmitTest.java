@@ -86,7 +86,8 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
-            "reviewAdditionalAppIsConfidential"
+            "reviewAdditionalAppIsConfidential",
+            "amendedDraftOrder"
         );
     }
 
@@ -111,7 +112,8 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
-            "reviewAdditionalAppIsConfidential"
+            "reviewAdditionalAppIsConfidential",
+            "amendedDraftOrder"
         );
     }
 

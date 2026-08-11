@@ -44,10 +44,9 @@ public class ReviewAdditionalApplicationService {
     public static final String ONLY_ONE_APPLICATION = "onlyOneApplicationToBeReviewed";
     private static final String APPLICANT_CHANGES_REQUESTED = "Applicant needs to make changes to the order";
 
-    private final ApproveDraftOrdersService approveDraftOrdersService;
     private final HearingOrderGenerator hearingOrderGenerator;
+    private final ApproveDraftOrdersService approveDraftOrdersService;
     private final ApplicationRefusalOrderService refusalOrderService;
-    // private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
 
     public Map<String, Object> initEventField(CaseData caseData) {
         Map<String, Object> resultMap = new HashMap<>();

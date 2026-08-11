@@ -97,6 +97,7 @@ public class UploadAdditionalApplicationsService {
 
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
     private static final String C2_APPLICATION_NAME = "C2_application.pdf";
+    private static final String DEFAULT_STRING = "-";
 
     private final Time time;
     private final UserService userService;
@@ -298,7 +299,9 @@ public class UploadAdditionalApplicationsService {
             .safeguardingReason(c2EventData.getSafeguardingRiskDetails())
             .requestAdjournment(c2EventData.getIsHearingAdjournmentRequired().getValue(language))
             .whichHearing(c2EventData.getRequestedHearingToAdjourn())
-            .considerAtNextHearing(c2EventData.getCanBeConsideredAtNextHearing().getValue(language))
+            .considerAtNextHearing(!isEmpty(c2EventData.getCanBeConsideredAtNextHearing())
+                ? c2EventData.getCanBeConsideredAtNextHearing().getValue(language)
+                : DEFAULT_STRING)
             .crest(CREST.getValue(language))
             .build();
 

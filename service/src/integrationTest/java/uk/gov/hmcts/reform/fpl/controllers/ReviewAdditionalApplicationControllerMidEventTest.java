@@ -128,17 +128,42 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
     }
 
     @Test
-    void shouldSetFlagsForApproveApplicationChangeOrderRoute() {
+    void shouldGeneratePreviewForApproveApplicationAndChangeOrderRoute() {
+        DocumentReference draftOrderDocument = document("draft-order.docx");
+        DocumentReference amendedDraftOrderDocument = document("amended-draft-order.docx");
+        DocumentReference amendedPreviewOrderDocument = document("amended-draft-order-with-coversheet.pdf");
+
         CaseData caseData = CaseData.builder()
             .approveAdditionalAppRouter(APPROVE_APPLICATION_CHANGE_ORDER)
+            .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
+                .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                    .draftOrdersBundle(List.of(element(
+                        DRAFT_ORDER_ID,
+                        DraftOrder.builder().title("Draft order title").document(draftOrderDocument).build()
+                    )))
+                    .build())
+                .amendedDraftOrder(amendedDraftOrderDocument)
+                .build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
             .build();
 
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any()))
+            .thenReturn("District Judge Example");
+        when(hearingOrderGenerator.addCoverSheet(any(), eq(amendedDraftOrderDocument)))
+            .thenReturn(amendedPreviewOrderDocument);
+
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "edit-hearing");
-        ConfirmApplicationReviewedEventData resultEventData = extractCaseData(response)
-            .getConfirmApplicationReviewedEventData();
+        CaseData resultCaseData = extractCaseData(response);
+        ConfirmApplicationReviewedEventData resultEventData = resultCaseData.getConfirmApplicationReviewedEventData();
 
         assertThat(resultEventData.getReviewOrderUrgency()).isEqualTo(YesNo.YES);
-        assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.NO);
+        assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.YES);
+        assertThat(response.getData().get("previewApprovedOrder1")).isEqualTo(Map.of(
+            "document_url", amendedPreviewOrderDocument.getUrl(),
+            "document_filename", amendedPreviewOrderDocument.getFilename(),
+            "document_binary_url", amendedPreviewOrderDocument.getBinaryUrl()
+        ));
+        assertThat(response.getData().get("previewApprovedOrderTitle1")).isEqualTo("Order Draft order title");
     }
 
     @Test

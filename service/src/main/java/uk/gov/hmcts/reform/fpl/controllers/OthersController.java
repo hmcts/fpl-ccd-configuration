@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
@@ -28,36 +27,35 @@ public class OthersController extends CallbackController {
     private final ConfidentialDetailsService confidentialService;
     private final OthersService othersService;
 
-    private static final String OTHERS = "others";
-
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(OTHERS, othersService.prepareOthers(caseData));
+        caseDetails.getData().put(OTHER.getCaseDataKey(), othersService.prepareOthers(caseData));
 
         return respond(caseDetails);
     }
 
+    // TODO DFPL-2421 update unit test
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Others updatedOthers = othersService.consolidateAndRemoveHiddenFields(getCaseData(caseDetails));
-        caseDetails.getData().put(OTHERS, updatedOthers);
 
+        List<Element<Other>> updatedOthers = othersService.consolidateAndRemoveHiddenFields(getCaseData(caseDetails));
+        caseDetails.getData().put(OTHER.getCaseDataKey(), updatedOthers);
         CaseData caseData = getCaseData(caseDetails);
-        List<Element<Other>> allOthers = caseData.getAllOthers();
 
-        confidentialService.addConfidentialDetailsToCase(caseDetails, allOthers, OTHER);
+        List<Element<Other>> others = caseData.getOthersV2();
 
-        List<Element<Other>> othersList = confidentialService.removeConfidentialDetails(allOthers);
+        confidentialService.addConfidentialDetailsToCase(caseDetails, others, OTHER);
 
-        Others others = Others.from(othersList);
+        others = confidentialService.removeConfidentialDetails(others);
+
         if (isNull(others)) {
-            caseDetails.getData().remove(OTHERS);
+            caseDetails.getData().remove(OTHER.getCaseDataKey());
         } else {
-            caseDetails.getData().put(OTHERS, others);
+            caseDetails.getData().put(OTHER.getCaseDataKey(), others);
         }
 
         return respond(caseDetails);
