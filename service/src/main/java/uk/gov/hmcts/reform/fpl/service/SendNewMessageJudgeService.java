@@ -160,6 +160,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
 
         String fromLabel = formatLabel(senderRoleType, senderEmail);
         String toLabel = formatLabel(recipientRoleType, recipientEmail);
+        String urgency = getMessageUrgency(messageJudgeEventData.getJudicialMessageMetaData());
 
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(senderEmail)
@@ -170,10 +171,10 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             .toLabel(toLabel)
             .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
-            .judicialMessageReplies(buildMessageReplyList(latestMessage, fromLabel, toLabel))
+            .judicialMessageReplies(buildMessageReplyList(latestMessage, fromLabel, toLabel, urgency))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
-            .urgency(getMessageUrgency(messageJudgeEventData.getJudicialMessageMetaData()))
+            .urgency(urgency)
             .isJudicialMessageUrgent(judicialMessageMetaData.getIsJudicialMessageUrgent())
             .status(OPEN);
 
@@ -238,8 +239,8 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return applications;
     }
 
-    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, String from, String to) {
-        return buildMessageReplies(latestMessage, Optional.empty(), from, to);
+    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, String from, String to, String urgency) {
+        return buildMessageReplies(latestMessage, Optional.empty(), from, to, urgency);
     }
 
     private boolean hasC2s(CaseData caseData) {

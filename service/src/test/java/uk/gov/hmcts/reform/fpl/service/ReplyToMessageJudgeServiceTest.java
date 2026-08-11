@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -421,6 +422,7 @@ class ReplyToMessageJudgeServiceTest {
                         .replyFrom("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
                         .replyTo("%s (%s)".formatted(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(),
                             MESSAGE_SENDER))
+                        .urgency(NO.getValue())
                         .build()
                     ),
                     element(
@@ -431,6 +433,7 @@ class ReplyToMessageJudgeServiceTest {
                         .message(MESSAGE)
                         .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
                         .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
+                        .urgency(NO.getValue())
                         .build()
                 )))
                 .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
@@ -593,6 +596,7 @@ class ReplyToMessageJudgeServiceTest {
                     .message(MESSAGE)
                     .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
                     .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
+                    .urgency(NO.getValue())
                     .build()
             )))
             .dateSent(formatLocalDateTimeBaseUsingFormat(dateSent, DATE_TIME_AT))
