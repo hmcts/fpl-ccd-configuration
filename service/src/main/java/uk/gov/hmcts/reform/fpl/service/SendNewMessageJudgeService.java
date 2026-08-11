@@ -239,7 +239,8 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return applications;
     }
 
-    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, String from, String to, String urgency) {
+    private List<Element<JudicialMessageReply>> buildMessageReplyList(String latestMessage, String from,
+                                                                      String to, String urgency) {
         return buildMessageReplies(latestMessage, Optional.empty(), from, to, urgency);
     }
 

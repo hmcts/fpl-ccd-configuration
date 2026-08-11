@@ -29,6 +29,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.MessageJudgeService.SAME_DAY_URGENCY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -114,6 +115,7 @@ class MessageJudgeControllerAboutToSubmitTest extends MessageJudgeControllerAbst
                     .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
                     .updatedTime(now())
                     .message("Some message")
+                    .urgency(SAME_DAY_URGENCY)
                     .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
                     .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
                 .build())))
