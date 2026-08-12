@@ -53,6 +53,9 @@ public class ConfirmApplicationReviewedEventData {
     YesNo addCoverSheet;
 
     @Temp
+    DocumentReference amendedDraftOrder;
+
+    @Temp
     DocumentReference uploadedDraftOrder;
 
     @Temp
@@ -76,21 +79,21 @@ public class ConfirmApplicationReviewedEventData {
             "onlyOneApplicationToBeReviewed",
             "additionalApplicationToBeReviewedList",
             "hasC2ToBeReview", "hasOtherToBeReview",
+            "c2AdditionalApplicationToBeReview",
             "otherAdditionalApplicationToBeReview",
-            "reviewOrderUrgency", "uploadedDraftOrder",
-            "addCoverSheet", "previewApprovedOrder1",
-            "previewApprovedOrderTitle1",
-            "reviewAdditionalAppRefusalReason");
+            "reviewOrderUrgency", "uploadedDraftOrder", "addCoverSheet",
+            "previewApprovedOrder1", "previewApprovedOrderTitle1");
     }
 
     public static List<String> postSubmitEventFields() {
         return List.of(
             "approveAdditionalAppRouter",
-            "c2AdditionalApplicationToBeReview",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
             "reviewAdditionalAppIsConfidential",
-            "reviewAdditionalAppRequestedChanges"
+            "reviewAdditionalAppRequestedChanges",
+            "amendedDraftOrder",
+            "reviewAdditionalAppRefusalReason"
         );
     }
 }

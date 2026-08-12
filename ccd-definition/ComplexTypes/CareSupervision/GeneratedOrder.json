@@ -328,5 +328,14 @@
     "SecurityClassification": "Public",
     "FieldShowCondition": "notificationDocument!=\"\"",
     "CategoryID": "orders"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "refusedDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Order document",
+    "SecurityClassification": "Public",
+    "CategoryID": "refusedOrder"
   }
 ]

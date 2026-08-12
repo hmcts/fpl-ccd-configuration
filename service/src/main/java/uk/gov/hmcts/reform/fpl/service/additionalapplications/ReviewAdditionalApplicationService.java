@@ -3,6 +3,10 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions;
+import uk.gov.hmcts.reform.fpl.events.cmo.C2ApplicationRejectedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.ReviewCMOEvent;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -16,20 +20,20 @@ import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialOrderBundleUtils.addToConfidentialOrderBundle;
@@ -151,7 +155,7 @@ public class ReviewAdditionalApplicationService {
             getApplicationsToBeReviewed(caseData);
 
         if (applicationsBundlesToBeReviewed.size() == 1) {
-            return applicationsBundlesToBeReviewed.get(0);
+            return applicationsBundlesToBeReviewed.getFirst();
         } else {
             ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
 
@@ -221,46 +225,6 @@ public class ReviewAdditionalApplicationService {
         hearingOrdersBundle.getValue().removeOrderElement(orderElement);
         updates.putAll(approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, hearingOrdersBundle));
 
-
-        return updates;
-    }
-
-    public Map<String, Object> addRefusalOrders(CaseData caseData,
-                                                Element<HearingOrdersBundle> selectedOrdersBundle,
-                                                UUID draftOrderId) {
-        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
-
-        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
-
-        Element<GeneratedOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(
-            caseData,
-            eventData.getJudgeNameAndTitle(),
-            eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
-            eventData.getReviewAdditionalAppRefusalReason(),
-            isConfidential
-        );
-
-        List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
-        orderCollection.add(refusalOrderDoc);
-
-        Element<HearingOrder> draftOrder = findElement(draftOrderId,
-            selectedOrdersBundle.getValue().getAllOrdersAndConfidentialOrders()).orElseThrow();
-
-        Map<String, Object> updates = new HashMap<>();
-        Element<HearingOrder> rejectedDraftOrder = approveDraftOrdersService.rejectDraftOrderWithRequestedChanges(
-            caseData,
-            updates,
-            selectedOrdersBundle,
-            draftOrder,
-            eventData.getReviewAdditionalAppRefusalReason()
-        );
-
-        List<Element<HearingOrder>> rejectedOrders = getIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
-        rejectedOrders.add(rejectedDraftOrder);
-        updates.put("refusedHearingOrders", rejectedOrders);
-
-        selectedOrdersBundle.getValue().removeOrderElement(draftOrder);
-        updates.put("orderCollection", orderCollection);
 
         return updates;
     }
@@ -349,4 +313,59 @@ public class ReviewAdditionalApplicationService {
         return updates;
     }
 
+    public Map<String, Object> addRefusalOrders(CaseData caseData,
+                                                Element<HearingOrdersBundle> selectedOrdersBundle,
+                                                UUID draftOrderId) {
+        Map<String, Object> updates = new HashMap<>();
+        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+
+        // generate refusal order and add it to orderCollection
+        Element<GeneratedOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(caseData,
+            eventData.getJudgeNameAndTitle(),
+            eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
+            eventData.getReviewAdditionalAppRefusalReason());
+
+        List<Element<GeneratedOrder>> refusalOrders = getIfNull(caseData.getRefusalOrders(), new ArrayList<>());
+        refusalOrders.add(refusalOrderDoc);
+        updates.put("refusalOrders", refusalOrders);
+
+        // update the draft order as rejected and move them to refused
+        Element<HearingOrder> draftOrder = findElement(draftOrderId, selectedOrdersBundle.getValue()
+            .getAllOrdersAndConfidentialOrders()).orElseThrow();
+
+        Element<HearingOrder> rejectedDraftOrder = approveDraftOrdersService.rejectDraftOrderWithRequestedChanges(
+            caseData,
+            updates,
+            selectedOrdersBundle,
+            draftOrder,
+            eventData.getReviewAdditionalAppRefusalReason()
+        );
+
+        List<Element<HearingOrder>> rejectedOrders = getIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
+        rejectedOrders.add(rejectedDraftOrder);
+        updates.put("refusedHearingOrders", rejectedOrders);
+
+        selectedOrdersBundle.getValue().removeOrderElement(draftOrder);
+
+        return updates;
+    }
+
+    public List<ReviewCMOEvent> buildEventsToPublish(CaseData caseData, CaseData oldCaseData) {
+        ConfirmApplicationReviewedEventData oldEventData = oldCaseData.getConfirmApplicationReviewedEventData();
+        Element<AdditionalApplicationsBundle> selectedBundle = getSelectedApplicationsToBeReviewed(caseData);
+        C2DocumentBundle rejectedC2Bundle = oldEventData.getC2AdditionalApplicationToBeReview();
+
+        List<ReviewCMOEvent> eventsToPublish = new ArrayList<>();
+
+        if (ApproveAdditionalAppOptions.REFUSE.equals(oldCaseData.getApproveAdditionalAppRouter())) {
+            eventsToPublish.add(C2ApplicationRejectedEvent.builder()
+                .caseData(caseData)
+                .selectedAdditionalApplicationBundle(selectedBundle.getValue())
+                .c2DocumentRefused(rejectedC2Bundle)
+                .refusalOrderTitle(refusalOrderService.getRefusalOrderTitle(rejectedC2Bundle.getUploadedDateTime()))
+                .build());
+        }
+
+        return eventsToPublish;
+    }
 }

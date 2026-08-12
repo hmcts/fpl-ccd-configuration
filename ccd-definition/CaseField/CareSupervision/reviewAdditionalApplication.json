@@ -102,6 +102,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "amendedDraftOrder",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Upload amended order",
+    "FieldType": "Document",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "approveAdditionalAppRouter",
     "FieldType": "FixedRadioList",
@@ -195,6 +204,24 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "requireActionLabel",
     "Label": "<div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Call 020 3966 8650 if you need action within an hour.<br />For internal use only.<br />Monday to Friday from 9am to 5pm</strong></div>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewAdditionalAppRefusalReason",
+    "Label": "Reason for refusal - this will populate the order",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previewRefusalOrderLabel",
+    "Label": "Please review the following refusal order. If you click 'Continue', the refusal order will be added to the case and the applicant will be notified. A court seal will also be applied to the final version.<br/><br/>Please note that the preview shown below will not display the court seal, but it reflects the content that will be issued.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"

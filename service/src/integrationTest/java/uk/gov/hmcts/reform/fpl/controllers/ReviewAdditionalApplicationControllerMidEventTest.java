@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationRefusalOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPLICANT_CHANGE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_AND_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_CHANGE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.LIST;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.REFUSE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -47,6 +49,9 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
 
     @MockBean
     private HearingOrderGenerator hearingOrderGenerator;
+
+    @MockBean
+    private ApplicationRefusalOrderService refusalOrderService;
 
     private static final C2AdditionalApplicationEventData C2_APPLICATION =
         C2AdditionalApplicationEventData.builder()
@@ -123,17 +128,42 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
     }
 
     @Test
-    void shouldSetFlagsForApproveApplicationChangeOrderRoute() {
+    void shouldGeneratePreviewForApproveApplicationAndChangeOrderRoute() {
+        DocumentReference draftOrderDocument = document("draft-order.docx");
+        DocumentReference amendedDraftOrderDocument = document("amended-draft-order.docx");
+        DocumentReference amendedPreviewOrderDocument = document("amended-draft-order-with-coversheet.pdf");
+
         CaseData caseData = CaseData.builder()
             .approveAdditionalAppRouter(APPROVE_APPLICATION_CHANGE_ORDER)
+            .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
+                .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                    .draftOrdersBundle(List.of(element(
+                        DRAFT_ORDER_ID,
+                        DraftOrder.builder().title("Draft order title").document(draftOrderDocument).build()
+                    )))
+                    .build())
+                .amendedDraftOrder(amendedDraftOrderDocument)
+                .build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
             .build();
 
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any()))
+            .thenReturn("District Judge Example");
+        when(hearingOrderGenerator.addCoverSheet(any(), eq(amendedDraftOrderDocument)))
+            .thenReturn(amendedPreviewOrderDocument);
+
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "edit-hearing");
-        ConfirmApplicationReviewedEventData resultEventData = extractCaseData(response)
-            .getConfirmApplicationReviewedEventData();
+        CaseData resultCaseData = extractCaseData(response);
+        ConfirmApplicationReviewedEventData resultEventData = resultCaseData.getConfirmApplicationReviewedEventData();
 
         assertThat(resultEventData.getReviewOrderUrgency()).isEqualTo(YesNo.YES);
-        assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.NO);
+        assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.YES);
+        assertThat(response.getData().get("previewApprovedOrder1")).isEqualTo(Map.of(
+            "document_url", amendedPreviewOrderDocument.getUrl(),
+            "document_filename", amendedPreviewOrderDocument.getFilename(),
+            "document_binary_url", amendedPreviewOrderDocument.getBinaryUrl()
+        ));
+        assertThat(response.getData().get("previewApprovedOrderTitle1")).isEqualTo("Order Draft order title");
     }
 
     @Test
@@ -151,9 +181,44 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
     }
 
     @Test
-    void shouldSetFlagsForDefaultRoute() {
+    void shouldGeneratePreviewForRefusal() {
+        DocumentReference refusalPreviewDocument = document("refusal-order.pdf");
+
         CaseData caseData = CaseData.builder()
             .approveAdditionalAppRouter(REFUSE)
+            .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
+                .judgeNameAndTitle("District Judge Example")
+                .reviewAdditionalAppRefusalReason("Application does not meet the criteria for approval")
+                .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                    .uploadedDateTime("1 January 2021, 12:00pm")
+                    .build())
+                .build())
+            .build();
+
+        when(refusalOrderService.buildApplicationRefusalOrderDocument(
+            caseData, "District Judge Example",
+            "1 January 2021, 12:00pm",
+            "Application does not meet the criteria for approval",
+           false
+        )).thenReturn(refusalPreviewDocument);
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "edit-hearing");
+        ConfirmApplicationReviewedEventData resultEventData = extractCaseData(response)
+            .getConfirmApplicationReviewedEventData();
+
+        assertThat(resultEventData.getReviewOrderUrgency()).isEqualTo(YesNo.NO);
+        assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.NO);
+        assertThat(response.getData().get("previewApprovedOrder1")).isEqualTo(Map.of(
+            "document_url", refusalPreviewDocument.getUrl(),
+            "document_filename", refusalPreviewDocument.getFilename(),
+            "document_binary_url", refusalPreviewDocument.getBinaryUrl()
+        ));
+    }
+
+    @Test
+    void shouldSetFlagsForDefaultRoute() {
+        CaseData caseData = CaseData.builder()
+            .approveAdditionalAppRouter(LIST)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "edit-hearing");

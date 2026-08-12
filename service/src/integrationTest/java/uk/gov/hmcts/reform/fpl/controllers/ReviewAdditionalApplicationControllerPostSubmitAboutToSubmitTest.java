@@ -97,7 +97,8 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
-            "reviewAdditionalAppIsConfidential"
+            "reviewAdditionalAppIsConfidential",
+            "amendedDraftOrder"
         );
     }
 
@@ -122,7 +123,8 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
-            "reviewAdditionalAppIsConfidential"
+            "reviewAdditionalAppIsConfidential",
+            "amendedDraftOrder"
         );
     }
 
@@ -152,7 +154,6 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
         AboutToStartOrSubmitCallbackResponse response = postPostSubmitAboutToSubmit(caseData);
 
         verify(approveDraftOrdersService, never()).approveAndSealDraftOrder(any(), any(), any(), any(), any());
-        verify(approveDraftOrdersService, never()).updateHearingDraftOrdersBundle(any(), any());
         assertThat(response.getData()).doesNotContainKeys(
             "approveAdditionalAppRouter",
             "judgeNameAndTitle",
