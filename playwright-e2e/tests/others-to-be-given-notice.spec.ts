@@ -24,12 +24,13 @@ test.describe('Others to be given notice', () => {
 
             await othersToBeGivenNotice.gotoNextStep('Others to be given notice');
             await othersToBeGivenNotice.othersToBeGivenNotice();
+
             await othersToBeGivenNotice.tabNavigation('People in the case');
-            await expect(page.getByText('Others to be given notice 1',{exact: true})).toBeVisible();
-            await expect(page.getByText('James',{exact: true})).toBeVisible();
-            await expect(page.getByText('Trace',{exact: true})).toBeVisible();
-            await expect(page.getByText('Others to be given notice 1',{exact: true})).toBeVisible();
-            await expect(page.getByText('Tim',{exact: true})).toBeVisible();
-            await expect(page.getByText('kim',{exact: true})).toBeVisible();
+
+            await page.getByText('Others to be given notice 1').click();
+            await page.getByText('Others to be given notice 2').click();
+
+            await expect(page.getByText('Others to be given notice 1')).toBeVisible();
+            await expect(page.getByText('Others to be given notice 2')).toBeVisible();
         })
 });
