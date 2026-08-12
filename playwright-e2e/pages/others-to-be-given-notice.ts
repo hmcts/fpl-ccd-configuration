@@ -73,7 +73,6 @@ export class OthersToBeGivenNotice extends BasePage {
         await this.page.locator('#othersV2_1_childInformation').fill('Uncle');
         await this.page.locator('#othersV2_1_litigationIssues-NO').dblclick();
         await this.clickContinue();
-        await this.clickSaveAndContinue();
         await this.checkYourAnsAndSubmit();
     }
 };
