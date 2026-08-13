@@ -22,22 +22,20 @@ public class ChildrenSmartSelector {
 
     public List<Element<Child>> getSelectedChildren(CaseData caseData) {
         List<Element<Child>> childrenToReturn;
+
         boolean isChildSelectedByPlacementApplication =
             childSelectionUtils.isChildSelectedByPlacementApplication(caseData);
-        boolean onlyOneChildCanBeSelected = childSelectionUtils.canOnlyOneChildBeSelected(caseData);
-        List<Element<Child>> childList = childrenService.getSelectedChildrenFromMultiSelectList(caseData);
-        boolean dynamicMultiSelectListEmpty = childList.isEmpty();
-
         if (isChildSelectedByPlacementApplication) {
             UUID placementId =
                 caseData.getManageOrdersEventData().getManageOrdersChildPlacementApplication().getValueCodeAsUUID();
             childrenToReturn = List.of(placementService.getChildByPlacementId(caseData, placementId));
-        } else if (onlyOneChildCanBeSelected) {
-            childrenToReturn = childSelectionUtils.getSelectedChildFromSingleSelectionComponent(caseData);
-        } else if (!dynamicMultiSelectListEmpty) {
-            childrenToReturn = childList;
         } else {
-            childrenToReturn = childrenService.getSelectedChildren(caseData);
+            boolean onlyOneChildCanBeSelected = childSelectionUtils.canOnlyOneChildBeSelected(caseData);
+            if (onlyOneChildCanBeSelected) {
+                childrenToReturn = childSelectionUtils.getSelectedChildFromSingleSelectionComponent(caseData);
+            } else {
+                childrenToReturn = childrenService.getSelectedChildren(caseData);
+            }
         }
 
         return childrenToReturn;
