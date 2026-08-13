@@ -3638,7 +3638,7 @@ class MigrateCaseServiceTest {
             CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
             underTest.migrateOtherProceedings(caseDetails, caseData, MIGRATION_ID);
 
-            assertThat(caseDetailMap).doesNotContainKey("proceeding").containsKey("proceedings");
+            assertThat(caseDetailMap).containsKey("proceeding").containsKey("proceedings");
 
             List<Element<Proceeding>> migratedProceeding =
                 (List<Element<Proceeding>>) caseDetailMap.get("proceedings");
@@ -3662,7 +3662,7 @@ class MigrateCaseServiceTest {
             CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
             underTest.migrateOtherProceedings(caseDetails, caseData, MIGRATION_ID);
 
-            assertThat(caseDetailMap).doesNotContainKey("proceeding").containsKey("proceedings");
+            assertThat(caseDetailMap).containsKey("proceeding").containsKey("proceedings");
             List<Element<Proceeding>> migratedProceeding =
                 (List<Element<Proceeding>>) caseDetailMap.get("proceedings");
 
