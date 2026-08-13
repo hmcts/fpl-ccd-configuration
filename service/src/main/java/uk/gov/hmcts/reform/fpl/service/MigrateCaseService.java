@@ -1353,7 +1353,6 @@ public class MigrateCaseService {
                 migratedProceedings.addAll(oldAdditionalProceedings);
             }
 
-            caseDetails.getData().remove("proceeding");
             caseDetails.getData().put("proceedings", migratedProceedings);
         } else {
             throw new AssertionError(format("Migration {id = %s}, case {%d} no proceeding found", migrationId,
@@ -1368,9 +1367,9 @@ public class MigrateCaseService {
         if (migratedProceedings != null) {
             int migratedProceedingsSize = migratedProceedings.size();
 
-            Proceeding rollBackProceeding = (migratedProceedingsSize > 0) 
+            Proceeding rollBackProceeding = (migratedProceedingsSize > 0)
                 ? migratedProceedings.get(0).getValue() : Proceeding.builder().build();
-            
+
             if (migratedProceedingsSize > 1) {
                 rollBackProceeding = rollBackProceeding.toBuilder()
                     .additionalProceedings(migratedProceedings.subList(1, migratedProceedingsSize))
@@ -1437,9 +1436,9 @@ public class MigrateCaseService {
         }
 
         int othersV2Size = othersV2ToBeMigrated.size();
-        
+
         Other firstOther = (othersV2Size > 0) ? othersV2ToBeMigrated.get(0).getValue() : null;
-        List<Element<Other>> additionalOthers =  (othersV2Size > 1) 
+        List<Element<Other>> additionalOthers =  (othersV2Size > 1)
             ? othersV2ToBeMigrated.subList(1, othersV2Size) : null;
 
         Others others = Others.builder()
