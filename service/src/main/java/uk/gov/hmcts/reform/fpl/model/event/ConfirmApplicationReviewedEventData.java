@@ -79,7 +79,6 @@ public class ConfirmApplicationReviewedEventData {
             "onlyOneApplicationToBeReviewed",
             "additionalApplicationToBeReviewedList",
             "hasC2ToBeReview", "hasOtherToBeReview",
-            "c2AdditionalApplicationToBeReview",
             "otherAdditionalApplicationToBeReview",
             "reviewOrderUrgency", "uploadedDraftOrder", "addCoverSheet",
             "previewApprovedOrder1", "previewApprovedOrderTitle1");
@@ -93,7 +92,8 @@ public class ConfirmApplicationReviewedEventData {
             "reviewAdditionalAppIsConfidential",
             "reviewAdditionalAppRequestedChanges",
             "amendedDraftOrder",
-            "reviewAdditionalAppRefusalReason"
+            "reviewAdditionalAppRefusalReason",
+            "c2AdditionalApplicationToBeReview"
         );
     }
 }
