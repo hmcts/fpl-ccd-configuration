@@ -291,18 +291,13 @@ public class ApproveDraftOrdersService {
                     ordersToBeSent = defaultIfNull((List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT),
                         newArrayList());
                 } else if (JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
-                        orderElement, reviewDecision.getChangesRequestedByJudge());
-
-                    if (orderElement.getValue().isConfidentialOrder()) {
-                        Element<HearingOrder> confidentialRejectedOrder =
-                            element(rejectedOrder.getId(),
-                                rejectedOrder.getValue().toBuilder()
-                                .orderConfidential(null)
-                                .build());
-                        data.putAll(addToConfidentialOrderBundle(selectedOrdersBundle, orderElement,
-                            caseData.getConfidentialRefusedOrders(), confidentialRejectedOrder));
-                    }
+                    Element<HearingOrder> rejectedOrder = rejectDraftOrderWithRequestedChanges(
+                        caseData,
+                        data,
+                        selectedOrdersBundle,
+                        orderElement,
+                        reviewDecision.getChangesRequestedByJudge()
+                    );
 
                     ordersToBeSent.add(rejectedOrder);
                 } else {
@@ -418,6 +413,31 @@ public class ApproveDraftOrdersService {
 
         doApproveAndSealDraftOrder(caseData, data, selectedOrdersBundle, amendedOrderElement, amendedReviewDecision);
         selectedOrdersBundle.getValue().removeOrderElement(orderElement);
+    }
+
+    public Element<HearingOrder> rejectDraftOrderWithRequestedChanges(
+        CaseData caseData,
+        Map<String, Object> data,
+        Element<HearingOrdersBundle> selectedOrdersBundle,
+        Element<HearingOrder> orderElement,
+        String changesRequestedByJudge
+    ) {
+        Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
+            orderElement,
+            changesRequestedByJudge
+        );
+
+        if (orderElement.getValue().isConfidentialOrder()) {
+            Element<HearingOrder> confidentialRejectedOrder = element(rejectedOrder.getId(),
+                rejectedOrder.getValue().toBuilder()
+                    .orderConfidential(null)
+                    .build());
+
+            data.putAll(addToConfidentialOrderBundle(selectedOrdersBundle, orderElement,
+                caseData.getConfidentialRefusedOrders(), confidentialRejectedOrder));
+        }
+
+        return rejectedOrder;
     }
 
     @SuppressWarnings("unchecked")

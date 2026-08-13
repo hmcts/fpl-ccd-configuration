@@ -3404,6 +3404,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "refusalOrders",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderExclusionClause",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRUD"
@@ -6228,6 +6235,20 @@
     "CaseFieldID": "otherAdditionalApplicationToBeReview",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewAdditionalAppRefusalReason",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "previewRefusalOrderLabel",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",

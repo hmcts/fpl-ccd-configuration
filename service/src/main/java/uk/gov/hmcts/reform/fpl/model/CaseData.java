@@ -524,6 +524,8 @@ public class CaseData extends CaseDataParent {
             .toList();
     }
 
+    private final List<Element<GeneratedOrder>> refusalOrders;
+
     @JsonUnwrapped
     @Builder.Default
     private final RemovalToolData removalToolData = RemovalToolData.builder().build();
@@ -1291,5 +1293,10 @@ public class CaseData extends CaseDataParent {
         } else {
             return Optional.empty();
         }
+    }
+
+    @JsonIgnore
+    public Language getCaseLanguage() {
+        return Optional.ofNullable(getC110A().getLanguageRequirementApplication()).orElse(Language.ENGLISH);
     }
 }

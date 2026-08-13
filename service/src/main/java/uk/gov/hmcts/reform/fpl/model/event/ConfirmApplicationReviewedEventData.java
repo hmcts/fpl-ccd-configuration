@@ -71,12 +71,14 @@ public class ConfirmApplicationReviewedEventData {
     @Temp
     String reviewAdditionalAppRequestedChanges;
 
+    @Temp
+    String reviewAdditionalAppRefusalReason;
+
     public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
             "additionalApplicationToBeReviewedList",
             "hasC2ToBeReview", "hasOtherToBeReview",
-            "c2AdditionalApplicationToBeReview",
             "otherAdditionalApplicationToBeReview",
             "reviewOrderUrgency", "uploadedDraftOrder", "addCoverSheet",
             "previewApprovedOrder1", "previewApprovedOrderTitle1");
@@ -85,11 +87,13 @@ public class ConfirmApplicationReviewedEventData {
     public static List<String> postSubmitEventFields() {
         return List.of(
             "approveAdditionalAppRouter",
+            "c2AdditionalApplicationToBeReview",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
             "reviewAdditionalAppIsConfidential",
             "reviewAdditionalAppRequestedChanges",
-            "amendedDraftOrder"
+            "amendedDraftOrder",
+            "reviewAdditionalAppRefusalReason"
         );
     }
 }

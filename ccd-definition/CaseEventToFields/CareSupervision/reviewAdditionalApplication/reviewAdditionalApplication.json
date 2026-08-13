@@ -226,6 +226,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "reviewAdditionalAppRefusalReason",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": 3,
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "approveAdditionalAppRouter=\"REFUSE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
     "CaseFieldID": "addCoverSheet",
     "PageFieldDisplayOrder": 0,
     "DisplayContext": "READONLY",
@@ -234,7 +246,7 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "previewOrderLabel=\"DO_NOT_SHOW\"",
-    "PageShowCondition": "addCoverSheet=\"YES\""
+    "PageShowCondition": "addCoverSheet=\"YES\" OR approveAdditionalAppRouter=\"REFUSE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -245,7 +257,20 @@
     "PageID": 4,
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "PageFieldDisplayOrder": 1
+    "PageFieldDisplayOrder": 1,
+    "FieldShowCondition": "approveAdditionalAppRouter!=\"REFUSE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "previewRefusalOrderLabel",
+    "DisplayContext": "READONLY",
+    "PageID": 4,
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 1,
+    "FieldShowCondition": "approveAdditionalAppRouter=\"REFUSE\""
   },
   {
     "LiveFrom": "01/01/2017",
