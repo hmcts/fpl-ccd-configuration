@@ -178,21 +178,6 @@ public class ReviewAdditionalApplicationService {
         ).collect(Collectors.toList());
     }
 
-    private Element<AdditionalApplicationsBundle> getSelectedApplicationByDraftOrderId(CaseData caseData,
-                                                                                        UUID draftOrderId) {
-        return caseData.getAdditionalApplicationsBundle().stream()
-            .filter(bundleElement -> {
-                C2DocumentBundle c2Bundle = getRelevantC2DocumentBundle(bundleElement.getValue());
-                return !isEmpty(c2Bundle)
-                    && !isEmpty(c2Bundle.getDraftOrdersBundle())
-                    && c2Bundle.getDraftOrdersBundle().stream().anyMatch(order -> draftOrderId.equals(order.getId()));
-            })
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException(
-                "Cannot list application at next hearing because selected application bundle is missing"
-            ));
-    }
-
     public Map<String, Object> returnDraftOrderToApplicant(CaseData caseData,
                                                             Element<HearingOrdersBundle> hearingOrdersBundle,
                                                             UUID draftOrderId,
