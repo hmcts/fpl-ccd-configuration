@@ -87,13 +87,13 @@ public class ConfirmApplicationReviewedEventData {
     public static List<String> postSubmitEventFields() {
         return List.of(
             "approveAdditionalAppRouter",
+            "c2AdditionalApplicationToBeReview",
             "judgeNameAndTitle",
             "reviewAdditionalAppDraftOrderId",
             "reviewAdditionalAppIsConfidential",
             "reviewAdditionalAppRequestedChanges",
             "amendedDraftOrder",
-            "reviewAdditionalAppRefusalReason",
-            "c2AdditionalApplicationToBeReview"
+            "reviewAdditionalAppRefusalReason"
         );
     }
 }

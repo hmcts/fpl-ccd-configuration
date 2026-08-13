@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderServic
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
 import java.time.LocalDateTime;
