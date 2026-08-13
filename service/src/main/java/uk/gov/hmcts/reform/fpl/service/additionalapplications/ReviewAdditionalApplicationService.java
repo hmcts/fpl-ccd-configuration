@@ -226,33 +226,6 @@ public class ReviewAdditionalApplicationService {
         return caseData.getNextHearingAfter(LocalDateTime.now()).isPresent();
     }
 
-    private void addGeneratedOrderToCorrectCollection(Map<String, Object> updates,
-                                                      CaseData caseData,
-                                                      Element<HearingOrdersBundle> hearingOrdersBundle,
-                                                      UUID draftOrderId,
-                                                      Element<GeneratedOrder> generatedOrder,
-                                                      boolean isConfidential) {
-        if (isConfidential) {
-            Element<HearingOrder> draftOrderElement = hearingOrdersBundle.getValue().getAllOrdersAndConfidentialOrders().stream()
-                .filter(orderElement -> orderElement.getId().equals(draftOrderId))
-                .findFirst()
-                .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
-                    "No HearingOrder found with element id: " + draftOrderId
-                ));
-
-            updates.putAll(addToConfidentialOrderBundle(
-                hearingOrdersBundle,
-                draftOrderElement,
-                caseData.getConfidentialOrders(),
-                generatedOrder
-            ));
-        } else {
-            List<Element<GeneratedOrder>> orderCollection = new ArrayList<>(caseData.getOrderCollection());
-            orderCollection.add(generatedOrder);
-            updates.put("orderCollection", orderCollection);
-        }
-    }
-
     public Map<String, Object> listApplicationAtNextHearing(CaseData caseData,
                                                              Element<HearingOrdersBundle> hearingOrdersBundle,
                                                              UUID draftOrderId,
@@ -271,14 +244,25 @@ public class ReviewAdditionalApplicationService {
             isConfidential
         );
 
-        addGeneratedOrderToCorrectCollection(
-            updates,
-            caseData,
-            hearingOrdersBundle,
-            draftOrderId,
-            listedOrder,
-            isConfidential
-        );
+        if (isConfidential) {
+            Element<HearingOrder> draftOrderElement = hearingOrdersBundle.getValue().getAllOrdersAndConfidentialOrders().stream()
+                .filter(orderElement -> orderElement.getId().equals(draftOrderId))
+                .findFirst()
+                .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                    "No HearingOrder found with element id: " + draftOrderId
+                ));
+
+            updates.putAll(addToConfidentialOrderBundle(
+                hearingOrdersBundle,
+                draftOrderElement,
+                caseData.getConfidentialOrders(),
+                listedOrder
+            ));
+        } else {
+            List<Element<GeneratedOrder>> orderCollection = new ArrayList<>(caseData.getOrderCollection());
+            orderCollection.add(listedOrder);
+            updates.put("orderCollection", orderCollection);
+        }
 
         return updates;
     }
