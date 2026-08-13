@@ -19,8 +19,6 @@ import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderServic
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
 import java.time.LocalDateTime;
@@ -243,17 +241,6 @@ public class ReviewAdditionalApplicationService {
         return caseData.getNextHearingAfter(LocalDateTime.now()).isPresent();
     }
 
-    private String getApplicationDateOrThrow(Element<AdditionalApplicationsBundle> selectedApplication) {
-        String applicationDate = selectedApplication.getValue().getUploadedDateTime();
-        if (isEmpty(applicationDate)) {
-            throw new IllegalStateException(
-                "Cannot list application at next hearing because reviewed application date is missing"
-            );
-        }
-
-        return applicationDate;
-    }
-
     private void addGeneratedOrderToCorrectCollection(Map<String, Object> updates,
                                                       CaseData caseData,
                                                       Element<HearingOrdersBundle> hearingOrdersBundle,
@@ -287,12 +274,9 @@ public class ReviewAdditionalApplicationService {
                                                              ConfirmApplicationReviewedEventData eventData) {
         Map<String, Object> updates = new HashMap<>();
         boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
-        Element<AdditionalApplicationsBundle> selectedApplication =
-            getSelectedApplicationByDraftOrderId(caseData, draftOrderId);
 
         String nextHearingDate = getNextHearingDate(caseData);
-
-        String applicationDate = getApplicationDateOrThrow(selectedApplication);
+        String applicationDate = eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime();
 
         Element<GeneratedOrder> listedOrder = applicationListNextHearingOrderService.buildListAtNextHearingOrder(
             caseData,
