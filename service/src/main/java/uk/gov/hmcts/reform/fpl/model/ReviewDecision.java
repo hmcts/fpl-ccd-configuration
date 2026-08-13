@@ -6,6 +6,8 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.util.List;
+
 @Data
 @Builder(toBuilder = true)
 public class ReviewDecision {
@@ -14,6 +16,7 @@ public class ReviewDecision {
     private final String hearing;
     private final CMOReviewOutcome decision;
     private final String changesRequestedByJudge;
+    private final List<String> doesDecisionConcludeProceedings;
 
     @JsonIgnore
     public boolean hasReviewOutcomeOf(CMOReviewOutcome reviewOutcome) {
@@ -24,5 +27,10 @@ public class ReviewDecision {
     public boolean hasBeenApproved() {
         return CMOReviewOutcome.SEND_TO_ALL_PARTIES.equals(decision)
             || CMOReviewOutcome.JUDGE_AMENDS_DRAFT.equals(decision);
+    }
+
+    @JsonIgnore
+    public boolean hasDecisionConcludedProceedings() {
+        return doesDecisionConcludeProceedings != null && doesDecisionConcludeProceedings.contains("Yes");
     }
 }

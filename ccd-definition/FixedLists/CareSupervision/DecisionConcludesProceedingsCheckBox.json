@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DecisionConcludesProceedingsCheckBox",
-    "ListElementCode": "DECISION_CONCLUDES_PROCEEDINGS",
+    "ListElementCode": "doesDecisionConcludeProceedings",
     "ListElement": "Yes",
     "DisplayOrder": 1
   }

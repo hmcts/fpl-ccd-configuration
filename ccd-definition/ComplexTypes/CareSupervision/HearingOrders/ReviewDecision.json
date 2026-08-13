@@ -29,7 +29,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ReviewDecision",
-    "ListElementCode": "decisionConcludesProceedings",
+    "ListElementCode": "doesDecisionConcludeProceedings",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DecisionConcludesProceedingsCheckBox",
     "ElementLabel": "Does the order conclude the proceedings?",
