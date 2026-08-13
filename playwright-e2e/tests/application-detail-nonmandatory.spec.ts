@@ -68,7 +68,7 @@ test.describe('Non mandatory application details before application submit @test
             // Welsh language requirements
             await welshLangRequirements.gotoNextStep('Welsh language requirements');
             await welshLangRequirements.welshLanguageSmokeTest();
-            await startApplication.welshLanguageReqUpdated();
+            await expect(startApplication.page.getByRole('paragraph').filter({ hasText: 'Welsh language requirements' }).getByRole('img')).toBeVisible();
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
                 // but supports additional test-specific configuration too
@@ -154,7 +154,7 @@ test.describe('Non mandatory application details before application submit @test
         });
 
     test('LA add other people @xbrowser',
-        async ({startApplication, signInPage, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
+        async ({startApplication, signInPage, othersToBeGivenNotice, makeAxeBuilder}, testInfo) => {
             casename = 'Other people in case ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
             expect(caseNumber).toBeDefined();
@@ -168,9 +168,9 @@ test.describe('Non mandatory application details before application submit @test
             await signInPage.isSignedIn();
             await signInPage.navigateToCaseDetails(caseNumber);
             //add other people in the case
-            await otherPeopleInCase.gotoNextStep('Other people in the case');
-            await otherPeopleInCase.addOtherPerson();
-            await expect( otherPeopleInCase.page.getByRole('paragraph').filter({ hasText: 'Other people in the case' }).getByRole('img', { name: 'In progress' })).toBeVisible();
+            await othersToBeGivenNotice.gotoNextStep('Others to be given notice');
+            await othersToBeGivenNotice.othersToBeGivenNotice()
+            await expect( othersToBeGivenNotice.page.getByRole('paragraph').filter({ hasText: 'Others to be given notice' }).getByRole('img', { name: 'In progress' })).toBeVisible();
 
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
