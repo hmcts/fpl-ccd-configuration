@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationRefusalOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkdownService;
@@ -33,8 +32,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
@@ -58,9 +55,6 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @MockBean
-    private ApplicationRefusalOrderService applicationRefusalOrderService;
 
     @MockBean
     private ReviewAdditionalApplicationMarkdownService markdownService;
@@ -221,10 +215,6 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
         assertThatThrownBy(() -> postPostSubmitAboutToSubmit(caseData))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Cannot list application at next hearing because no future hearing exists");
-
-        verify(applicationRefusalOrderService, never()).buildRefusalOrder(
-            any(), anyString(), anyString(), anyString(), anyBoolean()
-        );
     }
 
     private AboutToStartOrSubmitCallbackResponse postPostSubmitAboutToSubmit(CaseData caseData) {
