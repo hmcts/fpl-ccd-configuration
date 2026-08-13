@@ -7,7 +7,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
+import java.time.format.ResolverStyle;
 import java.util.Locale;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class DateFormatterHelper {
     public static final String DATE_TIME_AT = "d MMMM yyyy 'at' h:mma";
@@ -40,7 +43,7 @@ public class DateFormatterHelper {
         }
         return dateTime.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
-    
+
     public static String formatLocalDateBaseUsingFormat(LocalDate date, String format) {
         return date.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
@@ -80,5 +83,37 @@ public class DateFormatterHelper {
             default:
                 return "th";
         }
+    }
+
+    public static boolean isValidDate(String date) {
+        return isValidDate(date, DATE_SHORT,
+            "d/M/yyyy",
+            "d-MM-yyyy",
+            "dd-MM-yyyy",
+            "d.MM.yyyy",
+            "dd.MM.yyyy",
+            "yyyy-MM-dd",
+            "yyyy/MM/dd",
+            "dd MMM yyyy",
+            DATE);
+    }
+
+    public static boolean isValidDate(String date, String... formats) {
+        if (isEmpty(date)) {
+            return false;
+        }
+
+        for (String format : formats) {
+            if (!isEmpty(format)) {
+                try {
+                    parseLocalDateFromStringUsingFormat(date, format);
+                    return true;
+                } catch (DateTimeParseException e) {
+                    // Try next pattern.
+                }
+            }
+        }
+
+        return false;
     }
 }

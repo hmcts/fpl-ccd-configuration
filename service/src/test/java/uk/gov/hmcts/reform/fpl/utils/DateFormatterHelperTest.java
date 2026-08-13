@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.isValidDate;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 
@@ -153,6 +154,34 @@ class DateFormatterHelperTest {
     @Test
     void shouldReturnEmptyIfDateTimeIsNull() {
         assertThat(formatLocalDateTimeBaseUsingFormat(null, "h:mma, yyyy")).isEmpty();
+    }
+
+    @Test
+    void shouldReturnTrueWhenDateMatchesSinglePattern() {
+        assertThat(isValidDate("01/01/2019", "dd/MM/yyyy")).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenDateDoesNotMatchSinglePattern() {
+        assertThat(isValidDate("2019-01-01", "dd/MM/yyyy")).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenDateIsInvalidEvenIfPatternMatches() {
+        assertThat(isValidDate("31/02/2019", "dd/MM/yyyy")).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenDateMatchesAnyProvidedPattern() {
+        assertThat(isValidDate("2019-01-01", "dd/MM/yyyy", "yyyy-MM-dd")).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseForNullBlankOrMissingPatterns() {
+        assertThat(isValidDate(null, "dd/MM/yyyy")).isFalse();
+        assertThat(isValidDate("", "dd/MM/yyyy")).isFalse();
+        assertThat(isValidDate("2019-01-01", (String[]) null)).isFalse();
+        assertThat(isValidDate("2019-01-01")).isFalse();
     }
 
     private LocalDate createDate() {

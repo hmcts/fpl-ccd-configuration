@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -115,8 +117,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.mockito.Mockito;
 
 
 @ExtendWith({MockitoExtension.class})
@@ -3694,6 +3694,8 @@ class MigrateCaseServiceTest {
                 .build();
 
             Map<String,Object> caseDetailMap = new HashMap<>();
+            caseDetailMap.put("proceeding", FIRST_PROCEEDING.toBuilder()
+                .additionalProceedings(OTHER_PROCEEDINGS).build());
             caseDetailMap.put("proceedings", migratedProceedings);
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();
@@ -3721,6 +3723,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             Map<String,Object> caseDetailMap = new HashMap<>();
+            caseDetailMap.put("proceeding", FIRST_PROCEEDING);
             caseDetailMap.put("proceedings", migratedProceedings);
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDetailMap).build();

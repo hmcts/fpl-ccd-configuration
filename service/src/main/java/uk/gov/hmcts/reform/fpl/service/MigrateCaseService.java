@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -86,10 +87,12 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.isValidDate;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
@@ -1353,6 +1356,11 @@ public class MigrateCaseService {
                 migratedProceedings.addAll(oldAdditionalProceedings);
             }
 
+            migratedProceedings = migratedProceedings.stream()
+                .map(proceedingElement ->
+                    element(proceedingElement.getId(), sanitizeProceeding(caseData, proceedingElement.getValue())))
+                .toList();
+
             caseDetails.getData().put("proceedings", migratedProceedings);
         } else {
             throw new AssertionError(format("Migration {id = %s}, case {%d} no proceeding found", migrationId,
@@ -1360,26 +1368,31 @@ public class MigrateCaseService {
         }
     }
 
+    private Proceeding sanitizeProceeding(CaseData caseData, Proceeding proceeding) {
+        // start date and end date are free text input, so we need to check if they are valid dates before migrating
+        boolean validStartDate = isValidDate(proceeding.getStarted());
+        boolean validEndDate = isValidDate(proceeding.getEnded());
+        Proceeding.ProceedingBuilder builder =  proceeding.toBuilder();
+        if (!validStartDate) {
+            builder.started(null);
+            log.warn("Case {} has invalid proceeding start date", caseData.getId());
+        }
+        if (!validEndDate) {
+            builder.ended(null);
+            log.warn("Case {} has invalid proceeding end date", caseData.getId());
+        }
+
+        return builder.build();
+    }
+
     @SuppressWarnings("deprecation")
     public void rollbackOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
         List<Element<Proceeding>> migratedProceedings = caseData.getProceedings();
 
         if (migratedProceedings != null) {
-            int migratedProceedingsSize = migratedProceedings.size();
-
-            Proceeding rollBackProceeding = (migratedProceedingsSize > 0)
-                ? migratedProceedings.get(0).getValue() : Proceeding.builder().build();
-
-            if (migratedProceedingsSize > 1) {
-                rollBackProceeding = rollBackProceeding.toBuilder()
-                    .additionalProceedings(migratedProceedings.subList(1, migratedProceedingsSize))
-                    .build();
-            }
-
             caseDetails.getData().remove("proceedings");
-            caseDetails.getData().put("proceeding", rollBackProceeding);
         } else {
-            throw new AssertionError(format("Migration {id = %s}, case {%d} no proceeding found", migrationId,
+            throw new AssertionError(format("Migration {id = %s}, case {%d} no migrated proceeding found", migrationId,
                 caseData.getId()));
         }
     }
