@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.orders.validator;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 
@@ -22,10 +22,9 @@ public class WhichChildrenValidator implements QuestionBlockOrderValidator {
     @Override
     public List<String> validate(CaseData caseData) {
         String orderAppliesToAllChildren = caseData.getOrderAppliesToAllChildren();
-        DynamicMultiSelectList childSelectorV2 = caseData.getChildSelectorV2();
+        Selector childSelector = caseData.getChildSelector();
 
-        if (NO.getValue().equals(orderAppliesToAllChildren) && (childSelectorV2.getValue() == null
-            || childSelectorV2.getValue().isEmpty())) {
+        if (NO.getValue().equals(orderAppliesToAllChildren) && childSelector.getSelected().isEmpty()) {
             return List.of(MESSAGE);
         }
 

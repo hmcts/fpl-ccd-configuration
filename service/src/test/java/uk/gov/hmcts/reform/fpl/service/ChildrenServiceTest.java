@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.Collections;
@@ -318,60 +316,6 @@ class ChildrenServiceTest {
         }
     }
 
-    @Nested
-    class DynamicMultiSelectListTests {
-
-        @Test
-        void shouldReturnAllChildrenWhenOrderAppliesToAllChildren() {
-            CaseData caseData = CaseData.builder()
-                .children1(childrenList)
-                .orderAppliesToAllChildren("Yes")
-                .build();
-
-            List<Element<Child>> selectedChildren = service.getSelectedChildrenFromMultiSelectList(caseData);
-
-            assertThat(selectedChildren).isEqualTo(caseData.getAllChildren());
-        }
-
-        @Test
-        void shouldReturnAllChildrenWhenNoSpecifiedIfOrderApplyToAllChildren() {
-            CaseData caseData = CaseData.builder()
-                .children1(childrenList)
-                .orderAppliesToAllChildren(null)
-                .build();
-
-            List<Element<Child>> selectedChildren = service.getSelectedChildrenFromMultiSelectList(caseData);
-
-            assertThat(selectedChildren).isEqualTo(caseData.getAllChildren());
-        }
-
-        @Test
-        void shouldReturnSelectedChildrenOnly() {
-            CaseData caseData = CaseData.builder()
-                .children1(childrenList)
-                .childSelectorV2(childrenMultiSelectListWithSelectedChildren)
-                .orderAppliesToAllChildren("No")
-                .build();
-
-            List<Element<Child>> selectedChildren = service.getSelectedChildrenFromMultiSelectList(caseData);
-
-            assertThat(selectedChildren.getFirst()).isEqualTo(childrenList.getFirst());
-        }
-
-        @Test
-        void shouldReturnEmptyListWhenNoChildrenSelected() {
-            CaseData caseData = CaseData.builder()
-                .children1(childrenList)
-                .childSelectorV2(childrenMultiSelectListWithNoSelectedChildren)
-                .orderAppliesToAllChildren("No")
-                .build();
-
-            List<Element<Child>> selectedChildren = service.getSelectedChildrenFromMultiSelectList(caseData);
-
-            assertThat(selectedChildren).isEmpty();
-        }
-    }
-
     private Element<Child> childWithConfidentialFields(UUID id) {
         return element(id, Child.builder()
             .party(ChildParty.builder()
@@ -441,30 +385,5 @@ class ChildrenServiceTest {
             .uploadedOrderType(uploadedOrderType)
             .build();
     }
-
-    private static final UUID childId1 = UUID.randomUUID();
-    private static final UUID childId2 = UUID.randomUUID();
-    private static final Child child1 = Child.builder()
-        .party(ChildParty.builder().firstName("Child").lastName("Name1").build())
-        .build();
-    private static final Child child2 = Child.builder()
-        .party(ChildParty.builder().firstName("Child").lastName("Name2").build())
-        .build();
-    private static final List<Element<Child>> childrenList = List.of(
-        Element.<Child>builder().id(childId1).value(child1).build(),
-        Element.<Child>builder().id(childId2).value(child2).build()
-    );
-    private static final DynamicMultiSelectListElement childListEle1 = DynamicMultiSelectListElement.builder()
-        .code(childId1.toString()).label("Child Name1")
-        .build();
-    private static final DynamicMultiSelectListElement childListEle2 = DynamicMultiSelectListElement.builder()
-        .code(childId2.toString()).label("Child Name2")
-        .build();
-    private static final DynamicMultiSelectList childrenMultiSelectListWithNoSelectedChildren = DynamicMultiSelectList
-        .builder().listItems(List.of(childListEle1, childListEle2))
-        .build();
-    private static final DynamicMultiSelectList childrenMultiSelectListWithSelectedChildren = DynamicMultiSelectList
-        .builder().value(List.of(childListEle1)).listItems(List.of(childListEle1, childListEle2))
-        .build();
 
 }
