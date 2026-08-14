@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -29,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
@@ -58,9 +58,6 @@ public class PlacementController extends CallbackController {
 
         final Cardinality childrenCardinality = eventData.getPlacementChildrenCardinality();
 
-        final DynamicMultiSelectList placementRespondentList = respondentService
-            .getRespondentsMultiSelectList(caseData);
-
         if (childrenCardinality == ZERO) {
             return respond(caseProperties, List.of("There are no children available for placement application"));
         }
@@ -73,8 +70,8 @@ public class PlacementController extends CallbackController {
         if (isNotEmpty(caseData.getAllRespondents())) {
             caseProperties.put("hasRespondents", "Yes");
             caseProperties.put("placementRespondentsLabel",
-                respondentService.formatRespondentSelector(placementRespondentList));
-            caseProperties.put("respondentsSelectorV2", placementRespondentList);
+                respondentService.buildRespondentLabel(caseData.getAllRespondents()));
+            caseProperties.put("respondentsSelector", newSelector(caseData.getAllRespondents().size()));
         }
 
 
