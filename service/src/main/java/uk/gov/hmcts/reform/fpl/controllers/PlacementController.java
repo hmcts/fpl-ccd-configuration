@@ -159,6 +159,7 @@ public class PlacementController extends CallbackController {
         caseDetails.getData().put("placementsNonConfidentialNotices",
                 eventData.getPlacementsNonConfidentialWithNotices(true));
         caseDetails.getData().put("placementPayment", eventData.getPlacementPayment());
+        caseDetails.getData().remove("respondentsSelectorV2");
 
         removeTemporaryFields(caseDetails, PlacementEventData.class);
 
