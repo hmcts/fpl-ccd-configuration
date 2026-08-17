@@ -2,8 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.validator;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 
@@ -15,11 +14,6 @@ class WhichChildrenValidatorTest {
     private static final String MESSAGE = "Select the children included in the order";
 
     private final WhichChildrenValidator underTest = new WhichChildrenValidator();
-
-    private final DynamicMultiSelectListElement childEle1 = DynamicMultiSelectListElement.builder().code("0")
-        .label("First child").build();
-    private final DynamicMultiSelectListElement childEle2 = DynamicMultiSelectListElement.builder().code("1")
-        .label("Second child").build();
 
     @Test
     void accept() {
@@ -39,9 +33,7 @@ class WhichChildrenValidatorTest {
     void validateSomeChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
-            .childSelectorV2(DynamicMultiSelectList.builder()
-                .value(List.of(childEle1))
-                .listItems(List.of(childEle1, childEle2)).build())
+            .childSelector(Selector.builder().selected(List.of(1, 2)).build())
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
@@ -51,8 +43,7 @@ class WhichChildrenValidatorTest {
     void validateNoChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
-            .childSelectorV2(DynamicMultiSelectList.builder()
-                .listItems(List.of(childEle1, childEle2)).build())
+            .childSelector(Selector.builder().build())
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(List.of(MESSAGE));
