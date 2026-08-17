@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -37,7 +38,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2421-rollback", this::rollback2421,
         "DFPL-3306", this::run3306,
         "DFPL-3292", this::run3292,
-        "DFPL-3296", this::run3296
+        "DFPL-3296", this::run3296,
+        "DFPL-3347", this::run3347
     );
 
     @PostMapping("/about-to-submit")
@@ -115,5 +117,31 @@ public class MigrateCaseController extends CallbackController {
                 + "in any placement records.", migrationId, Target_Migration_Id);
         }
     }
+
+    private void run3347(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3347";
+        final long expectedCaseId = 1783696286134453L;
+
+        Long caseId = caseDetails.getId();
+
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        log.info("Migration is {} started for case {}", migrationId, caseId);
+
+        String targetOrgId = "ZL7FAG5";
+
+        Map<String, OrganisationPolicy> migrationResult =
+            migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), targetOrgId, null);
+
+        caseDetails.getData().putAll(migrationResult);
+
+        OrganisationPolicy updatedOrgPolicy =  migrationResult.get("outsourcingPolicy");
+        if (updatedOrgPolicy != null && updatedOrgPolicy.getOrganisation() != null) {
+            log.info("Migration {} successfully updated outsourcingPolicy to organisation {} on case {}",
+                migrationId, updatedOrgPolicy.getOrganisation().getOrganisationID(), caseId);
+        } else {
+            log.info("Migration {} completed but outsourcingPolicy was null for case {}", migrationId, caseId);
+        }
+    }
+
 
 }
