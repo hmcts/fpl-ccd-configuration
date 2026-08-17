@@ -2426,6 +2426,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsSelectorV2",
+    "Label": "Select who should be notified",
+    "FieldType": "DynamicMultiSelectList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "personSelector",
     "Label": "Select who should be notified",
     "FieldType": "PersonSelector",
