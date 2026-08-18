@@ -336,7 +336,9 @@ class ReviewAdditionalApplicationServiceTest {
         Element<HearingOrdersBundle> selectedOrderBundle = element(
             HearingOrdersBundle.builder()
                 .hearingId(UUID.randomUUID())
-                .orders(new ArrayList<>(List.of(element(hearingOrderId, HearingOrder.builder().order(testDocumentReference()).build()))))
+                .orders(new ArrayList<>(List.of(element(hearingOrderId, HearingOrder.builder()
+                    .order(testDocumentReference())
+                    .build()))))
                 .build()
         );
 

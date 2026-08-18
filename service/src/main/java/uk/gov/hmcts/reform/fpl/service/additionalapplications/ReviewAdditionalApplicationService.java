@@ -235,7 +235,8 @@ public class ReviewAdditionalApplicationService {
             eventData.getReviewAdditionalAppRefusalReason()
         );
 
-        List<Element<HearingOrder>> rejectedOrders = defaultIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
+        List<Element<HearingOrder>> rejectedOrders =
+            defaultIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
         rejectedOrders.add(rejectedDraftOrder);
         updates.put("refusedHearingOrders", rejectedOrders);
 
