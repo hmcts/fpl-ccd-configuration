@@ -28,7 +28,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -220,7 +219,7 @@ public class ReviewAdditionalApplicationService {
             eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
             eventData.getReviewAdditionalAppRefusalReason());
 
-        List<Element<GeneratedOrder>> refusalOrders = getIfNull(caseData.getRefusalOrders(), new ArrayList<>());
+        List<Element<GeneratedOrder>> refusalOrders = defaultIfNull(caseData.getRefusalOrders(), new ArrayList<>());
         refusalOrders.add(refusalOrderDoc);
         updates.put("refusalOrders", refusalOrders);
 
@@ -236,7 +235,7 @@ public class ReviewAdditionalApplicationService {
             eventData.getReviewAdditionalAppRefusalReason()
         );
 
-        List<Element<HearingOrder>> rejectedOrders = getIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
+        List<Element<HearingOrder>> rejectedOrders = defaultIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
         rejectedOrders.add(rejectedDraftOrder);
         updates.put("refusedHearingOrders", rejectedOrders);
 
