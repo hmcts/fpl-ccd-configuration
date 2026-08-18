@@ -39,6 +39,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-3306", this::run3306,
         "DFPL-3292", this::run3292,
         "DFPL-3296", this::run3296,
+        "DFPL-3346", this::run3346,
         "DFPL-3347", this::run3347
     );
 
@@ -118,16 +119,26 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run3347(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3347";
-        final long expectedCaseId = 1783696286134453L;
+    private void run3346(CaseDetails caseDetails) {
+        final String DFPL_3346 = "DFPL-3346";
+        final long CASE_ID_3346 = 1781013695412110L;
+        final String ORG_ID_3346 = "CPYYWBZ";
+        runOutsourcingPolicyMigration(caseDetails, DFPL_3346, CASE_ID_3346, ORG_ID_3346);
+    }
 
+    private void run3347(CaseDetails caseDetails) {
+        final String DFPL_3347 = "DFPL-3347";
+        final long CASE_ID_3347 = 1783696286134453L;
+        final String ORG_ID_3347 = "ZL7FAG5";
+        runOutsourcingPolicyMigration(caseDetails, DFPL_3347, CASE_ID_3347, ORG_ID_3347);
+    }
+
+    private void runOutsourcingPolicyMigration(CaseDetails caseDetails, String migrationId,
+                                               long expectedCaseId, String targetOrgId) {
         Long caseId = caseDetails.getId();
 
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        log.info("Migration is {} started for case {}", migrationId, caseId);
-
-        String targetOrgId = "ZL7FAG5";
+        log.info("Migration of {} is started for case {}", migrationId, caseId);
 
         Map<String, OrganisationPolicy> migrationResult =
             migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), targetOrgId, null);
