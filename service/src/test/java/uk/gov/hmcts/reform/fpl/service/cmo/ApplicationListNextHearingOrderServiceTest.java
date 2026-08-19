@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentWithName;
 class ApplicationListNextHearingOrderServiceTest {
 
     private static final String APPLICATION_DATE = "1 January 2026, 12:00pm";
-    private static final String APPLICATION_DATE_ONLY = "1 January 2026";
     private static final String NEXT_HEARING_DATE = "1 August 2026";
     private static final String JUDGE = "District Judge Example";
     private static final byte[] DOC_BYTES = {1, 2, 3};
@@ -84,7 +83,7 @@ class ApplicationListNextHearingOrderServiceTest {
 
         verify(documentUploadService).uploadPDF(
             eq(SEALED_DOC_BYTES),
-            eq(LIST_AT_NEXT_HEARING_ORDER.getLabel() + " for application date " + APPLICATION_DATE_ONLY + ".pdf")
+            eq(LIST_AT_NEXT_HEARING_ORDER.getLabel() + " for application date " + APPLICATION_DATE + ".pdf")
         );
     }
 
@@ -106,7 +105,7 @@ class ApplicationListNextHearingOrderServiceTest {
 
         assertThat(listedOrder.getValue().getType()).isEqualTo(LIST_AT_NEXT_HEARING_ORDER.getLabel());
         assertThat(listedOrder.getValue().getTitle())
-            .isEqualTo(LIST_AT_NEXT_HEARING_ORDER.getLabel() + " for application date " + APPLICATION_DATE_ONLY);
+            .isEqualTo(LIST_AT_NEXT_HEARING_ORDER.getLabel() + " for application date " + APPLICATION_DATE);
     }
 
     private void stubCommonDependencies(boolean includeTimeStub) {

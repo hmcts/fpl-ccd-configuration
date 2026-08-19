@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.orders.AbstractApplicationGeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.APPLICATION_LIST_NEXT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.LIST_AT_NEXT_HEARING_ORDER;
@@ -33,10 +32,10 @@ public class ApplicationListNextHearingOrderService extends AbstractApplicationG
     }
 
     private DocmosisApplicationListNextHearingOrder getTemplateData(CaseData caseData,
-                                                                    String judgeTitleAndName,
-                                                                    String dateOfIssue,
-                                                                    String applicationDate,
-                                                                    String nextHearingDate) {
+                                                                     String judgeTitleAndName,
+                                                                     String dateOfIssue,
+                                                                     String applicationDate,
+                                                                     String nextHearingDate) {
         return DocmosisApplicationListNextHearingOrder.builder()
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .courtName(dataService.getCourtName(caseData))
@@ -61,7 +60,7 @@ public class ApplicationListNextHearingOrderService extends AbstractApplicationG
         );
 
         return buildOrderDocumentReference(caseData, requireSealing, docmosisDocument,
-            getOrderFileName(applicationDate));
+            buildApplicationOrderFileName(LIST_AT_NEXT_HEARING_ORDER.getLabel(), applicationDate));
     }
 
     public Element<GeneratedOrder> buildListAtNextHearingOrder(CaseData caseData,
@@ -105,29 +104,11 @@ public class ApplicationListNextHearingOrderService extends AbstractApplicationG
         return buildGeneratedOrder(
             caseData,
             LIST_AT_NEXT_HEARING_ORDER.getLabel(),
-            getOrderTitle(applicationDate),
+            buildApplicationOrderTitle(LIST_AT_NEXT_HEARING_ORDER.getLabel(), applicationDate),
             dateOfIssue,
             orderDoc,
             isConfidential
         );
-    }
-
-    private String getOrderTitle(String applicationDate) {
-        return format("%s for application date %s", LIST_AT_NEXT_HEARING_ORDER.getLabel(),
-            getApplicationDateOnly(applicationDate));
-    }
-
-    private String getApplicationDateOnly(String applicationDate) {
-        if (applicationDate == null) {
-            return null;
-        }
-
-        String[] dateAndTime = applicationDate.split(",", 2);
-        return dateAndTime[0].trim();
-    }
-
-    private String getOrderFileName(String applicationDate) {
-        return getOrderTitle(applicationDate) + ".pdf";
     }
 }
 
