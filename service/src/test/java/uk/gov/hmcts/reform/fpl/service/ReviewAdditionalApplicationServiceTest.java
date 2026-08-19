@@ -18,6 +18,8 @@ import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationRefusalOrderService;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
@@ -41,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 class ReviewAdditionalApplicationServiceTest {
@@ -54,8 +57,14 @@ class ReviewAdditionalApplicationServiceTest {
     @Mock
     private ApplicationListNextHearingOrderService applicationListNextHearingOrderService;
 
+    @Mock
+    private ApplicationRefusalOrderService applicationRefusalOrderService;
+
     @InjectMocks
     private ReviewAdditionalApplicationService reviewAdditionalApplicationService;
+
+    private static final String JUDGE_NAME_TITLE = "District Judge Example";
+    private static final String REFUSED_REASON = "Reason refused";
 
     private static final Element<AdditionalApplicationsBundle> REVIEWED_BUNDLE =
         element(AdditionalApplicationsBundle.builder()
@@ -86,7 +95,7 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Test
     void shouldInitEventFieldWithListOfBundlesToBeReviewed() {
-        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn("District Judge Example");
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn(JUDGE_NAME_TITLE);
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
@@ -101,7 +110,7 @@ class ReviewAdditionalApplicationServiceTest {
             asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2), AdditionalApplicationsBundle::toLabel),
             "reviewOrderUrgency", NO,
             "addCoverSheet", NO,
-            "judgeNameAndTitle", "District Judge Example"
+            "judgeNameAndTitle", JUDGE_NAME_TITLE
         );
 
         assertThat(resultMap).isEqualTo(expectedMap);
@@ -109,7 +118,7 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Test
     void shouldInitEventFieldWithOutBundlesToBeReviewed() {
-        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn("District Judge Example");
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn(JUDGE_NAME_TITLE);
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE))
@@ -122,7 +131,7 @@ class ReviewAdditionalApplicationServiceTest {
             "onlyOneApplicationToBeReviewed", NO,
             "reviewOrderUrgency", NO,
             "addCoverSheet", NO,
-            "judgeNameAndTitle", "District Judge Example"
+            "judgeNameAndTitle", JUDGE_NAME_TITLE
             );
 
         assertThat(resultMap).isEqualTo(expectedMap);
@@ -130,7 +139,7 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Test
     void shouldInitEventFieldWithOneBundleToBeReviewed() {
-        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn("District Judge Example");
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn(JUDGE_NAME_TITLE);
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1))
@@ -146,7 +155,7 @@ class ReviewAdditionalApplicationServiceTest {
             .containsEntry("uploadedDraftOrder", null)
             .containsEntry("reviewOrderUrgency", NO)
             .containsEntry("addCoverSheet", NO)
-            .containsEntry("judgeNameAndTitle", "District Judge Example")
+            .containsEntry("judgeNameAndTitle", JUDGE_NAME_TITLE)
             .containsEntry("c2AdditionalApplicationToBeReview",
                 buildReviewC2AdditionalApplicationEventData(NEW_BUNDLE_1.getValue()));
     }
@@ -478,6 +487,54 @@ class ReviewAdditionalApplicationServiceTest {
             .build();
 
         assertThat(reviewAdditionalApplicationService.hasFutureHearing(caseData)).isFalse();
+    }
+
+    @Test
+    void shouldUpdateRefusedHearingOrdersAndRefusalOrders() {
+        final UUID hearingOrderId = UUID.randomUUID();
+        final UUID refusedOrderId = UUID.randomUUID();
+        final UUID refusedHearingOrderId = UUID.randomUUID();
+
+        Element<GeneratedOrder> refusedOrder = element(refusedOrderId, GeneratedOrder.builder()
+            .refusedDocument(testDocumentReference()).build());
+
+        Element<HearingOrder> refusedHearingOrder = element(refusedHearingOrderId, HearingOrder.builder()
+            .refusedOrder(testDocumentReference()).build());
+
+        Element<HearingOrdersBundle> selectedOrderBundle = element(
+            HearingOrdersBundle.builder()
+                .hearingId(UUID.randomUUID())
+                .orders(new ArrayList<>(List.of(element(hearingOrderId, HearingOrder.builder()
+                    .order(testDocumentReference())
+                    .build()))))
+                .build()
+        );
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(NEW_BUNDLE_1))
+            .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
+                .judgeNameAndTitle(JUDGE_NAME_TITLE)
+                .reviewAdditionalAppRefusalReason(REFUSED_REASON)
+                .c2AdditionalApplicationToBeReview(buildReviewC2AdditionalApplicationEventData(NEW_BUNDLE_1.getValue()))
+                .build())
+            .build();
+
+        when(applicationRefusalOrderService.buildRefusalOrder(caseData, JUDGE_NAME_TITLE,
+            NEW_BUNDLE_1.getValue().getUploadedDateTime(), REFUSED_REASON))
+            .thenReturn(refusedOrder);
+
+        when(approveDraftOrdersService.rejectDraftOrderWithRequestedChanges(any(), any(), any(), any(),
+            any())).thenReturn(refusedHearingOrder);
+
+        Map<String, Object> result = reviewAdditionalApplicationService.addRefusalOrders(
+            caseData,
+            selectedOrderBundle,
+            hearingOrderId
+        );
+
+        assertThat(result.get("refusalOrders")).isEqualTo(List.of(refusedOrder));
+        assertThat(result.get("refusedHearingOrders")).isEqualTo(List.of(refusedHearingOrder));
+        assertThat(selectedOrderBundle.getValue().getOrders()).hasSize(0);
     }
 
     private static C2AdditionalApplicationEventData buildReviewC2AdditionalApplicationEventData(
