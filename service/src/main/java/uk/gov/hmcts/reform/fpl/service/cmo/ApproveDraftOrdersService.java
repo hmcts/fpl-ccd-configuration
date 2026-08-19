@@ -419,7 +419,8 @@ public class ApproveDraftOrdersService {
 
         if (nextHearingBooking.isPresent()
             && reviewDecision.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
-            && nextHearingBooking.get().isOfType(HearingType.FINAL)) {
+            && nextHearingBooking.get().isOfType(HearingType.FINAL)
+            && !currentState.equals(State.CLOSED)) {
             return State.FINAL_HEARING;
         }
         return currentState;

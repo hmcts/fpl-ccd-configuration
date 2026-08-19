@@ -1095,9 +1095,63 @@ class ApproveDraftOrdersServiceTest {
                 hearingsWithNextHearingTypeFinal, FINAL_HEARING),
             Arguments.of("next hearing type is ISSUE RESOLUTION",
                 hearingsWithNextHearingTypeIssueResolution, State.CASE_MANAGEMENT),
-            Arguments.of("next hearing type is ISSUE RESOLUTION",
+            Arguments.of("next hearing type is CASE MANAGEMENT",
                 hearingBookingsWithNextHearingTypeCaseManagement, State.CASE_MANAGEMENT)
         );
+    }
+
+    @Test
+    void shouldNotTransitionToFinalHearingWhenCaseIsClosed() {
+        LocalDateTime now = TIME.now();
+
+        Element<HearingOrder> agreedCMO = element(cmoID, HearingOrder.builder()
+            .hearing(HEARING_1)
+            .title(HEARING_1)
+            .type(AGREED_CMO)
+            .order(order)
+            .status(SEND_TO_JUDGE)
+            .judgeTitleAndName("Her Honour Judge").build());
+
+        Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(HEARING_1, newArrayList(agreedCMO));
+
+        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(createHearingBooking(now, now.plusDays(1), HearingType.CASE_MANAGEMENT, cmoID)),
+            element(createHearingBooking(now.plusDays(2), now.plusDays(3), FINAL, UUID.randomUUID()))
+        );
+
+        CaseData caseData = CaseData.builder()
+            .court(Court.builder().code("999").build())
+            .state(State.CLOSED)
+            .draftUploadedCMOs(newArrayList(agreedCMO))
+            .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
+            .reviewCMODecision(reviewDecision)
+            .hearingDetails(hearingBookings)
+            .build();
+
+        String othersNotified = "Other1, Other2";
+        List<Element<Other>> others = wrapElements(
+            Other.builder().name("Other1").address(Address.builder().postcode("SE1").build()).build(),
+            Other.builder().name("Other2").address(Address.builder().postcode("SE2").build()).build()
+        );
+
+        HearingOrder expectedCmo = expectedSealedCMO(others, othersNotified);
+
+        given(othersService.getSelectedOthers(any(), any(), any())).willReturn(others);
+        given(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class))).willReturn(
+            HearingOrdersBundles.builder()
+                .agreedCmos(emptyList())
+                .draftCmos(emptyList())
+                .build()
+        );
+        given(hearingOrderGenerator.buildSealedHearingOrder(caseData,
+            reviewDecision, agreedCMO, others, othersNotified, false))
+            .willReturn(element(agreedCMO.getId(), expectedCmo));
+
+        Map<String, Object> actualData = underTest.reviewCMO(caseData, ordersBundleElement);
+
+        assertThat(actualData).containsEntry("state", State.CLOSED);
     }
 
     private static Stream<ReviewDecision> populateNullAndEmptyReviewDecisionValues() {
