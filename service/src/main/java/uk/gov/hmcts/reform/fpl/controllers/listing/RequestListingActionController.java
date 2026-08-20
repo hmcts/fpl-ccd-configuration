@@ -39,6 +39,10 @@ public class RequestListingActionController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        // Pre-select "No" if the user has not opened this event before
+        if (caseData.getIsUrgentListingRequest() == null) {
+            caseDetails.getData().put("isUrgentListingRequest", YesNo.NO.getValue());
+        }
 
         // if we have no court object OR the court is part of the WA trial, block the event from being used
         if (isEmpty(caseData.getCourt()) || featureToggleService.isCourtNotificationEnabledForWa(caseData.getCourt())) {
