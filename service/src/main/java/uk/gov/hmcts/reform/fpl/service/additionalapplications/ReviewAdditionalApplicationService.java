@@ -244,7 +244,8 @@ public class ReviewAdditionalApplicationService {
         );
 
         if (isConfidential) {
-            Element<HearingOrder> draftOrderElement = hearingOrdersBundle.getValue().getAllOrdersAndConfidentialOrders().stream()
+            Element<HearingOrder> draftOrderElement = hearingOrdersBundle.getValue()
+                .getAllOrdersAndConfidentialOrders().stream()
                 .filter(orderElement -> orderElement.getId().equals(draftOrderId))
                 .findFirst()
                 .orElseThrow(() -> new HearingOrdersBundleNotFoundException(

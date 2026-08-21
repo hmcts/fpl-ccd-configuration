@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -344,7 +345,7 @@ class ReviewAdditionalApplicationServiceTest {
                 .uploadedDateTime("1 January 2021, 12:00pm")
                 .applicationReviewed(NO)
                 .c2DocumentBundle(C2DocumentBundle.builder()
-                    .draftOrdersBundle(List.of(element(draftOrderId, uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                    .draftOrdersBundle(List.of(element(draftOrderId, DraftOrder.builder().build())))
                     .build())
                 .build())))
             .hearingOrdersBundlesDrafts(List.of(hearingBundle))
@@ -394,7 +395,7 @@ class ReviewAdditionalApplicationServiceTest {
                 .uploadedDateTime("1 January 2021, 12:00pm")
                 .applicationReviewed(NO)
                 .c2DocumentBundle(C2DocumentBundle.builder()
-                    .draftOrdersBundle(List.of(element(draftOrderId, uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                    .draftOrdersBundle(List.of(element(draftOrderId, DraftOrder.builder().build())))
                     .build())
                 .build())))
             .hearingOrdersBundlesDrafts(List.of(hearingBundle))
@@ -443,7 +444,7 @@ class ReviewAdditionalApplicationServiceTest {
                 .uploadedDateTime("1 January 2021, 12:00pm")
                 .applicationReviewed(NO)
                 .c2DocumentBundle(C2DocumentBundle.builder()
-                    .draftOrdersBundle(List.of(element(draftOrderId, uk.gov.hmcts.reform.fpl.model.order.DraftOrder.builder().build())))
+                    .draftOrdersBundle(List.of(element(draftOrderId, DraftOrder.builder().build())))
                     .build())
                 .build())))
             .hearingOrdersBundlesDrafts(List.of(hearingBundle))

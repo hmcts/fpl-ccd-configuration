@@ -77,7 +77,8 @@ class ApplicationListNextHearingOrderServiceTest {
         );
 
         verify(docmosisDocumentGeneratorService).generateDocmosisDocument(
-            argThat((DocmosisApplicationListNextHearingOrder data) -> NEXT_HEARING_DATE.equals(data.getNextHearingDate())),
+            argThat((DocmosisApplicationListNextHearingOrder data) ->
+                NEXT_HEARING_DATE.equals(data.getNextHearingDate())),
             eq(DocmosisTemplates.APPLICATION_LIST_NEXT_HEARING)
         );
 

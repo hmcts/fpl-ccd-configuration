@@ -33,7 +33,8 @@ public abstract class AbstractApplicationGeneratedOrderService {
 
     protected AbstractApplicationGeneratedOrderService(CaseDataExtractionService dataService,
                                                        Time time,
-                                                       DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
+                                                       DocmosisDocumentGeneratorService
+                                                           docmosisDocumentGeneratorService,
                                                        UploadDocumentService documentUploadService,
                                                        DocumentSealingService documentSealingService) {
         this.dataService = dataService;
@@ -92,7 +93,8 @@ public abstract class AbstractApplicationGeneratedOrderService {
                                                           String title,
                                                           String dateOfIssue,
                                                           DocumentReference orderDoc,
-                                                          Consumer<GeneratedOrder.GeneratedOrderBuilder> documentBinder) {
+                                                          Consumer<GeneratedOrder.GeneratedOrderBuilder>
+                                                              documentBinder) {
         GeneratedOrder.GeneratedOrderBuilder generatedOrderBuilder = GeneratedOrder.builder()
             .type(generatedOrderType)
             .title(title)
