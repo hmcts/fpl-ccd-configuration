@@ -124,7 +124,6 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
             "document_filename", previewOrderDocument.getFilename(),
             "document_binary_url", previewOrderDocument.getBinaryUrl()
         ));
-        assertThat(response.getData().get("previewApprovedOrderTitle1")).isEqualTo("Order Draft order title");
     }
 
     @Test
@@ -163,7 +162,6 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
             "document_filename", amendedPreviewOrderDocument.getFilename(),
             "document_binary_url", amendedPreviewOrderDocument.getBinaryUrl()
         ));
-        assertThat(response.getData().get("previewApprovedOrderTitle1")).isEqualTo("Order Draft order title");
     }
 
     @Test

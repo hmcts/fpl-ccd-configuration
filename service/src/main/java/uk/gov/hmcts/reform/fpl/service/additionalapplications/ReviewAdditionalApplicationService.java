@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.REFUSAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialOrderBundleUtils.addToConfidentialOrderBundle;
@@ -213,7 +212,7 @@ public class ReviewAdditionalApplicationService {
         return updates;
     }
 
-    private String getNextHearingDate(CaseData caseData) {
+    public String getNextHearingDate(CaseData caseData) {
         return caseData.getNextHearingAfter(LocalDateTime.now())
             .map(hearing -> hearing.getStartDate().toLocalDate())
             .map(date -> formatLocalDateToString(date, DATE))
