@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -76,6 +77,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private String uploaderEmail;
     private DocumentUploaderType uploaderType;
     private List<CaseRole> uploaderCaseRoles;
+    public YesNo hasOrderConcludedProceedings;
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return from(order, hearing, date, AGREED_CMO, null, null, null);

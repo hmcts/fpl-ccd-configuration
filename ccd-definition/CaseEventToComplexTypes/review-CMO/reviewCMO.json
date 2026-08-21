@@ -334,5 +334,14 @@
     "FieldShowCondition": "judgeType=\"LEGAL_ADVISOR\"",
     "EventElementLabel": "Your name",
     "Comment": "Reusing existing Legal advisor input field"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewDecision",
+    "ListElementCode": "doesOrderConcludeProceedings",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Does the order conclude the proceedings?",
+    "FieldShowCondition": "decision=\"SEND_TO_ALL_PARTIES\"",
+    "SecurityClassification": "Public"
   }
 ]

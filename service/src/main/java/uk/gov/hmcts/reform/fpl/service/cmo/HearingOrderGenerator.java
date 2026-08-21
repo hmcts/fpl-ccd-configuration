@@ -56,7 +56,8 @@ public class HearingOrderGenerator {
             .status(CMOStatus.APPROVED)
             .lastUploadedOrder(order)
             .others(selectedOthers)
-            .othersNotified(othersNotified);
+            .othersNotified(othersNotified)
+            .hasOrderConcludedProceedings(reviewDecision.hasOrderConcludedProceedings());
 
         DocumentReference sealedOrder = documentSealingService.sealDocument(order, caseData.getCourt(),
             caseData.getSealType());

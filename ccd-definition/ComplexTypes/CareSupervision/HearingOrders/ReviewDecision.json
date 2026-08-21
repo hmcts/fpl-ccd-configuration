@@ -29,9 +29,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ReviewDecision",
-    "ListElementCode": "doesDecisionConcludeProceedings",
+    "ListElementCode": "doesOrderConcludeProceedings",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "DecisionConcludesProceedingsCheckBox",
+    "FieldTypeParameter": "OrderConcludesProceedingsCheckBox",
     "ElementLabel": "Does the order conclude the proceedings?",
     "FieldShowCondition": "decision=\"SEND_TO_ALL_PARTIES\"",
     "SecurityClassification": "Public"
