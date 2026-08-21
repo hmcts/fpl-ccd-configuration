@@ -215,6 +215,7 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
 
         assertThatThrownBy(() -> postPostSubmitAboutToSubmit(caseData))
             .isInstanceOf(RuntimeException.class)
+            .hasRootCauseInstanceOf(IllegalStateException.class)
             .hasMessageContaining("Cannot list application at next hearing because no future hearing exists");
     }
 
