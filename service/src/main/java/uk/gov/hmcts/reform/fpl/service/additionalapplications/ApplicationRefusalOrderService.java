@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -22,7 +21,6 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.REFUSAL_ORDER;
 @Service
 public class ApplicationRefusalOrderService extends AbstractApplicationGeneratedOrderService {
 
-    @Autowired
     public ApplicationRefusalOrderService(CaseDataExtractionService dataService,
                                           Time time,
                                           DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
@@ -50,7 +48,7 @@ public class ApplicationRefusalOrderService extends AbstractApplicationGenerated
 
     private DocmosisDocument generateApplicationRefusalOrderPDF(CaseData caseData,
                                                              DocmosisApplicationRefusalOrder templateData) {
-        return generateApplicationOrderPDF(caseData, DocmosisTemplates.APPLICATION_REFUSAL_ORDER, templateData);
+        return generateApplicationOrderPDF(DocmosisTemplates.APPLICATION_REFUSAL_ORDER, templateData);
     }
 
     public DocumentReference buildApplicationRefusalOrderDocument(CaseData caseData, String judgeTitleAndName,

@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -23,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractApplicationGeneratedOrderService {
 
     protected final CaseDataExtractionService dataService;
@@ -31,18 +34,6 @@ public abstract class AbstractApplicationGeneratedOrderService {
     protected final UploadDocumentService documentUploadService;
     protected final DocumentSealingService documentSealingService;
 
-    protected AbstractApplicationGeneratedOrderService(CaseDataExtractionService dataService,
-                                                       Time time,
-                                                       DocmosisDocumentGeneratorService
-                                                           docmosisDocumentGeneratorService,
-                                                       UploadDocumentService documentUploadService,
-                                                       DocumentSealingService documentSealingService) {
-        this.dataService = dataService;
-        this.time = time;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
-        this.documentUploadService = documentUploadService;
-        this.documentSealingService = documentSealingService;
-    }
 
     protected String getDateOfIssue(CaseData caseData) {
         return formatLocalDateToString(time.now().toLocalDate(), DATE, caseData.getCaseLanguage());
@@ -59,7 +50,7 @@ public abstract class AbstractApplicationGeneratedOrderService {
         return DocumentReference.buildFromDocument(documentUploadService.uploadPDF(documentBytes, fileName));
     }
 
-    protected DocmosisDocument generateApplicationOrderPDF(CaseData caseData, DocmosisTemplates template,
+    protected DocmosisDocument generateApplicationOrderPDF(DocmosisTemplates template,
                                                            DocmosisData templateData) {
         return docmosisDocumentGeneratorService.generateDocmosisDocument(templateData,
             template);

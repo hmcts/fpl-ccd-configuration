@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.cmo;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -22,7 +21,6 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.LIST_AT_NEXT_HEAR
 @Service
 public class ApplicationListNextHearingOrderService extends AbstractApplicationGeneratedOrderService {
 
-    @Autowired
     public ApplicationListNextHearingOrderService(CaseDataExtractionService dataService,
                                                   Time time,
                                                   DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
