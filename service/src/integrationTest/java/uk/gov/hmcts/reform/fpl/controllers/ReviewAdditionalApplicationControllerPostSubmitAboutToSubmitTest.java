@@ -210,8 +210,8 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
         CaseData caseData = buildCaseData(LIST, false);
 
         when(reviewAdditionalApplicationService.listApplicationAtNextHearing(any(), any(), any(), any()))
-            .thenThrow(new IllegalStateException("Cannot list application at next hearing because no future" +
-                " hearing exists"));
+            .thenThrow(new IllegalStateException("Cannot list application at next hearing because no future"
+                + " hearing exists"));
 
         assertThatThrownBy(() -> postPostSubmitAboutToSubmit(caseData))
             .isInstanceOf(RuntimeException.class)
