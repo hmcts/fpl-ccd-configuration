@@ -177,7 +177,7 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
     }
 
     @Test
-    void shouldKeepDraftOrderAndCreateRefusalOrderForListNextHearing() {
+    void shouldKeepDraftOrderAndCreateListAtNextHearingOrder() {
         LocalDateTime nextHearingStart = LocalDateTime.now().plusDays(7);
         CaseData caseData = buildCaseData(LIST, false).toBuilder()
             .hearingDetails(List.of(element(HearingBooking.builder()
@@ -185,7 +185,9 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
                 .build())))
             .build();
 
-        Element<GeneratedOrder> generatedOrder = element(GeneratedOrder.builder().title("Refusal order").build());
+        Element<GeneratedOrder> generatedOrder = element(GeneratedOrder.builder()
+            .title("List at next hearing order")
+            .build());
         when(reviewAdditionalApplicationService.listApplicationAtNextHearing(any(), any(), any(), any()))
             .thenReturn(Map.of("orderCollection", List.of(generatedOrder)));
 
@@ -199,7 +201,7 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
         assertThat(resultCaseData.getOrderCollection())
             .hasSize(1)
             .extracting(order -> order.getValue().getTitle())
-            .containsExactly("Refusal order");
+            .containsExactly("List at next hearing order");
         assertThat(resultCaseData.getHearingOrdersBundlesDrafts().getFirst().getValue().getOrders())
             .extracting(Element::getId)
             .containsExactly(DRAFT_ORDER_ID);

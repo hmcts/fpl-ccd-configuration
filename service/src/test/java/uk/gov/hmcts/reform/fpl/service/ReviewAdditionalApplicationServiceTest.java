@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialRefusedOrders;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -329,7 +330,7 @@ class ReviewAdditionalApplicationServiceTest {
     }
 
     @Test
-    void shouldCreateRefusalOrderAndKeepDraftWhenListedAtNextHearingForNonConfidentialApplication() {
+    void shouldCreateListAtNextHearingOrderAndKeepDraftForNonConfidentialApplication() {
         UUID draftOrderId = UUID.randomUUID();
         Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
             .order(DocumentReference.builder().filename("draft-order.docx").build())
@@ -349,7 +350,7 @@ class ReviewAdditionalApplicationServiceTest {
                     .build())
                 .build())))
             .hearingOrdersBundlesDrafts(List.of(hearingBundle))
-            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder()
                 .startDate(nextHearingDate)
                 .build())))
             .build();
@@ -362,9 +363,11 @@ class ReviewAdditionalApplicationServiceTest {
                 .build())
             .build();
 
-        Element<GeneratedOrder> refusalOrder = element(GeneratedOrder.builder().title("Refusal order").build());
+        Element<GeneratedOrder> listAtNextHearingOrder = element(GeneratedOrder.builder()
+            .title("List at next hearing order")
+            .build());
         when(applicationListNextHearingOrderService.buildListAtNextHearingOrder(any(), any(), any(), any(), eq(false)))
-            .thenReturn(refusalOrder);
+            .thenReturn(listAtNextHearingOrder);
 
         Map<String, Object> result = reviewAdditionalApplicationService.listApplicationAtNextHearing(
             caseData,
@@ -373,12 +376,12 @@ class ReviewAdditionalApplicationServiceTest {
             eventData
         );
 
-        assertThat(result.get("orderCollection")).isEqualTo(List.of(refusalOrder));
+        assertThat(result.get("orderCollection")).isEqualTo(List.of(listAtNextHearingOrder));
         assertThat(hearingBundle.getValue().getOrders()).extracting(Element::getId).containsExactly(draftOrderId);
     }
 
     @Test
-    void shouldCreateRefusalOrderInMatchingConfidentialCollectionWhenListedAtNextHearing() {
+    void shouldCreateListAtNextHearingOrderInMatchingConfidentialCollection() {
         UUID draftOrderId = UUID.randomUUID();
         Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
             .orderConfidential(DocumentReference.builder().filename("draft-order.docx").build())
@@ -399,7 +402,7 @@ class ReviewAdditionalApplicationServiceTest {
                     .build())
                 .build())))
             .hearingOrdersBundlesDrafts(List.of(hearingBundle))
-            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder()
                 .startDate(nextHearingDate)
                 .build())))
             .build();
@@ -412,9 +415,11 @@ class ReviewAdditionalApplicationServiceTest {
                 .build())
             .build();
 
-        Element<GeneratedOrder> refusalOrder = element(GeneratedOrder.builder().title("Refusal order").build());
+        Element<GeneratedOrder> listAtNextHearingOrder = element(GeneratedOrder.builder()
+            .title("List at next hearing order")
+            .build());
         when(applicationListNextHearingOrderService.buildListAtNextHearingOrder(any(), any(), any(), any(), eq(true)))
-            .thenReturn(refusalOrder);
+            .thenReturn(listAtNextHearingOrder);
 
         Map<String, Object> result = reviewAdditionalApplicationService.listApplicationAtNextHearing(
             caseData,
@@ -423,7 +428,7 @@ class ReviewAdditionalApplicationServiceTest {
             eventData
         );
 
-        assertThat(result.get("orderCollectionLA")).isEqualTo(List.of(refusalOrder));
+        assertThat(result.get("orderCollectionLA")).isEqualTo(List.of(listAtNextHearingOrder));
         assertThat(hearingBundle.getValue().getAllConfidentialOrders()).extracting(Element::getId)
             .containsExactly(draftOrderId);
     }
@@ -471,7 +476,7 @@ class ReviewAdditionalApplicationServiceTest {
     @Test
     void shouldReportFutureHearingExists() {
         CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder()
                 .startDate(LocalDateTime.now().plusDays(1))
                 .build())))
             .build();
@@ -482,7 +487,7 @@ class ReviewAdditionalApplicationServiceTest {
     @Test
     void shouldReportFutureHearingMissing() {
         CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(element(uk.gov.hmcts.reform.fpl.model.HearingBooking.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder()
                 .startDate(LocalDateTime.now().minusDays(1))
                 .build())))
             .build();
