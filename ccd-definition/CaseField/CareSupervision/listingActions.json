@@ -81,7 +81,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "isUrgentListingRequest",
     "FieldType": "YesOrNo",
-    "Label": "Is this urgent?",
+    "Label": "Is this urgent? (is there any action that needs to be taken within 24 hours?)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
