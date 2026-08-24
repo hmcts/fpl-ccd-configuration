@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
+import uk.gov.hmcts.reform.fpl.model.Court;
 
 @WebMvcTest(OrdersNeededController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -172,6 +174,66 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
             "fixtures/caseNonC1ApplicationWithSubmittedC1WithSupplement.json");
         assertThat(response.getData().get("submittedC1WithSupplement")).isNotNull();
+    }
+
+    @Test
+    void shouldReturnErrorWhenFleetwoodCaseLocationInMidEvent() {
+        CaseData caseData = CaseData.builder()
+            .caseManagementLocation(CaseLocation.builder()
+                .baseLocation("401452")
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData);
+
+        assertThat(response.getErrors()).containsExactly(
+            "Fleetwood is currently being removed and Blackpool should be selected as the issuing court"
+        );
+    }
+
+    @Test
+    void shouldReturnErrorWhenFleetwoodCourtCodeInMidEvent() {
+        CaseData caseData = CaseData.builder()
+            .court(Court.builder()
+                .code("438")
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData);
+
+        assertThat(response.getErrors()).containsExactly(
+            "Fleetwood is currently being removed and Blackpool should be selected as the issuing court"
+        );
+    }
+
+    @Test
+    void shouldReturnErrorWhenFleetwoodOrdersCourtInMidEvent() {
+        CaseData caseData = CaseData.builder()
+            .orders(Orders.builder()
+                .court("438")
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData);
+
+        assertThat(response.getErrors()).containsExactly(
+            "Fleetwood is currently being removed and Blackpool should be selected as the issuing court"
+        );
+    }
+
+    @Test
+    void shouldReturnErrorWhenFleetwoodCaseInAboutToSubmit() {
+        CaseData caseData = CaseData.builder()
+            .caseManagementLocation(CaseLocation.builder()
+                .baseLocation("401452")
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        assertThat(response.getErrors()).containsExactly(
+            "Fleetwood is currently being removed and Blackpool should be selected as the issuing court"
+        );
     }
 
 }
