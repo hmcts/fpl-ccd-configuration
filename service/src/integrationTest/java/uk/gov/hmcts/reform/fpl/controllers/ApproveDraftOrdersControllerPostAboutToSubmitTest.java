@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -140,10 +139,9 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
             .court(court)
             .state(State.CASE_MANAGEMENT)
             .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
-            .others(Others.builder().firstOther(
-                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
-                .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
-                    .address(Address.builder().postcode("SW2").build()).build())).build())
+            .othersV2(wrapElements(
+                Other.builder().firstName("Tim Jones").address(Address.builder().postcode("SE1").build()).build(),
+                Other.builder().firstName("Stephen Jones").address(Address.builder().postcode("SW2").build()).build()))
             .othersSelector(othersSelector)
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
@@ -173,13 +171,11 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
 
         assertThat(sealedCMO.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
         assertThat(unwrapElements(sealedCMO.getValue().getOthers()))
-            .contains(caseData.getOthers().getFirstOther(),
-                caseData.getOthers().getAdditionalOthers().get(0).getValue());
+            .containsExactlyElementsOf(unwrapElements(caseData.getOthersV2()));
 
         assertThat(orderToBeSent.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
         assertThat(unwrapElements(orderToBeSent.getValue().getOthers()))
-            .contains(caseData.getOthers().getFirstOther(),
-                caseData.getOthers().getAdditionalOthers().get(0).getValue());
+            .containsExactlyElementsOf(unwrapElements(caseData.getOthersV2()));
         assertTemporaryFieldsAreRemovedFromCaseData(response.getData());
     }
 
