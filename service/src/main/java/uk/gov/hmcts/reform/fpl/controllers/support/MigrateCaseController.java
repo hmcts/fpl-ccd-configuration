@@ -146,6 +146,7 @@ public class MigrateCaseController extends CallbackController {
             BLACKBURN_LANCASTER_DFJ_COURT
         ));
     }
+
     private void run3346(CaseDetails caseDetails) {
         final String DFPL_3346 = "DFPL-3346";
         final long CASE_ID_3346 = 1781013695412110L;
