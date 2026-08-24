@@ -1,28 +1,39 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.controllers.support.MigrateCaseController.MIGRATION_ID_KEY;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
+import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -33,6 +44,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     private static final String INVALID_MIGRATION_ID = "invalid id";
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper mapper;
+    @MockBean
+    private OrganisationService organisationService;
 
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
@@ -56,198 +73,191 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         givenFplService();
     }
 
-    @Nested
-    class Dfpl2773 {
-        private static final String MIGRATION_ID = "DFPL-2773";
-        private static final String ROLLBACK_ID = "DFPL-2773-rollback";
-        private static final DocumentReference ORDER_DOCUMENT = testDocumentReference();
-        private static final UUID HEARING_ORDER_ID = UUID.randomUUID();
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldFilterPlacementRespondentWhenMigrationIdAndTargetIdMatches() throws Exception {
+        String migrationId = "DFPL-3296";
+        long targetCaseId = 1767800818952560L;
+        String targetElementId = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
 
-        @Test
-        void shouldMigrateRefusedOrder() {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of("refusedHearingOrders",
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().order(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
-                    MIGRATION_ID_KEY, MIGRATION_ID))
+        RespondentSolicitor solicitor = RespondentSolicitor.builder()
+            .email("test@test.com")
+            .build();
+
+        Respondent respondent = Respondent.builder()
+            .solicitor(solicitor)
+            .build();
+
+
+        Map<String, Object> respondentElement = Map.of(
+            "id", targetElementId,
+            "value", respondent
+        );
+
+        Map<String, Object> placementValue = new HashMap<>();
+        placementValue.put("placementChildName", "test child");
+        placementValue.put("placementRespondentsToNotify", List.of(respondentElement));
+
+        Map<String, Object> placementElement = Map.of(
+            "id", UUID.randomUUID().toString(),
+            "value", placementValue
+        );
+
+
+        CaseData caseData = CaseData.builder().id(targetCaseId).build();
+        CaseDetails caseDetails = asCaseDetails(caseData);
+
+        caseDetails.getData().put("migrationId", migrationId);
+        caseDetails.getData().put("placements", new ArrayList<>(List.of(placementElement)));
+        caseDetails.getData().put("placementsNonConfidential", new ArrayList<>(List.of(placementElement)));
+        caseDetails.getData().put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementElement)));
+
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .eventId("migrate-case")
+            .build();
+
+        // MockMvc execution to simulate endpoint invocation
+        String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/callback/migrate-case/about-to-submit")
+                .header("authorization", "Bearer token")
+                .header("user-id", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(callbackRequest)))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        // Map and extract response payload
+        ObjectMapper testMapper = new ObjectMapper();
+        testMapper.registerModule(new JavaTimeModule());
+
+        Map<String, Object> responseMap = testMapper.readValue(responseContent, new TypeReference<>() {});
+        Map<String, Object> dataField = (Map<String, Object>) responseMap.get("data");
+
+        // Assertions
+        assertThat(dataField).containsKeys("placements", "placementsNonConfidential",
+                                                   "placementsNonConfidentialNotices");
+
+        List<Map<String, Object>> noticesList = (List<Map<String, Object>>) dataField
+                                                .get("placementsNonConfidentialNotices");
+        assertThat(noticesList).hasSize(1);
+
+        Map<String, Object> innerValue = (Map<String, Object>) noticesList.getFirst().get("value");
+        List<?> respondentsToNotify = (List<?>) innerValue.get("placementRespondentsToNotify");
+
+        // Verification: The element matching the target UUID was successfully dropped!
+        assertThat(respondentsToNotify).isEmpty();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldLogSkipMessageWhenCaseMatchesButTargetIdIsNotFound() throws Exception {
+        String migrationId = "DFPL-3296";
+        long targetCaseId = 1767800818952560L;
+
+        RespondentSolicitor solicitor = RespondentSolicitor.builder()
+            .email("test@test.com")
+            .build();
+
+        Respondent respondent = Respondent.builder()
+            .solicitor(solicitor)
+            .build();
+
+        Map<String, Object> respondentElement = Map.of(
+            "id", UUID.randomUUID().toString(),
+            "value", respondent
+        );
+
+        Map<String, Object> placementValue = new HashMap<>();
+        placementValue.put("placementChildName", "test child");
+        placementValue.put("placementRespondentsToNotify", List.of(respondentElement));
+
+        Map<String, Object> placementElement = Map.of(
+            "id", UUID.randomUUID().toString(),
+            "value", placementValue
+        );
+
+
+        CaseData caseData = CaseData.builder().id(targetCaseId).build();
+        CaseDetails caseDetails = asCaseDetails(caseData);
+
+        caseDetails.getData().put("migrationId", migrationId);
+        caseDetails.getData().put("placements", new ArrayList<>(List.of(placementElement)));
+        caseDetails.getData().put("placementsNonConfidential", new ArrayList<>(List.of(placementElement)));
+        caseDetails.getData().put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementElement)));
+
+        // Callback request
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .eventId("migrate-case")
+            .build();
+
+        // Hit MockMvc endpoint
+        String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/callback/migrate-case/about-to-submit")
+                .header("authorization", "Bearer token")
+                .header("user-id", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(callbackRequest)))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        // Check response
+        ObjectMapper testMapper = new ObjectMapper();
+        testMapper.registerModule(new JavaTimeModule());
+
+        Map<String, Object> responseMap = testMapper.readValue(responseContent, new TypeReference<>() {});
+        Map<String, Object> dataField = (Map<String, Object>) responseMap.get("data");
+
+        // Assertions
+        List<Map<String, Object>> noticesList = (List<Map<String, Object>>) dataField
+                                                    .get("placementsNonConfidentialNotices");
+        Map<String, Object> innerValue = (Map<String, Object>) noticesList.getFirst().get("value");
+        List<?> respondentsToNotify = (List<?>) innerValue.get("placementRespondentsToNotify");
+
+        assertThat(respondentsToNotify).hasSize(1);
+    }
+
+    @Test
+    void shouldSuccessfullyMigrateOutsourcingPolicyWhenMigrationIdIsDFPL3347() {
+        given(organisationService.findOrganisation("ZL7FAG5"))
+            .willReturn(Optional.of(Organisation.builder()
+                .organisationIdentifier("ZL7FAG5")
+                .name("Test Organisation")
                 .build()));
 
-            assertThat(after.getRefusedHearingOrders())
-                .isEqualTo(List.of(element(HEARING_ORDER_ID,
-                    HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
-        }
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(
+            CaseDetails.builder()
+                .id(1783696286134453L)
+                .data(Map.of("migrationId", "DFPL-3347"))
+                .build()
+        ));
 
-        @ParameterizedTest
-        @ValueSource(strings = {
-            "CTSC", "LA", "Resp0", "Child0", "Resp1", "Child1", "Resp2", "Child2", "Resp3", "Child3", "Resp4", "Child4",
-            "Resp5", "Child5", "Resp6", "Child6", "Resp7", "Child7", "Resp8", "Child8", "Resp9", "Child9",
-            "Child10", "Child11", "Child12", "Child13", "Child14"
-        })
-        void shouldMigrateConfidentialRefusedOrder(String suffix) {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of("refusedHearingOrders" + suffix,
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().orderConfidential(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
-                    MIGRATION_ID_KEY, MIGRATION_ID))
+        assertThat(caseData.getOutsourcingPolicy()).isNotNull();
+        assertThat(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID())
+            .isEqualTo("ZL7FAG5");
+    }
+
+    @Test
+    void shouldSuccessfullyMigrateOutsourcingPolicyWhenMigrationIdIsDFPL3346() {
+        given(organisationService.findOrganisation("CPYYWBZ"))
+            .willReturn(Optional.of(Organisation.builder()
+                .organisationIdentifier("CPYYWBZ")
+                .name("Test Organisation")
                 .build()));
 
-            after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
-                if (suffixAfter.equals(suffix)) {
-                    assertThat(orders).isEqualTo(List.of(element(HEARING_ORDER_ID,
-                        HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
-                            .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
-                } else {
-                    assertThat(orders).isNull();
-                }
-            });
-        }
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(
+            CaseDetails.builder()
+                .id(1781013695412110L)
+                .data(Map.of("migrationId", "DFPL-3346"))
+                .build()
+        ));
 
-        @Test
-        void shouldNotMigrateIfEmptyOrNull() {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of(MIGRATION_ID_KEY, MIGRATION_ID))
-                .build()));
-
-            assertThat(after.getRefusedHearingOrders()).isNull();
-
-            after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
-                assertThat(orders).isNull();
-            });
-        }
-
-        @Test
-        void shouldNotMigrateIfNewFormatAlready() {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of(MIGRATION_ID_KEY, MIGRATION_ID,
-                    "refusedHearingOrders", List.of(element(HEARING_ORDER_ID, HearingOrder.builder()
-                        .refusedOrder(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE"))
-                        .build()))))
-                .build()));
-
-            assertThat(after.getRefusedHearingOrders())
-                .isEqualTo(List.of(element(HEARING_ORDER_ID,
-                    HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {
-            "CTSC", "LA", "Resp0", "Child0", "Resp1", "Child1", "Resp2", "Child2", "Resp3", "Child3", "Resp4", "Child4",
-            "Resp5", "Child5", "Resp6", "Child6", "Resp7", "Child7", "Resp8", "Child8", "Resp9", "Child9",
-            "Child10", "Child11", "Child12", "Child13", "Child14"
-        })
-        void shouldNotMigrateConfidentialRefusedOrderIfNewFormatAlready(String suffix) {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of("refusedHearingOrders" + suffix,
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
-                    MIGRATION_ID_KEY, MIGRATION_ID))
-                .build()));
-
-            after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
-                if (suffixAfter.equals(suffix)) {
-                    assertThat(orders).isEqualTo(List.of(element(HEARING_ORDER_ID,
-                        HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
-                            .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
-                } else {
-                    assertThat(orders).isNull();
-                }
-            });
-        }
-
-        @Test
-        void shouldRollbackRefusedOrder() {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of("refusedHearingOrders",
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
-                    MIGRATION_ID_KEY, ROLLBACK_ID))
-                .build()));
-
-            assertThat(after.getRefusedHearingOrders())
-                .isEqualTo(List.of(element(HEARING_ORDER_ID,
-                    HearingOrder.builder().order(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {
-            "CTSC", "LA", "Resp0", "Child0", "Resp1", "Child1", "Resp2", "Child2", "Resp3", "Child3", "Resp4", "Child4",
-            "Resp5", "Child5", "Resp6", "Child6", "Resp7", "Child7", "Resp8", "Child8", "Resp9", "Child9",
-            "Child10", "Child11", "Child12", "Child13", "Child14"
-        })
-        void shouldRollbackConfidentialRefusedOrder(String suffix) {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of("refusedHearingOrders" + suffix,
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().refusedOrder(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
-                    MIGRATION_ID_KEY, ROLLBACK_ID))
-                .build()));
-
-            after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
-                if (suffixAfter.equals(suffix)) {
-                    assertThat(orders).isEqualTo(List.of(element(HEARING_ORDER_ID,
-                        HearingOrder.builder().orderConfidential(ORDER_DOCUMENT)
-                            .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
-                } else {
-                    assertThat(orders).isNull();
-                }
-            });
-        }
-
-        @Test
-        void shouldNotRollbackIfEmptyOrNull() {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of(MIGRATION_ID_KEY, ROLLBACK_ID))
-                .build()));
-
-            assertThat(after.getRefusedHearingOrders()).isNull();
-
-            after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
-                assertThat(orders).isNull();
-            });
-        }
-
-        @Test
-        void shouldNotRollbackRefusedOrderIfRolledBackAlready() {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of("refusedHearingOrders",
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().order(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
-                    MIGRATION_ID_KEY, ROLLBACK_ID))
-                .build()));
-
-            assertThat(after.getRefusedHearingOrders())
-                .isEqualTo(List.of(element(HEARING_ORDER_ID,
-                    HearingOrder.builder().order(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {
-            "CTSC", "LA", "Resp0", "Child0", "Resp1", "Child1", "Resp2", "Child2", "Resp3", "Child3", "Resp4", "Child4",
-            "Resp5", "Child5", "Resp6", "Child6", "Resp7", "Child7", "Resp8", "Child8", "Resp9", "Child9",
-            "Child10", "Child11", "Child12", "Child13", "Child14"
-        })
-        void shouldNotRollbackConfidentialRefusedOrderIfRolledbackAlready(String suffix) {
-            CaseData after = extractCaseData(postAboutToSubmitEvent(CaseDetails.builder()
-                .data(Map.of("refusedHearingOrders" + suffix,
-                    List.of(element(HEARING_ORDER_ID, HearingOrder.builder().orderConfidential(ORDER_DOCUMENT)
-                        .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())),
-                    MIGRATION_ID_KEY, ROLLBACK_ID))
-                .build()));
-
-            after.getConfidentialRefusedOrders().processAllConfidentialOrders((suffixAfter, orders) -> {
-                if (suffixAfter.equals(suffix)) {
-                    assertThat(orders).isEqualTo(List.of(element(HEARING_ORDER_ID,
-                        HearingOrder.builder().orderConfidential(ORDER_DOCUMENT)
-                            .documentAcknowledge(List.of("ACK_RELATED_TO_CASE")).build())));
-                } else {
-                    assertThat(orders).isNull();
-                }
-            });
-        }
+        assertThat(caseData.getOutsourcingPolicy()).isNotNull();
+        assertThat(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID())
+            .isEqualTo("CPYYWBZ");
     }
 }

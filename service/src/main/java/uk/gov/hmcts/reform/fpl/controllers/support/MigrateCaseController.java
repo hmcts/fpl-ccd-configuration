@@ -10,22 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ConfidentialRefusedOrders;
-import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.Consumer;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORC;
 
 @Slf4j
 @RestController
@@ -34,15 +30,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
+    private final CaseAccessService caseAccessService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2773", this::run2773,
-        "DFPL-2773-rollback", this::run2773Rollback,
-        "DFPL-3272", this::run3272,
-        "DFPL-3048", this::run3048,
-        "DFPL-3047", this::run3047,
-        "DFPL-3101", this::run3101
+        "DFPL-2421", this::run2421,
+        "DFPL-2421-rollback", this::rollback2421,
+        "DFPL-3306", this::run3306,
+        "DFPL-3292", this::run3292,
+        "DFPL-3296", this::run3296,
+        "DFPL-3346", this::run3346,
+        "DFPL-3347", this::run3347
     );
 
     @PostMapping("/about-to-submit")
@@ -69,138 +67,92 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3272(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3272";
-        final long expectedCaseId = 1778521486149688L;
-        final CaseData caseData = getCaseData(caseDetails);
-
-        final Orders updatedOrder = caseData.getOrders().toBuilder()
-            .directionDetails(null)
-            .build();
+    private void run3306(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3306";
+        final long expectedCaseId = 1753883480919014L;
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-
-        caseDetails.getData().put("orders", updatedOrder);
+        caseAccessService.grantCaseAccess(caseId, Set.of("b0016258-02fa-4d57-8766-dc23b2411f01"), SOLICITORC);
     }
 
-    private void run3048(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3048";
-        final Long expectedCaseId = 1769766848334996L;
-
-        Long caseId = caseDetails.getId();
-        final CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        caseDetails.getData().put("hearing",
-            caseData.getHearing().toBuilder().hearingUrgencyDetails("***").build());
-    }
-
-    private void run3047(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3047";
-        final Long expectedCaseId = 1757072393794849L;
-        final String orgId = "CVPRECR";
+    private void run3292(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3292";
+        final long expectedCaseId = 1773832351122360L;
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService
-            .updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 0));
+        caseAccessService.grantCaseAccess(caseId, Set.of("ad13c0f2-dac2-4e66-bff2-cd4be1b3a889"), LASOLICITOR);
     }
 
-    private void run3101(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3101";
-        final long expectedCaseId = 1772096689254060L;
+    private void run2421(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2421";
+        migrateCaseService.migrateOthersToOthersV2(getCaseData(caseDetails), caseDetails.getData(), migrationId);
+    }
+
+    private void rollback2421(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2421-rollback";
+        migrateCaseService.rollbackOthersV2ToOthers(getCaseData(caseDetails), caseDetails.getData(), migrationId);
+    }
+
+    private void run3296(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3296";
+        final long expectedCaseId = 1767800818952560L;
+        final String Target_Migration_Id = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
 
         Long caseId = caseDetails.getId();
+
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        log.info("Migration {} started for case {}", migrationId, caseId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeFirstOther(migrationId, getCaseData(caseDetails)));
-    }
 
-    private void run2773(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
+        boolean isModified = migrateCaseService
+                                .removeSolicitorEmailFromPlacementNotices(caseDetails, Target_Migration_Id);
 
-        if (isNotEmpty(caseData.getRefusedHearingOrders())) {
-            caseDetails.getData().put("refusedHearingOrders",
-                migrateRefusedOrders(caseData.getRefusedHearingOrders(), false));
-        }
-
-        // Process all confidential refused orders
-        ConfidentialRefusedOrders existingConfidentialRefusedOrders = caseData.getConfidentialRefusedOrders();
-        if (existingConfidentialRefusedOrders != null) {
-            existingConfidentialRefusedOrders.processAllConfidentialOrders((suffix, refusedOrderElements) -> {
-                if (isNotEmpty(refusedOrderElements)) {
-                    caseDetails.getData().put(
-                        existingConfidentialRefusedOrders.getFieldBaseName() + suffix,
-                        migrateRefusedOrders(refusedOrderElements, true));
-                }
-            });
+        if (isModified) {
+            log.info("Migration {} successfully removed target solicitor entry"
+                    + " by ID from placement notification list on case {}",
+                migrationId, caseId);
+        } else {
+            log.info("Migration {} skipped: Target ID {} not found "
+                + "in any placement records.", migrationId, Target_Migration_Id);
         }
     }
 
-    // one off migration only, can't see any reason to keep this method in the future
-    private List<Element<HearingOrder>> migrateRefusedOrders(List<Element<HearingOrder>> refusedOrders,
-                                                             boolean isConfidential) {
-        return refusedOrders.stream()
-            .map(refusedOrderElement -> {
-                DocumentReference refusedOrderDoc = (isConfidential)
-                    ? refusedOrderElement.getValue().getOrderConfidential()
-                    : refusedOrderElement.getValue().getOrder();
-
-                if (refusedOrderDoc == null) {
-                    log.warn("Refused order document is null for element: {}", refusedOrderElement.getId());
-                    return refusedOrderElement;
-                } else {
-                    return element(refusedOrderElement.getId(), refusedOrderElement.getValue().toBuilder()
-                        .refusedOrder(refusedOrderDoc)
-                        .order(null)
-                        .orderConfidential(null)
-                        .build());
-                }
-            })
-            .toList();
+    private void run3346(CaseDetails caseDetails) {
+        final String DFPL_3346 = "DFPL-3346";
+        final long CASE_ID_3346 = 1781013695412110L;
+        final String ORG_ID_3346 = "CPYYWBZ";
+        runOutsourcingPolicyMigration(caseDetails, DFPL_3346, CASE_ID_3346, ORG_ID_3346);
     }
 
-    private void run2773Rollback(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
+    private void run3347(CaseDetails caseDetails) {
+        final String DFPL_3347 = "DFPL-3347";
+        final long CASE_ID_3347 = 1783696286134453L;
+        final String ORG_ID_3347 = "ZL7FAG5";
+        runOutsourcingPolicyMigration(caseDetails, DFPL_3347, CASE_ID_3347, ORG_ID_3347);
+    }
 
-        if (isNotEmpty(caseData.getRefusedHearingOrders())) {
-            caseDetails.getData().put("refusedHearingOrders",
-                rollbackRefusedOrders(caseData.getRefusedHearingOrders(), false));
-        }
+    private void runOutsourcingPolicyMigration(CaseDetails caseDetails, String migrationId,
+                                               long expectedCaseId, String targetOrgId) {
+        Long caseId = caseDetails.getId();
 
-        // Process all confidential refused orders
-        ConfidentialRefusedOrders existingConfidentialRefusedOrders = caseData.getConfidentialRefusedOrders();
-        if (existingConfidentialRefusedOrders != null) {
-            existingConfidentialRefusedOrders.processAllConfidentialOrders((suffix, refusedOrderElements) -> {
-                if (isNotEmpty(refusedOrderElements)) {
-                    caseDetails.getData().put(
-                        existingConfidentialRefusedOrders.getFieldBaseName() + suffix,
-                        rollbackRefusedOrders(refusedOrderElements, true));
-                }
-            });
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        log.info("Migration of {} is started for case {}", migrationId, caseId);
+
+        Map<String, OrganisationPolicy> migrationResult =
+            migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), targetOrgId, null);
+
+        caseDetails.getData().putAll(migrationResult);
+
+        OrganisationPolicy updatedOrgPolicy =  migrationResult.get("outsourcingPolicy");
+        if (updatedOrgPolicy != null && updatedOrgPolicy.getOrganisation() != null) {
+            log.info("Migration {} successfully updated outsourcingPolicy to organisation {} on case {}",
+                migrationId, updatedOrgPolicy.getOrganisation().getOrganisationID(), caseId);
+        } else {
+            log.info("Migration {} completed but outsourcingPolicy was null for case {}", migrationId, caseId);
         }
     }
 
-    // one off migration only, can't see any reason to keep this method in the future
-    private List<Element<HearingOrder>> rollbackRefusedOrders(List<Element<HearingOrder>> refusedOrders,
-                                                              boolean isConfidential) {
-        return refusedOrders.stream()
-            .map(refusedOrderElement -> {
-                DocumentReference refusedOrderDoc = refusedOrderElement.getValue().getRefusedOrder();
-                if (refusedOrderDoc == null) {
-                    log.warn("Refused order document is null for element: {}", refusedOrderElement.getId());
-                    return refusedOrderElement;
-                } else {
-                    return element(
-                        refusedOrderElement.getId(),
-                        refusedOrderElement.getValue().toBuilder()
-                            .refusedOrder(null)
-                            .order((!isConfidential) ? refusedOrderDoc : null)
-                            .orderConfidential((isConfidential) ? refusedOrderDoc : null)
-                            .build());
-                }
-            })
-            .toList();
-    }
+
 }
