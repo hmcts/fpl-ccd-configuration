@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
@@ -44,7 +45,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2421-rollback", this::rollback2421,
         "DFPL-3306", this::run3306,
         "DFPL-3292", this::run3292,
-        "DFPL-3296", this::run3296
+        "DFPL-3296", this::run3296,
+        "DFPL-3346", this::run3346,
+        "DFPL-3347", this::run3347
     );
 
     @PostMapping("/about-to-submit")
@@ -143,5 +146,41 @@ public class MigrateCaseController extends CallbackController {
             BLACKBURN_LANCASTER_DFJ_COURT
         ));
     }
+    private void run3346(CaseDetails caseDetails) {
+        final String DFPL_3346 = "DFPL-3346";
+        final long CASE_ID_3346 = 1781013695412110L;
+        final String ORG_ID_3346 = "CPYYWBZ";
+        runOutsourcingPolicyMigration(caseDetails, DFPL_3346, CASE_ID_3346, ORG_ID_3346);
+    }
+
+    private void run3347(CaseDetails caseDetails) {
+        final String DFPL_3347 = "DFPL-3347";
+        final long CASE_ID_3347 = 1783696286134453L;
+        final String ORG_ID_3347 = "ZL7FAG5";
+        runOutsourcingPolicyMigration(caseDetails, DFPL_3347, CASE_ID_3347, ORG_ID_3347);
+    }
+
+    private void runOutsourcingPolicyMigration(CaseDetails caseDetails, String migrationId,
+                                               long expectedCaseId, String targetOrgId) {
+        Long caseId = caseDetails.getId();
+
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        log.info("Migration of {} is started for case {}", migrationId, caseId);
+
+        Map<String, OrganisationPolicy> migrationResult =
+            migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), targetOrgId, null);
+
+        caseDetails.getData().putAll(migrationResult);
+
+        OrganisationPolicy updatedOrgPolicy =  migrationResult.get("outsourcingPolicy");
+        if (updatedOrgPolicy != null && updatedOrgPolicy.getOrganisation() != null) {
+            log.info("Migration {} successfully updated outsourcingPolicy to organisation {} on case {}",
+                migrationId, updatedOrgPolicy.getOrganisation().getOrganisationID(), caseId);
+        } else {
+            log.info("Migration {} completed but outsourcingPolicy was null for case {}", migrationId, caseId);
+        }
+    }
+
+
 }
 
