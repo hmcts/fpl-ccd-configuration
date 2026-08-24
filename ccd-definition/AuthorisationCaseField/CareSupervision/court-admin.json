@@ -1836,13 +1836,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "childSelectorV2",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "personSelector",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRUD"
@@ -4433,7 +4426,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentsSelectorV2",
+    "CaseFieldID": "respondentsSelector",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRUD"
   },

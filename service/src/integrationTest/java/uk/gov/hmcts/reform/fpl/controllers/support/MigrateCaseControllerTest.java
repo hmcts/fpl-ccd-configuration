@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -20,15 +21,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -42,7 +47,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private com.fasterxml.jackson.databind.ObjectMapper mapper;
+    private ObjectMapper mapper;
+    @MockBean
+    private OrganisationService organisationService;
 
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
@@ -213,5 +220,44 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         assertThat(respondentsToNotify).hasSize(1);
     }
-}
 
+    @Test
+    void shouldSuccessfullyMigrateOutsourcingPolicyWhenMigrationIdIsDFPL3347() {
+        given(organisationService.findOrganisation("ZL7FAG5"))
+            .willReturn(Optional.of(Organisation.builder()
+                .organisationIdentifier("ZL7FAG5")
+                .name("Test Organisation")
+                .build()));
+
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(
+            CaseDetails.builder()
+                .id(1783696286134453L)
+                .data(Map.of("migrationId", "DFPL-3347"))
+                .build()
+        ));
+
+        assertThat(caseData.getOutsourcingPolicy()).isNotNull();
+        assertThat(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID())
+            .isEqualTo("ZL7FAG5");
+    }
+
+    @Test
+    void shouldSuccessfullyMigrateOutsourcingPolicyWhenMigrationIdIsDFPL3346() {
+        given(organisationService.findOrganisation("CPYYWBZ"))
+            .willReturn(Optional.of(Organisation.builder()
+                .organisationIdentifier("CPYYWBZ")
+                .name("Test Organisation")
+                .build()));
+
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(
+            CaseDetails.builder()
+                .id(1781013695412110L)
+                .data(Map.of("migrationId", "DFPL-3346"))
+                .build()
+        ));
+
+        assertThat(caseData.getOutsourcingPolicy()).isNotNull();
+        assertThat(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID())
+            .isEqualTo("CPYYWBZ");
+    }
+}
