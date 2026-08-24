@@ -112,6 +112,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
     void init() {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(CMO.getOrder()).willReturn(ORDER);
+        given(CMO.getHasOrderConcludedProceedings()).willReturn(YesNo.NO);
     }
 
     @Test
