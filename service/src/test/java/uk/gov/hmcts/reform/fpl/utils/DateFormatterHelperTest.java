@@ -21,7 +21,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.isValidDate;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 
@@ -156,32 +155,23 @@ class DateFormatterHelperTest {
         assertThat(formatLocalDateTimeBaseUsingFormat(null, "h:mma, yyyy")).isEmpty();
     }
 
-    @Test
-    void shouldReturnTrueWhenDateMatchesSinglePattern() {
-        assertThat(isValidDate("01/01/2019", "dd/MM/yyyy")).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseWhenDateDoesNotMatchSinglePattern() {
-        assertThat(isValidDate("2019-01-01", "dd/MM/yyyy")).isFalse();
-    }
-
-    @Test
-    void shouldReturnFalseWhenDateIsInvalidEvenIfPatternMatches() {
-        assertThat(isValidDate("31/02/2019", "dd/MM/yyyy")).isFalse();
-    }
-
-    @Test
-    void shouldReturnTrueWhenDateMatchesAnyProvidedPattern() {
-        assertThat(isValidDate("2019-01-01", "dd/MM/yyyy", "yyyy-MM-dd")).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseForNullBlankOrMissingPatterns() {
-        assertThat(isValidDate(null, "dd/MM/yyyy")).isFalse();
-        assertThat(isValidDate("", "dd/MM/yyyy")).isFalse();
-        assertThat(isValidDate("2019-01-01", (String[]) null)).isFalse();
-        assertThat(isValidDate("2019-01-01")).isFalse();
+    @ParameterizedTest
+    @ValueSource(strings = {"01/01/2026", "1/01/2026", "01/1/2026", "1/1/2026",
+        "01-01-2026", "1-01-2026", "01-1-2026", "1-1-2026",
+        "01.01.2026", "1.01.2026", "01.1.2026", "1.1.2026",
+        "01 01 2026", "1 01 2026", "01 1 2026", "1 1 2026",
+        "2026-01-01", "2026-01-1", "2026-1-01", "2026-1-1",
+        "2026/01/01", "2026/01/1", "2026/1/01", "2026/1/1",
+        "2026.01.01", "2026.01.1", "2026.1.01", "2026.1.1",
+        "2026 01 01", "2026 01 1", "2026 1 01", "2026 1 1",
+        "01 Jan 2026", "1 Jan 2026", "01/Jan 2026", "1/Jan/2026",
+        "01 January 2026", "1 January 2026", "01/January 2026", "1/January 2026",
+        "01|01|2026", "1|01|2026", "01|1|2026", "1|1|2026",
+        "01\\01\\2026", "1\\01\\2026", "01\\1\\2026", "1\\1\\2026",
+    })
+    void shouldParseLocalDateIfMatchAyFormat(String dateStr) {
+        final LocalDate date = LocalDate.of(2026, 1, 1);
+        assertThat(DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches(dateStr)).get().isEqualTo(date);
     }
 
     private LocalDate createDate() {

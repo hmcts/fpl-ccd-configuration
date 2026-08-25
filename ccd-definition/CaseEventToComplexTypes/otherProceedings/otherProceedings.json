@@ -14,7 +14,7 @@
     "ID": "OtherProceedings",
     "CaseEventID": "otherProceedings",
     "CaseFieldID": "proceedings",
-    "ListElementCode": "started",
+    "ListElementCode": "startedV2",
     "FieldDisplayOrder": "2",
     "DisplayContext": "MANDATORY"
   },
@@ -23,7 +23,7 @@
     "ID": "OtherProceedings",
     "CaseEventID": "otherProceedings",
     "CaseFieldID": "proceedings",
-    "ListElementCode": "ended",
+    "ListElementCode": "endedV2",
     "FieldDisplayOrder": "3",
     "DisplayContext": "MANDATORY"
   },

@@ -5,10 +5,12 @@ import uk.gov.hmcts.reform.fpl.enums.ProceedingStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiProceeding;
+import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 
 import java.util.List;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -34,8 +36,14 @@ public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDat
                 .proceedingStatus(ofNullable(proceeding.getProceedingStatus())
                     .map(ProceedingStatus::getValue).orElse(null))
                 .caseNumber(proceeding.getCaseNumber())
-                .started(proceeding.getStarted())
-                .ended(proceeding.getEnded())
+                .started((isEmpty(proceeding.getStartedV2()))
+                    ? proceeding.getStarted()
+                    : DateFormatterHelper.formatLocalDateToString(proceeding.getStartedV2(),
+                        DateFormatterHelper.DATE_SHORT))
+                .ended((isEmpty(proceeding.getEndedV2()))
+                    ? proceeding.getEnded()
+                    : DateFormatterHelper.formatLocalDateToString(proceeding.getEndedV2(),
+                        DateFormatterHelper.DATE_SHORT))
                 .ordersMade(proceeding.getOrdersMade())
                 .judge(proceeding.getJudge())
                 .children(proceeding.getChildren())

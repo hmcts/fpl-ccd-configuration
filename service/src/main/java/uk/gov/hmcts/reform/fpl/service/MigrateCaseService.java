@@ -87,7 +87,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.isValidDate;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -1370,15 +1370,17 @@ public class MigrateCaseService {
 
     private Proceeding sanitizeProceeding(CaseData caseData, Proceeding proceeding) {
         // start date and end date are free text input, so we need to check if they are valid dates before migrating
-        boolean validStartDate = isValidDate(proceeding.getStarted());
-        boolean validEndDate = isValidDate(proceeding.getEnded());
+        Optional<LocalDate> validStartDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getStarted());
+        Optional<LocalDate> validEndDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getEnded());
         Proceeding.ProceedingBuilder builder =  proceeding.toBuilder();
-        if (!validStartDate) {
-            builder.started(null);
+        if (validStartDate.isPresent()) {
+            builder.startedV2(validStartDate.get());
+        } else {
             log.warn("Case {} has invalid proceeding start date", caseData.getId());
         }
-        if (!validEndDate) {
-            builder.ended(null);
+        if (validEndDate.isPresent()) {
+            builder.endedV2(validEndDate.get());
+        } else {
             log.warn("Case {} has invalid proceeding end date", caseData.getId());
         }
 

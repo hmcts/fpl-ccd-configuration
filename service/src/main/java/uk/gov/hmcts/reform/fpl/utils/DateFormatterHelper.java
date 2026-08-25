@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
-import java.time.format.ResolverStyle;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -20,6 +21,19 @@ public class DateFormatterHelper {
     public static final String DATE_TIME_WITH_ORDINAL_SUFFIX = "h:mma 'on the' d'%s' MMMM y";
     public static final String DATE_WITH_ORDINAL_SUFFIX = "d'%s' MMMM y";
     public static final String DATE_SHORT = "dd/MM/yyyy";
+    public static final List<String> POSSIBLE_FREETEXT_DATE_FORMATS = List.of(
+        DATE_SHORT, "d/MM/yyyy", "dd/M/yyyy", "d/M/yyyy",
+//        "d-MM-yyyy", "dd-MM-yyyy", "d-M-yyyy", "dd-M-yyyy",
+//        "d.MM.yyyy", "dd.MM.yyyy", "d.M.yyyy", "dd.M.yyyy",
+//        "dd MM yyyy", "d MM yyyy", "dd M yyyy", "d M yyyy",
+        "yyyy/MM/dd", "yyyy/MM/d", "yyyy/M/dd", "yyyy/M/d",
+//        "yyyy-MM-dd", "yyyy-MM-d", "yyyy-M-dd", "yyyy-M-d",
+//        "yyyy.MM.dd", "yyyy.MM.d", "yyyy.M.dd", "yyyy.M.d",
+//        "yyyy MM dd", "yyyy MM d", "yyyy M dd", "yyyy M d",
+        "dd/MMM/yyyy", "d/MMM/yyyy",
+        "dd/MMMM/yyyy", "d/MMMM/yyyy"
+        );
+    public static final List<Character> POSSIBLE_FREETEXT_DATE_ANY_OTHER_SYMBOL = List.of('-','.', ' ', '|', '\\');
 
     private DateFormatterHelper() {
         // NO-OP
@@ -85,35 +99,23 @@ public class DateFormatterHelper {
         }
     }
 
-    public static boolean isValidDate(String date) {
-        return isValidDate(date, DATE_SHORT,
-            "d/M/yyyy",
-            "d-MM-yyyy",
-            "dd-MM-yyyy",
-            "d.MM.yyyy",
-            "dd.MM.yyyy",
-            "yyyy-MM-dd",
-            "yyyy/MM/dd",
-            "dd MMM yyyy",
-            DATE);
-    }
+    public static Optional<LocalDate> parseLocalDateFromStringIfAnyFormatMatches(String date) {
+        if (!isEmpty(date)) {
+            String adjustedDateStr = date;
+            for (char symbolChar : POSSIBLE_FREETEXT_DATE_ANY_OTHER_SYMBOL) {
+                adjustedDateStr = adjustedDateStr.replace(symbolChar, '/');
+            }
 
-    public static boolean isValidDate(String date, String... formats) {
-        if (isEmpty(date)) {
-            return false;
-        }
-
-        for (String format : formats) {
-            if (!isEmpty(format)) {
-                try {
-                    parseLocalDateFromStringUsingFormat(date, format);
-                    return true;
-                } catch (DateTimeParseException e) {
-                    // Try next pattern.
+            for (String format : POSSIBLE_FREETEXT_DATE_FORMATS) {
+                if (!isEmpty(format)) {
+                    try {
+                        return Optional.of(parseLocalDateFromStringUsingFormat(adjustedDateStr, format));
+                    } catch (DateTimeParseException e) {
+                        // Try next pattern.
+                    }
                 }
             }
         }
-
-        return false;
+        return Optional.empty();
     }
 }

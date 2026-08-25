@@ -42,7 +42,7 @@ public class ProceedingsChecker implements EventChecker {
             if (anyEmpty(
                 proceeding.getProceedingStatus(),
                 proceeding.getCaseNumber(),
-                proceeding.getStarted(),
+                proceeding.getStartedV2(),
                 proceeding.getOrdersMade(),
                 proceeding.getJudge(),
                 proceeding.getChildren(),
@@ -51,7 +51,7 @@ public class ProceedingsChecker implements EventChecker {
                 return false;
             }
 
-            if (PREVIOUS.equals(proceeding.getProceedingStatus()) && isEmpty(proceeding.getEnded())) {
+            if (PREVIOUS.equals(proceeding.getProceedingStatus()) && isEmpty(proceeding.getEndedV2())) {
                 return false;
             }
 
