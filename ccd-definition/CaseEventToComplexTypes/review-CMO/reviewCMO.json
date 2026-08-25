@@ -337,11 +337,14 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ReviewDecision",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "ReviewDecision",
     "ListElementCode": "doesOrderConcludeProceedings",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "decision=\"SEND_TO_ALL_PARTIES\" OR decision=\"JUDGE_AMENDS_DRAFT\"",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Does the order conclude the proceedings?",
-    "FieldShowCondition": "decision=\"SEND_TO_ALL_PARTIES\"",
-    "SecurityClassification": "Public"
+    "EventElementLabel": "Does the order conclude the proceedings?"
   }
 ]
