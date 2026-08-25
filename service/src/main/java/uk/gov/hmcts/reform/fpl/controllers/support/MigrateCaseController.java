@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
@@ -31,9 +32,15 @@ public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
     private final CaseAccessService caseAccessService;
+    private static final String FLEETWOOD_EPIMMS_ID = "401452";
+    private static final String BLACKPOOL_EPIMMS_ID = "214320";
+    private static final String BLACKPOOL_COURT_CODE = "131";
+    private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
+    private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-3213", this::run3213,
         "DFPL-2421", this::run2421,
         "DFPL-2421-rollback", this::rollback2421,
         "DFPL-3306", this::run3306,
@@ -119,6 +126,27 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
+    //run 3213 Migrate function to replace Fleetwood Location with BlackPool Location
+    private void run3213(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3213";
+
+        Long caseId = caseDetails.getId();
+        log.info("Migration {id = {}, case reference = {}} processing", migrationId, caseId);
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        // Calling the service to replace Fleetwood location with Blackpool Location if exists
+        caseDetails.getData().putAll(migrateCaseService.updateCaseManagementLocation(
+            migrationId,
+            caseData,
+            FLEETWOOD_EPIMMS_ID,
+            BLACKPOOL_EPIMMS_ID,
+            BLACKPOOL_COURT_CODE,
+            BLACKPOOL_COURT_NAME,
+            BLACKBURN_LANCASTER_DFJ_COURT
+        ));
+    }
+
     private void run3346(CaseDetails caseDetails) {
         final String DFPL_3346 = "DFPL-3346";
         final long CASE_ID_3346 = 1781013695412110L;
@@ -156,3 +184,4 @@ public class MigrateCaseController extends CallbackController {
 
 
 }
+
