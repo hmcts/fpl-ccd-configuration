@@ -77,7 +77,7 @@ public class RequestListingActionController extends CallbackController {
 
         listingRequests.addFirst(element(newRequest));
 
-        caseDetails.getData().put("waTaskUrgencyLevel", urgencyLevel);
+        caseDetails.getData().put("waTaskUrgencyLevel", urgencyLevel.name());
         caseDetails.getData().put("listingRequests", listingRequests);
         caseDetails.getData().put("lastListingRequestType", newRequest.getTypesLabel().replace(", ", ";"));
 
