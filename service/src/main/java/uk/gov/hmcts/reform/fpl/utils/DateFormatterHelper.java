@@ -23,16 +23,9 @@ public class DateFormatterHelper {
     public static final String DATE_SHORT = "dd/MM/yyyy";
     public static final List<String> POSSIBLE_FREETEXT_DATE_FORMATS = List.of(
         DATE_SHORT, "d/MM/yyyy", "dd/M/yyyy", "d/M/yyyy",
-//        "d-MM-yyyy", "dd-MM-yyyy", "d-M-yyyy", "dd-M-yyyy",
-//        "d.MM.yyyy", "dd.MM.yyyy", "d.M.yyyy", "dd.M.yyyy",
-//        "dd MM yyyy", "d MM yyyy", "dd M yyyy", "d M yyyy",
         "yyyy/MM/dd", "yyyy/MM/d", "yyyy/M/dd", "yyyy/M/d",
-//        "yyyy-MM-dd", "yyyy-MM-d", "yyyy-M-dd", "yyyy-M-d",
-//        "yyyy.MM.dd", "yyyy.MM.d", "yyyy.M.dd", "yyyy.M.d",
-//        "yyyy MM dd", "yyyy MM d", "yyyy M dd", "yyyy M d",
         "dd/MMM/yyyy", "d/MMM/yyyy",
-        "dd/MMMM/yyyy", "d/MMMM/yyyy"
-        );
+        "dd/MMMM/yyyy", "d/MMMM/yyyy");
     public static final List<Character> POSSIBLE_FREETEXT_DATE_ANY_OTHER_SYMBOL = List.of('-','.', ' ', '|', '\\');
 
     private DateFormatterHelper() {
