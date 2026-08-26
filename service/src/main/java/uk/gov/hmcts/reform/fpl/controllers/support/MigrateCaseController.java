@@ -35,7 +35,7 @@ public class MigrateCaseController extends CallbackController {
     private static final String TRANSFERRED_EPIMMS_ID = "102476";
     private static final String BLACKPOOL_EPIMMS_ID = "214320";
     private static final String BLACKPOOL_COURT_CODE = "131";
-    private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
+    private static final String TRANSFERRED_COURT_NAME = "Family Court sitting at Preston";
     private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
@@ -142,7 +142,7 @@ public class MigrateCaseController extends CallbackController {
             TRANSFERRED_EPIMMS_ID,
             BLACKPOOL_EPIMMS_ID,
             BLACKPOOL_COURT_CODE,
-            BLACKPOOL_COURT_NAME,
+            TRANSFERRED_COURT_NAME,
             BLACKBURN_LANCASTER_DFJ_COURT
         ));
     }
