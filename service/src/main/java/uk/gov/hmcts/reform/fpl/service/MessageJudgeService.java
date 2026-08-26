@@ -108,13 +108,6 @@ public abstract class MessageJudgeService {
     protected List<Element<JudicialMessageReply>> buildMessageReplies(String latestMessage,
                                                                       Optional<JudicialMessage> message,
                                                                       String from,
-                                                                      String to) {
-        return buildMessageReplies(latestMessage, message, from, to, null);
-    }
-
-    protected List<Element<JudicialMessageReply>> buildMessageReplies(String latestMessage,
-                                                                      Optional<JudicialMessage> message,
-                                                                      String from,
                                                                       String to,
                                                                       String urgency) {
         JudicialMessageReply messageReply = JudicialMessageReply.builder()
@@ -254,7 +247,7 @@ public abstract class MessageJudgeService {
 
     protected String getMessageUrgency(JudicialMessageMetaData metaData) {
         return YesNo.YES.equals(metaData.getIsJudicialMessageUrgent())
-            ? SAME_DAY_URGENCY : null;
+            ? SAME_DAY_URGENCY : YesNo.NO.getValue();
     }
 
     public abstract boolean isMessageUrgent(CaseData caseData);

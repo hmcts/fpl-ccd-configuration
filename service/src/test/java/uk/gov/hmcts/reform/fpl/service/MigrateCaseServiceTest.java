@@ -87,7 +87,7 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
-
+import uk.gov.hmcts.reform.fpl.model.Address;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -4224,6 +4224,122 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () -> underTest.removeFirstOther(MIGRATION_ID, caseData));
+        }
+    }
+
+    @Nested
+    class UpdateCaseManagementLocationDFPL3213 {
+
+        private static final String FLEETWOOD_EPIMMS_ID = "401452";
+        private static final String BLACKPOOL_EPIMMS_ID = "214320";
+        private static final String BLACKPOOL_COURT_CODE = "131";
+        private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
+        private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
+
+        @Test
+        void shouldSuccessfullyMigrateFleetwoodToBlackpool() {
+            CaseLocation location = CaseLocation.builder()
+                .baseLocation("401452")
+                .region("4")
+                .build();
+
+            Court court = Court.builder()
+                .code("438")
+                .name("Family Court sitting at Fleetwood")
+                .epimmsId("401452")
+                .build();
+
+
+            Address mockAddress = Address.builder().postcode("FY7 6AA").build();
+            Orders orders = Orders.builder()
+                .court("438")
+                .address(mockAddress)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(location)
+                .court(court)
+                .orders(orders)
+                .build();
+
+            Map<String, Object> result = underTest.updateCaseManagementLocation(
+                "DFPL-3213",
+                caseData,
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
+            );
+
+            // Assert
+            assertThat(result).containsKey("caseManagementLocation");
+            CaseLocation updatedLocation = (CaseLocation) result.get("caseManagementLocation");
+            assertThat(updatedLocation).isNotNull();
+            assertThat(updatedLocation.getBaseLocation()).isEqualTo("214320");
+
+            assertThat(result).containsKey("court");
+            Court updatedCourt = (Court) result.get("court");
+            assertThat(updatedCourt).isNotNull();
+            assertThat(updatedCourt.getCode()).isEqualTo("131");
+            assertThat(updatedCourt.getEpimmsId()).isEqualTo("214320");
+            assertThat(updatedCourt.getName()).isEqualTo("Family Court sitting at Blackpool");
+
+            assertThat(result).containsKey("orders");
+            Orders updatedOrders = (Orders) result.get("orders");
+            assertThat(updatedOrders).isNotNull();
+            assertThat(updatedOrders.getCourt()).isEqualTo("131");
+            assertThat(updatedOrders.getAddress().getPostcode()).isEqualTo("FY7 6AA");
+
+            assertThat(result)
+                .containsEntry("blackburnLancasterDFJCourt", "131")
+                .containsEntry("caseSummaryCourtName", "Family Court sitting at Blackpool");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenCaseManagementLocationIsNull() {
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(null)
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
+                "DFPL-3213",
+                caseData,
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
+            ))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("caseManagementLocation structure is missing");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenLocationIsNotFleetwood() {
+            CaseLocation location = CaseLocation.builder()
+                .baseLocation("111111")
+                .region("1")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(location)
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
+                "DFPL-3213",
+                caseData,
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
+            ))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("expected base location 401452 but found: 111111");
         }
     }
 

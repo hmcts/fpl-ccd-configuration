@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -13,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +33,8 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.controllers.support.MigrateCaseController.MIGRATION_ID_KEY;
+
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(MigrateCaseController.class)
@@ -71,6 +73,75 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     void setup() {
         givenSystemUser();
         givenFplService();
+    }
+
+    @Nested
+    class Dfpl3213 {
+        private static final String MIGRATION_ID = "DFPL-3213";
+
+        @Test
+        void shouldMigrateCaseManagementLocationFromFleetwoodToBlackpool() {
+
+            Map<String, Object> locationStructure = Map.of("baseLocation", "401452", "region", "4");
+            Map<String, Object> courtStructure = Map.of("code", "438",
+                "name", "Family Court sitting at Fleetwood",
+                "epimmsId", "401452");
+            Map<String, Object> ordersStructure = Map.of("court", "438",
+                "address", Map.of("PostCode", "FY7 6AA"));
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(1778521486149688L)
+                .data(new java.util.HashMap<>(Map.of(
+                    MIGRATION_ID_KEY, MIGRATION_ID,
+                    "caseManagementLocation", locationStructure,
+                    "court", courtStructure,
+                    "orders", ordersStructure,
+                    "blackburnLancasterDFJCourt", "438",
+                    "caseSummaryCourtName", "Family Court sitting at Fleetwood"
+                )))
+                .build();
+
+            CaseData mutatedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            // Assert
+            assertThat(mutatedCaseData.getCaseManagementLocation()).isNotNull();
+            assertThat(mutatedCaseData.getCaseManagementLocation().getBaseLocation()).isEqualTo("214320");
+            assertThat(mutatedCaseData.getCourt().getCode()).isEqualTo("131");
+            assertThat(mutatedCaseData.getOrders().getCourt()).isEqualTo("131");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenControllerEncountersMissingCaseManagementLocation() {
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(1778521486149688L)
+                .data(new java.util.HashMap<>(Map.of(MIGRATION_ID_KEY, MIGRATION_ID)))
+                .build();
+
+            //  Assert
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .hasRootCauseInstanceOf(AssertionError.class)
+                .hasMessageContaining("caseManagementLocation structure is missing");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenControllerEncountersNonFleetwoodBaseLocation() {
+
+            Map<String, Object> invalidLocationStructure = Map.of("baseLocation", "111111", "region", "1");
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(1778521486149688L)
+                .data(new java.util.HashMap<>(Map.of(
+                    MIGRATION_ID_KEY, MIGRATION_ID,
+                    "caseManagementLocation", invalidLocationStructure
+                )))
+                .build();
+
+            // Assert
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .hasRootCauseInstanceOf(AssertionError.class)
+                .hasMessageContaining("expected base location 401452 but found: 111111");
+        }
     }
 
     @Test
