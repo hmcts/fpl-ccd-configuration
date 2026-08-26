@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -84,16 +85,10 @@ class ProceedingsCheckerTest {
                 .caseNumber(null)
                 .build()),
             wrapElements(completedProceeding()
-                .started(null)
+                .startedV2(null)
                 .build()),
             wrapElements(completedProceeding()
-                .started("")
-                .build()),
-            wrapElements(completedProceeding()
-                .ended(null)
-                .build()),
-            wrapElements(completedProceeding()
-                .ended("")
+                .endedV2(null)
                 .build()),
             wrapElements(completedProceeding()
                 .ordersMade("")
@@ -136,11 +131,11 @@ class ProceedingsCheckerTest {
             wrapElements(completedProceeding().build()),
             wrapElements(completedProceeding()
                 .proceedingStatus(ProceedingStatus.ONGOING)
-                .ended("")
+                .endedV2(null)
                 .build()),
             wrapElements(completedProceeding()
                 .proceedingStatus(ProceedingStatus.ONGOING)
-                .ended(null)
+                .endedV2(null)
                 .build()),
             wrapElements(completedProceeding()
                 .sameGuardianNeeded(YesNo.YES)
@@ -157,8 +152,8 @@ class ProceedingsCheckerTest {
         return Proceeding.builder()
             .proceedingStatus(ProceedingStatus.PREVIOUS)
             .caseNumber("Test")
-            .started("Test")
-            .ended("Test")
+            .startedV2(LocalDate.of(2026, 1, 1))
+            .endedV2(LocalDate.of(2026, 2, 12))
             .ordersMade("Test")
             .judge("Test")
             .children("Test")

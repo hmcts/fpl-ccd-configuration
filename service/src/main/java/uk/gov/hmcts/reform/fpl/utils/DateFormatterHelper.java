@@ -93,6 +93,8 @@ public class DateFormatterHelper {
     }
 
     public static Optional<LocalDate> parseLocalDateFromStringIfAnyFormatMatches(String date) {
+        // This helper method was implemented for DFPL-2423 migration,
+        // but it may be also useful for any other free text date parsing scenarios in the future.
         if (!isEmpty(date)) {
             String adjustedDateStr = date;
             for (char symbolChar : POSSIBLE_FREETEXT_DATE_ANY_OTHER_SYMBOL) {

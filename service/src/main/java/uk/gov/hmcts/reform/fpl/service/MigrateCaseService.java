@@ -1350,20 +1350,25 @@ public class MigrateCaseService {
         Proceeding oldProceeding = caseData.getProceeding();
 
         if (oldProceeding != null) {
-            List<Element<Proceeding>> migratedProceedings = new ArrayList<>();
-            migratedProceedings.add(element(oldProceeding.toBuilder().additionalProceedings(null).build()));
+            if (YesNo.YES.getValue().equalsIgnoreCase(oldProceeding.getOnGoingProceeding())) {
+                List<Element<Proceeding>> migratedProceedings = new ArrayList<>();
+                migratedProceedings.add(element(oldProceeding.toBuilder().additionalProceedings(null).build()));
 
-            List<Element<Proceeding>> oldAdditionalProceedings = oldProceeding.getAdditionalProceedings();
-            if (oldAdditionalProceedings != null) {
-                migratedProceedings.addAll(oldAdditionalProceedings);
+                List<Element<Proceeding>> oldAdditionalProceedings = oldProceeding.getAdditionalProceedings();
+                if (oldAdditionalProceedings != null) {
+                    migratedProceedings.addAll(oldAdditionalProceedings);
+                }
+
+                migratedProceedings = migratedProceedings.stream()
+                    .map(proceedingElement ->
+                        element(proceedingElement.getId(), sanitizeProceeding(caseData, proceedingElement.getValue())))
+                    .toList();
+
+                caseDetails.getData().put("proceedings", migratedProceedings);
+            } else {
+                log.info("Migration {id = {}}, case {} is skipped because onGoingProceeding is not Yes",
+                    migrationId, caseData.getId());
             }
-
-            migratedProceedings = migratedProceedings.stream()
-                .map(proceedingElement ->
-                    element(proceedingElement.getId(), sanitizeProceeding(caseData, proceedingElement.getValue())))
-                .toList();
-
-            caseDetails.getData().put("proceedings", migratedProceedings);
         } else {
             throw new AssertionError(format("Migration {id = %s}, case {%d} no proceeding found", migrationId,
                 caseData.getId()));
@@ -1371,19 +1376,25 @@ public class MigrateCaseService {
     }
 
     private Proceeding sanitizeProceeding(CaseData caseData, Proceeding proceeding) {
-        // start date and end date are free text input, so we need to check if they are valid dates before migrating
-        Optional<LocalDate> validStartDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getStarted());
-        Optional<LocalDate> validEndDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getEnded());
         Proceeding.ProceedingBuilder builder =  proceeding.toBuilder();
-        if (validStartDate.isPresent()) {
-            builder.startedV2(validStartDate.get());
-        } else {
-            log.warn("Case {} has invalid proceeding start date", caseData.getId());
+
+        // start date and end date are free text input, so we need to check if they are valid dates before migrating
+        if (!isEmpty(proceeding.getStarted())) {
+            Optional<LocalDate> validStartDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getStarted());
+            if (validStartDate.isPresent()) {
+                builder.startedV2(validStartDate.get());
+            } else {
+                log.warn("Case {} has invalid proceeding start date", caseData.getId());
+            }
         }
-        if (validEndDate.isPresent()) {
-            builder.endedV2(validEndDate.get());
-        } else {
-            log.warn("Case {} has invalid proceeding end date", caseData.getId());
+
+        if (!isEmpty(proceeding.getEnded())) {
+            Optional<LocalDate> validEndDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getEnded());
+            if (validEndDate.isPresent()) {
+                builder.endedV2(validEndDate.get());
+            } else {
+                log.warn("Case {} has invalid proceeding end date", caseData.getId());
+            }
         }
 
         return builder.build();
@@ -1667,7 +1678,7 @@ public class MigrateCaseService {
 
         return updates;
     }
-  
+
     public boolean removeSolicitorEmailFromPlacementNotices(CaseDetails caseDetails, String targetId) {
         // Flag to track if modifications happen anywhere across the three fields
         boolean dynamicModified = false;

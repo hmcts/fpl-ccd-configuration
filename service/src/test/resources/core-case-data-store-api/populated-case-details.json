@@ -234,9 +234,9 @@
       {
         "id": "4fc12677-e96f-4cce-9ae1-42047ee18d9a",
         "value": {
-          "ended": "02-02-2006",
+          "endedV2": "2006-02-02",
           "judge": "William Peters",
-          "started": "02-02-2002",
+          "startedV2": "2002-02-02",
           "children": "children subject to proceedings",
           "guardian": "Mark Watson",
           "caseNumber": "12345",
@@ -250,9 +250,9 @@
       {
         "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b9",
         "value": {
-          "ended": "02-02-2009",
+          "endedV2": "2009-02-02",
           "judge": "Peters Williams",
-          "started": "02-02-2008",
+          "startedV2": "2008-02-02",
           "children": "children subject to proceedings",
           "guardian": "John Watson",
           "caseNumber": "12345",

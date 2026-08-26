@@ -668,10 +668,12 @@ public class CaseSubmissionGenerationService
         return DocmosisProceeding.builder()
             .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus().getValue()))
             .caseNumber(getDefaultIfNullOrEmpty(proceeding.getCaseNumber()))
-            .started(getDefaultIfNullOrEmpty(DateFormatterHelper.formatLocalDateToString(proceeding.getStartedV2(),
-                DATE_SHORT)))
-            .ended(getDefaultIfNullOrEmpty(DateFormatterHelper.formatLocalDateToString(proceeding.getEndedV2(),
-                DATE_SHORT)))
+            .started(getDefaultIfNullOrEmpty(!isEmpty(proceeding.getStartedV2())
+                ? DateFormatterHelper.formatLocalDateToString(proceeding.getStartedV2(), DATE_SHORT)
+                : null))
+            .ended(getDefaultIfNullOrEmpty(!isEmpty(proceeding.getEndedV2())
+                ? DateFormatterHelper.formatLocalDateToString(proceeding.getEndedV2(), DATE_SHORT)
+                : null))
             .ordersMade(getDefaultIfNullOrEmpty(proceeding.getOrdersMade()))
             .judge(getDefaultIfNullOrEmpty(proceeding.getJudge()))
             .children(getDefaultIfNullOrEmpty(proceeding.getChildren()))
