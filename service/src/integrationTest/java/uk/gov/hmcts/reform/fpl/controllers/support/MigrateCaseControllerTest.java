@@ -82,12 +82,16 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldMigrateCaseManagementLocationFromFleetwoodToBlackpool() {
 
-            Map<String, Object> locationStructure = Map.of("baseLocation", "401452", "region", "4");
-            Map<String, Object> courtStructure = Map.of("code", "438",
+            Map<String, Object> locationStructure = Map.of("baseLocation", "102476", "region", "4");
+            Map<String, Object> courtStructure = Map.of(
+                "code", "438",
                 "name", "Family Court sitting at Fleetwood",
-                "epimmsId", "401452");
-            Map<String, Object> ordersStructure = Map.of("court", "438",
-                "address", Map.of("PostCode", "FY7 6AA"));
+                "epimmsId", "102476"
+            );
+            Map<String, Object> ordersStructure = Map.of(
+                "court", "438",
+                "address", Map.of("PostCode", "FY7 6AA")
+            );
 
             CaseDetails caseDetails = CaseDetails.builder()
                 .id(1778521486149688L)
@@ -140,7 +144,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             // Assert
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .hasRootCauseInstanceOf(AssertionError.class)
-                .hasMessageContaining("expected base location 401452 but found: 111111");
+                .hasMessageContaining("expected base location 102476 but found: 111111");
         }
     }
 
