@@ -19,6 +19,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ListingActionRequest",
+    "ListElementCode": "isUrgent",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Urgent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ListingActionRequest",
     "ListElementCode": "dateSent",
     "FieldType": "DateTime",
     "ElementLabel": "Date sent",
@@ -33,13 +41,5 @@
     "ElementLabel": "Date reviewed",
     "SecurityClassification": "Public",
     "DisplayContextParameter": "#DATETIMEDISPLAY(d LLL yyyy)"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ListingActionRequest",
-    "ListElementCode": "isUrgent",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Is this urgent?",
-    "SecurityClassification": "Public"
   }
 ]
