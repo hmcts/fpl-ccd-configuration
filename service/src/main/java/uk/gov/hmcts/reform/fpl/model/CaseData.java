@@ -501,7 +501,6 @@ public class CaseData extends CaseDataParent {
     private final Selector childSelector;
     private final DynamicMultiSelectList childSelectorV2;
     private final Selector othersSelector;
-    private final DynamicMultiSelectList respondentsSelectorV2;
     private final Selector personSelector;
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
