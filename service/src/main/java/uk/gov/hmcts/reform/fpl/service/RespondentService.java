@@ -262,7 +262,7 @@ public class RespondentService {
             return respondents;
         } else {
             return Optional.ofNullable(respondentsSelectorV2).map(respondentsSelector ->
-                respondentsSelector.getSelectedElementFromMultiSelectList(respondents)).orElse(List.of());
+                respondentsSelector.getSelectedElementsFromMultiSelectList(respondents)).orElse(List.of());
         }
     }
 

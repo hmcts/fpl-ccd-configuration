@@ -226,7 +226,7 @@ public class ChildrenService {
         if (useAllChildren(appliesToAllChildren)) {
             return children;
         } else {
-            return childSelectorV2.getSelectedElementFromMultiSelectList(children);
+            return childSelectorV2.getSelectedElementsFromMultiSelectList(children);
         }
     }
 }
