@@ -1394,9 +1394,9 @@ public class MigrateCaseService {
         }
 
         int othersV2Size = othersV2ToBeMigrated.size();
-        
+
         Other firstOther = (othersV2Size > 0) ? othersV2ToBeMigrated.get(0).getValue() : null;
-        List<Element<Other>> additionalOthers =  (othersV2Size > 1) 
+        List<Element<Other>> additionalOthers =  (othersV2Size > 1)
             ? othersV2ToBeMigrated.subList(1, othersV2Size) : null;
 
         Others others = Others.builder()
@@ -1544,16 +1544,12 @@ public class MigrateCaseService {
         String migrationId,
         CaseData caseData,
         String expectedBaseLocation,
-        String targetBaseLocation,
-        String targetCourtCode,
-        String targetCourtName,
-        String dfjAreaFieldKey
+        String targetCourtCode
     ) {
         CaseLocation caseManagementLocation = caseData.getCaseManagementLocation();
-        final Court court = caseData.getCourt();
         final Orders orders = caseData.getOrders();
 
-        //  validation checks
+        // Validation checks
         if (caseManagementLocation == null) {
             throw new AssertionError(String.format(
                 "Migration {id = %s, case reference = %s}, caseManagementLocation structure is missing",
@@ -1566,20 +1562,7 @@ public class MigrateCaseService {
                 migrationId, caseData.getId(), expectedBaseLocation, caseManagementLocation.getBaseLocation()));
         }
 
-        // Update core location block
-        caseManagementLocation.setBaseLocation(targetBaseLocation);
-
-        // Clone and update the Court object
-        Court updatedCourt = null;
-        if (court != null) {
-            updatedCourt = court.toBuilder()
-                .code(targetCourtCode)
-                .name(targetCourtName)
-                .epimmsId(targetBaseLocation)
-                .build();
-        }
-
-        // Clone and update the Orders object
+        // Clone and update ONLY orders.court
         Orders updatedOrders = null;
         if (orders != null) {
             updatedOrders = orders.toBuilder()
@@ -1587,28 +1570,15 @@ public class MigrateCaseService {
                 .build();
         }
 
-        // Assemble payload updates map
         Map<String, Object> updates = new HashMap<>();
-        updates.put(CASE_MANAGEMENT_LOCATION, caseManagementLocation);
 
-        if (updatedCourt != null) {
-            updates.put(COURT, updatedCourt);
-        }
         if (updatedOrders != null) {
             updates.put(ORDERS, updatedOrders);
         }
 
-        // Dynamic DFJ court property update
-        if (dfjAreaFieldKey != null) {
-            updates.put(dfjAreaFieldKey, targetCourtCode);
-        }
-
-        // Case summary court name
-        updates.put(CASE_SUMMARY_COURT_NAME, targetCourtName);
-
         return updates;
     }
-  
+
     public boolean removeSolicitorEmailFromPlacementNotices(CaseDetails caseDetails, String targetId) {
         // Flag to track if modifications happen anywhere across the three fields
         boolean dynamicModified = false;

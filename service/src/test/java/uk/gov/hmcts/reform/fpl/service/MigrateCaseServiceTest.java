@@ -4100,25 +4100,21 @@ class MigrateCaseServiceTest {
     @Nested
     class UpdateCaseManagementLocationDFPL3213 {
 
-        private static final String FLEETWOOD_EPIMMS_ID = "401452";
-        private static final String BLACKPOOL_EPIMMS_ID = "214320";
-        private static final String BLACKPOOL_COURT_CODE = "131";
-        private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
-        private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
+        private static final String EXPECTED_BASE_LOCATION = "102476";
+        private static final String PRESTON_COURT_CODE = "303";
 
         @Test
-        void shouldSuccessfullyMigrateFleetwoodToBlackpool() {
+        void shouldSuccessfullyMigrateOrdersToPreston() {
             CaseLocation location = CaseLocation.builder()
-                .baseLocation("401452")
+                .baseLocation("102476")
                 .region("4")
                 .build();
 
             Court court = Court.builder()
-                .code("438")
-                .name("Family Court sitting at Fleetwood")
-                .epimmsId("401452")
+                .code("303")
+                .name("Family Court sitting at Preston")
+                .epimmsId("102476")
                 .build();
-
 
             Address mockAddress = Address.builder().postcode("FY7 6AA").build();
             Orders orders = Orders.builder()
@@ -4136,35 +4132,18 @@ class MigrateCaseServiceTest {
             Map<String, Object> result = underTest.updateCaseManagementLocation(
                 "DFPL-3213",
                 caseData,
-                FLEETWOOD_EPIMMS_ID,
-                BLACKPOOL_EPIMMS_ID,
-                BLACKPOOL_COURT_CODE,
-                BLACKPOOL_COURT_NAME,
-                BLACKBURN_LANCASTER_DFJ_COURT
+                EXPECTED_BASE_LOCATION,
+                PRESTON_COURT_CODE
             );
 
-            // Assert
-            assertThat(result).containsKey("caseManagementLocation");
-            CaseLocation updatedLocation = (CaseLocation) result.get("caseManagementLocation");
-            assertThat(updatedLocation).isNotNull();
-            assertThat(updatedLocation.getBaseLocation()).isEqualTo("214320");
-
-            assertThat(result).containsKey("court");
-            Court updatedCourt = (Court) result.get("court");
-            assertThat(updatedCourt).isNotNull();
-            assertThat(updatedCourt.getCode()).isEqualTo("131");
-            assertThat(updatedCourt.getEpimmsId()).isEqualTo("214320");
-            assertThat(updatedCourt.getName()).isEqualTo("Family Court sitting at Blackpool");
-
+            // Assert map contains only orders update
+            assertThat(result).hasSize(1);
             assertThat(result).containsKey("orders");
+
             Orders updatedOrders = (Orders) result.get("orders");
             assertThat(updatedOrders).isNotNull();
-            assertThat(updatedOrders.getCourt()).isEqualTo("131");
+            assertThat(updatedOrders.getCourt()).isEqualTo("303");
             assertThat(updatedOrders.getAddress().getPostcode()).isEqualTo("FY7 6AA");
-
-            assertThat(result)
-                .containsEntry("blackburnLancasterDFJCourt", "131")
-                .containsEntry("caseSummaryCourtName", "Family Court sitting at Blackpool");
         }
 
         @Test
@@ -4177,18 +4156,15 @@ class MigrateCaseServiceTest {
             assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
                 "DFPL-3213",
                 caseData,
-                FLEETWOOD_EPIMMS_ID,
-                BLACKPOOL_EPIMMS_ID,
-                BLACKPOOL_COURT_CODE,
-                BLACKPOOL_COURT_NAME,
-                BLACKBURN_LANCASTER_DFJ_COURT
+                EXPECTED_BASE_LOCATION,
+                PRESTON_COURT_CODE
             ))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("caseManagementLocation structure is missing");
         }
 
         @Test
-        void shouldThrowAssertionErrorWhenLocationIsNotFleetwood() {
+        void shouldThrowAssertionErrorWhenLocationIsNotExpectedBaseLocation() {
             CaseLocation location = CaseLocation.builder()
                 .baseLocation("111111")
                 .region("1")
@@ -4202,14 +4178,11 @@ class MigrateCaseServiceTest {
             assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
                 "DFPL-3213",
                 caseData,
-                FLEETWOOD_EPIMMS_ID,
-                BLACKPOOL_EPIMMS_ID,
-                BLACKPOOL_COURT_CODE,
-                BLACKPOOL_COURT_NAME,
-                BLACKBURN_LANCASTER_DFJ_COURT
+                EXPECTED_BASE_LOCATION,
+                PRESTON_COURT_CODE
             ))
                 .isInstanceOf(AssertionError.class)
-                .hasMessageContaining("expected base location 401452 but found: 111111");
+                .hasMessageContaining("expected base location 102476 but found: 111111");
         }
     }
 
