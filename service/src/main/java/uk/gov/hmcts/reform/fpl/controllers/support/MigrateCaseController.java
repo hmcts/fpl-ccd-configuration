@@ -32,20 +32,29 @@ public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
     private final CaseAccessService caseAccessService;
+    private static final String FLEETWOOD_EPIMMS_ID = "401452";
+    private static final String BLACKPOOL_EPIMMS_ID = "214320";
+    private static final String BLACKPOOL_COURT_CODE = "131";
+    private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
+    private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
+
     private static final String EXPECTED_BASE_LOCATION = "102476";
     private static final String PRESTON_COURT_CODE = "303";
-
+    private static final String MIGRATION_ID_3213 = "DFPL-3213";
+    private static final String MIGRATION_ID_3213_V2 = "DFPL-3213-v2";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3213", this::run3213,
+        MIGRATION_ID_3213, this::run3213,
         "DFPL-2421", this::run2421,
         "DFPL-2421-rollback", this::rollback2421,
         "DFPL-3306", this::run3306,
         "DFPL-3292", this::run3292,
         "DFPL-3296", this::run3296,
         "DFPL-3346", this::run3346,
-        "DFPL-3347", this::run3347
+        "DFPL-3347", this::run3347,
+        MIGRATION_ID_3213_V2, this::run3213v2
+
     );
 
     @PostMapping("/about-to-submit")
@@ -133,12 +142,15 @@ public class MigrateCaseController extends CallbackController {
 
         CaseData caseData = getCaseData(caseDetails);
 
-        // Update orders court code to Preston
+        // Calling the service to replace Fleetwood location with Blackpool Location if exists
         caseDetails.getData().putAll(migrateCaseService.updateCaseManagementLocation(
             migrationId,
             caseData,
-            EXPECTED_BASE_LOCATION,
-            PRESTON_COURT_CODE
+            FLEETWOOD_EPIMMS_ID,
+            BLACKPOOL_EPIMMS_ID,
+            BLACKPOOL_COURT_CODE,
+            BLACKPOOL_COURT_NAME,
+            BLACKBURN_LANCASTER_DFJ_COURT
         ));
     }
 
@@ -175,6 +187,21 @@ public class MigrateCaseController extends CallbackController {
         } else {
             log.info("Migration {} completed but outsourcingPolicy was null for case {}", migrationId, caseId);
         }
+    }
+
+    //run 3213 Migrate function to replace Fleetwood Location with Preston Location
+    private void run3213v2(CaseDetails caseDetails) {
+        Long caseId = caseDetails.getId();
+        log.info("Migration  {id = {}, case reference = {}} processing", MIGRATION_ID_3213_V2, caseId);
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().putAll(migrateCaseService.updateOrdersCourt(
+            MIGRATION_ID_3213_V2,
+            caseData,
+            EXPECTED_BASE_LOCATION,
+            PRESTON_COURT_CODE
+        ));
     }
 
 

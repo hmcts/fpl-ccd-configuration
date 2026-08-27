@@ -80,18 +80,14 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         private static final String MIGRATION_ID = "DFPL-3213";
 
         @Test
-        void shouldMigrateFleetwoodOrdersCourtToPreston() {
+        void shouldMigrateCaseManagementLocationFromFleetwoodToBlackpool() {
 
-            Map<String, Object> locationStructure = Map.of("baseLocation", "102476", "region", "4");
-            Map<String, Object> courtStructure = Map.of(
-                "code", "303",
-                "name", "Family Court sitting at Preston",
-                "epimmsId", "102476"
-            );
-            Map<String, Object> ordersStructure = Map.of(
-                "court", "438",
-                "address", Map.of("PostCode", "FY7 6AA")
-            );
+            Map<String, Object> locationStructure = Map.of("baseLocation", "401452", "region", "4");
+            Map<String, Object> courtStructure = Map.of("code", "438",
+                "name", "Family Court sitting at Fleetwood",
+                "epimmsId", "401452");
+            Map<String, Object> ordersStructure = Map.of("court", "438",
+                "address", Map.of("PostCode", "FY7 6AA"));
 
             CaseDetails caseDetails = CaseDetails.builder()
                 .id(1778521486149688L)
@@ -99,7 +95,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     MIGRATION_ID_KEY, MIGRATION_ID,
                     "caseManagementLocation", locationStructure,
                     "court", courtStructure,
-                    "orders", ordersStructure
+                    "orders", ordersStructure,
+                    "blackburnLancasterDFJCourt", "438",
+                    "caseSummaryCourtName", "Family Court sitting at Fleetwood"
                 )))
                 .build();
 
@@ -107,8 +105,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             // Assert
             assertThat(mutatedCaseData.getCaseManagementLocation()).isNotNull();
-            assertThat(mutatedCaseData.getCaseManagementLocation().getBaseLocation()).isEqualTo("102476");
-            assertThat(mutatedCaseData.getOrders().getCourt()).isEqualTo("303");
+            assertThat(mutatedCaseData.getCaseManagementLocation().getBaseLocation()).isEqualTo("214320");
+            assertThat(mutatedCaseData.getCourt().getCode()).isEqualTo("131");
+            assertThat(mutatedCaseData.getOrders().getCourt()).isEqualTo("131");
         }
 
         @Test
@@ -141,8 +140,35 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             // Assert
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .hasRootCauseInstanceOf(AssertionError.class)
-                .hasMessageContaining("expected base location 102476 but found: 111111");
+                .hasMessageContaining("expected base location 401452 but found: 111111");
         }
+
+        @Test
+        void shouldMigrateFleetwoodOrdersCourtToPrestonForDfpl3213v2() {
+
+            Map<String, Object> locationStructure = Map.of("baseLocation", "102476", "region", "4");
+            Map<String, Object> ordersStructure = Map.of(
+                "court", "438",
+                "address", Map.of("PostCode", "FY7 6AA")
+            );
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(1778521486149688L)
+                .data(new java.util.HashMap<>(Map.of(
+                    MIGRATION_ID_KEY, "DFPL-3213-v2",
+                    "caseManagementLocation", locationStructure,
+                    "orders", ordersStructure
+                )))
+                .build();
+
+            CaseData mutatedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            // Assert
+            assertThat(mutatedCaseData.getCaseManagementLocation()).isNotNull();
+            assertThat(mutatedCaseData.getCaseManagementLocation().getBaseLocation()).isEqualTo("102476");
+            assertThat(mutatedCaseData.getOrders().getCourt()).isEqualTo("303");
+        }
+
     }
 
     @Test
@@ -210,10 +236,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         // Assertions
         assertThat(dataField).containsKeys("placements", "placementsNonConfidential",
-                                                   "placementsNonConfidentialNotices");
+            "placementsNonConfidentialNotices");
 
         List<Map<String, Object>> noticesList = (List<Map<String, Object>>) dataField
-                                                .get("placementsNonConfidentialNotices");
+            .get("placementsNonConfidentialNotices");
         assertThat(noticesList).hasSize(1);
 
         Map<String, Object> innerValue = (Map<String, Object>) noticesList.getFirst().get("value");
@@ -286,7 +312,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         // Assertions
         List<Map<String, Object>> noticesList = (List<Map<String, Object>>) dataField
-                                                    .get("placementsNonConfidentialNotices");
+            .get("placementsNonConfidentialNotices");
         Map<String, Object> innerValue = (Map<String, Object>) noticesList.getFirst().get("value");
         List<?> respondentsToNotify = (List<?>) innerValue.get("placementRespondentsToNotify");
 
@@ -332,4 +358,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         assertThat(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID())
             .isEqualTo("CPYYWBZ");
     }
+
+
 }

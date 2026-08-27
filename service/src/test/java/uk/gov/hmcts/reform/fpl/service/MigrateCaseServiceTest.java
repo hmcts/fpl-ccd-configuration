@@ -274,7 +274,7 @@ class MigrateCaseServiceTest {
         void updateOutsourcingPolicy() {
             when(organisationService.findOrganisation(newOrgId))
                 .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
-                        .name(newOrgName)
+                    .name(newOrgName)
                     .build()));
             CaseData caseData = CaseData.builder()
                 .id(1L)
@@ -317,7 +317,7 @@ class MigrateCaseServiceTest {
             Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
                 .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
-                    .notificationRecipient(YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
                 .notificationRecipient(YES.getValue()).build());
 
@@ -1488,7 +1488,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThatThrownBy(() -> underTest.revertChildExtensionDate(caseData, MIGRATION_ID,
-                    targetChild1.getId().toString(), revertedDate, revertedReason))
+                targetChild1.getId().toString(), revertedDate, revertedReason))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format(
                     "Migration {id = %s}, case reference = %s} child %s not found",
@@ -1519,7 +1519,7 @@ class MigrateCaseServiceTest {
         @Test
         void shouldOnlyRemoveSelectPlacement() {
             var placementRemaining = element(placementToRemain, Placement.builder()
-                            .build());
+                .build());
 
             List<Element<Placement>> placements = List.of(
                 element(placementToRemove, Placement.builder()
@@ -1536,7 +1536,7 @@ class MigrateCaseServiceTest {
             Map<String, Object> updatedFields = underTest.removeSpecificPlacements(caseData, placementToRemove);
 
             assertThat(updatedFields).extracting("placements").asList().hasSize(1)
-                    .isEqualTo(placementsRemaining);
+                .isEqualTo(placementsRemaining);
             assertThat(updatedFields).extracting("placementsNonConfidential").asList()
                 .hasSize(1).isEqualTo(placementsRemaining);
             assertThat(updatedFields).extracting("placementsNonConfidentialNotices").asList()
@@ -1787,7 +1787,7 @@ class MigrateCaseServiceTest {
                 underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString()))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message "
-                            + mesageToBeRemoved.getId() + " not found");
+                    + mesageToBeRemoved.getId() + " not found");
         }
 
         @Test
@@ -1852,7 +1852,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThatThrownBy(() -> underTest.removeSkeletonArgument(caseData,
-                    skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID))
+                skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, skeleton argument %s not found",
                     MIGRATION_ID, 1, skeletonArgumentToBeRemoved.getId().toString()));
@@ -2006,9 +2006,9 @@ class MigrateCaseServiceTest {
 
         private final Element<HearingCourtBundle> singleCbHearingCourtBundle = element(hearingId,
             HearingCourtBundle.builder().courtBundle(List.of(
-                element(targetBundleId, CourtBundle.builder().document(DocumentReference.builder().build()).build())
-            ))
-            .build());
+                    element(targetBundleId, CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                ))
+                .build());
 
         private final Element<HearingCourtBundle> mixedCourtBundlesHearingCourtBundle = element(hearingId,
             HearingCourtBundle.builder().courtBundle(List.of(cb1, cb2,
@@ -2573,29 +2573,29 @@ class MigrateCaseServiceTest {
         void shouldThrowExceptionIfFinalOrderNotFound() {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
                 .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME)
-                        .markedFinal(YesNo.NO.getValue())
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Blank order (C21)")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Care order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Discharge of care order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Supervision order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim testing order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim testing order")
-                        .markedFinal(YES.getValue())
-                        .build())
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME)
+                            .markedFinal(YesNo.NO.getValue())
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Blank order (C21)")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Care order")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Discharge of care order")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Supervision order")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim testing order")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim testing order")
+                            .markedFinal(YES.getValue())
+                            .build())
                     )
                 ).build();
 
@@ -2711,54 +2711,54 @@ class MigrateCaseServiceTest {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
                 .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
                 .orderCollection(List.of(
-                    // not final order
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.NO.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE)
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Care order")
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
-                        .build()),
+                        // not final order
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YesNo.NO.getValue())
+                            .approvalDate(LATEST_APPROVAL_DATE)
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Care order")
+                            .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                            .build()),
 
-                    // no approval date
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDate(null)
-                        .approvalDateTime(null)
-                        .build()),
+                        // no approval date
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDate(null)
+                            .approvalDateTime(null)
+                            .build()),
 
-                    // approved final orders
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(2))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(3))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(4))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Final Care order")
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(5))
-                        .build())
+                        // approved final orders
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDate(LATEST_APPROVAL_DATE.minusDays(2))
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(3))
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDate(LATEST_APPROVAL_DATE.minusDays(4))
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Final Care order")
+                            .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(5))
+                            .build())
                     )
                 ).build();
 
@@ -3824,16 +3824,16 @@ class MigrateCaseServiceTest {
         private final UUID nonExistentBundleId = UUID.randomUUID();
 
         Element<DraftOrder> draftOrderToRemove = element(orderToRemoveId,
-                DraftOrder.builder()
-                    .title("Order to remove")
-                    .build()
-            );
+            DraftOrder.builder()
+                .title("Order to remove")
+                .build()
+        );
 
         Element<DraftOrder> draftOrderToRetain = element(orderToRetainId,
-                DraftOrder.builder()
-                    .title("Order to retain")
-                    .build()
-            );
+            DraftOrder.builder()
+                .title("Order to retain")
+                .build()
+        );
 
         private final Element<AdditionalApplicationsBundle> bundleWithOrder = element(bundleId,
             AdditionalApplicationsBundle.builder()
@@ -4100,21 +4100,25 @@ class MigrateCaseServiceTest {
     @Nested
     class UpdateCaseManagementLocationDFPL3213 {
 
-        private static final String EXPECTED_BASE_LOCATION = "102476";
-        private static final String PRESTON_COURT_CODE = "303";
+        private static final String FLEETWOOD_EPIMMS_ID = "401452";
+        private static final String BLACKPOOL_EPIMMS_ID = "214320";
+        private static final String BLACKPOOL_COURT_CODE = "131";
+        private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
+        private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
 
         @Test
-        void shouldSuccessfullyMigrateOrdersToPreston() {
+        void shouldSuccessfullyMigrateFleetwoodToBlackpool() {
             CaseLocation location = CaseLocation.builder()
-                .baseLocation("102476")
+                .baseLocation("401452")
                 .region("4")
                 .build();
 
             Court court = Court.builder()
-                .code("303")
-                .name("Family Court sitting at Preston")
-                .epimmsId("102476")
+                .code("438")
+                .name("Family Court sitting at Fleetwood")
+                .epimmsId("401452")
                 .build();
+
 
             Address mockAddress = Address.builder().postcode("FY7 6AA").build();
             Orders orders = Orders.builder()
@@ -4132,18 +4136,35 @@ class MigrateCaseServiceTest {
             Map<String, Object> result = underTest.updateCaseManagementLocation(
                 "DFPL-3213",
                 caseData,
-                EXPECTED_BASE_LOCATION,
-                PRESTON_COURT_CODE
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
             );
 
-            // Assert map contains only orders update
-            assertThat(result).hasSize(1);
-            assertThat(result).containsKey("orders");
+            // Assert
+            assertThat(result).containsKey("caseManagementLocation");
+            CaseLocation updatedLocation = (CaseLocation) result.get("caseManagementLocation");
+            assertThat(updatedLocation).isNotNull();
+            assertThat(updatedLocation.getBaseLocation()).isEqualTo("214320");
 
+            assertThat(result).containsKey("court");
+            Court updatedCourt = (Court) result.get("court");
+            assertThat(updatedCourt).isNotNull();
+            assertThat(updatedCourt.getCode()).isEqualTo("131");
+            assertThat(updatedCourt.getEpimmsId()).isEqualTo("214320");
+            assertThat(updatedCourt.getName()).isEqualTo("Family Court sitting at Blackpool");
+
+            assertThat(result).containsKey("orders");
             Orders updatedOrders = (Orders) result.get("orders");
             assertThat(updatedOrders).isNotNull();
-            assertThat(updatedOrders.getCourt()).isEqualTo("303");
+            assertThat(updatedOrders.getCourt()).isEqualTo("131");
             assertThat(updatedOrders.getAddress().getPostcode()).isEqualTo("FY7 6AA");
+
+            assertThat(result)
+                .containsEntry("blackburnLancasterDFJCourt", "131")
+                .containsEntry("caseSummaryCourtName", "Family Court sitting at Blackpool");
         }
 
         @Test
@@ -4156,15 +4177,18 @@ class MigrateCaseServiceTest {
             assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
                 "DFPL-3213",
                 caseData,
-                EXPECTED_BASE_LOCATION,
-                PRESTON_COURT_CODE
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
             ))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("caseManagementLocation structure is missing");
         }
 
         @Test
-        void shouldThrowAssertionErrorWhenLocationIsNotExpectedBaseLocation() {
+        void shouldThrowAssertionErrorWhenLocationIsNotFleetwood() {
             CaseLocation location = CaseLocation.builder()
                 .baseLocation("111111")
                 .region("1")
@@ -4178,11 +4202,68 @@ class MigrateCaseServiceTest {
             assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
                 "DFPL-3213",
                 caseData,
-                EXPECTED_BASE_LOCATION,
-                PRESTON_COURT_CODE
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
             ))
                 .isInstanceOf(AssertionError.class)
-                .hasMessageContaining("expected base location 102476 but found: 111111");
+                .hasMessageContaining("expected base location 401452 but found: 111111");
+        }
+
+        @Test
+        void shouldUpdateOrdersCourtToPrestonWhenBaseLocationMatches() {
+            CaseLocation caseManagementLocation = CaseLocation.builder()
+                .baseLocation("102476")
+                .region("4")
+                .build();
+
+            Orders orders = Orders.builder()
+                .court("438")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(caseManagementLocation)
+                .orders(orders)
+                .build();
+
+            // Use underTest instead of migrateCaseService
+            Map<String, Object> updates = underTest.updateOrdersCourt(
+                "DFPL-3213-v2",
+                caseData,
+                "102476",
+                "303"
+            );
+
+            assertThat(updates).containsKey("orders");
+            Orders updatedOrders = (Orders) updates.get("orders");
+            assertThat(updatedOrders.getCourt()).isEqualTo("303");
+            assertThat(updates).doesNotContainKey("caseManagementLocation");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenBaseLocationDoesNotMatch() {
+            CaseLocation caseManagementLocation = CaseLocation.builder()
+                .baseLocation("999999")
+                .region("4")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(caseManagementLocation)
+                .build();
+
+            // Use underTest instead of migrateCaseService
+            assertThatThrownBy(() -> underTest.updateOrdersCourt(
+                "DFPL-3213-v2",
+                caseData,
+                "102476",
+                "303"
+            ))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("expected base location 102476 but found: 999999");
         }
     }
 

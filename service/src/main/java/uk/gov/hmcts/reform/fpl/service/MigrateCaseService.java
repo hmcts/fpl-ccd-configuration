@@ -1544,12 +1544,16 @@ public class MigrateCaseService {
         String migrationId,
         CaseData caseData,
         String expectedBaseLocation,
-        String targetCourtCode
+        String targetBaseLocation,
+        String targetCourtCode,
+        String targetCourtName,
+        String dfjAreaFieldKey
     ) {
         CaseLocation caseManagementLocation = caseData.getCaseManagementLocation();
+        final Court court = caseData.getCourt();
         final Orders orders = caseData.getOrders();
 
-        // Validation checks
+        //  validation checks
         if (caseManagementLocation == null) {
             throw new AssertionError(String.format(
                 "Migration {id = %s, case reference = %s}, caseManagementLocation structure is missing",
@@ -1562,7 +1566,20 @@ public class MigrateCaseService {
                 migrationId, caseData.getId(), expectedBaseLocation, caseManagementLocation.getBaseLocation()));
         }
 
-        // Clone and update ONLY orders.court
+        // Update core location block
+        caseManagementLocation.setBaseLocation(targetBaseLocation);
+
+        // Clone and update the Court object
+        Court updatedCourt = null;
+        if (court != null) {
+            updatedCourt = court.toBuilder()
+                .code(targetCourtCode)
+                .name(targetCourtName)
+                .epimmsId(targetBaseLocation)
+                .build();
+        }
+
+        // Clone and update the Orders object
         Orders updatedOrders = null;
         if (orders != null) {
             updatedOrders = orders.toBuilder()
@@ -1570,11 +1587,24 @@ public class MigrateCaseService {
                 .build();
         }
 
+        // Assemble payload updates map
         Map<String, Object> updates = new HashMap<>();
+        updates.put(CASE_MANAGEMENT_LOCATION, caseManagementLocation);
 
+        if (updatedCourt != null) {
+            updates.put(COURT, updatedCourt);
+        }
         if (updatedOrders != null) {
             updates.put(ORDERS, updatedOrders);
         }
+
+        // Dynamic DFJ court property update
+        if (dfjAreaFieldKey != null) {
+            updates.put(dfjAreaFieldKey, targetCourtCode);
+        }
+
+        // Case summary court name
+        updates.put(CASE_SUMMARY_COURT_NAME, targetCourtName);
 
         return updates;
     }
@@ -1657,5 +1687,41 @@ public class MigrateCaseService {
         String currentElementId = String.valueOf(respondentEl.getId());
 
         return !targetId.equalsIgnoreCase(currentElementId);
+    }
+
+    public Map<String, Object> updateOrdersCourt(
+        String migrationId,
+        CaseData caseData,
+        String expectedBaseLocation,
+        String targetCourtCode
+    ) {
+        CaseLocation caseManagementLocation = caseData.getCaseManagementLocation();
+        final Orders orders = caseData.getOrders();
+
+        if (caseManagementLocation == null) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, caseManagementLocation structure is missing",
+                migrationId, caseData.getId()));
+        }
+
+        if (!expectedBaseLocation.equalsIgnoreCase(caseManagementLocation.getBaseLocation())) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, expected base location %s but found: %s",
+                migrationId, caseData.getId(), expectedBaseLocation, caseManagementLocation.getBaseLocation()));
+        }
+
+        Orders updatedOrders = null;
+        if (orders != null) {
+            updatedOrders = orders.toBuilder()
+                .court(targetCourtCode)
+                .build();
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        if (updatedOrders != null) {
+            updates.put(ORDERS, updatedOrders);
+        }
+
+        return updates;
     }
 }
