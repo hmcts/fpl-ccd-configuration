@@ -730,6 +730,31 @@ public class MigrateCaseService {
         return Map.of("noticeOfProceedingsBundle", updatedNoticeOfProceedingsBundle);
     }
 
+    public Map<String, Object> removeDraftOrdersRemovedElement(CaseData caseData,
+                                                               String migrationId,
+                                                               UUID expectedOrderId) {
+        Long caseId = caseData.getId();
+        List<Element<HearingOrder>> draftOrdersRemoved = caseData.getDraftOrdersRemoved();
+
+        if (isNull(draftOrdersRemoved) || draftOrdersRemoved.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, draftOrdersRemoved collection is empty",
+                migrationId, caseId));
+        }
+
+        List<Element<HearingOrder>> updatedDraftOrdersRemoved = draftOrdersRemoved.stream()
+            .filter(el -> !el.getId().equals(expectedOrderId))
+            .toList();
+
+        if (updatedDraftOrdersRemoved.size() != draftOrdersRemoved.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, target element %s not found in draftOrdersRemoved",
+                migrationId, caseId, expectedOrderId));
+        }
+
+        return Map.of("draftOrdersRemoved", updatedDraftOrdersRemoved);
+    }
+
     public Map<String, Object> removeDocumentFiledOnIssue(CaseData caseData, UUID documentFiledOnIssueId,
                                                       String migrationId) {
         Long caseId = caseData.getId();
