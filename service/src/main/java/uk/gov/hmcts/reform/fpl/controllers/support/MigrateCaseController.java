@@ -170,7 +170,6 @@ public class MigrateCaseController extends CallbackController {
 
         Long caseId = caseDetails.getId();
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        log.info("Migration of {} is now started for case {}", migrationId, caseId);
 
         CaseData caseData = getCaseData(caseDetails);
 
