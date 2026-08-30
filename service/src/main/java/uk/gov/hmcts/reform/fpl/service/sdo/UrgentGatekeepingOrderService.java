@@ -108,7 +108,7 @@ public class UrgentGatekeepingOrderService {
         List<DocmosisTemplates> templates = new ArrayList<>();
         templates.add(DocmosisTemplates.C6);
 
-        if (!caseData.getAllOthers().isEmpty()) {
+        if (!caseData.getOthersV2().isEmpty()) {
             templates.add(DocmosisTemplates.C6A);
         }
 

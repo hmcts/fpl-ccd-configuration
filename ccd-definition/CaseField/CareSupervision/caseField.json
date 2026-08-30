@@ -597,9 +597,11 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "others",
+    "ID": "othersV2",
     "Label": "Others to be given notice",
-    "FieldType": "Person",
+    "HintText": "These are people who are not a party to the case but who are notified. If they are made a party later, they'll be added as a respondent.",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -1508,7 +1510,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "confidentialOthers",
-    "Label": "Others",
+    "Label": "Others to be given notice",
     "FieldType": "Collection",
     "FieldTypeParameter": "Others",
     "SecurityClassification": "Public",
@@ -2085,7 +2087,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "othersSubHeadingLabel",
     "FieldType": "Label",
-    "Label": "#### Other people in the case",
+    "Label": "#### Others to be given notice",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -2418,6 +2420,15 @@
     "ID": "respondentsSelector",
     "Label": "Select who should be notified",
     "FieldType": "RespondentsSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsSelectorV2",
+    "Label": "Select who should be notified",
+    "FieldType": "DynamicMultiSelectList",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -33,6 +34,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
@@ -55,6 +57,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private DocumentReference orderRemoved;
     private DocumentReference translatedOrder;
     private DocumentReference lastUploadedOrder;
+    private DocumentReference refusedOrder;
     private String hearing;
     // Case management order, 21 June 2020
     private UUID hearingId;
@@ -150,10 +153,20 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
 
     @Override
     public String asLabel() {
+        if (RETURNED.equals(status)) {
+            return format("Refused order sent on %s, %s",
+                formatLocalDateToString(dateSent, DATE),
+                (refusedOrder != null && refusedOrder.getFilename() != null) ? refusedOrder.getFilename() : "");
+        }
+
+        String documentName = Optional.ofNullable(getDocument())
+            .map(DocumentReference::getFilename)
+            .orElse("");
+
         if (type == C21) {
             return format("Draft order sent on %s for %s, %s", formatLocalDateToString(dateSent, DATE),
                 getTitle(),
-                getDocument().getFilename());
+                documentName);
         } else {
             if (APPROVED.equals(status)) {
                 return format("Sealed case management order issued on %s",
@@ -163,12 +176,12 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
             if (SEND_TO_JUDGE.equals(status)) {
                 return format("Agreed case management order sent on %s, %s",
                     formatLocalDateToString(dateSent, DATE),
-                    getDocument().getFilename());
+                    documentName);
             }
 
             return format("Draft case management order sent on %s, %s",
                 formatLocalDateToString(dateSent, DATE),
-                getDocument().getFilename());
+                documentName);
         }
     }
 
