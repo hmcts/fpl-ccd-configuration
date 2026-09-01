@@ -948,7 +948,15 @@
     "Label": "Add legal adviser details",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Deprecated"
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsSelector",
+    "Label": "Select who should be notified",
+    "FieldType": "RespondentsSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
