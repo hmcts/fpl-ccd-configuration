@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ListingActionRequest;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -37,6 +39,10 @@ public class RequestListingActionController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        // Pre-select "No" if the user has not opened this event before
+        if (caseData.getIsUrgentListingRequest() == null) {
+            caseDetails.getData().put("isUrgentListingRequest", YesNo.NO.getValue());
+        }
 
         // if we have no court object OR the court is part of the WA trial, block the event from being used
         if (isEmpty(caseData.getCourt()) || featureToggleService.isCourtNotificationEnabledForWa(caseData.getCourt())) {
@@ -52,21 +58,31 @@ public class RequestListingActionController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        YesNo isUrgentInput = caseData.getIsUrgentListingRequest();
+
+        WorkAllocationTaskUrgency urgencyLevel = YesNo.YES.equals(isUrgentInput)
+            ? WorkAllocationTaskUrgency.URGENT
+            : WorkAllocationTaskUrgency.STANDARD;
+
+
         List<Element<ListingActionRequest>> listingRequests = Optional.ofNullable(caseData.getListingRequests())
             .orElse(new ArrayList<>());
 
         ListingActionRequest newRequest = ListingActionRequest.builder()
             .type(caseData.getSelectListingActions())
             .details(caseData.getListingDetails())
+            .isUrgent(isUrgentInput)
             .dateSent(time.now())
             .build();
 
-        listingRequests.add(0, element(newRequest));
+        listingRequests.addFirst(element(newRequest));
 
+        caseDetails.getData().put("waTaskUrgencyLevel", urgencyLevel.name());
         caseDetails.getData().put("listingRequests", listingRequests);
         caseDetails.getData().put("lastListingRequestType", newRequest.getTypesLabel().replace(", ", ";"));
 
-        removeTemporaryFields(caseDetails, "selectListingActions", "listingDetails");
+        removeTemporaryFields(caseDetails, "selectListingActions", "listingDetails", "isUrgentListingRequest");
+
         return respond(caseDetails);
     }
 
