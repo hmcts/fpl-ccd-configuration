@@ -88,7 +88,7 @@ public class JudgeAndLegalAdvisorHelper {
     }
 
     public static String buildAllocatedJudgeLabel(Judge judge) {
-        return String.format("Case assigned to: %s %s", judge.getJudgeOrMagistrateTitle(), judge.getJudgeName());
+        return String.format("Case assigned to: %s", judge.getJudgeFullName());
     }
 
     private static String mapJudgeOrAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
@@ -102,9 +102,10 @@ public class JudgeAndLegalAdvisorHelper {
                 String magistrateFullName = judgeAndLegalAdvisor.getJudgeFullName();
                 return isBlank(magistrateFullName) ? "Justice of the Peace" : magistrateFullName + " (JP)";
             case OTHER:
-                return judgeAndLegalAdvisor.getOtherTitle() + " " + judgeAndLegalAdvisor.getJudgeLastName();
+                return String.format("%s %s", judgeAndLegalAdvisor.getOtherTitle(),
+                    judgeAndLegalAdvisor.getJudgeFullName());
             default:
-                return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
+                return judgeAndLegalAdvisor.getJudgeFullName();
         }
     }
 
