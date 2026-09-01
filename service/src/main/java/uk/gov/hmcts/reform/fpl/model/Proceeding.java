@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
+import uk.gov.hmcts.reform.fpl.json.serializer.YesNoSerializer;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
@@ -38,6 +40,7 @@ public class Proceeding {
     private final String judge;
     private final String children;
     private final String guardian;
+    @JsonSerialize(using = YesNoSerializer.class)
     @JsonDeserialize(using = YesNoDeserializer.class)
     private final YesNo sameGuardianNeeded;
     private final String sameGuardianDetails;

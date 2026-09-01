@@ -1377,7 +1377,7 @@ public class MigrateCaseService {
         if (oldProceeding != null) {
             if (YesNo.YES.getValue().equalsIgnoreCase(oldProceeding.getOnGoingProceeding())) {
                 List<Element<Proceeding>> migratedProceedings = new ArrayList<>();
-                migratedProceedings.add(element(oldProceeding.toBuilder().additionalProceedings(null).build()));
+                migratedProceedings.add(element(oldProceeding));
 
                 List<Element<Proceeding>> oldAdditionalProceedings = oldProceeding.getAdditionalProceedings();
                 if (oldAdditionalProceedings != null) {
@@ -1401,7 +1401,8 @@ public class MigrateCaseService {
     }
 
     private Proceeding sanitizeProceeding(CaseData caseData, Proceeding proceeding) {
-        Proceeding.ProceedingBuilder builder =  proceeding.toBuilder();
+        Proceeding.ProceedingBuilder builder =  proceeding.toBuilder()
+            .additionalProceedings(null);
 
         // start date and end date are free text input, so we need to check if they are valid dates before migrating
         if (!isEmpty(proceeding.getStarted())) {
