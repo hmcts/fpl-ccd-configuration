@@ -4456,4 +4456,58 @@ class MigrateCaseServiceTest {
             assertThat(isModified).isTrue();
         }
     }
+
+    @Test
+    void shouldRemoveTargetElementFromDraftOrdersRemovedAndKeepOthers() {
+        UUID orderIdToRemove = UUID.fromString("13f8bfee-4ed0-40b2-87ac-0300552584d1");
+        UUID orderIdToKeep = UUID.randomUUID();
+
+        Element<HearingOrder> orderToRemove = element(orderIdToRemove, HearingOrder.builder().build());
+        Element<HearingOrder> orderToKeep = element(orderIdToKeep, HearingOrder.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .id(1777371329249951L)
+            .draftOrdersRemoved(List.of(orderToKeep, orderToRemove))
+            .build();
+
+        Map<String, Object> fields = underTest.removeDraftOrdersRemovedElement(
+            caseData, "DFPL-3345", orderIdToRemove
+        );
+
+        @SuppressWarnings("unchecked")
+        List<Element<HearingOrder>> result = (List<Element<HearingOrder>>) fields.get("draftOrdersRemoved");
+
+        assertThat(result)
+            .hasSize(1)
+            .containsExactly(orderToKeep);
+    }
+
+    @Test
+    void shouldThrowAssertionErrorWhenDraftOrdersRemovedIsEmpty() {
+        UUID orderIdToRemove = UUID.fromString("13f8bfee-4ed0-40b2-87ac-0300552584d1");
+
+        CaseData caseData = CaseData.builder()
+            .id(1777371329249951L)
+            .draftOrdersRemoved(List.of())
+            .build();
+
+        assertThatThrownBy(() -> underTest.removeDraftOrdersRemovedElement(caseData, "DFPL-3345", orderIdToRemove))
+            .isInstanceOf(AssertionError.class)
+            .hasMessageContaining("draftOrdersRemoved collection is empty");
+    }
+
+    @Test
+    void shouldThrowAssertionErrorWhenTargetElementNotFoundInDraftOrdersRemoved() {
+        UUID orderIdToRemove = UUID.fromString("13f8bfee-4ed0-40b2-87ac-0300552584d1");
+        UUID otherOrderId = UUID.randomUUID();
+
+        CaseData caseData = CaseData.builder()
+            .id(1777371329249951L)
+            .draftOrdersRemoved(List.of(element(otherOrderId, HearingOrder.builder().build())))
+            .build();
+
+        assertThatThrownBy(() -> underTest.removeDraftOrdersRemovedElement(caseData, "DFPL-3345", orderIdToRemove))
+            .isInstanceOf(AssertionError.class)
+            .hasMessageContaining("target element " + orderIdToRemove + " not found in draftOrdersRemoved");
+    }
 }

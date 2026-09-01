@@ -67,7 +67,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
     public DocmosisParameters generate(CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
-        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Child>> selectedChildren = childrenService.getSelectedChildrenFromMultiSelectList(caseData);
 
         return C43aSpecialGuardianshipOrderDocmosisParameters.builder()
             .orderTitle(Order.C43A_SPECIAL_GUARDIANSHIP_ORDER.getTitle())

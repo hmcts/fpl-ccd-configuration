@@ -359,5 +359,55 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .isEqualTo("CPYYWBZ");
     }
 
+    @Nested
+    class Dfpl3345 {
+        private static final String MIGRATION_ID = "DFPL-3345";
+        private static final long CASE_ID = 1777371329249951L;
+        private static final String TARGET_UUID = "13f8bfee-4ed0-40b2-87ac-0300552584d1";
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldRemoveTargetElementFromDraftOrdersRemovedWhenMigrationIdMatches() {
+            String keepUuid = UUID.randomUUID().toString();
+
+            Map<String, Object> targetElement = Map.of(
+                "id", TARGET_UUID,
+                "value", Map.of("title", "Confidential Draft Order")
+            );
+
+            Map<String, Object> keepElement = Map.of(
+                "id", keepUuid,
+                "value", Map.of("title", "Valid Draft Order")
+            );
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(CASE_ID)
+                .data(new HashMap<>(Map.of(
+                    MIGRATION_ID_KEY, MIGRATION_ID,
+                    "draftOrdersRemoved", new ArrayList<>(List.of(targetElement, keepElement))
+                )))
+                .build();
+
+            CaseData mutatedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            // Assert
+            assertThat(mutatedCaseData.getDraftOrdersRemoved()).hasSize(1);
+            assertThat(mutatedCaseData.getDraftOrdersRemoved().get(0).getId())
+                .isEqualTo(UUID.fromString(keepUuid));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCaseIdDoesNotMatch() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(9999999999999999L)
+                .data(new HashMap<>(Map.of(MIGRATION_ID_KEY, MIGRATION_ID)))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .hasRootCauseInstanceOf(AssertionError.class)
+                .hasMessageContaining("DFPL-3345");
+        }
+    }
+
 
 }
