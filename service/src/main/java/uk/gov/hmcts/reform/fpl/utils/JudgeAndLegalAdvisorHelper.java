@@ -88,7 +88,7 @@ public class JudgeAndLegalAdvisorHelper {
     }
 
     public static String buildAllocatedJudgeLabel(Judge judge) {
-        return String.format("Case assigned to: %s", judge.getJudgeFullName());
+        return String.format("Case assigned to: %s %s", judge.getJudgeOrMagistrateTitle(), judge.getJudgeName());
     }
 
     private static String mapJudgeOrAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
