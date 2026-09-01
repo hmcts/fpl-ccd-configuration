@@ -394,5 +394,15 @@
     "FieldDisplayOrder": 37,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Tick to confirm this document is related to this case"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supportingEvidenceBundle.hasConfidentialAddressConfirmation",
+    "FieldDisplayOrder": 38,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "isC2Confidential=\"No\" AND c2ApplicationRoute=\"PAPER_FORM\" AND hasConfidentialParty=\"YES\""
   }
 ]

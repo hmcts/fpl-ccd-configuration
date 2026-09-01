@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -74,8 +75,14 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String requestedHearingToAdjourn;
     @JsonSerialize(using = YesNoSerializer.class)
     private final YesNo canBeConsideredAtNextHearing;
+    private final List<String> hasConfidentialAddress;
     @JsonSerialize(using = YesNoSerializer.class)
     private YesNo isHearingAdjournmentRequired;
+
+    @JsonGetter("hasConfidentialAddressValue")
+    public String getHasConfidentialAddressValue() {
+        return document != null ? YesNo.NO.getValue() : null;
+    }
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
