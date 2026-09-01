@@ -46,9 +46,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-3213", this::run3213,
         "DFPL-3306", this::run3306,
         "DFPL-3292", this::run3292,
-        "DFPL-3296", this::run3296,
         "DFPL-3346", this::run3346,
         "DFPL-3347", this::run3347,
+        "DFPL-3213-v2", this::run3213v2,
         "DFPL-3345", this::run3345
     );
 
@@ -103,30 +103,6 @@ public class MigrateCaseController extends CallbackController {
     private void run2423Rollback(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2423-rollback";
         migrateCaseService.rollbackOtherProceedings(caseDetails, getCaseData(caseDetails), migrationId);
-    }
-
-    private void run3296(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3296";
-        final long expectedCaseId = 1767800818952560L;
-        final String Target_Migration_Id = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
-
-        Long caseId = caseDetails.getId();
-
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        log.info("Migration {} started for case {}", migrationId, caseId);
-
-
-        boolean isModified = migrateCaseService
-                                .removeSolicitorEmailFromPlacementNotices(caseDetails, Target_Migration_Id);
-
-        if (isModified) {
-            log.info("Migration {} successfully removed target solicitor entry"
-                    + " by ID from placement notification list on case {}",
-                migrationId, caseId);
-        } else {
-            log.info("Migration {} skipped: Target ID {} not found "
-                + "in any placement records.", migrationId, Target_Migration_Id);
-        }
     }
 
     //run 3213 Migrate function to replace Fleetwood Location with BlackPool Location
@@ -202,6 +178,25 @@ public class MigrateCaseController extends CallbackController {
         } else {
             log.info("Migration {} completed but outsourcingPolicy was null for case {}", migrationId, caseId);
         }
+    }
+
+    // run 3213 Migrate function to replace Fleetwood Location with Preston Location
+    private void run3213v2(CaseDetails caseDetails) {
+        String migrationId = "DFPL-3213-v2";
+        String expectedBaseLocation = "102476";
+        String prestonCourtCode = "303";
+
+        Long caseId = caseDetails.getId();
+        log.info("Migration {id = {}, case_reference = {}} processing", migrationId, caseId);
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().putAll(migrateCaseService.updateOrdersCourt(
+            migrationId,
+            caseData,
+            expectedBaseLocation,
+            prestonCourtCode
+        ));
     }
 
 

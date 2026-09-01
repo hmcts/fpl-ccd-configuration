@@ -1784,4 +1784,40 @@ public class MigrateCaseService {
 
         return !targetId.equalsIgnoreCase(currentElementId);
     }
+
+    public Map<String, Object> updateOrdersCourt(
+        String migrationId,
+        CaseData caseData,
+        String expectedBaseLocation,
+        String targetCourtCode
+    ) {
+        CaseLocation caseManagementLocation = caseData.getCaseManagementLocation();
+        final Orders orders = caseData.getOrders();
+
+        if (caseManagementLocation == null) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, caseManagementLocation structure is missing",
+                migrationId, caseData.getId()));
+        }
+
+        if (!expectedBaseLocation.equalsIgnoreCase(caseManagementLocation.getBaseLocation())) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, expected base location %s but found: %s",
+                migrationId, caseData.getId(), expectedBaseLocation, caseManagementLocation.getBaseLocation()));
+        }
+
+        Orders updatedOrders = null;
+        if (orders != null) {
+            updatedOrders = orders.toBuilder()
+                .court(targetCourtCode)
+                .build();
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        if (updatedOrders != null) {
+            updates.put(ORDERS, updatedOrders);
+        }
+
+        return updates;
+    }
 }
