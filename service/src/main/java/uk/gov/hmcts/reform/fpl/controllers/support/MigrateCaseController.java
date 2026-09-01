@@ -39,21 +39,16 @@ public class MigrateCaseController extends CallbackController {
     private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
     private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
 
-    private static final String EXPECTED_BASE_LOCATION = "102476";
-    private static final String PRESTON_COURT_CODE = "303";
-    private static final String MIGRATION_ID_3213 = "DFPL-3213";
-    private static final String MIGRATION_ID_3213_V2 = "DFPL-3213-v2";
-
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        MIGRATION_ID_3213, this::run3213,
+        "DFPL-3213", this::run3213,
         "DFPL-2421", this::run2421,
         "DFPL-2421-rollback", this::rollback2421,
         "DFPL-3306", this::run3306,
         "DFPL-3292", this::run3292,
         "DFPL-3346", this::run3346,
         "DFPL-3347", this::run3347,
-        MIGRATION_ID_3213_V2, this::run3213v2,
+        "DFPL-3213-v2", this::run3213v2,
         "DFPL-3345", this::run3345
     );
 
@@ -184,18 +179,22 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    //run 3213 Migrate function to replace Fleetwood Location with Preston Location
+    // run 3213 Migrate function to replace Fleetwood Location with Preston Location
     private void run3213v2(CaseDetails caseDetails) {
+        String migrationId = "DFPL-3213-v2";
+        String expectedBaseLocation = "102476";
+        String prestonCourtCode = "303";
+
         Long caseId = caseDetails.getId();
-        log.info("Migration  {id = {}, case reference = {}} processing", MIGRATION_ID_3213_V2, caseId);
+        log.info("Migration {id = {}, case_reference = {}} processing", migrationId, caseId);
 
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(migrateCaseService.updateOrdersCourt(
-            MIGRATION_ID_3213_V2,
+            migrationId,
             caseData,
-            EXPECTED_BASE_LOCATION,
-            PRESTON_COURT_CODE
+            expectedBaseLocation,
+            prestonCourtCode
         ));
     }
 
