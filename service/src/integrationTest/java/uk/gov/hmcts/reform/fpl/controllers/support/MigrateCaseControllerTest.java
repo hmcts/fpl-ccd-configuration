@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,8 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,12 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
