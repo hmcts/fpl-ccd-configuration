@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@<latest-2.x.x>") _
+@Library("Infrastructure@2.5.4") _
 
 properties([
 		parameters([

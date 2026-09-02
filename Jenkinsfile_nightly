@@ -14,7 +14,7 @@ properties([
     ])
 ])
 
-@Library("Infrastructure@<latest-2.x.x>")
+@Library("Infrastructure@2.5.4")
 import uk.gov.hmcts.contino.AppPipelineConfig
 
 def type = 'java'
