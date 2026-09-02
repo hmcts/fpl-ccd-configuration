@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.REFUSAL_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -29,6 +29,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicationRefusalOrderService {
+    public static final String REFUSAL_ORDER_FILE_NAME = "Refusal_order.pdf";
+
     private final CaseDataExtractionService dataService;
     private final Time time;
 
@@ -76,7 +78,7 @@ public class ApplicationRefusalOrderService {
             : docmosisDocument.getBytes();
 
         return DocumentReference.buildFromDocument(
-            documentUploadService.uploadPDF(documentBytes, REFUSAL_ORDER.getFileName()));
+            documentUploadService.uploadPDF(documentBytes, REFUSAL_ORDER_FILE_NAME));
     }
 
     public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
@@ -94,18 +96,18 @@ public class ApplicationRefusalOrderService {
             dateOfRefusal, applicationDate, refusalReason, true);
 
         GeneratedOrder.GeneratedOrderBuilder refusalOrderBuilder = GeneratedOrder.builder()
-            .type(REFUSAL_ORDER.getLabel())
+            .type(BLANK_ORDER.getLabel())
             .title(getRefusalOrderTitle(applicationDate))
             .dateOfIssue(dateOfRefusal)
             .judgeAndLegalAdvisor(null)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .children(caseData.getAllChildren())
-            .refusedDocument(refusalOrderDoc);
+            .refusalDocument(refusalOrderDoc);
 
         return element(refusalOrderBuilder.build());
     }
 
     public String getRefusalOrderTitle(String applicationDate) {
-        return format("%s for application date %s", REFUSAL_ORDER.getLabel(), applicationDate);
+        return format("Refusal order for C2 application date %s", applicationDate);
     }
 }

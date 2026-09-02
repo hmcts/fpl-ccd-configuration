@@ -54,7 +54,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     private final DocumentReference documentConfidential;
     private final DocumentReference translatedDocument;
     private final DocumentReference unsealedDocumentCopy;
-    private final DocumentReference refusedDocument;
+    private final DocumentReference refusalDocument;
     private final LocalDateTime translationUploadDateTime;
     private final LanguageTranslationRequirement translationRequirements;
     private final LocalDate amendedDate;

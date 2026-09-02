@@ -332,10 +332,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
-    "ListElementCode": "refusedDocument",
+    "ListElementCode": "refusalDocument",
     "FieldType": "Document",
     "ElementLabel": "Order document",
     "SecurityClassification": "Public",
-    "CategoryID": "refusedOrder"
+    "CategoryID": "refusalOrder"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "refusalDocumentConfidential",
+    "FieldType": "Document",
+    "ElementLabel": "Order document",
+    "SecurityClassification": "Public",
+    "CategoryID": "refusalOrder"
   }
 ]

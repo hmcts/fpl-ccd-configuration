@@ -189,7 +189,23 @@
     "CategoryID": "refusedOrder",
     "CategoryLabel": "Refused Order",
     "ParentCategoryID": "orders",
+    "DisplayOrder": "808"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "refusalOrder",
+    "CategoryLabel": "Refusal Order",
+    "ParentCategoryID": "orders",
     "DisplayOrder": "809"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "refusalOrderConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "refusalOrder",
+    "DisplayOrder": "8091"
   },
   {
     "LiveFrom": "01/01/2017",

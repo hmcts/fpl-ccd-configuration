@@ -192,7 +192,7 @@ public class ApplicationRefusalOrderServiceTest {
             .judgeAndLegalAdvisor(null)
             .date(formatLocalDateTimeBaseUsingFormat(NOW, TIME_DATE))
             .children(caseData.getAllChildren())
-            .refusedDocument(DocumentReference.buildFromDocument(REFUSAL_ORDER_DOC))
+            .refusalDocument(DocumentReference.buildFromDocument(REFUSAL_ORDER_DOC))
             .build());
         verify(documentSealingService).sealDocument(DOCMOSIS_BYTES, caseData.getCourt(), ENGLISH);
     }

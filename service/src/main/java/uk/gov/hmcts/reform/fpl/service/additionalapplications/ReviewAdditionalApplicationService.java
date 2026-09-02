@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.events.cmo.C2ApplicationRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.cmo.ReviewCMOEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
@@ -28,6 +30,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -187,7 +190,8 @@ public class ReviewAdditionalApplicationService {
 
         Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
             orderElement,
-            isBlank(requestedChanges) ? APPLICANT_CHANGES_REQUESTED : requestedChanges
+            isBlank(requestedChanges) ? APPLICANT_CHANGES_REQUESTED : requestedChanges,
+            CMOStatus.RETURNED
         );
 
         if (orderElement.getValue().isConfidentialOrder()) {
@@ -219,7 +223,7 @@ public class ReviewAdditionalApplicationService {
             eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
             eventData.getReviewAdditionalAppRefusalReason());
 
-        List<Element<GeneratedOrder>> refusalOrders = defaultIfNull(caseData.getRefusalOrders(), new ArrayList<>());
+        List<Element<GeneratedOrder>> refusalOrders = getIfNull(caseData.getRefusalOrders(), new ArrayList<>());
         refusalOrders.add(refusalOrderDoc);
         updates.put("refusalOrders", refusalOrders);
 
@@ -232,6 +236,7 @@ public class ReviewAdditionalApplicationService {
             updates,
             selectedOrdersBundle,
             draftOrder,
+            CMOStatus.REFUSED,
             eventData.getReviewAdditionalAppRefusalReason()
         );
 

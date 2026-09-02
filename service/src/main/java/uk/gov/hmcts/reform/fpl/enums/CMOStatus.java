@@ -5,5 +5,6 @@ public enum CMOStatus {
     APPROVED,
     RETURNED,
     DRAFT,
-    REMOVED
+    REMOVED,
+    REFUSED
 }
