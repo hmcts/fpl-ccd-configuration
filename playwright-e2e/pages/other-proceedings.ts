@@ -33,13 +33,15 @@ export class OtherProceedings extends BasePage {
         await this.addProceeding.nth(1).click();
 
         await this.proceedingTwo.getByLabel('Previous').click();
-        await this.proceedingTwo.getByLabel('Previous').click();
-        await this.proceedingTwo.filter({hasText: 'Application submission date'}).locator('#started-day').fill('3');
-        await this.proceedingTwo.filter({hasText: 'Application submission date'}).locator('#started-month').fill('4');
-        await this.proceedingTwo.filter({hasText: 'Application submission date'}).locator('#started-year').fill('2010');
-        await this.proceedingTwo.filter({hasText: 'Final order date'}).locator('#ended-day').fill('4');
-        await this.proceedingTwo.filter({hasText: 'Final order date'}).locator('#ended-month').fill('6');
-        await this.proceedingTwo.filter({hasText: 'Final order date'}).locator('#ended-year').fill('2019');
+        await this.page.getByRole('group', { name: 'Application submission date' }).nth(1).getByLabel('Day').fill('3');
+        await this.page.getByRole('group', { name: 'Application submission date' }).nth(1).getByLabel('Month').fill('4');
+        await this.page.getByRole('group', { name: 'Application submission date' }).nth(1).getByLabel('Year').fill('2022');
+
+        await this.page.getByRole('group', { name: 'Final order date' }).nth(0).getByLabel('Day').fill('3');
+        await this.page.getByRole('group', { name: 'Final order date' }).nth(0).getByLabel('Month').fill('4');
+        await this.page.getByRole('group', { name: 'Final order date' }).nth(0).getByLabel('Year').fill('2025');
+
+
         await this.proceedingTwo.getByLabel('Case number').fill('45756867989');
         await this.proceedingTwo.getByLabel('Orders made').fill('Care order c12');
         await this.proceedingTwo.getByLabel('Judge').fill('District judge Joe Bloggs');
