@@ -105,7 +105,9 @@ public class JudgeAndLegalAdvisorHelper {
                 return String.format("%s %s", judgeAndLegalAdvisor.getOtherTitle(),
                     judgeAndLegalAdvisor.getJudgeFullName());
             default:
-                return judgeAndLegalAdvisor.getJudgeFullName();
+                return isBlank(judgeAndLegalAdvisor.getJudgeFullName())
+                    ? String.format("%s %s", judgeAndLegalAdvisor.getJudgeTitle().getLabel(),
+                        judgeAndLegalAdvisor.getJudgeLastName()) : judgeAndLegalAdvisor.getJudgeFullName();
         }
     }
 
