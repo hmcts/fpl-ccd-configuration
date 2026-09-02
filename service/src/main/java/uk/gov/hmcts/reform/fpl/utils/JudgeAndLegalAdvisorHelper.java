@@ -103,7 +103,8 @@ public class JudgeAndLegalAdvisorHelper {
                 return isBlank(magistrateFullName) ? "Justice of the Peace" : magistrateFullName + " (JP)";
             case OTHER:
                 return String.format("%s %s", judgeAndLegalAdvisor.getOtherTitle(),
-                    judgeAndLegalAdvisor.getJudgeFullName());
+                    isBlank(judgeAndLegalAdvisor.getJudgeFullName()) ? judgeAndLegalAdvisor.getJudgeLastName()
+                        : judgeAndLegalAdvisor.getJudgeFullName());
             default:
                 return isBlank(judgeAndLegalAdvisor.getJudgeFullName())
                     ? String.format("%s %s", judgeAndLegalAdvisor.getJudgeTitle().getLabel(),
