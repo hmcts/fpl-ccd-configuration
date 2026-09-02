@@ -2588,5 +2588,12 @@
     "CaseFieldID": "guardians",
     "UserRole": "[LAMANAGING]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isUrgentListingRequest",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRUD"
   }
 ]
