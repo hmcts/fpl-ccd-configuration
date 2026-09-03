@@ -59,7 +59,7 @@ resource "azurerm_key_vault_secret" "AZURE_KEY_VAULT_SECRET" {
 }
 
 module "key-vault" {
-  source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=DTSPO-31965/remove-jenkins-ptl-access"
   name                    = "fpl-${var.env}"
   product                 = var.product
   env                     = var.env
@@ -70,6 +70,8 @@ module "key-vault" {
   common_tags             = var.common_tags
   create_managed_identity = true
   jenkins_object_id       = data.azurerm_user_assigned_identity.jenkins.principal_id
+
+  grant_preview_jenkins_access = var.env == "aat"
 }
 
 data "azurerm_user_assigned_identity" "jenkins" {
@@ -83,7 +85,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     azurerm.postgres_network = azurerm.postgres_network
   }
 
-  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   name                 = "${var.product}-${var.component}-postgresql-v15-flexible-server"
   env                  = var.env
   pgsql_admin_username = var.pgsql_admin_username
