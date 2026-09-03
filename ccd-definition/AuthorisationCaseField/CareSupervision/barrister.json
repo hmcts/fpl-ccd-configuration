@@ -1375,5 +1375,12 @@
     "UserRole": "[BARRISTER]",
     "CRUD": "CRD",
     "Comment": "barrister can remove themselves from the legalCounsellors list, but not allow to add / update"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isUrgentListingRequest",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "R"
   }
 ]

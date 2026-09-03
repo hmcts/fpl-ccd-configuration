@@ -1325,6 +1325,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childSelectorV2",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "optionCount",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRUD"
@@ -7166,5 +7173,12 @@
     "CaseFieldID": "draftOrdersRemoved",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isUrgentListingRequest",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
   }
 ]
