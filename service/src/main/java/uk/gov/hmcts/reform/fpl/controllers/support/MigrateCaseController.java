@@ -41,9 +41,9 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
+        "DFPL-2423", this::run2423,
+        "DFPL-2423-rollback", this::run2423Rollback,
         "DFPL-3213", this::run3213,
-        "DFPL-2421", this::run2421,
-        "DFPL-2421-rollback", this::rollback2421,
         "DFPL-3306", this::run3306,
         "DFPL-3292", this::run3292,
         "DFPL-3346", this::run3346,
@@ -94,14 +94,15 @@ public class MigrateCaseController extends CallbackController {
         caseAccessService.grantCaseAccess(caseId, Set.of("ad13c0f2-dac2-4e66-bff2-cd4be1b3a889"), LASOLICITOR);
     }
 
-    private void run2421(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2421";
-        migrateCaseService.migrateOthersToOthersV2(getCaseData(caseDetails), caseDetails.getData(), migrationId);
+    private void run2423(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2423";
+
+        migrateCaseService.migrateOtherProceedings(caseDetails, getCaseData(caseDetails), migrationId);
     }
 
-    private void rollback2421(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2421-rollback";
-        migrateCaseService.rollbackOthersV2ToOthers(getCaseData(caseDetails), caseDetails.getData(), migrationId);
+    private void run2423Rollback(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2423-rollback";
+        migrateCaseService.rollbackOtherProceedings(caseDetails, getCaseData(caseDetails), migrationId);
     }
 
     //run 3213 Migrate function to replace Fleetwood Location with BlackPool Location

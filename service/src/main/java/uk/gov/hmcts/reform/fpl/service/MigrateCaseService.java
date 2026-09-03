@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -87,10 +88,12 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
@@ -1365,6 +1368,74 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("hearing", hearing);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void migrateOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
+        Proceeding oldProceeding = caseData.getProceeding();
+
+        if (oldProceeding != null) {
+            if (YesNo.YES.getValue().equalsIgnoreCase(oldProceeding.getOnGoingProceeding())) {
+                List<Element<Proceeding>> migratedProceedings = new ArrayList<>();
+                migratedProceedings.add(element(oldProceeding));
+
+                List<Element<Proceeding>> oldAdditionalProceedings = oldProceeding.getAdditionalProceedings();
+                if (oldAdditionalProceedings != null) {
+                    migratedProceedings.addAll(oldAdditionalProceedings);
+                }
+
+                migratedProceedings = migratedProceedings.stream()
+                    .map(proceedingElement ->
+                        element(proceedingElement.getId(), sanitizeProceeding(caseData, proceedingElement.getValue())))
+                    .toList();
+
+                caseDetails.getData().put("proceedings", migratedProceedings);
+            } else {
+                log.info("Migration {id = {}}, case {} is skipped because onGoingProceeding is not Yes",
+                    migrationId, caseData.getId());
+            }
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, case {%d} no proceeding found", migrationId,
+                caseData.getId()));
+        }
+    }
+
+    private Proceeding sanitizeProceeding(CaseData caseData, Proceeding proceeding) {
+        Proceeding.ProceedingBuilder builder =  proceeding.toBuilder()
+            .additionalProceedings(null);
+
+        // start date and end date are free text input, so we need to check if they are valid dates before migrating
+        if (!isEmpty(proceeding.getStarted())) {
+            Optional<LocalDate> validStartDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getStarted());
+            if (validStartDate.isPresent()) {
+                builder.startedV2(validStartDate.get());
+            } else {
+                log.warn("Case {} has invalid proceeding start date", caseData.getId());
+            }
+        }
+
+        if (!isEmpty(proceeding.getEnded())) {
+            Optional<LocalDate> validEndDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getEnded());
+            if (validEndDate.isPresent()) {
+                builder.endedV2(validEndDate.get());
+            } else {
+                log.warn("Case {} has invalid proceeding end date", caseData.getId());
+            }
+        }
+
+        return builder.build();
+    }
+
+    @SuppressWarnings("deprecation")
+    public void rollbackOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
+        List<Element<Proceeding>> migratedProceedings = caseData.getProceedings();
+
+        if (migratedProceedings != null) {
+            caseDetails.getData().remove("proceedings");
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, case {%d} no migrated proceeding found", migrationId,
+                caseData.getId()));
+        }
     }
 
     public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {

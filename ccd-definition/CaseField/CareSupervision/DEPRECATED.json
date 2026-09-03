@@ -858,6 +858,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "proceeding",
+    "Label": "Other proceedings",
+    "FieldType": "Proceeding",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorityColleaguesList",
     "Label": "Nominate a case contact",
     "HintText": "HMCTS will contact this person if they have any questions",
