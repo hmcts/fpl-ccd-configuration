@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -115,5 +117,30 @@ public class AdditionalApplicationsBundle {
                || isNotEmpty(c2DocumentBundleChild10) || isNotEmpty(c2DocumentBundleChild11)
                || isNotEmpty(c2DocumentBundleChild12) || isNotEmpty(c2DocumentBundleChild13)
                || isNotEmpty(c2DocumentBundleChild14);
+    }
+
+    @JsonIgnore
+    public String geC2ConfidentialSuffix() {
+        if (YesNo.YES.equals(getHasConfidentialC2())) {
+            return Arrays.stream(getClass().getDeclaredFields())
+                .filter(field -> {
+                    String fieldName = field.getName();
+                    return fieldName.startsWith("c2DocumentBundle") && !"c2DocumentBundle".equals(fieldName)
+                        && !fieldName.endsWith("Confidential");
+                })
+                .filter(field -> {
+                    try {
+                        return isNotEmpty(field.get(this));
+                    } catch (IllegalAccessException e) {
+                        return false;
+                    }
+                })
+                .map(field -> field.getName().replace("c2DocumentBundle", ""))
+                .findFirst()
+                .orElse("CTSC");
+
+        } else {
+            return "";
+        }
     }
 }

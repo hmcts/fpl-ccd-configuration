@@ -1,14 +1,18 @@
 package uk.gov.hmcts.reform.fpl.model.order.generated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.converter.BasicChildConverter;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -41,8 +45,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFr
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 
 @Slf4j
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = GeneratedRefusalOrder.class)
+})
+@Jacksonized
 @Data
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 public class GeneratedOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
 
     // this is the new type
@@ -54,7 +62,6 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     private final DocumentReference documentConfidential;
     private final DocumentReference translatedDocument;
     private final DocumentReference unsealedDocumentCopy;
-    private final DocumentReference refusalDocument;
     private final LocalDateTime translationUploadDateTime;
     private final LanguageTranslationRequirement translationRequirements;
     private final LocalDate amendedDate;

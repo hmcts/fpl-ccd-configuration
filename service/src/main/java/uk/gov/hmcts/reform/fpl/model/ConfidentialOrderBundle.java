@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 
 public interface ConfidentialOrderBundle<T> {
+    String SUFFIX_NON_CONFIDENTIAL = "";
     String SUFFIX_CTSC = "CTSC";
     String SUFFIX_LA = "LA";
     String SUFFIX_RESPONDENT = "Resp";
@@ -52,6 +53,11 @@ public interface ConfidentialOrderBundle<T> {
             .findFirst().orElse(null);
     }
 
+    /**
+     * Set or replace the existing field with the given list by suffix
+     * @param suffix
+     * @param orderCollection
+     */
     @JsonIgnore
     @SuppressWarnings("unchecked")
     default void setConfidentialOrdersBySuffix(String suffix, List<Element<T>> orderCollection) {

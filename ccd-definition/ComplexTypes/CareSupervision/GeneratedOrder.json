@@ -345,6 +345,6 @@
     "FieldType": "Document",
     "ElementLabel": "Order document",
     "SecurityClassification": "Public",
-    "CategoryID": "refusalOrder"
+    "CategoryID": "refusalOrderConfidential"
   }
 ]

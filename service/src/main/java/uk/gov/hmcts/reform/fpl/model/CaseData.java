@@ -88,6 +88,7 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedRefusalOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
@@ -525,10 +526,11 @@ public class CaseData extends CaseDataParent {
             .toList();
     }
 
-    private final List<Element<GeneratedOrder>> refusalOrders;
+    private final List<Element<GeneratedRefusalOrder>> refusalOrders;
     @JsonUnwrapped
     @Builder.Default
-    private final ConfidentialGeneratedOrders confidentialRefusalOrders = ConfidentialGeneratedOrders.builder().build();
+    private final ConfidentialGeneratedRefusalOrders confidentialRefusalOrders =
+        ConfidentialGeneratedRefusalOrders.builder().build();
 
     @JsonUnwrapped
     @Builder.Default

@@ -1,0 +1,282 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrders",
+    "Label": "Refusal Order",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersCTSC",
+    "Label": "Confidential Refusal Order (Visible by CTSC)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersLA",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp0",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 1)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp1",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 2)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp2",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 3)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp3",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 4)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp4",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 5)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp5",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 6)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp6",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 7)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp7",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 8)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp8",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 9)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersResp9",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Respondent 10)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild0",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 1)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild1",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 2)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild2",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 3)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild3",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 4)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild4",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 5)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild5",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 6)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild6",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 7)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild7",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 8)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild8",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 9)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild9",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 10)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild10",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 11)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild11",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 12)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild12",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 13)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild13",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 14)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusalOrdersChild14",
+    "Label": "Confidential Refusal Order (Visible by CTSC/LA/Child 15)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

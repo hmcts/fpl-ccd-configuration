@@ -19,8 +19,10 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedRefusalOrder;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
+import uk.gov.hmcts.reform.fpl.utils.ConfidentialOrderBundleUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,6 +100,7 @@ public class ReviewAdditionalApplicationService {
             resultMap.put("reviewAdditionalAppIsConfidential", isConfidential ? YES : NO);
             resultMap.put("c2AdditionalApplicationToBeReview", C2AdditionalApplicationEventData.builder()
                 .routeType(c2ToBeReviewed.getRouteType())
+                .confidentialFieldSuffix(bundle.geC2ConfidentialSuffix())
                 .applicantName(c2ToBeReviewed.getApplicantName())
                 .type(c2ToBeReviewed.getType())
                 .confidentialApplication(isConfidential
@@ -216,16 +219,27 @@ public class ReviewAdditionalApplicationService {
                                                 UUID draftOrderId) {
         Map<String, Object> updates = new HashMap<>();
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+        boolean isC2Confidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
 
         // generate refusal order and add it to orderCollection
-        Element<GeneratedOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(caseData,
+        Element<GeneratedRefusalOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(caseData,
             eventData.getJudgeNameAndTitle(),
             eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
-            eventData.getReviewAdditionalAppRefusalReason());
+            eventData.getReviewAdditionalAppRefusalReason(),
+            isC2Confidential);
 
-        List<Element<GeneratedOrder>> refusalOrders = getIfNull(caseData.getRefusalOrders(), new ArrayList<>());
+        String refusalOrdersFieldName = "refusalOrders";
+        List<Element<GeneratedRefusalOrder>> refusalOrders;
+        if (isC2Confidential) {
+            String suffix = eventData.getC2AdditionalApplicationToBeReview().getConfidentialFieldSuffix();
+            refusalOrders = caseData.getConfidentialRefusalOrders().getConfidentialOrdersBySuffix(suffix);
+            refusalOrdersFieldName += suffix;
+        } else {
+            refusalOrders = caseData.getRefusalOrders();
+        }
+        refusalOrders = getIfNull(refusalOrders, new ArrayList<>());
         refusalOrders.add(refusalOrderDoc);
-        updates.put("refusalOrders", refusalOrders);
+        updates.put(refusalOrdersFieldName, refusalOrders);
 
         // update the draft order as rejected and move them to refused
         Element<HearingOrder> draftOrder = findElement(draftOrderId, selectedOrdersBundle.getValue()
@@ -240,10 +254,12 @@ public class ReviewAdditionalApplicationService {
             eventData.getReviewAdditionalAppRefusalReason()
         );
 
-        List<Element<HearingOrder>> rejectedOrders =
-            defaultIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
-        rejectedOrders.add(rejectedDraftOrder);
-        updates.put("refusedHearingOrders", rejectedOrders);
+        if (!rejectedDraftOrder.getValue().isConfidentialOrder()) {
+            List<Element<HearingOrder>> rejectedOrders =
+                defaultIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
+            rejectedOrders.add(rejectedDraftOrder);
+            updates.put("refusedHearingOrders", rejectedOrders);
+        }
 
         selectedOrdersBundle.getValue().removeOrderElement(draftOrder);
 

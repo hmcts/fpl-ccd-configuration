@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicationRefusalOrder;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedRefusalOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -81,28 +82,30 @@ public class ApplicationRefusalOrderService {
             documentUploadService.uploadPDF(documentBytes, REFUSAL_ORDER_FILE_NAME));
     }
 
-    public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
-                                                     String applicationDate, String refusalReason) {
+    public Element<GeneratedRefusalOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
+                                                            String applicationDate, String refusalReason,
+                                                            boolean isConfidential) {
         return buildRefusalOrder(caseData, judgeTitleAndName,
             formatLocalDateToString(time.now().toLocalDate(), DATE, caseData.getCaseLanguage()),
-            applicationDate, refusalReason);
+            applicationDate, refusalReason, isConfidential);
     }
 
-    public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
-                                                     String dateOfRefusal, String applicationDate,
-                                                     String refusalReason) {
+    public Element<GeneratedRefusalOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
+                                                            String dateOfRefusal, String applicationDate,
+                                                            String refusalReason, boolean isConfidential) {
 
         DocumentReference refusalOrderDoc = buildApplicationRefusalOrderDocument(caseData, judgeTitleAndName,
             dateOfRefusal, applicationDate, refusalReason, true);
 
-        GeneratedOrder.GeneratedOrderBuilder refusalOrderBuilder = GeneratedOrder.builder()
+        GeneratedRefusalOrder.GeneratedRefusalOrderBuilder refusalOrderBuilder = GeneratedRefusalOrder.builder()
             .type(BLANK_ORDER.getLabel())
             .title(getRefusalOrderTitle(applicationDate))
             .dateOfIssue(dateOfRefusal)
             .judgeAndLegalAdvisor(null)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .children(caseData.getAllChildren())
-            .refusalDocument(refusalOrderDoc);
+            .refusalDocument(isConfidential ? null : refusalOrderDoc)
+            .refusalDocumentConfidential(isConfidential? refusalOrderDoc : null);
 
         return element(refusalOrderBuilder.build());
     }
