@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -57,6 +58,21 @@ class HearingOrderGeneratorTest {
 
     public static final UUID ORDER_ID = UUID.randomUUID();
 
+    public static final String othersNotified = "John Smith";
+    public static final List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified)
+        .build()));
+    private static final HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order)
+        .hasOrderConcludedProceedings(YesNo.NO).build();
+    private static final ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
+    private static final Court court = Court.builder().build();
+
+    private static final Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
+        .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
+        .othersNotified(othersNotified)
+        .others(selectedOthers)
+        .hasOrderConcludedProceedings(YesNo.NO)
+        .order(sealedOrder).lastUploadedOrder(order).build());
+
     @Mock
     private DocumentSealingService documentSealingService;
     @Mock
@@ -75,12 +91,6 @@ class HearingOrderGeneratorTest {
 
     @Test
     void shouldBuildSealedHearingOrderWhenReviewDecisionIsApproved() throws IOException {
-        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
-        String othersNotified = "John Smith";
-        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
-        Court court = Court.builder().build();
-        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
-
         CaseData caseData = CaseData.builder()
             .court(court)
             .reviewCMODecision(reviewDecision)
@@ -95,10 +105,11 @@ class HearingOrderGeneratorTest {
         when(documentSealingService.sealDocument(ORDER_WITH_COVER_SHEET, court, SealType.ENGLISH))
             .thenReturn(ORDER_WITH_SEALED_COVERSHEET);
 
-        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
+        Element<HearingOrder> expectedOrderWhenReviewDecisionApproved = element(ORDER_ID, hearingOrder.toBuilder()
             .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
             .othersNotified(othersNotified)
             .others(selectedOthers)
+            .hasOrderConcludedProceedings(YesNo.NO)
             .order(ORDER_WITH_SEALED_COVERSHEET).lastUploadedOrder(order).build());
 
         Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
@@ -109,15 +120,11 @@ class HearingOrderGeneratorTest {
             othersNotified,
             true);
 
-        assertThat(actual).isEqualTo(expectedOrder);
+        assertThat(actual).isEqualTo(expectedOrderWhenReviewDecisionApproved);
     }
 
     @Test
     void shouldBuildSealedHearingOrderWhenJudgeAmendsTheDocument() throws IOException {
-        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
-        Court court = Court.builder().build();
-        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
-
         CaseData caseData = CaseData.builder()
             .court(court)
             .reviewCMODecision(reviewDecision)
@@ -131,9 +138,10 @@ class HearingOrderGeneratorTest {
         when(documentSealingService.sealDocument(ORDER_WITH_COVER_SHEET, court, SealType.ENGLISH))
             .thenReturn(ORDER_WITH_SEALED_COVERSHEET);
 
-        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
+        Element<HearingOrder> expectedOrderWhenJudgeAmendsDocument = element(ORDER_ID, hearingOrder.toBuilder()
             .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
             .others(List.of()).othersNotified("")
+            .hasOrderConcludedProceedings(YesNo.NO)
             .order(ORDER_WITH_SEALED_COVERSHEET).lastUploadedOrder(amendedOrder).build());
 
         Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
@@ -142,29 +150,17 @@ class HearingOrderGeneratorTest {
             element(ORDER_ID, hearingOrder),
             List.of(), "", true);
 
-        assertThat(actual).isEqualTo(expectedOrder);
+        assertThat(actual).isEqualTo(expectedOrderWhenJudgeAmendsDocument);
     }
 
     @Test
     void shouldBuildSealedHearingOrderWithoutCoverSheetIfNotRequired() {
-        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
-        String othersNotified = "John Smith";
-        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
-        Court court = Court.builder().build();
-        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
-
         CaseData caseData = CaseData.builder()
             .court(court)
             .reviewCMODecision(reviewDecision)
             .build();
 
         when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
-
-        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
-            .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
-            .othersNotified(othersNotified)
-            .others(selectedOthers)
-            .order(sealedOrder).lastUploadedOrder(order).build());
 
         Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
             caseData,
@@ -179,8 +175,6 @@ class HearingOrderGeneratorTest {
 
     @Test
     void shouldBuildRejectedHearingOrderWhenJudgeRequestsChanges() {
-        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
-
         String changesRequested = "incorrect order";
 
         Element<HearingOrder> actual = underTest.buildRejectedHearingOrder(
@@ -193,12 +187,6 @@ class HearingOrderGeneratorTest {
 
     @Test
     void shouldSkipAddingCoverSheetIfJudgeTitleAneNameNotFound() {
-        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
-        String othersNotified = "John Smith";
-        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
-        Court court = Court.builder().build();
-        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
-
         CaseData caseData = CaseData.builder()
             .court(court)
             .reviewCMODecision(reviewDecision)
@@ -206,12 +194,6 @@ class HearingOrderGeneratorTest {
             .build();
 
         when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
-
-        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
-            .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
-            .othersNotified(othersNotified)
-            .others(selectedOthers)
-            .order(sealedOrder).lastUploadedOrder(order).build());
 
         Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
             caseData,
@@ -226,24 +208,12 @@ class HearingOrderGeneratorTest {
 
     @Test
     void shouldSkipAddingCoverSheetIfReviewDraftOrdersDataIsNull() {
-        HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
-        String othersNotified = "John Smith";
-        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
-        Court court = Court.builder().build();
-        ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
-
         CaseData caseData = CaseData.builder()
             .court(court)
             .reviewCMODecision(reviewDecision)
             .build();
 
         when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
-
-        Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
-            .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
-            .othersNotified(othersNotified)
-            .others(selectedOthers)
-            .order(sealedOrder).lastUploadedOrder(order).build());
 
         Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
             caseData,

@@ -220,5 +220,15 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForApproval",
+    "ListElementCode": "hasOrderConcludedProceedings",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\"",
+    "Searchable": "N"
   }
 ]
