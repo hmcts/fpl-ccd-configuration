@@ -115,8 +115,8 @@ def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
 }
 
 def setupSecretsForIntegrationTests(pipelineConf) {
-  withSubscription('nonprod') {
-    withTeamSecrets(pipelineConf, 'aat') {
+  withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
+    withTeamSecrets(pipelineConf, env.ENV) {
       /* Setup Email template integration tests key with gov.notify */
       env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
       /* Setup Docmosis template integration tests key and url */
