@@ -3,11 +3,14 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -79,5 +82,9 @@ public class ConfidentialDetailsService {
             });
         }
         return collection;
+    }
+
+    public Map<String, Object> populateHasConfidentialPartyFlag(CaseData caseData) {
+        return Map.of("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
     }
 }

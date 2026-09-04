@@ -1,5 +1,5 @@
 import { BasePage } from "../../base-page";
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 export class Applications extends BasePage {
     readonly applyingForGroup: Locator;
@@ -19,11 +19,12 @@ export class Applications extends BasePage {
 
     constructor(page: Page) {
         super(page);
-        this.applyingForGroup = page.getByRole('group', { name:  'What are you applying for?' });
+        this.applyingForGroup = page.getByRole('group', { name:  'What application are you making?' });
         this.otherSpecificOrderCheckbox = this.applyingForGroup.getByRole('checkbox', { name: 'Other specific order' });
-        this.c2OrderCheckbox = this.applyingForGroup.getByRole('checkbox', { name: 'C2 - to add or remove someone on a case' });
+        this.c2OrderCheckbox = this.applyingForGroup.getByRole('checkbox', { name: 'C2 Application' });
 
-        this.typeOfC2ApplicationGroup = page.getByRole('group', { name: 'What type of C2 application?' });
+        //this.typeOfC2ApplicationGroup = page.getByRole('group', { name: 'C2 application' });
+        this.typeOfC2ApplicationGroup = page.getByRole('group', { name: 'C2 Application' });
         this.applicationWithNoticeRadioButton = this.typeOfC2ApplicationGroup.getByRole('radio', { name: 'Application with notice' });
         this.applicationByConsentRadioButton = this.typeOfC2ApplicationGroup.getByRole('radio', { name: 'Application by consent' });
 
@@ -40,7 +41,12 @@ export class Applications extends BasePage {
     }
 
     async checkC2Order(): Promise<void> {
-        await this.c2OrderCheckbox.check();
+        // await this.c2OrderCheckbox.focus();
+        // await this.c2OrderCheckbox.dblclick();
+        await this. page.getByRole('checkbox', { name: 'C2 Application' }).check();
+        await this.page.waitForTimeout(6000);
+        await expect (this.page.getByText('Do you want to make the C2 application online or upload a paper form?')).toBeVisible();
+
     }
 
     async checkApplicationWithNotice(): Promise<void> {

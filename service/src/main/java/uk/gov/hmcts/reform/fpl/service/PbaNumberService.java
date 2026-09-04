@@ -45,7 +45,7 @@ public class PbaNumberService {
     public C2DocumentBundle update(C2DocumentBundle c2DocumentBundle) {
         return getNonEmptyPbaNumber(c2DocumentBundle)
             .map(PbaNumberHelper::setPrefix)
-            .map(pbaNumber -> c2DocumentBundle.toBuilder().pbaNumber(pbaNumber).build())
+            .map(pbaNumber -> (C2DocumentBundle) c2DocumentBundle.toBuilder().pbaNumber(pbaNumber).build())
             .orElse(c2DocumentBundle);
     }
 

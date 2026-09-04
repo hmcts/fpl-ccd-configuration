@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -236,8 +237,10 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .respondents1(respondents)
             .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
                 REPRESENTATIVE_WITH_POST_PREFERENCE))
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .build())
             .othersV2(wrapElements(other))
-            .additionalApplicationType(List.of(C2_ORDER))
             .sendToCtsc("No")
             .additionalApplicationsBundle(wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
                 .pbaPayment(PBAPayment.builder().usePbaPayment("Yes").build())
@@ -403,7 +406,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .lastName(RESPONDENT_SURNAME)
                     .build())
                 .build())))
-            .additionalApplicationType(List.of(C2_ORDER))
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .build())
             .additionalApplicationsBundle(wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(null)
