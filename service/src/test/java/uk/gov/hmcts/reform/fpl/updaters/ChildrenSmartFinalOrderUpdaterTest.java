@@ -40,9 +40,13 @@ class ChildrenSmartFinalOrderUpdaterTest {
     private static final DynamicMultiSelectListElement selectedChildEle1 = DynamicMultiSelectListElement.builder()
         .code(childId1.toString()).label("first1 last1").build();
     private static final DynamicMultiSelectListElement selectedChildEle2 = DynamicMultiSelectListElement.builder()
+        .code(childId2.toString()).label("first2 last2").build();
+    private static final DynamicMultiSelectListElement selectedChildEle3 = DynamicMultiSelectListElement.builder()
         .code(childId3.toString()).label("first3 last3").build();
     private static final DynamicMultiSelectListElement childEle1 = DynamicMultiSelectListElement.builder()
-        .code(childId2.toString()).label("first2 last2").build();
+        .code(childId4.toString()).label("first4 last4").build();
+    private static final DynamicMultiSelectListElement childEle2 = DynamicMultiSelectListElement.builder()
+        .code(childId5.toString()).label("first5 last5").build();
 
     ChildrenSmartFinalOrderUpdater underTest =
         new ChildrenSmartFinalOrderUpdater(new ChildSelectionUtils(), new ChildrenService());
@@ -176,10 +180,10 @@ class ChildrenSmartFinalOrderUpdaterTest {
         List<Element<Child>> children = List.of(
             childForFinalOrderIssuedDynamicMultiSelectList("first1", "last1",
                 CARE_ORDER, childId1),
+            childForFinalOrderIssuedDynamicMultiSelectList("first4", "last4",
+                null, childId4),
             childForFinalOrderIssuedDynamicMultiSelectList("first2", "last2",
-                null, childId2),
-            childForFinalOrderIssuedDynamicMultiSelectList("first3", "last3",
-                CARE_ORDER, childId3));
+                CARE_ORDER, childId2));
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -214,18 +218,6 @@ class ChildrenSmartFinalOrderUpdaterTest {
             childForFinalOrderIssuedDynamicMultiSelectList("first5", "last5", null, childId5)
         );
 
-        DynamicMultiSelectListElement selectedChildEle1 = DynamicMultiSelectListElement.builder()
-            .code(childId1.toString()).label("first1 last1").build();
-        DynamicMultiSelectListElement selectedChildEle2 = DynamicMultiSelectListElement.builder()
-            .code(childId2.toString()).label("first2 last2").build();
-        DynamicMultiSelectListElement selectedChildEle3 = DynamicMultiSelectListElement.builder()
-            .code(childId3.toString()).label("first3 last3").build();
-        DynamicMultiSelectListElement childEle1 = DynamicMultiSelectListElement.builder()
-            .code(childId4.toString()).label("first4 last4").build();
-        DynamicMultiSelectListElement childEle2 = DynamicMultiSelectListElement.builder()
-            .code(childId5.toString()).label("first5 last5").build();
-
-
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(manageOrdersEventData)
             .children1(children)
@@ -255,13 +247,6 @@ class ChildrenSmartFinalOrderUpdaterTest {
                 null, childId2),
             childForFinalOrderIssuedDynamicMultiSelectList("first3", "last3",
                 null, childId3));
-
-        DynamicMultiSelectListElement selectedChildEle1 = DynamicMultiSelectListElement.builder()
-            .code(childId1.toString()).label("first1 last1").build();
-        DynamicMultiSelectListElement selectedChildEle2 = DynamicMultiSelectListElement.builder()
-            .code(childId2.toString()).label("first2 last2").build();
-        DynamicMultiSelectListElement selectedChildEle3 = DynamicMultiSelectListElement.builder()
-            .code(childId3.toString()).label("first3 last3").build();
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(manageOrdersEventData)

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -19,6 +20,9 @@ public class ChildrenSmartFinalOrderUpdater {
     private final ChildrenService childrenService;
 
     public List<Element<Child>> updateFinalOrderIssued(CaseData caseData) {
+        if (caseData == null) {
+            return Collections.emptyList();
+        }
         List<Element<Child>> selectedChildren = getSelectedChildrenForIssuingFinalOrder(caseData);
 
         return childrenService.updateFinalOrderIssued(
