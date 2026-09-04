@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -30,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -84,7 +87,7 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
-import uk.gov.hmcts.reform.fpl.model.Address;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -110,12 +113,11 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.mockito.Mockito;
 
 
 @ExtendWith({MockitoExtension.class})
@@ -4509,5 +4511,73 @@ class MigrateCaseServiceTest {
         assertThatThrownBy(() -> underTest.removeDraftOrdersRemovedElement(caseData, "DFPL-3345", orderIdToRemove))
             .isInstanceOf(AssertionError.class)
             .hasMessageContaining("target element " + orderIdToRemove + " not found in draftOrdersRemoved");
+    }
+
+    @Test
+    void shouldUpdateChildStatusWithFinalOrderIssued() {
+        UUID childOneId = UUID.randomUUID();
+        UUID childTwoId = UUID.randomUUID();
+        Child childOne = Child.builder()
+            .party(ChildParty.builder().firstName("One").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
+        Child childTwo = Child.builder()
+            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .finalOrderIssued(YES.getValue())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .children1(List.of(
+                element(childOneId, childOne),
+                element(childTwoId, childTwo)))
+            .orderCollection(wrapElementsWithUUIDs(
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childOneId, childOne), element(childTwoId, childTwo)))
+                    .build()))
+            .build();
+
+        Map<String, Object> actualUpdate = underTest.updateChildStatusWithFinalOrderIssued(MIGRATION_ID, caseData);
+
+        assertThat(actualUpdate).containsOnlyKeys("children1");
+
+
+        assertThat(actualUpdate.get("children1")).isEqualTo(List.of(
+            element(childOneId, childOne.toBuilder().finalOrderIssued(YES.getValue()).build()),
+            element(childTwoId, childTwo)
+        ));
+    }
+
+    @Test
+    void shouldNotUpdateChildStatusWithoutFinalOrderIssued() {
+        UUID childOneId = UUID.randomUUID();
+        UUID childTwoId = UUID.randomUUID();
+        Child childOne = Child.builder()
+            .party(ChildParty.builder().firstName("One").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
+        Child childTwo = Child.builder()
+            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .finalOrderIssued(YES.getValue())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .children1(List.of(
+                element(childOneId, childOne),
+                element(childTwoId, childTwo)))
+            .orderCollection(wrapElementsWithUUIDs(
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childTwoId, childTwo)))
+                    .build()))
+            .build();
+
+        assertThatThrownBy(() -> underTest.updateChildStatusWithFinalOrderIssued(MIGRATION_ID, caseData))
+            .isInstanceOf(AssertionError.class)
+            .hasMessage(format("Migration {id = %s, case reference = %s}, no child requires update", MIGRATION_ID, 1L));
     }
 }
