@@ -304,8 +304,10 @@ class ChildrenSmartFinalOrderUpdaterTest {
     }
 
     // Use when need to support both ChildSelector and ChildSelectorV2
-    private static Element<Child> childForFinalOrderIssuedDynamicMultiSelectList(String firstName, String lastName,
-                                                                                 GeneratedOrderType orderType, UUID id) {
+    private static Element<Child> childForFinalOrderIssuedDynamicMultiSelectList(String firstName,
+                                                                                 String lastName,
+                                                                                 GeneratedOrderType orderType,
+                                                                                 UUID id) {
         Child child = Child.builder()
             .party(ChildParty.builder()
                 .firstName(firstName)
