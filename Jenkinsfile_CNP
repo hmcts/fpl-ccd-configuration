@@ -218,7 +218,12 @@ withPipeline(type, product, component) {
   disableLegacyDeployment()
 
   enableAksStagingDeployment()
-  enableSlackNotifications('#fpla-tech')
+  try {
+    enableSlackNotifications('#fpla-tech')
+  } catch (Exception e) {
+    echo "Warning: Slack notification failed: ${e.message}"
+  }
+
   enableHighLevelDataSetup()
 
   onMaster() {
