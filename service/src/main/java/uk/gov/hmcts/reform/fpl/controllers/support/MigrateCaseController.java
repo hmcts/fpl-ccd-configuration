@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -19,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
@@ -49,7 +49,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-3346", this::run3346,
         "DFPL-3347", this::run3347,
         "DFPL-3213-v2", this::run3213v2,
-        "DFPL-3345", this::run3345
+        "DFPL-3361", this::run3361
     );
 
     @PostMapping("/about-to-submit")
@@ -139,25 +139,6 @@ public class MigrateCaseController extends CallbackController {
         runOutsourcingPolicyMigration(caseDetails, DFPL_3347, CASE_ID_3347, ORG_ID_3347);
     }
 
-    private void run3345(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3345";
-        final long expectedCaseId = 1777371329249951L;
-        final UUID targetOrderId = UUID.fromString("13f8bfee-4ed0-40b2-87ac-0300552584d1");
-
-        Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        Map<String, Object> updatedData = migrateCaseService.removeDraftOrdersRemovedElement(
-            caseData,
-            migrationId,
-            targetOrderId
-        );
-
-        caseDetails.getData().putAll(updatedData);
-    }
-
     private void runOutsourcingPolicyMigration(CaseDetails caseDetails, String migrationId,
                                                long expectedCaseId, String targetOrgId) {
         Long caseId = caseDetails.getId();
@@ -196,6 +177,19 @@ public class MigrateCaseController extends CallbackController {
             expectedBaseLocation,
             prestonCourtCode
         ));
+    }
+
+    private void run3361(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3361";
+        final long expectedCaseId = 1761903519622353L;
+        final String orgId = "CPYYWBZ";
+
+        Long caseId = caseDetails.getId();
+        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
+            orgId, CaseRole.EPSMANAGING.formattedName()));
+
     }
 
 
