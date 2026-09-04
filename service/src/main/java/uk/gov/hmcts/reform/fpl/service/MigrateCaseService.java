@@ -730,6 +730,31 @@ public class MigrateCaseService {
         return Map.of("noticeOfProceedingsBundle", updatedNoticeOfProceedingsBundle);
     }
 
+    public Map<String, Object> removeDraftOrdersRemovedElement(CaseData caseData,
+                                                               String migrationId,
+                                                               UUID expectedOrderId) {
+        Long caseId = caseData.getId();
+        List<Element<HearingOrder>> draftOrdersRemoved = caseData.getDraftOrdersRemoved();
+
+        if (isNull(draftOrdersRemoved) || draftOrdersRemoved.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, draftOrdersRemoved collection is empty",
+                migrationId, caseId));
+        }
+
+        List<Element<HearingOrder>> updatedDraftOrdersRemoved = draftOrdersRemoved.stream()
+            .filter(el -> !el.getId().equals(expectedOrderId))
+            .toList();
+
+        if (updatedDraftOrdersRemoved.size() != draftOrdersRemoved.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, target element %s not found in draftOrdersRemoved",
+                migrationId, caseId, expectedOrderId));
+        }
+
+        return Map.of("draftOrdersRemoved", updatedDraftOrdersRemoved);
+    }
+
     public Map<String, Object> removeDocumentFiledOnIssue(CaseData caseData, UUID documentFiledOnIssueId,
                                                       String migrationId) {
         Long caseId = caseData.getId();
@@ -1394,9 +1419,9 @@ public class MigrateCaseService {
         }
 
         int othersV2Size = othersV2ToBeMigrated.size();
-        
+
         Other firstOther = (othersV2Size > 0) ? othersV2ToBeMigrated.get(0).getValue() : null;
-        List<Element<Other>> additionalOthers =  (othersV2Size > 1) 
+        List<Element<Other>> additionalOthers =  (othersV2Size > 1)
             ? othersV2ToBeMigrated.subList(1, othersV2Size) : null;
 
         Others others = Others.builder()
@@ -1608,7 +1633,7 @@ public class MigrateCaseService {
 
         return updates;
     }
-  
+
     public boolean removeSolicitorEmailFromPlacementNotices(CaseDetails caseDetails, String targetId) {
         // Flag to track if modifications happen anywhere across the three fields
         boolean dynamicModified = false;
@@ -1687,5 +1712,41 @@ public class MigrateCaseService {
         String currentElementId = String.valueOf(respondentEl.getId());
 
         return !targetId.equalsIgnoreCase(currentElementId);
+    }
+
+    public Map<String, Object> updateOrdersCourt(
+        String migrationId,
+        CaseData caseData,
+        String expectedBaseLocation,
+        String targetCourtCode
+    ) {
+        CaseLocation caseManagementLocation = caseData.getCaseManagementLocation();
+        final Orders orders = caseData.getOrders();
+
+        if (caseManagementLocation == null) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, caseManagementLocation structure is missing",
+                migrationId, caseData.getId()));
+        }
+
+        if (!expectedBaseLocation.equalsIgnoreCase(caseManagementLocation.getBaseLocation())) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, expected base location %s but found: %s",
+                migrationId, caseData.getId(), expectedBaseLocation, caseManagementLocation.getBaseLocation()));
+        }
+
+        Orders updatedOrders = null;
+        if (orders != null) {
+            updatedOrders = orders.toBuilder()
+                .court(targetCourtCode)
+                .build();
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        if (updatedOrders != null) {
+            updates.put(ORDERS, updatedOrders);
+        }
+
+        return updates;
     }
 }

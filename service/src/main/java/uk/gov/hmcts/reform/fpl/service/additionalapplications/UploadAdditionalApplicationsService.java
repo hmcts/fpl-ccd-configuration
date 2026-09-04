@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiselectListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC2OrderDocument;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
@@ -110,11 +110,11 @@ public class UploadAdditionalApplicationsService {
     private final JudicialService judicialService;
 
     public DynamicMultiSelectList getChildrenMultiSelectList(CaseData caseData) {
-        List<DynamicMultiselectListElement> listItems = new ArrayList<>();
+        List<DynamicMultiSelectListElement> listItems = new ArrayList<>();
         if (caseData.getChildren1() != null) {
             IncrementalInteger i = new IncrementalInteger(1);
             caseData.getChildren1().forEach(child -> {
-                listItems.add(DynamicMultiselectListElement.builder().code(child.getId().toString())
+                listItems.add(DynamicMultiSelectListElement.builder().code(child.getId().toString())
                     .label(child.getValue().getParty().getFirstName() + " "
                         + child.getValue().getParty().getLastName()
                         + " (Child " + i.getAndIncrement() + ")").build());

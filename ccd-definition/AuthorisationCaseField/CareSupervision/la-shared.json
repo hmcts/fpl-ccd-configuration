@@ -2156,7 +2156,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentsSelector",
+    "CaseFieldID": "respondentsSelectorV2",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
   },
@@ -2691,5 +2691,12 @@
     "CaseFieldID": "guardians",
     "UserRole": "[LASHARED]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isUrgentListingRequest",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRUD"
   }
 ]

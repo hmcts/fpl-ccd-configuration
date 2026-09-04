@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiselectListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC2OrderDocument;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
@@ -978,12 +978,12 @@ class UploadAdditionalApplicationsServiceTest {
 
         CaseData caseData =  CaseData.builder().children1(createChildrenList(child1Id, child2Id)).build();
 
-        DynamicMultiselectListElement child1Element = DynamicMultiselectListElement.builder()
+        DynamicMultiSelectListElement child1Element = DynamicMultiSelectListElement.builder()
             .label("Jemima Test (Child 1)")
             .code(child1Id.toString())
             .build();
 
-        DynamicMultiselectListElement child2Element = DynamicMultiselectListElement.builder()
+        DynamicMultiSelectListElement child2Element = DynamicMultiSelectListElement.builder()
             .label("Jim Test (Child 2)")
             .code(child2Id.toString())
             .build();
@@ -1096,12 +1096,12 @@ class UploadAdditionalApplicationsServiceTest {
 
     private C2AdditionalApplicationEventData createC2EventDataForOnlineForm(Supplement supplementsBundle,
                                                                SupportingEvidenceBundle supportingEvidenceBundle) {
-        DynamicMultiselectListElement child1Element = DynamicMultiselectListElement.builder()
+        DynamicMultiSelectListElement child1Element = DynamicMultiSelectListElement.builder()
             .label("Jemima Test (Child 1)")
             .code("67891")
             .build();
 
-        DynamicMultiselectListElement child2Element = DynamicMultiselectListElement.builder()
+        DynamicMultiSelectListElement child2Element = DynamicMultiSelectListElement.builder()
             .label("Jim Test (Child 2)")
             .code("12345")
             .build();

@@ -18,14 +18,14 @@ import static org.apache.commons.lang3.StringUtils.abbreviate;
 @Data
 @Jacksonized
 @Builder
-public class DynamicMultiselectListElement {
+public class DynamicMultiSelectListElement {
     public static final String DEFAULT_CODE = "00000000-0000-0000-0000-000000000000";
     public static final String DEFAULT_LABEL = "";
-    public static final DynamicMultiselectListElement EMPTY = DynamicMultiselectListElement.builder().build();
+    public static final DynamicMultiSelectListElement EMPTY = DynamicMultiSelectListElement.builder().build();
 
     static final int MAX_DYNAMIC_LIST_LABEL_LENGTH = 250;
 
-    private DynamicMultiselectListElement(String code, String label) {
+    private DynamicMultiSelectListElement(String code, String label) {
         this.code = code;
         this.label = abbreviate(label, MAX_DYNAMIC_LIST_LABEL_LENGTH);
     }
@@ -48,8 +48,8 @@ public class DynamicMultiselectListElement {
         return hasCode(Optional.ofNullable(code).map(UUID::toString).orElse(null));
     }
 
-    public static DynamicMultiselectListElement defaultListItem(String label) {
-        return DynamicMultiselectListElement.builder()
+    public static DynamicMultiSelectListElement defaultListItem(String label) {
+        return DynamicMultiSelectListElement.builder()
             .code(DEFAULT_CODE)
             .label(label)
             .build();
