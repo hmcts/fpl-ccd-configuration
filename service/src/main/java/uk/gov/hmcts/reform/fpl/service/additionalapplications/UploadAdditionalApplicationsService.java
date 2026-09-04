@@ -538,7 +538,7 @@ public class UploadAdditionalApplicationsService {
         }
 
         if (!isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle())
-            && eventData.getTemporaryC2Document().getDraftOrdersBundle().size() > 1 ) {
+            && eventData.getTemporaryC2Document().getDraftOrdersBundle().size() > 1) {
             errors.add("Please upload only a single draft order to proceed");
         }
 
