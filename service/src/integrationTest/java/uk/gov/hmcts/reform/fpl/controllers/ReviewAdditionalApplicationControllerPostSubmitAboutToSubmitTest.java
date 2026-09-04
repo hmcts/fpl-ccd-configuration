@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
@@ -15,18 +16,21 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkdownService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -34,6 +38,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPLICANT_CHANGE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPROVE_APPLICATION_AND_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.LIST;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.REFUSE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -171,6 +176,51 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
         );
     }
 
+    @Test
+    void shouldKeepDraftOrderAndCreateListAtNextHearingOrder() {
+        LocalDateTime nextHearingStart = LocalDateTime.now().plusDays(7);
+        CaseData caseData = buildCaseData(LIST, false).toBuilder()
+            .hearingDetails(List.of(element(HearingBooking.builder()
+                .startDate(nextHearingStart)
+                .build())))
+            .build();
+
+        Element<GeneratedOrder> generatedOrder = element(GeneratedOrder.builder()
+            .title("List at next hearing order")
+            .build());
+        when(reviewAdditionalApplicationService.listApplicationAtNextHearing(any(), any(), any(), any()))
+            .thenReturn(Map.of("orderCollection", List.of(generatedOrder)));
+
+        AboutToStartOrSubmitCallbackResponse response = postPostSubmitAboutToSubmit(caseData);
+
+        verify(reviewAdditionalApplicationService).listApplicationAtNextHearing(any(), any(), any(), any());
+        verify(approveDraftOrdersService, never()).approveAndSealDraftOrder(any(), any(), any(), any(), any());
+        verify(approveDraftOrdersService, never()).updateHearingDraftOrdersBundle(any(), any());
+
+        CaseData resultCaseData = extractCaseData(response);
+        assertThat(resultCaseData.getOrderCollection())
+            .hasSize(1)
+            .extracting(order -> order.getValue().getTitle())
+            .containsExactly("List at next hearing order");
+        assertThat(resultCaseData.getHearingOrdersBundlesDrafts().getFirst().getValue().getOrders())
+            .extracting(Element::getId)
+            .containsExactly(DRAFT_ORDER_ID);
+    }
+
+    @Test
+    void shouldThrowForListAtNextHearingAndNoFutureHearingExists() {
+        CaseData caseData = buildCaseData(LIST, false);
+
+        when(reviewAdditionalApplicationService.listApplicationAtNextHearing(any(), any(), any(), any()))
+            .thenThrow(new IllegalStateException("Cannot list application at next hearing because no future"
+                + " hearing exists"));
+
+        assertThatThrownBy(() -> postPostSubmitAboutToSubmit(caseData))
+            .isInstanceOf(RuntimeException.class)
+            .hasRootCauseInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("Cannot list application at next hearing because no future hearing exists");
+    }
+
     private AboutToStartOrSubmitCallbackResponse postPostSubmitAboutToSubmit(CaseData caseData) {
         Map<String, Object> body = postMetadataCallback(
             "/callback/review-additional-application/post-submit-callback/about-to-submit",
@@ -200,6 +250,7 @@ class ReviewAdditionalApplicationControllerPostSubmitAboutToSubmitTest extends A
 
         C2AdditionalApplicationEventData c2Data = C2AdditionalApplicationEventData.builder()
             .confidentialApplication(confidential ? CONFIDENTIAL_APPLICATION : "No")
+            .uploadedDateTime("1 January 2026, 12:00pm")
             .draftOrdersBundle(List.of(draftOrder))
             .build();
 

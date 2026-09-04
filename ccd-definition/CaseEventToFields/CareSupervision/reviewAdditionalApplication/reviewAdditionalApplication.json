@@ -238,6 +238,21 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "previewApprovedOrder2",
+    "CaseEventFieldLabel": "Generated list at next hearing order",
+    "DisplayContext": "READONLY",
+    "PageID": 6,
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 4,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "approveAdditionalAppRouter=\"LIST\"",
+    "PageShowCondition": "approveAdditionalAppRouter=\"LIST\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
     "CaseFieldID": "addCoverSheet",
     "PageFieldDisplayOrder": 0,
     "DisplayContext": "READONLY",
@@ -258,7 +273,7 @@
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 1,
-    "FieldShowCondition": "approveAdditionalAppRouter!=\"REFUSE\""
+    "FieldShowCondition": "approveAdditionalAppRouter!=\"REFUSE\" AND approveAdditionalAppRouter!=\"LIST\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -271,17 +286,6 @@
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 1,
     "FieldShowCondition": "approveAdditionalAppRouter=\"REFUSE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "reviewAdditionalApplication",
-    "CaseFieldID": "previewApprovedOrderTitle1",
-    "DisplayContext": "READONLY",
-    "PageID": 5,
-    "PageDisplayOrder": 5,
-    "PageColumnNumber": 1,
-    "PageFieldDisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",

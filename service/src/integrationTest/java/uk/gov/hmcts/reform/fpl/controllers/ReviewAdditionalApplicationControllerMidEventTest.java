@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationRefusalOrderService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
@@ -52,6 +53,9 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
 
     @MockBean
     private ApplicationRefusalOrderService refusalOrderService;
+
+    @MockBean
+    private ApplicationListNextHearingOrderService listNextHearingOrderService;
 
     private static final C2AdditionalApplicationEventData C2_APPLICATION =
         C2AdditionalApplicationEventData.builder()
@@ -124,7 +128,6 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
             "document_filename", previewOrderDocument.getFilename(),
             "document_binary_url", previewOrderDocument.getBinaryUrl()
         ));
-        assertThat(response.getData().get("previewApprovedOrderTitle1")).isEqualTo("Order Draft order title");
     }
 
     @Test
@@ -163,7 +166,6 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
             "document_filename", amendedPreviewOrderDocument.getFilename(),
             "document_binary_url", amendedPreviewOrderDocument.getBinaryUrl()
         ));
-        assertThat(response.getData().get("previewApprovedOrderTitle1")).isEqualTo("Order Draft order title");
     }
 
     @Test
@@ -216,10 +218,24 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
     }
 
     @Test
-    void shouldSetFlagsForDefaultRoute() {
+    void shouldGeneratePreviewForListAtNextHearingRoute() {
+        DocumentReference listPreviewDocument = document("list-at-next-hearing-order.pdf");
+
         CaseData caseData = CaseData.builder()
             .approveAdditionalAppRouter(LIST)
+            .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
+                .judgeNameAndTitle("District Judge Example")
+                .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                    .uploadedDateTime("1 January 2021, 12:00pm")
+                    .build())
+                .build())
             .build();
+
+        when(reviewAdditionalApplicationService.hasFutureHearing(any())).thenReturn(true);
+        when(reviewAdditionalApplicationService.getNextHearingDate(any())).thenReturn("8 January 2021");
+        when(listNextHearingOrderService.buildApplicationListedAtNextHearingOrderDocument(
+            any(), any(), any(), any(), any(), eq(false)
+        )).thenReturn(listPreviewDocument);
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "edit-hearing");
         ConfirmApplicationReviewedEventData resultEventData = extractCaseData(response)
@@ -227,6 +243,11 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
 
         assertThat(resultEventData.getReviewOrderUrgency()).isEqualTo(YesNo.NO);
         assertThat(resultEventData.getAddCoverSheet()).isEqualTo(YesNo.NO);
+        assertThat(response.getData().get("previewApprovedOrder2")).isEqualTo(Map.of(
+            "document_url", listPreviewDocument.getUrl(),
+            "document_filename", listPreviewDocument.getFilename(),
+            "document_binary_url", listPreviewDocument.getBinaryUrl()
+        ));
     }
 
     private static DocumentReference document(String filename) {

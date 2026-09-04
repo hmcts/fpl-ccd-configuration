@@ -30,6 +30,8 @@ public enum DocmosisTemplates {
         "FL-PLW-GOR-WEL-APPROVED-ORDER-COVER-SHEET.docx", "approved-order-cover"),
     C2_APPLICATION("FL-PLW-GOR-ENG-C2-APPLICATION.docx", "FL-PLW-GOR-WEL-C2-APPLICATION.docx", "C2_application"),
     APPLICATION_REFUSAL_ORDER("FL-PLW-GOR-ENG-APPLICATION-REFUSAL-ORDER.docx", null, "Refusal_order"),
+    APPLICATION_LIST_NEXT_HEARING("FL-PLW-GOR-ENG-APPLICATION-LIST-NEXT-HEARING.docx", null,
+        "application_list_next_hearing"),
     TRANSLATION_REQUEST("FL-PLW-LET-ENG-00748.doc", null, "translation_request"),
     A70("FL-PLW-GOR-ENG-00763V4.doc", null, "placement_order_a70"),
     A81("FL-PLW-GOR-ENG-00728V4.doc", null, "placement_order_a81"),

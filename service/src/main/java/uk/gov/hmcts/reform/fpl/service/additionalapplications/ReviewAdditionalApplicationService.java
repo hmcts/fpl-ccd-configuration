@@ -14,12 +14,14 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderService;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +35,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialOrderBundleUtils.addToConfidentialOrderBundle;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -43,9 +47,10 @@ public class ReviewAdditionalApplicationService {
     public static final String ONLY_ONE_APPLICATION = "onlyOneApplicationToBeReviewed";
     private static final String APPLICANT_CHANGES_REQUESTED = "Applicant needs to make changes to the order";
 
-    private final HearingOrderGenerator hearingOrderGenerator;
     private final ApproveDraftOrdersService approveDraftOrdersService;
     private final ApplicationRefusalOrderService refusalOrderService;
+    private final ApplicationListNextHearingOrderService applicationListNextHearingOrderService;
+    private final HearingOrderGenerator hearingOrderGenerator;
 
     public Map<String, Object> initEventField(CaseData caseData) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -203,6 +208,61 @@ public class ReviewAdditionalApplicationService {
         hearingOrdersBundle.getValue().removeOrderElement(orderElement);
         updates.putAll(approveDraftOrdersService.updateHearingDraftOrdersBundle(caseData, hearingOrdersBundle));
 
+
+        return updates;
+    }
+
+    public String getNextHearingDate(CaseData caseData) {
+        return caseData.getNextHearingAfter(LocalDateTime.now())
+            .map(hearing -> hearing.getStartDate().toLocalDate())
+            .map(date -> formatLocalDateToString(date, DATE))
+            .orElseThrow(() -> new IllegalStateException(
+                "Cannot list application at next hearing because no future hearing exists"
+            ));
+    }
+
+    public boolean hasFutureHearing(CaseData caseData) {
+        return caseData.getNextHearingAfter(LocalDateTime.now()).isPresent();
+    }
+
+    public Map<String, Object> listApplicationAtNextHearing(CaseData caseData,
+                                                             Element<HearingOrdersBundle> hearingOrdersBundle,
+                                                             UUID draftOrderId,
+                                                             ConfirmApplicationReviewedEventData eventData) {
+        Map<String, Object> updates = new HashMap<>();
+        boolean isConfidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
+
+        String nextHearingDate = getNextHearingDate(caseData);
+        String applicationDate = eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime();
+
+        Element<GeneratedOrder> listedOrder = applicationListNextHearingOrderService.buildListAtNextHearingOrder(
+            caseData,
+            eventData.getJudgeNameAndTitle(),
+            applicationDate,
+            nextHearingDate,
+            isConfidential
+        );
+
+        if (isConfidential) {
+            Element<HearingOrder> draftOrderElement = hearingOrdersBundle.getValue()
+                .getAllOrdersAndConfidentialOrders().stream()
+                .filter(orderElement -> orderElement.getId().equals(draftOrderId))
+                .findFirst()
+                .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                    "No HearingOrder found with element id: " + draftOrderId
+                ));
+
+            updates.putAll(addToConfidentialOrderBundle(
+                hearingOrdersBundle,
+                draftOrderElement,
+                caseData.getConfidentialOrders(),
+                listedOrder
+            ));
+        } else {
+            List<Element<GeneratedOrder>> orderCollection = new ArrayList<>(caseData.getOrderCollection());
+            orderCollection.add(listedOrder);
+            updates.put("orderCollection", orderCollection);
+        }
 
         return updates;
     }

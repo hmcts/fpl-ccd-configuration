@@ -23,12 +23,16 @@ import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationRefusalOrderService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 import uk.gov.hmcts.reform.fpl.service.markdown.ReviewAdditionalApplicationMarkdownService;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,6 +41,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Slf4j
 @RestController
@@ -50,6 +56,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
     private final ReviewAdditionalApplicationService reviewAdditionalApplicationService;
     private final HearingOrderGenerator hearingOrderGenerator;
     private final ApplicationRefusalOrderService refusalOrderService;
+    private final ApplicationListNextHearingOrderService listNextHearingOrderService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -79,6 +86,7 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+        List<String> errors = new ArrayList<>();
 
         switch (caseData.getApproveAdditionalAppRouter()) {
             case APPROVE_APPLICATION_AND_ORDER, APPROVE_APPLICATION_CHANGE_ORDER:
@@ -101,8 +109,6 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                         ? draftOrder.getValue().getDocument() : amendedDraftOrderDocument);
 
                 caseDetails.getData().put("previewApprovedOrder1", previewOrder);
-                caseDetails.getData().put("previewApprovedOrderTitle1", String.format("Order %s",
-                    draftOrder.getValue().getTitle()));
                 break;
             case APPLICANT_CHANGE_ORDER:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
@@ -117,12 +123,39 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                         eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
                         eventData.getReviewAdditionalAppRefusalReason(), false));
                 break;
+            case LIST:
+                if (!reviewAdditionalApplicationService.hasFutureHearing(caseData)) {
+                    errors.add("Cannot list application at next hearing because no future hearing exists");
+                    break;
+                }
+
+                caseDetails.getData().put("reviewOrderUrgency", NO);
+                caseDetails.getData().put("addCoverSheet", NO);
+                populateListAtNextHearingPreview(caseDetails, caseData, eventData);
+                break;
             default:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
                 caseDetails.getData().put("addCoverSheet", NO);
         }
 
-        return respond(caseDetails);
+        return respond(caseDetails, errors);
+    }
+
+    private void populateListAtNextHearingPreview(CaseDetails caseDetails,
+                                                  CaseData caseData,
+                                                  ConfirmApplicationReviewedEventData eventData) {
+        String dateOfIssue = formatLocalDateToString(LocalDate.now(), DATE, caseData.getCaseLanguage());
+        String nextHearingDate = reviewAdditionalApplicationService.getNextHearingDate(caseData);
+
+        caseDetails.getData().put("previewApprovedOrder2",
+            listNextHearingOrderService.buildApplicationListedAtNextHearingOrderDocument(
+                caseData,
+                eventData.getJudgeNameAndTitle(),
+                dateOfIssue,
+                eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
+                nextHearingDate,
+                false
+            ));
     }
 
     @PostMapping("/about-to-submit")
@@ -252,6 +285,14 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 );
                 break;
             }
+            case LIST:
+                caseDetails.getData().putAll(reviewAdditionalApplicationService.listApplicationAtNextHearing(
+                    caseData,
+                    bundleFromDraftOrder,
+                    draftOrderId,
+                    eventData
+                ));
+                break;
             default:
                 break;
         }
