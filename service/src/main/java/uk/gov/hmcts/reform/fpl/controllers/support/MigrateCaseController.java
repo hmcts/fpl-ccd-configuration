@@ -18,12 +18,8 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
-
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORC;
 
 @Slf4j
 @RestController
@@ -44,10 +40,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-3213", this::run3213,
         "DFPL-2421", this::run2421,
         "DFPL-2421-rollback", this::rollback2421,
-        "DFPL-3306", this::run3306,
-        "DFPL-3292", this::run3292,
-        "DFPL-3346", this::run3346,
-        "DFPL-3347", this::run3347,
+        "DFPL-3363", this::run3363,
         "DFPL-3213-v2", this::run3213v2,
         "DFPL-3345", this::run3345
     );
@@ -74,24 +67,6 @@ public class MigrateCaseController extends CallbackController {
 
     private void runLog(CaseDetails caseDetails) {
         log.info("Logging migration on case {}", caseDetails.getId());
-    }
-
-    private void run3306(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3306";
-        final long expectedCaseId = 1753883480919014L;
-
-        Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        caseAccessService.grantCaseAccess(caseId, Set.of("b0016258-02fa-4d57-8766-dc23b2411f01"), SOLICITORC);
-    }
-
-    private void run3292(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3292";
-        final long expectedCaseId = 1773832351122360L;
-
-        Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        caseAccessService.grantCaseAccess(caseId, Set.of("ad13c0f2-dac2-4e66-bff2-cd4be1b3a889"), LASOLICITOR);
     }
 
     private void run2421(CaseDetails caseDetails) {
@@ -198,6 +173,10 @@ public class MigrateCaseController extends CallbackController {
         ));
     }
 
-
+    public void run3363(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3363";
+        final CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.migrateChildWithFinalOrderIssued(migrationId, caseData));
+    }
 }
 

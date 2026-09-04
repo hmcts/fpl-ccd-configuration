@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -58,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +93,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
@@ -1748,5 +1751,46 @@ public class MigrateCaseService {
         }
 
         return updates;
+    }
+
+    public Map<String, Object> migrateChildWithFinalOrderIssued(String migrationId, CaseData caseData) {
+        Map<String, Object> updates = new HashMap<>();
+
+        final Set<UUID> childIdWithFinalOrderIssued = caseData.getOrderCollection().stream()
+            .map(Element::getValue)
+            .filter(GeneratedOrder::isFinalOrder)
+            .map(GeneratedOrder::getChildren)
+            .flatMap(List::stream)
+            .map(Element::getId)
+            .collect(Collectors.toSet());
+
+        Set<UUID> childUpdated = new HashSet<>();
+
+        List<Element<Child>> children = caseData.getChildren1().stream()
+            .map(childElm -> {
+                if (childIdWithFinalOrderIssued.contains(childElm.getId())
+                    && !YesNo.YES.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
+                    childUpdated.add(childElm.getId());
+
+                    log.info("Migration {id = {}, case reference = {}}, updating child {}",
+                        migrationId, caseData.getId(), childElm.getId());
+
+                    return element(childElm.getId(),
+                        childElm.getValue().toBuilder()
+                            .finalOrderIssued(YesNo.YES.getValue())
+                            .build());
+                } else {
+                    return childElm;
+                }
+            })
+            .toList();
+
+        if (!isEmpty(childUpdated)) {
+            updates.put("children1", children);
+            return updates;
+        } else {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, no child requires update",
+                migrationId, caseData.getId()));
+        }
     }
 }
