@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
@@ -4517,6 +4518,7 @@ class MigrateCaseServiceTest {
     void shouldUpdateChildStatusWithFinalOrderIssued() {
         UUID childOneId = UUID.randomUUID();
         UUID childTwoId = UUID.randomUUID();
+        UUID childThreeId = UUID.randomUUID();
         Child childOne = Child.builder()
             .party(ChildParty.builder().firstName("One").lastName("Child").build())
             .finalOrderIssued(NO.getValue())
@@ -4525,18 +4527,31 @@ class MigrateCaseServiceTest {
             .party(ChildParty.builder().firstName("Two").lastName("Child").build())
             .finalOrderIssued(YES.getValue())
             .build();
+        Child childThree = Child.builder()
+            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
 
         CaseData caseData = CaseData.builder()
             .id(1L)
             .children1(List.of(
                 element(childOneId, childOne),
-                element(childTwoId, childTwo)))
+                element(childTwoId, childTwo),
+                element(childThreeId, childThree)))
             .orderCollection(wrapElementsWithUUIDs(
                 GeneratedOrder.builder()
                     .type("Final")
                     .markedFinal(YES.getValue())
                     .children(List.of(element(childOneId, childOne), element(childTwoId, childTwo)))
                     .build()))
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionCTSC(wrapElementsWithUUIDs(
+                    GeneratedOrder.builder()
+                        .type("Final")
+                        .markedFinal(YES.getValue())
+                        .children(List.of(element(childThreeId, childThree)))
+                        .build()))
+                .build())
             .build();
 
         Map<String, Object> actualUpdate = underTest.updateChildStatusWithFinalOrderIssued(MIGRATION_ID, caseData);
@@ -4546,7 +4561,8 @@ class MigrateCaseServiceTest {
 
         assertThat(actualUpdate.get("children1")).isEqualTo(List.of(
             element(childOneId, childOne.toBuilder().finalOrderIssued(YES.getValue()).build()),
-            element(childTwoId, childTwo)
+            element(childTwoId, childTwo),
+            element(childThreeId, childThree.toBuilder().finalOrderIssued(YES.getValue()).build())
         ));
     }
 

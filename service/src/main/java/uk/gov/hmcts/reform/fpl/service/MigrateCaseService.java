@@ -1756,7 +1756,7 @@ public class MigrateCaseService {
     public Map<String, Object> updateChildStatusWithFinalOrderIssued(String migrationId, CaseData caseData) {
         Map<String, Object> updates = new HashMap<>();
 
-        final Set<UUID> childIdWithFinalOrderIssued = caseData.getOrderCollection().stream()
+        final Set<UUID> childIdWithFinalOrderIssued = caseData.getAllOrderCollections().stream()
             .map(Element::getValue)
             .filter(GeneratedOrder::isFinalOrder)
             .map(GeneratedOrder::getChildren)
