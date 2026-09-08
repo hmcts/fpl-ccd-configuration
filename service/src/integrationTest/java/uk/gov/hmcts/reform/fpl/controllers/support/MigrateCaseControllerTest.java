@@ -155,44 +155,5 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     }
 
-    @Test
-    void shouldSuccessfullyMigrateOutsourcingPolicyWhenMigrationIdIsDFPL3347() {
-        given(organisationService.findOrganisation("ZL7FAG5"))
-            .willReturn(Optional.of(Organisation.builder()
-                .organisationIdentifier("ZL7FAG5")
-                .name("Test Organisation")
-                .build()));
-
-        CaseData caseData = extractCaseData(postAboutToSubmitEvent(
-            CaseDetails.builder()
-                .id(1783696286134453L)
-                .data(Map.of("migrationId", "DFPL-3347"))
-                .build()
-        ));
-
-        assertThat(caseData.getOutsourcingPolicy()).isNotNull();
-        assertThat(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID())
-            .isEqualTo("ZL7FAG5");
-    }
-
-    @Test
-    void shouldSuccessfullyMigrateOutsourcingPolicyWhenMigrationIdIsDFPL3346() {
-        given(organisationService.findOrganisation("CPYYWBZ"))
-            .willReturn(Optional.of(Organisation.builder()
-                .organisationIdentifier("CPYYWBZ")
-                .name("Test Organisation")
-                .build()));
-
-        CaseData caseData = extractCaseData(postAboutToSubmitEvent(
-            CaseDetails.builder()
-                .id(1781013695412110L)
-                .data(Map.of("migrationId", "DFPL-3346"))
-                .build()
-        ));
-
-        assertThat(caseData.getOutsourcingPolicy()).isNotNull();
-        assertThat(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID())
-            .isEqualTo("CPYYWBZ");
-    }
 
 }
