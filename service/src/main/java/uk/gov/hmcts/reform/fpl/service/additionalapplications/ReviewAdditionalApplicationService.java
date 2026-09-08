@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.events.cmo.C2ApplicationRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.cmo.ReviewCMOEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
@@ -14,11 +15,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
-import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
-import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderService;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -100,6 +102,7 @@ public class ReviewAdditionalApplicationService {
             resultMap.put("reviewAdditionalAppIsConfidential", isConfidential ? YES : NO);
             resultMap.put("c2AdditionalApplicationToBeReview", C2AdditionalApplicationEventData.builder()
                 .routeType(c2ToBeReviewed.getRouteType())
+                .confidentialFieldSuffix(bundle.geC2ConfidentialSuffix())
                 .applicantName(c2ToBeReviewed.getApplicantName())
                 .type(c2ToBeReviewed.getType())
                 .confidentialApplication(isConfidential
@@ -192,7 +195,8 @@ public class ReviewAdditionalApplicationService {
 
         Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
             orderElement,
-            isBlank(requestedChanges) ? APPLICANT_CHANGES_REQUESTED : requestedChanges
+            isBlank(requestedChanges) ? APPLICANT_CHANGES_REQUESTED : requestedChanges,
+            CMOStatus.RETURNED
         );
 
         if (orderElement.getValue().isConfidentialOrder()) {
@@ -272,16 +276,27 @@ public class ReviewAdditionalApplicationService {
                                                 UUID draftOrderId) {
         Map<String, Object> updates = new HashMap<>();
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+        boolean isC2Confidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
 
         // generate refusal order and add it to orderCollection
         Element<GeneratedOrder> refusalOrderDoc = refusalOrderService.buildRefusalOrder(caseData,
             eventData.getJudgeNameAndTitle(),
             eventData.getC2AdditionalApplicationToBeReview().getUploadedDateTime(),
-            eventData.getReviewAdditionalAppRefusalReason());
+            eventData.getReviewAdditionalAppRefusalReason(),
+            isC2Confidential);
 
-        List<Element<GeneratedOrder>> refusalOrders = defaultIfNull(caseData.getRefusalOrders(), new ArrayList<>());
+        String refusalOrdersFieldName = "refusalOrders";
+        List<Element<GeneratedOrder>> refusalOrders;
+        if (isC2Confidential) {
+            String suffix = eventData.getC2AdditionalApplicationToBeReview().getConfidentialFieldSuffix();
+            refusalOrders = caseData.getConfidentialRefusalOrders().getConfidentialOrdersBySuffix(suffix);
+            refusalOrdersFieldName += suffix;
+        } else {
+            refusalOrders = caseData.getRefusalOrders();
+        }
+        refusalOrders = getIfNull(refusalOrders, new ArrayList<>());
         refusalOrders.add(refusalOrderDoc);
-        updates.put("refusalOrders", refusalOrders);
+        updates.put(refusalOrdersFieldName, refusalOrders);
 
         // update the draft order as rejected and move them to refused
         Element<HearingOrder> draftOrder = findElement(draftOrderId, selectedOrdersBundle.getValue()
@@ -292,13 +307,16 @@ public class ReviewAdditionalApplicationService {
             updates,
             selectedOrdersBundle,
             draftOrder,
+            CMOStatus.REFUSED,
             eventData.getReviewAdditionalAppRefusalReason()
         );
 
-        List<Element<HearingOrder>> rejectedOrders =
-            defaultIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
-        rejectedOrders.add(rejectedDraftOrder);
-        updates.put("refusedHearingOrders", rejectedOrders);
+        if (!rejectedDraftOrder.getValue().isConfidentialOrder()) {
+            List<Element<HearingOrder>> rejectedOrders =
+                defaultIfNull(caseData.getRefusedHearingOrders(), new ArrayList<>());
+            rejectedOrders.add(rejectedDraftOrder);
+            updates.put("refusedHearingOrders", rejectedOrders);
+        }
 
         selectedOrdersBundle.getValue().removeOrderElement(draftOrder);
 

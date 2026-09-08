@@ -320,5 +320,275 @@
     "TabDisplayOrder": 12,
     "CaseFieldID": "refusalOrders",
     "TabFieldDisplayOrder": 31
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersCTSC",
+    "TabFieldDisplayOrder": 32
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersLA",
+    "TabFieldDisplayOrder": 33
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp0",
+    "TabFieldDisplayOrder": 34
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp1",
+    "TabFieldDisplayOrder": 35
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp2",
+    "TabFieldDisplayOrder": 36
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp3",
+    "TabFieldDisplayOrder": 37
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp4",
+    "TabFieldDisplayOrder": 38
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp5",
+    "TabFieldDisplayOrder": 39
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp6",
+    "TabFieldDisplayOrder": 40
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp7",
+    "TabFieldDisplayOrder": 41
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp8",
+    "TabFieldDisplayOrder": 42
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersResp9",
+    "TabFieldDisplayOrder": 43
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild0",
+    "TabFieldDisplayOrder": 44
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild1",
+    "TabFieldDisplayOrder": 45
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild2",
+    "TabFieldDisplayOrder": 46
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild3",
+    "TabFieldDisplayOrder": 47
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild4",
+    "TabFieldDisplayOrder": 48
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild5",
+    "TabFieldDisplayOrder": 49
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild6",
+    "TabFieldDisplayOrder": 50
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild7",
+    "TabFieldDisplayOrder": 51
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild8",
+    "TabFieldDisplayOrder": 52
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild9",
+    "TabFieldDisplayOrder": 53
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild10",
+    "TabFieldDisplayOrder": 54
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild11",
+    "TabFieldDisplayOrder": 55
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild12",
+    "TabFieldDisplayOrder": 56
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild13",
+    "TabFieldDisplayOrder": 57
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
+    "CaseFieldID": "refusalOrdersChild14",
+    "TabFieldDisplayOrder": 58
   }
 ]
