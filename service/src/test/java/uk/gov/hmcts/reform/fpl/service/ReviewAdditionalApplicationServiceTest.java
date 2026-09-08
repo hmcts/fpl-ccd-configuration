@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialRefusedOrders;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -15,14 +16,18 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationRefusalOrderService;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApplicationListNextHearingOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.HearingOrderGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +55,9 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Mock
     private HearingOrderGenerator hearingOrderGenerator;
+
+    @Mock
+    private ApplicationListNextHearingOrderService applicationListNextHearingOrderService;
 
     @Mock
     private ApplicationRefusalOrderService applicationRefusalOrderService;
@@ -319,6 +327,172 @@ class ReviewAdditionalApplicationServiceTest {
         assertThat(result.get("refusedHearingOrders")).isEqualTo(List.of(rejectedOrder));
         verify(hearingOrderGenerator).buildRejectedHearingOrder(eq(draftOrder), eq(requestedChanges));
         verify(approveDraftOrdersService).updateHearingDraftOrdersBundle(caseData, hearingBundle);
+    }
+
+    @Test
+    void shouldCreateListAtNextHearingOrderAndKeepDraftForNonConfidentialApplication() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        LocalDateTime nextHearingDate = LocalDateTime.now().plusDays(3);
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .applicationReviewed(NO)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .draftOrdersBundle(List.of(element(draftOrderId, DraftOrder.builder().build())))
+                    .build())
+                .build())))
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .hearingDetails(List.of(element(HearingBooking.builder()
+                .startDate(nextHearingDate)
+                .build())))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(NO)
+            .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .build())
+            .build();
+
+        Element<GeneratedOrder> listAtNextHearingOrder = element(GeneratedOrder.builder()
+            .title("List at next hearing order")
+            .build());
+        when(applicationListNextHearingOrderService.buildListAtNextHearingOrder(any(), any(), any(), any(), eq(false)))
+            .thenReturn(listAtNextHearingOrder);
+
+        Map<String, Object> result = reviewAdditionalApplicationService.listApplicationAtNextHearing(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            eventData
+        );
+
+        assertThat(result.get("orderCollection")).isEqualTo(List.of(listAtNextHearingOrder));
+        assertThat(hearingBundle.getValue().getOrders()).extracting(Element::getId).containsExactly(draftOrderId);
+    }
+
+    @Test
+    void shouldCreateListAtNextHearingOrderInMatchingConfidentialCollection() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .orderConfidential(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>())
+            .ordersCTSC(new ArrayList<>())
+            .ordersLA(new ArrayList<>(List.of(draftOrder)))
+            .build());
+
+        LocalDateTime nextHearingDate = LocalDateTime.now().plusDays(2);
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .applicationReviewed(NO)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .draftOrdersBundle(List.of(element(draftOrderId, DraftOrder.builder().build())))
+                    .build())
+                .build())))
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .hearingDetails(List.of(element(HearingBooking.builder()
+                .startDate(nextHearingDate)
+                .build())))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(YES)
+            .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .build())
+            .build();
+
+        Element<GeneratedOrder> listAtNextHearingOrder = element(GeneratedOrder.builder()
+            .title("List at next hearing order")
+            .build());
+        when(applicationListNextHearingOrderService.buildListAtNextHearingOrder(any(), any(), any(), any(), eq(true)))
+            .thenReturn(listAtNextHearingOrder);
+
+        Map<String, Object> result = reviewAdditionalApplicationService.listApplicationAtNextHearing(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            eventData
+        );
+
+        assertThat(result.get("orderCollectionLA")).isEqualTo(List.of(listAtNextHearingOrder));
+        assertThat(hearingBundle.getValue().getAllConfidentialOrders()).extracting(Element::getId)
+            .containsExactly(draftOrderId);
+    }
+
+    @Test
+    void shouldThrowWhenListingAtNextHearingAndNoFutureHearingExists() {
+        UUID draftOrderId = UUID.randomUUID();
+        Element<HearingOrder> draftOrder = element(draftOrderId, HearingOrder.builder()
+            .order(DocumentReference.builder().filename("draft-order.docx").build())
+            .build());
+        Element<HearingOrdersBundle> hearingBundle = element(HearingOrdersBundle.builder()
+            .orders(new ArrayList<>(List.of(draftOrder)))
+            .ordersCTSC(new ArrayList<>())
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .applicationReviewed(NO)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .draftOrdersBundle(List.of(element(draftOrderId, DraftOrder.builder().build())))
+                    .build())
+                .build())))
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .build();
+
+        ConfirmApplicationReviewedEventData eventData = ConfirmApplicationReviewedEventData.builder()
+            .judgeNameAndTitle("District Judge Example")
+            .reviewAdditionalAppIsConfidential(NO)
+            .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                .uploadedDateTime("1 January 2021, 12:00pm")
+                .build())
+            .build();
+
+        assertThatThrownBy(() -> reviewAdditionalApplicationService.listApplicationAtNextHearing(
+            caseData,
+            hearingBundle,
+            draftOrderId,
+            eventData
+        ))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Cannot list application at next hearing because no future hearing exists");
+    }
+
+    @Test
+    void shouldReportFutureHearingExists() {
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build())))
+            .build();
+
+        assertThat(reviewAdditionalApplicationService.hasFutureHearing(caseData)).isTrue();
+    }
+
+    @Test
+    void shouldReportFutureHearingMissing() {
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build())))
+            .build();
+
+        assertThat(reviewAdditionalApplicationService.hasFutureHearing(caseData)).isFalse();
     }
 
     @Test

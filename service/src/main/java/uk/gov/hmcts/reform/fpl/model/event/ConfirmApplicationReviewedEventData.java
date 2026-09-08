@@ -81,7 +81,7 @@ public class ConfirmApplicationReviewedEventData {
             "hasC2ToBeReview", "hasOtherToBeReview",
             "otherAdditionalApplicationToBeReview",
             "reviewOrderUrgency", "uploadedDraftOrder", "addCoverSheet",
-            "previewApprovedOrder1", "previewApprovedOrderTitle1");
+            "previewApprovedOrder1", "previewApprovedOrder2");
     }
 
     public static List<String> postSubmitEventFields() {

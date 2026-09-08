@@ -13,9 +13,12 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.APPLICANT_CHANGE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ApproveAdditionalAppOptions.LIST;
 import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.REVIEW_ADDITIONAL_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.REVIEW_ADDITIONAL_APPLICATION_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.REVIEW_ADDITIONAL_APPLICATION_CONFIDENTIAL_NO_CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.REVIEW_ADDITIONAL_APPLICATION_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.REVIEW_ADDITIONAL_APPLICATION_LIST_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.REVIEW_ADDITIONAL_APPLICATION_NO_CTSC;
 
 @Service
@@ -48,6 +51,12 @@ public class ReviewAdditionalApplicationMarkdownService extends MarkdownSubstitu
             return isConfidential
                 ? REVIEW_ADDITIONAL_APPLICATION_CONFIDENTIAL_NO_CTSC
                 : REVIEW_ADDITIONAL_APPLICATION_NO_CTSC;
+        }
+
+        if (LIST == approveAdditionalAppOption) {
+            return isConfidential
+                ? REVIEW_ADDITIONAL_APPLICATION_LIST_CONFIDENTIAL
+                : REVIEW_ADDITIONAL_APPLICATION_LIST;
         }
 
         return isConfidential ? REVIEW_ADDITIONAL_APPLICATION_CONFIDENTIAL : REVIEW_ADDITIONAL_APPLICATION;
