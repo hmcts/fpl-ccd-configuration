@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 

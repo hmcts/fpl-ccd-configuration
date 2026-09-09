@@ -54,9 +54,9 @@ public interface ConfidentialOrderBundle<T> {
     }
 
     /**
-     * Set or replace the existing field with the given list by suffix
-     * @param suffix
-     * @param orderCollection
+     * Set or replace the existing field with the given list by suffix.
+     * @param suffix the suffix of the field to set, e.g. "CTSC", "LA", "Resp", "Child"
+     * @param orderCollection the list of orders to set
      */
     @JsonIgnore
     @SuppressWarnings("unchecked")

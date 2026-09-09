@@ -93,7 +93,7 @@ public class ApplicationRefusalOrderService extends AbstractApplicationGenerated
             builder -> {
                 if (isConfidential) {
                     builder.refusalDocumentConfidential(refusalOrderDoc);
-                }else {
+                } else {
                     builder.refusalDocument(refusalOrderDoc);
                 }
             }
