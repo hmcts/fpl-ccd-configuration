@@ -972,6 +972,21 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    public void shouldNotReturnErrorWhenSingleC2DraftOrderUploaded() {
+        UploadAdditionalApplicationsEventData eventData = UploadAdditionalApplicationsEventData.builder()
+            .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                .draftOrdersBundle(List.of(
+                    element(DraftOrder.builder().build())
+                ))
+                .build())
+            .build();
+
+        List<String> errors = underTest.validateC2Bundle(eventData);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
     public void shouldReturnListOfChildrenAsDynamicMultiSelectList() {
         UUID child1Id = UUID.randomUUID();
         UUID child2Id = UUID.randomUUID();
