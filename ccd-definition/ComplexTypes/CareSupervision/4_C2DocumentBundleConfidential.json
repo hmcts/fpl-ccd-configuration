@@ -352,6 +352,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Document contains a confidential address?",
     "SecurityClassification": "Public",
+    "FieldShowCondition": "routeType!=\"APPLY_ONLINE\"",
     "Searchable": "N"
   }
 ]
