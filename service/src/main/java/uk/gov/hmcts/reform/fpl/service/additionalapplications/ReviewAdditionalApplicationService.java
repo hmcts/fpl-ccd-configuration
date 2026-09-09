@@ -274,7 +274,6 @@ public class ReviewAdditionalApplicationService {
     public Map<String, Object> addRefusalOrders(CaseData caseData,
                                                 Element<HearingOrdersBundle> selectedOrdersBundle,
                                                 UUID draftOrderId) {
-        Map<String, Object> updates = new HashMap<>();
         ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
         boolean isC2Confidential = YES.equals(eventData.getReviewAdditionalAppIsConfidential());
 
@@ -296,6 +295,8 @@ public class ReviewAdditionalApplicationService {
         }
         refusalOrders = getIfNull(refusalOrders, new ArrayList<>());
         refusalOrders.add(refusalOrderDoc);
+
+        Map<String, Object> updates = new HashMap<>();
         updates.put(refusalOrdersFieldName, refusalOrders);
 
         // update the draft order as rejected and move them to refused

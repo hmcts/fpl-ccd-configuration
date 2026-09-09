@@ -66,7 +66,7 @@ public class ApplicationRefusalOrderService extends AbstractApplicationGenerated
             getTemplateData(caseData, judgeTitleAndName, dateOfRefusal, applicationDate, refusalReason));
 
         return buildOrderDocumentReference(caseData, requireSealing, docmosisDocument,
-            buildApplicationOrderFileName(REFUSAL_ORDER.getFileName(), applicationDate));
+            buildApplicationOrderFileName(REFUSAL_ORDER.getLabel(), applicationDate));
     }
 
     public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,

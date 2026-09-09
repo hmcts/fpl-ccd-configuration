@@ -40,24 +40,26 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentWithName;
 
 @ExtendWith(MockitoExtension.class)
 public class ApplicationRefusalOrderServiceTest {
-    private static final LocalDateTime NOW = LocalDateTime.of(2026, 7, 28, 10, 15);
-    private static final byte[] DOCMOSIS_BYTES = testDocumentBinary();
-    private static final byte[] SEALED_BYTES = testDocumentBinary();
-
-    private static final List<DocmosisChild> DOCMOSIS_CHILDREN =
-        List.of(DocmosisChild.builder().name("Child One").age("90").build());
-    private static final Document REFUSAL_ORDER_DOC = testDocument();
     private static final String COURT_NAME = "Test Court Name";
     private static final String JUDGE_TITLE_AND_NAME = "District Judge Example";
     private static final String DATE_OF_REFUSAL = "2 January 2026";
     private static final String APPLICATION_DATE = "1 January 2026";
     private static final String REFUSAL_REASON = "Invalid application";
 
+    private static final LocalDateTime NOW = LocalDateTime.of(2026, 7, 28, 10, 15);
+    private static final byte[] DOCMOSIS_BYTES = testDocumentBinary();
+    private static final byte[] SEALED_BYTES = testDocumentBinary();
+
+    private static final String REFUSAL_ORDER_DOC_FILE_NAME =
+        format("%s for application date %s.pdf", REFUSAL_ORDER.getLabel(), APPLICATION_DATE);
+    private static final List<DocmosisChild> DOCMOSIS_CHILDREN =
+        List.of(DocmosisChild.builder().name("Child One").age("90").build());
+    private static final Document REFUSAL_ORDER_DOC = testDocumentWithName(REFUSAL_ORDER_DOC_FILE_NAME);
     @Mock
     private CaseDataExtractionService caseDataExtractionService;
 
@@ -97,7 +99,7 @@ public class ApplicationRefusalOrderServiceTest {
     void shouldBuildUnsealedApplicationRefusalOrderDocument() {
         CaseData caseData = getCaseData();
 
-        when(documentUploadService.uploadPDF(DOCMOSIS_BYTES, REFUSAL_ORDER.getFileName()))
+        when(documentUploadService.uploadPDF(DOCMOSIS_BYTES, REFUSAL_ORDER_DOC_FILE_NAME))
             .thenReturn(REFUSAL_ORDER_DOC);
 
         DocumentReference documentReference = underTest.buildApplicationRefusalOrderDocument(
@@ -125,7 +127,7 @@ public class ApplicationRefusalOrderServiceTest {
 
         when(documentSealingService.sealDocument(DOCMOSIS_BYTES, caseData.getCourt(), ENGLISH))
             .thenReturn(SEALED_BYTES);
-        when(documentUploadService.uploadPDF(SEALED_BYTES, REFUSAL_ORDER.getFileName()))
+        when(documentUploadService.uploadPDF(SEALED_BYTES, REFUSAL_ORDER_DOC_FILE_NAME))
             .thenReturn(REFUSAL_ORDER_DOC);
 
         DocumentReference documentReference = underTest.buildApplicationRefusalOrderDocument(
@@ -151,7 +153,7 @@ public class ApplicationRefusalOrderServiceTest {
         CaseData caseData = getCaseData();
 
         when(time.now()).thenReturn(NOW);
-        when(documentUploadService.uploadPDF(DOCMOSIS_BYTES, REFUSAL_ORDER.getFileName()))
+        when(documentUploadService.uploadPDF(DOCMOSIS_BYTES, REFUSAL_ORDER_DOC_FILE_NAME))
             .thenReturn(REFUSAL_ORDER_DOC);
 
         underTest.buildApplicationRefusalOrderDocument(
@@ -173,7 +175,7 @@ public class ApplicationRefusalOrderServiceTest {
         when(time.now()).thenReturn(NOW);
         when(documentSealingService.sealDocument(DOCMOSIS_BYTES, caseData.getCourt(), ENGLISH))
             .thenReturn(SEALED_BYTES);
-        when(documentUploadService.uploadPDF(SEALED_BYTES, REFUSAL_ORDER.getFileName()))
+        when(documentUploadService.uploadPDF(SEALED_BYTES, REFUSAL_ORDER_DOC_FILE_NAME))
             .thenReturn(REFUSAL_ORDER_DOC);
 
         Element<GeneratedOrder> refusalOrder = underTest.buildRefusalOrder(
@@ -181,7 +183,8 @@ public class ApplicationRefusalOrderServiceTest {
             JUDGE_TITLE_AND_NAME,
             DATE_OF_REFUSAL,
             APPLICATION_DATE,
-            REFUSAL_REASON
+            REFUSAL_REASON,
+            false
         );
 
         GeneratedOrder order = refusalOrder.getValue();
@@ -204,14 +207,15 @@ public class ApplicationRefusalOrderServiceTest {
         when(time.now()).thenReturn(NOW);
         when(documentSealingService.sealDocument(DOCMOSIS_BYTES, caseData.getCourt(), ENGLISH))
             .thenReturn(SEALED_BYTES);
-        when(documentUploadService.uploadPDF(SEALED_BYTES, REFUSAL_ORDER.getFileName()))
+        when(documentUploadService.uploadPDF(SEALED_BYTES, REFUSAL_ORDER_DOC_FILE_NAME))
             .thenReturn(REFUSAL_ORDER_DOC);
 
         Element<GeneratedOrder> refusalOrder = underTest.buildRefusalOrder(
             caseData,
             JUDGE_TITLE_AND_NAME,
             APPLICATION_DATE,
-            REFUSAL_REASON
+            REFUSAL_REASON,
+            false
         );
 
         String expectedDateOfRefusal = formatLocalDateToString(NOW.toLocalDate(), DATE, caseData.getCaseLanguage());

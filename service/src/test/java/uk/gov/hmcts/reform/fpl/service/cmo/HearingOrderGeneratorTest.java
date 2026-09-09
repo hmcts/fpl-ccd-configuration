@@ -184,7 +184,7 @@ class HearingOrderGeneratorTest {
         String changesRequested = "incorrect order";
 
         Element<HearingOrder> actual = underTest.buildRejectedHearingOrder(
-            element(ORDER_ID, hearingOrder), changesRequested);
+            element(ORDER_ID, hearingOrder), changesRequested, CMOStatus.REFUSED);
 
         assertThat(actual).isEqualTo(element(ORDER_ID, hearingOrder.toBuilder()
             .status(CMOStatus.RETURNED).requestedChanges(changesRequested)

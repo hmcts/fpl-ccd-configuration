@@ -187,7 +187,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "refusedOrder",
-    "CategoryLabel": "Refused Order",
+    "CategoryLabel": "Returned / Refused Order",
     "ParentCategoryID": "orders",
     "DisplayOrder": "808"
   },
