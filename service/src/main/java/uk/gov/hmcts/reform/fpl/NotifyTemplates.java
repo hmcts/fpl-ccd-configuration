@@ -12,6 +12,7 @@ public final class NotifyTemplates {
     public static final String OUTSOURCED_CASE_TEMPLATE = "c4d612a3-8384-468b-9b83-532e7e857c63";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "3c422258-7a6e-4aa0-8d4b-56f50f42d0eb";
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
+    public static final String C2_APPLICATION_REFUSED_TEMPLATE = "c7afde20-b088-48cd-bc60-95c205842665";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
         = "62791aee-6caf-4a22-a599-fcfc4381ba20";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
