@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ListingActionType;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ public class ListingActionRequest {
 
     List<ListingActionType> type;
     String details;
+    YesNo isUrgent;
     LocalDateTime dateSent;
     LocalDateTime dateReviewed;
 

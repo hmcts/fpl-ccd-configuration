@@ -33,7 +33,8 @@ public class RefusedHearingOrderRemovalAction implements OrderRemovalAction {
                                    RemovableOrder removableOrder) {
         HearingOrder draftOrder = (HearingOrder) removableOrder;
 
-        data.put("orderToBeRemoved", draftOrder.getOrder());
+        data.put("orderToBeRemoved", (draftOrder.getRefusedOrder() != null)
+            ? draftOrder.getRefusedOrder() : draftOrder.getOrder());
         data.put("orderTitleToBeRemoved", draftOrder.getTitle());
         data.put("showRemoveCMOFieldsFlag", EMPTY);
         data.put("showReasonFieldFlag", NO.getValue());

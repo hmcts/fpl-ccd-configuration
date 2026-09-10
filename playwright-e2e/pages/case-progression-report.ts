@@ -7,6 +7,7 @@ export class CaseProgressionReport extends BasePage {
     readonly selectDfjArea: Locator;
     readonly selectDfjCourt: Locator;
     readonly type: Locator;
+    readonly doneButton: Locator;
 
     public constructor(page: Page) {
         super(page);
@@ -15,6 +16,7 @@ export class CaseProgressionReport extends BasePage {
         this.selectDfjArea = page.locator('#londonDFJ');
         this.selectDfjCourt = page.locator('#westLondonDFJCourts')
         this.type = page.getByLabel('Select report type');
+        this.doneButton = page.getByRole('button', { name: 'Done' });
     }
 
     async CaseProgressionReport() {
@@ -24,6 +26,6 @@ export class CaseProgressionReport extends BasePage {
         await this.selectDfjCourt.selectOption('West London Family');
         await this.type.selectOption('At risk')
         await this.continueButton.click();
-        await this.clickSubmit();
+        await this.doneButton.click();
     }
 };

@@ -18,7 +18,7 @@ export const subtractMonthDate = async (subMonth:number)  => {
     date.setMonth(date.getMonth() - subMonth);
     return date
 }
-export function addMonthsToDate(date: Date, months: number): Date {
+export function addMonthsToDate(date: string, months: number): Date {
     const newDate = new Date(date);
     newDate.setMonth(newDate.getMonth() + months);
     return newDate;

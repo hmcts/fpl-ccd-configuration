@@ -16,7 +16,7 @@
     "CaseEventID": "listGatekeepingHearing",
     "CaseFieldID": "tempAllocatedJudge",
     "ListElementCode": "judgeTitle",
-    "EventElementLabel": "Judge or magistrate's title",
+    "EventElementLabel": "Judge or Magistrate's title",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },

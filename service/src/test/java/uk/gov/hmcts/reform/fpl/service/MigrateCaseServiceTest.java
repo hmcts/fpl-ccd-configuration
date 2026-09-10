@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -30,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -37,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
@@ -110,10 +114,12 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+
 
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -135,6 +141,9 @@ class MigrateCaseServiceTest {
 
     @Mock
     private CaseNoteService caseNoteService;
+
+    @Mock
+    private com.fasterxml.jackson.databind.ObjectMapper mapper;
 
     @InjectMocks
     private MigrateCaseService underTest;
@@ -268,7 +277,7 @@ class MigrateCaseServiceTest {
         void updateOutsourcingPolicy() {
             when(organisationService.findOrganisation(newOrgId))
                 .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
-                        .name(newOrgName)
+                    .name(newOrgName)
                     .build()));
             CaseData caseData = CaseData.builder()
                 .id(1L)
@@ -311,7 +320,7 @@ class MigrateCaseServiceTest {
             Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
                 .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
-                    .notificationRecipient(YES.getValue()).build());
+                .notificationRecipient(YES.getValue()).build());
             Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
                 .notificationRecipient(YES.getValue()).build());
 
@@ -1482,7 +1491,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThatThrownBy(() -> underTest.revertChildExtensionDate(caseData, MIGRATION_ID,
-                    targetChild1.getId().toString(), revertedDate, revertedReason))
+                targetChild1.getId().toString(), revertedDate, revertedReason))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format(
                     "Migration {id = %s}, case reference = %s} child %s not found",
@@ -1513,7 +1522,7 @@ class MigrateCaseServiceTest {
         @Test
         void shouldOnlyRemoveSelectPlacement() {
             var placementRemaining = element(placementToRemain, Placement.builder()
-                            .build());
+                .build());
 
             List<Element<Placement>> placements = List.of(
                 element(placementToRemove, Placement.builder()
@@ -1530,7 +1539,7 @@ class MigrateCaseServiceTest {
             Map<String, Object> updatedFields = underTest.removeSpecificPlacements(caseData, placementToRemove);
 
             assertThat(updatedFields).extracting("placements").asList().hasSize(1)
-                    .isEqualTo(placementsRemaining);
+                .isEqualTo(placementsRemaining);
             assertThat(updatedFields).extracting("placementsNonConfidential").asList()
                 .hasSize(1).isEqualTo(placementsRemaining);
             assertThat(updatedFields).extracting("placementsNonConfidentialNotices").asList()
@@ -1781,7 +1790,7 @@ class MigrateCaseServiceTest {
                 underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString()))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message "
-                            + mesageToBeRemoved.getId() + " not found");
+                    + mesageToBeRemoved.getId() + " not found");
         }
 
         @Test
@@ -1846,7 +1855,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThatThrownBy(() -> underTest.removeSkeletonArgument(caseData,
-                    skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID))
+                skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, skeleton argument %s not found",
                     MIGRATION_ID, 1, skeletonArgumentToBeRemoved.getId().toString()));
@@ -2000,9 +2009,9 @@ class MigrateCaseServiceTest {
 
         private final Element<HearingCourtBundle> singleCbHearingCourtBundle = element(hearingId,
             HearingCourtBundle.builder().courtBundle(List.of(
-                element(targetBundleId, CourtBundle.builder().document(DocumentReference.builder().build()).build())
-            ))
-            .build());
+                    element(targetBundleId, CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                ))
+                .build());
 
         private final Element<HearingCourtBundle> mixedCourtBundlesHearingCourtBundle = element(hearingId,
             HearingCourtBundle.builder().courtBundle(List.of(cb1, cb2,
@@ -2567,29 +2576,29 @@ class MigrateCaseServiceTest {
         void shouldThrowExceptionIfFinalOrderNotFound() {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
                 .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME)
-                        .markedFinal(YesNo.NO.getValue())
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Blank order (C21)")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Care order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Discharge of care order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Supervision order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim testing order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim testing order")
-                        .markedFinal(YES.getValue())
-                        .build())
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME)
+                            .markedFinal(YesNo.NO.getValue())
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Blank order (C21)")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Care order")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Discharge of care order")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Supervision order")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim testing order")
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim testing order")
+                            .markedFinal(YES.getValue())
+                            .build())
                     )
                 ).build();
 
@@ -2705,54 +2714,54 @@ class MigrateCaseServiceTest {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
                 .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
                 .orderCollection(List.of(
-                    // not final order
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.NO.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE)
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Care order")
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
-                        .build()),
+                        // not final order
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YesNo.NO.getValue())
+                            .approvalDate(LATEST_APPROVAL_DATE)
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Interim Care order")
+                            .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                            .build()),
 
-                    // no approval date
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDate(null)
-                        .approvalDateTime(null)
-                        .build()),
+                        // no approval date
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDate(null)
+                            .approvalDateTime(null)
+                            .build()),
 
-                    // approved final orders
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(2))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(3))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(4))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YES.getValue())
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Final Care order")
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(5))
-                        .build())
+                        // approved final orders
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDate(LATEST_APPROVAL_DATE.minusDays(2))
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(3))
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .approvalDate(LATEST_APPROVAL_DATE.minusDays(4))
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                            .markedFinal(YES.getValue())
+                            .build()),
+                        element(GeneratedOrder.builder()
+                            .type("Final Care order")
+                            .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(5))
+                            .build())
                     )
                 ).build();
 
@@ -3650,6 +3659,166 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
+    class MigrateOthersToOthersV2 {
+        private static final Element<Other> FIRST_OTHER = element(Other.builder().firstName("first").build());
+
+        private static final Element<Other> ADDTIONAL_OTHER_1 = element(Other.builder().firstName("1").build());
+        private static final Element<Other> ADDTIONAL_OTHER_2 = element(Other.builder().firstName("2").build());
+        private static final Element<Other> ADDTIONAL_OTHER_3 = element(Other.builder().firstName("3").build());
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldMigrateOthersToOthersV2() {
+            Others others = Others.builder()
+                .firstOther(FIRST_OTHER.getValue())
+                .additionalOthers(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3))
+                .build();
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("others", others);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .others(others)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.migrateOthersToOthersV2(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(others);
+
+            List<Element<Other>> othersV2 = (List<Element<Other>>) migratedCaseDetails.get("othersV2");
+            assertThat(othersV2).hasSize(4);
+            assertThat(othersV2.get(0).getValue()).isEqualTo(FIRST_OTHER.getValue());
+            assertThat(othersV2.get(1)).isEqualTo(ADDTIONAL_OTHER_1);
+            assertThat(othersV2.get(2)).isEqualTo(ADDTIONAL_OTHER_2);
+            assertThat(othersV2.get(3)).isEqualTo(ADDTIONAL_OTHER_3);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldMigrateOthersToOthersV2IfFirstOtherNotExist() {
+            Others others = Others.builder()
+                .additionalOthers(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3))
+                .build();
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("others", others);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .others(others)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.migrateOthersToOthersV2(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(others);
+
+            List<Element<Other>> othersV2 = (List<Element<Other>>) migratedCaseDetails.get("othersV2");
+            assertThat(othersV2).isEqualTo(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldGetFirstOtherIdIfConfidentialFirstOtherExist() {
+            Others others = Others.builder()
+                .firstOther(FIRST_OTHER.getValue())
+                .additionalOthers(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3))
+                .build();
+
+            List<Element<Other>> confidentialOthers = List.of(FIRST_OTHER, ADDTIONAL_OTHER_2);
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("others", others);
+            caseDetailsMap.put("confidentialOthers", confidentialOthers);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .others(others)
+                .confidentialOthers(confidentialOthers)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.migrateOthersToOthersV2(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(others);
+            assertThat(migratedCaseDetails).extracting("confidentialOthers")
+                .isEqualTo(confidentialOthers);
+            assertThat(migratedCaseDetails).extracting("othersV2")
+                .isEqualTo(List.of(FIRST_OTHER, ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldRollbackOthersV2ToOthers() {
+            List<Element<Other>> othersV2 =
+                List.of(FIRST_OTHER, ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3);
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("othersV2", othersV2);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .othersV2(othersV2)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
+
+            Others actualOthers = (Others) migratedCaseDetails.get("others");
+            assertThat(actualOthers.getFirstOther()).isEqualTo(FIRST_OTHER.getValue());
+            assertThat(actualOthers.getAdditionalOthers()).hasSize(3);
+            assertThat(actualOthers.getAdditionalOthers())
+                .isEqualTo(List.of(ADDTIONAL_OTHER_1, ADDTIONAL_OTHER_2, ADDTIONAL_OTHER_3));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldRollbackOthersV2ToOthersIfOnlyOneOtherExist() {
+            List<Element<Other>> othersV2 = List.of(FIRST_OTHER);
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("othersV2", othersV2);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .othersV2(othersV2)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
+
+            Others actualOthers = (Others) migratedCaseDetails.get("others");
+            assertThat(actualOthers.getFirstOther()).isEqualTo(FIRST_OTHER.getValue());
+            assertThat(actualOthers.getAdditionalOthers()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldRollbackOthersV2ToOthersIfNoOtherExist() {
+            List<Element<Other>> othersV2 = List.of();
+
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("othersV2", othersV2);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .othersV2(othersV2)
+                .build();
+
+            Map<String, Object> migratedCaseDetails =
+                underTest.rollbackOthersV2ToOthers(caseData, caseDetailsMap, MIGRATION_ID);
+
+            assertThat(migratedCaseDetails).doesNotContainKey("othersV2");
+            assertThat(migratedCaseDetails.get("others")).isEqualTo(Others.builder().build());
+        }
+    }
+
+    @Nested
     class RemoveDraftOrderFromAdditionalApplicationBundle {
 
         private final UUID bundleId = UUID.randomUUID();
@@ -3658,16 +3827,16 @@ class MigrateCaseServiceTest {
         private final UUID nonExistentBundleId = UUID.randomUUID();
 
         Element<DraftOrder> draftOrderToRemove = element(orderToRemoveId,
-                DraftOrder.builder()
-                    .title("Order to remove")
-                    .build()
-            );
+            DraftOrder.builder()
+                .title("Order to remove")
+                .build()
+        );
 
         Element<DraftOrder> draftOrderToRetain = element(orderToRetainId,
-                DraftOrder.builder()
-                    .title("Order to retain")
-                    .build()
-            );
+            DraftOrder.builder()
+                .title("Order to retain")
+                .build()
+        );
 
         private final Element<AdditionalApplicationsBundle> bundleWithOrder = element(bundleId,
             AdditionalApplicationsBundle.builder()
@@ -3929,5 +4098,502 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () -> underTest.removeFirstOther(MIGRATION_ID, caseData));
         }
+    }
+
+    @Nested
+    class UpdateCaseManagementLocationDFPL3213 {
+
+        private static final String FLEETWOOD_EPIMMS_ID = "401452";
+        private static final String BLACKPOOL_EPIMMS_ID = "214320";
+        private static final String BLACKPOOL_COURT_CODE = "131";
+        private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
+        private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
+
+        @Test
+        void shouldSuccessfullyMigrateFleetwoodToBlackpool() {
+            CaseLocation location = CaseLocation.builder()
+                .baseLocation("401452")
+                .region("4")
+                .build();
+
+            Court court = Court.builder()
+                .code("438")
+                .name("Family Court sitting at Fleetwood")
+                .epimmsId("401452")
+                .build();
+
+
+            Address mockAddress = Address.builder().postcode("FY7 6AA").build();
+            Orders orders = Orders.builder()
+                .court("438")
+                .address(mockAddress)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(location)
+                .court(court)
+                .orders(orders)
+                .build();
+
+            Map<String, Object> result = underTest.updateCaseManagementLocation(
+                "DFPL-3213",
+                caseData,
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
+            );
+
+            // Assert
+            assertThat(result).containsKey("caseManagementLocation");
+            CaseLocation updatedLocation = (CaseLocation) result.get("caseManagementLocation");
+            assertThat(updatedLocation).isNotNull();
+            assertThat(updatedLocation.getBaseLocation()).isEqualTo("214320");
+
+            assertThat(result).containsKey("court");
+            Court updatedCourt = (Court) result.get("court");
+            assertThat(updatedCourt).isNotNull();
+            assertThat(updatedCourt.getCode()).isEqualTo("131");
+            assertThat(updatedCourt.getEpimmsId()).isEqualTo("214320");
+            assertThat(updatedCourt.getName()).isEqualTo("Family Court sitting at Blackpool");
+
+            assertThat(result).containsKey("orders");
+            Orders updatedOrders = (Orders) result.get("orders");
+            assertThat(updatedOrders).isNotNull();
+            assertThat(updatedOrders.getCourt()).isEqualTo("131");
+            assertThat(updatedOrders.getAddress().getPostcode()).isEqualTo("FY7 6AA");
+
+            assertThat(result)
+                .containsEntry("blackburnLancasterDFJCourt", "131")
+                .containsEntry("caseSummaryCourtName", "Family Court sitting at Blackpool");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenCaseManagementLocationIsNull() {
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(null)
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
+                "DFPL-3213",
+                caseData,
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
+            ))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("caseManagementLocation structure is missing");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenLocationIsNotFleetwood() {
+            CaseLocation location = CaseLocation.builder()
+                .baseLocation("111111")
+                .region("1")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(location)
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateCaseManagementLocation(
+                "DFPL-3213",
+                caseData,
+                FLEETWOOD_EPIMMS_ID,
+                BLACKPOOL_EPIMMS_ID,
+                BLACKPOOL_COURT_CODE,
+                BLACKPOOL_COURT_NAME,
+                BLACKBURN_LANCASTER_DFJ_COURT
+            ))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("expected base location 401452 but found: 111111");
+        }
+
+        @Test
+        void shouldUpdateOrdersCourtToPrestonWhenBaseLocationMatches() {
+            CaseLocation caseManagementLocation = CaseLocation.builder()
+                .baseLocation("102476")
+                .region("4")
+                .build();
+
+            Orders orders = Orders.builder()
+                .court("438")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(caseManagementLocation)
+                .orders(orders)
+                .build();
+
+            // Use underTest instead of migrateCaseService
+            Map<String, Object> updates = underTest.updateOrdersCourt(
+                "DFPL-3213-v2",
+                caseData,
+                "102476",
+                "303"
+            );
+
+            assertThat(updates).containsKey("orders");
+            Orders updatedOrders = (Orders) updates.get("orders");
+            assertThat(updatedOrders.getCourt()).isEqualTo("303");
+            assertThat(updates).doesNotContainKey("caseManagementLocation");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenBaseLocationDoesNotMatch() {
+            CaseLocation caseManagementLocation = CaseLocation.builder()
+                .baseLocation("999999")
+                .region("4")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1778521486149688L)
+                .caseManagementLocation(caseManagementLocation)
+                .build();
+
+            // Use underTest instead of migrateCaseService
+            assertThatThrownBy(() -> underTest.updateOrdersCourt(
+                "DFPL-3213-v2",
+                caseData,
+                "102476",
+                "303"
+            ))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("expected base location 102476 but found: 999999");
+        }
+    }
+
+    @Nested
+    class RemoveSolicitorEmailFromPlacementNotices {
+
+        private static final String TARGET_ID = "0592fa9e-547c-4db0-8c08-6905489fcf8e";
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldReturnTrueAndRemoveMatchingRespondentFromAllThreePlacementFields() {
+            Element<Respondent> matchingElement = Element.<Respondent>builder()
+                .id(UUID.fromString(TARGET_ID))
+                .value(Respondent.builder().build())
+                .build();
+
+            Element<Respondent> keepElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(Respondent.builder().build())
+                .build();
+
+            Placement placementValue = Placement.builder()
+                .placementRespondentsToNotify(List.of(matchingElement, keepElement))
+                .build();
+
+            Element<Placement> placementElement = Element.<Placement>builder()
+                .id(UUID.randomUUID())
+                .value(placementValue)
+                .build();
+
+            List<Element<Placement>> mockPlacementList = List.of(placementElement);
+
+            // Stub the mapper to return our mock placement list
+            Mockito.when(mapper.convertValue(
+                Mockito.any(),
+                Mockito.any(TypeReference.class)
+            )).thenReturn(mockPlacementList);
+
+            Map<String, Object> placementDataMock = new HashMap<>();
+            placementDataMock.put("id", UUID.randomUUID().toString());
+            placementDataMock.put("value", new HashMap<>());
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", new ArrayList<>(List.of(placementDataMock)));
+            caseDataMap.put("placementsNonConfidential", new ArrayList<>(List.of(placementDataMock)));
+            caseDataMap.put("placementsNonConfidentialNotices", new ArrayList<>(List.of(placementDataMock)));
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1767800818952560L)
+                .data(caseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isTrue();
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldReturnFalseWhenNoMatchingIdIsFound() {
+            Element<Respondent> respElement = Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(Respondent.builder().build())
+                .build();
+
+            Placement placementValue = Placement.builder()
+                .placementRespondentsToNotify(List.of(respElement))
+                .build();
+
+            Element<Placement> placementWrap = Element.<Placement>builder()
+                .id(UUID.randomUUID())
+                .value(placementValue)
+                .build();
+
+            List<Element<Placement>> mockPlacementList = List.of(placementWrap);
+
+            // Stub the mapper
+            Mockito.when(mapper.convertValue(
+                Mockito.any(),
+                Mockito.any(TypeReference.class)
+            )).thenReturn(mockPlacementList);
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", List.of(new HashMap<>()));
+            caseDataMap.put("placementsNonConfidential", List.of(new HashMap<>()));
+            caseDataMap.put("placementsNonConfidentialNotices", List.of(new HashMap<>()));
+
+            CaseDetails testCaseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldReturnFalseWhenRespondentElementOrElementIdIsNull() {
+
+            Element<Respondent> nullElement = null;
+            Element<Respondent> nullIdElement = Element.<Respondent>builder()
+                .id(null)
+                .value(Respondent.builder().build())
+                .build();
+
+            List<Element<Respondent>> testList = new ArrayList<>();
+            testList.add(nullElement);
+            testList.add(nullIdElement);
+
+            Placement corruptPlacementValue = Placement.builder()
+                .placementRespondentsToNotify(testList)
+                .build();
+
+            Element<Placement> placementElement = Element.<Placement>builder()
+                .id(UUID.randomUUID())
+                .value(corruptPlacementValue)
+                .build();
+
+            List<Element<Placement>> mockPlacementList = List.of(placementElement);
+
+            // Stub the mapper
+            Mockito.when(mapper.convertValue(
+                Mockito.any(),
+                Mockito.any(TypeReference.class)
+            )).thenReturn(mockPlacementList);
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidential", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidentialNotices", new ArrayList<>(List.of(new HashMap<>())));
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1767800818952560L)
+                .data(caseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseAndSkipProcessingWhenAllPlacementFieldsAreNull() {
+            Map<String, Object> emptyCaseDataMap = new HashMap<>();
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1767800818952560L)
+                .data(emptyCaseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldForceTrueBranchExecutionForAllInnerPlacementBlocks() {
+            java.util.function.Supplier<List<Element<Placement>>> matchSupplier = () -> {
+                Element<Respondent> matchingElement = Element.<Respondent>builder()
+                    .id(UUID.fromString(TARGET_ID))
+                    .value(Respondent.builder().build())
+                    .build();
+                Placement matchingPlacement = Placement.builder()
+                    .placementRespondentsToNotify(List.of(matchingElement)).build();
+                return List.of(Element.<Placement>builder().id(UUID.randomUUID()).value(matchingPlacement).build());
+            };
+
+            Mockito.when(mapper.convertValue(Mockito.any(), Mockito.any(TypeReference.class)))
+                .thenReturn(matchSupplier.get())  // get ("placements")
+                .thenReturn(matchSupplier.get())  // get ("placementsNonConfidentialNotices")
+                .thenReturn(matchSupplier.get()); // get ("placementsNonConfidential")
+
+            Map<String, Object> caseDataMap = new HashMap<>();
+            caseDataMap.put("placements", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidential", new ArrayList<>(List.of(new HashMap<>())));
+            caseDataMap.put("placementsNonConfidentialNotices", new ArrayList<>(List.of(new HashMap<>())));
+
+            CaseDetails testCaseDetails = CaseDetails.builder()
+                .id(1767800818952560L)
+                .data(caseDataMap)
+                .build();
+
+            boolean isModified = underTest.removeSolicitorEmailFromPlacementNotices(testCaseDetails, TARGET_ID);
+
+            // Assert
+            assertThat(isModified).isTrue();
+        }
+    }
+
+    @Test
+    void shouldRemoveTargetElementFromDraftOrdersRemovedAndKeepOthers() {
+        UUID orderIdToRemove = UUID.fromString("13f8bfee-4ed0-40b2-87ac-0300552584d1");
+        UUID orderIdToKeep = UUID.randomUUID();
+
+        Element<HearingOrder> orderToRemove = element(orderIdToRemove, HearingOrder.builder().build());
+        Element<HearingOrder> orderToKeep = element(orderIdToKeep, HearingOrder.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .id(1777371329249951L)
+            .draftOrdersRemoved(List.of(orderToKeep, orderToRemove))
+            .build();
+
+        Map<String, Object> fields = underTest.removeDraftOrdersRemovedElement(
+            caseData, "DFPL-3345", orderIdToRemove
+        );
+
+        @SuppressWarnings("unchecked")
+        List<Element<HearingOrder>> result = (List<Element<HearingOrder>>) fields.get("draftOrdersRemoved");
+
+        assertThat(result)
+            .hasSize(1)
+            .containsExactly(orderToKeep);
+    }
+
+    @Test
+    void shouldThrowAssertionErrorWhenDraftOrdersRemovedIsEmpty() {
+        UUID orderIdToRemove = UUID.fromString("13f8bfee-4ed0-40b2-87ac-0300552584d1");
+
+        CaseData caseData = CaseData.builder()
+            .id(1777371329249951L)
+            .draftOrdersRemoved(List.of())
+            .build();
+
+        assertThatThrownBy(() -> underTest.removeDraftOrdersRemovedElement(caseData, "DFPL-3345", orderIdToRemove))
+            .isInstanceOf(AssertionError.class)
+            .hasMessageContaining("draftOrdersRemoved collection is empty");
+    }
+
+    @Test
+    void shouldThrowAssertionErrorWhenTargetElementNotFoundInDraftOrdersRemoved() {
+        UUID orderIdToRemove = UUID.fromString("13f8bfee-4ed0-40b2-87ac-0300552584d1");
+        UUID otherOrderId = UUID.randomUUID();
+
+        CaseData caseData = CaseData.builder()
+            .id(1777371329249951L)
+            .draftOrdersRemoved(List.of(element(otherOrderId, HearingOrder.builder().build())))
+            .build();
+
+        assertThatThrownBy(() -> underTest.removeDraftOrdersRemovedElement(caseData, "DFPL-3345", orderIdToRemove))
+            .isInstanceOf(AssertionError.class)
+            .hasMessageContaining("target element " + orderIdToRemove + " not found in draftOrdersRemoved");
+    }
+
+    @Test
+    void shouldUpdateChildStatusWithFinalOrderIssued() {
+        UUID childOneId = UUID.randomUUID();
+        UUID childTwoId = UUID.randomUUID();
+        UUID childThreeId = UUID.randomUUID();
+        Child childOne = Child.builder()
+            .party(ChildParty.builder().firstName("One").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
+        Child childTwo = Child.builder()
+            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .finalOrderIssued(YES.getValue())
+            .build();
+        Child childThree = Child.builder()
+            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .children1(List.of(
+                element(childOneId, childOne),
+                element(childTwoId, childTwo),
+                element(childThreeId, childThree)))
+            .orderCollection(wrapElementsWithUUIDs(
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childOneId, childOne), element(childTwoId, childTwo)))
+                    .build()))
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionCTSC(wrapElementsWithUUIDs(
+                    GeneratedOrder.builder()
+                        .type("Final")
+                        .markedFinal(YES.getValue())
+                        .children(List.of(element(childThreeId, childThree)))
+                        .build()))
+                .build())
+            .build();
+
+        Map<String, Object> actualUpdate = underTest.updateChildStatusWithFinalOrderIssued(MIGRATION_ID, caseData);
+
+        assertThat(actualUpdate).containsOnlyKeys("children1");
+
+
+        assertThat(actualUpdate.get("children1")).isEqualTo(List.of(
+            element(childOneId, childOne.toBuilder().finalOrderIssued(YES.getValue()).build()),
+            element(childTwoId, childTwo),
+            element(childThreeId, childThree.toBuilder().finalOrderIssued(YES.getValue()).build())
+        ));
+    }
+
+    @Test
+    void shouldNotUpdateChildStatusWithoutFinalOrderIssued() {
+        UUID childOneId = UUID.randomUUID();
+        UUID childTwoId = UUID.randomUUID();
+        Child childOne = Child.builder()
+            .party(ChildParty.builder().firstName("One").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
+        Child childTwo = Child.builder()
+            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .finalOrderIssued(YES.getValue())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .children1(List.of(
+                element(childOneId, childOne),
+                element(childTwoId, childTwo)))
+            .orderCollection(wrapElementsWithUUIDs(
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childTwoId, childTwo)))
+                    .build()))
+            .build();
+
+        assertThatThrownBy(() -> underTest.updateChildStatusWithFinalOrderIssued(MIGRATION_ID, caseData))
+            .isInstanceOf(AssertionError.class)
+            .hasMessage(format("Migration {id = %s, case reference = %s}, no child requires update", MIGRATION_ID, 1L));
     }
 }

@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
@@ -27,6 +26,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class UrgentGatekeepingOrderServiceTest {
     private static final DocumentReference UPLOADED_ORDER = mock(DocumentReference.class);
@@ -154,7 +154,7 @@ class UrgentGatekeepingOrderServiceTest {
 
     @Test
     void getNoticeOfProceedingsTemplatesWithOthers() {
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(mock(Other.class)).build()).build();
+        CaseData caseData = CaseData.builder().othersV2(wrapElements(mock(Other.class))).build();
 
         assertThat(underTest.getNoticeOfProceedingsTemplates(caseData)).isEqualTo(List.of(C6, C6A));
     }

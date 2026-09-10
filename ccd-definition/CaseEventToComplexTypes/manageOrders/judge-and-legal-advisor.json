@@ -36,7 +36,7 @@
     "CaseEventID": "manageOrders",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
-    "EventElementLabel": "Judge or magistrate's title",
+    "EventElementLabel": "Judge or Magistrate's title",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },

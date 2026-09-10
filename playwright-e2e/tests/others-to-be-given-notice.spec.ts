@@ -1,6 +1,6 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
-import caseData from '../caseData/caseSentToGatekeeper.json' assert { type: "json" };
+import caseData from '../caseData/caseSentToGatekeeper.json' with { type: "json" };
 import { newSwanseaLocalAuthorityUserOne, CTSCUser} from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 
@@ -25,7 +25,11 @@ test.describe('Others to be given notice', () => {
             await othersToBeGivenNotice.gotoNextStep('Others to be given notice');
             await othersToBeGivenNotice.othersToBeGivenNotice();
             await othersToBeGivenNotice.tabNavigation('People in the case');
-            await expect(page.getByText('Person 1',{exact: true})).toBeVisible();
-            await expect(page.getByText('John Doe')).toBeVisible();
+            await expect(page.getByText('Others to be given notice 1',{exact: true})).toBeVisible();
+            await expect(page.getByText('James',{exact: true})).toBeVisible();
+            await expect(page.getByText('Trace',{exact: true})).toBeVisible();
+            await expect(page.getByText('Others to be given notice 1',{exact: true})).toBeVisible();
+            await expect(page.getByText('Tim',{exact: true})).toBeVisible();
+            await expect(page.getByText('kim',{exact: true})).toBeVisible();
         })
 });

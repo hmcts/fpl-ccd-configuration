@@ -29,7 +29,7 @@ export class LogExpertReport extends BasePage {
         await this.Year.fill('2024');
         await this.radioButton.click();
         await this.radioButton.click();
-        await this.clickSubmit();
-        await this.saveAndContinue.click();
+        await this.clickSaveAndContinue();
+        await this.clickSaveAndContinue();
     }
 };

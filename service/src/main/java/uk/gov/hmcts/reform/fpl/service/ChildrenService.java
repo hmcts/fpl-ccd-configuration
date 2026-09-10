@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
 
 import java.util.ArrayList;
@@ -198,4 +201,32 @@ public class ChildrenService {
             Collections.unmodifiableList(before));
     }
 
+    public DynamicMultiSelectList getChildrenMultiSelectList(CaseData caseData) {
+        List<DynamicMultiSelectListElement> listItems = new ArrayList<>();
+        if (caseData.getChildren1() != null) {
+            IncrementalInteger i = new IncrementalInteger(1);
+            caseData.getChildren1().forEach(child -> listItems.add(DynamicMultiSelectListElement
+                .builder().code(child.getId().toString()).label(child.getValue().asLabel()
+                    + " (Child " + i.getAndIncrement() + ")").build()));
+        }
+        return DynamicMultiSelectList.builder().listItems(listItems).build();
+    }
+
+    public List<Element<Child>> getSelectedChildrenFromMultiSelectList(CaseData caseData) {
+        if (caseData == null) {
+            return Collections.emptyList();
+        }
+        return getSelectedChildrenFromMultiSelectList(caseData.getAllChildren(),
+            caseData.getChildSelectorV2(), caseData.getOrderAppliesToAllChildren());
+    }
+
+    private List<Element<Child>> getSelectedChildrenFromMultiSelectList(List<Element<Child>> children,
+                                                                        DynamicMultiSelectList childSelectorV2,
+                                                                        String appliesToAllChildren) {
+        if (useAllChildren(appliesToAllChildren)) {
+            return children;
+        } else {
+            return childSelectorV2.getSelectedElementsFromMultiSelectList(children);
+        }
+    }
 }

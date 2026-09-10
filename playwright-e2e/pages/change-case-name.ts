@@ -16,6 +16,6 @@ export class ChangeCaseName extends BasePage {
         await expect(this.page.getByText('Case name will be updated to:')). toBeVisible();
         await expect(this.page.locator('#updatedCaseNameLabel').getByText('Swansea City Council & Bloggs')).toBeVisible();
         await expect(this.page.getByText('based on the current applicant and respondent\'s details.')).toBeVisible();
-        await this.clickSubmit();
+        await this.clickSaveAndContinue();
     };
 };

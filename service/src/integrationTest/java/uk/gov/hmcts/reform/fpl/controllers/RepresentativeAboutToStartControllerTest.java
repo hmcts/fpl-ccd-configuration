@@ -45,7 +45,7 @@ class RepresentativeAboutToStartControllerTest extends AbstractCallbackTest {
             .data(Map.of(
                 "representatives", representatives,
                 "respondents1", createRespondents(),
-                "others", createOthers()))
+                "othersV2", createOthers()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);

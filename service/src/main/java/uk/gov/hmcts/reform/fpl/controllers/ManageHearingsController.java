@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -94,10 +95,15 @@ public class ManageHearingsController extends CallbackController {
         caseDetails.getData().remove(SELECTED_HEARING_ID);
 
         CaseData caseData = getCaseData(caseDetails);
+        List<String> errors = new ArrayList<>();
 
         if (caseData.getAllocatedJudge() != null) {
             caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
             caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+        } else {
+            // Capture the error
+            errors.add("You will need to add a judge or legal adviser using the allocated "
+                + "judge event before you can proceed to use manage hearings");
         }
 
         boolean isFirstHearing = isEmpty(caseData.getAllHearings());
@@ -112,7 +118,8 @@ public class ManageHearingsController extends CallbackController {
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
 
-        return respond(caseDetails);
+        // Return everything together. If errors list has items, display them to the user.
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/edit-hearing/mid-event")

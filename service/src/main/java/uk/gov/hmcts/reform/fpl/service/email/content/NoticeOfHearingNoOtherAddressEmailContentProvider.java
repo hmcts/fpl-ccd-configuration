@@ -29,7 +29,7 @@ public class NoticeOfHearingNoOtherAddressEmailContentProvider extends AbstractE
             .ccdNumber(formatCCDCaseNumber(caseData.getId()))
             .hearingType(hearingBooking.getType().getLabel().toLowerCase())
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
-            .partyName(other.getName())
+            .partyName(other.getFullName())
             .caseUrl(getCaseUrl(caseData.getId(), HEARINGS))
             .build();
     }

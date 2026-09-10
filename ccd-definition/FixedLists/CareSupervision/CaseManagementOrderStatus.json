@@ -26,5 +26,12 @@
     "ListElementCode": "DRAFT",
     "ListElement": "Draft order, to review before hearing",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrderStatus",
+    "ListElementCode": "REMOVED",
+    "ListElement": "Removed",
+    "DisplayOrder": 5
   }
 ]

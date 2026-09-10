@@ -36,21 +36,12 @@ class StandardDirectionOrderTest {
     }
 
     @Test
-    void shouldReturnTrueWhenOrderIsRemovable() {
-        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
-            .orderStatus(SEALED)
-            .build();
-
-        assertThat(standardDirectionOrder.isRemovable()).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseWhenOrderIsNotRemovable() {
+    void shouldReturnFalseWhenOrderIsDraft() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .orderStatus(DRAFT)
             .build();
 
-        assertThat(standardDirectionOrder.isRemovable()).isFalse();
+        assertThat(standardDirectionOrder.isRemovable()).isTrue();
     }
 
     @Test

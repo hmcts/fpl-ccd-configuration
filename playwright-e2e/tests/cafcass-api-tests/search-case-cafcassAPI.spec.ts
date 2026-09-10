@@ -1,11 +1,14 @@
 import {expect, test} from "../../fixtures/fixtures";
 import {createCase, updateCase} from "../../utils/api-helper";
-import {authToken, newSwanseaLocalAuthorityUserOne} from "../../settings/user-credentials";
+import {
+    cafcassAPIUser,
+    newSwanseaLocalAuthorityUserOne,
+    systemUpdateUser
+} from "../../settings/user-credentials";
 import cafcassAPISearchSchema from '../../caseData/cafcassAPITest/cafcassAPICaseSchema.json' assert {type: 'json'};
 import submitCase from '../../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 import cafcassCase from '../../caseData/cafcassAPITest/caseCaffcassAPISearchAllFieldData.json' assert {type: 'json'};
 import {cafcassAPICaseSearch, getDateTimePram, validateCaseItemWithSchema} from "../../utils/cafcass-api-test-helper";
-import caseData from "../../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json";
 import {testConfig} from "../../settings/test-config";
 
 test.describe('CafcassAPI search cases', () => {
@@ -38,7 +41,7 @@ test.describe('CafcassAPI search cases', () => {
             intervalStartTime = getDateTimePram(currentTime, -2); // getting time 2 mins before the current time for start time
             intervalEndTime = getDateTimePram(currentTime, 10); // getting time 10 mins after the current time for end time
 
-            let response = await cafcassAPICaseSearch(request, authToken.cafcassAuth, intervalStartTime, intervalEndTime);
+            let response = await cafcassAPICaseSearch(request, cafcassAPIUser, intervalStartTime, intervalEndTime);
 
             //assert the response
             expect.soft(response.status()).toBe(200);
@@ -75,14 +78,14 @@ test.describe('CafcassAPI search cases', () => {
         })
     test('search case by unauthorised user', async ({request}) => {
 
-        let response = await cafcassAPICaseSearch(request, authToken.systemAuth, intervalStartTime, intervalEndTime);
+        let response = await cafcassAPICaseSearch(request, systemUpdateUser, intervalStartTime, intervalEndTime);
         //assertion
         expect(response.status()).toBe(403);
         expect(response.statusText()).toBe('Forbidden');
     })
     test('Search cases with invalid search time interval', async ({request}) => {
         let endTime = new Date().setMinutes(new Date().getMinutes() + 30);
-        let response = await cafcassAPICaseSearch(request, authToken.cafcassAuth, intervalStartTime, endTime.toString());
+        let response = await cafcassAPICaseSearch(request, cafcassAPIUser, intervalStartTime, endTime.toString());
         //assertion
         expect(response.status()).toEqual(400);
         expect(response.statusText()).toEqual('Bad Request');

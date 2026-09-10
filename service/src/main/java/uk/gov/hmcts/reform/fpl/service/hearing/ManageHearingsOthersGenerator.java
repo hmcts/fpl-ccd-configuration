@@ -26,7 +26,7 @@ public class ManageHearingsOthersGenerator {
 
     public Map<String, Object> generate(CaseData caseData, HearingBooking hearingBooking) {
 
-        List<Element<Other>> allOthers = caseData.getAllOthers();
+        List<Element<Other>> allOthers = caseData.getOthersV2();
         List<Element<Other>> selectedOthers = hearingBooking.getOthers();
 
         Map<String, Object> data = new HashMap<>();
@@ -34,7 +34,7 @@ public class ManageHearingsOthersGenerator {
             data.put("hasOthers", YES.getValue());
             data.put("othersSelector",
                 othersService.buildOtherSelector(unwrapElements(allOthers), unwrapElements(selectedOthers)));
-            data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
+            data.put("others_label", othersService.getOthersLabel(caseData.getOthersV2()));
 
             if (NEW_HEARING != caseData.getHearingOption()) {
                 data.put("sendNoticeOfHearing", sendNoticeOfHearing(hearingBooking) ? YES.getValue() : NO.getValue());

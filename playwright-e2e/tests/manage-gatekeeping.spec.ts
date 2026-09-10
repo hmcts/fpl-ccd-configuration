@@ -31,7 +31,7 @@ test.describe('Adding gatekeeping details', () => {
             await test.step('Add family man reference number', async () => {
                 await familymanCaseNumber.gotoNextStep('Add case number');
                 await familymanCaseNumber.fillfamilyManCaseNumber('TN24C51337');
-                await familymanCaseNumber.clickSubmit();
+                await familymanCaseNumber.clickSaveAndContinue();
 
                 await expect(familymanCaseNumber.page.getByText('has been updated with event: Add case number')).toBeVisible();
                 await expect(familymanCaseNumber.page.getByRole('heading', {
@@ -46,7 +46,7 @@ test.describe('Adding gatekeeping details', () => {
             await test.step('Send to gatekeeper', async () => {
                 await signInPage.gotoNextStep('Send to gatekeeper');
                 await sendToGatekepperPage.fillGateKeeperEmail('gatekeeper@email.com');
-                await sendToGatekepperPage.clickSubmit();
+                await sendToGatekepperPage.clickSaveAndContinue();
                 await sendToGatekepperPage.clickSaveAndContinue();
 
                 await sendToGatekepperPage.tabNavigation('History');

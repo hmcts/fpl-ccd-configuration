@@ -40,7 +40,7 @@
     "ListElementCode": "judgeTitle",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "JudgeOrMagistrateTitle",
-    "ElementLabel": "Judge or magistrate's title",
+    "ElementLabel": "Judge or Magistrate's title",
     "FieldShowCondition": "useAllocatedJudge=\"No\" OR allocatedJudgeLabel!=\"*\"",
     "SecurityClassification": "Public"
   },

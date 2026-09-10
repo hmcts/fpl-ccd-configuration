@@ -126,7 +126,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(child);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -158,7 +158,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(child);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -189,7 +189,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(child);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -221,7 +221,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(child);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -260,7 +260,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(child);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);

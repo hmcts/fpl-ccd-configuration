@@ -56,7 +56,7 @@ public class OtherRecipientsInbox {
         RepresentativeServingPreferences servingPreferences,
         CaseData caseData
     ) {
-        Set<UUID> allOthersRepresentativeIds = caseData.getAllOthers().stream()
+        Set<UUID> allOthersRepresentativeIds = caseData.getOthersV2().stream()
             .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))
             .collect(Collectors.toSet());
 

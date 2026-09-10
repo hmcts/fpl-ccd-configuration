@@ -31,7 +31,7 @@
     "moment": "2.30.1",
     "node-fetch": "^2.6.9",
     "node-gyp": "^9.4.0",
-    "pdfjs-dist": "4.2.67",
+    "pdfjs-dist": "4.10.38",
     "qs": "^6.11.2",
     "typescript": "^5.4.5",
     "webdriverio": "8.36.1"
@@ -54,11 +54,11 @@
     "test:api-test": "yarn playwright test --project=APITest --config=playwright.api.config.ts",
     "test:functional-cafcassAPI": "yarn playwright install chromium && yarn playwright test --project=cafcassAPITest --config=playwright.api.config.ts --repeat-each 3",
     "prepare": "husky install",
-    "yarn-update": "yarn set version 3.x",
+    "yarn-update": "yarn set version 4.x",
     "install-dependencies": "/usr/bin/yarn install --silent",
     "lint-ui-tests": "/usr/bin/yarn lint",
     "build-container": "docker build -t playwright-container .",
-    "start-container": "docker run --rm -it --network host --ipc=host -v \"$(pwd)\":/playwright -w /playwright playwright /bin/bash"
+    "start-container": "docker run --rm -it --network host --shm-size=4g -v \"$(pwd)\":/playwright -w /playwright playwright /bin/bash"
   },
   "peerDependencies": {
     "debug": "4.4.0",
@@ -69,11 +69,11 @@
   "resolutions": {
     "yargs-parser": "^20.2.9"
   },
-  "packageManager": "yarn@3.8.6",
+  "packageManager": "yarn@4.14.1",
   "license": "MIT",
   "dependencies": {
-    "@axe-core/playwright": "^4.8.5",
-    "@hmcts/playwright-common": "^1.0.34",
+    "@axe-core/playwright": "^4.11.1",
+    "@hmcts/playwright-common": "^1.1.2",
     "@types/lodash": "^4.14.202",
     "dotenv": "^16.4.1"
   }
