@@ -209,6 +209,17 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2SupportingEvidenceBundleConfidential",
+    "ListElementCode": "hasConfidentialAddressConfirmation",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "NoConfidentialAddressConfirmation",
+    "ElementLabel": "There is a confidential address on this case. Check the document and confirm it doesn't contain a confidential address.",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "hasConfidentialAddressConfirmation=\"DO_NOT_SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2SupportingEvidenceBundleConfidential",
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",

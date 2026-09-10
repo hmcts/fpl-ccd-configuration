@@ -139,6 +139,7 @@ class C2DocumentBundleSerializationTest {
             entry("description", "description"),
             entry("uploadedDateTime", "uploadedDatetime"),
             entry("author", "Author"),
+            entry("hasConfidentialAddressValue", YesNo.NO.getValue()),
             entry("supportingEvidenceBundle", expectedBundles),
             entry("supplementsBundle", expectedSupplementBundle)
         );
@@ -223,6 +224,7 @@ class C2DocumentBundleSerializationTest {
             entry("description", "description"),
             entry("uploadedDateTime", "uploadedDatetime"),
             entry("author", "Author"),
+            entry("hasConfidentialAddressValue", YesNo.NO.getValue()),
             entry("supportingEvidenceBundle", expectedBundles),
             entry("supplementsBundle", expectedSupplementBundle)
         );
