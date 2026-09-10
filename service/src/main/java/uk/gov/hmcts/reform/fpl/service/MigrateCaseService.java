@@ -16,12 +16,31 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.Recipients;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Recipients;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -34,31 +53,13 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.CloseCase;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.Hearing;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
-import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
-import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
-import uk.gov.hmcts.reform.fpl.model.Proceeding;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1819,5 +1820,43 @@ public class MigrateCaseService {
         }
 
         return updates;
+    }
+
+    public Map<String, Object> updateChildStatusWithFinalOrderIssued(String migrationId, CaseData caseData) {
+        Map<String, Object> updates = new HashMap<>();
+
+        final Set<UUID> childIdWithFinalOrderIssued = caseData.getAllOrderCollections().stream()
+            .map(Element::getValue)
+            .filter(GeneratedOrder::isFinalOrder)
+            .map(GeneratedOrder::getChildren)
+            .flatMap(List::stream)
+            .map(Element::getId)
+            .collect(Collectors.toSet());
+
+        Set<UUID> childUpdated = new HashSet<>();
+
+        List<Element<Child>> children = caseData.getChildren1().stream()
+            .map(childElm -> {
+                if (childIdWithFinalOrderIssued.contains(childElm.getId())
+                    && !YesNo.YES.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
+                    childUpdated.add(childElm.getId());
+
+                    return element(childElm.getId(),
+                        childElm.getValue().toBuilder()
+                            .finalOrderIssued(YesNo.YES.getValue())
+                            .build());
+                } else {
+                    return childElm;
+                }
+            })
+            .toList();
+
+        if (!isEmpty(childUpdated)) {
+            updates.put("children1", children);
+            return updates;
+        } else {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, no child requires update",
+                migrationId, caseData.getId()));
+        }
     }
 }

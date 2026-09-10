@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.enums.ProceedingStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -40,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
@@ -87,7 +89,7 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
-import uk.gov.hmcts.reform.fpl.model.Address;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -113,6 +115,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
@@ -4639,5 +4642,88 @@ class MigrateCaseServiceTest {
         assertThatThrownBy(() -> underTest.removeDraftOrdersRemovedElement(caseData, "DFPL-3345", orderIdToRemove))
             .isInstanceOf(AssertionError.class)
             .hasMessageContaining("target element " + orderIdToRemove + " not found in draftOrdersRemoved");
+    }
+
+    @Test
+    void shouldUpdateChildStatusWithFinalOrderIssued() {
+        UUID childOneId = UUID.randomUUID();
+        UUID childTwoId = UUID.randomUUID();
+        UUID childThreeId = UUID.randomUUID();
+        Child childOne = Child.builder()
+            .party(ChildParty.builder().firstName("One").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
+        Child childTwo = Child.builder()
+            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .finalOrderIssued(YES.getValue())
+            .build();
+        Child childThree = Child.builder()
+            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .children1(List.of(
+                element(childOneId, childOne),
+                element(childTwoId, childTwo),
+                element(childThreeId, childThree)))
+            .orderCollection(wrapElementsWithUUIDs(
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childOneId, childOne), element(childTwoId, childTwo)))
+                    .build()))
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionCTSC(wrapElementsWithUUIDs(
+                    GeneratedOrder.builder()
+                        .type("Final")
+                        .markedFinal(YES.getValue())
+                        .children(List.of(element(childThreeId, childThree)))
+                        .build()))
+                .build())
+            .build();
+
+        Map<String, Object> actualUpdate = underTest.updateChildStatusWithFinalOrderIssued(MIGRATION_ID, caseData);
+
+        assertThat(actualUpdate).containsOnlyKeys("children1");
+
+
+        assertThat(actualUpdate.get("children1")).isEqualTo(List.of(
+            element(childOneId, childOne.toBuilder().finalOrderIssued(YES.getValue()).build()),
+            element(childTwoId, childTwo),
+            element(childThreeId, childThree.toBuilder().finalOrderIssued(YES.getValue()).build())
+        ));
+    }
+
+    @Test
+    void shouldNotUpdateChildStatusWithoutFinalOrderIssued() {
+        UUID childOneId = UUID.randomUUID();
+        UUID childTwoId = UUID.randomUUID();
+        Child childOne = Child.builder()
+            .party(ChildParty.builder().firstName("One").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
+        Child childTwo = Child.builder()
+            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .finalOrderIssued(YES.getValue())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .children1(List.of(
+                element(childOneId, childOne),
+                element(childTwoId, childTwo)))
+            .orderCollection(wrapElementsWithUUIDs(
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childTwoId, childTwo)))
+                    .build()))
+            .build();
+
+        assertThatThrownBy(() -> underTest.updateChildStatusWithFinalOrderIssued(MIGRATION_ID, caseData))
+            .isInstanceOf(AssertionError.class)
+            .hasMessage(format("Migration {id = %s, case reference = %s}, no child requires update", MIGRATION_ID, 1L));
     }
 }
