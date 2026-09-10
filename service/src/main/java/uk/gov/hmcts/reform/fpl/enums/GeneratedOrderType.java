@@ -15,7 +15,8 @@ public enum GeneratedOrderType {
     DISCHARGE_OF_CARE_ORDER("Discharge of care order", "discharge_of_care_order.pdf"),
     SUPERVISION_ORDER("Supervision order", "supervision_order.pdf"),
     UPLOAD(null, null),
-    REFUSAL_ORDER("Refusal order", "refusal_order.pdf"),;
+    REFUSAL_ORDER("Refusal order", "refusal_order.pdf"),
+    LIST_AT_NEXT_HEARING_ORDER("List at next hearing order", "list_at_next_hearing_order.pdf");
 
     private final String label;
     private final String fileName;
