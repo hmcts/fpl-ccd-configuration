@@ -75,7 +75,7 @@
     "CaseEventID": "placement",
     "CaseFieldID": "respondentsSelectorV2",
     "PageFieldDisplayOrder": 7,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "FieldShowCondition": "sendPlacementNoticeToAllRespondents=\"No\"",
