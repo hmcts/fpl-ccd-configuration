@@ -403,6 +403,6 @@
     "ListElementCode": "supportingEvidenceBundle.hasConfidentialAddressConfirmation",
     "FieldDisplayOrder": 38,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "isC2Confidential=\"No\" AND c2ApplicationRoute=\"PAPER_FORM\" AND hasConfidentialParty=\"YES\""
+    "FieldShowCondition": "isC2Confidential=\"No\" AND hasConfidentialParty=\"YES\""
   }
 ]
