@@ -208,6 +208,11 @@ public class CaseManagementOrderIssuedEventHandler {
     @EventListener
     public void createWorkAllocationTask(CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
-        workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.CMO_REVIEWED);
+        boolean orderConcludesProceedings = event.getCmo().getHasOrderConcludedProceedings().equalsString("Yes");
+
+        workAllocationTaskService.createWorkAllocationTask(caseData,
+            orderConcludesProceedings
+                ? WorkAllocationTaskType.ORDER_CONCLUDES_PROCEEDINGS
+                : WorkAllocationTaskType.CMO_REVIEWED);
     }
 }
