@@ -37,6 +37,16 @@
       "option10": [],
       "option11": []
     },
+    "childSelectorV2": {
+      "value": [{
+        "code": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "label": "Timothy Jones (Child 1)"
+      }],
+      "list_items": [{
+        "code": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "label": "Timothy Jones (Child 1)"
+      }]
+    },
     "hearingDetailsSectionSubHeader": "Discharge of care order (C32B)",
     "othersSelector": {
       "option9": [],

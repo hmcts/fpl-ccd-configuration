@@ -326,6 +326,7 @@ class ChildrenServiceTest {
             CaseData caseData = CaseData.builder()
                 .children1(childrenList)
                 .orderAppliesToAllChildren("Yes")
+                .childSelectorV2(childrenMultiSelectListWithSelectedChildren)
                 .build();
 
             List<Element<Child>> selectedChildren = service.getSelectedChildrenFromMultiSelectList(caseData);
@@ -338,6 +339,7 @@ class ChildrenServiceTest {
             CaseData caseData = CaseData.builder()
                 .children1(childrenList)
                 .orderAppliesToAllChildren(null)
+                .childSelectorV2(childrenMultiSelectListWithSelectedChildren)
                 .build();
 
             List<Element<Child>> selectedChildren = service.getSelectedChildrenFromMultiSelectList(caseData);
