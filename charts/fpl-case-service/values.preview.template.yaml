@@ -7,6 +7,7 @@ java:
   livenessDelay: 50
   devmemoryRequests: '1524Mi'
   devmemoryLimits: '2048Mi'
+  devcpuRequests: '100m'
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -59,8 +60,8 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctsprod.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    devcpuRequests: 500m
-    devmemoryRequests: 1Gi
+    devcpuRequests: 50m
+    devmemoryRequests: 512Mi
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     readinessPeriod: 5
@@ -148,7 +149,7 @@ ccd:
       imagePullPolicy: Always
       devmemoryRequests: '1524Mi'
       devmemoryLimits: '2048Mi'
-      devcpuRequests: '900m'
+      devcpuRequests: '50m'
       environment:
         CCD_MULTIPARTY_FIX_ENABLED: true
         CCD_MULTIPARTY_CASE_TYPES: "*"
@@ -191,7 +192,7 @@ ccd:
       disableKeyVaults: true
       devmemoryRequests: '1024Mi'
       devmemoryLimits: '2048Mi'
-      devcpuRequests: '900m'
+      devcpuRequests: '50m'
       autoscaling:
         enabled: false
         minReplicas: 1
@@ -218,6 +219,7 @@ ccd:
     java:
       disableKeyVaults: true
       imagePullPolicy: Always
+      devcpuRequests: 50m
       autoscaling:
         enabled: false
         minReplicas: 1
@@ -288,6 +290,7 @@ ccd:
     java:
       devmemoryRequests: '1024Mi'
       devmemoryLimits: '2048Mi'
+      devcpuRequests: '50m'
       ingressHost: am-role-assignment-service-${SERVICE_FQDN}
       autoscaling:
         enabled: false
@@ -324,6 +327,7 @@ aac-manage-case-assignment:
     releaseNameOverride: ${SERVICE_NAME}-aac
     image: hmctsprod.azurecr.io/aac/manage-case-assignment:latest
     ingressHost: aac-${SERVICE_FQDN}
+    devcpuRequests: 50m
     environment:
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -366,6 +370,7 @@ ccd-case-document-am-api:
     imagePullPolicy: Always
     image: hmctsprod.azurecr.io/ccd/case-document-am-api:latest
     ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
+    devcpuRequests: 50m
     autoscaling:
       enabled: false
       minReplicas: 1
