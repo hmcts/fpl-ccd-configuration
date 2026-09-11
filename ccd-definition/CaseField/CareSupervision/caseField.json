@@ -514,10 +514,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "proceedings",
+    "ID": "proceeding",
     "Label": "Other proceedings",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Proceeding",
+    "FieldType": "Proceeding",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

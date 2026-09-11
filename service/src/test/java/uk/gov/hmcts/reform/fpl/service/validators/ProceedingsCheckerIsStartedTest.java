@@ -10,13 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class ProceedingsCheckerIsStartedTest {
@@ -27,9 +24,9 @@ class ProceedingsCheckerIsStartedTest {
     @ParameterizedTest
     @NullSource
     @MethodSource("emptyProceedings")
-    void shouldReturnFalseWhenEmptyProceedings(List<Element<Proceeding>> proceedings) {
+    void shouldReturnFalseWhenEmptyProceedings(Proceeding proceeding) {
         final CaseData caseData = CaseData.builder()
-                .proceedings(proceedings)
+                .proceeding(proceeding)
                 .build();
 
         assertThat(proceedingsChecker.isStarted(caseData)).isFalse();
@@ -37,8 +34,11 @@ class ProceedingsCheckerIsStartedTest {
 
     @Test
     void shouldReturnTrueWhenProceedingsNotEmpty() {
+        final Proceeding proceeding = Proceeding.builder()
+                .onGoingProceeding("No")
+                .build();
         final CaseData caseData = CaseData.builder()
-                .proceedings(wrapElements(Proceeding.builder().build()))
+                .proceeding(proceeding)
                 .build();
 
         assertThat(proceedingsChecker.isStarted(caseData)).isTrue();
@@ -46,8 +46,11 @@ class ProceedingsCheckerIsStartedTest {
 
     private static Stream<Arguments> emptyProceedings() {
         return Stream.of(
-                null,
-                List.of())
+                Proceeding.builder()
+                        .build(),
+                Proceeding.builder()
+                        .onGoingProceeding("")
+                        .build())
                 .map(Arguments::of);
     }
 }
