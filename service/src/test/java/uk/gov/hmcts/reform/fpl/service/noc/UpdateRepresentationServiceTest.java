@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.noc;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -289,6 +290,51 @@ class UpdateRepresentationServiceTest {
 
         assertThat(actual).isEqualTo(Map.of(
             "respondents1", List.of(respondent1, updatedRespondent, respondent3),
+            "changeOfRepresentatives", UPDATED_CHANGE_OF_REPRESENTATIVES
+        ));
+    }
+
+    @Test
+    void shouldUpdateRepresentationForThirdPartyOutsourcing() {
+        Organisation oldOrg = Organisation.builder().organisationID("Test123").build();
+        Organisation newOrg = Organisation.builder().organisationID("Test456").build();
+
+        RespondentSolicitor initialSolicitor = RespondentSolicitor.builder()
+            .organisation(oldOrg)
+            .build();
+
+        RespondentSolicitor newSolicitor = RespondentSolicitor.builder()
+            .firstName("Tom")
+            .lastName("Wilson")
+            .email(SOLICITOR_EMAIL)
+            .organisation(newOrg)
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .appSolicitorPolicy(OrganisationPolicy.builder()
+                .organisation(oldOrg)
+                .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
+                .build())
+            .changeOrganisationRequestField(ChangeOrganisationRequest.builder()
+                .organisationToAdd(newOrg)
+                .caseRoleId(caseRoleDynamicList("[APPSOLICITOR]"))
+                .build())
+            .changeOfRepresentatives(CHANGE_OF_REPRESENTATIVES)
+            .build();
+
+        when(changeService.changeRepresentative(
+            ChangeOfRepresentationRequest.builder()
+                .method(NOC)
+                .by(SOLICITOR_EMAIL)
+                .current(CHANGE_OF_REPRESENTATIVES)
+                .addedRepresentative(newSolicitor)
+                .removedRepresentative(initialSolicitor)
+                .build()
+        )).thenReturn(UPDATED_CHANGE_OF_REPRESENTATIVES);
+
+        final Map<String, Object> actual = underTest.updateRepresentationThirdPartyOutsourcing(caseData, USER);
+
+        assertThat(actual).isEqualTo(Map.of(
             "changeOfRepresentatives", UPDATED_CHANGE_OF_REPRESENTATIVES
         ));
     }

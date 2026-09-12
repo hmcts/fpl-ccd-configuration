@@ -202,5 +202,11 @@
     "ID": "CaseRole",
     "ListElementCode": "CHILDSOLICITORO",
     "ListElement": "Child Solicitor O"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "APPSOLICITOR",
+    "ListElement": "Applicant's Solicitor"
   }
 ]

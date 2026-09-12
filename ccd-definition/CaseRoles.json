@@ -20,6 +20,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[APPSOLICITOR]",
+    "Name": "Applicant's Solicitor",
+    "Description": "Applicant's Solicitor",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "[LAMANAGING]",
     "Name": "Managing Local Authority",
     "Description": "Managing Local Authority role",

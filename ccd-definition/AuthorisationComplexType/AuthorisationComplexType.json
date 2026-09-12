@@ -8,6 +8,7 @@
       "[LASOLICITOR]",
       "[LASHARED]",
       "[EPSMANAGING]",
+      "[APPSOLICITOR]",
       "[LAMANAGING]"
     ],
     "CRUD": "R"
@@ -21,6 +22,7 @@
       "[LASOLICITOR]",
       "[LASHARED]",
       "[EPSMANAGING]",
+      "[APPSOLICITOR]",
       "[LAMANAGING]"
     ],
     "CRUD": "R"
@@ -34,6 +36,7 @@
       "[LASOLICITOR]",
       "[LASHARED]",
       "[EPSMANAGING]",
+      "[APPSOLICITOR]",
       "[LAMANAGING]"
     ],
     "CRUD": "R"
@@ -47,6 +50,7 @@
       "[LASOLICITOR]",
       "[LASHARED]",
       "[EPSMANAGING]",
+      "[APPSOLICITOR]",
       "[LAMANAGING]"
     ],
     "CRUD": "R"
