@@ -249,11 +249,10 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static List<DocmosisProceeding> expectedDocmosisProceeding() {
         return List.of(DocmosisProceeding.builder()
-                .onGoingProceeding("Yes")
                 .proceedingStatus("Ongoing")
                 .caseNumber("12345")
-                .started("02-02-2002")
-                .ended("02-02-2006")
+                .started("02/02/2002")
+                .ended("02/02/2006")
                 .ordersMade("Supervision order")
                 .judge("William Peters")
                 .children("children subject to proceedings")
@@ -261,11 +260,10 @@ public class SampleCaseSubmissionTestDataHelper {
                 .sameGuardianDetails("No\nSome guardian not needed")
                 .build(),
             DocmosisProceeding.builder()
-                .onGoingProceeding("Yes")
                 .proceedingStatus("Ongoing")
                 .caseNumber("12345")
-                .started("02-02-2008")
-                .ended("02-02-2009")
+                .started("02/02/2008")
+                .ended("02/02/2009")
                 .ordersMade("Supervision order")
                 .judge("Peters Williams")
                 .children("children subject to proceedings")
