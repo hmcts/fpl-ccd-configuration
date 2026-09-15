@@ -92,6 +92,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().remove("latestRoleSent");
+        caseDetails.getData().remove("isC2Application");
         caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
 
         return respond(caseDetails);
@@ -243,6 +244,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().put("latestRoleSent", uploadAdditionalApplicationsService
             .getAllocatedJudgeOrLegalAdviserType(caseData));
+
+        caseDetails.getData().put("isC2Application", !isNull(eventData.getTemporaryC2Document()) ? YES : NO);
 
         workAllocationTaskService.setTaskUrgency(caseDetails.getData(),
             uploadAdditionalApplicationsService.getBundleUrgency(additionalApplicationsBundle));
