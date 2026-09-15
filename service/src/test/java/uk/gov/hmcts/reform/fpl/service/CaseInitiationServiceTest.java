@@ -521,6 +521,47 @@ class CaseInitiationServiceTest {
             verify(caseRoleService).grantCaseRoleToUser(CASE_ID, USER_ID, caseRole);
             verifyNoMoreInteractions(caseRoleService);
         }
+
+        @Test
+        void shouldGrantCaseAccessToCreatorOnlyWhenShareCasseIsDisabled() {
+            final CaseRole caseRole = LASOLICITOR;
+
+            given(featureToggleService.isShareCaseToAllLaUserDisabled()).willReturn(true);
+
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LA1.code)
+                .localAuthorityPolicy(organisationPolicy(LA1.orgId, LA1.name, caseRole))
+                .build();
+
+            underTest.grantCaseAccess(caseData);
+
+            verify(caseRoleService).revokeCaseRoleFromUser(CASE_ID, USER_ID, CREATOR);
+            verify(caseRoleService).grantCaseRoleToUser(CASE_ID, USER_ID, caseRole);
+            verifyNoMoreInteractions(caseRoleService);
+        }
+
+        @ParameterizedTest
+        @EnumSource(OutsourcingType.class)
+        void shouldGrantCaseAccessToCreatorOnlyWhenShareCasseIsDisabledAndOutsourced(OutsourcingType outsourcingType) {
+            final CaseRole caseRole = outsourcingType.getCaseRole();
+
+            given(featureToggleService.isShareCaseToAllLaUserDisabled()).willReturn(true);
+            given(requestData.userId()).willReturn(USER_ID);
+
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LA1.code)
+                .localAuthorityPolicy(organisationPolicy(LA1.orgId, LA1.name, LASOLICITOR))
+                .outsourcingPolicy(organisationPolicy(EXTERNAL_ORG_ID, EXTERNAL_ORG_NAME, caseRole))
+                .build();
+
+            underTest.grantCaseAccess(caseData);
+
+            verify(caseRoleService).revokeCaseRoleFromUser(CASE_ID, USER_ID, CREATOR);
+            verify(caseRoleService).grantCaseRoleToUser(CASE_ID, USER_ID, caseRole);
+            verifyNoMoreInteractions(caseRoleService);
+        }
     }
 
     @Nested
