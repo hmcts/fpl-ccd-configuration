@@ -65,19 +65,21 @@ public class ApplicationRefusalOrderService extends AbstractApplicationGenerated
         DocmosisDocument docmosisDocument = generateApplicationRefusalOrderPDF(caseData,
             getTemplateData(caseData, judgeTitleAndName, dateOfRefusal, applicationDate, refusalReason));
 
-        return buildOrderDocumentReference(caseData, requireSealing, docmosisDocument, REFUSAL_ORDER.getFileName());
+        return buildOrderDocumentReference(caseData, requireSealing, docmosisDocument,
+            buildApplicationOrderFileName(REFUSAL_ORDER.getLabel(), applicationDate));
     }
 
     public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
-                                                     String applicationDate, String refusalReason) {
+                                                            String applicationDate, String refusalReason,
+                                                            boolean isConfidential) {
         return buildRefusalOrder(caseData, judgeTitleAndName,
             getDateOfIssue(caseData),
-            applicationDate, refusalReason);
+            applicationDate, refusalReason, isConfidential);
     }
 
     public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
-                                                     String dateOfRefusal, String applicationDate,
-                                                     String refusalReason) {
+                                                            String dateOfRefusal, String applicationDate,
+                                                            String refusalReason, boolean isConfidential) {
 
         DocumentReference refusalOrderDoc = buildApplicationRefusalOrderDocument(caseData, judgeTitleAndName,
             dateOfRefusal, applicationDate, refusalReason, true);
@@ -85,10 +87,16 @@ public class ApplicationRefusalOrderService extends AbstractApplicationGenerated
         return buildGeneratedOrder(
             caseData,
             REFUSAL_ORDER.getLabel(),
-            buildApplicationOrderTitle(REFUSAL_ORDER.getLabel(), applicationDate),
+            getRefusalOrderTitle(applicationDate),
             dateOfRefusal,
             refusalOrderDoc,
-            builder -> builder.refusedDocument(refusalOrderDoc)
+            builder -> {
+                if (isConfidential) {
+                    builder.refusalDocumentConfidential(refusalOrderDoc);
+                } else {
+                    builder.refusalDocument(refusalOrderDoc);
+                }
+            }
         );
     }
 

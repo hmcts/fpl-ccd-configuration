@@ -367,5 +367,16 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Temporary field in review additional application event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "confidentialFieldSuffix",
+    "FieldType": "Text",
+    "ElementLabel": "Confidential suffix",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field in review additional application event",
+    "FieldShowCondition": "confidentialFieldSuffix=\"DO_NOT_SHOW\""
   }
 ]
