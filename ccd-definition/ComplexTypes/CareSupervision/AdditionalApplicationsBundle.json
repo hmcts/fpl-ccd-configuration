@@ -336,5 +336,14 @@
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "refusalReason",
+    "FieldType": "Text",
+    "ElementLabel": "Reason for refusal",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

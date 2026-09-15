@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -57,15 +58,16 @@ public class UploadC2DocumentsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
         //workaround for previous-continue bug
-        if (shouldRemoveDocument(caseData)) {
+        if (shouldRemoveDocument(eventData)) {
             removeDocumentFromData(data);
         }
 
         try {
-            FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
+            FeesData feesData = feeService.getFeesDataForC2(eventData.getC2ApplicationType().get("type"));
             data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
             data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
         } catch (FeeRegisterException ignore) {
@@ -80,8 +82,9 @@ public class UploadC2DocumentsController extends CallbackController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
 
-        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
+        var updatedTemporaryC2Document = pbaNumberService.update(eventData.getTemporaryC2Document());
         caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
         List<String> errors = new ArrayList<>();
         errors.addAll(pbaNumberService.validate(updatedTemporaryC2Document));
@@ -133,9 +136,9 @@ public class UploadC2DocumentsController extends CallbackController {
         }
     }
 
-    private boolean shouldRemoveDocument(CaseData caseData) {
-        return caseData.getTemporaryC2Document() != null
-            && caseData.getTemporaryC2Document().getDocument().getUrl() == null;
+    private boolean shouldRemoveDocument(UploadAdditionalApplicationsEventData eventData) {
+        return eventData.getTemporaryC2Document() != null
+            && eventData.getTemporaryC2Document().getDocument().getUrl() == null;
     }
 
     private void removeDocumentFromData(Map<String, Object> data) {
