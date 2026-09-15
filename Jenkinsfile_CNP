@@ -389,6 +389,11 @@ withPipeline(type, product, component) {
     // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
   }
 
+  before('highleveldatasetup') {
+    sh 'az login --identity'
+    sh 'az acr login --name hmctsprod'
+  }
+
   afterAlways('highleveldatasetup') {
     if (env.ENV != 'preview') {
       // For Preview the setup is performed before the smoke test since the environment could be not bootstrapped yet (if the first build or removed the PR helm release)
