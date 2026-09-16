@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.5.4")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
@@ -387,6 +387,11 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
     env.ENV = 'prod'
     // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
+  }
+
+  before('highleveldatasetup') {
+    sh 'az login --identity'
+    sh 'az acr login --name hmctsprod'
   }
 
   afterAlways('highleveldatasetup') {
