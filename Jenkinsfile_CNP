@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.5.4")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
@@ -389,13 +389,22 @@ withPipeline(type, product, component) {
     // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
   }
 
+  before('highleveldatasetup') {
+    sh 'az login --identity'
+    sh 'az acr login --name hmctsprod'
+  }
+
   afterAlways('highleveldatasetup') {
     if (env.ENV != 'preview') {
       // For Preview the setup is performed before the smoke test since the environment could be not bootstrapped yet (if the first build or removed the PR helm release)
       echo "CCD definition upload for environment: ${env.ENV}"
       setupShutteringSecret()
       withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
-        withTeamSecrets(pipelineConf, env.ENV) {
+        azureKeyVault(
+          keyVaultURL: "https://fpl-${env.ENV}.vault.azure.net/",
+          secrets: [
+            secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
+          ]) {
           archiveCoreCaseDataDefinitions(env.ENV)
           uploadCoreCaseDataDefinitions(env.ENV, env.USE_SHUTTERED_CASE_DEF)
         }
