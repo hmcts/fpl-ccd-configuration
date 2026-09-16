@@ -31,7 +31,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -293,7 +292,7 @@ public class ReviewAdditionalApplicationService {
         } else {
             refusalOrders = caseData.getRefusalOrders();
         }
-        refusalOrders = getIfNull(refusalOrders, new ArrayList<>());
+        refusalOrders = defaultIfNull(refusalOrders, new ArrayList<>());
         refusalOrders.add(refusalOrderDoc);
 
         Map<String, Object> updates = new HashMap<>();
