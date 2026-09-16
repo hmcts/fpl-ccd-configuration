@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -1873,10 +1874,9 @@ public class MigrateCaseService {
 
         List<Element<Child>> children = caseData.getChildren1().stream()
             .map(childElm -> {
+                Child.ChildBuilder childBuilder = childElm.getValue().toBuilder();
+                boolean updated = false;
                 if (childrenFinalOrderType.containsKey(childElm.getId())) {
-
-                    boolean updated = false;
-                    Child.ChildBuilder childBuilder = childElm.getValue().toBuilder();
 
                     if (!YesNo.YES.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
                         childBuilder = childBuilder.finalOrderIssued(YesNo.YES.getValue());
@@ -1894,11 +1894,26 @@ public class MigrateCaseService {
                         }
                     }
 
-                    if (updated) {
-                        return element(childElm.getId(), childBuilder.build());
+                } else {
+                    if (!YesNo.NO.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
+                        childBuilder = childBuilder.finalOrderIssued(YesNo.NO.getValue());
+                        childUpdated.add(childElm.getId());
+                        updated = true;
+                    }
+
+                    if (!ObjectUtils.isEmpty(childElm.getValue().getFinalOrderIssuedType())) {
+                        childBuilder = childBuilder.finalOrderIssuedType(null);
+                        childUpdated.add(childElm.getId());
+                        updated = true;
                     }
                 }
-                return childElm;
+
+                if (updated) {
+                    return element(childElm.getId(), childBuilder.build());
+                } else {
+                    return childElm;
+
+                }
             })
             .toList();
 
