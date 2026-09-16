@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -50,11 +51,13 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -1825,29 +1828,77 @@ public class MigrateCaseService {
     public Map<String, Object> updateChildStatusWithFinalOrderIssued(String migrationId, CaseData caseData) {
         Map<String, Object> updates = new HashMap<>();
 
-        final Set<UUID> childIdWithFinalOrderIssued = caseData.getAllOrderCollections().stream()
+
+        // filter out final order, and sort the final order in ascending order (by issue / upload time),
+        // just in case of multiple final order being issued to the same child.
+        // then map the final order type of each child
+        final Map<UUID, Order> childrenFinalOrderType = new HashMap<>();
+
+        caseData.getAllOrderCollections().stream()
             .map(Element::getValue)
             .filter(GeneratedOrder::isFinalOrder)
-            .map(GeneratedOrder::getChildren)
-            .flatMap(List::stream)
-            .map(Element::getId)
-            .collect(Collectors.toSet());
+            .sorted((order1, order2) -> {
+                LocalDateTime orderDateTime1 = (order1.getDateTimeIssued() != null)
+                    ? order1.getApprovalDateTime()
+                    : order1.getDocument().getUploadedTimestamp();
+                LocalDateTime orderDateTime2 =  (order2.getDateTimeIssued() != null)
+                    ? order2.getApprovalDateTime()
+                    : order2.getDocument().getUploadedTimestamp();
+
+                if (orderDateTime1 == null && orderDateTime2 == null) {
+                    return 0;
+                } else if (orderDateTime1 == null) {
+                    return 1;
+                } else if (orderDateTime2 == null) {
+                    return -1;
+                } else {
+                    return orderDateTime2.compareTo(orderDateTime1);
+                }
+            })
+            .forEach(order -> {
+                if (isNotEmpty(order.getChildren())) {
+                    order.getChildren().forEach(child -> {
+                        Order orderType;
+                        try {
+                            orderType = (order.getOrderType() != null) ? Order.valueOf(order.getOrderType()) : null;
+                        } catch (IllegalArgumentException e) {
+                            orderType = null;
+                        }
+                        childrenFinalOrderType.put(child.getId(), orderType);
+                    });
+                }
+            });
 
         Set<UUID> childUpdated = new HashSet<>();
 
         List<Element<Child>> children = caseData.getChildren1().stream()
             .map(childElm -> {
-                if (childIdWithFinalOrderIssued.contains(childElm.getId())
-                    && !YesNo.YES.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
-                    childUpdated.add(childElm.getId());
+                if (childrenFinalOrderType.containsKey(childElm.getId())) {
 
-                    return element(childElm.getId(),
-                        childElm.getValue().toBuilder()
-                            .finalOrderIssued(YesNo.YES.getValue())
-                            .build());
-                } else {
-                    return childElm;
+                    boolean updated = false;
+                    Child.ChildBuilder childBuilder = childElm.getValue().toBuilder();
+
+                    if (!YesNo.YES.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
+                        childBuilder = childBuilder.finalOrderIssued(YesNo.YES.getValue());
+                        childUpdated.add(childElm.getId());
+                        updated = true;
+                    }
+
+                    Order orderType = childrenFinalOrderType.get(childElm.getId());
+                    if (orderType != null) {
+                        String orderTypeStr = orderType.getTitle();
+                        if (!StringUtils.equals(orderTypeStr, childElm.getValue().getFinalOrderIssuedType())) {
+                            childBuilder = childBuilder.finalOrderIssuedType(orderTypeStr);
+                            childUpdated.add(childElm.getId());
+                            updated = true;
+                        }
+                    }
+
+                    if (updated) {
+                        return element(childElm.getId(), childBuilder.build());
+                    }
                 }
+                return childElm;
             })
             .toList();
 

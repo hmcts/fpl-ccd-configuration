@@ -85,6 +85,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -4651,14 +4652,15 @@ class MigrateCaseServiceTest {
         UUID childThreeId = UUID.randomUUID();
         Child childOne = Child.builder()
             .party(ChildParty.builder().firstName("One").lastName("Child").build())
-            .finalOrderIssued(NO.getValue())
+            .finalOrderIssued(YES.getValue())
             .build();
         Child childTwo = Child.builder()
             .party(ChildParty.builder().firstName("Two").lastName("Child").build())
             .finalOrderIssued(YES.getValue())
+            .finalOrderIssuedType(Order.C32A_CARE_ORDER.getTitle())
             .build();
         Child childThree = Child.builder()
-            .party(ChildParty.builder().firstName("Two").lastName("Child").build())
+            .party(ChildParty.builder().firstName("Three").lastName("Child").build())
             .finalOrderIssued(NO.getValue())
             .build();
 
@@ -4670,16 +4672,27 @@ class MigrateCaseServiceTest {
                 element(childThreeId, childThree)))
             .orderCollection(wrapElementsWithUUIDs(
                 GeneratedOrder.builder()
-                    .type("Final")
+                    .type(Order.C32A_CARE_ORDER.getHistoryTitle())
+                    .orderType(Order.C32A_CARE_ORDER.toString())
                     .markedFinal(YES.getValue())
                     .children(List.of(element(childOneId, childOne), element(childTwoId, childTwo)))
+                    .dateTimeIssued(LocalDateTime.now().minusDays(1))
                     .build()))
             .confidentialOrders(ConfidentialGeneratedOrders.builder()
                 .orderCollectionCTSC(wrapElementsWithUUIDs(
                     GeneratedOrder.builder()
-                        .type("Final")
+                        .type(Order.C35A_SUPERVISION_ORDER.getHistoryTitle())
+                        .orderType(Order.C35A_SUPERVISION_ORDER.toString())
                         .markedFinal(YES.getValue())
                         .children(List.of(element(childThreeId, childThree)))
+                        .dateTimeIssued(LocalDateTime.now().minusDays(2))
+                        .build(),
+                    GeneratedOrder.builder()
+                        .type(Order.A70_PLACEMENT_ORDER.getHistoryTitle())
+                        .orderType(Order.A70_PLACEMENT_ORDER.toString())
+                        .markedFinal(YES.getValue())
+                        .children(List.of(element(childOneId, childOne)))
+                        .dateTimeIssued(LocalDateTime.now())
                         .build()))
                 .build())
             .build();
@@ -4690,9 +4703,13 @@ class MigrateCaseServiceTest {
 
 
         assertThat(actualUpdate.get("children1")).isEqualTo(List.of(
-            element(childOneId, childOne.toBuilder().finalOrderIssued(YES.getValue()).build()),
+            element(childOneId, childOne.toBuilder()
+                .finalOrderIssuedType(Order.A70_PLACEMENT_ORDER.getTitle())
+                .build()),
             element(childTwoId, childTwo),
-            element(childThreeId, childThree.toBuilder().finalOrderIssued(YES.getValue()).build())
+            element(childThreeId, childThree.toBuilder()
+                .finalOrderIssued(YES.getValue())
+                .finalOrderIssuedType(Order.C35A_SUPERVISION_ORDER.getTitle()).build())
         ));
     }
 
@@ -4707,6 +4724,7 @@ class MigrateCaseServiceTest {
         Child childTwo = Child.builder()
             .party(ChildParty.builder().firstName("Two").lastName("Child").build())
             .finalOrderIssued(YES.getValue())
+            .finalOrderIssuedType(Order.C32A_CARE_ORDER.getTitle())
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -4717,8 +4735,17 @@ class MigrateCaseServiceTest {
             .orderCollection(wrapElementsWithUUIDs(
                 GeneratedOrder.builder()
                     .type("Final")
+                    .orderType(Order.C32A_CARE_ORDER.toString())
                     .markedFinal(YES.getValue())
                     .children(List.of(element(childTwoId, childTwo)))
+                    .dateTimeIssued(LocalDateTime.now().minusDays(1))
+                    .build(),
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .orderType("some invalid type")
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childTwoId, childTwo)))
+                    .dateTimeIssued(LocalDateTime.now())
                     .build()))
             .build();
 
