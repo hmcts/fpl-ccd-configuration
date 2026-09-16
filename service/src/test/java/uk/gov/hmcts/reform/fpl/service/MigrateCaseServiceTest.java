@@ -4677,6 +4677,25 @@ class MigrateCaseServiceTest {
                     .markedFinal(YES.getValue())
                     .children(List.of(element(childOneId, childOne), element(childTwoId, childTwo)))
                     .dateTimeIssued(LocalDateTime.now().minusDays(1))
+                    .build(),
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .orderType(Order.C21_BLANK_ORDER.toString())
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childOneId, childOne), element(childTwoId, childTwo)))
+                    .build(),
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .orderType(Order.C23_EMERGENCY_PROTECTION_ORDER.toString())
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childOneId, childOne), element(childTwoId, childTwo)))
+                    .build(),
+                GeneratedOrder.builder()
+                    .type(Order.C26_SECURE_ACCOMMODATION_ORDER.getHistoryTitle())
+                    .orderType(Order.C26_SECURE_ACCOMMODATION_ORDER.toString())
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childOneId, childOne), element(childTwoId, childTwo)))
+                    .dateTimeIssued(LocalDateTime.now().minusDays(100))
                     .build()))
             .confidentialOrders(ConfidentialGeneratedOrders.builder()
                 .orderCollectionCTSC(wrapElementsWithUUIDs(
@@ -4710,6 +4729,53 @@ class MigrateCaseServiceTest {
             element(childThreeId, childThree.toBuilder()
                 .finalOrderIssued(YES.getValue())
                 .finalOrderIssuedType(Order.C35A_SUPERVISION_ORDER.getTitle()).build())
+        ));
+    }
+
+    @Test
+    void shouldUseLatestIssueOrUploadTimeWhenMultipleFinalOrdersExistForAChild() {
+        UUID childId = UUID.randomUUID();
+
+        Child child = Child.builder()
+            .party(ChildParty.builder().firstName("One").lastName("Child").build())
+            .finalOrderIssued(NO.getValue())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .children1(List.of(element(childId, child)))
+            .orderCollection(wrapElementsWithUUIDs(
+                GeneratedOrder.builder()
+                    .type(Order.C32A_CARE_ORDER.getHistoryTitle())
+                    .orderType(Order.C32A_CARE_ORDER.toString())
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childId, child)))
+                    .dateTimeIssued(LocalDateTime.now().minusDays(2))
+                    .build(),
+                GeneratedOrder.builder()
+                    .type(Order.C35A_SUPERVISION_ORDER.getHistoryTitle())
+                    .orderType(Order.C35A_SUPERVISION_ORDER.toString())
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childId, child)))
+                    .dateTimeIssued(LocalDateTime.now().minusDays(1))
+                    .build(),
+                GeneratedOrder.builder()
+                    .type("Final")
+                    .orderType(Order.A70_PLACEMENT_ORDER.toString())
+                    .markedFinal(YES.getValue())
+                    .children(List.of(element(childId, child)))
+                    .document(DocumentReference.builder().uploadedTimestamp(LocalDateTime.now()).build())
+                    .build()))
+            .build();
+
+        Map<String, Object> actualUpdate = underTest.updateChildStatusWithFinalOrderIssued(MIGRATION_ID, caseData);
+
+        assertThat(actualUpdate).containsOnlyKeys("children1");
+        assertThat(actualUpdate.get("children1")).isEqualTo(List.of(
+            element(childId, child.toBuilder()
+                .finalOrderIssued(YES.getValue())
+                .finalOrderIssuedType(Order.A70_PLACEMENT_ORDER.getTitle())
+                .build())
         ));
     }
 

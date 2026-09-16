@@ -1896,21 +1896,21 @@ public class MigrateCaseService {
     }
 
     private int compareGeneratedOrderByDateTimeIssued(GeneratedOrder order1, GeneratedOrder order2) {
-        LocalDateTime orderDateTime1 = (order1.getDateTimeIssued() != null)
-            ? order1.getApprovalDateTime()
-            : order1.getDocument().getUploadedTimestamp();
-        LocalDateTime orderDateTime2 = (order2.getDateTimeIssued() != null)
-            ? order2.getApprovalDateTime()
-            : order2.getDocument().getUploadedTimestamp();
+        LocalDateTime orderDateTime1 = getOrderDateTimeIssuedOrUploaded(order1);
+        LocalDateTime orderDateTime2 = getOrderDateTimeIssuedOrUploaded(order2);
 
-        if (orderDateTime1 == null && orderDateTime2 == null) {
-            return 0;
-        } else if (orderDateTime1 == null) {
-            return 1;
-        } else if (orderDateTime2 == null) {
-            return -1;
-        } else {
-            return orderDateTime2.compareTo(orderDateTime1);
+        return Comparator.nullsFirst(LocalDateTime::compareTo).compare(orderDateTime1, orderDateTime2);
+    }
+
+    private LocalDateTime getOrderDateTimeIssuedOrUploaded(GeneratedOrder order) {
+        if (order == null) {
+            return null;
         }
+
+        if (order.getDateTimeIssued() != null) {
+            return order.getDateTimeIssued();
+        }
+
+        return order.getDocument() != null ? order.getDocument().getUploadedTimestamp() : null;
     }
 }
