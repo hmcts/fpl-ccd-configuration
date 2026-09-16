@@ -400,11 +400,7 @@ withPipeline(type, product, component) {
       echo "CCD definition upload for environment: ${env.ENV}"
       setupShutteringSecret()
       withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
-        azureKeyVault(
-          keyVaultURL: "https://fpl-${env.ENV}.vault.azure.net/",
-          secrets: [
-            secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
-          ]) {
+        withTeamSecrets(pipelineConf, env.ENV) {
           archiveCoreCaseDataDefinitions(env.ENV)
           uploadCoreCaseDataDefinitions(env.ENV, env.USE_SHUTTERED_CASE_DEF)
         }
