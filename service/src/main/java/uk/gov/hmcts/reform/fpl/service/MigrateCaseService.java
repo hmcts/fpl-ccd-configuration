@@ -1893,20 +1893,20 @@ public class MigrateCaseService {
                             updated = true;
                         }
                     }
-
-                } else {
-                    if (!YesNo.NO.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
-                        childBuilder = childBuilder.finalOrderIssued(YesNo.NO.getValue());
-                        childUpdated.add(childElm.getId());
-                        updated = true;
-                    }
-
-                    if (!ObjectUtils.isEmpty(childElm.getValue().getFinalOrderIssuedType())) {
-                        childBuilder = childBuilder.finalOrderIssuedType(null);
-                        childUpdated.add(childElm.getId());
-                        updated = true;
-                    }
                 }
+//                else {
+//                    if (!YesNo.NO.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
+//                        childBuilder = childBuilder.finalOrderIssued(YesNo.NO.getValue());
+//                        childUpdated.add(childElm.getId());
+//                        updated = true;
+//                    }
+//
+//                    if (!ObjectUtils.isEmpty(childElm.getValue().getFinalOrderIssuedType())) {
+//                        childBuilder = childBuilder.finalOrderIssuedType(null);
+//                        childUpdated.add(childElm.getId());
+//                        updated = true;
+//                    }
+//                }
 
                 if (updated) {
                     return element(childElm.getId(), childBuilder.build());
