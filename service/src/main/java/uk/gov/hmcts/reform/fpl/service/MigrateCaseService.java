@@ -1894,6 +1894,8 @@ public class MigrateCaseService {
                         }
                     }
                 }
+//                We haven't received any snow ticket about this scenario, so comment this section out,
+//                in case of updating extra stuff unexpected
 //                else {
 //                    if (!YesNo.NO.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
 //                        childBuilder = childBuilder.finalOrderIssued(YesNo.NO.getValue());
