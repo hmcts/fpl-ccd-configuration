@@ -1837,24 +1837,7 @@ public class MigrateCaseService {
         caseData.getAllOrderCollections().stream()
             .map(Element::getValue)
             .filter(GeneratedOrder::isFinalOrder)
-            .sorted((order1, order2) -> {
-                LocalDateTime orderDateTime1 = (order1.getDateTimeIssued() != null)
-                    ? order1.getApprovalDateTime()
-                    : order1.getDocument().getUploadedTimestamp();
-                LocalDateTime orderDateTime2 =  (order2.getDateTimeIssued() != null)
-                    ? order2.getApprovalDateTime()
-                    : order2.getDocument().getUploadedTimestamp();
-
-                if (orderDateTime1 == null && orderDateTime2 == null) {
-                    return 0;
-                } else if (orderDateTime1 == null) {
-                    return 1;
-                } else if (orderDateTime2 == null) {
-                    return -1;
-                } else {
-                    return orderDateTime2.compareTo(orderDateTime1);
-                }
-            })
+            .sorted(this::compareGeneratedOrderByDateTimeIssued)
             .forEach(order -> {
                 if (isNotEmpty(order.getChildren())) {
                     order.getChildren().forEach(child -> {
@@ -1893,21 +1876,6 @@ public class MigrateCaseService {
                         }
                     }
                 }
-                // We haven't received any snow ticket about this scenario, so comment this section out,
-                // in case of updating extra stuff unexpected
-                // else {
-                //     if (!YesNo.NO.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
-                //         childBuilder = childBuilder.finalOrderIssued(YesNo.NO.getValue());
-                //         childUpdated.add(childElm.getId());
-                //         updated = true;
-                //     }
-                //
-                //     if (!ObjectUtils.isEmpty(childElm.getValue().getFinalOrderIssuedType())) {
-                //         childBuilder = childBuilder.finalOrderIssuedType(null);
-                //         childUpdated.add(childElm.getId());
-                //         updated = true;
-                //     }
-                // }
 
                 if (updated) {
                     return element(childElm.getId(), childBuilder.build());
@@ -1924,6 +1892,25 @@ public class MigrateCaseService {
         } else {
             throw new AssertionError(format("Migration {id = %s, case reference = %s}, no child requires update",
                 migrationId, caseData.getId()));
+        }
+    }
+
+    private int compareGeneratedOrderByDateTimeIssued(GeneratedOrder order1, GeneratedOrder order2) {
+        LocalDateTime orderDateTime1 = (order1.getDateTimeIssued() != null)
+            ? order1.getApprovalDateTime()
+            : order1.getDocument().getUploadedTimestamp();
+        LocalDateTime orderDateTime2 = (order2.getDateTimeIssued() != null)
+            ? order2.getApprovalDateTime()
+            : order2.getDocument().getUploadedTimestamp();
+
+        if (orderDateTime1 == null && orderDateTime2 == null) {
+            return 0;
+        } else if (orderDateTime1 == null) {
+            return 1;
+        } else if (orderDateTime2 == null) {
+            return -1;
+        } else {
+            return orderDateTime2.compareTo(orderDateTime1);
         }
     }
 }
