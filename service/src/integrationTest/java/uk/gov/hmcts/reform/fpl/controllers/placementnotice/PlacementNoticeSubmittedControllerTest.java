@@ -183,9 +183,8 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
                 DEFAULT_CAFCASS_EMAIL,
                 mapper.convertValue(PLACEMENT_NOTIFY_DATA, new TypeReference<>() {}),
                 notificationReference(CASE_ID));
-
-            verifyNoMoreInteractions(notificationClient);
         });
+        verifyNoMoreInteractions(notificationClient);
     }
 
     @Test
@@ -242,8 +241,7 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
             assertThat(documents.getValue().contains(application)).isTrue();
             assertThat(documents.getValue().contains(birthCertificate.getDocument())).isTrue();
             assertThat(documents.getValue().contains(placementNotice)).isTrue();
-
-            verifyNoMoreInteractions(sendDocumentService);
         });
+        verifyNoMoreInteractions(sendDocumentService);
     }
 }
