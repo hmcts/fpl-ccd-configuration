@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.5.4")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
@@ -18,18 +18,6 @@ def serviceSecrets = [
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
     secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
-  ]
-]
-
-def integrationTestSecrets = [
-  'fpl-aat': [
-    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
-    secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
-    secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
-    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
-    secret('fpl-case-service-idam-client-secret', 'IDAM_CLIENT_SECRET')
   ]
 ]
 
@@ -61,6 +49,20 @@ static Map<String, Object> secret(String secretName, String envVariable) {
     secretType : 'Secret',
     name       : secretName,
     envVariable: envVariable
+  ]
+}
+
+def integrationTestSecrets() {
+  [
+    'fpl-aat': [
+      secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
+      secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
+      secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
+      secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
+      secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+      secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
+      secret('fpl-case-service-idam-client-secret', 'IDAM_CLIENT_SECRET')
+    ]
   ]
 }
 
@@ -114,9 +116,12 @@ def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
   }
 }
 
-def setupSecretsForIntegrationTests(pipelineConf) {
+def setupSecretsForIntegrationTests() {
   withSubscription('nonprod') {
-    withTeamSecrets(pipelineConf, 'aat') {
+    def integrationTestPipelineConf = new AppPipelineConfig()
+    integrationTestPipelineConf.vaultSecrets = integrationTestSecrets()
+
+    withTeamSecrets(integrationTestPipelineConf, 'aat') {
       /* Setup Email template integration tests key with gov.notify */
       env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
       /* Setup Docmosis template integration tests key and url */
@@ -213,7 +218,7 @@ env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 withPipeline(type, product, component) {
   pipelineConf = config;
 
-  loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
+  loadVaultSecrets(serviceSecrets + otherSecrets)
 
   disableLegacyDeployment()
 
@@ -248,7 +253,7 @@ withPipeline(type, product, component) {
   }
 
   before('test') {
-    setupSecretsForIntegrationTests(pipelineConf)
+    setupSecretsForIntegrationTests()
   }
 
   before('akschartsinstall') {
