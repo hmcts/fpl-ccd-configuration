@@ -21,6 +21,30 @@ def serviceSecrets = [
   ]
 ]
 
+def integrationTestSecrets() {
+  [
+    'fpl-aat': [
+      secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
+      secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
+      secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
+      secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
+      secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+      secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
+      secret('fpl-case-service-idam-client-secret', 'IDAM_CLIENT_SECRET')
+    ]
+  ]
+}
+
+def roleAssignmentSecrets() {
+  [
+    'fpl-aat': [
+      secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
+      secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+      secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
+    ]
+  ]
+}
+
 def otherSecrets = [
   // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flex volume for secrets
   's2s-${env}': [
@@ -49,20 +73,6 @@ static Map<String, Object> secret(String secretName, String envVariable) {
     secretType : 'Secret',
     name       : secretName,
     envVariable: envVariable
-  ]
-}
-
-def integrationTestSecrets() {
-  [
-    'fpl-aat': [
-      secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-      secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
-      secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
-      secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
-      secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-      secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
-      secret('fpl-case-service-idam-client-secret', 'IDAM_CLIENT_SECRET')
-    ]
   ]
 }
 
@@ -130,6 +140,19 @@ def setupSecretsForIntegrationTests() {
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
       env.SYSTEM_UPDATE_USER_PASSWORD = "${SYSTEM_UPDATE_USER_PASSWORD}"
       env.SYSTEM_UPDATE_USER_USERNAME = "${SYSTEM_UPDATE_USER_USERNAME}"
+    }
+  }
+}
+
+def setupSecretsForRoleAssignments() {
+  withSubscription('nonprod') {
+    def roleAssignmentPipelineConf = new AppPipelineConfig()
+    roleAssignmentPipelineConf.vaultSecrets = roleAssignmentSecrets()
+
+    withTeamSecrets(roleAssignmentPipelineConf, 'aat') {
+      env.SYSTEM_UPDATE_USER_PASSWORD = "${SYSTEM_UPDATE_USER_PASSWORD}"
+      env.SYSTEM_UPDATE_USER_USERNAME = "${SYSTEM_UPDATE_USER_USERNAME}"
+      env.E2E_TEST_JUDGE_PASSWORD = "${E2E_TEST_JUDGE_PASSWORD}"
     }
   }
 }
@@ -296,6 +319,8 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:preview') {
+    setupSecretsForRoleAssignments()
+
     def githubApi = new GithubAPI(this)
     // Only run WA-specific role assignment + wait when WA is enabled via PR label.
     if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
