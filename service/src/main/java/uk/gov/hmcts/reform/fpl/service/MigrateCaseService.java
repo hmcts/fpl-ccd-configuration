@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -15,12 +17,31 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.Recipients;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Recipients;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -30,34 +51,18 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.CloseCase;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.Hearing;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
-import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
-import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
-import uk.gov.hmcts.reform.fpl.model.Proceeding;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,10 +92,12 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
@@ -1367,6 +1374,74 @@ public class MigrateCaseService {
         return Map.of("hearing", hearing);
     }
 
+    @SuppressWarnings("deprecation")
+    public void migrateOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
+        Proceeding oldProceeding = caseData.getProceeding();
+
+        if (oldProceeding != null) {
+            if (YesNo.YES.getValue().equalsIgnoreCase(oldProceeding.getOnGoingProceeding())) {
+                List<Element<Proceeding>> migratedProceedings = new ArrayList<>();
+                migratedProceedings.add(element(oldProceeding));
+
+                List<Element<Proceeding>> oldAdditionalProceedings = oldProceeding.getAdditionalProceedings();
+                if (oldAdditionalProceedings != null) {
+                    migratedProceedings.addAll(oldAdditionalProceedings);
+                }
+
+                migratedProceedings = migratedProceedings.stream()
+                    .map(proceedingElement ->
+                        element(proceedingElement.getId(), sanitizeProceeding(caseData, proceedingElement.getValue())))
+                    .toList();
+
+                caseDetails.getData().put("proceedings", migratedProceedings);
+            } else {
+                log.info("Migration {id = {}}, case {} is skipped because onGoingProceeding is not Yes",
+                    migrationId, caseData.getId());
+            }
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, case {%d} no proceeding found", migrationId,
+                caseData.getId()));
+        }
+    }
+
+    private Proceeding sanitizeProceeding(CaseData caseData, Proceeding proceeding) {
+        Proceeding.ProceedingBuilder builder =  proceeding.toBuilder()
+            .additionalProceedings(null);
+
+        // start date and end date are free text input, so we need to check if they are valid dates before migrating
+        if (!isEmpty(proceeding.getStarted())) {
+            Optional<LocalDate> validStartDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getStarted());
+            if (validStartDate.isPresent()) {
+                builder.startedV2(validStartDate.get());
+            } else {
+                log.warn("Case {} has invalid proceeding start date", caseData.getId());
+            }
+        }
+
+        if (!isEmpty(proceeding.getEnded())) {
+            Optional<LocalDate> validEndDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getEnded());
+            if (validEndDate.isPresent()) {
+                builder.endedV2(validEndDate.get());
+            } else {
+                log.warn("Case {} has invalid proceeding end date", caseData.getId());
+            }
+        }
+
+        return builder.build();
+    }
+
+    @SuppressWarnings("deprecation")
+    public void rollbackOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
+        List<Element<Proceeding>> migratedProceedings = caseData.getProceedings();
+
+        if (migratedProceedings != null) {
+            caseDetails.getData().remove("proceedings");
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, case {%d} no migrated proceeding found", migrationId,
+                caseData.getId()));
+        }
+    }
+
     public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {
         if (!caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
             throw new AssertionError(format("Migration {id = %s}, this is not an EPO", migrationId));
@@ -1748,5 +1823,94 @@ public class MigrateCaseService {
         }
 
         return updates;
+    }
+
+    public Map<String, Object> updateChildStatusWithFinalOrderIssued(String migrationId, CaseData caseData) {
+        Map<String, Object> updates = new HashMap<>();
+
+
+        // filter out final order, and sort the final order in ascending order (by issue / upload time),
+        // just in case of multiple final order being issued to the same child.
+        // then map the final order type of each child
+        final Map<UUID, Order> childrenFinalOrderType = new HashMap<>();
+
+        caseData.getAllOrderCollections().stream()
+            .map(Element::getValue)
+            .filter(GeneratedOrder::isFinalOrder)
+            .sorted(this::compareGeneratedOrderByDateTimeIssued)
+            .forEach(order -> {
+                if (isNotEmpty(order.getChildren())) {
+                    order.getChildren().forEach(child -> {
+                        Order orderType;
+                        try {
+                            orderType = (order.getOrderType() != null) ? Order.valueOf(order.getOrderType()) : null;
+                        } catch (IllegalArgumentException e) {
+                            orderType = null;
+                        }
+                        childrenFinalOrderType.put(child.getId(), orderType);
+                    });
+                }
+            });
+
+        Set<UUID> childUpdated = new HashSet<>();
+
+        List<Element<Child>> children = caseData.getChildren1().stream()
+            .map(childElm -> {
+                Child.ChildBuilder childBuilder = childElm.getValue().toBuilder();
+                boolean updated = false;
+                if (childrenFinalOrderType.containsKey(childElm.getId())) {
+
+                    if (!YesNo.YES.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
+                        childBuilder = childBuilder.finalOrderIssued(YesNo.YES.getValue());
+                        childUpdated.add(childElm.getId());
+                        updated = true;
+                    }
+
+                    Order orderType = childrenFinalOrderType.get(childElm.getId());
+                    if (orderType != null) {
+                        String orderTypeStr = orderType.getTitle();
+                        if (!StringUtils.equals(orderTypeStr, childElm.getValue().getFinalOrderIssuedType())) {
+                            childBuilder = childBuilder.finalOrderIssuedType(orderTypeStr);
+                            childUpdated.add(childElm.getId());
+                            updated = true;
+                        }
+                    }
+                }
+
+                if (updated) {
+                    return element(childElm.getId(), childBuilder.build());
+                } else {
+                    return childElm;
+
+                }
+            })
+            .toList();
+
+        if (!isEmpty(childUpdated)) {
+            updates.put("children1", children);
+            return updates;
+        } else {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, no child requires update",
+                migrationId, caseData.getId()));
+        }
+    }
+
+    private int compareGeneratedOrderByDateTimeIssued(GeneratedOrder order1, GeneratedOrder order2) {
+        LocalDateTime orderDateTime1 = getOrderDateTimeIssuedOrUploaded(order1);
+        LocalDateTime orderDateTime2 = getOrderDateTimeIssuedOrUploaded(order2);
+
+        return Comparator.nullsFirst(LocalDateTime::compareTo).compare(orderDateTime1, orderDateTime2);
+    }
+
+    private LocalDateTime getOrderDateTimeIssuedOrUploaded(GeneratedOrder order) {
+        if (order == null) {
+            return null;
+        }
+
+        if (order.getDateTimeIssued() != null) {
+            return order.getDateTimeIssued();
+        }
+
+        return order.getDocument() != null ? order.getDocument().getUploadedTimestamp() : null;
     }
 }
