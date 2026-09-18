@@ -132,15 +132,46 @@ def setupSecretsForIntegrationTests() {
     def integrationTestPipelineConf = new AppPipelineConfig()
     integrationTestPipelineConf.vaultSecrets = integrationTestSecrets()
 
+    def integrationTestNotifyServiceKey
+    def integrationTestDocmosisTornadoKey
+    def e2eTestPassword
+    def systemUpdateUserUsername
+    def systemUpdateUserPassword
+    def e2eTestJudgePassword
+    def idamClientSecret
+
     withTeamSecrets(integrationTestPipelineConf, 'aat') {
-      /* Setup Email template integration tests key with gov.notify */
-      env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
-      /* Setup Docmosis template integration tests key and url */
-      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
-      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
-      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
-      env.SYSTEM_UPDATE_USER_PASSWORD = "${SYSTEM_UPDATE_USER_PASSWORD}"
-      env.SYSTEM_UPDATE_USER_USERNAME = "${SYSTEM_UPDATE_USER_USERNAME}"
+      integrationTestNotifyServiceKey = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+      integrationTestDocmosisTornadoKey = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
+      e2eTestPassword = "${E2E_TEST_PASSWORD}"
+      systemUpdateUserUsername = "${SYSTEM_UPDATE_USER_USERNAME}"
+      systemUpdateUserPassword = "${SYSTEM_UPDATE_USER_PASSWORD}"
+      e2eTestJudgePassword = "${E2E_TEST_JUDGE_PASSWORD}"
+      idamClientSecret = "${IDAM_CLIENT_SECRET}"
+    }
+
+    /* Setup integration secrets for later stage steps outside withTeamSecrets. */
+    env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = integrationTestNotifyServiceKey
+    env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = integrationTestDocmosisTornadoKey
+    env.E2E_TEST_PASSWORD = e2eTestPassword
+    env.SYSTEM_UPDATE_USER_USERNAME = systemUpdateUserUsername
+    env.SYSTEM_UPDATE_USER_PASSWORD = systemUpdateUserPassword
+    env.E2E_TEST_JUDGE_PASSWORD = e2eTestJudgePassword
+    env.IDAM_CLIENT_SECRET = idamClientSecret
+    env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
+    env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
+  }
+}
+
+def runPreviewUiFunctionalTests() {
+  withSubscription('nonprod') {
+    def uiFunctionalPipelineConf = new AppPipelineConfig()
+    def uiFunctionalYarnBuilder = new YarnBuilder(this)
+    uiFunctionalPipelineConf.vaultSecrets = integrationTestSecrets()
+
+    withTeamSecrets(uiFunctionalPipelineConf, 'aat') {
+      setupUITestEnvVariablesForPreview()
+      uiFunctionalYarnBuilder.yarn('test:functional-nightly-preview')
     }
   }
 }
@@ -194,6 +225,9 @@ def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
+  env.E2E_TEST_PASSWORD = ''
+  env.E2E_TEST_JUDGE_PASSWORD = ''
+  env.IDAM_CLIENT_SECRET = ''
   env.SYSTEM_UPDATE_USER_PASSWORD = ''
   env.SYSTEM_UPDATE_USER_USERNAME = ''
 }
@@ -325,6 +359,7 @@ withPipeline(type, product, component) {
 
   before('fullFunctionalTest:preview'){
 
+    setupSecretsForIntegrationTests()
     installYarnDependenciesIfNeeded(yarnBuilder)
       setupUITestEnvVariablesForPreview()
   }
@@ -332,7 +367,7 @@ withPipeline(type, product, component) {
     archiveTestResult("test-results/functional", "index.html", "API Test Report")
     stage('UIFunctionalTests') {
       try {
-          yarnBuilder.yarn('test:functional-nightly-preview')
+          runPreviewUiFunctionalTests()
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -396,6 +431,7 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
+   setupSecretsForIntegrationTests()
    installYarnDependenciesIfNeeded(yarnBuilder)
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
@@ -405,6 +441,7 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:aat') {
+    setupSecretsForIntegrationTests()
     installYarnDependenciesIfNeeded(yarnBuilder)
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
