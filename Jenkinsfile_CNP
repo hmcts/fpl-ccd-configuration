@@ -4,9 +4,10 @@
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
+import uk.gov.hmcts.contino.YarnBuilder
 
 def type = "java"
-def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+def yarnBuilder = new YarnBuilder(this)
 def product = "fpl"
 def component = "case-service"
 
@@ -147,11 +148,12 @@ def setupSecretsForIntegrationTests() {
 def runPreviewSmokeTests() {
   withSubscription('nonprod') {
     def smokeTestPipelineConf = new AppPipelineConfig()
+    def smokeYarnBuilder = new YarnBuilder(this)
     smokeTestPipelineConf.vaultSecrets = integrationTestSecrets()
 
     withTeamSecrets(smokeTestPipelineConf, 'aat') {
       setupUITestEnvVariablesForPreview()
-      yarnBuilder.yarn('test:smoke')
+      smokeYarnBuilder.yarn('test:smoke')
     }
   }
 }
