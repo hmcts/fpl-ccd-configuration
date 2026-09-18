@@ -2,15 +2,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2ApplicationType",
-    "ListElementCode": "WITH_NOTICE",
-    "ListElement": "Application with notice.",
+    "ListElementCode": "WITHOUT_NOTICE",
+    "ListElement": "Yes",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2ApplicationType",
-    "ListElementCode": "WITHOUT_NOTICE",
-    "ListElement": "Application by consent. Parties will be notified of this application.",
+    "ListElementCode": "WITH_NOTICE",
+    "ListElement": "No",
     "DisplayOrder": 2
   }
 ]
