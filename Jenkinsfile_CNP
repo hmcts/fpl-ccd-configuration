@@ -144,15 +144,29 @@ def setupSecretsForIntegrationTests() {
   }
 }
 
-def setupSecretsForRoleAssignments() {
+def runPreviewRoleSetup(boolean waEnabled) {
   withSubscription('nonprod') {
     def roleAssignmentPipelineConf = new AppPipelineConfig()
     roleAssignmentPipelineConf.vaultSecrets = roleAssignmentSecrets()
 
     withTeamSecrets(roleAssignmentPipelineConf, 'aat') {
-      env.SYSTEM_UPDATE_USER_PASSWORD = "${SYSTEM_UPDATE_USER_PASSWORD}"
-      env.SYSTEM_UPDATE_USER_USERNAME = "${SYSTEM_UPDATE_USER_USERNAME}"
-      env.E2E_TEST_JUDGE_PASSWORD = "${E2E_TEST_JUDGE_PASSWORD}"
+      if (waEnabled) {
+        sh """
+          set -eu
+          eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+          ./bin/add-ccd-user-roles.sh
+          ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
+          bash ./bin/wait-for-system-update-am-role.sh 18 10
+        """
+      } else {
+        echo "Skipping system-update AM role wait because 'pr-values:wa' label is not present"
+        sh """
+          set -eu
+          eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+          ./bin/add-ccd-user-roles.sh
+          ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
+        """
+      }
     }
   }
 }
@@ -319,27 +333,10 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:preview') {
-    setupSecretsForRoleAssignments()
-
     def githubApi = new GithubAPI(this)
     // Only run WA-specific role assignment + wait when WA is enabled via PR label.
-    if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
-      sh """
-        set -eu
-        eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-        ./bin/add-ccd-user-roles.sh
-        ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
-        bash ./bin/wait-for-system-update-am-role.sh 18 10
-      """
-    } else {
-      echo "Skipping system-update AM role wait because 'pr-values:wa' label is not present"
-      sh """
-        set -eu
-        eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-        ./bin/add-ccd-user-roles.sh
-        ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
-      """
-    }
+    def waEnabled = githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')
+    runPreviewRoleSetup(waEnabled)
 
     archiveCoreCaseDataDefinitions('preview')
     uploadCoreCaseDataDefinitions('preview', '0')
