@@ -97,7 +97,6 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Test
     void shouldInitEventFieldWithListOfBundlesToBeReviewed() {
-        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn(JUDGE_NAME_TITLE);
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
@@ -111,8 +110,7 @@ class ReviewAdditionalApplicationServiceTest {
             "additionalApplicationToBeReviewedList",
             asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2), AdditionalApplicationsBundle::toLabel),
             "reviewOrderUrgency", NO,
-            "addCoverSheet", NO,
-            "judgeNameAndTitle", JUDGE_NAME_TITLE
+            "addCoverSheet", NO
         );
 
         assertThat(resultMap).isEqualTo(expectedMap);
@@ -120,7 +118,6 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Test
     void shouldInitEventFieldWithOutBundlesToBeReviewed() {
-        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn(JUDGE_NAME_TITLE);
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE))
@@ -132,8 +129,7 @@ class ReviewAdditionalApplicationServiceTest {
             "hasApplicationToBeReviewed", NO,
             "onlyOneApplicationToBeReviewed", NO,
             "reviewOrderUrgency", NO,
-            "addCoverSheet", NO,
-            "judgeNameAndTitle", JUDGE_NAME_TITLE
+            "addCoverSheet", NO
             );
 
         assertThat(resultMap).isEqualTo(expectedMap);
@@ -141,7 +137,6 @@ class ReviewAdditionalApplicationServiceTest {
 
     @Test
     void shouldInitEventFieldWithOneBundleToBeReviewed() {
-        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any())).thenReturn(JUDGE_NAME_TITLE);
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1))
@@ -157,7 +152,6 @@ class ReviewAdditionalApplicationServiceTest {
             .containsEntry("uploadedDraftOrder", null)
             .containsEntry("reviewOrderUrgency", NO)
             .containsEntry("addCoverSheet", NO)
-            .containsEntry("judgeNameAndTitle", JUDGE_NAME_TITLE)
             .containsEntry("c2AdditionalApplicationToBeReview",
                 buildReviewC2AdditionalApplicationEventData(NEW_BUNDLE_1.getValue()));
     }

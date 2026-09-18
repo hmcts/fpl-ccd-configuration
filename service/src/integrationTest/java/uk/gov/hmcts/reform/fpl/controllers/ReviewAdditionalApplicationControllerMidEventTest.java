@@ -6,12 +6,15 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
@@ -256,6 +259,95 @@ public class ReviewAdditionalApplicationControllerMidEventTest extends AbstractC
             .binaryUrl("http://dm-store/documents/" + filename + "/binary")
             .filename(filename)
             .build();
+    }
+
+    @Test
+    void shouldSetLegalAdvisorTypeWhenJudgeDetailsCannotBeFound() {
+        DocumentReference draftOrderDocument = document("draft-order.docx");
+
+        CaseData caseData = CaseData.builder()
+            .approveAdditionalAppRouter(APPROVE_APPLICATION_AND_ORDER)
+            .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
+                .c2AdditionalApplicationToBeReview(C2AdditionalApplicationEventData.builder()
+                    .draftOrdersBundle(List.of(element(
+                        DRAFT_ORDER_ID,
+                        DraftOrder.builder()
+                            .title("Draft order title")
+                            .document(draftOrderDocument)
+                            .build()
+                    )))
+                    .build())
+                .build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .build();
+
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any()))
+            .thenThrow(new RuntimeException("Not found"));
+
+        AboutToStartOrSubmitCallbackResponse response =
+            postMidEvent(caseData, "edit-hearing");
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData())
+            .containsEntry("judgeType", "LEGAL_ADVISOR");
+    }
+
+    @Test
+    void shouldGeneratePreviewUsingLegalAdvisorEnteredName() {
+        DocumentReference draftOrderDocument = document("draft-order.docx");
+        DocumentReference previewOrderDocument =
+            document("draft-order-with-coversheet.pdf");
+
+        CaseData caseData = CaseData.builder()
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.LEGAL_ADVISOR,
+                null,
+                null,
+                Judge.builder()
+                    .judgeFullName("Legal Adviser Example")
+                    .build()
+            ))
+            .confirmApplicationReviewedEventData(
+                ConfirmApplicationReviewedEventData.builder()
+                    .c2AdditionalApplicationToBeReview(
+                        C2AdditionalApplicationEventData.builder()
+                            .draftOrdersBundle(List.of(element(
+                                DRAFT_ORDER_ID,
+                                DraftOrder.builder()
+                                    .title("Draft order title")
+                                    .document(draftOrderDocument)
+                                    .build()
+                            )))
+                            .build()
+                    )
+                    .build()
+            )
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .build();
+
+        when(approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(any()))
+            .thenReturn("Legal Adviser Example");
+
+        when(hearingOrderGenerator.addCoverSheet(
+            any(),
+            eq(draftOrderDocument)
+        )).thenReturn(previewOrderDocument);
+
+        AboutToStartOrSubmitCallbackResponse response =
+            postMidEvent(
+                caseData,
+                "judge-or-legal-advisor-details"
+            );
+
+        assertThat(response.getData())
+            .containsEntry("judgeNameAndTitle", "Legal Adviser Example");
+
+        assertThat(response.getData())
+            .containsEntry("previewApprovedOrder1", Map.of(
+                "document_url", previewOrderDocument.getUrl(),
+                "document_filename", previewOrderDocument.getFilename(),
+                "document_binary_url", previewOrderDocument.getBinaryUrl()
+            ));
     }
 
 }
