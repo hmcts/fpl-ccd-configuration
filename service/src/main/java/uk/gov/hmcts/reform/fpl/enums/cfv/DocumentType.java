@@ -387,6 +387,7 @@ public enum DocumentType {
         switch (uploaderType) {
             case DESIGNATED_LOCAL_AUTHORITY:
             case SECONDARY_LOCAL_AUTHORITY:
+            case APPSOLICITOR:
                 return isConfidential ? LA : NON_CONFIDENTIAL;
             case HMCTS:
             case ROBOTICS:
