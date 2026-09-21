@@ -244,6 +244,7 @@ public class UploadAdditionalApplicationsService {
                 .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
                 .supplementsBundle(updatedSupplementsBundle)
                 .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+                .hasConfidentialAddress(null)
                 .type(eventData.getC2Type())
                 .respondents(respondentsInCase)
                 .routeType(eventData.getC2ApplicationRoute());
@@ -382,6 +383,10 @@ public class UploadAdditionalApplicationsService {
             supportingEvidence.getValue().setUploadedBy(uploadedBy);
             supportingEvidence.getValue().setUploaderType(uploaderType);
             supportingEvidence.getValue().setUploaderCaseRoles(uploadCaseRoles);
+            supportingEvidence.getValue().setHasConfidentialAddress(
+                supportingEvidence.getValue().getHasConfidentialAddress()
+            );
+            supportingEvidence.getValue().setHasConfidentialAddressConfirmation(null);
         });
 
         // If done with consent add the consent document to the support docs list
@@ -390,6 +395,7 @@ public class UploadAdditionalApplicationsService {
             supportingEvidenceBundle.add(element(SupportingEvidenceBundle.builder()
                 .name("Evidence of consent")
                 .document(eventData.getC2EvidenceConsentDocument())
+                .hasConfidentialAddress(YesNo.NO.getValue())
                 .dateTimeUploaded(uploadedDateTime)
                 .uploadedBy(uploadedBy)
                 .uploaderType(uploaderType)

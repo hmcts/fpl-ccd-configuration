@@ -1,12 +1,13 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.5.4")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
+import uk.gov.hmcts.contino.YarnBuilder
 
 def type = "java"
-def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+def yarnBuilder = new YarnBuilder(this)
 def product = "fpl"
 def component = "case-service"
 
@@ -21,17 +22,29 @@ def serviceSecrets = [
   ]
 ]
 
-def integrationTestSecrets = [
-  'fpl-aat': [
-    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
-    secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
-    secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
-    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
-    secret('fpl-case-service-idam-client-secret', 'IDAM_CLIENT_SECRET')
+def integrationTestSecrets() {
+  [
+    'fpl-aat': [
+      secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
+      secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
+      secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
+      secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
+      secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+      secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD'),
+      secret('fpl-case-service-idam-client-secret', 'IDAM_CLIENT_SECRET')
+    ]
   ]
-]
+}
+
+def roleAssignmentSecrets() {
+  [
+    'fpl-aat': [
+      secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
+      secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+      secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
+    ]
+  ]
+}
 
 def otherSecrets = [
   // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flex volume for secrets
@@ -114,17 +127,91 @@ def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
   }
 }
 
-def setupSecretsForIntegrationTests(pipelineConf) {
+def setupSecretsForIntegrationTests() {
   withSubscription('nonprod') {
-    withTeamSecrets(pipelineConf, 'aat') {
-      /* Setup Email template integration tests key with gov.notify */
-      env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
-      /* Setup Docmosis template integration tests key and url */
-      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
-      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
-      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
-      env.SYSTEM_UPDATE_USER_PASSWORD = "${SYSTEM_UPDATE_USER_PASSWORD}"
-      env.SYSTEM_UPDATE_USER_USERNAME = "${SYSTEM_UPDATE_USER_USERNAME}"
+    def integrationTestPipelineConf = new AppPipelineConfig()
+    integrationTestPipelineConf.vaultSecrets = integrationTestSecrets()
+
+    def integrationTestNotifyServiceKey
+    def integrationTestDocmosisTornadoKey
+    def e2eTestPassword
+    def systemUpdateUserUsername
+    def systemUpdateUserPassword
+    def e2eTestJudgePassword
+    def idamClientSecret
+
+    withTeamSecrets(integrationTestPipelineConf, 'aat') {
+      integrationTestNotifyServiceKey = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+      integrationTestDocmosisTornadoKey = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
+      e2eTestPassword = "${E2E_TEST_PASSWORD}"
+      systemUpdateUserUsername = "${SYSTEM_UPDATE_USER_USERNAME}"
+      systemUpdateUserPassword = "${SYSTEM_UPDATE_USER_PASSWORD}"
+      e2eTestJudgePassword = "${E2E_TEST_JUDGE_PASSWORD}"
+      idamClientSecret = "${IDAM_CLIENT_SECRET}"
+    }
+
+    /* Setup integration secrets for later stage steps outside withTeamSecrets. */
+    env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = integrationTestNotifyServiceKey
+    env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = integrationTestDocmosisTornadoKey
+    env.E2E_TEST_PASSWORD = e2eTestPassword
+    env.SYSTEM_UPDATE_USER_USERNAME = systemUpdateUserUsername
+    env.SYSTEM_UPDATE_USER_PASSWORD = systemUpdateUserPassword
+    env.E2E_TEST_JUDGE_PASSWORD = e2eTestJudgePassword
+    env.IDAM_CLIENT_SECRET = idamClientSecret
+    env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
+    env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
+  }
+}
+
+def runPreviewUiFunctionalTests() {
+  withSubscription('nonprod') {
+    def uiFunctionalPipelineConf = new AppPipelineConfig()
+    def uiFunctionalYarnBuilder = new YarnBuilder(this)
+    uiFunctionalPipelineConf.vaultSecrets = integrationTestSecrets()
+
+    withTeamSecrets(uiFunctionalPipelineConf, 'aat') {
+      setupUITestEnvVariablesForPreview()
+      uiFunctionalYarnBuilder.yarn('test:functional-nightly-preview')
+    }
+  }
+}
+
+def runPreviewSmokeTests() {
+  withSubscription('nonprod') {
+    def smokeTestPipelineConf = new AppPipelineConfig()
+    def smokeYarnBuilder = new YarnBuilder(this)
+    smokeTestPipelineConf.vaultSecrets = integrationTestSecrets()
+
+    withTeamSecrets(smokeTestPipelineConf, 'aat') {
+      setupUITestEnvVariablesForPreview()
+      smokeYarnBuilder.yarn('test:smoke')
+    }
+  }
+}
+
+def runPreviewRoleSetup(boolean waEnabled) {
+  withSubscription('nonprod') {
+    def roleAssignmentPipelineConf = new AppPipelineConfig()
+    roleAssignmentPipelineConf.vaultSecrets = roleAssignmentSecrets()
+
+    withTeamSecrets(roleAssignmentPipelineConf, 'aat') {
+      if (waEnabled) {
+        sh """
+          set -eu
+          eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+          ./bin/add-ccd-user-roles.sh
+          ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
+          bash ./bin/wait-for-system-update-am-role.sh 18 10
+        """
+      } else {
+        echo "Skipping system-update AM role wait because 'pr-values:wa' label is not present"
+        sh """
+          set -eu
+          eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+          ./bin/add-ccd-user-roles.sh
+          ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
+        """
+      }
     }
   }
 }
@@ -138,6 +225,9 @@ def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
+  env.E2E_TEST_PASSWORD = ''
+  env.E2E_TEST_JUDGE_PASSWORD = ''
+  env.IDAM_CLIENT_SECRET = ''
   env.SYSTEM_UPDATE_USER_PASSWORD = ''
   env.SYSTEM_UPDATE_USER_USERNAME = ''
 }
@@ -213,7 +303,7 @@ env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 withPipeline(type, product, component) {
   pipelineConf = config;
 
-  loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
+  loadVaultSecrets(serviceSecrets + otherSecrets)
 
   disableLegacyDeployment()
 
@@ -248,7 +338,7 @@ withPipeline(type, product, component) {
   }
 
   before('test') {
-    setupSecretsForIntegrationTests(pipelineConf)
+    setupSecretsForIntegrationTests()
   }
 
   before('akschartsinstall') {
@@ -269,6 +359,7 @@ withPipeline(type, product, component) {
 
   before('fullFunctionalTest:preview'){
 
+    setupSecretsForIntegrationTests()
     installYarnDependenciesIfNeeded(yarnBuilder)
       setupUITestEnvVariablesForPreview()
   }
@@ -276,7 +367,7 @@ withPipeline(type, product, component) {
     archiveTestResult("test-results/functional", "index.html", "API Test Report")
     stage('UIFunctionalTests') {
       try {
-          yarnBuilder.yarn('test:functional-nightly-preview')
+          runPreviewUiFunctionalTests()
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -293,23 +384,8 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
     def githubApi = new GithubAPI(this)
     // Only run WA-specific role assignment + wait when WA is enabled via PR label.
-    if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
-      sh """
-        set -eu
-        eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-        ./bin/add-ccd-user-roles.sh
-        ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
-        bash ./bin/wait-for-system-update-am-role.sh 18 10
-      """
-    } else {
-      echo "Skipping system-update AM role wait because 'pr-values:wa' label is not present"
-      sh """
-        set -eu
-        eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-        ./bin/add-ccd-user-roles.sh
-        ./bin/add-role-assignments.sh --skip-system-update-am-role-seeding
-      """
-    }
+    def waEnabled = githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')
+    runPreviewRoleSetup(waEnabled)
 
     archiveCoreCaseDataDefinitions('preview')
     uploadCoreCaseDataDefinitions('preview', '0')
@@ -320,7 +396,7 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('smoketest:preview') {
-    yarnBuilder.yarn('test:smoke')
+    runPreviewSmokeTests()
     archiveTestResult("test-results/functional", "index.html", "Smoke Test Report")
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
@@ -355,6 +431,7 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
+   setupSecretsForIntegrationTests()
    installYarnDependenciesIfNeeded(yarnBuilder)
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
@@ -364,6 +441,7 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:aat') {
+    setupSecretsForIntegrationTests()
     installYarnDependenciesIfNeeded(yarnBuilder)
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
@@ -387,6 +465,11 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
     env.ENV = 'prod'
     // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
+  }
+
+  before('highleveldatasetup') {
+    sh 'az login --identity'
+    sh 'az acr login --name hmctsprod'
   }
 
   afterAlways('highleveldatasetup') {
