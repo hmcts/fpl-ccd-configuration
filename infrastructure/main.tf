@@ -55,18 +55,18 @@ module "application_insights_uksouth" {
 
 moved {
   from = azurerm_application_insights.appinsights
-  to   = module.application_insights.azurerm_application_insights.this
+  to   = module.application_insights_uksouth.azurerm_application_insights.this
 }
-#Copying appinsights key to the valut
+#Copying appinsights key to the vault
 resource "azurerm_key_vault_secret" "AZURE_APPINSGHTS_KEY" {
   name         = "AppInsightsInstrumentationKey"
-  value        = module.application_insights.instrumentation_key
+  value        = module.application_insights_uksouth.instrumentation_key
   key_vault_id = module.key-vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "AZURE_KEY_VAULT_SECRET" {
   name         = "app-insights-connection-string"
-  value        = module.application_insights.connection_string
+  value        = module.application_insights_uksouth.connection_string
   key_vault_id = module.key-vault.key_vault_id
 }
 
