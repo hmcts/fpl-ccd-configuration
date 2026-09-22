@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.ccd.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
@@ -35,6 +36,10 @@ public class ChangeOrganisationRequest {
 
     @JsonProperty("ApprovalStatus")
     private ChangeOrganisationApprovalStatus approvalStatus;
+
+    @JsonProperty("CreatedBy")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String createdBy;
 
     @JsonIgnore
     public SolicitorRole getCaseRole() {
