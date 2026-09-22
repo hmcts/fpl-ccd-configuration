@@ -94,7 +94,7 @@
     "PageID": "checkSharing",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageShowCondition": "outsourcingType = \"MLA\" AND isOutsourcedCase = \"Yes\""
+    "PageShowCondition": "outsourcingType = \"MLA\" AND isOutsourcedCase = \"Yes\" AND sharingWithUsers != \"DO_NOT_SHARE\""
   },
   {
     "LiveFrom": "01/01/2017",
