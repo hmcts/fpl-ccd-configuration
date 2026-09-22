@@ -177,6 +177,7 @@ public class CaseData extends CaseDataParent {
     private YesNo isLocalAuthority;
     private String latestQueryID;
     private YesNo isC2Application;
+    private YesNo reviewNextHearing;
 
     @JsonIgnore
     public boolean checkIfCaseIsSubmittedByLA() {
