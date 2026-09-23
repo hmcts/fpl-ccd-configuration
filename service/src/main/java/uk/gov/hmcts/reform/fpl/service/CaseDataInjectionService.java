@@ -20,14 +20,10 @@ public class CaseDataInjectionService {
     private static final String AMBER = "AMBER";
     private static final String RED = "RED";
 
-    private final Clock clock;
-
     public CaseDataInjectionResponse generate(CaseData caseData) {
-        LocalDate dateSubmitted = caseData == null ? null : caseData.getDateSubmitted();
-        Long caseAgeWeeks = dateSubmitted == null
-            ? null
-            : Math.max(0, ChronoUnit.WEEKS.between(dateSubmitted, LocalDate.now(clock)));
-        String caseAgeBand = getBand(caseAgeWeeks);
+        LocalDate dateSubmitted = caseData.getDateSubmitted();
+        Long caseAgeWeeks = Math.max(0, ChronoUnit.WEEKS.between(dateSubmitted, LocalDate.now()));
+        String caseAgeBand = getCaseAgeBand(caseAgeWeeks);
 
         return CaseDataInjectionResponse.builder()
             .metadataFields(List.of(
@@ -36,11 +32,7 @@ public class CaseDataInjectionService {
             .build();
     }
 
-    private String getBand(Long caseAgeWeeks) {
-        if (caseAgeWeeks == null) {
-            return "";
-        }
-
+    private String getCaseAgeBand(Long caseAgeWeeks) {
         if (caseAgeWeeks < 26) {
             return GREEN;
         }
@@ -52,14 +44,6 @@ public class CaseDataInjectionService {
         return RED;
     }
 
-    private String toBandLabel(String caseAgeBand) {
-        return switch (caseAgeBand) {
-            case GREEN -> "Under 26 weeks";
-            case AMBER -> "26 to 52 weeks";
-            case RED -> "Over 52 weeks";
-            default -> "";
-        };
-    }
 }
 
 
