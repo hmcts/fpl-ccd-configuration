@@ -282,6 +282,144 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseSummaryCaseAgeInjected",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseSummaryCaseAgeBandInjected",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseSummaryCaseAgeStatusLabel",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseSummaryCaseAgeGreenTag",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseSummaryCaseAgeAmberTag",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseSummaryCaseAgeRedTag",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "extend26WeekTimelineLink",
     "AccessControl": [
       {
