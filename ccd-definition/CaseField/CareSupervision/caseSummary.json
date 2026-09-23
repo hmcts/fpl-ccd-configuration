@@ -110,26 +110,8 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseSummaryCaseAgeInjected",
-    "Label": "Case age (weeks)",
-    "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryCaseAgeBandInjected",
     "Label": "Injected age band helper",
-    "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseSummaryCaseAgeStatusLabel",
-    "Label": "Case age",
     "FieldType": "Text",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"

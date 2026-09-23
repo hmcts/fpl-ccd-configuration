@@ -15,9 +15,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataInjectionService {
-    private static final String AGE_WEEKS_ID = "caseSummaryCaseAgeInjected";
     private static final String AGE_BAND_ID = "caseSummaryCaseAgeBandInjected";
-    private static final String AGE_STATUS_LABEL_ID = "caseSummaryCaseAgeStatusLabel";
     private static final String GREEN = "GREEN";
     private static final String AMBER = "AMBER";
     private static final String RED = "RED";
@@ -30,13 +28,10 @@ public class CaseDataInjectionService {
             ? null
             : Math.max(0, ChronoUnit.WEEKS.between(dateSubmitted, LocalDate.now(clock)));
         String caseAgeBand = getBand(caseAgeWeeks);
-        String caseAgeText = caseAgeWeeks == null ? "" : String.valueOf(caseAgeWeeks);
 
         return CaseDataInjectionResponse.builder()
             .metadataFields(List.of(
-                CdiMetadataField.text(AGE_WEEKS_ID, "Case age (weeks)", caseAgeText),
-                CdiMetadataField.text(AGE_BAND_ID, "Case age band", caseAgeBand),
-                CdiMetadataField.text(AGE_STATUS_LABEL_ID, "Case age status", toBandLabel(caseAgeBand))
+                CdiMetadataField.text(AGE_BAND_ID, "Case age band", caseAgeBand)
             ))
             .build();
     }

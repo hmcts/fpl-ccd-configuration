@@ -83,16 +83,6 @@
     "TabID": "SummaryLA",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "caseSummaryCaseAgeStatusLabel",
-    "TabFieldDisplayOrder": 7
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "SummaryLA",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryCaseAgeGreenTag",
     "FieldShowCondition": "caseSummaryCaseAgeBandInjected = \"GREEN\"",
     "TabFieldDisplayOrder": 8
