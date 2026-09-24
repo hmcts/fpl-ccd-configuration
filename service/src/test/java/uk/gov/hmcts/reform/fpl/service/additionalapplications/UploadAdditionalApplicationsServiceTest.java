@@ -1010,6 +1010,58 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(underTest.getChildrenMultiSelectList(caseData)).isEqualTo(expectedList);
     }
 
+    @Test
+    void shouldAddC2EvidenceOfConsentOnlyToC2SupportingDocuments() {
+        Supplement c2Supplement = createSupplementsBundle();
+        SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
+
+        Supplement otherSupplement = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
+        SupportingEvidenceBundle otherSupportingDocument = createSupportingEvidenceBundle("other document");
+
+        DocumentReference evidenceOfConsent = testDocumentReference("EvidenceOfConsent.pdf");
+
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0))
+            .listItems(DYNAMIC_LIST_ELEMENTS)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .c2Type(WITHOUT_NOTICE)
+                .c2EvidenceConsentDocument(evidenceOfConsent)
+                .temporaryC2Document(createC2EventData(c2Supplement, c2SupportingDocument))
+                .temporaryOtherApplicationsBundle(
+                    createOtherApplicationsBundle(otherSupplement, otherSupportingDocument)
+                )
+                .applicantsList(applicantsList)
+                .c2ApplicationRoute(PAPER_FORM)
+                .build())
+            .build();
+
+        AdditionalApplicationsBundle actual =
+            underTest.buildAdditionalApplicationsBundle(caseData);
+
+        List<Element<SupportingEvidenceBundle>> c2SupportingDocuments =
+            actual.getC2DocumentBundle().getSupportingEvidenceBundle();
+
+        List<Element<SupportingEvidenceBundle>> otherSupportingDocuments =
+            actual.getOtherApplicationsBundle().getSupportingEvidenceBundle();
+
+        assertThat(c2SupportingDocuments)
+            .hasSize(2)
+            .extracting(element -> element.getValue().getName())
+            .containsExactlyInAnyOrder(
+                "Supporting document",
+                "Evidence of consent"
+            );
+
+        assertThat(otherSupportingDocuments)
+            .hasSize(1)
+            .extracting(element -> element.getValue().getName())
+            .containsExactly("other document");
+    }
+
     private void assertOnlineC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
 
