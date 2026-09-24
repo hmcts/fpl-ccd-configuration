@@ -39,6 +39,7 @@ import java.util.UUID;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -63,7 +64,25 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        caseDetails.getData().remove("judgeType");
+        caseDetails.getData().remove("manualJudgeDetails");
+
         caseDetails.getData().putAll(reviewAdditionalApplicationService.initEventField(caseData));
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/judge-or-legal-advisor-details/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleJudgeOrLegalAdvisorDetails(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        ConfirmApplicationReviewedEventData eventData =
+            caseData.getConfirmApplicationReviewedEventData();
+
+        populateApprovedOrderPreview(caseDetails, caseData, eventData);
 
         return respond(caseDetails);
     }
@@ -93,22 +112,16 @@ public class ReviewAdditionalApplicationController extends CallbackController {
                 caseDetails.getData().put("reviewOrderUrgency", YES);
                 caseDetails.getData().put("addCoverSheet", YES);
 
-                C2DocumentBundle bundle  = eventData.getC2AdditionalApplicationToBeReview().toC2DocumentBundle();
+                try {
+                    populateApprovedOrderPreview(caseDetails, caseData, eventData);
+                } catch (Exception e) {
+                    log.error(
+                        "Fail to get judge title and name. Entering Legal advisor route",
+                        e
+                    );
+                    caseDetails.getData().put("judgeType", LEGAL_ADVISOR);
+                }
 
-                Element<DraftOrder> draftOrder = bundle.getDraftOrdersBundle().getFirst();
-                DocumentReference amendedDraftOrderDocument = isEmpty(eventData.getAmendedDraftOrder())
-                    ? null : eventData.getAmendedDraftOrder();
-
-                DocumentReference previewOrder = hearingOrderGenerator.addCoverSheet(caseData
-                        .toBuilder().reviewDraftOrdersData(caseData.getReviewDraftOrdersData().toBuilder()
-                            .judgeTitleAndName(approveDraftOrdersService
-                                .getJudgeTitleAndNameOfCurrentUser(caseData))
-                            .build())
-                        .build(),
-                    isEmpty(eventData.getAmendedDraftOrder())
-                        ? draftOrder.getValue().getDocument() : amendedDraftOrderDocument);
-
-                caseDetails.getData().put("previewApprovedOrder1", previewOrder);
                 break;
             case APPLICANT_CHANGE_ORDER:
                 caseDetails.getData().put("reviewOrderUrgency", NO);
@@ -300,6 +313,43 @@ public class ReviewAdditionalApplicationController extends CallbackController {
         ConfirmApplicationReviewedEventData.postSubmitEventFields().forEach(caseDetails.getData()::remove);
 
         return respond(caseDetails);
+    }
+
+    private void populateApprovedOrderPreview(
+        CaseDetails caseDetails,
+        CaseData caseData,
+        ConfirmApplicationReviewedEventData eventData) {
+
+        String judgeNameAndTitle =
+            approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData);
+
+        caseDetails.getData().put("judgeNameAndTitle", judgeNameAndTitle);
+
+        C2DocumentBundle bundle =
+            eventData.getC2AdditionalApplicationToBeReview().toC2DocumentBundle();
+
+        Element<DraftOrder> draftOrder =
+            bundle.getDraftOrdersBundle().getFirst();
+
+        DocumentReference amendedDraftOrderDocument =
+            isEmpty(eventData.getAmendedDraftOrder())
+                ? null
+                : eventData.getAmendedDraftOrder();
+
+        DocumentReference previewOrder = hearingOrderGenerator.addCoverSheet(
+            caseData.toBuilder()
+                .reviewDraftOrdersData(
+                    caseData.getReviewDraftOrdersData().toBuilder()
+                        .judgeTitleAndName(judgeNameAndTitle)
+                        .build()
+                )
+                .build(),
+            isEmpty(eventData.getAmendedDraftOrder())
+                ? draftOrder.getValue().getDocument()
+                : amendedDraftOrderDocument
+        );
+
+        caseDetails.getData().put("previewApprovedOrder1", previewOrder);
     }
 
 }
