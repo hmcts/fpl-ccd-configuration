@@ -119,7 +119,7 @@ public class AdditionalApplicationsBundle {
     }
 
     @JsonIgnore
-    public String geC2ConfidentialSuffix() {
+    public String getC2ConfidentialSuffix() {
         if (YesNo.YES.equals(getHasConfidentialC2())) {
             return Arrays.stream(getClass().getDeclaredFields())
                 .filter(field -> {

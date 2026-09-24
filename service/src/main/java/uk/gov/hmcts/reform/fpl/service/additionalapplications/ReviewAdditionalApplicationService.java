@@ -101,7 +101,7 @@ public class ReviewAdditionalApplicationService {
             resultMap.put("reviewAdditionalAppIsConfidential", isConfidential ? YES : NO);
             resultMap.put("c2AdditionalApplicationToBeReview", C2AdditionalApplicationEventData.builder()
                 .routeType(c2ToBeReviewed.getRouteType())
-                .confidentialFieldSuffix(bundle.geC2ConfidentialSuffix())
+                .confidentialFieldSuffix(bundle.getC2ConfidentialSuffix())
                 .applicantName(c2ToBeReviewed.getApplicantName())
                 .type(c2ToBeReviewed.getType())
                 .confidentialApplication(isConfidential
