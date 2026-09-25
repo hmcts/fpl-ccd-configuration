@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -272,6 +273,7 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         Element<HearingOrder> expectedOrderToReturn = element(draftOrderId,
             draftOrder.toBuilder().status(APPROVED).order(sealedDocument)
                 .others(null).othersNotified("")
+                .hasOrderConcludedProceedings(YesNo.NO)
                 .lastUploadedOrder(SEND_TO_ALL_PARTIES.equals(reviewOutcome) ? order : convertedDocument).build());
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -317,6 +319,7 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
             .dateIssued(LocalDate.now())
             .status(APPROVED)
             .others(null)
+            .hasOrderConcludedProceedings(YesNo.NO)
             .othersNotified("")
             .build();
 

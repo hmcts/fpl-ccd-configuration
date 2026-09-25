@@ -57,6 +57,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
@@ -121,7 +122,6 @@ import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +142,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -249,7 +250,13 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
+    /**
+     * This historical field is deprecated since DFPL-2423.
+     * @deprecated (DFPL-2423, historical field)
+     */
+    @Deprecated(since = "DFPL-2423")
     private final Proceeding proceeding;
+    private final List<Element<Proceeding>> proceedings;
 
     @Deprecated
     @NotNull(message = "Add the applicant's solicitor's details")
@@ -390,6 +397,7 @@ public class CaseData extends CaseDataParent {
     private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
     private final PBAPayment temporaryPbaPayment;
     private final YesNo isCTSCUser;
+    private final YesNo isUrgentListingRequest;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
     private final DynamicList applicantsList;
@@ -505,8 +513,8 @@ public class CaseData extends CaseDataParent {
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
+    private final DynamicMultiSelectList childSelectorV2;
     private final Selector othersSelector;
-    private final Selector respondentsSelector;
     private final Selector personSelector;
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
@@ -615,21 +623,8 @@ public class CaseData extends CaseDataParent {
     private final EPOExclusionRequirementType epoExclusionRequirementType;
 
     @JsonIgnore
-    public List<Element<Proceeding>> getAllProceedings() {
-        List<Element<Proceeding>> proceedings = new ArrayList<>();
-
-        ofNullable(this.getProceeding()).map(ElementUtils::element).ifPresent(proceedings::add);
-        ofNullable(this.getProceeding())
-            .map(Proceeding::getAdditionalProceedings).ifPresent(proceedings::addAll);
-
-        return Collections.unmodifiableList(proceedings);
-    }
-
-    @JsonIgnore
     public String getRelevantProceedings() {
-        return ofNullable(this.getProceeding())
-            .map(Proceeding::getOnGoingProceeding)
-            .orElse("");
+        return isNotEmpty(proceedings) ? YES.getValue() : NO.getValue();
     }
 
     public Optional<Other> findOther(int sequenceNo) {

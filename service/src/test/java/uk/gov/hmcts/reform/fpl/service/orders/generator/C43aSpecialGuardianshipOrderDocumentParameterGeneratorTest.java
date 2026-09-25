@@ -78,7 +78,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent is appointed as special guardian");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -97,7 +97,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent is appointed as special guardian");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -116,7 +116,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent is appointed as special guardian");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
@@ -135,7 +135,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD, CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent is appointed as special guardian");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -154,7 +154,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD, CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent is appointed as special guardian");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
@@ -173,7 +173,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent and Randle Responde are appointed as special guardians");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -192,7 +192,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent and Randle Responde are appointed as special guardians");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -211,7 +211,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17 "
                 + "are appointed as special guardians");

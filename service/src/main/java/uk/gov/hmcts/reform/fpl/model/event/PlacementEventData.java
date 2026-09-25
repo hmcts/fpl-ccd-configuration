@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.TempNullify;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -63,6 +64,9 @@ public class PlacementEventData {
 
     @TempNullify
     private PBAPayment placementPayment;
+
+    @Temp
+    private final DynamicMultiSelectList respondentsSelectorV2;
 
     private LocalDateTime placementLastPaymentTime;
 

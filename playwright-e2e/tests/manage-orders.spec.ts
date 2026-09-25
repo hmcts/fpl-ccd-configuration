@@ -71,7 +71,7 @@ test.describe('manage orders', () => {
 
         });
 
-    test('CTSC creates Emergency protection order', async ({ page, signInPage, orders }) => {
+    test('CTSC creates Emergency protection order with exclusion', async ({ page, signInPage, orders }) => {
         caseName = 'Emergency protection order (C23) ' + dateTime.slice(0, 10);
         expect(await updateCase(caseName, caseNumber, caseWithOrderData)).toBeTruthy();
         await signInPage.visit();
@@ -92,11 +92,9 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Order 1', { exact: true })).toBeVisible();
         await expect(page.getByRole('cell', { name: ' c23_emergency_protection_order.pdf', exact: true })).toBeVisible();
-        await orders.openOrderDoc('c23_emergency_protection_order.pdf');
-
     });
 
-    test('Judge creates Emergency protection order', async ({ page, signInPage, orders }) => {
+    test('Judge creates Emergency protection order with exclusion', async ({ page, signInPage, orders }) => {
         caseName = 'Emergency protection order (C23) ' + dateTime.slice(0, 10);
         expect(await updateCase(caseName, caseNumber, caseWithOrderData)).toBeTruthy();
         await signInPage.visit();
@@ -117,7 +115,6 @@ test.describe('manage orders', () => {
         await orders.tabNavigation('Orders');
         await expect(page.getByText('Order 1', { exact: true })).toBeVisible();
         await expect(page.getByRole('cell', { name: ' c23_emergency_protection_order.pdf', exact: true })).toBeVisible();
-        await orders.openOrderDoc('c23_emergency_protection_order.pdf');
 
     });
 

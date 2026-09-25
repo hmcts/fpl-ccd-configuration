@@ -54,6 +54,7 @@
       "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
     },
     "childSelector": {},
+    "childSelectorV2": {},
     "hearingDetailsSectionSubHeader": "Care order (C32A)",
     "manageOrdersOperation": "CREATE",
     "orderTempQuestions": {

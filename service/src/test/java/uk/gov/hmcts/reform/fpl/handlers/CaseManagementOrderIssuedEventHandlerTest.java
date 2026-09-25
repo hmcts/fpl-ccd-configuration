@@ -74,8 +74,10 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private static final IssuedCMOTemplate EMAIL_REP_CMO_TEMPLATE_DATA = mock(IssuedCMOTemplate.class);
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final HearingOrder CMO = mock(HearingOrder.class);
+    private static final HearingOrder CMO1 = mock(HearingOrder.class);
     private static final DocumentReference ORDER = mock(DocumentReference.class);
     private static final CaseManagementOrderIssuedEvent EVENT = new CaseManagementOrderIssuedEvent(CASE_DATA, CMO);
+    private static final CaseManagementOrderIssuedEvent EVENT1 = new CaseManagementOrderIssuedEvent(CASE_DATA, CMO1);
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
         LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 
@@ -112,6 +114,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
     void init() {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(CMO.getOrder()).willReturn(ORDER);
+        given(CMO.getHasOrderConcludedProceedings()).willReturn(YesNo.NO);
+        given(CMO1.getHasOrderConcludedProceedings()).willReturn(YesNo.YES);
     }
 
     @Test
@@ -347,5 +351,13 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
         verify(workAllocationTaskService).createWorkAllocationTask(CASE_DATA,
             WorkAllocationTaskType.CMO_REVIEWED);
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenCMOApprovedWithOrderConcludesProceedings() {
+        underTest.createWorkAllocationTask(EVENT1);
+
+        verify(workAllocationTaskService).createWorkAllocationTask(CASE_DATA,
+            WorkAllocationTaskType.ORDER_CONCLUDES_PROCEEDINGS);
     }
 }

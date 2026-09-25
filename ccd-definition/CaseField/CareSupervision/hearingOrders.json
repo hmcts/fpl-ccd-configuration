@@ -1443,5 +1443,15 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Temporary field for previewing the approved order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "doesOrderConcludeProceedings",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "OrderConcludesProceedingsCheckBox",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.listing.RequestListingActionController;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskUrgency;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ListingActionType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ListingActionRequest;
@@ -87,4 +89,43 @@ class RequestListingActionAboutToSubmitControllerTest extends AbstractCallbackTe
             .containsExactly(expectedNewRequest, oldRequest);
     }
 
+    @Test
+    void shouldSetWaUrgencyToUrgentWhenIsUrgentListingRequestIsYes() {
+        CaseData caseData = CaseData.builder()
+            .selectListingActions(List.of(ListingActionType.LISTING_REQUIRED))
+            .listingDetails(LISTING_DETAILS)
+            .isUrgentListingRequest(YesNo.YES)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(caseData);
+
+        CaseData actualCaseData = mapper.convertValue(actualResponse.getData(), CaseData.class);
+
+        assertThat(actualCaseData.getWaTaskUrgencyLevel()).isEqualTo(WorkAllocationTaskUrgency.URGENT);
+
+        assertThat(actualCaseData.getListingRequests()).hasSize(1);
+        assertThat(actualCaseData.getListingRequests().getFirst().getValue().getIsUrgent()).isEqualTo(YesNo.YES);
+
+        assertThat(actualCaseData.getIsUrgentListingRequest()).isNull();
+    }
+
+    @Test
+    void shouldSetWaUrgencyToStandardWhenIsUrgentListingRequestIsNo() {
+        CaseData caseData = CaseData.builder()
+            .selectListingActions(List.of(ListingActionType.LISTING_REQUIRED))
+            .listingDetails(LISTING_DETAILS)
+            .isUrgentListingRequest(YesNo.NO)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(caseData);
+
+        CaseData actualCaseData = mapper.convertValue(actualResponse.getData(), CaseData.class);
+
+        assertThat(actualCaseData.getWaTaskUrgencyLevel()).isEqualTo(WorkAllocationTaskUrgency.STANDARD);
+
+        assertThat(actualCaseData.getListingRequests()).hasSize(1);
+        assertThat(actualCaseData.getListingRequests().getFirst().getValue().getIsUrgent()).isEqualTo(YesNo.NO);
+
+        assertThat(actualCaseData.getIsUrgentListingRequest()).isNull();
+    }
 }

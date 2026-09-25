@@ -384,6 +384,14 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void createWorkAllocationTask(DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
-        workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.CMO_REVIEWED);
+        boolean orderConcludesProceedings = Stream.of(event.getApprovedOrders(),
+            unwrapElements(event.getApprovedConfidentialOrders()))
+            .flatMap(List::stream)
+            .anyMatch(order -> order.getHasOrderConcludedProceedings().equalsString("YES"));
+
+        workAllocationTaskService.createWorkAllocationTask(caseData,
+            orderConcludesProceedings
+                ? WorkAllocationTaskType.ORDER_CONCLUDES_PROCEEDINGS
+                : WorkAllocationTaskType.CMO_REVIEWED);
     }
 }
