@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2ApplicationRouteSelection",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationRoute",
+    "ElementLabel": "Do you want to make the C2 application online or upload a paper form?",
+    "SecurityClassification": "Public"
+  }
+]

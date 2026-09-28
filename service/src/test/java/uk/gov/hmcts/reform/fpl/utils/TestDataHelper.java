@@ -123,6 +123,22 @@ public class TestDataHelper {
             .build();
     }
 
+    public static Document testDocumentWithName(String filename) {
+        final Document.Link binaryLink = new Document.Link();
+        binaryLink.href = randomAlphanumeric(10);
+        final Document.Link selfLink = new Document.Link();
+        selfLink.href = randomAlphanumeric(10);
+
+        final Document.Links links = new Document.Links();
+        links.binary = binaryLink;
+        links.self = selfLink;
+
+        return Document.builder()
+            .links(links)
+            .originalDocumentName(filename)
+            .build();
+    }
+
     public static uk.gov.hmcts.reform.document.domain.Document testOldDocument() {
         final uk.gov.hmcts.reform.document.domain.Document.Link binaryLink =
             new uk.gov.hmcts.reform.document.domain.Document.Link();

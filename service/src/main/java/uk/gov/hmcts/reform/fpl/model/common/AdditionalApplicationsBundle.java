@@ -54,6 +54,7 @@ public class AdditionalApplicationsBundle {
     private String removalReason;
     private String amountToPay;
     private YesNo applicationReviewed;
+    private String refusalReason;
 
     @JsonIgnore
     public String toLabel() {

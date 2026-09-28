@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
@@ -37,6 +39,11 @@ public class DynamicMultiSelectList {
     private List<DynamicMultiSelectListElement> listItems;
 
     @JsonIgnore
+    public String getValueLabel() {
+        return value == null ? null : value.toString();
+    }
+
+    @JsonIgnore
     public <T> List<Element<T>> getSelectedElementsFromMultiSelectList(List<Element<T>> elements) {
         if (isEmpty(value)) {
             return Collections.emptyList();
@@ -44,5 +51,15 @@ public class DynamicMultiSelectList {
         return elements.stream().filter(element -> value.stream()
                 .anyMatch(listValue -> listValue.hasCode(element.getId())))
             .toList();
+    }
+
+    @JsonIgnore
+    public UUID getValueCodeAsUuid() {
+        return Optional.ofNullable(getValueCode()).map(UUID::fromString).orElse(null);
+    }
+
+    @JsonIgnore
+    public String getValueCode() {
+        return value == null ? null : value.toString();
     }
 }

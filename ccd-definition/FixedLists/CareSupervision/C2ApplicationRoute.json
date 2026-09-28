@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2ApplicationRoute",
+    "ListElementCode": "APPLY_ONLINE",
+    "ListElement": "Apply online",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2ApplicationRoute",
+    "ListElementCode": "PAPER_FORM",
+    "ListElement": "Upload a paper form",
+    "DisplayOrder": 2
+  }
+]
