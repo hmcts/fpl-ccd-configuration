@@ -102,13 +102,14 @@ public class MigrateCaseController extends CallbackController {
 
     private void run3374(CaseDetails caseDetails) {
         final String migrationId = "DFPL-3374";
-        final long expectedCaseId = 784796259751728L;
+        final long expectedCaseId = 1784796259751728L;
         final String outsourcingOrgId = "CPYYWBZ";
         Long caseId = caseDetails.getId();
 
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), outsourcingOrgId, null));
+        caseDetails.getData().putAll(migrateCaseService
+            .updateOutsourcingPolicy(getCaseData(caseDetails), outsourcingOrgId, null));
     }
 
     // run 3213 Migrate function to replace Fleetwood Location with Preston Location
