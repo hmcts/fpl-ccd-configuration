@@ -46,6 +46,15 @@ xui-webapp:
       NOW: false
       REDISCLOUD_URL: redis://${SERVICE_NAME}-redis-master:6379
       PROTOCOL: http
+    keyVaults:
+      rpx:
+        resourceGroup: rpx
+        secrets:
+          - mc-s2s-client-secret
+          - mc-idam-client-secret
+          - system-user-name
+          - system-user-password
+          - mc-session-secret
 
 
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
