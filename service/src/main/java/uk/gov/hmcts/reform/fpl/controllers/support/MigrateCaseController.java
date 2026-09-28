@@ -40,9 +40,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-3213", this::run3213,
         "DFPL-2423", this::run2423,
         "DFPL-2423-rollback", this::run2423Rollback,
-        "DFPL-3363", this::run3363,
         "DFPL-3213-v2", this::run3213v2,
-        "DFPL-3361", this::run3361
+        "DFPL-3374", this::run3374
     );
 
     @PostMapping("/about-to-submit")
@@ -101,39 +100,15 @@ public class MigrateCaseController extends CallbackController {
         ));
     }
 
-    private void run3346(CaseDetails caseDetails) {
-        final String DFPL_3346 = "DFPL-3346";
-        final long CASE_ID_3346 = 1781013695412110L;
-        final String ORG_ID_3346 = "CPYYWBZ";
-        runOutsourcingPolicyMigration(caseDetails, DFPL_3346, CASE_ID_3346, ORG_ID_3346);
-    }
-
-    private void run3347(CaseDetails caseDetails) {
-        final String DFPL_3347 = "DFPL-3347";
-        final long CASE_ID_3347 = 1783696286134453L;
-        final String ORG_ID_3347 = "ZL7FAG5";
-        runOutsourcingPolicyMigration(caseDetails, DFPL_3347, CASE_ID_3347, ORG_ID_3347);
-    }
-
-    private void runOutsourcingPolicyMigration(CaseDetails caseDetails, String migrationId,
-                                               long expectedCaseId, String targetOrgId) {
+    private void run3374(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3374";
+        final long expectedCaseId = 784796259751728L;
+        final String outsourcingOrgId = "CPYYWBZ";
         Long caseId = caseDetails.getId();
 
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        log.info("Migration of {} is started for case {}", migrationId, caseId);
 
-        Map<String, OrganisationPolicy> migrationResult =
-            migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), targetOrgId, null);
-
-        caseDetails.getData().putAll(migrationResult);
-
-        OrganisationPolicy updatedOrgPolicy =  migrationResult.get("outsourcingPolicy");
-        if (updatedOrgPolicy != null && updatedOrgPolicy.getOrganisation() != null) {
-            log.info("Migration {} successfully updated outsourcingPolicy to organisation {} on case {}",
-                migrationId, updatedOrgPolicy.getOrganisation().getOrganisationID(), caseId);
-        } else {
-            log.info("Migration {} completed but outsourcingPolicy was null for case {}", migrationId, caseId);
-        }
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), outsourcingOrgId, null));
     }
 
     // run 3213 Migrate function to replace Fleetwood Location with Preston Location
@@ -153,25 +128,6 @@ public class MigrateCaseController extends CallbackController {
             expectedBaseLocation,
             prestonCourtCode
         ));
-    }
-
-    private void run3361(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3361";
-        final long expectedCaseId = 1761903519622353L;
-        final String orgId = "CPYYWBZ";
-
-        Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, CaseRole.EPSMANAGING.formattedName()));
-
-    }
-
-    public void run3363(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3363";
-        final CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.updateChildStatusWithFinalOrderIssued(migrationId, caseData));
     }
 }
 
