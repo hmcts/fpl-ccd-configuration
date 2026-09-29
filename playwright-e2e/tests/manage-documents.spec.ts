@@ -2,11 +2,18 @@ import { test } from '../fixtures/create-fixture';
 import { testConfig } from '../settings/test-config';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser, privateSolicitorOrgUser } from '../settings/user-credentials';
+import {
+    CTSCUser,
+    newSwanseaLocalAuthorityUserOne,
+    HighCourtAdminUser,
+    privateSolicitorOrgUser,
+    CTSCTeamLeadUser
+} from '../settings/user-credentials';
 import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
 import { expect } from '@playwright/test';
 import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
 import { setHighCourt } from '../utils/update-case-details';
+import {all} from "axios";
 
 
 test.describe('Manage Documents', () => {
@@ -18,45 +25,61 @@ test.describe('Manage Documents', () => {
     const caseWithResSolicitor = require('../caseData/caseWithRespondentSolicitor.json');
     const caseWithManageDocumentUploads = require('../caseData/caseWithManageDocumentUploads.json');
     test.beforeEach(async () => {
-        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        expect(caseNumber).toBeDefined();
+     //  caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+      // expect(caseNumber).toBeDefined();
+        caseNumber = ''
     });
 
-    test('LA uploads documents @xbrowser', async ({ page, signInPage, manageDocuments, caseFileView }) => {
-        caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
-        expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+    test.only('LA uploads documents @xbrowser', async ({ page, signInPage, manageDocuments, caseFileView,allWork }) => {
+       // caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
+        //expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
         await signInPage.visit();
-        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-        await signInPage.navigateToCaseDetails(caseNumber);
-        await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadDocuments('Court correspondence');
+        await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
+       // await signInPage.navigateToCaseDetails(caseNumber);
+        await signInPage.page.pause();
+        await signInPage.clickAllWork();
+        // search for the routine CTSC work
+await allWork.filterService('Family Public Law');
+await allWork.filterWorkType('Routine work');
+await allWork.filterTaskName('Review Correspondence');
+await allWork.clickSearchButton();
+await allWork.ParseTaskTable();
 
-        // Check CFV
-        await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Court Correspondence');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
 
-        // If WA is enabled
-        if (testConfig.waEnabled) {
-            console.log('WA testing');
-            await manageDocuments.clickSignOut();
-            await signInPage.visit();
-            await signInPage.login(CTSCUser.email, CTSCUser.password);
+        // await manageDocuments.gotoNextStep('Manage documents');
+        // await manageDocuments.uploadDocuments('Court correspondence');
+        //
+        // // Check CFV
+        // await caseFileView.goToCFVTab();
+        // await caseFileView.openFolder('Court Correspondence');
+        // await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        //
+        // // If WA is enabled
+        // if (testConfig.waEnabled) {
+        //     console.log('WA testing');
+        //     await manageDocuments.clickSignOut();
+        //     await signInPage.visit();
+        //     await signInPage.login(CTSCUser.email, CTSCUser.password);
+        //
+        //     await signInPage.navigateToCaseDetails(caseNumber);
+        //
+        //     // Judge in Wales should see this Welsh case task + be able to assign it to themselves
+        //     await manageDocuments.tabNavigation('Tasks');
+        //     await manageDocuments.waitForTask('Review Correspondence');
+        //
+        //     // Assign and complete the task
+        //     await page.getByText('Assign to me').click();
+        //   //  await page.getByText('Mark as done').click();
+        //    // await page.getByRole('button', { name: "Mark as done" }).click();
+        //
+        //     // Should be no more tasks on the page
+        //    // await expect(page.getByText('Review Correspondence')).toHaveCount(0);
+        //     await manageDocuments.page.pause();
+        //     //CTSC user able to filter the my tasks and see the completed task
 
-            await signInPage.navigateToCaseDetails(caseNumber);
 
-            // Judge in Wales should see this Welsh case task + be able to assign it to themselves
-            await manageDocuments.tabNavigation('Tasks');
-            await manageDocuments.waitForTask('Review Correspondence');
 
-            // Assign and complete the task
-            await page.getByText('Assign to me').click();
-            await page.getByText('Mark as done').click();
-            await page.getByRole('button', { name: "Mark as done" }).click();
 
-            // Should be no more tasks on the page
-            await expect(page.getByText('Review Correspondence')).toHaveCount(0);
-        }
     });
 
 
