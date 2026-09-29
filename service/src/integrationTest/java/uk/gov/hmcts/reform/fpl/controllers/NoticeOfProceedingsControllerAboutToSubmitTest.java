@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -38,10 +38,10 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractCallbackTes
     private static final byte[] PDF = testDocumentBinaries();
     private static final LocalDateTime NOW = LocalDateTime.now();
 
-    @MockBean
+    @MockitoBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
     NoticeOfProceedingsControllerAboutToSubmitTest() {

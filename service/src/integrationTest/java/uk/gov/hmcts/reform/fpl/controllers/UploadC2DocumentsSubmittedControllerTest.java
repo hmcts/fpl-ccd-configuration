@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
@@ -64,19 +64,19 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
     private static DocumentReference latestC2Document;
     private static final byte[] C2_BINARY = testDocumentBinaries();
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private PaymentService paymentService;
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @MockitoBean
     private WorkAllocationTaskService workAllocationTaskService;
 
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
     UploadC2DocumentsSubmittedControllerTest() {

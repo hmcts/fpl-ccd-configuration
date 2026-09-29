@@ -8,9 +8,9 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.AdditionalAnswers;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -91,18 +91,18 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 1234567890123456L;
     private static final String CASE_NAME = "case name";
 
-    @SpyBean
+    @MockitoBean
     private EventService eventService;
-    @SpyBean
+    @MockitoSpyBean
     private NoticeOfChangeService nocService;
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
-    @MockBean
+    @MockitoBean
     private OrganisationApi orgApi;
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     ChildControllerSubmittedTest() {

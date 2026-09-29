@@ -2,9 +2,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -40,9 +39,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     CaseUrlService.class, RepresentativeNotificationService.class, RepresentativeService.class,
     OtherRecipientsInbox.class
 })
-@MockBeans({
-    @MockBean(CaseService.class), @MockBean(OrganisationService.class), @MockBean(RepresentativeCaseRoleService.class),
-    @MockBean(ValidateEmailService.class), @MockBean(CaseRoleLookupService.class)
+@MockitoBean(types = {
+    CaseService.class, OrganisationService.class, RepresentativeCaseRoleService.class,
+    ValidateEmailService.class, CaseRoleLookupService.class
 })
 class PartyAddedToCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "Perturabo";

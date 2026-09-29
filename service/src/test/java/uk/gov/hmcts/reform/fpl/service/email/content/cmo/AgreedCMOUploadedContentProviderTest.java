@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -47,7 +47,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
         ))
         .build();
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
 
     @Autowired

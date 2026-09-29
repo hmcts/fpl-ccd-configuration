@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
@@ -48,10 +47,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     CtscEmailLookupConfiguration.class, CaseDataExtractionService.class, EmailNotificationHelper.class,
     OtherRecipientsInbox.class
 })
-@MockBeans(value = {
-    @MockBean(SendDocumentService.class),
-    @MockBean(TranslationRequestService.class),
-    @MockBean(CafcassNotificationService.class)
+@MockitoBean(types = {
+    SendDocumentService.class,
+    TranslationRequestService.class,
+    CafcassNotificationService.class
 })
 class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String CHILD_LAST_NAME = "Mortarion";
@@ -79,7 +78,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
             .build()))
         .build();
 
-    @MockBean
+    @MockitoBean
     private HearingVenueLookUpService venueLookUp;
     @Autowired
     private SendNoticeOfHearingHandler underTest;

@@ -5,7 +5,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.events.CaseProgressionReportEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.controllers.CaseProgressionReportControlle
 @OverrideAutoConfiguration(enabled = true)
 class CaseProgressReportControllerAboutToSubmitTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private EventService eventService;
 
     @Captor

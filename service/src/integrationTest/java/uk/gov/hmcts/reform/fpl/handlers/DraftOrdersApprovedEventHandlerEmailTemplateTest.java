@@ -4,9 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
@@ -59,10 +58,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     DraftOrdersApprovedEventHandler.class, ReviewDraftOrdersEmailContentProvider.class, CaseUrlService.class,
     RepresentativeNotificationService.class, EmailNotificationHelper.class, OtherRecipientsInbox.class
 })
-@MockBeans({
-    @MockBean(TranslationRequestService.class),
-    @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class), @MockBean(FeatureToggleService.class),
-    @MockBean(WorkAllocationTaskService.class)
+@MockitoBean(types = {
+    TranslationRequestService.class,
+    OtherRecipientsInbox.class, SendDocumentService.class, FeatureToggleService.class,
+    WorkAllocationTaskService.class
 })
 class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String CHILD_LAST_NAME = "Jones";
@@ -73,7 +72,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
     @Captor
     private ArgumentCaptor<Set<DocumentReference>> documArgumentCaptor;
 
-    @MockBean
+    @MockitoBean
     private CafcassNotificationService cafcassNotificationService;
 
     @Autowired

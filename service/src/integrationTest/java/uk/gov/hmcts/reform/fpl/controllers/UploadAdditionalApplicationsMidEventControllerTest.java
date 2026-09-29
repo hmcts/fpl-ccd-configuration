@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
@@ -60,13 +60,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private FeeService feeService;
 
-    @MockBean
+    @MockitoBean
     private PbaService pbaService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     UploadAdditionalApplicationsMidEventControllerTest() {
