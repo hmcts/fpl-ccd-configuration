@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -33,7 +33,7 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
     private static final String HEARING_CALLOUT = "hearing " + HEARING_DATE
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
     private static final String LAST_NAME = "Jones";
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
     @Autowired
     private JudicialMessageReplyContentProvider underTest;

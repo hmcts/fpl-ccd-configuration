@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -45,16 +45,16 @@ public abstract class AbstractEmailContentProviderTest {
         return String.format("%s/cases/case-details/%s#%s", UI_URL, caseId, tab.getAnchor());
     }
 
-    @MockBean
+    @MockitoBean
     protected DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @MockitoBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     protected FeatureToggleService featureToggleService;
 
     @SpyBean

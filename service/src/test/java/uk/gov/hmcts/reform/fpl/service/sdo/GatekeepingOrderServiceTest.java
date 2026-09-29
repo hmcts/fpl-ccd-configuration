@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -93,25 +93,25 @@ class GatekeepingOrderServiceTest {
     @Autowired
     Time time;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
-    @MockBean
+    @MockitoBean
     private DocumentService documentService;
 
-    @MockBean
+    @MockitoBean
     private CalendarService calendarService;
 
-    @MockBean
+    @MockitoBean
     private DocumentSealingService sealingService;
 
-    @MockBean
+    @MockitoBean
     private OrdersLookupService ordersLookupService;
 
-    @MockBean
+    @MockitoBean
     private GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
 
-    @MockBean
+    @MockitoBean
     private CoreCaseDataService coreCaseDataService;
 
     @Autowired
