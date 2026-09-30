@@ -249,7 +249,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().put("isC2Application", !isNull(eventData.getTemporaryC2Document()) ? YES : NO);
         caseDetails.getData().put("reviewNextHearing",
             !isNull(eventData.getTemporaryC2Document().getCanBeConsideredAtNextHearing())
-                ? eventData.getTemporaryC2Document().getCanBeConsideredAtNextHearing() : YES);
+                ? eventData.getTemporaryC2Document().getCanBeConsideredAtNextHearing() : NO);
         workAllocationTaskService.setTaskUrgency(caseDetails.getData(),
             uploadAdditionalApplicationsService.getBundleUrgency(additionalApplicationsBundle));
 
