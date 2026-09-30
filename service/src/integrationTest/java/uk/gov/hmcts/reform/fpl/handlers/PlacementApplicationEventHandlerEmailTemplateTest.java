@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 @ContextConfiguration(classes = {PlacementEventsHandler.class, PlacementContentProvider.class,
     EmailNotificationHelper.class, CaseUrlService.class
 })
-@MockitoBean(types ={
+@MockitoBean(types = {
     UserService.class,
     PaymentService.class,
     CoreCaseDataService.class,
