@@ -97,7 +97,7 @@
     "FieldType": "Document",
     "ElementLabel": "Order document",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "date=\"*\" OR dateTimeIssued=\"*\"",
+    "FieldShowCondition": "date=\"*\" OR dateTimeIssued=\"*\" OR applicationGeneratedOrder=\"*\"",
     "Comment": "During event, document is linked to page 1 for visibility on check answers page - during tab view stage, make document visible as part of Order object",
     "CategoryID": "orders"
   },
@@ -108,7 +108,7 @@
     "FieldType": "Document",
     "ElementLabel": "Confidential Order document",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "date=\"*\" OR dateTimeIssued=\"*\"",
+    "FieldShowCondition": "date=\"*\" OR dateTimeIssued=\"*\" OR applicationGeneratedOrder=\"*\"",
     "Comment": "During event, document is linked to page 1 for visibility on check answers page - during tab view stage, make document visible as part of Order object",
     "CategoryID": "ordersConfidential"
   },
@@ -337,5 +337,14 @@
     "ElementLabel": "Order document",
     "SecurityClassification": "Public",
     "CategoryID": "refusedOrder"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "applicationGeneratedOrder",
+    "FieldType": "Text",
+    "ElementLabel": "Application generated order",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "applicationGeneratedOrder=\"DO_NOT_SHOW\""
   }
 ]

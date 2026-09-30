@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.AbstractApplicationGeneratedOrderS
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.REFUSAL_ORDER;
 
 @Service
@@ -84,7 +85,7 @@ public class ApplicationRefusalOrderService extends AbstractApplicationGenerated
 
         return buildGeneratedOrder(
             caseData,
-            REFUSAL_ORDER.getLabel(),
+            BLANK_ORDER.getLabel(),
             buildApplicationOrderTitle(REFUSAL_ORDER.getLabel(), applicationDate),
             dateOfRefusal,
             refusalOrderDoc,

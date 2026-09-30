@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.LIST_AT_NEXT_HEARING_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.document.SealType.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentWithName;
@@ -104,9 +105,36 @@ class ApplicationListNextHearingOrderServiceTest {
             false
         );
 
-        assertThat(listedOrder.getValue().getType()).isEqualTo(LIST_AT_NEXT_HEARING_ORDER.getLabel());
+        assertThat(listedOrder.getValue().getType()).isEqualTo(BLANK_ORDER.getLabel());
         assertThat(listedOrder.getValue().getTitle())
             .isEqualTo(LIST_AT_NEXT_HEARING_ORDER.getLabel() + " for application date " + APPLICATION_DATE);
+        assertThat(listedOrder.getValue().getDocument()).isNotNull();
+        assertThat(listedOrder.getValue().getDocumentConfidential()).isNull();
+        assertThat(listedOrder.getValue().getDate()).isNull();
+        assertThat(listedOrder.getValue().getApplicationGeneratedOrder()).isEqualTo("YES");
+    }
+
+    @Test
+    void shouldSetConfidentialDocumentAndApplicationGeneratedOrderForListNextHearingOrder() {
+        stubCommonDependencies(true);
+
+        CaseData caseData = CaseData.builder()
+            .court(Court.builder().build())
+            .build();
+
+        Element<GeneratedOrder> listedOrder = underTest.buildListAtNextHearingOrder(
+            caseData,
+            JUDGE,
+            APPLICATION_DATE,
+            NEXT_HEARING_DATE,
+            true
+        );
+
+        assertThat(listedOrder.getValue().getType()).isEqualTo(BLANK_ORDER.getLabel());
+        assertThat(listedOrder.getValue().getDocumentConfidential()).isNotNull();
+        assertThat(listedOrder.getValue().getDocument()).isNull();
+        assertThat(listedOrder.getValue().getDate()).isNull();
+        assertThat(listedOrder.getValue().getApplicationGeneratedOrder()).isEqualTo("YES");
     }
 
     private void stubCommonDependencies(boolean includeTimeStub) {

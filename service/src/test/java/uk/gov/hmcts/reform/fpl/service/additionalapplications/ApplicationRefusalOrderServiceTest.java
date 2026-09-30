@@ -34,11 +34,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.REFUSAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.document.SealType.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
@@ -170,7 +169,6 @@ public class ApplicationRefusalOrderServiceTest {
     void shouldBuildRefusalOrder() {
         CaseData caseData = getCaseData();
 
-        when(time.now()).thenReturn(NOW);
         when(documentSealingService.sealDocument(DOCMOSIS_BYTES, caseData.getCourt(), ENGLISH))
             .thenReturn(SEALED_BYTES);
         when(documentUploadService.uploadPDF(SEALED_BYTES, REFUSAL_ORDER.getFileName()))
@@ -186,11 +184,10 @@ public class ApplicationRefusalOrderServiceTest {
 
         GeneratedOrder order = refusalOrder.getValue();
         assertThat(order).isEqualTo(GeneratedOrder.builder()
-            .type(REFUSAL_ORDER.getLabel())
+            .type(BLANK_ORDER.getLabel())
             .title(format("%s for application date %s", REFUSAL_ORDER.getLabel(), APPLICATION_DATE))
             .dateOfIssue(DATE_OF_REFUSAL)
             .judgeAndLegalAdvisor(null)
-            .date(formatLocalDateTimeBaseUsingFormat(NOW, TIME_DATE))
             .children(caseData.getAllChildren())
             .refusedDocument(DocumentReference.buildFromDocument(REFUSAL_ORDER_DOC))
             .build());
