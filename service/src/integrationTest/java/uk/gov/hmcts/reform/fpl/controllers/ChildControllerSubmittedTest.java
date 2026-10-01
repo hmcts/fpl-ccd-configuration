@@ -28,8 +28,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
-import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -84,6 +84,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         .firstName(MAIN_SOLICITOR_FIRST_NAME)
         .lastName(MAIN_SOLICITOR_LAST_NAME)
         .email(MAIN_SOLICITOR_EMAIL)
+        .organisation(null)
         .unregisteredOrganisation(UnregisteredOrganisation.builder().name(ORGANISATION_NAME).build())
         .build();
     private static final String CHILD_NAME_1 = "John";
@@ -91,8 +92,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 1234567890123456L;
     private static final String CASE_NAME = "case name";
 
-    @MockitoBean
-    private EventService eventService;
     @MockitoSpyBean
     private NoticeOfChangeService nocService;
 
@@ -104,6 +103,9 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
     private OrganisationApi orgApi;
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private SystemUserService systemUserService;
 
     ChildControllerSubmittedTest() {
         super("enter-children");
@@ -126,6 +128,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         when(concurrencyHelper.startEvent(any(), eq("updateRepresentation")))
             .thenAnswer(AdditionalAnswers.returnsElementsOf(startEventResponses));
 
+        when(systemUserService.getSysUserToken()).thenReturn(USER_AUTH_TOKEN);
     }
 
     @ParameterizedTest
@@ -137,7 +140,8 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verifyNoInteractions(nocService, eventService);
+        verifyNoInteractions(nocService);
+        verifyNoInteractions(concurrencyHelper, caseAssignmentApi, notificationClient);
     }
 
     @Test

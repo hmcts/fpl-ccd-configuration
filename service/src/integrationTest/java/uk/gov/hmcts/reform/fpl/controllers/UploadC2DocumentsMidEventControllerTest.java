@@ -76,13 +76,22 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractCallbackTest {
             .totalAmount(BigDecimal.TEN)
             .build());
 
+        Map<String, Object> docRefMap = Map.of(
+            "document_url", "example_url",
+            "document_binary_url", "example_url/binary",
+            "document_filename", "c2.pdf"
+        );
+
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document",
-                Map.of("document", Map.of("url", "example_url")),
+                Map.of("document", docRefMap),
                 "c2ApplicationType", Map.of("type", "WITH_NOTICE")))
             .build(), "get-fee");
 
-        assertThat(response.getData()).extracting("temporaryC2Document")
+        CaseData updatedCaseData = extractCaseData(CaseDetails.builder().data(response.getData()).build());
+
+        assertThat(updatedCaseData)
+            .extracting("temporaryC2Document")
             .extracting("document")
             .extracting("url")
             .isEqualTo("example_url");
