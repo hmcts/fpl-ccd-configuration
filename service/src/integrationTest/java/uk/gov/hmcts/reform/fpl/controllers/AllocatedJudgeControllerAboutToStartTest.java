@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
@@ -32,25 +32,25 @@ class AllocatedJudgeControllerAboutToStartTest extends AbstractCallbackTest {
         super("allocated-judge");
     }
 
-    @MockBean
+    @MockitoBean
     private JudicialApi jrdApi;
 
-    @MockBean
+    @MockitoBean
     private JudicialUsersConfiguration judicialUsersConfiguration;
 
-    @MockBean
+    @MockitoBean
     private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
-    @MockBean
+    @MockitoBean
     private SystemUserService systemUserService;
 
-    @MockBean
+    @MockitoBean
     private RoleAssignmentService roleAssignmentService;
 
-    @MockBean
+    @MockitoBean
     private ValidateEmailService validateEmailService;
 
-    @MockBean
+    @MockitoBean
     private ElinksService elinksService;
 
     @WithMockUser

@@ -4,9 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
@@ -49,10 +48,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
     LocalAuthorityChangedHandler.class, LocalAuthorityChangedContentProvider.class, EmailNotificationHelper.class,
     CaseUrlService.class, HighCourtAdminEmailLookupConfiguration.class
 })
-@MockBeans({@MockBean(FeatureToggleService.class)})
+@MockitoBean(types = {FeatureToggleService.class})
 class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
 
-    @MockBean
+    @MockitoBean
     private ApplicantLocalAuthorityService service;
 
     @Autowired

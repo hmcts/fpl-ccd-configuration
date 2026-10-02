@@ -5,7 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -46,9 +46,9 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
     private static final String USER_ID = RandomStringUtils.randomAlphanumeric(10);
     private static final OrganisationUser USER = OrganisationUser.builder().userIdentifier(USER_ID).build();
 
-    @MockBean
+    @MockitoBean
     private OrganisationApi organisationApi;
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     ManageLegalRepresentativeMidEventControllerTest() {

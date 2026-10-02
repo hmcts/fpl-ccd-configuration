@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -46,11 +45,11 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
     ModifiedDocumentCommonEventHandler.class, ModifiedItemEmailContentProviderStrategy.class,
     EmailNotificationHelper.class, CaseUrlService.class, RepresentativeNotificationService.class
 })
-@MockBeans({
+@MockitoBean(types = {
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
-    @MockBean(SendDocumentService.class),
-    @MockBean(OtherRecipientsInbox.class),
-    @MockBean(FeatureToggleService.class)
+    SendDocumentService.class,
+    OtherRecipientsInbox.class,
+    FeatureToggleService.class
 })
 class OrderAmendedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final GeneratedOrder ORDER = mock(GeneratedOrder.class);

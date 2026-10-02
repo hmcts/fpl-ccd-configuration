@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasAttachedDocument;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @HasAttachedDocument(groups = UploadDocumentsGroup.class)
+@Jacksonized
 @SuperBuilder(toBuilder = true)
 public class Document extends DocumentMetaData {
     private final String statusReason;

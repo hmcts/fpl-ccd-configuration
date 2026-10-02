@@ -5,7 +5,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -87,19 +87,19 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
         .surname("Smith")
         .build();
 
-    @MockBean
+    @MockitoBean
     private Time time;
 
-    @MockBean
+    @MockitoBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     private JudicialUsersConfiguration judicialUsersConfiguration;
 
-    @MockBean
+    @MockitoBean
     private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     ListGatekeepingHearingControllerAboutToSubmitTest() {

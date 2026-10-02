@@ -6,8 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -52,9 +52,9 @@ class RegisteredRepresentativeSolicitorContentProviderTest extends AbstractEmail
     private final RespondentSolicitor solicitor2 = mock(RespondentSolicitor.class);
 
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
-    @MockBean
+    @MockitoBean
     private LocalAuthorityNameLookupConfiguration lookup;
 
     @Autowired

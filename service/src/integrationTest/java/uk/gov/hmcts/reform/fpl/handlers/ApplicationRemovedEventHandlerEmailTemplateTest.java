@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.config.CtscTeamLeadLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.ApplicationRemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -39,8 +38,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     ApplicationRemovedEventHandler.class, ApplicationRemovedEmailContentProvider.class, EmailNotificationHelper.class,
     RemoveApplicationService.class, CaseUrlService.class, CtscTeamLeadLookupConfiguration.class
 })
-@MockBeans({
-    @MockBean(FeatureToggleService.class), @MockBean(Time.class)
+@MockitoBean(types = {
+    FeatureToggleService.class, Time.class
 })
 class ApplicationRemovedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;

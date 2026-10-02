@@ -5,7 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -31,8 +31,8 @@ class UploadDocumentsAboutToStartControllerTest extends AbstractCallbackTest {
     private static final String FILE_NAME = "mockChecklist.pdf";
     private static final String FILE_BINARY_URL = "http://dm-store:8080/documents/fakeUrl/binary";
     private static final String USER = "kurt@swansea.gov.uk";
-    
-    @MockBean
+
+    @MockitoBean
     private ManageDocumentService manageDocumentService;
 
     UploadDocumentsAboutToStartControllerTest() {

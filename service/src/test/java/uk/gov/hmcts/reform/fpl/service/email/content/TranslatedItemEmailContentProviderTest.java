@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -32,10 +32,10 @@ class TranslatedItemEmailContentProviderTest extends AbstractEmailContentProvide
     @Autowired
     private TranslatedItemEmailContentProvider underTest;
 
-    @MockBean
+    @MockitoBean
     private CourtService courtService;
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
 
     @BeforeEach

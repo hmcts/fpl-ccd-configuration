@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content.representative;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -45,10 +45,10 @@ class UnregisteredRepresentativeSolicitorContentProviderTest extends AbstractEma
     private final Party party2 = mock(Party.class);
     private final CaseData caseData = mock(CaseData.class);
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
 
-    @MockBean
+    @MockitoBean
     private LocalAuthorityNameLookupConfiguration lookup;
 
     @Autowired

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 @OverrideAutoConfiguration(enabled = true)
 class UpdateCaseNameControllerAboutToStartTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private CaseSubmissionService caseSubmissionService;
 
     UpdateCaseNameControllerAboutToStartTest() {
