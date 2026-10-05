@@ -119,6 +119,7 @@ public class MigrateCaseService {
     public final MigrateRelatingLAService migrateRelatingLAService;
     public final OrganisationService organisationService;
     public final CourtLookUpService courtLookUpService;
+    public static final String LOCAL_AUTHORITIES = "localAuthorities";
 
     private static final Map<String, HearingType>  HEARING_TYPE_DETAILS_MAPPING = initialiseHearingMapping();
     private final ObjectMapper mapper;
@@ -939,7 +940,7 @@ public class MigrateCaseService {
                 "Migration {id = %s, case reference = %s}, invalid local authorities",
                 migrationId, caseId));
         }
-        return Map.of("localAuthorities", localAuthoritiesList);
+        return Map.of(LOCAL_AUTHORITIES, localAuthoritiesList);
     }
 
     private final CaseConverter caseConverter;
@@ -950,6 +951,9 @@ public class MigrateCaseService {
 
     public Map<String, Object> fixIncorrectCaseManagementLocation(CaseDetails caseDetails, String migrationId) {
         CaseData caseData = getCaseData(caseDetails);
+        if (caseData == null) {
+            throw new IllegalStateException("Case converter returned null");
+        }
 
         Court court = caseData.getCourt();
         final String targetCourt = "270"; // Middlesborough
@@ -1066,7 +1070,7 @@ public class MigrateCaseService {
             .build();
 
         updatedLocalAuthorities.set(index, replacement);
-        return Map.of("localAuthorities", updatedLocalAuthorities);
+        return Map.of(LOCAL_AUTHORITIES, updatedLocalAuthorities);
     }
 
     public Map<String, String> updateCaseLocalAuthorityName(String newOrgName) {
@@ -1118,7 +1122,7 @@ public class MigrateCaseService {
             colleague.setNotificationRecipient(YesNo.NO.getValue())
         );
 
-        return Map.of("localAuthorities", localAuthorities);
+        return Map.of(LOCAL_AUTHORITIES, localAuthorities);
     }
 
     public Map<String, Object> setCaseManagementLocation(CaseData caseData, String migrationId) {

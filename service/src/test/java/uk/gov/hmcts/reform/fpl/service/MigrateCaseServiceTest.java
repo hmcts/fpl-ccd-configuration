@@ -493,7 +493,7 @@ class MigrateCaseServiceTest {
             Map<String, List<Element<LocalAuthority>>> updatedFields = underTest
                 .updateDesignatedLocalAuthority(caseData, newOrgName);
 
-            assertThat(updatedFields.get("localAuthorities")).isEqualTo(List.of(
+            assertThat(updatedFields).containsEntry("localAuthorities", List.of(
                 createLA(elementId1, orgId, newOrgName, YES.getValue()),
                 createLA(elementId2, "TUVWXYZ", "Other Organisation Name", NO.getValue())
             ));
