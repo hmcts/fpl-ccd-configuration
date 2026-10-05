@@ -1024,6 +1024,55 @@ public class MigrateCaseService {
             .orgPolicyCaseAssignedRole(caseRole).build());
     }
 
+    public Map<String, OrganisationPolicy> updateLocalAuthorityPolicy(CaseData caseData, String orgId,
+                                                                      String caseRole, String newOrgName) {
+        Organisation newOrganisation = createNewOrganisation(orgId, newOrgName);
+
+        caseRole = caseData.getLocalAuthorityPolicy() != null
+            ? caseData.getLocalAuthorityPolicy().getOrgPolicyCaseAssignedRole() : caseRole;
+
+        return Map.of("localAuthorityPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
+            .orgPolicyCaseAssignedRole(caseRole).build());
+    }
+
+    public Map<String, List<Element<LocalAuthority>>> updateDesignatedLocalAuthority(CaseData caseData,
+                                                                                     String newOrgName) {
+        List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
+        List<Element<LocalAuthority>> updatedLocalAuthorities = new ArrayList<>(localAuthorities);
+        Element<LocalAuthority> designatedLocalAuthority = caseData.getLocalAuthorities().stream()
+            .filter(la -> YesNo.YES.getValue().equals(la.getValue().getDesignated()))
+            .findFirst()
+            .orElseThrow();
+        int index = updatedLocalAuthorities.indexOf(designatedLocalAuthority);
+        LocalAuthority designatedLAValue = designatedLocalAuthority.getValue();
+
+        LocalAuthority updatedDesignatedLAValue = LocalAuthority.builder()
+            .id(designatedLAValue.getId())
+            .name(newOrgName)
+            .email(designatedLAValue.getEmail())
+            .phone(designatedLAValue.getPhone())
+            .address(designatedLAValue.getAddress())
+            .pbaNumber(designatedLAValue.getPbaNumber())
+            .clientCode(designatedLAValue.getClientCode())
+            .colleagues(designatedLAValue.getColleagues())
+            .designated(designatedLAValue.getDesignated())
+            .legalTeamManager(designatedLAValue.getLegalTeamManager())
+            .customerReference(designatedLAValue.getCustomerReference())
+            .build();
+
+        Element<LocalAuthority> replacement = Element.<LocalAuthority>builder()
+            .id(designatedLocalAuthority.getId())
+            .value(updatedDesignatedLAValue)
+            .build();
+
+        updatedLocalAuthorities.set(index, replacement);
+        return Map.of("localAuthorities", updatedLocalAuthorities);
+    }
+
+    public Map<String, String> updateCaseLocalAuthorityName(String newOrgName) {
+        return Map.of("caseLocalAuthorityName", newOrgName);
+    }
+
     private String getOrgName(String orgId) {
         return organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)

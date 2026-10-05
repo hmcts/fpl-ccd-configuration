@@ -42,7 +42,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2423-rollback", this::run2423Rollback,
         "DFPL-3363", this::run3363,
         "DFPL-3213-v2", this::run3213v2,
-        "DFPL-3361", this::run3361
+        "DFPL-3361", this::run3361,
+        "DFPL-3017", this::run3017
     );
 
     @PostMapping("/about-to-submit")
@@ -172,6 +173,18 @@ public class MigrateCaseController extends CallbackController {
         final String migrationId = "DFPL-3363";
         final CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.updateChildStatusWithFinalOrderIssued(migrationId, caseData));
+    }
+
+    public void run3017(CaseDetails caseDetails) {
+        final CaseData caseData = getCaseData(caseDetails);
+        String orgId = "KB2TFNA";
+        String caseRole = CaseRole.LAMANAGING.formattedName();
+        String newOrgName = "Milton Keynes City Council";
+
+        caseDetails.getData().putAll(migrateCaseService.updateLocalAuthorityPolicy(caseData, orgId,
+                                                                                   caseRole, newOrgName));
+        caseDetails.getData().putAll(migrateCaseService.updateDesignatedLocalAuthority(caseData, newOrgName));
+        caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthorityName(newOrgName));
     }
 }
 
