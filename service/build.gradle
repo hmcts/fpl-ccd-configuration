@@ -3,10 +3,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.34")
-    classpath("au.com.dius.pact.provider:gradle:4.1.41") {
-      exclude group: 'com.vladsch.flexmark'
-    }
+    classpath("net.serenity-bdd:serenity-gradle-plugin:4.2.22")
   }
 }
 
@@ -24,12 +21,12 @@ plugins {
   id 'idea'
   id 'info.solidsoft.pitest' version '1.19.0-rc.2'
   id 'com.github.hmcts.rse-cft-lib' version '0.19.2018'
+  id 'au.com.dius.pact' version '4.7.5'
 }
 
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'net.serenity-bdd.aggregator'
-apply plugin: 'au.com.dius.pact'
+apply plugin: 'net.serenity-bdd.serenity-gradle-plugin'
 
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
@@ -146,7 +143,9 @@ tasks.register('runApiTests', Exec) {
 
 project.ext {
   pacticipant = 'fpl_ccdConfiguration'
-  pacticipantVersion = System.env.GIT_COMMIT != null ? System.env.GIT_COMMIT.substring(0,9) : ''
+  pacticipantVersion = System.env.GIT_COMMIT != null
+    ? System.env.GIT_COMMIT.substring(0,9)
+    : getCheckedOutGitCommitHash()
 }
 
 tasks.register('runContractTests', Test) {
@@ -314,6 +313,10 @@ def versions = [
   lombok          : '1.18.38',
   sonarPitest     : '0.5'
 ]
+
+static def getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
 
 dependencies {
   compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
