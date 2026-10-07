@@ -459,6 +459,7 @@ class MigrateCaseServiceTest {
             return Organisation.builder().organisationID(organisationId).organisationName(orgName)
                 .build();
         }
+
         private Element<LocalAuthority> createLA(UUID elementId, String organisationId,
                                                  String orgName, String designated) {
             return element(elementId, LocalAuthority.builder().id(organisationId).name(orgName).designated(designated)
