@@ -1039,37 +1039,39 @@ public class MigrateCaseService {
             .orgPolicyCaseAssignedRole(caseRole).build());
     }
 
-    public Map<String, List<Element<LocalAuthority>>> updateDesignatedLocalAuthority(CaseData caseData,
-                                                                                     String newOrgName) {
+    public Map<String, List<Element<LocalAuthority>>> updateLocalAuthority(CaseData caseData, String orgName,
+                                                                           String newOrgName) {
         List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
         List<Element<LocalAuthority>> updatedLocalAuthorities = new ArrayList<>(localAuthorities);
-        Element<LocalAuthority> designatedLocalAuthority = caseData.getLocalAuthorities().stream()
-            .filter(la -> YesNo.YES.getValue().equals(la.getValue().getDesignated()))
+
+        Element<LocalAuthority> localAuthorityToUpdate = localAuthorities.stream()
+            .filter(la -> orgName.equals(la.getValue().getName()))
             .findFirst()
             .orElseThrow();
-        int index = updatedLocalAuthorities.indexOf(designatedLocalAuthority);
-        LocalAuthority designatedLAValue = designatedLocalAuthority.getValue();
 
-        LocalAuthority updatedDesignatedLAValue = LocalAuthority.builder()
-            .id(designatedLAValue.getId())
+        int index = updatedLocalAuthorities.indexOf(localAuthorityToUpdate);
+        LocalAuthority localAuthorityToUpdateValue = localAuthorityToUpdate.getValue();
+
+        LocalAuthority updatedLocalAuthorityValue = LocalAuthority.builder()
+            .id(localAuthorityToUpdateValue.getId())
             .name(newOrgName)
-            .email(designatedLAValue.getEmail())
-            .phone(designatedLAValue.getPhone())
-            .address(designatedLAValue.getAddress())
-            .pbaNumber(designatedLAValue.getPbaNumber())
-            .clientCode(designatedLAValue.getClientCode())
-            .colleagues(designatedLAValue.getColleagues())
-            .designated(designatedLAValue.getDesignated())
-            .legalTeamManager(designatedLAValue.getLegalTeamManager())
-            .customerReference(designatedLAValue.getCustomerReference())
+            .email(localAuthorityToUpdateValue.getEmail())
+            .phone(localAuthorityToUpdateValue.getPhone())
+            .address(localAuthorityToUpdateValue.getAddress())
+            .pbaNumber(localAuthorityToUpdateValue.getPbaNumber())
+            .clientCode(localAuthorityToUpdateValue.getClientCode())
+            .colleagues(localAuthorityToUpdateValue.getColleagues())
+            .designated(localAuthorityToUpdateValue.getDesignated())
+            .legalTeamManager(localAuthorityToUpdateValue.getLegalTeamManager())
+            .customerReference(localAuthorityToUpdateValue.getCustomerReference())
             .build();
 
-        Element<LocalAuthority> replacement = Element.<LocalAuthority>builder()
-            .id(designatedLocalAuthority.getId())
-            .value(updatedDesignatedLAValue)
+        Element<LocalAuthority> updatedLocalAuthorityElement = Element.<LocalAuthority>builder()
+            .id(localAuthorityToUpdate.getId())
+            .value(updatedLocalAuthorityValue)
             .build();
 
-        updatedLocalAuthorities.set(index, replacement);
+        updatedLocalAuthorities.set(index, updatedLocalAuthorityElement);
         return Map.of(LOCAL_AUTHORITIES, updatedLocalAuthorities);
     }
 

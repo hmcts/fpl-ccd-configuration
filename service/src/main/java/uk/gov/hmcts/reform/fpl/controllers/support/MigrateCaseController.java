@@ -179,11 +179,12 @@ public class MigrateCaseController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
         String orgId = "KB2TFNA";
         String caseRole = CaseRole.LAMANAGING.formattedName();
+        String orgName = "Milton Keynes Council";
         String newOrgName = "Milton Keynes City Council";
 
         caseDetails.getData().putAll(migrateCaseService.updateLocalAuthorityPolicy(caseData, orgId,
                                                                                    caseRole, newOrgName));
-        caseDetails.getData().putAll(migrateCaseService.updateDesignatedLocalAuthority(caseData, newOrgName));
+        caseDetails.getData().putAll(migrateCaseService.updateLocalAuthority(caseData, orgName,  newOrgName));
         caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthorityName(newOrgName));
     }
 }
