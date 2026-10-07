@@ -470,6 +470,9 @@ withPipeline(type, product, component) {
   before('highleveldatasetup') {
     sh 'az login --identity'
     sh 'az acr login --name hmctsprod'
+    echo "Int-test-not-serv-key: ${env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+    teardownSecretsForIntegrationTests()
+    echo "Int-test-not-serv-key: ${env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
   }
 
   afterAlways('highleveldatasetup') {
