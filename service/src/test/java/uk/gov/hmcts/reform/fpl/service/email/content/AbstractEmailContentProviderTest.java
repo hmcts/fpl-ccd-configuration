@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -22,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseUrlService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseUrlService.class, DocumentService.class})
 @TestPropertySource(properties = "manage-case.ui.base.url:http://fake-url")
 public abstract class AbstractEmailContentProviderTest {
     protected static final String LOCAL_AUTHORITY_NAME = LOCAL_AUTHORITY_1_NAME;
@@ -56,9 +55,6 @@ public abstract class AbstractEmailContentProviderTest {
 
     @MockitoBean
     protected FeatureToggleService featureToggleService;
-
-    @MockitoSpyBean
-    private DocumentService documentService;
 
     @BeforeEach
     private void init() {

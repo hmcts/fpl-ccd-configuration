@@ -95,9 +95,6 @@ public class EmailTemplateTest {
     @MockitoBean
     protected FeatureToggleService featureToggleService;
 
-    @MockitoBean
-    private DocumentService documentService;
-
     private final ResultsCaptor<SendEmailResponse> resultsCaptor = new ResultsCaptor<>();
 
     @BeforeEach
@@ -145,6 +142,15 @@ public class EmailTemplateTest {
         @Bean
         public NotificationClient notificationClient(@Value("${integration-test.notify-service.key}") String key) {
             return new NotificationClient(key);
+        }
+
+        @Bean
+        public DocumentService documentService(
+            DocmosisDocumentGeneratorService docmosisGeneratorService,
+            UploadDocumentService uploadDocumentService,
+            FeatureToggleService featureToggleService
+        ) {
+            return new DocumentService(docmosisGeneratorService, uploadDocumentService, featureToggleService);
         }
     }
 

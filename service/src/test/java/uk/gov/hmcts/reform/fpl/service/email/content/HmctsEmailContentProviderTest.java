@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
-    private static final String BINARY_URL = "/documents/applicationBinaryUrl";
+    private static final String BINARY_URL = "/documentsv2/applicationBinaryUrl";
     private static final DocumentReference C110A = mock(DocumentReference.class);
     private static final String CHILD_LAST_NAME = "Holmes";
 

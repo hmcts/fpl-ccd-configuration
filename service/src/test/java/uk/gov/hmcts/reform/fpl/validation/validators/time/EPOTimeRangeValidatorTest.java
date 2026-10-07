@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ContextConfiguration(classes = {FixedTimeConfiguration.class})
+@ContextConfiguration(classes = {FixedTimeConfiguration.class, ValidateGroupService.class})
 class EPOTimeRangeValidatorTest extends TimeValidatorTest {
 
     @Autowired

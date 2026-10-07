@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AmendedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.ModifiedItemEmailContentProviderStrategy;
@@ -49,8 +48,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 @MockitoBean(types = {
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
     SendDocumentService.class,
-    OtherRecipientsInbox.class,
-    FeatureToggleService.class
+    OtherRecipientsInbox.class
 })
 class TranslationUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final GeneratedOrder ORDER = GeneratedOrder.builder()

@@ -24,10 +24,8 @@ import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderNotificationDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderTitleGenerator;
@@ -84,8 +82,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     OrderCreationService.class, SealedOrderHistoryExtraTitleGenerator.class,
     SealedOrderHistoryFinalMarker.class, OrderNotificationDocumentService.class,
     FeeService.class, PbaNumberService.class, DocumentSealingService.class,
-    RespondentService.class, DocmosisDocumentGeneratorService.class,
-    UploadDocumentService.class, HearingVenueLookUpService.class,
+    RespondentService.class, HearingVenueLookUpService.class,
     HighCourtAdminEmailLookupConfiguration.class, UserService.class,
     PbaService.class
 })

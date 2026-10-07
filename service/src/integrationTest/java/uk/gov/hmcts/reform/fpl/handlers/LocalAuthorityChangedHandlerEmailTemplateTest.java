@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityChangedContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -48,7 +47,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
     LocalAuthorityChangedHandler.class, LocalAuthorityChangedContentProvider.class, EmailNotificationHelper.class,
     CaseUrlService.class, HighCourtAdminEmailLookupConfiguration.class
 })
-@MockitoBean(types = {FeatureToggleService.class})
 class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @MockitoBean

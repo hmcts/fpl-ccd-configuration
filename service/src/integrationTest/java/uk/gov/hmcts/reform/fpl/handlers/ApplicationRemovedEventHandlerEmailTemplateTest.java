@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.ApplicationRemovedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveApplicationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -39,7 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     RemoveApplicationService.class, CaseUrlService.class, CtscTeamLeadLookupConfiguration.class
 })
 @MockitoBean(types = {
-    FeatureToggleService.class, Time.class
+    Time.class
 })
 class ApplicationRemovedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;

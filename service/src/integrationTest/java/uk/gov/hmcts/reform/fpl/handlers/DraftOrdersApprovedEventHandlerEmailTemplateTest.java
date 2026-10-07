@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
@@ -60,7 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockitoBean(types = {
     TranslationRequestService.class,
-    OtherRecipientsInbox.class, SendDocumentService.class, FeatureToggleService.class,
+    OtherRecipientsInbox.class, SendDocumentService.class,
     WorkAllocationTaskService.class
 })
 class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest {
