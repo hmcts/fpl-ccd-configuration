@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -33,8 +34,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @ExtendWith(MockitoExtension.class)
 class NoticeOfChangeServiceTest {
@@ -83,6 +87,10 @@ class NoticeOfChangeServiceTest {
             final CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
                 .respondents1(List.of(respondent))
+                .changeOrganisationRequestField(ChangeOrganisationRequest.builder()
+                    .approvalStatus(APPROVED)
+                    .caseRoleId(caseRoleDynamicList(SOLICITORB))
+                    .build())
                 .build();
 
             final AuditEvent auditEvent = AuditEvent.builder()
@@ -105,6 +113,53 @@ class NoticeOfChangeServiceTest {
                 .thenReturn(solicitorUser);
 
             when(updateRepresentationService.updateRepresentation(caseData, solicitorUser))
+                .thenReturn(UPDATED_REPRESENTATION);
+
+            final Map<String, Object> actual = underTest.updateRepresentation(caseData);
+
+            assertThat(actual).isEqualTo(UPDATED_REPRESENTATION);
+
+            verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
+            verify(userService).getUserDetailsById(USER_ID);
+            verifyNoMoreInteractions(auditEventService, userService, updateRepresentationService);
+        }
+
+        @Test
+        void shouldUpdateRepresentationForThirdPartyOutsourcing() {
+            Organisation newOrg = Organisation.builder().organisationID("Test123").build();
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .appSolicitorPolicy(OrganisationPolicy.builder()
+                    .organisation(newOrg)
+                    .orgPolicyCaseAssignedRole("[APPSOLICITOR]")
+                    .build())
+                .changeOrganisationRequestField(ChangeOrganisationRequest.builder()
+                    .organisationToAdd(newOrg)
+                    .caseRoleId(caseRoleDynamicList("[APPSOLICITOR]"))
+                    .build())
+                .build();
+
+            final AuditEvent auditEvent = AuditEvent.builder()
+                .id("nocRequest")
+                .userFirstName("Johnny")
+                .userLastName("Smithy")
+                .userId(USER_ID)
+                .build();
+
+            final UserDetails solicitorUser = UserDetails.builder()
+                .email("john.smith@test.com")
+                .forename("John")
+                .surname("Smith")
+                .build();
+
+            when(auditEventService.getLatestAuditEventByName(caseData.getId().toString(), NOC_REQUEST_EVENT))
+                .thenReturn(Optional.of(auditEvent));
+
+            when(userService.getUserDetailsById(USER_ID))
+                .thenReturn(solicitorUser);
+
+            when(updateRepresentationService.updateRepresentationThirdPartyOutsourcing(caseData, solicitorUser))
                 .thenReturn(UPDATED_REPRESENTATION);
 
             final Map<String, Object> actual = underTest.updateRepresentation(caseData);

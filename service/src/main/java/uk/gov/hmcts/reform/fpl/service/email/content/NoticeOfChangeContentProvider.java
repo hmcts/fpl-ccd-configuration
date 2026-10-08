@@ -32,6 +32,19 @@ public class NoticeOfChangeContentProvider extends AbstractEmailContentProvider 
             .build();
     }
 
+    public NoticeOfChangeRespondentSolicitorTemplate buildNoticeOfChangeThirdPartySolicitorTemplate(CaseData caseData) {
+
+        return NoticeOfChangeRespondentSolicitorTemplate.builder()
+            .salutation(EMPTY)
+            .caseName(caseData.getCaseName())
+            .ccdNumber(caseData.getId().toString())
+            .caseUrl(getCaseUrl(caseData.getId()))
+            .clientFullName(EMPTY)
+            .childLastName(helper.getEldestChildLastName(caseData.getChildren1()))
+            .build();
+
+    }
+
     private String getSalutation(RespondentSolicitor solicitor) {
         final String representativeName = solicitor.getFullName();
         return isBlank(representativeName) ? EMPTY : "Dear " + representativeName;

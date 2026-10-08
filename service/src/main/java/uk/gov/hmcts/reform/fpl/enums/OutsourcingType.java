@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 public enum OutsourcingType {
-    EPS(CaseRole.EPSMANAGING), MLA(CaseRole.LAMANAGING);
+    EPS(CaseRole.EPSMANAGING), MLA(CaseRole.LAMANAGING), APP(CaseRole.APPSOLICITOR);
 
     private final CaseRole caseRole;
 
