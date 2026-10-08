@@ -60,7 +60,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractCallbackTest 
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
         assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
-        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(caseData.getUploadAdditionalApplicationsEventData().getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(1);
         assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
         assertSupportingEvidenceBundle(uploadedC2DocumentBundle);
@@ -83,7 +83,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractCallbackTest 
         assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
         assertC2BundleDocument(existingC2Document, "C2 document one");
         assertC2BundleDocument(appendedC2Document, "C2 document two");
-        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(caseData.getUploadAdditionalApplicationsEventData().getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(2);
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
