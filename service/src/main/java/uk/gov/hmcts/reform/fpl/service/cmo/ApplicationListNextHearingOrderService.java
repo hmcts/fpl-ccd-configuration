@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.APPLICATION_LIST_NEXT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.LIST_AT_NEXT_HEARING_ORDER;
 
 @Service
@@ -101,11 +102,19 @@ public class ApplicationListNextHearingOrderService extends AbstractApplicationG
                                                          boolean isConfidential) {
         return buildGeneratedOrder(
             caseData,
-            LIST_AT_NEXT_HEARING_ORDER.getLabel(),
+            BLANK_ORDER.getLabel(),
             buildApplicationOrderTitle(LIST_AT_NEXT_HEARING_ORDER.getLabel(), applicationDate),
             dateOfIssue,
             orderDoc,
-            isConfidential
+            builder -> {
+                if (isConfidential) {
+                    builder.documentConfidential(orderDoc);
+                } else {
+                    builder.document(orderDoc);
+                }
+
+                builder.applicationGeneratedOrder("YES");
+            }
         );
     }
 }
