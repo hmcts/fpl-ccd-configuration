@@ -475,7 +475,8 @@ class ApproveDraftOrdersServiceTest {
             .requestedChanges("requested changes text")
             .build();
 
-        when(hearingOrderGenerator.buildRejectedHearingOrder(agreedCMO, reviewDecision.getChangesRequestedByJudge()))
+        when(hearingOrderGenerator.buildRejectedHearingOrder(agreedCMO, reviewDecision.getChangesRequestedByJudge(),
+            RETURNED))
             .thenReturn(element(agreedCMO.getId(), expectedOrder));
         when(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class)))
             .thenReturn(HearingOrdersBundles.builder()
@@ -625,7 +626,7 @@ class ApproveDraftOrdersServiceTest {
             draftOrder1.getValue().toBuilder().status(RETURNED).requestedChanges("some change").build());
 
         given(hearingOrderGenerator.buildRejectedHearingOrder(
-            draftOrder1, reviewDecision.getChangesRequestedByJudge())).willReturn(rejectedOrderToReturn);
+            draftOrder1, reviewDecision.getChangesRequestedByJudge(), RETURNED)).willReturn(rejectedOrderToReturn);
 
         Map<String, Object> expectedData = Map.of(
             "orderCollection", emptyList(),
@@ -922,7 +923,7 @@ class ApproveDraftOrdersServiceTest {
                     .build());
 
             given(hearingOrderGenerator.buildRejectedHearingOrder(
-                draftOrder1, reviewDecision.getChangesRequestedByJudge())).willReturn(rejectedOrderToReturn);
+                draftOrder1, reviewDecision.getChangesRequestedByJudge(), RETURNED)).willReturn(rejectedOrderToReturn);
 
             Map<String, Object> expectedData = Map.of(
                 "orderCollection", emptyList(),
