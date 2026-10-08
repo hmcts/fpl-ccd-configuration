@@ -76,7 +76,6 @@ public class ReviewAdditionalApplicationService {
 
         resultMap.put("reviewOrderUrgency", NO);
         resultMap.put("addCoverSheet", NO);
-        resultMap.put("judgeNameAndTitle", approveDraftOrdersService.getJudgeTitleAndNameOfCurrentUser(caseData));
 
         return resultMap;
     }
