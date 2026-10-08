@@ -111,18 +111,22 @@ public class CaseInitiationService {
     }
 
     public String getOrganisationUsers() {
-        Optional<Organisation> userOrg = organisationService.findOrganisation();
+        if (featureToggleService.isShareCaseToAllLaUserDisabled()) {
+            return "DO_NOT_SHARE";
+        } else {
+            Optional<Organisation> userOrg = organisationService.findOrganisation();
 
-        try {
-            if (userOrg.isPresent()) {
-                return "<ul>" + caseAccessService.getLocalAuthorityUsersAllInfo().stream()
-                    .map(OrganisationUser::getUserString)
-                    .collect(Collectors.joining("")) + "</ul>";
+            try {
+                if (userOrg.isPresent()) {
+                    return "<ul>" + caseAccessService.getLocalAuthorityUsersAllInfo().stream()
+                        .map(OrganisationUser::getUserString)
+                        .collect(Collectors.joining("")) + "</ul>";
+                }
+            } catch (Exception e) {
+                return "No users found";
             }
-        } catch (Exception e) {
             return "No users found";
         }
-        return "No users found";
     }
 
     public List<String> checkUserAllowedToCreateCase(CaseData caseData) {
@@ -296,21 +300,30 @@ public class CaseInitiationService {
 
         caseAccessService.revokeCaseRoleFromUser(caseId, creatorId, CREATOR);
 
-        if (nonNull(caseData.getOutsourcingPolicy())) {
-            final CaseRole caseRole = getCaseRole(caseData.getOutsourcingPolicy());
-            if (LAMANAGING.equals(caseRole)
-                && !isEmpty(caseData.getShouldShareWithOrganisationUsers())
-                && caseData.getShouldShareWithOrganisationUsers().equals(YesNo.YES)) {
-                // LAMANAGING + we want to share with everyone
-                caseAccessService.grantCaseRoleToLocalAuthority(caseId, creatorId, localAuthority, caseRole);
-            } else {
-                // EPSMANAGING do not share OR LAMANAGING doesn't want to share
-                caseAccessService.grantCaseRoleToUser(caseId, creatorId, caseRole);
-            }
+        if (featureToggleService.isShareCaseToAllLaUserDisabled()) {
+            // if disabled, only grant access to the creator.
+            final CaseRole caseRole = getCaseRole(
+                (nonNull(caseData.getOutsourcingPolicy()))
+                    ? caseData.getOutsourcingPolicy()
+                    : caseData.getLocalAuthorityPolicy());
+            caseAccessService.grantCaseRoleToUser(caseId, creatorId, caseRole);
         } else {
-            final CaseRole caseRole = getCaseRole(caseData.getLocalAuthorityPolicy());
-            // LASOLICITOR share with all sols in org
-            caseAccessService.grantCaseRoleToLocalAuthority(caseId, creatorId, localAuthority, caseRole);
+            if (nonNull(caseData.getOutsourcingPolicy())) {
+                final CaseRole caseRole = getCaseRole(caseData.getOutsourcingPolicy());
+                if (LAMANAGING.equals(caseRole)
+                    && !isEmpty(caseData.getShouldShareWithOrganisationUsers())
+                    && caseData.getShouldShareWithOrganisationUsers().equals(YesNo.YES)) {
+                    // LAMANAGING + we want to share with everyone
+                    caseAccessService.grantCaseRoleToLocalAuthority(caseId, creatorId, localAuthority, caseRole);
+                } else {
+                    // EPSMANAGING do not share OR LAMANAGING doesn't want to share
+                    caseAccessService.grantCaseRoleToUser(caseId, creatorId, caseRole);
+                }
+            } else {
+                final CaseRole caseRole = getCaseRole(caseData.getLocalAuthorityPolicy());
+                // LASOLICITOR share with all sols in org
+                caseAccessService.grantCaseRoleToLocalAuthority(caseId, creatorId, localAuthority, caseRole);
+            }
         }
     }
 
