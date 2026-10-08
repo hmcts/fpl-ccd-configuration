@@ -1,15 +1,5 @@
 buildscript {
   repositories {
-    mavenLocal()
-
-    maven {
-      url = uri('https://artifactory.platform.hmcts.net/artifactory/maven-remotes')
-    }
-
-    maven {
-      url = uri('https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1')
-    }
-
     mavenCentral()
   }
   dependencies {
