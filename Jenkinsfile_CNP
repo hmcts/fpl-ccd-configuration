@@ -291,6 +291,7 @@ def setupUITestEnvVariablesForPreview() {
 }
 def installYarnDependenciesIfNeeded(yarnBuilder) {
     if (!fileExists('node_modules')){
+      yarnBuilder.yarn('yarn-update')
       yarnBuilder.yarn('install-dependencies')
   }
 
