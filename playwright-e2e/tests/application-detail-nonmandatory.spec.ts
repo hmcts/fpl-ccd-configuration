@@ -205,7 +205,7 @@ test.describe('Non mandatory application details before application submit @test
             await otherProceedings.tabNavigation('View application');
 
             //assert the details
-            await expect(otherProceedings.page.getByRole('cell', { name: 'Other proceedings', exact: true }).locator('div')).toBeVisible();
+            await expect(otherProceedings.page.getByRole('rowheader', { name: 'Other proceedings', exact: true }).locator('div')).toBeVisible();
             await expect(otherProceedings.page.getByText('Ongoing')).toBeVisible();
             await expect(otherProceedings.page.getByText('Previous')).toBeVisible();
             await expect(otherProceedings.page.getByRole('link', { name: 'Make changes to other' })).toBeVisible();
