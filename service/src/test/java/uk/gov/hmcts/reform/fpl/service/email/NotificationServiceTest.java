@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -31,7 +31,7 @@ class NotificationServiceTest {
     private static final String TEMPLATE_ID = "some template id";
     private static final String NOTIFICATION_REFERENCE = String.format("%s/%s", ENV, REFERENCE);
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
     @Autowired

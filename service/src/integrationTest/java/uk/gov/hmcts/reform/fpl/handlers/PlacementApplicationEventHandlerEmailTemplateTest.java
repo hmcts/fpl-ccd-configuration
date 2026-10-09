@@ -2,9 +2,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
 import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -37,14 +36,14 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 @ContextConfiguration(classes = {PlacementEventsHandler.class, PlacementContentProvider.class,
     EmailNotificationHelper.class, CaseUrlService.class
 })
-@MockBeans({
-    @MockBean(UserService.class),
-    @MockBean(PaymentService.class),
-    @MockBean(CoreCaseDataService.class),
-    @MockBean(EventService.class),
-    @MockBean(Time.class),
-    @MockBean(SendDocumentService.class),
-    @MockBean(CafcassNotificationService.class)
+@MockitoBean(types = {
+    UserService.class,
+    PaymentService.class,
+    CoreCaseDataService.class,
+    EventService.class,
+    Time.class,
+    SendDocumentService.class,
+    CafcassNotificationService.class
 })
 class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTest {
 

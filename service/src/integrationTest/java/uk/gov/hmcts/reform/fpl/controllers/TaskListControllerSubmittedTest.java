@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -30,10 +30,10 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
         super("update-task-list");
     }
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
 
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
     final CaseData caseData = CaseData.builder()

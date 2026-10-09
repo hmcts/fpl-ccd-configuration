@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -52,16 +52,16 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     private static final CaseData CASE_MANAGEMENT_CASE_DATA = CaseData.builder().state(CASE_MANAGEMENT).build();
     private static final LocalDate DATE_ADDED = LocalDate.of(2018, 2, 4);
 
-    @SpyBean
+    @MockitoSpyBean
     private EventService eventService;
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
 
     StandardDirectionsOrderControllerSubmittedTest() {

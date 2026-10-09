@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -14,13 +14,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ContextConfiguration(classes = {FixedTimeConfiguration.class})
+@ContextConfiguration(classes = {FixedTimeConfiguration.class, ValidateGroupService.class})
 class EPOTimeRangeValidatorTest extends TimeValidatorTest {
 
     @Autowired
     private Time time;
 
-    @SpyBean
+    @MockitoSpyBean
     private ValidateGroupService validateGroupService;
 
     @Test

@@ -5,7 +5,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -40,10 +40,10 @@ class ManageDocumentsControllerV2SubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 1L;
 
-    @MockBean
+    @MockitoBean
     private ManageDocumentService manageDocumentService;
 
-    @MockBean
+    @MockitoBean
     private EventService eventPublisher;
 
     @Captor

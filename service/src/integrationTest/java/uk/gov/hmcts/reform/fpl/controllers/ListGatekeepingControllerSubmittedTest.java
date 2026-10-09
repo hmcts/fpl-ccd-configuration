@@ -8,8 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -188,37 +188,37 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     @Captor
     private ArgumentCaptor<String> eventIdCaptor;
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @MockitoBean
     private DocumentConversionService documentConversionService;
 
-    @MockBean
+    @MockitoBean
     private DocmosisCoverDocumentsService documentService;
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private SendLetterApi sendLetterApi;
 
-    @MockBean
+    @MockitoBean
     private OtherRecipientsInbox otherRecipientsInbox;
 
-    @MockBean
+    @MockitoBean
     private CafcassNotificationService cafcassNotificationService;
 
-    @MockBean
+    @MockitoBean
     private JudicialUsersConfiguration judicialUsersConfiguration;
 
-    @MockBean
+    @MockitoBean
     private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     ListGatekeepingControllerSubmittedTest() {

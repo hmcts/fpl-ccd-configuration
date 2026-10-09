@@ -6,9 +6,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -35,10 +35,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 class RoboticsControllerTest extends AbstractTest {
     private static final String CASE_ID = "12345";
 
-    @MockBean
+    @MockitoBean
     private CoreCaseDataApi coreCaseDataApi;
 
-    @MockBean
+    @MockitoBean
     private EmailService emailService;
 
     @Autowired

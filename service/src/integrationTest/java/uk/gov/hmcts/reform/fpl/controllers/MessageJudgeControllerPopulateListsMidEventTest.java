@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.MessageRegardingDocuments;
@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MessageJudgeControllerPopulateListsMidEventTest extends AbstractCallbackTest {
-    @MockBean
+    @MockitoBean
     ManageDocumentService manageDocumentService;
     private static final DocumentReference DOCUMENT_REFERENCE_1 = testDocumentReference("Test Doc One");
     private static final UUID DOCUMENT_1_ID = randomUUID();

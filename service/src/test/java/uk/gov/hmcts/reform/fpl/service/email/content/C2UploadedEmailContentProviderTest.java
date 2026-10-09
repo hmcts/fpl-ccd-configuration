@@ -106,7 +106,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
             .callout("Smith, 12345, " + HEARING_CALLOUT)
             .respondentLastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, C2))
-            .documentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary")
+            .documentUrl("http://fake-url/documentsv2/b28f859b-7521-4c84-9057-47e56afd773f/binary")
             .build();
     }
 

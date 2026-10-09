@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -76,31 +76,31 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
     @Captor
     private ArgumentCaptor<List<DocumentReference>> documents;
 
-    @MockBean
+    @MockitoBean
     private CoreCaseDataApi coreCaseDataApi;
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @MockitoBean
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
-    @MockBean
+    @MockitoBean
     private SendDocumentService sendDocumentService;
 
-    @MockBean
+    @MockitoBean
     private PlacementContentProvider placementContentProvider;
 
-    @MockBean
+    @MockitoBean
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
-    @MockBean
+    @MockitoBean
     private LocalAuthorityRecipientsService localAuthorityRecipientsService;
 
     @BeforeEach
