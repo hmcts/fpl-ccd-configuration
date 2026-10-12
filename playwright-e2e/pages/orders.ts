@@ -622,6 +622,12 @@ export class Orders extends BasePage {
         await this.endDayTimeDay.fill('07');
         await this.endDayTimeMonth.fill('07');
         await this.endDayTimeYear.fill('2026');
+        await this.produceChildrenToApplicant.getByLabel('Yes').click();// checkbox not clicking had to work around it
+      
+        let endDate = addMonthsToDate(new Date(), 5);
+        await this.endDayTimeDay.fill(new Intl.DateTimeFormat('en', {day: 'numeric'}).format(endDate));
+        await this.endDayTimeMonth.fill(new Intl.DateTimeFormat('en', {month: 'numeric'}).format(endDate));
+        await this.endDayTimeYear.fill(new Intl.DateTimeFormat('en', {year: 'numeric'}).format(endDate));
         await this.hour.fill('10');
         await this.finalOrder.getByLabel('No').click();
         await this.clickContinue();
