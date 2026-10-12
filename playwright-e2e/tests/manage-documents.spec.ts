@@ -34,7 +34,8 @@ test.describe('Manage Documents', () => {
         // Check CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Court Correspondence');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(caseFileView.page.getByLabel('Court Correspondence folder, 1 documents')).toBeVisible();
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeVisible();
 
         // If WA is enabled
         if (testConfig.waEnabled) {
@@ -73,7 +74,8 @@ test.describe('Manage Documents', () => {
         // position is visble under CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).toContainText(' testTextFile.txt ');
+        await expect(caseFileView.page.getByLabel('Position Statements folder, 1 documents')).toBeVisible();
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeVisible();
         await signInPage.logout();
 
         //Login as respondence solicitor
@@ -84,7 +86,8 @@ test.describe('Manage Documents', () => {
         //go to CFV and assert Position statement  visible
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(caseFileView.page.getByLabel('Position Statements folder, 1 documents')).toBeVisible();
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeVisible();//await expect(page.getByRole('button')).toContainText('testTextFile.txt');
     });
 
     test('LA uploads confidential documents visible in CFV not visible to solicitor', async ({ signInPage, manageDocuments, caseFileView, page }) => {
@@ -100,8 +103,9 @@ test.describe('Manage Documents', () => {
         // position is visible under CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
+        await expect(caseFileView.page.getByLabel('Confidential folder, 1 documents')).toBeVisible();
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeVisible();
 
         //Login as respondence solicitor
         await signInPage.logout();
@@ -112,9 +116,9 @@ test.describe('Manage Documents', () => {
         //go to CFV and assert Position statement not visible
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(caseFileView.page.getByLabel('Confidential folder, 1 documents')).toBeHidden();
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeHidden();
     });
 
     test('CTSC uploads confidential documents visible in CFV not visible to solicitor ', async ({ signInPage, manageDocuments, caseFileView, page }) => {
@@ -130,7 +134,7 @@ test.describe('Manage Documents', () => {
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeVisible();
         await signInPage.logout();
 
         //Login as respondence solicitor
@@ -142,9 +146,9 @@ test.describe('Manage Documents', () => {
         //go to CFV and assert Position statement not visble
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
         await signInPage.logout();
 
         //login in LA and assert position statement not visible
@@ -157,9 +161,9 @@ test.describe('Manage Documents', () => {
         await signInPage.navigateToCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
 
     });
 
@@ -176,7 +180,7 @@ test.describe('Manage Documents', () => {
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Advocate Meeting Minutes');
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeVisible();
         await signInPage.logout();
 
           //Login as respondence solicitor
@@ -188,6 +192,7 @@ test.describe('Manage Documents', () => {
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Advocate Meeting Minutes');
         await caseFileView.openFolder('Confidential');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
         await signInPage.logout();
 
     });
@@ -206,7 +211,7 @@ test.describe('Manage Documents', () => {
         await caseFileView.openFolder('Respondents');
         await caseFileView.openFolder('Respondents own statements');
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeVisible();
         await signInPage.logout();
 
          //Login as respondence solicitor
@@ -219,6 +224,7 @@ test.describe('Manage Documents', () => {
         await caseFileView.openFolder('Respondents');
         await caseFileView.openFolder('Respondents own statements');
         await caseFileView.openFolder('Confidential');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden()
         await signInPage.logout();
 
     });
@@ -237,7 +243,7 @@ test.describe('Manage Documents', () => {
         //go to CFV and assert Court Correspondence not visble
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Court Correspondence');
-        await expect(page.getByRole('tree')).not.toContainText('mock.pdf');
+        await expect(page.getByLabel('mock.pdf')).toBeHidden();
     });
 
     test('CTSC user can move document between folder ', async ({ page, signInPage, caseFileView }) => {
@@ -249,7 +255,7 @@ test.describe('Manage Documents', () => {
         await caseFileView.goToCFVTab();
         await caseFileView.moveDocument('Court Correspondence', 'Threshold');
         await caseFileView.openFolder('Threshold');
-        await expect(page.getByRole('tree')).toContainText('mock.pdf');
+        await expect(page.getByLabel('mock.pdf')).toBeVisible();
 
     });
 
@@ -266,7 +272,7 @@ test.describe('Manage Documents', () => {
         // Check CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Court Correspondence');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeVisible();
 
         // If WA is enabled
         if (testConfig.waEnabled) {
