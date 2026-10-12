@@ -1,7 +1,6 @@
 import { BasePage } from "./base-page";
 import { expect, Locator, Page } from "@playwright/test";
 import config from "../settings/test-docs/config";
-import {addMonthsToDate} from "../utils/util-helper";
 
 export class Orders extends BasePage {
     orderPage: Page;
@@ -93,6 +92,12 @@ export class Orders extends BasePage {
     readonly endDayTimeMonth: Locator
     readonly endDayTimeYear: Locator
     readonly hour: Locator;
+    readonly orderPlacingChildInCare: Locator;
+    readonly whatOrderAllow: Locator;
+    readonly orderMadeExParte: Locator;
+    readonly dayWhenOrderMade: Locator;
+    readonly monthWhenOrderMade: Locator;
+    readonly yearWhenOrderMade: Locator;
 
 
 
@@ -188,7 +193,12 @@ export class Orders extends BasePage {
         this.endDayTimeMonth = page.locator('#manageOrdersEndDateTime-month');
         this.endDayTimeYear = page.locator('#manageOrdersEndDateTime-year');
         this.hour = page.getByRole('textbox', { name: 'Hour' });
-
+        this.orderPlacingChildInCare = page.getByRole('radio', { name: 'Care order' });
+        this.whatOrderAllow = page.getByRole('checkbox', { name: 'Entry' });
+        this.orderMadeExParte = page.locator('#manageOrdersIsExParte_Yes');
+        this.dayWhenOrderMade = page.getByRole('textbox', { name: 'Day' });
+        this.monthWhenOrderMade = page.getByRole('textbox', { name: 'Month' });
+        this.yearWhenOrderMade = page.getByRole('textbox', { name: 'Year' });
 
     }
 
@@ -244,9 +254,9 @@ export class Orders extends BasePage {
     async addChildDetails(isAllChildrenInvolved: string) {
         await this.isAllChildrenInvolved.getByRole('radio', { name: `${isAllChildrenInvolved}` }).click();
         if (isAllChildrenInvolved == 'No') {
-            await this.page.getByRole('checkbox',{name:'Timothy Jones'}).check();
-            await this.page.getByRole('checkbox',{name:'John Black'}).check();
-            await this.page.getByRole('checkbox',{name:'Sarah Black'}).check();
+            await this.page.getByRole('group', { name: 'Child 1 (Optional)' }).getByLabel('Yes').check();
+            await this.page.getByRole('group', { name: 'Child 2 (Optional)' }).getByLabel('Yes').check();
+            await this.page.getByRole('group', { name: 'Child 4 (Optional)' }).getByLabel('Yes').check();
         }
 
     }
@@ -261,7 +271,7 @@ export class Orders extends BasePage {
             await this.powerOfExclusionStart.getByLabel('Month').fill('3');
             await this.powerOfExclusionStart.getByLabel('Year').fill('2024');
             await this.powerOfExclusionStart.getByLabel('Day').fill('12');
-
+            await this.uploadPowerOfArrestIfRequired.setInputFiles(config.testPdfFile);
         }
         await this.page.getByRole('group', { name: 'Include: "Any person who can produce the children to the applicant must do so"' }).getByLabel('Yes').click();
         await this.page.getByLabel('Add description of children (').fill('Children description');
@@ -353,13 +363,11 @@ export class Orders extends BasePage {
     async addAuthorityToRefuseContactWithAChildInCareDetails() {
         await this.clickContinue();
         await this.judgeMagistrateRadioButton.check();
-        await this.judgeLastName.fill('Dean');
-        await this.judgeEmail.fill('email@email.comLegal');
+        await this.judgeLastName.getByText('Dean');
         await this.approvalDate.getByLabel('Day').fill('2');
         await this.approvalDate.getByLabel('Month').fill('2');
         await this.approvalDate.getByLabel('Year').fill('2024');
         await this.clickContinue();
-        await this.clickContinue();// Playwright playing up.Had to work around it
         await this.isAllChildrenInvolved.getByRole('radio', { name: 'Yes' }).check();
         await this.clickContinue();
         await this.orderConsent.getByRole('radio', { name: 'Yes' }).check();
@@ -379,7 +387,6 @@ export class Orders extends BasePage {
         await this.permissionReport.getByLabel('Day').fill('12');
         await this.permissionReport.getByLabel('Month').fill('12');
         await this.permissionReport.getByLabel('Year').fill('2031');
-        await this.page.press('body', 'Tab'); //exui throws date validation error before entering all the date value
     }
 
     async familyAssistanceOrder() {
@@ -518,7 +525,7 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.orderApproved.getByLabel('No').check();
         await this.clickContinue();
-        await this.orderApplication.getByLabel('No').check();
+        await this.orderApplication.getByLabel('Yes').check();
         await this.clickContinue();
         await this.issuingJudge.getByLabel('Yes').click();
         await this.clickContinue();
@@ -611,15 +618,35 @@ export class Orders extends BasePage {
         await this.powerOfExclusionStart.getByLabel('Month').fill('06');
         await this.powerOfExclusionStart.getByLabel('Year').fill('2026');
         await this.produceChildrenToApplicant.getByLabel('Yes').click();
-        await this.produceChildrenToApplicant.getByLabel('Yes').click();
-        // checkbox not clicking had to work around it
-        let endDate = addMonthsToDate(this.getCurrentDate().toString(), 5);
-        await this.endDayTimeDay.fill(new Intl.DateTimeFormat('en', {day: 'numeric'}).format(endDate));
-        await this.endDayTimeMonth.fill(new Intl.DateTimeFormat('en', {month: 'numeric'}).format(endDate));
-        await this.endDayTimeYear.fill(new Intl.DateTimeFormat('en', {year: 'numeric'}).format(endDate));
+        await this.produceChildrenToApplicant.getByLabel('Yes').click();// checkbox not clicking had to work around it
+        await this.endDayTimeDay.fill('07');
+        await this.endDayTimeMonth.fill('07');
+        await this.endDayTimeYear.fill('2026');
         await this.hour.fill('10');
         await this.finalOrder.getByLabel('No').click();
         await this.clickContinue();
 
+    }
+    async uploadsChildRecoveryOrder() {
+        await this.clickContinue();
+        await this.orderApproved.getByLabel('Yes').check();
+        await this.approvedHearing.selectOption('Case management hearing, 3 November 2012');
+        await this.orderApplication.getByLabel('Yes').click();
+        await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
+        await this.clickContinue();
+        await this.clickContinue();
+        await this.isAllChildrenInvolved.getByLabel('Yes').check();
+        await this.clickContinue();
+        await this.orderPlacingChildInCare.check();
+        await this.dayWhenOrderMade.fill('11');
+        await this.monthWhenOrderMade.fill('11');
+        await this.yearWhenOrderMade.fill('2020');
+        await this.whatOrderAllow.click();
+        await this.whatOrderAllow.click();// checkbox not clicking had to work around it
+        await this.enterPostCode('EN4');
+        await this.orderMadeExParte.check();
+        await this.orderFurtherDirectionDetails.fill('Test');
+        await this.finalOrder.getByText('No').click();
+        await this.clickContinue();
     }
 }
