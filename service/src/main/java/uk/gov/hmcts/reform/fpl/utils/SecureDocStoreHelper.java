@@ -144,7 +144,7 @@ public class SecureDocStoreHelper {
     public Document uploadDocument(byte[] byteArrayOfFile, String fileName, String contentType,
                                    Callable<Document> oldDmStoreApproach) {
         try {
-            log.info("Uploading document file name: {} ({})", fileName, contentType);
+            log.info("Uploading document of content type {}", contentType);
             Document ret = secureDocStoreService.uploadDocument(byteArrayOfFile, fileName, contentType);
             if (featureToggleService.isSecureDocstoreEnabled()) {
                 return ret;
