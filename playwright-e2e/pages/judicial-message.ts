@@ -79,11 +79,11 @@ export class JudicialMessage extends BasePage {
 
     async assertJudicialMessageHeaders() {
         return Promise.all([
-            expect(this.page.getByRole('columnheader', {name: 'Date sentSort Date sent'})).toBeVisible(),
-            expect(this.page.getByRole('columnheader', {name: 'FromSort From'})).toBeVisible(),
-            expect(this.page.getByRole('columnheader', {name: 'ToSort To'})).toBeVisible(),
-            expect(this.page.getByRole('columnheader', {name: 'StatusSort Status'})).toBeVisible(),
-            expect(this.page.getByRole('columnheader', {name: 'Message subjectSort Message'})).toBeVisible()
+            expect(this.page.getByRole('columnheader', {name: 'Date sent Sort Date sent'})).toBeVisible(),
+            expect(this.page.getByRole('columnheader', {name: 'From Sort From'})).toBeVisible(),
+            expect(this.page.getByRole('columnheader', {name: 'To Sort To'})).toBeVisible(),
+            expect(this.page.getByRole('columnheader', {name: 'Status Sort Status'})).toBeVisible(),
+            expect(this.page.getByRole('columnheader', {name: 'Message subject Sort Message'})).toBeVisible()
         ]);
     }
 
