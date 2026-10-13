@@ -20,8 +20,6 @@ import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -91,7 +89,6 @@ public abstract class AbstractApplicationGeneratedOrderService {
             .title(title)
             .dateOfIssue(dateOfIssue)
             .judgeAndLegalAdvisor(null)
-            .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .children(caseData.getAllChildren());
 
         documentBinder.accept(generatedOrderBuilder);
