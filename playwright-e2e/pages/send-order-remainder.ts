@@ -15,6 +15,9 @@ export class SendOrderRemainder extends BasePage {
     get historyTab(): Locator {
         return this.page.getByRole('tab', { name: 'History',exact:true });
     }
+    get sendRemainderButton(): Locator {
+        return this.page.getByRole('button', {name: 'Send reminder'});
+    }
 
     async sendOrderRemainder(yesNo = 'Yes') {
         await this.remainderRadioButton.getByRole('radio', {name: 'Yes'}).check();
@@ -24,7 +27,9 @@ export class SendOrderRemainder extends BasePage {
     async gotoHistoryTab(){
         await this.historyTab.click();
     }
-
+async clickSendOrderRemainder() {
+        await this.sendRemainderButton.click();
+}
 }
 
 

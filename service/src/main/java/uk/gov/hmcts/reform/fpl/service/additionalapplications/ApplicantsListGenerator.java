@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
@@ -76,21 +77,26 @@ public class ApplicantsListGenerator {
         if (isNotEmpty(caseData.getCaseLocalAuthorityName())) {
             applicantsFullNames.add(InterlocutoryApplicant.builder()
                 .code("applicant")
-                .name(caseData.getCaseLocalAuthorityName() + ", Applicant").build());
+                .name(caseData.isC1Application() || YesNo.NO.equals(caseData.getIsLocalAuthority())
+                   ? caseData.getCaseLocalAuthorityName() + ", Local Authority" :
+                   caseData.getCaseLocalAuthorityName() + ", Applicant").build());
+
         }
 
         caseData.getSecondaryLocalAuthority()
             .map(LocalAuthority::getName)
             .map(localAuthorityName -> InterlocutoryApplicant.builder()
                 .code("secondaryLocalAuthority")
-                .name(localAuthorityName + ", Secondary LA").build())
+                .name(caseData.isC1Application() || YesNo.NO.equals(caseData.getIsLocalAuthority())
+                  ?  localAuthorityName +  ", Applicant" :
+                    localAuthorityName + ", Secondary LA").build())
             .ifPresent(applicantsFullNames::add);
 
         applicantsFullNames.addAll(buildRespondentNameElements(caseData.getAllRespondents()));
         applicantsFullNames.addAll(buildChildNameElements(caseData.getAllChildren()));
 
         if (withOthersOption) {
-            applicantsFullNames.addAll(buildOthersElements(caseData.getAllOthers())); // Others to give notice
+            applicantsFullNames.addAll(buildOthersElements(caseData.getOthersV2())); // Others to give notice
             applicantsFullNames.add(
                 InterlocutoryApplicant.builder().code(APPLICANT_SOMEONE_ELSE).name("Someone else").build());
         }
@@ -108,7 +114,7 @@ public class ApplicantsListGenerator {
         others.forEach(other -> applicants.add(
             InterlocutoryApplicant.builder()
                 .code(String.valueOf(other.getId()))
-                .name(other.getValue().getName() + ", Other to be given notice " + i.getAndIncrement())
+                .name(other.getValue().getFullName() + ", Other to be given notice " + i.getAndIncrement())
                 .build())
         );
 

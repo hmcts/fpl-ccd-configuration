@@ -84,7 +84,7 @@ export class CreateCase extends BasePage{
   }
 
   async clickSubmit(): Promise<void> {
-      await this.submitButton.click();
+      await this.saveAndContinue.click();
   }
 
   private generateCaseName(value: string = 'Smoke Test'): string {
@@ -123,7 +123,7 @@ export class CreateCase extends BasePage{
           this.page.waitForResponse(response =>
               response.url().includes('/api/wa-supported-jurisdiction/get') && response.status() === 200
           ),
-          this.clickSubmit(),
+          this.clickSaveAndContinue(),
       ]);
 
       const caseData = await caseResponse.json();
@@ -157,7 +157,7 @@ export class CreateCase extends BasePage{
   }
 
     async submitOutSourceCase(){
-        await this.submit.click();
+        await this.saveAndContinue.click();
   }
 
     async getCaseNumber(){

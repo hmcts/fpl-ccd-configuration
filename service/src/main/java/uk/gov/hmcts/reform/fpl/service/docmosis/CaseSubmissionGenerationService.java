@@ -70,6 +70,7 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Gender;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.GrammarHelper;
 
 import java.time.LocalDate;
@@ -87,6 +88,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
@@ -101,6 +103,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisplay;
 import static uk.gov.hmcts.reform.fpl.utils.Constants.NEW_LINE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -336,8 +339,8 @@ public class CaseSubmissionGenerationService
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents(), applicationLanguage))
             .applicants(buildDocmosisApplicants(caseData))
             .children(buildDocmosisChildren(caseData.getAllChildren(), applicationLanguage))
-            .others(buildDocmosisOthers(caseData.getAllOthers(), applicationLanguage))
-            .proceeding(buildDocmosisProceedings(caseData.getAllProceedings(), applicationLanguage))
+            .others(buildDocmosisOthers(caseData.getOthersV2(), applicationLanguage))
+            .proceeding(buildDocmosisProceedings(caseData.getProceedings()))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings(), applicationLanguage))
             .dischargeOfOrder(caseData.isDischargeOfCareApplication())
             .groundsForEPOReason(isNotEmpty(caseData.getOrders())
@@ -650,54 +653,54 @@ public class CaseSubmissionGenerationService
             .collect(toList());
     }
 
-    private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<Proceeding>> proceedings,
-                                                              Language applicationLanguage) {
+    private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<Proceeding>> proceedings) {
+        if (isEmpty(proceedings)) {
+            return List.of();
+        }
         return proceedings.stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
-            .map(proceeding -> buildProceeding(proceeding, applicationLanguage))
+            .map(this::buildProceeding)
             .collect(toList());
     }
 
-    private DocmosisProceeding buildProceeding(final Proceeding proceeding,
-                                               Language applicationLanguage) {
+    private DocmosisProceeding buildProceeding(final Proceeding proceeding) {
         return DocmosisProceeding.builder()
-            .onGoingProceeding(getValidAnswerOrDefaultValue(proceeding.getOnGoingProceeding(), applicationLanguage))
-            .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus()))
+            .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus().getValue()))
             .caseNumber(getDefaultIfNullOrEmpty(proceeding.getCaseNumber()))
-            .started(getDefaultIfNullOrEmpty(proceeding.getStarted()))
-            .ended(getDefaultIfNullOrEmpty(proceeding.getEnded()))
+            .started(getDefaultIfNullOrEmpty(!isEmpty(proceeding.getStartedV2())
+                ? DateFormatterHelper.formatLocalDateToString(proceeding.getStartedV2(), DATE_SHORT)
+                : null))
+            .ended(getDefaultIfNullOrEmpty(!isEmpty(proceeding.getEndedV2())
+                ? DateFormatterHelper.formatLocalDateToString(proceeding.getEndedV2(), DATE_SHORT)
+                : null))
             .ordersMade(getDefaultIfNullOrEmpty(proceeding.getOrdersMade()))
             .judge(getDefaultIfNullOrEmpty(proceeding.getJudge()))
             .children(getDefaultIfNullOrEmpty(proceeding.getChildren()))
             .guardian(getDefaultIfNullOrEmpty(proceeding.getGuardian()))
             .sameGuardianDetails(
                 concatenateKeyAndValue(
-                    proceeding.getSameGuardianNeeded(),
+                    ofNullable(proceeding.getSameGuardianNeeded()).map(YesNo::getValue).orElse(null),
                     proceeding.getSameGuardianDetails()))
             .build();
     }
 
     private DocmosisOtherParty buildOtherParty(final Other other,
                                                Language applicationLanguage) {
-        final boolean isConfidential = equalsIgnoreCase(other.getDetailsHidden(), YES.getValue());
         return DocmosisOtherParty.builder()
-            .name(other.getName())
-            .gender(formatGenderDisplay(Gender.fromLabel(other.getGender()).getLabel(applicationLanguage),
-                other.getGenderIdentification()))
+            .name(other.getFullName())
             .dateOfBirth(StringUtils.isNotBlank(other.getDateOfBirth())
                          ? formatLocalDateToString(parse(other.getDateOfBirth()), DATE, applicationLanguage)
                          : DEFAULT_STRING
             )
-            .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
-            .address(isConfidential ? getConfidential(applicationLanguage) : formatAddress(other.getAddress()))
-            .telephoneNumber(isConfidential ? getConfidential(applicationLanguage) :
-                             getDefaultIfNullOrEmpty(other.getTelephone()))
-            .detailsHidden(getValidAnswerOrDefaultValue(other.getDetailsHidden(), applicationLanguage))
-            .detailsHiddenReason(
-                concatenateYesOrNoKeyAndValue(
-                    other.getDetailsHidden(),
-                    other.getDetailsHiddenReason(), applicationLanguage))
+            .address(
+                YES.equalsString(other.getHideAddress())
+                    ? getConfidential(applicationLanguage)
+                    : formatAddress(other.getAddress()))
+            .telephoneNumber(
+                YES.equalsString(other.getHideTelephone())
+                    ? getConfidential(applicationLanguage)
+                    : getDefaultIfNullOrEmpty(other.getTelephone()))
             .litigationIssuesDetails(
                 concatenateYesOrNoKeyAndValue(
                     other.getLitigationIssues(),

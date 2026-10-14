@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -26,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -46,21 +51,26 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -82,10 +92,12 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
@@ -103,11 +115,13 @@ public class MigrateCaseService {
     private final CourtService courtService;
     private static final String CORRECT_COURT_NAME = "Family Court Sitting at West London";
     private static final String ORDER_TYPE = "orderType";
+    private static final String CASE_SUMMARY_COURT_NAME = "caseSummaryCourtName";
     public final MigrateRelatingLAService migrateRelatingLAService;
     public final OrganisationService organisationService;
     public final CourtLookUpService courtLookUpService;
 
     private static final Map<String, HearingType>  HEARING_TYPE_DETAILS_MAPPING = initialiseHearingMapping();
+    private final ObjectMapper mapper;
 
 
     private static Map<String, HearingType> initialiseHearingMapping() {
@@ -723,6 +737,31 @@ public class MigrateCaseService {
         return Map.of("noticeOfProceedingsBundle", updatedNoticeOfProceedingsBundle);
     }
 
+    public Map<String, Object> removeDraftOrdersRemovedElement(CaseData caseData,
+                                                               String migrationId,
+                                                               UUID expectedOrderId) {
+        Long caseId = caseData.getId();
+        List<Element<HearingOrder>> draftOrdersRemoved = caseData.getDraftOrdersRemoved();
+
+        if (isNull(draftOrdersRemoved) || draftOrdersRemoved.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, draftOrdersRemoved collection is empty",
+                migrationId, caseId));
+        }
+
+        List<Element<HearingOrder>> updatedDraftOrdersRemoved = draftOrdersRemoved.stream()
+            .filter(el -> !el.getId().equals(expectedOrderId))
+            .toList();
+
+        if (updatedDraftOrdersRemoved.size() != draftOrdersRemoved.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, target element %s not found in draftOrdersRemoved",
+                migrationId, caseId, expectedOrderId));
+        }
+
+        return Map.of("draftOrdersRemoved", updatedDraftOrdersRemoved);
+    }
+
     public Map<String, Object> removeDocumentFiledOnIssue(CaseData caseData, UUID documentFiledOnIssueId,
                                                       String migrationId) {
         Long caseId = caseData.getId();
@@ -1335,12 +1374,140 @@ public class MigrateCaseService {
         return Map.of("hearing", hearing);
     }
 
+    @SuppressWarnings("deprecation")
+    public void migrateOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
+        Proceeding oldProceeding = caseData.getProceeding();
+
+        if (oldProceeding != null) {
+            if (YesNo.YES.getValue().equalsIgnoreCase(oldProceeding.getOnGoingProceeding())) {
+                List<Element<Proceeding>> migratedProceedings = new ArrayList<>();
+                migratedProceedings.add(element(oldProceeding));
+
+                List<Element<Proceeding>> oldAdditionalProceedings = oldProceeding.getAdditionalProceedings();
+                if (oldAdditionalProceedings != null) {
+                    migratedProceedings.addAll(oldAdditionalProceedings);
+                }
+
+                migratedProceedings = migratedProceedings.stream()
+                    .map(proceedingElement ->
+                        element(proceedingElement.getId(), sanitizeProceeding(caseData, proceedingElement.getValue())))
+                    .toList();
+
+                caseDetails.getData().put("proceedings", migratedProceedings);
+            } else {
+                log.info("Migration {id = {}}, case {} is skipped because onGoingProceeding is not Yes",
+                    migrationId, caseData.getId());
+            }
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, case {%d} no proceeding found", migrationId,
+                caseData.getId()));
+        }
+    }
+
+    private Proceeding sanitizeProceeding(CaseData caseData, Proceeding proceeding) {
+        Proceeding.ProceedingBuilder builder =  proceeding.toBuilder()
+            .additionalProceedings(null);
+
+        // start date and end date are free text input, so we need to check if they are valid dates before migrating
+        if (!isEmpty(proceeding.getStarted())) {
+            Optional<LocalDate> validStartDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getStarted());
+            if (validStartDate.isPresent()) {
+                builder.startedV2(validStartDate.get());
+            } else {
+                log.warn("Case {} has invalid proceeding start date", caseData.getId());
+            }
+        }
+
+        if (!isEmpty(proceeding.getEnded())) {
+            Optional<LocalDate> validEndDate = parseLocalDateFromStringIfAnyFormatMatches(proceeding.getEnded());
+            if (validEndDate.isPresent()) {
+                builder.endedV2(validEndDate.get());
+            } else {
+                log.warn("Case {} has invalid proceeding end date", caseData.getId());
+            }
+        }
+
+        return builder.build();
+    }
+
+    @SuppressWarnings("deprecation")
+    public void rollbackOtherProceedings(CaseDetails caseDetails, CaseData caseData, String migrationId) {
+        List<Element<Proceeding>> migratedProceedings = caseData.getProceedings();
+
+        if (migratedProceedings != null) {
+            caseDetails.getData().remove("proceedings");
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, case {%d} no migrated proceeding found", migrationId,
+                caseData.getId()));
+        }
+    }
+
     public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {
         if (!caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
             throw new AssertionError(format("Migration {id = %s}, this is not an EPO", migrationId));
         }
 
         return Map.of(ORDERS, caseData.getOrders().toBuilder().address(null).build());
+    }
+
+    public Map<String, Object> migrateOthersToOthersV2(CaseData caseData, Map<String, Object> caseDetailsMap,
+                                                       String migrationId) {
+        Others othersToBeMigrated = caseData.getOthers();
+
+        if (othersToBeMigrated == null) {
+            throw new AssertionError(format("Migration {id = %s}, there is no others in case %s", migrationId,
+                caseData.getId()));
+        }
+
+        List<Element<Other>> othersV2 = new ArrayList<>();
+        if (othersToBeMigrated.getFirstOther() != null) {
+            Element<Other> firstOther = element(getFirstOtherId(caseData), othersToBeMigrated.getFirstOther());
+            othersV2.add(firstOther);
+        }
+        if (isNotEmpty(othersToBeMigrated.getAdditionalOthers())) {
+            othersV2.addAll(othersToBeMigrated.getAdditionalOthers());
+        }
+
+        caseDetailsMap.put("othersV2", othersV2);
+
+        return caseDetailsMap;
+    }
+
+    private UUID getFirstOtherId(CaseData caseData) {
+        // Copied from respondentController
+        // if firstOther exists confidentialOthers, it should return its uuid in confidentialOthers
+        // otherwise, it returns a random UUID
+        Set<UUID> additionalOtherIds = nullSafeList(caseData.getOthers().getAdditionalOthers())
+            .stream().map(Element::getId).collect(Collectors.toSet());
+        return caseData.getConfidentialOthers().stream().map(Element::getId)
+            .filter(co -> !additionalOtherIds.contains(co)).findFirst()
+            .orElse(UUID.randomUUID());
+    }
+
+    public Map<String, Object> rollbackOthersV2ToOthers(CaseData caseData, Map<String, Object> caseDetailsMap,
+                                                       String migrationId) {
+        List<Element<Other>> othersV2ToBeMigrated = caseData.getOthersV2();
+
+        if (othersV2ToBeMigrated == null) {
+            throw new AssertionError(format("Migration {id = %s}, there is no othersV2 in case %s", migrationId,
+                caseData.getId()));
+        }
+
+        int othersV2Size = othersV2ToBeMigrated.size();
+
+        Other firstOther = (othersV2Size > 0) ? othersV2ToBeMigrated.get(0).getValue() : null;
+        List<Element<Other>> additionalOthers =  (othersV2Size > 1)
+            ? othersV2ToBeMigrated.subList(1, othersV2Size) : null;
+
+        Others others = Others.builder()
+            .firstOther(firstOther)
+            .additionalOthers(additionalOthers)
+            .build();
+
+        caseDetailsMap.remove("othersV2");
+        caseDetailsMap.put("others", others);
+
+        return caseDetailsMap;
     }
 
     public Map<String, Object> removeDraftOrderFromAdditionalApplication(CaseData caseData, String migrationId,
@@ -1470,5 +1637,280 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("others", updatedOthers);
+    }
+
+
+    public Map<String, Object> updateCaseManagementLocation(
+        String migrationId,
+        CaseData caseData,
+        String expectedBaseLocation,
+        String targetBaseLocation,
+        String targetCourtCode,
+        String targetCourtName,
+        String dfjAreaFieldKey
+    ) {
+        CaseLocation caseManagementLocation = caseData.getCaseManagementLocation();
+        final Court court = caseData.getCourt();
+        final Orders orders = caseData.getOrders();
+
+        //  validation checks
+        if (caseManagementLocation == null) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, caseManagementLocation structure is missing",
+                migrationId, caseData.getId()));
+        }
+
+        if (!expectedBaseLocation.equalsIgnoreCase(caseManagementLocation.getBaseLocation())) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, expected base location %s but found: %s",
+                migrationId, caseData.getId(), expectedBaseLocation, caseManagementLocation.getBaseLocation()));
+        }
+
+        // Update core location block
+        caseManagementLocation.setBaseLocation(targetBaseLocation);
+
+        // Clone and update the Court object
+        Court updatedCourt = null;
+        if (court != null) {
+            updatedCourt = court.toBuilder()
+                .code(targetCourtCode)
+                .name(targetCourtName)
+                .epimmsId(targetBaseLocation)
+                .build();
+        }
+
+        // Clone and update the Orders object
+        Orders updatedOrders = null;
+        if (orders != null) {
+            updatedOrders = orders.toBuilder()
+                .court(targetCourtCode)
+                .build();
+        }
+
+        // Assemble payload updates map
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(CASE_MANAGEMENT_LOCATION, caseManagementLocation);
+
+        if (updatedCourt != null) {
+            updates.put(COURT, updatedCourt);
+        }
+        if (updatedOrders != null) {
+            updates.put(ORDERS, updatedOrders);
+        }
+
+        // Dynamic DFJ court property update
+        if (dfjAreaFieldKey != null) {
+            updates.put(dfjAreaFieldKey, targetCourtCode);
+        }
+
+        // Case summary court name
+        updates.put(CASE_SUMMARY_COURT_NAME, targetCourtName);
+
+        return updates;
+    }
+
+    public boolean removeSolicitorEmailFromPlacementNotices(CaseDetails caseDetails, String targetId) {
+        // Flag to track if modifications happen anywhere across the three fields
+        boolean dynamicModified = false;
+
+        // Process standard placements
+        if (caseDetails.getData().get(PLACEMENT) != null) {
+            List<Element<Placement>> placements = getPlacementList(caseDetails, PLACEMENT);
+            if (processPlacementsList(placements, targetId)) {
+                caseDetails.getData().put(PLACEMENT, placements);
+                dynamicModified = true;
+            }
+        }
+
+        // Process placementsNonConfidentialNotices
+        if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL_NOTICES) != null) {
+            List<Element<Placement>> notices = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+            if (processPlacementsList(notices, targetId)) {
+                caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, notices);
+                dynamicModified = true;
+            }
+        }
+
+        // Process placementsNonConfidential
+        if (caseDetails.getData().get(PLACEMENT_NON_CONFIDENTIAL) != null) {
+            List<Element<Placement>> nonConf = getPlacementList(caseDetails, PLACEMENT_NON_CONFIDENTIAL);
+            if (processPlacementsList(nonConf, targetId)) {
+                caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConf);
+                dynamicModified = true;
+            }
+        }
+
+        return dynamicModified;
+    }
+
+    private List<Element<Placement>> getPlacementList(CaseDetails caseDetails, String key) {
+        return mapper.convertValue(caseDetails.getData().get(key), new TypeReference<>() {});
+    }
+
+    private boolean processPlacementsList(List<Element<Placement>> placements, String targetId) {
+        boolean modified = false;
+
+        for (Element<Placement> placementElement : placements) {
+            Placement placement = placementElement.getValue();
+
+            if (placement != null && placement.getPlacementRespondentsToNotify() != null) {
+                List<Element<Respondent>> originalList = placement.getPlacementRespondentsToNotify();
+                List<Element<Respondent>> filteredList = filterRespondentsById(originalList, targetId);
+
+                if (filteredList.size() != originalList.size()) {
+                    placement.setPlacementRespondentsToNotify(filteredList);
+                    modified = true;
+                }
+            }
+        }
+
+        return modified;
+    }
+
+    private List<Element<Respondent>> filterRespondentsById(List<Element<Respondent>> respondents, String targetId) {
+        List<Element<Respondent>> updatedRespondents = new ArrayList<>();
+
+        for (Element<Respondent> respondentEl : respondents) {
+            if (shouldKeepRespondent(respondentEl, targetId)) {
+                updatedRespondents.add(respondentEl);
+            }
+        }
+
+        return updatedRespondents;
+    }
+
+    private boolean shouldKeepRespondent(Element<Respondent> respondentEl, String targetId) {
+        if (respondentEl == null || respondentEl.getId() == null) {
+            return true;
+        }
+
+        String currentElementId = String.valueOf(respondentEl.getId());
+
+        return !targetId.equalsIgnoreCase(currentElementId);
+    }
+
+    public Map<String, Object> updateOrdersCourt(
+        String migrationId,
+        CaseData caseData,
+        String expectedBaseLocation,
+        String targetCourtCode
+    ) {
+        CaseLocation caseManagementLocation = caseData.getCaseManagementLocation();
+        final Orders orders = caseData.getOrders();
+
+        if (caseManagementLocation == null) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, caseManagementLocation structure is missing",
+                migrationId, caseData.getId()));
+        }
+
+        if (!expectedBaseLocation.equalsIgnoreCase(caseManagementLocation.getBaseLocation())) {
+            throw new AssertionError(String.format(
+                "Migration {id = %s, case reference = %s}, expected base location %s but found: %s",
+                migrationId, caseData.getId(), expectedBaseLocation, caseManagementLocation.getBaseLocation()));
+        }
+
+        Orders updatedOrders = null;
+        if (orders != null) {
+            updatedOrders = orders.toBuilder()
+                .court(targetCourtCode)
+                .build();
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        if (updatedOrders != null) {
+            updates.put(ORDERS, updatedOrders);
+        }
+
+        return updates;
+    }
+
+    public Map<String, Object> updateChildStatusWithFinalOrderIssued(String migrationId, CaseData caseData) {
+        Map<String, Object> updates = new HashMap<>();
+
+
+        // filter out final order, and sort the final order in ascending order (by issue / upload time),
+        // just in case of multiple final order being issued to the same child.
+        // then map the final order type of each child
+        final Map<UUID, Order> childrenFinalOrderType = new HashMap<>();
+
+        caseData.getAllOrderCollections().stream()
+            .map(Element::getValue)
+            .filter(GeneratedOrder::isFinalOrder)
+            .sorted(this::compareGeneratedOrderByDateTimeIssued)
+            .forEach(order -> {
+                if (isNotEmpty(order.getChildren())) {
+                    order.getChildren().forEach(child -> {
+                        Order orderType;
+                        try {
+                            orderType = (order.getOrderType() != null) ? Order.valueOf(order.getOrderType()) : null;
+                        } catch (IllegalArgumentException e) {
+                            orderType = null;
+                        }
+                        childrenFinalOrderType.put(child.getId(), orderType);
+                    });
+                }
+            });
+
+        Set<UUID> childUpdated = new HashSet<>();
+
+        List<Element<Child>> children = caseData.getChildren1().stream()
+            .map(childElm -> {
+                Child.ChildBuilder childBuilder = childElm.getValue().toBuilder();
+                boolean updated = false;
+                if (childrenFinalOrderType.containsKey(childElm.getId())) {
+
+                    if (!YesNo.YES.getValue().equalsIgnoreCase(childElm.getValue().getFinalOrderIssued())) {
+                        childBuilder = childBuilder.finalOrderIssued(YesNo.YES.getValue());
+                        childUpdated.add(childElm.getId());
+                        updated = true;
+                    }
+
+                    Order orderType = childrenFinalOrderType.get(childElm.getId());
+                    if (orderType != null) {
+                        String orderTypeStr = orderType.getTitle();
+                        if (!StringUtils.equals(orderTypeStr, childElm.getValue().getFinalOrderIssuedType())) {
+                            childBuilder = childBuilder.finalOrderIssuedType(orderTypeStr);
+                            childUpdated.add(childElm.getId());
+                            updated = true;
+                        }
+                    }
+                }
+
+                if (updated) {
+                    return element(childElm.getId(), childBuilder.build());
+                } else {
+                    return childElm;
+
+                }
+            })
+            .toList();
+
+        if (!isEmpty(childUpdated)) {
+            updates.put("children1", children);
+            return updates;
+        } else {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, no child requires update",
+                migrationId, caseData.getId()));
+        }
+    }
+
+    private int compareGeneratedOrderByDateTimeIssued(GeneratedOrder order1, GeneratedOrder order2) {
+        LocalDateTime orderDateTime1 = getOrderDateTimeIssuedOrUploaded(order1);
+        LocalDateTime orderDateTime2 = getOrderDateTimeIssuedOrUploaded(order2);
+
+        return Comparator.nullsFirst(LocalDateTime::compareTo).compare(orderDateTime1, orderDateTime2);
+    }
+
+    private LocalDateTime getOrderDateTimeIssuedOrUploaded(GeneratedOrder order) {
+        if (order == null) {
+            return null;
+        }
+
+        if (order.getDateTimeIssued() != null) {
+            return order.getDateTimeIssued();
+        }
+
+        return order.getDocument() != null ? order.getDocument().getUploadedTimestamp() : null;
     }
 }

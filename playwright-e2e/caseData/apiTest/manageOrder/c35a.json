@@ -37,6 +37,16 @@
       "option10": [],
       "option11": []
     },
+    "childSelectorV2": {
+      "value": [{
+        "code": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "label": "Timothy Jones (Child 1)"
+      }],
+      "list_items": [{
+        "code": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "label": "Timothy Jones (Child 1)"
+      }]
+    },
     "hearingDetailsSectionSubHeader": "Supervision order (C35A)",
     "othersSelector": {
       "option9": [],
@@ -358,21 +368,24 @@
       }
     ],
     "caseName": "e2e test case",
-    "others": {
-      "firstOther": {
-        "birthPlace": "Newry",
-        "address": {
-          "AddressLine2": "Saffron Central Square 11",
-          "AddressLine1": "Flat 12, Pinnacle Apartments",
-          "PostTown": "London",
-          "PostCode": "CR0 2GE",
-          "County": "United Kingdom"
-        },
-        "name": "John Doe",
-        "representedBy": []
-      },
-      "additionalOthers": []
-    },
+    "othersV2": [
+      {
+        "id": "c721b8c8-dcdd-4b77-a16f-841a47d83e8f",
+        "value": {
+          "firstName": "John",
+          "lastName": "Doe",
+          "birthPlace": "Newry",
+          "address": {
+            "AddressLine2": "Saffron Central Square 11",
+            "AddressLine1": "Flat 12, Pinnacle Apartments",
+            "PostTown": "London",
+            "PostCode": "CR0 2GE",
+            "County": "United Kingdom"
+          },
+          "representedBy": []
+        }
+      }
+    ],
     "solicitor": {
       "name": "John Smith",
       "mobile": "07000000000",

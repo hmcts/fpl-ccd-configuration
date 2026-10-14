@@ -66,7 +66,7 @@ export class ReturnApplication extends BasePage {
   async ReturnApplication() {
     await this.reasonForRejection.check();
     await this.needToChange.fill('incomplete application');
-    await this.submit.click();
+    await this.clickSaveAndContinue();
     await this.submitApplication.click();
   }
 
@@ -78,7 +78,7 @@ export class ReturnApplication extends BasePage {
 
   async SubmitApplication() {
     await this.IAgreeWithThisStatement.check();
-    await this.clickSubmit();
+    await this.clickSaveAndContinue()
   }
 
   async UpdateRespondent() {

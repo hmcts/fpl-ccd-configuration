@@ -1,6 +1,7 @@
 import {expect, test} from "../fixtures/fixtures";
-import {newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
-import {createCase} from "../utils/api-helper";
+import {CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
+import {createCase, updateCase} from "../utils/api-helper";
+import caseData from '../caseData/caseWithHearingDetails.json' with {type: 'json'};
 
 test.describe('Non mandatory application details before application submit @test', () => {
     const dateTime = new Date().toISOString();
@@ -68,7 +69,7 @@ test.describe('Non mandatory application details before application submit @test
             // Welsh language requirements
             await welshLangRequirements.gotoNextStep('Welsh language requirements');
             await welshLangRequirements.welshLanguageSmokeTest();
-            await startApplication.welshLanguageReqUpdated();
+            await expect(startApplication.page.getByRole('paragraph').filter({ hasText: 'Welsh language requirements' }).getByRole('img')).toBeVisible();
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
                 // but supports additional test-specific configuration too
@@ -122,7 +123,7 @@ test.describe('Non mandatory application details before application submit @test
 
         });
 
-    test('LA add c1 application',
+     test('LA add c1 application',
         async ({startApplication, signInPage, c1WithSupplement, makeAxeBuilder}, testInfo) => {
             casename = 'c1 application  ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
@@ -154,7 +155,7 @@ test.describe('Non mandatory application details before application submit @test
         });
 
     test('LA add other people @xbrowser',
-        async ({startApplication, signInPage, otherPeopleInCase, makeAxeBuilder}, testInfo) => {
+        async ({startApplication, signInPage, othersToBeGivenNotice, makeAxeBuilder}, testInfo) => {
             casename = 'Other people in case ' + dateTime.slice(0, 10);
             caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
             expect(caseNumber).toBeDefined();
@@ -168,9 +169,9 @@ test.describe('Non mandatory application details before application submit @test
             await signInPage.isSignedIn();
             await signInPage.navigateToCaseDetails(caseNumber);
             //add other people in the case
-            await otherPeopleInCase.gotoNextStep('Other people in the case');
-            await otherPeopleInCase.addOtherPerson();
-            await expect( otherPeopleInCase.page.getByRole('paragraph').filter({ hasText: 'Other people in the case' }).getByRole('img', { name: 'In progress' })).toBeVisible();
+            await othersToBeGivenNotice.gotoNextStep('Others to be given notice');
+            await othersToBeGivenNotice.othersToBeGivenNotice()
+            await expect( othersToBeGivenNotice.page.getByRole('paragraph').filter({ hasText: 'Others to be given notice' }).getByRole('img', { name: 'In progress' })).toBeVisible();
 
             const accessibilityScanResults = await makeAxeBuilder()
                 // Automatically uses the shared AxeBuilder configuration,
@@ -185,4 +186,56 @@ test.describe('Non mandatory application details before application submit @test
             expect(accessibilityScanResults.violations).toEqual([]);
 
         });
+
+        test('LA add Other Proceedings details',async({signInPage,startApplication,otherProceedings})=>{
+
+            casename = 'Other Proceedings  ' + dateTime.slice(0, 10);
+            caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+
+            await signInPage.visit();
+            await signInPage.login(
+                newSwanseaLocalAuthorityUserOne.email,
+                newSwanseaLocalAuthorityUserOne.password,
+            );
+
+            await signInPage.isSignedIn();
+            await signInPage.navigateToCaseDetails(caseNumber);
+            await startApplication.otherProceedingsNeeded();
+            await otherProceedings.otherProceedings();
+            await otherProceedings.tabNavigation('View application');
+
+            //assert the details
+            await expect(otherProceedings.page.getByRole('rowheader', { name: 'Other proceedings', exact: true }).locator('div')).toBeVisible();
+            await expect(otherProceedings.page.getByText('Ongoing')).toBeVisible();
+            await expect(otherProceedings.page.getByText('Previous')).toBeVisible();
+            await expect(otherProceedings.page.getByRole('link', { name: 'Make changes to other' })).toBeVisible();
+
+        });
+        test('CTSC add Other Proceedings details',async({signInPage,startApplication,otherProceedings})=>{
+
+        let caseName = 'Other Proceedings  ' + dateTime.slice(0, 10);
+        caseNumber = await createCase(casename, newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
+        expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+
+        await signInPage.visit();
+        await signInPage.login(
+            CTSCTeamLeadUser.email,
+            CTSCTeamLeadUser.password,
+        );
+
+        await signInPage.isSignedIn();
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await signInPage.gotoNextStep('Other proceedings');
+        await otherProceedings.otherProceedings();
+        await otherProceedings.tabNavigation('Legal basis');
+
+        //assert the details
+        await expect(otherProceedings.page.getByText('Ongoing')).toBeVisible();
+        await expect(otherProceedings.page.getByText('Previous')).toBeVisible();
+
+    });
+
+
+
 });

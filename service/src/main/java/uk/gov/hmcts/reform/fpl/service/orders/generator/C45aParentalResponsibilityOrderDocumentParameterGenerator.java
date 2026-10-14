@@ -61,7 +61,7 @@ public class C45aParentalResponsibilityOrderDocumentParameterGenerator implement
         RelationshipWithChild relationship = eventData.getManageOrdersRelationshipWithChild();
         String orderAct = ORDER_ACT.get(relationship);
 
-        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Child>> selectedChildren = childrenService.getSelectedChildrenFromMultiSelectList(caseData);
 
         return C45aParentalResponsibilityOrderDocmosisParameters.builder()
             .orderTitle(ORDER.getTitle())

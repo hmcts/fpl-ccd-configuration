@@ -18,8 +18,8 @@ export class SignInPage extends BasePage {
         super(page);
         this.page = page;
         this.mourl = urlConfig.manageOrgURL;
-        this.emailInputLocator = page.getByLabel("Email address");
-        this.passwordInputLocator = page.getByLabel("Password");
+        this.emailInputLocator =  page.getByRole('textbox', { name: 'Enter your email address' });
+        this.passwordInputLocator = page.getByRole('textbox', { name: 'Enter your password' });
         this.signinButtonLocator = page.getByRole("button", { name: "Sign in" });
         this.dropdownLocator = this.page.locator('h2[aria-label="Filters"].heading-h2',);
         this.applyLocator = page.getByRole("button", { name: "Apply" });
@@ -41,8 +41,9 @@ export class SignInPage extends BasePage {
 
     async login(email: string, password: string) {
         await this.emailInputLocator.fill(email);
+        await this.clickContinue();
         await this.passwordInputLocator.fill(password);
-        await this.signinButtonLocator.click();
+        await this.clickContinue();
         await this.page.waitForLoadState();
         await this.isSignedIn();
         if (await this.analyticCookie.isVisible()) {

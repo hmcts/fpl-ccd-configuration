@@ -73,6 +73,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.MessageJudgeService.SAME_DAY_URGENCY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -308,7 +309,7 @@ class SendNewMessageJudgeServiceTest {
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
                     .recipientDynamicList(buildRecipientList(
                         List.of(JudicialMessageRoleType.ALLOCATED_JUDGE.toString())))
-                    .isJudicialMessageUrgent(YesNo.NO)
+                    .isJudicialMessageUrgent(NO)
                     .build()),
                 entry("isSendingEmailsInCourt", YesNo.YES),
                 entry("documentTypesDynamicList",
@@ -328,7 +329,7 @@ class SendNewMessageJudgeServiceTest {
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
                     .recipientDynamicList(buildRecipientList(
                         List.of(JudicialMessageRoleType.LOCAL_COURT_ADMIN.toString())))
-                    .isJudicialMessageUrgent(YesNo.NO)
+                    .isJudicialMessageUrgent(NO)
                     .build()),
                 entry("isSendingEmailsInCourt", YesNo.YES),
                 entry("documentTypesDynamicList",
@@ -425,6 +426,7 @@ class SendNewMessageJudgeServiceTest {
                     .replyFrom("%s (%s)".formatted(
                         JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(), MESSAGE_SENDER))
                     .replyTo("%s (%s)".formatted(JudicialMessageRoleType.ALLOCATED_JUDGE.getLabel(), MESSAGE_RECIPIENT))
+                    .urgency(SAME_DAY_URGENCY)
                     .build())))
             .build());
 
@@ -810,12 +812,14 @@ class SendNewMessageJudgeServiceTest {
             .status(OPEN)
             .subject(MESSAGE_REQUESTED_BY)
             .latestMessage(MESSAGE_NOTE)
+            .urgency(NO.getValue())
             .judicialMessageReplies(List.of(element(updatedMessages.get(1).getValue()
                     .getJudicialMessageReplies().get(0).getId(),
                 JudicialMessageReply.builder()
                     .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
                     .updatedTime(updatedMessages.get(1).getValue().getUpdatedTime())
                     .message(MESSAGE_NOTE)
+                    .urgency(NO.getValue())
                     .replyFrom(expectedSenderLabel)
                     .replyTo(expectedRecipientLabel)
                     .build())))
@@ -902,6 +906,17 @@ class SendNewMessageJudgeServiceTest {
             .build());
         assertThat(sendNewMessageJudgeService.getMessageUrgency(eventData.getJudicialMessageMetaData()))
             .isEqualTo(SAME_DAY_URGENCY);
+    }
+
+    @Test
+    void shouldPopulateMessageUrgencyAsNo() {
+        MessageJudgeEventData eventData = (MessageJudgeEventData.builder()
+            .judicialMessageMetaData(JudicialMessageMetaData.builder()
+                .isJudicialMessageUrgent(null)
+                .build())
+            .build());
+        assertThat(sendNewMessageJudgeService.getMessageUrgency(eventData.getJudicialMessageMetaData()))
+            .isEqualTo(NO.getValue());
     }
 
     private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime, JudicialMessageStatus status) {

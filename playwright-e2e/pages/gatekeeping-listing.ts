@@ -55,7 +55,7 @@ export class GatekeepingListing extends HearingDetailsMixin()
     await this.page.waitForSelector('span:text("District Judge (MC) Craig")');
     await this.page.getByText('District Judge (MC) Craig').click();
     await this.clickContinue();
-    await this.completeHearingDetails();
+    await this.completeHearingDetails('Fact finding');
     await this.page.getByRole('radio', { name: 'Yes' }).check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
@@ -69,7 +69,7 @@ export class GatekeepingListing extends HearingDetailsMixin()
     await this.assertFeePaidJudgeTitle();
     await this.page.getByRole('radio', {name: 'Recorder'}).check();
     await this.clickContinue();
-    await this.completeHearingDetails();
+    await this.completeHearingDetails('Fact finding');
     await this.page.getByRole('radio', {name: 'Yes'}).check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();

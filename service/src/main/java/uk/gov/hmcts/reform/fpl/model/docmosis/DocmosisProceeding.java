@@ -8,7 +8,6 @@ import lombok.Data;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisProceeding {
-    private final String onGoingProceeding;
     private final String proceedingStatus;
     private final String caseNumber;
     private final String started;

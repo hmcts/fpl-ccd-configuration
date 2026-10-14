@@ -49,6 +49,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "refusedOrder",
+    "FieldType": "Document",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public",
+    "CategoryID": "refusedOrder"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
     "ListElementCode": "translationUploadDateTime",
     "FieldType": "DateTime",
     "ElementLabel": "Welsh translation upload time",
@@ -256,5 +265,15 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "hasOrderConcludedProceedings",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\"",
+    "Searchable": "N"
   }
 ]

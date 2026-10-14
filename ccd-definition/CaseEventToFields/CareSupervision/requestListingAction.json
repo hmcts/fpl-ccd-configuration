@@ -34,5 +34,16 @@
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "selectListingActions=\"DO_NOT_SHOW\"",
     "Publish": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "requestListingAction",
+    "CaseFieldID": "isUrgentListingRequest",
+    "DisplayContext": "MANDATORY",
+    "PageID": "ListingActions",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 4,
+    "ShowSummaryChangeOption": "Y"
   }
 ]

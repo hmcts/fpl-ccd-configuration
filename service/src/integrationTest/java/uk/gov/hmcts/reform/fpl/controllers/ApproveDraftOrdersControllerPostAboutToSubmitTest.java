@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -63,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -116,7 +117,8 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         assertThat(responseData.getReviewCMODecision()).isNull();
         assertThat(responseData.getOrdersToBeSent()).containsOnly(
             element(cmoElement.getId(),
-                cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ").build())
+                cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ")
+                    .refusedOrder(cmo.getOrder()).order(null).build())
         );
     }
 
@@ -137,10 +139,9 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
             .court(court)
             .state(State.CASE_MANAGEMENT)
             .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
-            .others(Others.builder().firstOther(
-                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
-                .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
-                    .address(Address.builder().postcode("SW2").build()).build())).build())
+            .othersV2(wrapElements(
+                Other.builder().firstName("Tim Jones").address(Address.builder().postcode("SE1").build()).build(),
+                Other.builder().firstName("Stephen Jones").address(Address.builder().postcode("SW2").build()).build()))
             .othersSelector(othersSelector)
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
@@ -170,13 +171,11 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
 
         assertThat(sealedCMO.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
         assertThat(unwrapElements(sealedCMO.getValue().getOthers()))
-            .contains(caseData.getOthers().getFirstOther(),
-                caseData.getOthers().getAdditionalOthers().get(0).getValue());
+            .containsExactlyElementsOf(unwrapElements(caseData.getOthersV2()));
 
         assertThat(orderToBeSent.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
         assertThat(unwrapElements(orderToBeSent.getValue().getOthers()))
-            .contains(caseData.getOthers().getFirstOther(),
-                caseData.getOthers().getAdditionalOthers().get(0).getValue());
+            .containsExactlyElementsOf(unwrapElements(caseData.getOthersV2()));
         assertTemporaryFieldsAreRemovedFromCaseData(response.getData());
     }
 
@@ -274,6 +273,7 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         Element<HearingOrder> expectedOrderToReturn = element(draftOrderId,
             draftOrder.toBuilder().status(APPROVED).order(sealedDocument)
                 .others(null).othersNotified("")
+                .hasOrderConcludedProceedings(YesNo.NO)
                 .lastUploadedOrder(SEND_TO_ALL_PARTIES.equals(reviewOutcome) ? order : convertedDocument).build());
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -319,11 +319,15 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
             .dateIssued(LocalDate.now())
             .status(APPROVED)
             .others(null)
+            .hasOrderConcludedProceedings(YesNo.NO)
             .othersNotified("")
             .build();
 
         HearingOrder expectedRejectedOrder = draftOrder.toBuilder()
-            .status(RETURNED).requestedChanges("missing data").build();
+            .status(RETURNED).requestedChanges("missing data")
+            .refusedOrder(draftOrder.getOrder()).order(null)
+            .documentAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
+            .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 

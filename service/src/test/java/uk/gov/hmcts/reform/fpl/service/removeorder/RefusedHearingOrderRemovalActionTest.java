@@ -98,6 +98,37 @@ class RefusedHearingOrderRemovalActionTest {
                 "orderTitleToBeRemoved",
                 "showRemoveCMOFieldsFlag",
                 "showReasonFieldFlag")
+            .containsExactly(orderToBeRemoved.getValue().getRefusedOrder(),
+                orderToBeRemoved.getValue().getTitle(),
+                StringUtils.EMPTY,
+                NO.getValue());
+    }
+
+    @Test
+    void shouldPopulateCaseFieldsFromRemovableLegacyReturnedOrder() {
+        DocumentReference order = testDocumentReference();
+
+        HearingOrder legacyReturnedOrder = returnedOrder(testDocumentReference());
+        legacyReturnedOrder = legacyReturnedOrder.toBuilder()
+            .order(legacyReturnedOrder.getRefusedOrder())
+            .refusedOrder(null)
+            .build();
+        Element<HearingOrder> orderToBeRemoved = element(ORDER_TO_REMOVE_ID, legacyReturnedOrder);
+        Element<HearingOrder> anotherOrder = element(returnedOrder(order));
+
+        CaseData caseData = CaseData.builder()
+            .refusedHearingOrders(newArrayList(orderToBeRemoved, anotherOrder))
+            .build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(new HashMap<>()).build());
+
+        underTest.populateCaseFields(caseData, caseDetailsMap, ORDER_TO_REMOVE_ID, orderToBeRemoved.getValue());
+
+        assertThat(caseDetailsMap)
+            .extracting("orderToBeRemoved",
+                "orderTitleToBeRemoved",
+                "showRemoveCMOFieldsFlag",
+                "showReasonFieldFlag")
             .containsExactly(orderToBeRemoved.getValue().getOrder(),
                 orderToBeRemoved.getValue().getTitle(),
                 StringUtils.EMPTY,
@@ -108,7 +139,7 @@ class RefusedHearingOrderRemovalActionTest {
         return HearingOrder.builder()
             .type(DRAFT_CMO)
             .status(RETURNED)
-            .order(order)
+            .refusedOrder(order)
             .dateSent(LocalDate.now().minusWeeks(1))
             .hearing("Draft Case management hearing sent on "
                 + formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(), "d MMMM yyyy"))

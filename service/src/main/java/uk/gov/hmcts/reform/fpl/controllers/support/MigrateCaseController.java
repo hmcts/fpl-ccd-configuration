@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Map;
@@ -26,13 +26,20 @@ import java.util.function.Consumer;
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
+    private final CaseAccessService caseAccessService;
+    private static final String FLEETWOOD_EPIMMS_ID = "401452";
+    private static final String BLACKPOOL_EPIMMS_ID = "214320";
+    private static final String BLACKPOOL_COURT_CODE = "131";
+    private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
+    private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3272", this::run3272,
-        "DFPL-3048", this::run3048,
-        "DFPL-3047", this::run3047,
-        "DFPL-3101", this::run3101
+        "DFPL-3213", this::run3213,
+        "DFPL-2423", this::run2423,
+        "DFPL-2423-rollback", this::run2423Rollback,
+        "DFPL-3213-v2", this::run3213v2,
+        "DFPL-3374", this::run3374
     );
 
     @PostMapping("/about-to-submit")
@@ -59,51 +66,67 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run3272(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3272";
-        final long expectedCaseId = 1778521486149688L;
-        final CaseData caseData = getCaseData(caseDetails);
+    private void run2423(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2423";
 
-        final Orders updatedOrder = caseData.getOrders().toBuilder()
-            .directionDetails(null)
-            .build();
-
-        Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-
-        caseDetails.getData().put("orders", updatedOrder);
+        migrateCaseService.migrateOtherProceedings(caseDetails, getCaseData(caseDetails), migrationId);
     }
 
-    private void run3048(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3048";
-        final Long expectedCaseId = 1769766848334996L;
-
-        Long caseId = caseDetails.getId();
-        final CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        caseDetails.getData().put("hearing",
-            caseData.getHearing().toBuilder().hearingUrgencyDetails("***").build());
+    private void run2423Rollback(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2423-rollback";
+        migrateCaseService.rollbackOtherProceedings(caseDetails, getCaseData(caseDetails), migrationId);
     }
 
-    private void run3047(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3047";
-        final Long expectedCaseId = 1757072393794849L;
-        final String orgId = "CVPRECR";
+    //run 3213 Migrate function to replace Fleetwood Location with BlackPool Location
+    private void run3213(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3213";
 
         Long caseId = caseDetails.getId();
+        log.info("Migration {id = {}, case reference = {}} processing", migrationId, caseId);
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        // Calling the service to replace Fleetwood location with Blackpool Location if exists
+        caseDetails.getData().putAll(migrateCaseService.updateCaseManagementLocation(
+            migrationId,
+            caseData,
+            FLEETWOOD_EPIMMS_ID,
+            BLACKPOOL_EPIMMS_ID,
+            BLACKPOOL_COURT_CODE,
+            BLACKPOOL_COURT_NAME,
+            BLACKBURN_LANCASTER_DFJ_COURT
+        ));
+    }
+
+    private void run3374(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3374";
+        final long expectedCaseId = 1784796259751728L;
+        final String outsourcingOrgId = "CPYYWBZ";
+        Long caseId = caseDetails.getId();
+
         migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+
         caseDetails.getData().putAll(migrateCaseService
-            .updateRespondentPolicy(getCaseData(caseDetails), orgId, null, 0));
+            .updateOutsourcingPolicy(getCaseData(caseDetails), outsourcingOrgId, null));
     }
 
-    private void run3101(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3101";
-        final long expectedCaseId = 1772096689254060L;
+    // run 3213 Migrate function to replace Fleetwood Location with Preston Location
+    private void run3213v2(CaseDetails caseDetails) {
+        String migrationId = "DFPL-3213-v2";
+        String expectedBaseLocation = "102476";
+        String prestonCourtCode = "303";
 
         Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
+        log.info("Migration {id = {}, case_reference = {}} processing", migrationId, caseId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeFirstOther(migrationId, getCaseData(caseDetails)));
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().putAll(migrateCaseService.updateOrdersCourt(
+            migrationId,
+            caseData,
+            expectedBaseLocation,
+            prestonCourtCode
+        ));
     }
 }
+

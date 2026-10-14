@@ -29,7 +29,7 @@ export class ChangeOtherToRespondent extends BasePage {
 
     async ChangeOtherToRespondent() {
         await expect(this.changeOtherToRespondent).toBeVisible;
-        await this.giveNotice.selectOption('Doel Sany');
+        await this.giveNotice.selectOption('James Trace');
         await this.continueButton.click();
         await this.firstName.fill('Thierry');
         await this.lastName.fill('John');
