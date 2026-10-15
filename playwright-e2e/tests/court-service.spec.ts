@@ -87,7 +87,7 @@ test.describe('Court Service', () => {
 
             await courtServices.tabNavigation('Legal basis');
             await expect(courtServices.page.locator('#case-viewer-field-read--hearingPreferences').getByText('Court services', {exact: true})).toBeVisible();
-            await expect(courtServices.page.getByRole('cell', {name: 'Choose which court services you need to be considered before first hearing'})).toBeVisible();
+            await expect(courtServices.page.getByRole('rowheader', {name: 'Choose which court services you need to be considered before first hearing'})).toBeVisible();
             await expect(courtServices.page.getByRole('cell', {name: 'Interpreter', exact: true})).toBeVisible();
             await expect(courtServices.page.getByRole('cell', {name: 'Intermediary', exact: true})).toBeVisible();
             await expect(courtServices.page.getByRole('cell', {
