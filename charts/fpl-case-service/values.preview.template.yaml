@@ -233,11 +233,15 @@ ccd:
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   elasticsearch:
+    securityContext:
+      allowPrivilegeEscalation: false
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
     replicas: 1
 
   logstash:
+    securityContext:
+      allowPrivilegeEscalation: false
     image: hmctsprod.azurecr.io/ccd/logstash
     imageTag: "latest"
     logstashJavaOpts: -Xmx1g -Xms512M
