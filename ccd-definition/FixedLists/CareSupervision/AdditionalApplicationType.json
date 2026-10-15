@@ -2,15 +2,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AdditionalApplicationType",
-    "ListElementCode": "OTHER_ORDER",
-    "ListElement": "Other specific order - including C1 and C100 orders, and supplements",
+    "ListElementCode": "C2_ORDER",
+    "ListElement": "C2 Application",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AdditionalApplicationType",
-    "ListElementCode": "C2_ORDER",
-    "ListElement": "C2 - to add or remove someone on a case, or for a specific request to the judge",
+    "ListElementCode": "OTHER_ORDER",
+    "ListElement": "Other specific application - including C1, C100 and supplements",
     "DisplayOrder": 2
   }
 ]

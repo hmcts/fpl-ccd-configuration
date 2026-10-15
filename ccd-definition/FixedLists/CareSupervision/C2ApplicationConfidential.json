@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2ApplicationConfidential",
+    "ListElementCode": "Yes",
+    "ListElement": "Yes - only the judge or HMCTS will be able to view this application",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2ApplicationConfidential",
+    "ListElementCode": "No",
+    "ListElement": "No - the other parties will be notified about your application",
+    "DisplayOrder": 2
+  }
+]
