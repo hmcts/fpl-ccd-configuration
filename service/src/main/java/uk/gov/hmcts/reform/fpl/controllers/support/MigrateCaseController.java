@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -39,7 +40,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2423", this::run2423,
         "DFPL-2423-rollback", this::run2423Rollback,
         "DFPL-3213-v2", this::run3213v2,
-        "DFPL-3374", this::run3374
+        "DFPL-3017", this::run3017
     );
 
     @PostMapping("/about-to-submit")
@@ -127,6 +128,19 @@ public class MigrateCaseController extends CallbackController {
             expectedBaseLocation,
             prestonCourtCode
         ));
+    }
+
+    public void run3017(CaseDetails caseDetails) {
+        final CaseData caseData = getCaseData(caseDetails);
+        String orgId = "KB2TFNA";
+        String caseRole = CaseRole.LAMANAGING.formattedName();
+        String orgName = "Milton Keynes Council";
+        String newOrgName = "Milton Keynes City Council";
+
+        caseDetails.getData().putAll(migrateCaseService.updateLocalAuthorityPolicy(caseData, orgId,
+                                                                                   caseRole, newOrgName));
+        caseDetails.getData().putAll(migrateCaseService.updateLocalAuthority(caseData, orgName,  newOrgName));
+        caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthorityName(newOrgName));
     }
 }
 
