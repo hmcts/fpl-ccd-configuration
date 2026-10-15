@@ -40,7 +40,6 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-2423", this::run2423,
         "DFPL-2423-rollback", this::run2423Rollback,
         "DFPL-3213-v2", this::run3213v2,
-        "DFPL-3361", this::run3361,
         "DFPL-3017", this::run3017
     );
 
@@ -129,25 +128,6 @@ public class MigrateCaseController extends CallbackController {
             expectedBaseLocation,
             prestonCourtCode
         ));
-    }
-
-    private void run3361(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3361";
-        final long expectedCaseId = 1761903519622353L;
-        final String orgId = "CPYYWBZ";
-
-        Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, CaseRole.EPSMANAGING.formattedName()));
-
-    }
-
-    public void run3363(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3363";
-        final CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.updateChildStatusWithFinalOrderIssued(migrationId, caseData));
     }
 
     public void run3017(CaseDetails caseDetails) {
