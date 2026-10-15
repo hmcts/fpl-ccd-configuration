@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data
+@Jacksonized
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SentDocuments {

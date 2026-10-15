@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.listing.ReviewListingActionController;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ListingActionType;
@@ -29,7 +29,7 @@ class ReviewListingActionAboutToSubmitControllerTest extends AbstractCallbackTes
 
     public static final LocalDateTime NOW = LocalDateTime.of(2020, 1, 1, 0, 0);
 
-    @MockBean
+    @MockitoBean
     private Time time;
 
     ReviewListingActionAboutToSubmitControllerTest() {

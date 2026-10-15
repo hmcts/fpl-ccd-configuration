@@ -6,8 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -40,7 +40,7 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
         .id(CASE_ID).children1(CHILDREN).caseName(CASE_NAME).build();
     public static final String CHILD_LAST_NAME = "Jones";
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
 
     @Autowired

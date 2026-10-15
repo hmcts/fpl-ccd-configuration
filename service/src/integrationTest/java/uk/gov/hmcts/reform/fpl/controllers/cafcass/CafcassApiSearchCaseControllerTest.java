@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers.cafcass;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 public class CafcassApiSearchCaseControllerTest extends CafcassApiControllerBaseTest {
-    @MockBean
+    @MockitoBean
     private CafcassApiSearchCaseService cafcassApiSearchCaseService;
 
     @Test

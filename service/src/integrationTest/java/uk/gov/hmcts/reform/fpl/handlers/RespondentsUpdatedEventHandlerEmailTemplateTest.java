@@ -5,9 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -48,9 +47,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     EmailNotificationHelper.class,
     FixedTimeConfiguration.class
 })
-@MockBeans({
-    @MockBean(CafcassNotificationService.class),
-    @MockBean(LocalAuthorityService.class)
+@MockitoBean(types = {
+    CafcassNotificationService.class,
+    LocalAuthorityService.class
 })
 class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 

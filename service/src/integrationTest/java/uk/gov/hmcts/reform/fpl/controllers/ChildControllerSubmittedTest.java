@@ -8,9 +8,9 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.AdditionalAnswers;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -28,8 +28,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
-import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -84,6 +84,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         .firstName(MAIN_SOLICITOR_FIRST_NAME)
         .lastName(MAIN_SOLICITOR_LAST_NAME)
         .email(MAIN_SOLICITOR_EMAIL)
+        .organisation(null)
         .unregisteredOrganisation(UnregisteredOrganisation.builder().name(ORGANISATION_NAME).build())
         .build();
     private static final String CHILD_NAME_1 = "John";
@@ -91,19 +92,20 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 1234567890123456L;
     private static final String CASE_NAME = "case name";
 
-    @SpyBean
-    private EventService eventService;
-    @SpyBean
+    @MockitoSpyBean
     private NoticeOfChangeService nocService;
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
-    @MockBean
+    @MockitoBean
     private OrganisationApi orgApi;
-    @MockBean
+    @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private SystemUserService systemUserService;
 
     ChildControllerSubmittedTest() {
         super("enter-children");
@@ -126,6 +128,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         when(concurrencyHelper.startEvent(any(), eq("updateRepresentation")))
             .thenAnswer(AdditionalAnswers.returnsElementsOf(startEventResponses));
 
+        when(systemUserService.getSysUserToken()).thenReturn(USER_AUTH_TOKEN);
     }
 
     @ParameterizedTest
@@ -137,7 +140,8 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verifyNoInteractions(nocService, eventService);
+        verifyNoInteractions(nocService);
+        verifyNoInteractions(concurrencyHelper, caseAssignmentApi, notificationClient);
     }
 
     @Test

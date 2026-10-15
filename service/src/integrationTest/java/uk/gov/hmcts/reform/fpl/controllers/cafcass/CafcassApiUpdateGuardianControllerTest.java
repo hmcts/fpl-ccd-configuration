@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.UpdateGuardianEvent;
 import uk.gov.hmcts.reform.fpl.handlers.UpdateGuardiansEventHandler;
@@ -46,13 +46,13 @@ public class CafcassApiUpdateGuardianControllerTest extends CafcassApiController
     private static final CaseDetails CASE_DETAILS_UPDATED = mock(CaseDetails.class);
     private static final CaseData CASE_DATA_UPDATED =
         CaseData.builder().guardians(wrapElements(VALID_UPDATE_LIST)).build();
-    @MockBean
+    @MockitoBean
     private CaseConverter caseConverter;
-    @MockBean
+    @MockitoBean
     private CoreCaseDataService coreCaseDataService;
-    @MockBean
+    @MockitoBean
     private UpdateGuardiansEventHandler updateGuardiansEventHandler;
-    @MockBean
+    @MockitoBean
     private CafcassApiGuardianService cafcassApiGuardianService;
     @Captor
     private ArgumentCaptor<UpdateGuardianEvent> updateGuardianEventCaptor;

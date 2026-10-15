@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
@@ -28,10 +28,10 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
         super("manage-hearings");
     }
 
-    @MockBean
+    @MockitoBean
     private JudicialUsersConfiguration judicialUsersConfiguration;
 
-    @MockBean
+    @MockitoBean
     private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     @Test

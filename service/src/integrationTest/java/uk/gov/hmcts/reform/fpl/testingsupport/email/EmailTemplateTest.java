@@ -5,11 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscTeamLeadLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -59,44 +59,41 @@ public class EmailTemplateTest {
     protected static final String FOOTER_CONTACT_DETAILS = "Do not reply to this email. "
         + "If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk";
 
-    @SpyBean
+    @MockitoSpyBean
     private NotificationClient client;
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @MockitoBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    @MockBean
+    @MockitoBean
     private CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
 
-    @MockBean
+    @MockitoBean
     protected CourtService courtService;
 
-    @MockBean
+    @MockitoBean
     private LocalAuthorityRecipientsService localAuthorityRecipients;
 
-    @MockBean
+    @MockitoBean
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
-    @MockBean
+    @MockitoBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
-    @MockBean
+    @MockitoBean
     private RepresentativesInbox inbox;
 
-    @MockBean
+    @MockitoBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     protected FeatureToggleService featureToggleService;
-
-    @SpyBean
-    private DocumentService documentService;
 
     private final ResultsCaptor<SendEmailResponse> resultsCaptor = new ResultsCaptor<>();
 
@@ -145,6 +142,15 @@ public class EmailTemplateTest {
         @Bean
         public NotificationClient notificationClient(@Value("${integration-test.notify-service.key}") String key) {
             return new NotificationClient(key);
+        }
+
+        @Bean
+        public DocumentService documentService(
+            DocmosisDocumentGeneratorService docmosisGeneratorService,
+            UploadDocumentService uploadDocumentService,
+            FeatureToggleService featureToggleService
+        ) {
+            return new DocumentService(docmosisGeneratorService, uploadDocumentService, featureToggleService);
         }
     }
 

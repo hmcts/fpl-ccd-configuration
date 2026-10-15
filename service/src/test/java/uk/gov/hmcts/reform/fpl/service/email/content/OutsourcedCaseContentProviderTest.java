@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
@@ -38,7 +38,7 @@ class OutsourcedCaseContentProviderTest extends AbstractEmailContentProviderTest
     @Autowired
     private OutsourcedCaseContentProvider underTest;
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
 
     @BeforeEach

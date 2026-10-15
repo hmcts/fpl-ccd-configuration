@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -41,13 +41,13 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private C2UploadedEventHandler underTest;
 
-    @MockBean
+    @MockitoBean
     private IdamClient idamClient;
 
-    @MockBean
+    @MockitoBean
     private RequestData requestData;
 
-    @MockBean
+    @MockitoBean
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @Test

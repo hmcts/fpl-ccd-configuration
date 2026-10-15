@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
@@ -51,11 +51,11 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CHILD_LAST_NAME = "Jones";
 
-    @MockBean
+    @MockitoBean
     private Time time;
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
-    @MockBean
+    @MockitoBean
     private CalendarService calendarService;
 
     @Autowired

@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons;
 import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -71,7 +71,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
     @Autowired
     private ReturnedCaseContentProvider returnedCaseContentProvider;
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
 
     @BeforeEach

@@ -6,8 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -70,22 +70,22 @@ class SendLetterServiceTest {
     @Autowired
     private Time time;
 
-    @MockBean
+    @MockitoBean
     private SendLetterApi sendLetterApi;
 
-    @MockBean
+    @MockitoBean
     private DocumentConversionService documentConversionService;
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
-    @MockBean
+    @MockitoBean
     private AuthTokenGenerator authTokenGenerator;
 
     @Captor

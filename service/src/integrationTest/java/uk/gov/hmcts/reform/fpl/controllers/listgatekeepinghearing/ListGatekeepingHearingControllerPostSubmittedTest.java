@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers.listgatekeepinghearing;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -57,10 +57,10 @@ class ListGatekeepingHearingControllerPostSubmittedTest extends AbstractCallback
         super("list-gatekeeping-hearing/post-submit-callback");
     }
 
-    @MockBean
+    @MockitoBean
     private JudicialUsersConfiguration judicialUsersConfiguration;
 
-    @MockBean
+    @MockitoBean
     private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     @Test

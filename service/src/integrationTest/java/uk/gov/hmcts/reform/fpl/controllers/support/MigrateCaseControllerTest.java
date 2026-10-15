@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -34,7 +34,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
-    @MockBean
+    @MockitoBean
     private OrganisationService organisationService;
 
     @Test

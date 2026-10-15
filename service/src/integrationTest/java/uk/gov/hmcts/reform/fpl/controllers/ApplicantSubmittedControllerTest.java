@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -30,31 +30,31 @@ class ApplicantSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12323L;
 
-    @MockBean
+    @MockitoBean
     private PbaNumberService pbaNumberService;
 
-    @MockBean
+    @MockitoBean
     private OrganisationService organisationService;
 
-    @MockBean
+    @MockitoBean
     private ValidateEmailService validateEmailService;
 
-    @MockBean
+    @MockitoBean
     private OrganisationApi organisationApi;
 
-    @MockBean
+    @MockitoBean
     private CoreCaseDataApi coreCaseDataApi;
 
-    @MockBean
+    @MockitoBean
     private RequestData requestData;
 
-    @MockBean
+    @MockitoBean
     private SystemUserService systemUserService;
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
 
-    @MockBean
+    @MockitoBean
     private CoreCaseDataService coreCaseDataService;
 
     ApplicantSubmittedControllerTest() {

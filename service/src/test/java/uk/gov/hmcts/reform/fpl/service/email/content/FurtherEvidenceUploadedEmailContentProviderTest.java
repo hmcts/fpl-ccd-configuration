@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -33,7 +33,7 @@ class FurtherEvidenceUploadedEmailContentProviderTest extends AbstractEmailConte
     private static final List<String> DOCUMENT_NAMES = List.of("DOCUMENT");
 
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
     @Autowired
     private FurtherEvidenceUploadedEmailContentProvider underTest;

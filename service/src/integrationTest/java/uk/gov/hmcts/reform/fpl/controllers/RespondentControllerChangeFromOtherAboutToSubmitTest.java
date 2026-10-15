@@ -4,9 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
@@ -72,37 +72,37 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomU
     RepresentativeService.class})
 class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private RequestData requestData;
 
-    @MockBean
+    @MockitoBean
     private OthersListGenerator othersListGenerator;
 
-    @MockBean
+    @MockitoBean
     private CaseService caseService;
 
-    @MockBean
+    @MockitoBean
     private RepresentativeCaseRoleService representativeCaseRoleService;
 
-    @MockBean
+    @MockitoBean
     private ValidateEmailService validateEmailService;
 
-    @MockBean
+    @MockitoBean
     private ChangeOfRepresentationService changeOfRepresentationService;
 
-    @MockBean
+    @MockitoBean
     private NoticeOfChangeFieldPopulator noticeOfChangeFieldPopulator;
 
-    @MockBean
+    @MockitoBean
     private RespondentValidator respondentValidator;
 
-    @MockBean
+    @MockitoBean
     private NoticeOfChangeService noticeOfChangeService;
 
-    @MockBean
+    @MockitoBean
     private OrganisationService organisationService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     private static final int SELECTED_OTHER = 0;

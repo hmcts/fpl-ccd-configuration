@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
@@ -91,16 +91,16 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     private static final String CTSC_TEAM_LEAD_EMAIL = "teamlead@test.com";
     public static final String CONFIDENTIAL_INFORMATION_WAS_DISCLOSED = "Confidential information was disclosed.";
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper helper;
 
-    @MockBean
+    @MockitoBean
     private CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
 
-    @MockBean
+    @MockitoBean
     private Time time;
 
     RemovalToolControllerSubmittedEventTest() {
