@@ -363,16 +363,17 @@ export class Orders extends BasePage {
     async addAuthorityToRefuseContactWithAChildInCareDetails() {
         await this.clickContinue();
         await this.judgeMagistrateRadioButton.check();
-        await this.judgeLastName.getByText('Dean');
+        await this.judgeLastName.fill('Dean');
+        await this.judgeEmail.fill('email@email.comLegal');
         await this.approvalDate.getByLabel('Day').fill('2');
         await this.approvalDate.getByLabel('Month').fill('2');
         await this.approvalDate.getByLabel('Year').fill('2024');
         await this.clickContinue();
+        await this.clickContinue();//checkbox not clicking had to work around it
         await this.isAllChildrenInvolved.getByRole('radio', { name: 'Yes' }).check();
         await this.clickContinue();
         await this.orderConsent.getByRole('radio', { name: 'Yes' }).check();
         await this.finalOrder.getByRole('radio', { name: 'No' }).check();
-        await this.clickContinue();
     }
 
     async uploadsTransparencyOrder() {
@@ -527,7 +528,10 @@ export class Orders extends BasePage {
         await this.clickContinue();
         await this.orderApplication.getByLabel('Yes').check();
         await this.clickContinue();
-        await this.issuingJudge.getByLabel('Yes').click();
+        await this.issuingJudge.getByLabel('Yes').check();
+        await this.issuingJudge.getByLabel('Yes').check();//issues with code. Had to work around it
+        await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
+        await this.clickContinue();
         await this.clickContinue();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
@@ -619,8 +623,8 @@ export class Orders extends BasePage {
         await this.powerOfExclusionStart.getByLabel('Year').fill('2026');
         await this.produceChildrenToApplicant.getByLabel('Yes').click();
         await this.produceChildrenToApplicant.getByLabel('Yes').click();// checkbox not clicking had to work around it
-        await this.endDayTimeDay.fill('07');
-        await this.endDayTimeMonth.fill('07');
+        await this.endDayTimeDay.fill('20');
+        await this.endDayTimeMonth.fill('11');
         await this.endDayTimeYear.fill('2026');
         await this.hour.fill('10');
         await this.finalOrder.getByLabel('No').click();

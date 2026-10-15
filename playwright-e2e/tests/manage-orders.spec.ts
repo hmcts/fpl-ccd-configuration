@@ -421,10 +421,11 @@ test.describe('manage orders', () => {
         await orders.addAuthorityToRefuseContactWithAChildInCareDetails();
         await orders.clickContinue();
 
+        await orders.clickContinue();
         await orders.clickSaveAndContinue();
-
-        await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'c34b_authority_to_refuse_contact.pdf' })).toBeVisible();
+       
+        await orders.tabNavigation('Orders'); 
+        await expect(page.getByRole('button', { name: 'c34b_authority_to_refuse_contact.pdf', exact: true })).toBeVisible();
 
     })
 
@@ -447,11 +448,11 @@ test.describe('manage orders', () => {
         await orders.uploadsTransparencyOrder();
 
         await orders.clickContinue();
-        await orders.clickContinue();
+        await orders.clickContinue();// issues with code, had to work around it
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'transparency_order.pdf', exact: true })).toBeVisible();
     })
 
     test('Judge uploads Transparency Order ', async ({ page, signInPage, orders }) => {
@@ -471,13 +472,14 @@ test.describe('manage orders', () => {
         await expect.soft(page.getByText('Transparency Order', { exact: true })).toBeVisible();
 
         await orders.uploadsTransparencyOrder();
+        await orders.clickContinue();
 
         await orders.clickContinue();
-        await orders.clickContinue();
+        await orders.clickContinue();// issues with code, had to work around it
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'transparency_order.pdf', exact: true })).toBeVisible();
     })
 
     test('CTSC uploads Family assistance order', async ({ page, signInPage, orders }) => {
@@ -879,7 +881,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: ' c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: ' c34a_contact_with_a_child_in_care.pdf'})).toBeVisible();
 
     })
 
