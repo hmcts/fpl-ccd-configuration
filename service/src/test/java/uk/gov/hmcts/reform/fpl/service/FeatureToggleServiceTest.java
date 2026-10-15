@@ -279,6 +279,19 @@ class FeatureToggleServiceTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForShareCaseToAllLaUserFlag(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isShareCaseToAllLaUserDisabled())
+            .isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("disable-sharing-case-to-all-la-user"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private void givenToggle(boolean state) {
         when(ldClient.boolVariation(anyString(), any(), anyBoolean())).thenReturn(state);
     }
