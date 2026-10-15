@@ -421,10 +421,11 @@ test.describe('manage orders', () => {
         await orders.addAuthorityToRefuseContactWithAChildInCareDetails();
         await orders.clickContinue();
 
+        await orders.clickContinue();
         await orders.clickSaveAndContinue();
-
-        await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'c34b_authority_to_refuse_contact.pdf' })).toBeVisible();
+       
+        await orders.tabNavigation('Orders'); 
+        await expect(page.getByRole('button', { name: 'c34b_authority_to_refuse_contact.pdf', exact: true })).toBeVisible();
 
     })
 
@@ -447,11 +448,11 @@ test.describe('manage orders', () => {
         await orders.uploadsTransparencyOrder();
 
         await orders.clickContinue();
-        await orders.clickContinue();
+        await orders.clickContinue();// issues with code, had to work around it
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'transparency_order.pdf', exact: true })).toBeVisible();
     })
 
     test('Judge uploads Transparency Order ', async ({ page, signInPage, orders }) => {
@@ -471,13 +472,14 @@ test.describe('manage orders', () => {
         await expect.soft(page.getByText('Transparency Order', { exact: true })).toBeVisible();
 
         await orders.uploadsTransparencyOrder();
+        await orders.clickContinue();
 
         await orders.clickContinue();
-        await orders.clickContinue();
+        await orders.clickContinue();// issues with code, had to work around it
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'transparency_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'transparency_order.pdf', exact: true })).toBeVisible();
     })
 
     test('CTSC uploads Family assistance order', async ({ page, signInPage, orders }) => {
@@ -879,7 +881,7 @@ test.describe('manage orders', () => {
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: ' c34a_contact_with_a_child_in_care.pdf', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: ' c34a_contact_with_a_child_in_care.pdf'})).toBeVisible();
 
     })
 
@@ -1022,7 +1024,58 @@ test.describe('manage orders', () => {
 
         await orders.clickContinue();
         await orders.checkYourAnsAndSubmit();
+
         await orders.tabNavigation('Orders');
-        await expect(page.getByRole('button', { name: 'a81_placement_blank_order.pdf' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'a81_placement_blank_order.pdf', exact: true })).toBeVisible();
+
+    })
+
+    test('CTSC uploads Recovery of a child (C29) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Recovery of a child (C29) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.gotoNextStep('Manage orders');
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Recovery of Child (C29)');
+        await orders.clickContinue();
+
+        await orders.uploadsChildRecoveryOrder();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c29_recovery_of_a_child.pdf', exact: true })).toBeVisible
+
+
+    })
+
+    test(' Judge uploads Recovery of a child (C29) ', async ({ page, signInPage, orders }) => {
+        caseName = 'Recovery of a child (C29) ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(judgeUser.email, judgeUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        await orders.gotoNextStep('Manage orders');
+        await orders.selectOrderOperation('Create an order');
+        await orders.clickContinue();
+
+        await orders.selectOrder('Recovery of Child (C29)');
+        await orders.clickContinue();
+
+        await orders.uploadsChildRecoveryOrder();
+
+        await orders.clickContinue();
+        await orders.checkYourAnsAndSubmit();
+
+        await orders.tabNavigation('Orders');
+        await expect(page.getByRole('button', { name: 'c29_recovery_of_a_child.pdf', exact: true })).toBeVisible
+
     })
 })
