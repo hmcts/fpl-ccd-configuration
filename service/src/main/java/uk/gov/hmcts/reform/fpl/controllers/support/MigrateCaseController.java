@@ -74,13 +74,13 @@ public class MigrateCaseController extends CallbackController {
 
     public void run3390(CaseDetails caseDetails) {
         final CaseData caseData = getCaseData(caseDetails);
-        final String ORG_ID = "CS35UMJ";
-        final String MIGRATION_ID = "DFPL-3390";
+        final String orgId = "CS35UMJ";
+        final String migrationId = "DFPL-3390";
         final long expectedCaseId = 1786619265255294L;
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, MIGRATION_ID);
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(caseData, ORG_ID, null));
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(caseData, orgId, null));
     }
 }
 
