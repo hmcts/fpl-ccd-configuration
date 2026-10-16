@@ -1,0 +1,469 @@
+
+{
+  "state": "SUBMITTED",
+  "caseData": {
+
+  "court": {
+    "code": "117",
+    "name": "Family Court sitting at Barnet",
+    "email": null,
+    "region": "London",
+    "epimmsId": "229786",
+    "regionId": "1",
+    "dateTransferred": null
+  },
+  "orders": {
+    "court": "117",
+    "address": {
+      "County": null,
+      "Country": null,
+      "PostCode": null,
+      "PostTown": null,
+      "AddressLine1": null,
+      "AddressLine2": null,
+      "AddressLine3": null
+    },
+    "epoType": null,
+    "excluded": null,
+    "orderType": [
+      "CARE_ORDER"
+    ],
+    "directions": "No",
+    "otherOrder": null,
+    "directionDetails": null,
+    "particularsOfChildren": [],
+    "emergencyProtectionOrders": [],
+    "particularsOfChildrenDetails": null,
+    "emergencyProtectionOrderDetails": null,
+    "emergencyProtectionOrderDirections": [],
+    "childAssessmentOrderContactDirections": null,
+    "childRecoveryOrderDirectionsAppliedFor": null,
+    "childAssessmentOrderAssessmentDirections": null,
+    "emergencyProtectionOrderDirectionDetails": null,
+    "educationSupervisionOrderDirectionsAppliedFor": null,
+    "educationSupervisionOrderPriorConsultationType": [],
+    "educationSupervisionOrderPriorConsultationOtherLA": null
+  },
+  "dfjArea": "WEST_LONDON",
+  "grounds": {
+    "thresholdReason": [
+      "beyondControl"
+    ],
+    "thresholdDetails": "Test",
+    "hasThresholdDocument": "NO"
+  },
+    "appSolicitorPolicy": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[APPSOLICITOR]"
+    },
+  "hearing": {
+    "type": null,
+    "reason": null,
+    "timeFrame": null,
+    "reason2Days": null,
+    "reason7Days": null,
+    "reason12Days": null,
+    "reducedNotice": null,
+    "withoutNotice": null,
+    "type_GiveReason": null,
+    "respondentsAware": "Yes",
+    "hearingUrgencyType": "STANDARD",
+    "reducedNoticeReason": null,
+    "withoutNoticeReason": null,
+    "hearingUrgencyDetails": null,
+    "respondentsAwareReason": null
+  },
+  "caseName": "Smoke Test 2025-06-27T13:54:37.426Z",
+  "children1": [
+    {
+      "id": "abedd7d7-5af9-41f9-bf66-2b02a0d0c785",
+      "value": {
+        "party": {
+          "gender": "Girl",
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "BN26 6AL",
+            "PostTown": "Polegate",
+            "AddressLine1": "Hart Reade",
+            "AddressLine2": "55 High Street",
+            "AddressLine3": ""
+          },
+          "partyId": "05742f12-4849-417b-8f79-631e5aab25d3",
+          "adoption": "No",
+          "keyDates": "these are the key dates",
+          "lastName": "Brown",
+          "firstName": "Susan",
+          "dateOfBirth": "2019-01-10",
+          "fathersName": "Charles Brown",
+          "mothersName": "Claire Brown",
+          "detailsHidden": "No",
+          "additionalNeeds": "No",
+          "livingSituation": "Living with respondents",
+          "litigationIssues": "NO",
+          "socialWorkerName": "Robert Taylor",
+          "addressChangeDate": "2022-02-01",
+          "careAndContactPlan": "this is the brief summary of care and contact plan",
+          "fathersResponsibility": "Yes",
+          "socialWorkerTelephoneNumber": {
+            "telephoneNumber": "0123456789",
+            "contactDirection": "Jane Smith"
+          }
+        },
+        "legalCounsellors": []
+      }
+    }
+  ],
+  "sendToCtsc": "Yes",
+  "amountToPay": "251500",
+  "carePlanList": [],
+  "childPolicy0": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+  },
+  "childPolicy1": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORB]"
+  },
+  "childPolicy2": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORC]"
+  },
+  "childPolicy3": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORD]"
+  },
+  "childPolicy4": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORE]"
+  },
+  "childPolicy5": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORF]"
+  },
+  "childPolicy6": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORG]"
+  },
+  "childPolicy7": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORH]"
+  },
+  "childPolicy8": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORI]"
+  },
+  "childPolicy9": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
+  },
+  "respondents1": [
+    {
+      "id": "f5321201-ca1d-4f84-8079-5a5c4ab71ba5",
+      "value": {
+        "party": {
+          "gender": "Male",
+          "address": {},
+          "partyId": "93a07879-adad-4562-9991-9198b9b368c9",
+          "lastName": "Jones",
+          "firstName": "Tom",
+          "addressKnow": "No",
+          "dateOfBirth": "1980-03-31",
+          "hideAddress": "No",
+          "hideTelephone": "No",
+          "litigationIssues": "YES",
+          "relationshipToChild": "uncle",
+          "addressNotKnowReason": "Whereabouts unknown",
+          "litigationIssuesDetails": "test"
+        },
+        "representedBy": [],
+        "isLocalAuthority": "NO",
+        "legalCounsellors": [],
+        "legalRepresentation": "No"
+      }
+    },
+    {
+      "id": "4e294ff1-3169-40f6-8350-11662767af24",
+      "value": {
+        "party": {
+          "gender": "Male",
+          "address": {},
+          "lastName": "Jordan",
+          "firstName": "Thierry",
+          "addressKnow": "No",
+          "dateOfBirth": "1980-03-31",
+          "hideAddress": "No",
+          "hideTelephone": "No",
+          "litigationIssues": "NO",
+          "relationshipToChild": "uncle",
+          "addressNotKnowReason": "No fixed abode"
+        },
+        "solicitor": {
+          "email": "email@eamil.com",
+          "lastName": "samy",
+          "firstName": "respondent",
+          "organisation": {
+            "OrganisationID": "D25VR7V",
+            "OrganisationName": "Private solicitors"
+          },
+          "telephoneNumber": {
+            "telephoneNumber": "956809760"
+          },
+          "regionalOfficeAddress": {},
+          "colleaguesToBeNotified": [],
+          "unregisteredOrganisation": {}
+        },
+        "representedBy": [],
+        "isLocalAuthority": "NO",
+        "legalCounsellors": [],
+        "legalRepresentation": "Yes"
+      }
+    }
+  ],
+  "c1Application": "No",
+  "childPolicy10": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORK]"
+  },
+  "childPolicy11": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORL]"
+  },
+  "childPolicy12": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORM]"
+  },
+  "childPolicy13": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORN]"
+  },
+  "childPolicy14": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORO]"
+  },
+  "dateSubmitted":"TO BE FILLED WITH VALID DATA",
+  "submittedForm": {
+    "document_url": "${TEST_DOCUMENT_URL}",
+    "upload_timestamp": "2025-06-27T14:43:08.625802680",
+    "document_filename": "Smoke_Test_2025-06-27T135437.426Z.pdf",
+    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+  },
+  "thresholdList": [],
+  "carePlanListLA": [],
+  "deadline26week": "2025-12-26",
+  "otherOrderType": "NO",
+  "hasRespondentLA": "NO",
+  "thresholdListLA": [],
+  "localAuthorities": [
+    {
+      "id": "8cd9eee0-333e-493f-a94b-a1d6422b0931",
+      "value": {
+        "id": "W9V61CP",
+        "name": "Swansea City Council",
+        "email": "FamilyPublicLaw+sa@gmail.com",
+        "phone": null,
+        "address": {
+          "County": "United Kingdom",
+          "Country": "United Kingdom",
+          "PostCode": "CR0 2GE",
+          "PostTown": "Swansea",
+          "AddressLine1": "Flat 1, Swansea Apartments",
+          "AddressLine2": "Swansea Central Square 11",
+          "AddressLine3": "40 Fleet street"
+        },
+        "pbaNumber": "PBA0082848",
+        "clientCode": null,
+        "colleagues": [
+          {
+            "id": "5d88647e-ea4f-4ea7-80b4-17ef686ce8ea",
+            "value": {
+              "email": "Me2@mail.com",
+              "phone": "0123456789",
+              "lastName": "John",
+              "firstName": "Peters",
+              "mainContact": "Yes",
+              "alternativePhone": "123456780",
+              "notificationRecipient": "Yes"
+            }
+          },
+          {
+            "id": "df53e079-76cb-43b0-aa93-a54d190fad10",
+            "value": {
+              "role": "OTHER",
+              "email": "zee@mail.com",
+              "title": "QA",
+              "lastName": "Two",
+              "firstName": "Me",
+              "mainContact": "No",
+              "notificationRecipient": "Yes"
+            }
+          }
+        ],
+        "designated": "Yes",
+        "legalTeamManager": "Tom Jones",
+        "customerReference": "1234567",
+        "representingDetails": {
+          "lastName": null,
+          "firstName": null
+        }
+      }
+    }
+  ],
+  "respondentPolicy0": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+  },
+  "respondentPolicy1": {
+    "Organisation": {
+      "OrganisationID": "D25VR7V",
+      "OrganisationName": "Private solicitors"
+    },
+    "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+  },
+  "respondentPolicy2": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+  },
+  "respondentPolicy3": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+  },
+  "respondentPolicy4": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+  },
+  "respondentPolicy5": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+  },
+  "respondentPolicy6": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+  },
+  "respondentPolicy7": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+  },
+  "respondentPolicy8": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+  },
+  "respondentPolicy9": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+  },
+  "submissionConsent": [
+    "agree"
+  ],
+  "allocationProposal": {
+    "proposal": null,
+    "proposalV2": "Circuit judge",
+    "proposalReason": "Test"
+  },
+  "caseLocalAuthority": "SA",
+  "displayAmountToPay": "Yes",
+  "nextHearingDetails": {},
+  "representativeType": "LOCAL_AUTHORITY",
+  "westLondonDFJCourt": "117",
+  "caseSummaryCourtName": "Family Court sitting at Barnet",
+  "dateAndTimeSubmitted": "2025-06-27T15:43:07.664746127+01:00",
+  "localAuthorityPolicy": {
+    "Organisation": {
+      "OrganisationID": "W9V61CP",
+      "OrganisationName": "Swansea City Council"
+    },
+    "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+  },
+  "respondentsConfirmPR": [
+    "confirm"
+  ],
+  "caseNameHmctsInternal": "Smoke Test 2025-06-27T13:54:37.426Z",
+  "lastGenuineUpdateTime": "2025-06-27T15:43:08.565762355",
+  "caseLocalAuthorityName": "Swansea City Council",
+  "caseManagementCategory": {
+    "value": {
+      "code": "FPL",
+      "label": "Family Public Law"
+    },
+    "list_items": [
+      {
+        "code": "FPL",
+        "label": "Family Public Law"
+      }
+    ]
+  },
+  "caseManagementLocation": {
+    "region": "1",
+    "baseLocation": "229786"
+  },
+  "caseSummaryDateOfIssue": "2025-06-27",
+  "caseSummaryLATabHidden": "Yes",
+  "noticeOfChangeAnswers0": {
+    "respondentLastName": "Jones",
+    "respondentFirstName": "Tom"
+  },
+  "noticeOfChangeAnswers1": {
+    "respondentLastName": "Jordan",
+    "respondentFirstName": "Thierry"
+  },
+  "caseSummaryCaseFlagNotes": null,
+  "caseSummaryHighCourtCase": "No",
+  "caseSummaryHasNextHearing": null,
+  "caseSummaryNextHearingCMO": null,
+  "documentsFiledOnIssueList": [
+    {
+      "id": "f2728d39-58f7-426e-8326-88ff60bebcf8",
+      "value": {
+        "document": {
+          "document_url": "${TEST_DOCUMENT_URL}",
+          "upload_timestamp": "2025-06-27T13:55:17.767907003",
+          "document_filename": "testPdf.pdf",
+          "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+        },
+        "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+        "uploaderCaseRoles": [
+          "LASOLICITOR"
+        ]
+      }
+    }
+  ],
+  "caseSummaryCafcassGuardian": null,
+  "caseSummaryHasFinalHearing": null,
+  "caseSummaryLAHighCourtCase": "No",
+  "caseSummaryLASolicitorName": "Peters John",
+  "caseSummaryNextHearingDate": null,
+  "caseSummaryNextHearingType": null,
+  "caseSummaryOrdersRequested": "Care order",
+  "caseSummaryFinalHearingDate": null,
+  "caseSummaryFlagAddedByEmail": null,
+  "caseSummaryLASolicitorEmail": "Me2@mail.com",
+  "caseSummaryNextHearingJudge": null,
+  "caseSummaryNumberOfChildren": 1,
+  "documentsFiledOnIssueListLA": [],
+  "noticeOfChangeChildAnswers0": {
+    "respondentLastName": "Brown",
+    "respondentFirstName": "Susan"
+  },
+  "caseSummaryPreviousCourtName": null,
+  "secureAccommodationOrderType": "NO",
+  "caseSummaryAllocatedJudgeName": null,
+  "caseSummaryFlagAssessmentForm": null,
+  "caseSummaryHasPreviousHearing": null,
+  "caseSummaryPreviousHearingCMO": null,
+  "caseSummaryAllocatedJudgeEmail": null,
+  "caseSummaryFlagAddedByFullName": null,
+  "caseSummaryLanguageRequirement": "No",
+  "caseSummaryNextHearingDateTime": null,
+  "caseSummaryPreviousHearingDate": null,
+  "caseSummaryPreviousHearingType": null,
+  "contactWithChildInCareOrderType": null,
+  "refuseContactWithChildOrderType": null,
+  "caseSummaryHasUnresolvedMessages": null,
+  "caseSummaryLALanguageRequirement": "No",
+  "applicationDocumentsToFollowReason": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+  "caseSummaryFirstRespondentLastName": "Jones",
+  "caseSummaryFirstRespondentLegalRep": null,
+  "caseSummaryNextHearingEmailAddress": null
+}
+}
