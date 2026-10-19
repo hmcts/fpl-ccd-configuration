@@ -231,6 +231,13 @@ public class UploadAdditionalApplicationsService {
             temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
         );
 
+        addC2EvidenceOfConsent(
+            caseData,
+            updatedSupportingEvidenceBundle,
+            uploadedBy,
+            uploadedTime
+        );
+
         List<Element<Supplement>> updatedSupplementsBundle =
             getSupplementsBundle(temporaryC2Document.getSupplementsBundle(),
                 uploadedBy, uploadedTime);
@@ -370,11 +377,34 @@ public class UploadAdditionalApplicationsService {
         buildC2BundleByPolicy(caseData, convertedC2, builder);
     }
 
+    private void addC2EvidenceOfConsent(
+        CaseData caseData,
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
+        String uploadedBy,
+        LocalDateTime uploadedDateTime) {
+
+        UploadAdditionalApplicationsEventData eventData =
+            caseData.getUploadAdditionalApplicationsEventData();
+
+        if (eventData.getC2Type() == C2ApplicationType.WITHOUT_NOTICE
+            && eventData.getC2EvidenceConsentDocument() != null) {
+
+            supportingEvidenceBundle.add(element(SupportingEvidenceBundle.builder()
+                .name("Evidence of consent")
+                .document(eventData.getC2EvidenceConsentDocument())
+                .hasConfidentialAddress(YesNo.NO.getValue())
+                .dateTimeUploaded(uploadedDateTime)
+                .uploadedBy(uploadedBy)
+                .uploaderType(manageDocumentService.getUploaderType(caseData))
+                .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+                .build()));
+        }
+    }
+
     private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(CaseData caseData,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         String uploadedBy, LocalDateTime uploadedDateTime) {
 
-        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
         final DocumentUploaderType uploaderType = manageDocumentService.getUploaderType(caseData);
         final List<CaseRole> uploadCaseRoles = new ArrayList<>(userService.getCaseRoles(caseData.getId()));
 
@@ -388,20 +418,6 @@ public class UploadAdditionalApplicationsService {
             );
             supportingEvidence.getValue().setHasConfidentialAddressConfirmation(null);
         });
-
-        // If done with consent add the consent document to the support docs list
-        if (eventData.getC2Type() == C2ApplicationType.WITHOUT_NOTICE
-            && eventData.getC2EvidenceConsentDocument() != null) {
-            supportingEvidenceBundle.add(element(SupportingEvidenceBundle.builder()
-                .name("Evidence of consent")
-                .document(eventData.getC2EvidenceConsentDocument())
-                .hasConfidentialAddress(YesNo.NO.getValue())
-                .dateTimeUploaded(uploadedDateTime)
-                .uploadedBy(uploadedBy)
-                .uploaderType(uploaderType)
-                .uploaderCaseRoles(uploadCaseRoles)
-                .build()));
-        }
 
         return supportingEvidenceBundle;
     }
