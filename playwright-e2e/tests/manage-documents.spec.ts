@@ -2,18 +2,11 @@ import { test } from '../fixtures/create-fixture';
 import { testConfig } from '../settings/test-config';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-import {
-    CTSCUser,
-    newSwanseaLocalAuthorityUserOne,
-    HighCourtAdminUser,
-    privateSolicitorOrgUser,
-    CTSCTeamLeadUser
-} from '../settings/user-credentials';
+import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser, privateSolicitorOrgUser } from '../settings/user-credentials';
 import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
 import { expect } from '@playwright/test';
 import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
 import { setHighCourt } from '../utils/update-case-details';
-import {all} from "axios";
 
 
 test.describe('Manage Documents', () => {
@@ -45,41 +38,33 @@ await allWork.filterTaskName('Review Correspondence');
 await allWork.clickSearchButton();
 await allWork.ParseTaskTable();
 
+        // Check CFV
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Court Correspondence');
+        await expect(caseFileView.page.getByLabel('Court Correspondence folder, 1 documents')).toBeVisible();
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeVisible();
 
-        // await manageDocuments.gotoNextStep('Manage documents');
-        // await manageDocuments.uploadDocuments('Court correspondence');
-        //
-        // // Check CFV
-        // await caseFileView.goToCFVTab();
-        // await caseFileView.openFolder('Court Correspondence');
-        // await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
-        //
-        // // If WA is enabled
-        // if (testConfig.waEnabled) {
-        //     console.log('WA testing');
-        //     await manageDocuments.clickSignOut();
-        //     await signInPage.visit();
-        //     await signInPage.login(CTSCUser.email, CTSCUser.password);
-        //
-        //     await signInPage.navigateToCaseDetails(caseNumber);
-        //
-        //     // Judge in Wales should see this Welsh case task + be able to assign it to themselves
-        //     await manageDocuments.tabNavigation('Tasks');
-        //     await manageDocuments.waitForTask('Review Correspondence');
-        //
-        //     // Assign and complete the task
-        //     await page.getByText('Assign to me').click();
-        //   //  await page.getByText('Mark as done').click();
-        //    // await page.getByRole('button', { name: "Mark as done" }).click();
-        //
-        //     // Should be no more tasks on the page
-        //    // await expect(page.getByText('Review Correspondence')).toHaveCount(0);
-        //     await manageDocuments.page.pause();
-        //     //CTSC user able to filter the my tasks and see the completed task
+        // If WA is enabled
+        if (testConfig.waEnabled) {
+            console.log('WA testing');
+            await manageDocuments.clickSignOut();
+            await signInPage.visit();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
 
+            await signInPage.navigateToCaseDetails(caseNumber);
 
+            // Judge in Wales should see this Welsh case task + be able to assign it to themselves
+            await manageDocuments.tabNavigation('Tasks');
+            await manageDocuments.waitForTask('Review Correspondence');
 
+            // Assign and complete the task
+            await page.getByText('Assign to me').click();
+            await page.getByText('Mark as done').click();
+            await page.getByRole('button', { name: "Mark as done" }).click();
 
+            // Should be no more tasks on the page
+            await expect(page.getByText('Review Correspondence')).toHaveCount(0);
+        }
     });
 
 
@@ -96,7 +81,8 @@ await allWork.ParseTaskTable();
         // position is visble under CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).toContainText(' testTextFile.txt ');
+        await expect(caseFileView.page.getByLabel('Position Statements folder, 1 documents')).toBeVisible();
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeVisible();
         await signInPage.logout();
 
         //Login as respondence solicitor
@@ -107,7 +93,8 @@ await allWork.ParseTaskTable();
         //go to CFV and assert Position statement  visible
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(caseFileView.page.getByLabel('Position Statements folder, 1 documents')).toBeVisible();
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeVisible();//await expect(page.getByRole('button')).toContainText('testTextFile.txt');
     });
 
     test('LA uploads confidential documents visible in CFV not visible to solicitor', async ({ signInPage, manageDocuments, caseFileView, page }) => {
@@ -123,8 +110,9 @@ await allWork.ParseTaskTable();
         // position is visible under CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
+        await expect(caseFileView.page.getByLabel('Confidential folder, 1 documents')).toBeVisible();
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeVisible();
 
         //Login as respondence solicitor
         await signInPage.logout();
@@ -135,9 +123,9 @@ await allWork.ParseTaskTable();
         //go to CFV and assert Position statement not visible
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(caseFileView.page.getByLabel('Confidential folder, 1 documents')).toBeHidden();
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(caseFileView.page.getByLabel('testTextFile.txt')).toBeHidden();
     });
 
     test('CTSC uploads confidential documents visible in CFV not visible to solicitor ', async ({ signInPage, manageDocuments, caseFileView, page }) => {
@@ -153,7 +141,7 @@ await allWork.ParseTaskTable();
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeVisible();
         await signInPage.logout();
 
         //Login as respondence solicitor
@@ -165,9 +153,9 @@ await allWork.ParseTaskTable();
         //go to CFV and assert Position statement not visble
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
         await signInPage.logout();
 
         //login in LA and assert position statement not visible
@@ -180,9 +168,9 @@ await allWork.ParseTaskTable();
         await signInPage.navigateToCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
 
     });
 
@@ -199,7 +187,7 @@ await allWork.ParseTaskTable();
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Advocate Meeting Minutes');
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeVisible();
         await signInPage.logout();
 
           //Login as respondence solicitor
@@ -211,6 +199,7 @@ await allWork.ParseTaskTable();
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Advocate Meeting Minutes');
         await caseFileView.openFolder('Confidential');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden();
         await signInPage.logout();
 
     });
@@ -229,7 +218,7 @@ await allWork.ParseTaskTable();
         await caseFileView.openFolder('Respondents');
         await caseFileView.openFolder('Respondents own statements');
         await caseFileView.openFolder('Confidential');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeVisible();
         await signInPage.logout();
 
          //Login as respondence solicitor
@@ -242,6 +231,7 @@ await allWork.ParseTaskTable();
         await caseFileView.openFolder('Respondents');
         await caseFileView.openFolder('Respondents own statements');
         await caseFileView.openFolder('Confidential');
+        await expect(page.getByLabel('testTextFile.txt')).toBeHidden()
         await signInPage.logout();
 
     });
@@ -260,7 +250,7 @@ await allWork.ParseTaskTable();
         //go to CFV and assert Court Correspondence not visble
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Court Correspondence');
-        await expect(page.getByRole('tree')).not.toContainText('mock.pdf');
+        await expect(page.getByLabel('mock.pdf')).toBeHidden();
     });
 
     test('CTSC user can move document between folder ', async ({ page, signInPage, caseFileView }) => {
@@ -272,7 +262,7 @@ await allWork.ParseTaskTable();
         await caseFileView.goToCFVTab();
         await caseFileView.moveDocument('Court Correspondence', 'Threshold');
         await caseFileView.openFolder('Threshold');
-        await expect(page.getByRole('tree')).toContainText('mock.pdf');
+        await expect(page.getByLabel('mock.pdf')).toBeVisible();
 
     });
 
@@ -289,7 +279,7 @@ await allWork.ParseTaskTable();
         // Check CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Court Correspondence');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await expect(page.getByLabel('testTextFile.txt')).toBeVisible();
 
         // If WA is enabled
         if (testConfig.waEnabled) {

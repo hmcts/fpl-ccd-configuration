@@ -119,6 +119,7 @@ public class MigrateCaseService {
     public final MigrateRelatingLAService migrateRelatingLAService;
     public final OrganisationService organisationService;
     public final CourtLookUpService courtLookUpService;
+    public static final String LOCAL_AUTHORITIES = "localAuthorities";
 
     private static final Map<String, HearingType>  HEARING_TYPE_DETAILS_MAPPING = initialiseHearingMapping();
     private final ObjectMapper mapper;
@@ -939,7 +940,7 @@ public class MigrateCaseService {
                 "Migration {id = %s, case reference = %s}, invalid local authorities",
                 migrationId, caseId));
         }
-        return Map.of("localAuthorities", localAuthoritiesList);
+        return Map.of(LOCAL_AUTHORITIES, localAuthoritiesList);
     }
 
     private final CaseConverter caseConverter;
@@ -950,6 +951,9 @@ public class MigrateCaseService {
 
     public Map<String, Object> fixIncorrectCaseManagementLocation(CaseDetails caseDetails, String migrationId) {
         CaseData caseData = getCaseData(caseDetails);
+        if (caseData == null) {
+            throw new IllegalStateException("Case converter returned null");
+        }
 
         Court court = caseData.getCourt();
         final String targetCourt = "270"; // Middlesborough
@@ -1024,6 +1028,57 @@ public class MigrateCaseService {
             .orgPolicyCaseAssignedRole(caseRole).build());
     }
 
+    public Map<String, OrganisationPolicy> updateLocalAuthorityPolicy(CaseData caseData, String orgId,
+                                                                      String caseRole, String newOrgName) {
+        Organisation newOrganisation = createNewOrganisation(orgId, newOrgName);
+
+        caseRole = caseData.getLocalAuthorityPolicy() != null
+            ? caseData.getLocalAuthorityPolicy().getOrgPolicyCaseAssignedRole() : caseRole;
+
+        return Map.of("localAuthorityPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
+            .orgPolicyCaseAssignedRole(caseRole).build());
+    }
+
+    public Map<String, List<Element<LocalAuthority>>> updateLocalAuthority(CaseData caseData, String orgName,
+                                                                           String newOrgName) {
+        List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
+        List<Element<LocalAuthority>> updatedLocalAuthorities = new ArrayList<>(localAuthorities);
+
+        Element<LocalAuthority> localAuthorityToUpdate = localAuthorities.stream()
+            .filter(la -> orgName.equals(la.getValue().getName()))
+            .findFirst()
+            .orElseThrow();
+
+        int index = updatedLocalAuthorities.indexOf(localAuthorityToUpdate);
+        LocalAuthority localAuthorityToUpdateValue = localAuthorityToUpdate.getValue();
+
+        LocalAuthority updatedLocalAuthorityValue = LocalAuthority.builder()
+            .id(localAuthorityToUpdateValue.getId())
+            .name(newOrgName)
+            .email(localAuthorityToUpdateValue.getEmail())
+            .phone(localAuthorityToUpdateValue.getPhone())
+            .address(localAuthorityToUpdateValue.getAddress())
+            .pbaNumber(localAuthorityToUpdateValue.getPbaNumber())
+            .clientCode(localAuthorityToUpdateValue.getClientCode())
+            .colleagues(localAuthorityToUpdateValue.getColleagues())
+            .designated(localAuthorityToUpdateValue.getDesignated())
+            .legalTeamManager(localAuthorityToUpdateValue.getLegalTeamManager())
+            .customerReference(localAuthorityToUpdateValue.getCustomerReference())
+            .build();
+
+        Element<LocalAuthority> updatedLocalAuthorityElement = Element.<LocalAuthority>builder()
+            .id(localAuthorityToUpdate.getId())
+            .value(updatedLocalAuthorityValue)
+            .build();
+
+        updatedLocalAuthorities.set(index, updatedLocalAuthorityElement);
+        return Map.of(LOCAL_AUTHORITIES, updatedLocalAuthorities);
+    }
+
+    public Map<String, String> updateCaseLocalAuthorityName(String newOrgName) {
+        return Map.of("caseLocalAuthorityName", newOrgName);
+    }
+
     private String getOrgName(String orgId) {
         return organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
@@ -1069,7 +1124,7 @@ public class MigrateCaseService {
             colleague.setNotificationRecipient(YesNo.NO.getValue())
         );
 
-        return Map.of("localAuthorities", localAuthorities);
+        return Map.of(LOCAL_AUTHORITIES, localAuthorities);
     }
 
     public Map<String, Object> setCaseManagementLocation(CaseData caseData, String migrationId) {
