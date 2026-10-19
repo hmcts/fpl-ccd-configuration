@@ -23,6 +23,9 @@ public class C2AdditionalApplicationEventData extends C2DocumentBundle {
     @Temp
     public String confidentialApplication;
 
+    @Temp
+    public String confidentialFieldSuffix;
+
     @JsonIgnore
     public C2DocumentBundle toC2DocumentBundle() {
         return super.toBuilder().build();

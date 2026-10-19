@@ -533,6 +533,10 @@ public class CaseData extends CaseDataParent {
     }
 
     private final List<Element<GeneratedOrder>> refusalOrders;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ConfidentialGeneratedRefusalOrders confidentialRefusalOrders =
+        ConfidentialGeneratedRefusalOrders.builder().build();
 
     @JsonUnwrapped
     @Builder.Default
