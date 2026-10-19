@@ -204,6 +204,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Document contains a confidential address?",
     "SecurityClassification": "Public",
+    "FieldShowCondition": "hasConfidentialAddress!=\"No\"",
     "Searchable": "N"
   },
   {
