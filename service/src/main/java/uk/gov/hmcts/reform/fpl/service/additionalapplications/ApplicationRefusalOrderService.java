@@ -85,6 +85,7 @@ public class ApplicationRefusalOrderService extends AbstractApplicationGenerated
 
         return buildGeneratedOrder(
             caseData,
+            // Use BLANK_ORDER for the order type, while REFUSAL_ORDER is used for the generated order title.
             BLANK_ORDER.getLabel(),
             buildApplicationOrderTitle(REFUSAL_ORDER.getLabel(), applicationDate),
             dateOfRefusal,

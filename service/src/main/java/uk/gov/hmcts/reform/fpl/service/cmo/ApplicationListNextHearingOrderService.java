@@ -102,6 +102,7 @@ public class ApplicationListNextHearingOrderService extends AbstractApplicationG
                                                          boolean isConfidential) {
         return buildGeneratedOrder(
             caseData,
+            // Use BLANK_ORDER as the order type and LIST_AT_NEXT_HEARING_ORDER for the title.
             BLANK_ORDER.getLabel(),
             buildApplicationOrderTitle(LIST_AT_NEXT_HEARING_ORDER.getLabel(), applicationDate),
             dateOfIssue,

@@ -83,7 +83,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     private String childArrangementsContactWithDetails;
     private String specificIssueOrderDetails;
     private String prohibitedStepsOrderDetails;
-    private final String applicationGeneratedOrder;
+    private String applicationGeneratedOrder;
 
     @JsonIgnore
     public boolean isRemovable() {
