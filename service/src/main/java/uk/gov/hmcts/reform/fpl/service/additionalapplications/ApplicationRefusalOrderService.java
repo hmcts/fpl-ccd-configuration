@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.AbstractApplicationGeneratedOrderS
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.REFUSAL_ORDER;
 
 @Service
@@ -65,30 +66,39 @@ public class ApplicationRefusalOrderService extends AbstractApplicationGenerated
         DocmosisDocument docmosisDocument = generateApplicationRefusalOrderPDF(caseData,
             getTemplateData(caseData, judgeTitleAndName, dateOfRefusal, applicationDate, refusalReason));
 
-        return buildOrderDocumentReference(caseData, requireSealing, docmosisDocument, REFUSAL_ORDER.getFileName());
+        return buildOrderDocumentReference(caseData, requireSealing, docmosisDocument,
+            buildApplicationOrderFileName(REFUSAL_ORDER.getLabel(), applicationDate));
     }
 
     public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
-                                                     String applicationDate, String refusalReason) {
+                                                            String applicationDate, String refusalReason,
+                                                            boolean isConfidential) {
         return buildRefusalOrder(caseData, judgeTitleAndName,
             getDateOfIssue(caseData),
-            applicationDate, refusalReason);
+            applicationDate, refusalReason, isConfidential);
     }
 
     public Element<GeneratedOrder> buildRefusalOrder(CaseData caseData, String judgeTitleAndName,
-                                                     String dateOfRefusal, String applicationDate,
-                                                     String refusalReason) {
+                                                            String dateOfRefusal, String applicationDate,
+                                                            String refusalReason, boolean isConfidential) {
 
         DocumentReference refusalOrderDoc = buildApplicationRefusalOrderDocument(caseData, judgeTitleAndName,
             dateOfRefusal, applicationDate, refusalReason, true);
 
         return buildGeneratedOrder(
             caseData,
-            REFUSAL_ORDER.getLabel(),
+            // Use BLANK_ORDER for the order type, while REFUSAL_ORDER is used for the generated order title.
+            BLANK_ORDER.getLabel(),
             buildApplicationOrderTitle(REFUSAL_ORDER.getLabel(), applicationDate),
             dateOfRefusal,
             refusalOrderDoc,
-            builder -> builder.refusedDocument(refusalOrderDoc)
+            builder -> {
+                if (isConfidential) {
+                    builder.refusalDocumentConfidential(refusalOrderDoc);
+                } else {
+                    builder.refusalDocument(refusalOrderDoc);
+                }
+            }
         );
     }
 
