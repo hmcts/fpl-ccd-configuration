@@ -65,7 +65,7 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         assertThat(eventData.getCmoHearingInfo()).isEqualTo("Case management hearing, 15 March 2020");
         assertThat(eventData.getShowReplacementCMO()).isEqualTo(YesNo.NO);
         assertThat(eventData.getPastHearingsForCMO()).isEqualTo(pastHearingListAsMap);
-        assertThat(eventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Judy");
+        assertThat(eventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Jane Judy");
         assertThat(eventData.getCurrentHearingOrderDrafts()).extracting(Element::getValue)
             .containsExactly(HearingOrder.builder().build());
     }
@@ -117,7 +117,7 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         assertThat(updatedEventData.getShowReplacementCMO()).isEqualTo(YesNo.YES);
         assertThat(updatedEventData.getCmoHearingInfo()).isEqualTo("Case management hearing, 17 March 2020");
         assertThat(updatedEventData.getPastHearingsForCMO()).isEqualTo(pastHearingListAsMap);
-        assertThat(updatedEventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Judy");
+        assertThat(updatedEventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Jane Judy");
     }
 
     @Test
@@ -175,6 +175,6 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         assertThat(updatedEventData.getShowReplacementCMO()).isEqualTo(YesNo.YES);
         assertThat(updatedEventData.getCmoHearingInfo()).isEqualTo("Case management hearing, 17 March 2021");
         assertThat(updatedEventData.getFutureHearingsForCMO()).isEqualTo(hearingListAsMap);
-        assertThat(updatedEventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Judy");
+        assertThat(updatedEventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Jane Judy");
     }
 }
