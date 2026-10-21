@@ -6164,7 +6164,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2AdditionalApplicationToBeReview",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRD"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
