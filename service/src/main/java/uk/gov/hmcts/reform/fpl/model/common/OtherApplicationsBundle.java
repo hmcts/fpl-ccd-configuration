@@ -56,6 +56,8 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
         return defaultIfNull(supplementsBundle, new ArrayList<>());
     }
 
+    @Deprecated
+    @JsonIgnore
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
         return getSupportingEvidenceBundle().stream()
@@ -63,6 +65,8 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
             .collect(Collectors.toList());
     }
 
+    @Deprecated
+    @JsonIgnore
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
         return getSupportingEvidenceBundle().stream()

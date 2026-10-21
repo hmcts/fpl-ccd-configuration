@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationRouteType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
@@ -32,6 +33,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -88,6 +91,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         .build();
     private static final DocumentReference UPLOADED_DOCUMENT = testDocumentReference();
     private static final DocumentReference PDF_DOCUMENT = testDocumentReference();
+    private static final DocumentReference EVIDENCE_DOCUMENT = testDocumentReference();
 
     @MockBean
     private ManageDocumentService manageDocumentService;
@@ -136,10 +140,17 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .allocatedJudge(AlLOCATED_JUDGE)
-            .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
-            .temporaryC2Document(createTemporaryC2Document())
-            .temporaryPbaPayment(temporaryPbaPayment)
-            .applicantsList(createApplicantsDynamicList(APPLICANT))
+            .uploadAdditionalApplicationsEventData(
+                UploadAdditionalApplicationsEventData.builder()
+                    .c2ApplicationRoute(C2ApplicationRouteType.PAPER_FORM)
+                    .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
+                    .temporaryC2Document(createTemporaryC2Document())
+                    .temporaryPbaPayment(temporaryPbaPayment)
+                    .applicantsList(createApplicantsDynamicList(APPLICANT))
+                    .c2Type(WITHOUT_NOTICE)
+                    .c2EvidenceConsentDocument(EVIDENCE_DOCUMENT)
+                    .build()
+            )
             .representatives(List.of(representativeElement))
             .respondents1(wrapElements(Respondent.builder()
                 .representedBy(wrapElements(representativeElement.getId()))
@@ -181,12 +192,15 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .allocatedJudge(AlLOCATED_JUDGE)
-            .additionalApplicationType(List.of(AdditionalApplicationType.OTHER_ORDER))
-            .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
-            .temporaryC2Document(createTemporaryC2Document())
-            .temporaryPbaPayment(temporaryPbaPayment)
-            .applicantsList(createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE))
-            .otherApplicant(OTHER_APPLICANT_NAME)
+            .uploadAdditionalApplicationsEventData(
+                UploadAdditionalApplicationsEventData.builder()
+                    .additionalApplicationType(List.of(AdditionalApplicationType.OTHER_ORDER))
+                    .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
+                    .temporaryC2Document(createTemporaryC2Document())
+                    .temporaryPbaPayment(temporaryPbaPayment)
+                    .applicantsList(createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE))
+                    .otherApplicant(OTHER_APPLICANT_NAME)
+                    .build())
             .representatives(List.of(representative))
             .respondents1(List.of(respondentElement))
             .build();
@@ -215,13 +229,18 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .allocatedJudge(AlLOCATED_JUDGE)
-            .additionalApplicationType(
-                List.of(AdditionalApplicationType.C2_ORDER, AdditionalApplicationType.OTHER_ORDER)
-            )
-            .temporaryC2Document(createTemporaryC2Document())
-            .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
-            .temporaryPbaPayment(temporaryPbaPayment)
-            .applicantsList(createApplicantsDynamicList(APPLICANT))
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .c2ApplicationRoute(C2ApplicationRouteType.PAPER_FORM)
+                .additionalApplicationType(
+                    List.of(AdditionalApplicationType.C2_ORDER, AdditionalApplicationType.OTHER_ORDER)
+                )
+                .temporaryC2Document(createTemporaryC2Document())
+                .c2Type(WITHOUT_NOTICE)
+                .c2EvidenceConsentDocument(EVIDENCE_DOCUMENT)
+                .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
+                .temporaryPbaPayment(temporaryPbaPayment)
+                .applicantsList(createApplicantsDynamicList(APPLICANT))
+                .build())
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
@@ -245,9 +264,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseData caseData = extractCaseData(callbackRequest()).toBuilder()
             .id(CASE_ID)
             .allocatedJudge(AlLOCATED_JUDGE)
-            .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .temporaryC2Document(createTemporaryC2Document())
-            .build();
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .c2ApplicationRoute(C2ApplicationRouteType.PAPER_FORM)
+                .applicantsList(createApplicantsDynamicList(APPLICANT))
+                .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
+                .temporaryC2Document(createTemporaryC2Document())
+                .build()
+            ).build();
 
         CaseData returnedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
 
@@ -265,7 +288,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         // This is no longer true - PDF conversion has been moved to post submit
         // assertDocument(appendedC2Document.getDocument(), PDF_DOCUMENT);
 
-        assertThat(returnedCaseData.getTemporaryC2Document()).isNull();
+        assertThat(returnedCaseData.getUploadAdditionalApplicationsEventData().getTemporaryC2Document()).isNull();
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
 
@@ -277,6 +300,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 "c2Type", WITHOUT_NOTICE,
                 "applicantsList", createApplicantsDynamicList(APPLICANT),
                 "additionalApplicationType", List.of("C2_ORDER"),
+                "c2ApplicationRoute", C2ApplicationRouteType.PAPER_FORM,
                 "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
                 "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument(),
@@ -315,8 +339,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .id(CASE_ID)
             .allocatedJudge(AlLOCATED_JUDGE)
             .c2DocumentBundle(wrapElements(firstBundleAdded, secondBundleAdded, thirdBundleAdded))
-            .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .temporaryC2Document(createTemporaryC2Document())
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .applicantsList(createApplicantsDynamicList(APPLICANT))
+                .temporaryC2Document(createTemporaryC2Document())
+                .build())
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
@@ -347,9 +373,11 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .id(CASE_ID)
             .allocatedJudge(AlLOCATED_JUDGE)
             .c2DocumentBundle(wrapElements(firstBundleAdded))
-            .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .temporaryC2Document(createTemporaryC2Document().toBuilder()
-                .draftOrdersBundle(List.of()) // C2 app without draft order
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .applicantsList(createApplicantsDynamicList(APPLICANT))
+                .temporaryC2Document(createTemporaryC2Document().toBuilder()
+                    .draftOrdersBundle(List.of()) // C2 app without draft order
+                    .build())
                 .build())
             .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
             .build();
@@ -372,10 +400,12 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .allocatedJudge(AlLOCATED_JUDGE)
-            .isC2Confidential(YesNo.YES)
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .isC2Confidential(YesNo.YES)
+                .applicantsList(createApplicantsDynamicList(APPLICANT))
+                .temporaryC2Document(createTemporaryC2Document())
+                .build())
             .c2DocumentBundle(wrapElements(firstBundleAdded))
-            .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .temporaryC2Document(createTemporaryC2Document())
             .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
             .build();
 
@@ -383,7 +413,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         HearingOrdersBundle actualBundle = updatedCaseData.getHearingOrdersBundlesDrafts().get(0).getValue();
         assertThat(actualBundle.getOrdersCTSC().get(0).getValue().getOrderConfidential())
-            .isEqualTo(caseData.getTemporaryC2Document().getDraftOrdersBundle().get(0).getValue().getDocument());
+            .isEqualTo(caseData.getUploadAdditionalApplicationsEventData()
+                .getTemporaryC2Document().getDraftOrdersBundle().get(0).getValue().getDocument());
     }
 
     private void assertC2DocumentBundle(C2DocumentBundle uploadedC2DocumentBundle) {
@@ -394,7 +425,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
         // This is no longer true - PDF conversion has been moved to post submit
         // assertDocument(uploadedC2DocumentBundle.getDocument(), PDF_DOCUMENT);
-        assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle());
+        assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle(), true);
         assertSupplementsBundle(uploadedC2DocumentBundle.getSupplementsBundle());
     }
 
@@ -407,7 +438,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .isEqualTo(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN);
         assertThat(uploadedOtherApplicationsBundle.getAuthor()).isEqualTo(USER_NAME);
 
-        assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle());
+        assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle(), false);
         assertSupplementsBundle(uploadedOtherApplicationsBundle.getSupplementsBundle());
 
         // This is no longer true - PDF conversion has been moved to post submit
@@ -415,13 +446,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     }
 
     private void assertTemporaryFieldsAreRemoved(CaseData caseData) {
-        assertThat(caseData.getTemporaryC2Document()).isNull();
-        assertThat(caseData.getTemporaryOtherApplicationsBundle()).isNull();
-        assertThat(caseData.getTemporaryPbaPayment()).isNull();
-        assertThat(caseData.getC2ApplicationType()).isNull();
+        UploadAdditionalApplicationsEventData emptyEventDataObject = UploadAdditionalApplicationsEventData
+            .builder()
+            .build();
+
         assertThat(caseData.getAmountToPay()).isNull();
-        assertThat(caseData.getApplicantsList()).isNull();
-        assertThat(caseData.getOtherApplicant()).isNull();
+        assertThat(caseData.getUploadAdditionalApplicationsEventData()).isEqualTo(emptyEventDataObject);
+        assertThat(caseData.getIsCTSCUser()).isNull();
         assertThat(caseData.getNotifyApplicationsToAllOthers()).isNull();
         assertThat(caseData.getPersonSelector()).isNull();
     }
@@ -432,7 +463,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(actualDocument.getBinaryUrl()).isEqualTo(expectedDocument.getBinaryUrl());
     }
 
-    private void assertSupportingEvidenceBundle(List<Element<SupportingEvidenceBundle>> documentBundle) {
+    private void assertSupportingEvidenceBundle(List<Element<SupportingEvidenceBundle>> documentBundle,
+                                                boolean isC2withoutNotice) {
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(documentBundle);
 
         assertThat(supportingEvidenceBundle).first().extracting(
@@ -448,6 +480,20 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             UPLOADED_DOCUMENT,
             USER_NAME
         );
+
+        if (isC2withoutNotice) {
+            assertThat(supportingEvidenceBundle).last().extracting(
+                SupportingEvidenceBundle::getName,
+                SupportingEvidenceBundle::getDateTimeUploaded,
+                SupportingEvidenceBundle::getDocument,
+                SupportingEvidenceBundle::getUploadedBy
+            ).containsExactly(
+                "Evidence of consent",
+                time.now(),
+                EVIDENCE_DOCUMENT,
+                USER_NAME
+            );
+        }
     }
 
     private void assertSupplementsBundle(List<Element<Supplement>> documentBundle) {
@@ -479,8 +525,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .build();
     }
 
-    private C2DocumentBundle createTemporaryC2Document() {
-        return C2DocumentBundle.builder()
+    private C2AdditionalApplicationEventData createTemporaryC2Document() {
+        return C2AdditionalApplicationEventData.builder()
             .type(WITH_NOTICE)
             .document(UPLOADED_DOCUMENT)
             .draftOrdersBundle(createDraftOrderBundle())

@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationPermissionType",
+    "ListElementCode": "YES",
+    "ListElement": "Yes",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationPermissionType",
+    "ListElementCode": "ALREADY_GRANTED",
+    "ListElement": "Permission already granted",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationPermissionType",
+    "ListElementCode": "NOT_REQUIRED",
+    "ListElement": "Permission not required",
+    "DisplayOrder": 3
+  }
+]

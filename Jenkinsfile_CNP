@@ -247,7 +247,7 @@ def deployWADmns() {
 
   def waStandaloneBranch = "master"
   // For testing DMNs, change this to the branch on the DMN repo, but ensure it is changed back to master before merging
-  def dmnBranch = "master"
+  def dmnBranch = "DFPL-2864"
 
   echo "Checking if we should use WA"
   if (githubApi.checkForLabel(env.BRANCH_NAME, 'pr-values:wa')) {
@@ -291,7 +291,6 @@ def setupUITestEnvVariablesForPreview() {
 }
 def installYarnDependenciesIfNeeded(yarnBuilder) {
     if (!fileExists('node_modules')){
-      yarnBuilder.yarn('yarn-update')
       yarnBuilder.yarn('install-dependencies')
   }
 
@@ -493,7 +492,7 @@ withPipeline(type, product, component) {
     env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
   }
 
-  def branchesToSync = ['demo', 'perftest', 'ithc']
-//  def branchesToSync = ['perftest','ithc']
+  //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment demo migration for DFPL-1855 completed
+  def branchesToSync = ['perftest','ithc']
   syncBranchesWithMaster(branchesToSync)
 }
