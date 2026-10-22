@@ -1,0 +1,459 @@
+{
+  "state": "SUBMITTED",
+  "caseData": {
+    "court": {
+      "code": "117",
+      "name": "Family Court sitting at Barnet",
+      "email": null,
+      "region": "London",
+      "epimmsId": "229786",
+      "regionId": "1",
+      "dateTransferred": null
+    },
+    "orders": {
+      "court": "117",
+      "orderType": [
+        "OTHER"
+      ],
+      "directions": "No",
+      "otherOrder": "Order to contact the child at foster care",
+      "directionDetails": null
+    },
+    "dfjArea": "WEST_LONDON",
+    "hearing": {
+      "type": null,
+      "reason": null,
+      "timeFrame": null,
+      "reason2Days": null,
+      "reason7Days": null,
+      "reason12Days": null,
+      "reducedNotice": null,
+      "withoutNotice": null,
+      "type_GiveReason": null,
+      "respondentsAware": "Yes",
+      "hearingUrgencyType": "STANDARD",
+      "reducedNoticeReason": null,
+      "withoutNoticeReason": null,
+      "hearingUrgencyDetails": null,
+      "respondentsAwareReason": null
+    },
+    "caseName": "Private Solicitor -C110 a Application ",
+    "children1": [
+      {
+        "id": "c003c03a-caff-4812-a58d-fd42277acaad",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "BN26 6AL",
+              "PostTown": "Polegate",
+              "AddressLine1": "Hart Reade",
+              "AddressLine2": "55 High Street",
+              "AddressLine3": ""
+            },
+            "partyId": "0b1e32bc-41ec-4d7a-84e7-6bc6f2245dff",
+            "adoption": "No",
+            "keyDates": "these are the key dates",
+            "lastName": "Brown",
+            "firstName": "Susan",
+            "dateOfBirth": "2019-01-10",
+            "fathersName": "Charles Brown",
+            "mothersName": "Claire Brown",
+            "detailsHidden": "No",
+            "additionalNeeds": "No",
+            "livingSituation": "Living with respondents",
+            "litigationIssues": "NO",
+            "socialWorkerName": "Robert Taylor",
+            "addressChangeDate": "2022-02-01",
+            "careAndContactPlan": "this is the brief summary of care and contact plan",
+            "fathersResponsibility": "Yes",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "0123456789",
+              "contactDirection": "Jane Smith"
+            }
+          },
+          "legalCounsellors": []
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "amountToPay": "26300",
+    "childPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+    },
+    "childPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORB]"
+    },
+    "childPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORC]"
+    },
+    "childPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORD]"
+    },
+    "childPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORE]"
+    },
+    "childPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORF]"
+    },
+    "childPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORG]"
+    },
+    "childPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORH]"
+    },
+    "childPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORI]"
+    },
+    "childPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
+    },
+    "childPolicy10": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORK]"
+    },
+    "childPolicy11": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORL]"
+    },
+    "childPolicy12": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORM]"
+    },
+    "childPolicy13": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORN]"
+    },
+    "childPolicy14": {
+      "Organisation": {
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORO]"
+    },
+
+    "respondents1": [
+      {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "value": {
+          "party": {
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "SK3 8PP",
+              "PostTown": "Stockport",
+              "AddressLine1": "1 Barnfield Road West",
+              "AddressLine2": "",
+              "AddressLine3": ""
+            },
+            "firstName": "Swansea City Council",
+            "addressKnow": "Yes",
+            "hideAddress": "No",
+            "hideTelephone": "No",
+            "relationshipToChild": "Local Authority"
+          },
+          "solicitor": {
+            "email": "FamilyPublicLaw+sa@gmail.com",
+            "lastName": "Lee",
+            "firstName": "Tommy",
+            "organisation": {
+              "OrganisationID": "W9V61CP",
+              "OrganisationName": "Swansea City Council"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "07818213678"
+            },
+            "regionalOfficeAddress": {},
+            "colleaguesToBeNotified": [],
+            "unregisteredOrganisation": {}
+          },
+          "representedBy": [],
+          "usingOtherOrg": "No",
+
+          "legalCounsellors": [],
+          "legalRepresentation": "Yes"
+        }
+      },
+      {
+        "id": "fe1b0a8a-4c7d-44c0-a5fe-fcbac4ed6b95",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {},
+            "partyId": "29518961-70d9-46bb-ba99-3019d6d0aba8",
+            "lastName": "Asa",
+            "firstName": "Dianah",
+            "addressKnow": "No",
+            "dateOfBirth": "1998-10-11",
+            "hideAddress": "No",
+            "hideTelephone": "No",
+            "litigationIssues": "NO",
+            "relationshipToChild": "uncle",
+            "addressNotKnowReason": "Whereabouts unknown"
+          },
+          "solicitor": {
+            "email": "email@email.com",
+            "lastName": "Solicitor",
+            "firstName": "respondent 1",
+            "organisation": {
+              "OrganisationID": "4ZYL0HK",
+              "OrganisationName": "FPLSolicitorOrg"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "04668769687"
+            },
+            "regionalOfficeAddress": {},
+            "colleaguesToBeNotified": [],
+            "unregisteredOrganisation": {}
+          },
+          "representedBy": [],
+          "legalCounsellors": [],
+          "legalRepresentation": "No"
+        }
+      },
+      {
+        "id": "694a6807-0bd7-4247-980e-825885678cbf",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {},
+            "lastName": "Yaks",
+            "firstName": "Moniks",
+            "addressKnow": "No",
+            "dateOfBirth": "1988-03-31",
+            "hideAddress": "No",
+            "hideTelephone": "No",
+            "litigationIssues": "NO",
+            "relationshipToChild": "uncle",
+            "addressNotKnowReason": "No fixed abode"
+          },
+          "representedBy": [],
+          "legalCounsellors": [],
+          "legalRepresentation": "No"
+        }
+      }
+    ],
+    "c1Application": "No",
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "Private_Solicitor_-C110_a_Application_2025-06-25T145849.968Z.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "deadline26week": "2025-12-24",
+    "otherOrderType": "YES",
+    "hasRespondentLA": "YES",
+    "ordersSolicitor": {
+      "court": "117",
+      "orderType": [
+        "OTHER"
+      ],
+      "directions": "No",
+      "otherOrder": "Order to contact the child at foster care",
+      "directionDetails": null
+    },
+    "localAuthorities": [
+      {
+        "id": "e0a7654d-6f28-44a1-a92d-2de87077ff42",
+        "value": {
+          "id": "D25VR7V",
+          "name": "Private solicitors",
+          "email": "privatesol@gmail.com",
+          "phone": null,
+          "address": {
+            "PostCode": "CR0 2GE",
+            "PostTown": "London",
+            "AddressLine1": "Flat 1",
+            "AddressLine2": "Private Solicitors Apartments"
+          },
+          "pbaNumber": "PBA1234567",
+          "clientCode": null,
+          "colleagues": [
+            {
+              "id": "e4e93dc2-b853-45ac-a522-e938cca85309",
+              "value": {
+                "email": "email@email.com",
+                "phone": "35346878679876",
+                "lastName": "Nouth",
+                "firstName": "Maie",
+                "mainContact": "Yes",
+                "notificationRecipient": "Yes"
+              }
+            },
+            {
+              "id": "fadb4830-bd21-4b69-bb6f-e4c65bbcd17a",
+              "value": {
+                "role": "OTHER",
+                "email": "Johnson@hmcts.com",
+                "title": "assistant",
+                "lastName": "Johnson",
+                "firstName": "Johnson",
+                "mainContact": "No",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ],
+          "designated": "No",
+          "legalTeamManager": null,
+          "customerReference": "Customer reference 1000",
+          "representingDetails": {
+            "lastName": "Somuy",
+            "firstName": "John"
+          }
+        }
+      }
+    ],
+      "respondentPolicy0": {
+        "Organisation": {
+          "OrganisationID": "W9V61CP",
+          "OrganisationName": "Swansea City Council"
+        },
+        "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+      },
+      "respondentPolicy1": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+      },
+      "respondentPolicy2": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+      },
+      "respondentPolicy3": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+      },
+      "respondentPolicy4": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+      },
+      "respondentPolicy5": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+      },
+      "respondentPolicy6": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+      },
+      "respondentPolicy7": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+      },
+      "respondentPolicy8": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+      },
+      "respondentPolicy9": {
+        "Organisation": {},
+        "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+      },
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": null,
+      "proposalV2": "Circuit judge",
+      "proposalReason": "Test"
+    },
+    "caseLocalAuthority": "SA",
+    "displayAmountToPay": "Yes",
+    "nextHearingDetails": {},
+    "representativeType": "RESPONDENT_SOLICITOR",
+    "westLondonDFJCourt": "117",
+    "caseSummaryCourtName": "Family Court sitting at Barnet",
+    "respondentsConfirmPR": [
+      "confirm"
+    ],
+    "caseNameHmctsInternal": "Private Solicitor -C110 a Application 2025-06-25T14:58:49.968Z",
+    "lastGenuineUpdateTime": "2025-06-25T16:00:03.970141236",
+    "caseLocalAuthorityName": "Swansea City Council",
+    "caseManagementCategory": {
+      "value": {
+        "code": "FPL",
+        "label": "Family Public Law"
+      },
+      "list_items": [
+        {
+          "code": "FPL",
+          "label": "Family Public Law"
+        }
+      ]
+    },
+    "caseManagementLocation": {
+      "region": "1",
+      "baseLocation": "229786"
+    },
+    "caseSummaryDateOfIssue": "2025-06-25",
+    "caseSummaryLATabHidden": "Yes",
+    "noticeOfChangeAnswers0": {
+      "respondentFirstName": "Swansea City Council"
+    },
+    "noticeOfChangeAnswers1": {
+      "respondentLastName": "Asa",
+      "respondentFirstName": "Dianah"
+    },
+    "noticeOfChangeAnswers2": {
+      "respondentLastName": "Yaks",
+      "respondentFirstName": "Moniks"
+    },
+    "appSolicitorPolicy": {
+      "Organisation": {
+        "OrganisationID": "D25VR7V",
+        "OrganisationName": "Private solicitors"
+      },
+      "OrgPolicyCaseAssignedRole": "[APPSOLICITOR]"
+    },
+    "caseSummaryHighCourtCase": "No",
+    "respondentLocalAuthority": {
+      "name": "Swansea City Council",
+      "email": "FamilyPublicLaw+sa@gmail.com",
+      "address": {
+        "County": "",
+        "Country": "United Kingdom",
+        "PostCode": "SK3 8PP",
+        "PostTown": "Stockport",
+        "AddressLine1": "1 Barnfield Road West",
+        "AddressLine2": "",
+        "AddressLine3": ""
+      },
+      "phoneNumber": "07818213678",
+      "organisation": {
+        "OrganisationID": null,
+        "OrganisationName": null
+      },
+      "usingOtherOrg": "No",
+      "legalCounsellors": [],
+      "representativeLastName": "Lee",
+      "representativeFirstName": "Tommy"
+    },
+    "caseSummaryLAHighCourtCase": "No",
+    "caseSummaryLASolicitorName": "Maie Nouth",
+    "caseSummaryOrdersRequested": "Variation or discharge of care or supervision order",
+    "caseSummaryLASolicitorEmail": "email@email.com",
+    "caseSummaryNumberOfChildren": 1,
+    "noticeOfChangeChildAnswers0": {
+      "respondentLastName": "Brown",
+      "respondentFirstName": "Susan"
+    },
+    "secureAccommodationOrderType": "NO",
+    "caseSummaryLanguageRequirement": "No",
+    "caseSummaryLALanguageRequirement": "No",
+    "noticeOfChangeAnswersThirdPartyRespondent": {
+      "respondentLastName": "Somuy",
+      "respondentFirstName": "John"
+    }
+  }
+}
