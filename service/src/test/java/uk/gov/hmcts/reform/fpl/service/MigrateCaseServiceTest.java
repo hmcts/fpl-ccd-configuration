@@ -437,6 +437,106 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
+    class UpdateLocalAuthorityName {
+        private final String orgId1 = "ABCDEFG";
+        private final String orgId2 = "TUVWXYZ";
+        private final String orgId3 = "HIJKLM";
+        private final String caseRole = "[LAMANAGING]";
+        private final String newOrgName = "New Organisation Name";
+        private final String prevOrgName = "Previous Organisation Name";
+        private final UUID elementId1 = UUID.randomUUID();
+        private final UUID elementId2 = UUID.randomUUID();
+        private final UUID elementId3 = UUID.randomUUID();
+
+        private final Element<LocalAuthority> designatedLA = createLA(elementId1, orgId1,
+            "Other Organisation Name", YES.getValue());
+        private final Element<LocalAuthority> secondaryLA1 = createLA(elementId2, orgId2,
+            "Other Organisation Name", NO.getValue());
+        private final Element<LocalAuthority> secondaryLA2 = createLA(elementId3, orgId3,
+            "Another Organisation Name", NO.getValue());
+
+        private Organisation createOrg(String organisationId, String orgName) {
+            return Organisation.builder().organisationID(organisationId).organisationName(orgName)
+                .build();
+        }
+
+        private Element<LocalAuthority> createLA(UUID elementId, String organisationId,
+                                                 String orgName, String designated) {
+            return element(elementId, LocalAuthority.builder().id(organisationId).name(orgName).designated(designated)
+                .build());
+        }
+
+        @Test
+        void updateLocalAuthorityPolicy() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorityPolicy(OrganisationPolicy.builder()
+                    .organisation(createOrg(orgId1, prevOrgName))
+                    .orgPolicyCaseAssignedRole(caseRole)
+                    .build())
+                .build();
+
+            Map<String, OrganisationPolicy> updatedFields = underTest.updateLocalAuthorityPolicy(caseData, orgId1,
+                null, newOrgName);
+            OrganisationPolicy updatedLAPolicy = updatedFields.get("localAuthorityPolicy");
+
+            assertThat(updatedLAPolicy).isEqualTo(OrganisationPolicy.builder()
+                .organisation(createOrg(orgId1, newOrgName))
+                .orgPolicyCaseAssignedRole(caseRole)
+                .build());
+        }
+
+        @Test
+        void updateDesignatedLocalAuthority() {
+            List<Element<LocalAuthority>> localAuthorities = List.of(
+                createLA(elementId1, orgId1, prevOrgName, YES.getValue()),
+                secondaryLA1
+            );
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(localAuthorities)
+                .build();
+            Map<String, List<Element<LocalAuthority>>> updatedFields = underTest
+                .updateLocalAuthority(caseData, prevOrgName, newOrgName);
+
+            assertThat(updatedFields).containsEntry("localAuthorities", List.of(
+                createLA(elementId1, orgId1, newOrgName, YES.getValue()),
+                secondaryLA1
+            ));
+        }
+
+        @Test
+        void updateSecondaryLocalAuthority() {
+            List<Element<LocalAuthority>> localAuthorities = List.of(
+                designatedLA,
+                createLA(elementId2, orgId2, prevOrgName, NO.getValue()),
+                secondaryLA2
+            );
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(localAuthorities)
+                .build();
+
+            Map<String, List<Element<LocalAuthority>>> updatedFields = underTest
+                .updateLocalAuthority(caseData, prevOrgName, newOrgName);
+
+            assertThat(updatedFields).containsEntry("localAuthorities", List.of(
+                designatedLA,
+                createLA(elementId2, orgId2, newOrgName, NO.getValue()),
+                secondaryLA2
+            ));
+        }
+
+        @Test
+        void updateCaseLocalAuthorityName() {
+            Map<String, String> updatedFields = underTest.updateCaseLocalAuthorityName(newOrgName);
+            String updatedCaseLAName = updatedFields.get("caseLocalAuthorityName");
+
+            assertThat(updatedCaseLAName).isEqualTo(newOrgName);
+        }
+    }
+
+    @Nested
     class RemoveHearingOrderBundleDraft {
 
         private final UUID bundleIdToRemove = UUID.randomUUID();
