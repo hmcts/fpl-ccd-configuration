@@ -439,7 +439,9 @@ public class ManageLocalAuthoritiesService {
             final LocalAuthority old = existingLocalAuthority.get();
 
             // Clear existing Applicant counsel when this LA becomes designated.
-            old.setLegalCounsellors(new ArrayList<>());
+            if (old.getLegalCounsellors() != null && !old.getLegalCounsellors().isEmpty()) {
+                old.setLegalCounsellors(new ArrayList<>());
+            }
 
             old.setName(newDesignatedLocalAuthority.getName());
             old.setEmail(newDesignatedLocalAuthority.getEmail());
@@ -500,7 +502,11 @@ public class ManageLocalAuthoritiesService {
     }
 
     private String getDesignatedOrganisationId(CaseData caseData) {
-        return caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID();
+        return Optional.ofNullable(caseData)
+            .map(CaseData::getLocalAuthorityPolicy)
+            .map(OrganisationPolicy::getOrganisation)
+            .map(Organisation::getOrganisationID)
+            .orElse(null);
     }
 
     private boolean isCaseShared(CaseData caseData) {

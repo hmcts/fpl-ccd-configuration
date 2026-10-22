@@ -17,12 +17,22 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.events.*;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
+import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
+import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
+import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityRemoved;
+import uk.gov.hmcts.reform.fpl.events.CaseTransferredToAnotherCourt;
+
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationPolicyNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityException;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
+import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -614,7 +624,6 @@ class ManageLocalAuthoritiesServiceTest {
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
                 .designated("Yes")
                 .id(newDesignatedLocalAuthorityOrgId)
-                .legalCounsellors(List.of())
                 .name(newDesignatedLocalAuthorityName)
                 .email(newDesignatedLocalAuthorityEmail)
                 .address(address)
@@ -750,7 +759,6 @@ class ManageLocalAuthoritiesServiceTest {
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
                 .designated("Yes")
                 .id(newDesignatedLocalAuthorityOrgId)
-                .legalCounsellors(List.of())
                 .name(newDesignatedLocalAuthorityName)
                 .email(newDesignatedLocalAuthorityEmail)
                 .address(address)
@@ -803,7 +811,6 @@ class ManageLocalAuthoritiesServiceTest {
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
                 .designated("Yes")
                 .id(newDesignatedLocalAuthorityOrgId)
-                .legalCounsellors(List.of())
                 .name(newDesignatedLocalAuthorityName)
                 .email(newDesignatedLocalAuthorityEmail)
                 .address(address)

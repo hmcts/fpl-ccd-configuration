@@ -29,7 +29,9 @@ import java.util.Set;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
@@ -84,6 +86,7 @@ class ManageLegalCounselServiceTest {
     private final ManageLegalCounselService underTest =
         new ManageLegalCounselService(caseConverter, caseRoleLookupService, organisationService,
             caseAccessService, userService, applicantLocalAuthorityService, coreCaseDataService);
+
     @Nested
     class SolicitorTests {
         @BeforeEach
@@ -119,7 +122,7 @@ class ManageLegalCounselServiceTest {
         @Test
         void shouldUpdateLegalCounselInCaseDataAndResetEventData() {
             CaseData caseData = buildCaseData();
-            CaseDetails caseDetails = CaseDetails.builder()
+            final CaseDetails caseDetails = CaseDetails.builder()
                     .id(TEST_CASE_ID)
                     .data(caseConverter.toMap(caseData))
                     .build();
@@ -850,7 +853,7 @@ class ManageLegalCounselServiceTest {
                     .build())
                 .build();
 
-            CaseDetails caseDetails = CaseDetails.builder()
+            final CaseDetails caseDetails = CaseDetails.builder()
                 .id(TEST_CASE_ID)
                 .data(caseConverter.toMap(caseData))
                 .build();
@@ -968,7 +971,7 @@ class ManageLegalCounselServiceTest {
                     .build())
                 .build();
 
-            CaseDetails caseDetails = CaseDetails.builder()
+            final CaseDetails caseDetails = CaseDetails.builder()
                 .id(TEST_CASE_ID)
                 .data(caseConverter.toMap(caseData))
                 .build();
@@ -1032,7 +1035,7 @@ class ManageLegalCounselServiceTest {
                     .build())
                 .build();
 
-            CaseDetails caseDetails = CaseDetails.builder()
+            final CaseDetails caseDetails = CaseDetails.builder()
                 .id(TEST_CASE_ID)
                 .data(caseConverter.toMap(caseData))
                 .build();
@@ -1109,7 +1112,7 @@ class ManageLegalCounselServiceTest {
                     .build())
                 .build();
 
-            CaseDetails caseDetails = CaseDetails.builder()
+            final CaseDetails caseDetails = CaseDetails.builder()
                 .id(TEST_CASE_ID)
                 .data(caseConverter.toMap(submittedCaseData))
                 .build();
