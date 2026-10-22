@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorAdded;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -111,14 +112,14 @@ public class LegalCounselUpdatedEventHandler {
 
         Stream<LegalCounsellor> respondentCounsel = caseData.getAllRespondents().stream()
             .map(Element::getValue)
-            .map(respondent -> respondent.getLegalCounsellors())
+            .map(WithSolicitor::getLegalCounsellors)
             .filter(Objects::nonNull)
             .flatMap(List::stream)
             .map(Element::getValue);
 
         Stream<LegalCounsellor> childCounsel = caseData.getAllChildren().stream()
             .map(Element::getValue)
-            .map(child -> child.getLegalCounsellors())
+            .map(WithSolicitor::getLegalCounsellors)
             .filter(Objects::nonNull)
             .flatMap(List::stream)
             .map(Element::getValue);

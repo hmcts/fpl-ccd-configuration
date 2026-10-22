@@ -315,10 +315,15 @@ public class ManageLegalCounselService {
     }
 
     public void updateApplicantLegalCounsel(CaseDetails caseDetails) {
+        Objects.requireNonNull(caseDetails, "Case details must not be null");
+
         CaseData caseData = caseConverter.convert(caseDetails);
 
-        CaseData persistedCaseData = caseConverter.convert(
-            coreCaseDataService.findCaseDetailsById(caseDetails.getId().toString())
+        CaseData persistedCaseData = Objects.requireNonNull(
+            caseConverter.convert(
+                coreCaseDataService.findCaseDetailsById(caseDetails.getId().toString())
+            ),
+            "Persisted case data must not be null"
         );
 
         List<Element<LocalAuthority>> applicants = persistedCaseData.getLocalAuthorities();
