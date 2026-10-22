@@ -17,18 +17,12 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
-import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
-import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
-import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityRemoved;
+import uk.gov.hmcts.reform.fpl.events.*;
+import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationPolicyNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityException;
-import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Colleague;
-import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -620,6 +614,7 @@ class ManageLocalAuthoritiesServiceTest {
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
                 .designated("Yes")
                 .id(newDesignatedLocalAuthorityOrgId)
+                .legalCounsellors(List.of())
                 .name(newDesignatedLocalAuthorityName)
                 .email(newDesignatedLocalAuthorityEmail)
                 .address(address)
@@ -662,6 +657,12 @@ class ManageLocalAuthoritiesServiceTest {
                 .email("org2old@test.com")
                 .pbaNumber("PBA111")
                 .colleagues(wrapElements(oldSolicitor))
+                .legalCounsellors(wrapElements(
+                    LegalCounsellor.builder()
+                        .email("existing.counsel@example.com")
+                        .userId("EXISTING_COUNSEL_USER")
+                        .build()
+                ))
                 .build();
 
             final CaseData caseData = CaseData.builder()
@@ -676,10 +677,13 @@ class ManageLocalAuthoritiesServiceTest {
                 .thenReturn(Optional.of(element(sharedLocalAuthority)));
 
             final Organisation actualOrganisation = underTest.transfer(caseData);
+            assertThat(caseData.getLocalAuthorities().get(0).getValue().getLegalCounsellors())
+                .isEmpty();
 
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
                 .designated("Yes")
                 .id(newDesignatedLocalAuthorityOrgId)
+                .legalCounsellors(List.of())
                 .name(newDesignatedLocalAuthorityName)
                 .email(newDesignatedLocalAuthorityEmail)
                 .address(address)
@@ -746,6 +750,7 @@ class ManageLocalAuthoritiesServiceTest {
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
                 .designated("Yes")
                 .id(newDesignatedLocalAuthorityOrgId)
+                .legalCounsellors(List.of())
                 .name(newDesignatedLocalAuthorityName)
                 .email(newDesignatedLocalAuthorityEmail)
                 .address(address)
@@ -798,6 +803,7 @@ class ManageLocalAuthoritiesServiceTest {
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
                 .designated("Yes")
                 .id(newDesignatedLocalAuthorityOrgId)
+                .legalCounsellors(List.of())
                 .name(newDesignatedLocalAuthorityName)
                 .email(newDesignatedLocalAuthorityEmail)
                 .address(address)
@@ -1250,6 +1256,96 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualChangeEvents).containsExactly(
                 new CaseTransferred(caseData, caseDataBefore),
                 new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore)
+            );
+        }
+
+        @Test
+        void shouldRemoveApplicantCounselWhenDesignatedLocalAuthorityChanges() {
+            final LegalCounsellor applicantCounsel = LegalCounsellor.builder()
+                .email("applicant.counsel@example.com")
+                .userId("APPLICANT_COUNSEL_USER")
+                .build();
+
+            final LocalAuthority previousDesignatedLA = LocalAuthority.builder()
+                .id("ORG1")
+                .name("ORG1 name")
+                .designated("Yes")
+                .legalCounsellors(wrapElements(applicantCounsel))
+                .build();
+
+            final LocalAuthority newDesignatedLA = LocalAuthority.builder()
+                .id("ORG2")
+                .name("ORG2 name")
+                .designated("Yes")
+                .build();
+
+            final CaseData caseDataBefore = CaseData.builder()
+                .localAuthorityPolicy(designatedOrganisationPolicy1)
+                .localAuthorities(wrapElements(previousDesignatedLA))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(designatedOrganisationPolicy2)
+                .localAuthorities(wrapElements(newDesignatedLA))
+                .build();
+
+            final List<Object> actualChangeEvents = underTest.getChangeEvent(caseData, caseDataBefore);
+
+            assertThat(actualChangeEvents).containsExactly(
+                new CaseTransferred(caseData, caseDataBefore),
+                new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore),
+                new LegalCounsellorRemoved(
+                    caseData,
+                    "ORG1 name",
+                    applicantCounsel,
+                    caseDataBefore
+                )
+            );
+        }
+
+        @Test
+        void shouldRemoveApplicantCounselWhenDesignatedLAAndCourtChange() {
+            final LegalCounsellor applicantCounsel = LegalCounsellor.builder()
+                .email("applicant.counsel@example.com")
+                .userId("APPLICANT_COUNSEL_USER")
+                .build();
+
+            final LocalAuthority previousDesignatedLA = LocalAuthority.builder()
+                .id("ORG1")
+                .name("ORG1 name")
+                .designated("Yes")
+                .legalCounsellors(wrapElements(applicantCounsel))
+                .build();
+
+            final LocalAuthority newDesignatedLA = LocalAuthority.builder()
+                .id("ORG2")
+                .name("ORG2 name")
+                .designated("Yes")
+                .build();
+
+            final CaseData caseDataBefore = CaseData.builder()
+                .court(Court.builder().code("C1").build())
+                .localAuthorityPolicy(designatedOrganisationPolicy1)
+                .localAuthorities(wrapElements(previousDesignatedLA))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .court(Court.builder().code("C2").build())
+                .localAuthorityPolicy(designatedOrganisationPolicy2)
+                .localAuthorities(wrapElements(newDesignatedLA))
+                .build();
+
+            final List<Object> actualChangeEvents = underTest.getChangeEvent(caseData, caseDataBefore);
+
+            assertThat(actualChangeEvents).containsExactly(
+                new CaseTransferredToAnotherCourt(caseData, caseDataBefore),
+                new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore),
+                new LegalCounsellorRemoved(
+                    caseData,
+                    "ORG1 name",
+                    applicantCounsel,
+                    caseDataBefore
+                )
             );
         }
 

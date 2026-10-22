@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
 import uk.gov.hmcts.reform.fpl.events.CaseTransferredToAnotherCourt;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityRemoved;
+import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationPolicyNotFound;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
@@ -299,16 +301,29 @@ public class ManageLocalAuthoritiesService {
     }
 
     public List<Object> getChangeEvent(CaseData caseData, CaseData caseDataBefore) {
-        if (!Objects.equals(caseData.getCourt(), caseDataBefore.getCourt())) {
-            return List.of(
-                new CaseTransferredToAnotherCourt(caseData, caseDataBefore),
-                new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
-        }
+        boolean courtChanged = !Objects.equals(caseData.getCourt(), caseDataBefore.getCourt());
 
-        if (!Objects.equals(getDesignatedOrganisationId(caseData), getDesignatedOrganisationId(caseDataBefore))) {
-            return List.of(
-                new CaseTransferred(caseData, caseDataBefore),
-                new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
+        boolean designatedLAChanged = !Objects.equals(
+            getDesignatedOrganisationId(caseData),
+            getDesignatedOrganisationId(caseDataBefore)
+        );
+
+        if (courtChanged || designatedLAChanged) {
+            List<Object> events = new ArrayList<>();
+
+            if (courtChanged) {
+                events.add(new CaseTransferredToAnotherCourt(caseData, caseDataBefore));
+            } else {
+                events.add(new CaseTransferred(caseData, caseDataBefore));
+            }
+
+            events.add(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
+
+            if (designatedLAChanged) {
+                events.addAll(getApplicantCounselRemovalEvents(caseData, caseDataBefore));
+            }
+
+            return events;
         }
 
         if (getSharedOrganisation(caseData).isPresent() && getSharedOrganisation(caseDataBefore).isEmpty()) {
@@ -320,6 +335,34 @@ public class ManageLocalAuthoritiesService {
         }
 
         return emptyList();
+    }
+
+    private List<Object> getApplicantCounselRemovalEvents(
+        CaseData caseData,
+        CaseData caseDataBefore) {
+
+        if (caseDataBefore.getLocalAuthorities() == null) {
+            return emptyList();
+        }
+
+        return caseDataBefore.getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .filter(la -> YES.getValue().equals(la.getDesignated()))
+            .flatMap(la -> {
+                if (la.getLegalCounsellors() == null) {
+                    return Stream.<Object>empty();
+                }
+
+                return la.getLegalCounsellors().stream()
+                    .map(Element::getValue)
+                    .map(counsel -> (Object) new LegalCounsellorRemoved(
+                        caseData,
+                        la.getName(),
+                        counsel,
+                        caseDataBefore
+                    ));
+            })
+            .toList();
     }
 
     public LocalAuthority getLocalAuthorityToTransferDetails(CaseData caseData) {
@@ -394,6 +437,9 @@ public class ManageLocalAuthoritiesService {
 
         if (existingLocalAuthority.isPresent()) {
             final LocalAuthority old = existingLocalAuthority.get();
+
+            // Clear existing Applicant counsel when this LA becomes designated.
+            old.setLegalCounsellors(new ArrayList<>());
 
             old.setName(newDesignatedLocalAuthority.getName());
             old.setEmail(newDesignatedLocalAuthority.getEmail());
