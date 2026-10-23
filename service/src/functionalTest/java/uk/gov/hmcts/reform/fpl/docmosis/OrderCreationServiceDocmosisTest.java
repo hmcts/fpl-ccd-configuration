@@ -4,10 +4,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.docmosis.generator.DocmosisOrderCaseDataGenerator;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -110,7 +109,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     PlacementService.class,
     UploadedOrderDocumentGenerator.class
 })
-@MockBeans({@MockBean(DocumentDownloadService.class), @MockBean(FeeService.class)})
+@MockitoBean(types = {DocumentDownloadService.class, FeeService.class})
 class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static final String LA_CODE = "LA_CODE";
@@ -119,13 +118,13 @@ class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private final DocmosisOrderCaseDataGenerator dataGenerator = new DocmosisOrderCaseDataGenerator();
 
-    @SpyBean
+    @MockitoSpyBean
     private DocmosisDocumentGeneratorService generatorService;
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
-    @MockBean
+    @MockitoBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-    @MockBean
+    @MockitoBean
     private CourtService courtService;
     @Autowired
     private DocmosisHelper docmosisHelper;

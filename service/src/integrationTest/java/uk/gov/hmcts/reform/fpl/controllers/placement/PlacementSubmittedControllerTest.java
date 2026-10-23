@@ -7,8 +7,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
@@ -96,40 +96,40 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
     private static final byte[] FIRST_PARENT_NOTICE_BINARIES = testDocumentBinaries();
     public static final String INTERNAL_CHANGE_PLACEMENT = "internal-change-placement";
 
-    @MockBean
+    @MockitoBean
     private PaymentApi paymentApi;
 
-    @MockBean
+    @MockitoBean
     private FeesRegisterApi feesRegisterApi;
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private SendLetterApi sendLetterApi;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @MockitoBean
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
     @Captor
     private ArgumentCaptor<LetterWithPdfsRequest> sendLetterRequestCaptor;
 
-    @MockBean
+    @MockitoBean
     private DocumentConversionService documentConversionService;
 
-    @MockBean
+    @MockitoBean
     private WorkAllocationTaskService workAllocationTaskService;
 
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
     @BeforeEach

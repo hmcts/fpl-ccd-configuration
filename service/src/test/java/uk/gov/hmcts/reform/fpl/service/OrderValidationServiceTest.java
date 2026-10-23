@@ -4,8 +4,8 @@ import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
@@ -46,7 +46,7 @@ class OrderValidationServiceTest {
     @Autowired
     private OrderValidationService validationService;
 
-    @SpyBean
+    @MockitoSpyBean
     private Validator validator;
 
     @Test

@@ -5,8 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
@@ -55,13 +54,13 @@ class ReplyToMessageJudgeControllerMidEventTest extends MessageJudgeControllerAb
     private static final String MESSAGE = "Some message";
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
 
-    @SpyBean
+    @MockitoBean
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
-    @MockBean
+    @MockitoBean
     private RoleAssignmentService roleAssignmentService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     ReplyToMessageJudgeControllerMidEventTest() {

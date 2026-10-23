@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService;
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.controllers.CaseProgressionReportControlle
 @OverrideAutoConfiguration(enabled = true)
 class CaseProgressReportControllerMidEventTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private CaseProgressionReportService caseProgressionReportService;
 
     CaseProgressReportControllerMidEventTest() {

@@ -7,9 +7,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -158,46 +158,46 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Captor
     private ArgumentCaptor<LetterWithPdfsRequest> printRequest;
 
-    @MockBean
+    @MockitoBean
     private SendLetterApi sendLetterApi;
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
-    @MockBean
+    @MockitoBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
 
-    @MockBean
+    @MockitoBean
     DocmosisHelper docmosisHelper;
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     private DocumentConversionService documentConversionService;
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @MockitoBean
     private DocmosisCoverDocumentsService documentService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
-    @SpyBean
+    @MockitoSpyBean
     private EventService eventPublisher;
 
-    @MockBean
+    @MockitoBean
     private EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     private CafcassNotificationService cafcassNotificationService;
 
     @Captor

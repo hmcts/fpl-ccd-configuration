@@ -6,7 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
@@ -45,19 +45,19 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 @OverrideAutoConfiguration(enabled = true)
 class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private CaseAccessService caseAccessService;
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private OrganisationService organisationService;
 
-    @MockBean
+    @MockitoBean
     private CaseRoleLookupService caseRoleLookupService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     @Captor

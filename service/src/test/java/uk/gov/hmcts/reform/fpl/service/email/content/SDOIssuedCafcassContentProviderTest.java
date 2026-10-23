@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -31,7 +31,7 @@ class SDOIssuedCafcassContentProviderTest extends AbstractEmailContentProviderTe
     private static final byte[] ORDER_BINARY = TestDataHelper.DOCUMENT_CONTENT;
     private static final String ENCODED_BINARY = Base64.getEncoder().encodeToString(ORDER_BINARY);
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
 
     @Autowired

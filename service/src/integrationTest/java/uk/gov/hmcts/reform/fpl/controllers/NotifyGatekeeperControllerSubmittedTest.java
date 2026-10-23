@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.service.notify.NotificationClient;
@@ -24,10 +24,10 @@ class NotifyGatekeeperControllerSubmittedTest extends AbstractCallbackTest {
     private static final String CAFCASS_EMAIL = "Cafcass+gatekeeper@gmail.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/12345";
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @SpyBean
+    @MockitoSpyBean
     private EventService eventPublisher;
 
     NotifyGatekeeperControllerSubmittedTest() {

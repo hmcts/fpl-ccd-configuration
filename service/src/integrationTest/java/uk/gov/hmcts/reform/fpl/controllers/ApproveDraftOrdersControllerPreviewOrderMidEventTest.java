@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -52,7 +52,7 @@ class ApproveDraftOrdersControllerPreviewOrderMidEventTest extends AbstractCallb
     private static final Element<HearingOrdersBundle> ORDER_BUNDLE_C2 = element(SELECTED_HEARING_ID,
         HearingOrdersBundle.builder().orders(new ArrayList<>((List.of(DRAFT_ORDER_ELEMENT_C2)))).build());
 
-    @MockBean
+    @MockitoBean
     private HearingOrderGenerator hearingOrderGenerator;
 
     ApproveDraftOrdersControllerPreviewOrderMidEventTest() {

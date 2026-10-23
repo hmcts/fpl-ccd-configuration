@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -39,14 +39,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
-    private static final String BINARY_URL = "/documents/applicationBinaryUrl";
+    private static final String BINARY_URL = "/documentsv2/applicationBinaryUrl";
     private static final DocumentReference C110A = mock(DocumentReference.class);
     private static final String CHILD_LAST_NAME = "Holmes";
 
     @Autowired
     private HmctsEmailContentProvider underTest;
 
-    @MockBean
+    @MockitoBean
     private EmailNotificationHelper helper;
 
     @BeforeEach

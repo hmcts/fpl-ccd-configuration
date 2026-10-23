@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.IsAddressKnowType;
@@ -56,7 +56,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 @OverrideAutoConfiguration(enabled = true)
 class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private RequestData requestData;
     private static final String CONFIRM_IF_LEGAL_REP_ERROR = "Confirm if respondent has legal representation";
     private static final String DOB_ERROR = "Date of birth for respondent cannot be in the future";

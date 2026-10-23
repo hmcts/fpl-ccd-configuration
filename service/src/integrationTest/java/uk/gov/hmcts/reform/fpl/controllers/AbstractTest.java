@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
@@ -63,28 +63,28 @@ public abstract class AbstractTest {
     @Autowired
     private SystemUpdateUserConfiguration userConfig;
 
-    @MockBean
+    @MockitoBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @MockBean
+    @MockitoBean
     protected IdamClient idamClient;
 
-    @MockBean
+    @MockitoBean
     protected CaseAssignmentApi caseAssignmentApi;
 
-    @MockBean
+    @MockitoBean
     protected CoreCaseDataApiV2 coreCaseDataApi;
 
-    @MockBean
+    @MockitoBean
     protected DocumentUploadClientApi documentUploadClientApi;
 
-    @MockBean
+    @MockitoBean
     protected DocumentDownloadClientApi documentDownloadClientApi;
 
-    @MockBean
+    @MockitoBean
     protected DocumentMetadataDownloadClientApi documentMetadataDownloadClientApi;
 
-    @MockBean
+    @MockitoBean
     protected CaseDocumentClientApi caseDocumentClientApi;
 
     @Autowired
