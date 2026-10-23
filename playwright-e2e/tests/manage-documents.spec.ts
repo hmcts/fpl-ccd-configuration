@@ -18,25 +18,18 @@ test.describe('Manage Documents', () => {
     const caseWithResSolicitor = require('../caseData/caseWithRespondentSolicitor.json');
     const caseWithManageDocumentUploads = require('../caseData/caseWithManageDocumentUploads.json');
     test.beforeEach(async () => {
-     //  caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-      // expect(caseNumber).toBeDefined();
-        caseNumber = ''
+        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        expect(caseNumber).toBeDefined();
     });
 
-    test.only('LA uploads documents @xbrowser', async ({ page, signInPage, manageDocuments, caseFileView,allWork }) => {
-       // caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
-        //expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+    test('LA uploads documents @xbrowser', async ({ page, signInPage, manageDocuments, caseFileView }) => {
+        caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
+        expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
         await signInPage.visit();
-        await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
-       // await signInPage.navigateToCaseDetails(caseNumber);
-        await signInPage.page.pause();
-        await signInPage.clickAllWork();
-        // search for the routine CTSC work
-await allWork.filterService('Family Public Law');
-await allWork.filterWorkType('Routine work');
-await allWork.filterTaskName('Review Correspondence');
-await allWork.clickSearchButton();
-await allWork.ParseTaskTable();
+        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await manageDocuments.gotoNextStep('Manage documents');
+        await manageDocuments.uploadDocuments('Court correspondence');
 
         // Check CFV
         await caseFileView.goToCFVTab();
