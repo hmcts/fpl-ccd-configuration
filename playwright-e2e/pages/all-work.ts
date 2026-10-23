@@ -21,6 +21,7 @@ export class ALLWork extends BasePage {
     private taskLink: Locator;
     private toDefaultButton: Locator;
     private workAllocationTable: Locator;
+    taskTableFirstRow: any;
 
 
 
@@ -41,6 +42,7 @@ export class ALLWork extends BasePage {
         this.searchlocationRadio = this.page.getByRole('radio', {name: 'search for a location'});
         this.locationSearchInput = this.page.locator('inputLocationSearch');
         this.workAllocationTable = this.page.locator('table.cdk-table.govuk-table')
+        this.taskTableFirstRow = this.page.locator('tr.cdk-row.govuk-table__row:not(.actions-row)').first();
 
 
 
@@ -72,7 +74,10 @@ export class ALLWork extends BasePage {
 
     async filterWorkType(workType: string = "Routine work"): Promise<void> {
         await this.workTypeSearchOption.fill(workType);
-        // await this.page.locator('#inputWorkTypeSearch').fill(workType);
+        await this.page.pause();
+        await this.page.getByText('Routine work').click();
+        await this.page.getByRole('link', { name: 'Add work type' }).click();
+
     }
     async filterTaskType(taskType: string): Promise<void> {
         await this.taskTypeSearchOption.selectOption(taskType);
@@ -81,12 +86,21 @@ export class ALLWork extends BasePage {
 
     async filterTaskName(taskName: string): Promise<void> {
         await this.tasknameSearchOption.fill(taskName);
-        await this.page.getByText('Review Correspondence', {exact: true}).click();
+        await this.page.getByText(taskName, {exact: true}).click();
     }
 
 
     async clickSearchButton(): Promise<void> {
-        await this.applyButton.click();
+
+        const [response] = await Promise.all([
+            this.page.waitForResponse(response =>
+                response.url().includes('/workallocation/task') &&
+                response.request().method() === 'POST' &&
+                response.status() === 200
+            ),
+            await this.applyButton.click()
+        ]);
+        await this.page.locator('body').click();
     }
 
     async clickCancelLink(): Promise<void> {
@@ -94,13 +108,40 @@ export class ALLWork extends BasePage {
     }
     async ParseTaskTable(): Promise<Array<Record<string, string>>> {
         const tableUtils = new TableUtils();
-        const WAmap = await tableUtils.parseWorkAllocationTable(this.workAllocationTable);
-        console.log(WAmap);
-         return WAmap;
+        const TaskMap = await tableUtils.parseWorkAllocationTable(this.workAllocationTable);
+       // const latestTask = TaskMap[0];
+        return TaskMap;
     }
 
+    async getDistinctColumnValues(columnName: string): Promise<string[]> {
+        const rows = await this.ParseTaskTable();
 
+        return [...new Set(
+            rows
+                .map(row => (row[columnName] ?? '').trim())
+                .filter(value => value.length > 0)
+        )];
+    }
+async sortColumn(sortBy: string = 'case_name',sortOrder: string = 'descending'): Promise<void> {
+    const headerCell = this.page.locator(`th.cdk-column-${sortBy}`);
+        const sortButton = headerCell.locator('button');
+    console.log(headerCell);
+    await sortButton.click();
+    let sortState = await this.page.locator('th.cdk-column-case_name')
+        .getAttribute('aria-sort');
+    console.log(sortState);
 
+    // If it's not already descending, click the sort button until it is
+    while (sortState !== sortOrder) {
+        await sortButton.click();
+
+        // Optional: If sorting triggers a network request, add your waitForResponse here
+
+        // Refresh the sort state value for the next loop check
+        sortState = await headerCell.getAttribute('aria-sort');
+    }
+    await expect(headerCell).toHaveAttribute('aria-sort', sortOrder);
+}
 
     // async getFirstTaskRow(page: Page): Promise<HeaderFromKeys<string[]>> {
     //
