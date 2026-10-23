@@ -291,7 +291,6 @@ def setupUITestEnvVariablesForPreview() {
 }
 def installYarnDependenciesIfNeeded(yarnBuilder) {
     if (!fileExists('node_modules')){
-      yarnBuilder.yarn('yarn-update')
       yarnBuilder.yarn('install-dependencies')
   }
 
@@ -320,7 +319,7 @@ withPipeline(type, product, component) {
   onPR() {
     env.ENV = 'preview'
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
-                   AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK
+                  AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK
     ])
   }
   onDemo {

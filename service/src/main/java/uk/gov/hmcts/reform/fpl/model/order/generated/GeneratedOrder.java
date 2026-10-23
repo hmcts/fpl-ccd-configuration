@@ -53,8 +53,9 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     private final DocumentReference document;
     private final DocumentReference documentConfidential;
     private final DocumentReference translatedDocument;
+    private final DocumentReference refusalDocument;
+    private final DocumentReference refusalDocumentConfidential;
     private final DocumentReference unsealedDocumentCopy;
-    private final DocumentReference refusedDocument;
     private final LocalDateTime translationUploadDateTime;
     private final LanguageTranslationRequirement translationRequirements;
     private final LocalDate amendedDate;
@@ -83,6 +84,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     private String childArrangementsContactWithDetails;
     private String specificIssueOrderDetails;
     private String prohibitedStepsOrderDetails;
+    private String applicationGeneratedOrder;
 
     @JsonIgnore
     public boolean isRemovable() {

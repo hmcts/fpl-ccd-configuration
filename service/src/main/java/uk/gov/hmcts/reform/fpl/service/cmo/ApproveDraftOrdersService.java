@@ -42,6 +42,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.LEGAL_ADVISOR;
@@ -213,7 +214,7 @@ public class ApproveDraftOrdersService {
                     data.put("state", getStateBasedOnNextHearing(caseData, cmoReviewDecision, reviewedOrder.getId()));
                 } else if (JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
                     reviewedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
-                        cmo, cmoReviewDecision.getChangesRequestedByJudge());
+                        cmo, cmoReviewDecision.getChangesRequestedByJudge(), RETURNED);
                 } else {
                     log.info("Draft CMO is removed by Judge");
                     data.putAll(removeDraftOrders(caseData, List.of(cmo)));
@@ -296,6 +297,7 @@ public class ApproveDraftOrdersService {
                         data,
                         selectedOrdersBundle,
                         orderElement,
+                        RETURNED,
                         reviewDecision.getChangesRequestedByJudge()
                     );
 
@@ -420,11 +422,13 @@ public class ApproveDraftOrdersService {
         Map<String, Object> data,
         Element<HearingOrdersBundle> selectedOrdersBundle,
         Element<HearingOrder> orderElement,
+        CMOStatus cmoStatus,
         String changesRequestedByJudge
     ) {
         Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
             orderElement,
-            changesRequestedByJudge
+            changesRequestedByJudge,
+            cmoStatus
         );
 
         if (orderElement.getValue().isConfidentialOrder()) {
