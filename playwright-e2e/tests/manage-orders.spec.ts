@@ -446,7 +446,8 @@ test.describe('manage orders', () => {
         await expect.soft(page.getByText('Transparency Order', { exact: true })).toBeVisible();
 
         await orders.uploadsTransparencyOrder();
-
+        await orders.clickContinue();
+        
         await orders.clickContinue();
         await orders.clickContinue();// issues with code, had to work around it
         await orders.checkYourAnsAndSubmit();

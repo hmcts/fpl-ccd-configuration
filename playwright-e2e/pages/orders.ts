@@ -1,6 +1,7 @@
 import { BasePage } from "./base-page";
 import { expect, Locator, Page } from "@playwright/test";
 import config from "../settings/test-docs/config";
+import { addMonthsToDate } from "../utils/document-format-helper";
 
 export class Orders extends BasePage {
     orderPage: Page;
@@ -254,9 +255,11 @@ export class Orders extends BasePage {
     async addChildDetails(isAllChildrenInvolved: string) {
         await this.isAllChildrenInvolved.getByRole('radio', { name: `${isAllChildrenInvolved}` }).click();
         if (isAllChildrenInvolved == 'No') {
-            await this.page.getByRole('group', { name: 'Child 1 (Optional)' }).getByLabel('Yes').check();
-            await this.page.getByRole('group', { name: 'Child 2 (Optional)' }).getByLabel('Yes').check();
-            await this.page.getByRole('group', { name: 'Child 4 (Optional)' }).getByLabel('Yes').check();
+            await this.page.getByRole('group', { name: 'Timothy Jones (Child 1)' }).getByLabel('Yes').click();
+            await this.page.getByRole('group', { name: 'John Black (Child 2)' }).getByLabel('Yes').click();
+            await this.page.getByRole('group', { name: 'Sarah Black (Child 4)' }).getByLabel('Yes').click();
+            await this.clickContinue();
+
         }
 
     }
@@ -525,13 +528,10 @@ export class Orders extends BasePage {
     async uploadsContactWithChildInCareOrder() {
         await this.clickContinue();
         await this.orderApproved.getByLabel('No').check();
-        await this.clickContinue();
         await this.orderApplication.getByLabel('Yes').check();
-        await this.clickContinue();
-        await this.issuingJudge.getByLabel('Yes').check();
-        await this.issuingJudge.getByLabel('Yes').check();//issues with code. Had to work around it
         await this.applications.selectOption('C2, 25 March 2021, 3:16pm');
         await this.clickContinue();
+        await this.issuingJudge.getByLabel('Yes').check();
         await this.clickContinue();
         await this.isAllChildrenInvolved.getByLabel('Yes').check();
         await this.clickContinue();
@@ -627,11 +627,11 @@ export class Orders extends BasePage {
         await this.endDayTimeMonth.fill('11');
         await this.endDayTimeYear.fill('2026');
         await this.produceChildrenToApplicant.getByLabel('Yes').click();// checkbox not clicking had to work around it
-      
+
         let endDate = addMonthsToDate(new Date(), 5);
-        await this.endDayTimeDay.fill(new Intl.DateTimeFormat('en', {day: 'numeric'}).format(endDate));
-        await this.endDayTimeMonth.fill(new Intl.DateTimeFormat('en', {month: 'numeric'}).format(endDate));
-        await this.endDayTimeYear.fill(new Intl.DateTimeFormat('en', {year: 'numeric'}).format(endDate));
+        await this.endDayTimeDay.fill(new Intl.DateTimeFormat('en', { day: 'numeric' }).format(endDate));
+        await this.endDayTimeMonth.fill(new Intl.DateTimeFormat('en', { month: 'numeric' }).format(endDate));
+        await this.endDayTimeYear.fill(new Intl.DateTimeFormat('en', { year: 'numeric' }).format(endDate));
         await this.hour.fill('10');
         await this.finalOrder.getByLabel('No').click();
         await this.clickContinue();
