@@ -521,7 +521,6 @@ export class Orders extends BasePage {
         await this.orderConsent.getByLabel('Yes').check();
         await this.specialGuardianOne.getByRole('checkbox', { name: 'Yes' }).click()
         await this.finalOrder.getByLabel('No').check();
-        await this.clickContinue();
 
     }
 
