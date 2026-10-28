@@ -255,11 +255,9 @@ export class Orders extends BasePage {
     async addChildDetails(isAllChildrenInvolved: string) {
         await this.isAllChildrenInvolved.getByRole('radio', { name: `${isAllChildrenInvolved}` }).click();
         if (isAllChildrenInvolved == 'No') {
-            await this.page.getByRole('group', { name: 'Timothy Jones (Child 1)' }).getByLabel('Yes').click();
-            await this.page.getByRole('group', { name: 'John Black (Child 2)' }).getByLabel('Yes').click();
-            await this.page.getByRole('group', { name: 'Sarah Black (Child 4)' }).getByLabel('Yes').click();
-            await this.clickContinue();
-
+            await this.page.getByRole('checkbox', { name: 'Timothy Jones (Child 1)' }).check();
+            await this.page.getByRole('checkbox', { name: 'John Black (Child 2)' }).check();
+            await this.page.getByRole('checkbox', { name: 'Sarah Black (Child 4)' }).check();
         }
 
     }
