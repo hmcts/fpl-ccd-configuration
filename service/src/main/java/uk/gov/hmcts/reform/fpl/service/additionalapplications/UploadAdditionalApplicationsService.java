@@ -574,7 +574,7 @@ public class UploadAdditionalApplicationsService {
     }
 
     public YesNo reviewNextHearingChecker(UploadAdditionalApplicationsEventData eventData) {
-      return !isNull(eventData.getTemporaryC2Document())
+        return !isNull(eventData.getTemporaryC2Document())
             && YesNo.YES.equals(eventData.getTemporaryC2Document().getCanBeConsideredAtNextHearing()) ? YES : NO;
     }
 }
