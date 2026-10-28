@@ -2923,7 +2923,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2AdditionalApplicationToBeReview",
     "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "CRD"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
