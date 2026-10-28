@@ -8,10 +8,10 @@ import {
 import {expect} from "@playwright/test";
 import {urlConfig} from "../settings/urls";
 import caseWithChildrenCafcassSolicitorDemo
-    from '../caseData/caseWithMultipleChildCafcassSolicitorDemo.json' assert {type: "json"};
+    from '../caseData/caseWithMultipleChildCafcassSolicitorDemo.json' with {type: "json"};
 import caseWithChildrenCafcassSolicitor
-    from '../caseData/caseWithMultipleChildCafcassSolicitor.json' assert {type: "json"};
-import caseWtihQuery from '../caseData/caseWithQuery.json' assert {type: "json"};
+    from '../caseData/caseWithMultipleChildCafcassSolicitor.json' with {type: "json"};
+import caseWtihQuery from '../caseData/caseWithQuery.json' with {type: "json"};
 
 test.describe('Query management', () => {
     const dateTime = new Date().toISOString();
