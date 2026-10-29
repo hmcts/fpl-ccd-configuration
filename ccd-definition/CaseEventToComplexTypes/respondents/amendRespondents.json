@@ -6,7 +6,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.firstName",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -15,7 +15,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.lastName",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -247,14 +247,15 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "legalRepresentationLabel",
     "DisplayContext": "READONLY"
-  },  {
-  "LiveFrom": "01/01/2017",
-  "ID": "AmendRespondents",
-  "CaseEventID": "amendRespondents",
-  "CaseFieldID": "respondents1",
-  "ListElementCode": "legalRepresentation",
-  "DisplayContext": "OPTIONAL"
-},
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendRespondents",
+    "CaseEventID": "amendRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "legalRepresentation",
+    "DisplayContext": "MANDATORY"
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AmendRespondents",
