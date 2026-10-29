@@ -72,20 +72,20 @@ export class ALLWork extends BasePage {
         }
     }
 
-    async filterWorkType(workType: string = "Routine work"): Promise<void> {
+    async filterByWorkType(workType: string = "Routine work"): Promise<void> {
         await this.workTypeSearchOption.fill(workType);
-        await this.page.pause();
-        await this.page.getByText('Routine work').click();
+        await this.page.getByText(workType, {exact: true}).click();
         await this.page.getByRole('link', { name: 'Add work type' }).click();
 
     }
-    async filterTaskType(taskType: string): Promise<void> {
+    async filterTaskBYRoleType(taskType: string): Promise<void> {
         await this.taskTypeSearchOption.selectOption(taskType);
     }
 
 
-    async filterTaskName(taskName: string): Promise<void> {
+    async filterByTaskName(taskName: string): Promise<void> {
         await this.tasknameSearchOption.fill(taskName);
+        await this.page.pause()
         await this.page.getByText(taskName, {exact: true}).click();
     }
 
