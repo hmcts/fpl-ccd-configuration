@@ -38,11 +38,7 @@ test.describe('send and reply message', () => {
             await expect(judicialMessages.page.getByText('To the allocated judge - Regard Hearing')).toBeVisible();
 
             await judicialMessages.expandMessageDetails('CTSC');
-           await expect( judicialMessages.page.locator('table[aria-describedby="complex field table"]')
-               .locator('tbody').locator('tr')
-               .filter({hasText: 'Date sent'})
-               .locator('td')).toContainText(sendDate);
-
+            expect(await judicialMessages.getCellValueInTable('complex field table', 'Date sent')).toContain(sendDate);
             await expect(page.locator('ccd-read-complex-field-collection-table')).toContainText('C2, 25 March 2021, 3:16pm');
             await expect(page.getByText('Allocated judge to decide on the hearing.')).toHaveCount(2);
 
@@ -64,10 +60,7 @@ test.describe('send and reply message', () => {
             await expect(judicialMessages.page.getByText('To legal adviser - Regard Hearing assistance')).toBeVisible();
             await expect(judicialMessages.page.getByText('Open', {exact: true})).toBeVisible();
             await judicialMessages.expandMessageDetails('CTSC');
-            await expect( judicialMessages.page.locator('table[aria-describedby="complex field table"]')
-                .locator('tbody').locator('tr')
-                .filter({hasText: 'Date sent'})
-                .locator('td')).toContainText(sendDate);
+            await expect( await judicialMessages.getCellValueInTable('complex field table', 'Date sent')).toContain(sendDate);
             await expect(page.getByText('Hearing needs assistance from legal adviser.')).toHaveCount(2);
 
         });
