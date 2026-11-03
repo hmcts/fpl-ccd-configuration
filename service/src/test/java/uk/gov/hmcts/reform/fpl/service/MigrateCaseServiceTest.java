@@ -63,6 +63,7 @@ import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -410,6 +411,32 @@ class MigrateCaseServiceTest {
             .organisationName(newOrgName)
             .build();
 
+        private final RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
+            .firstName("Respondent")
+            .lastName("Solicitor")
+            .email("solicitor@example.com")
+            .organisation(previousOrganisation)
+            .telephoneNumber(phoneNumber)
+            .regionalOfficeAddress(testAddress())
+            .build();
+
+        private final Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder().firstName("First").lastName("Respondent").build())
+            .solicitor(respondentSolicitor)
+            .legalRepresentation("Yes")
+            .usingOtherOrg(YES)
+            .build();
+
+        private final Respondent unchangedRespondent = Respondent.builder()
+            .party(RespondentParty.builder().firstName("Second").lastName("Respondent").build())
+            .solicitor(RespondentSolicitor.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("OPQRSTU")
+                    .organisationName("Other Organisation")
+                    .build())
+                .build())
+            .build();
+
         @Test
         void updateRespondentPolicy() {
             when(organisationService.findOrganisation(newOrgId))
@@ -433,6 +460,35 @@ class MigrateCaseServiceTest {
                 .organisation(newOrganisation)
                 .orgPolicyCaseAssignedRole(caseRole)
                 .build());
+        }
+
+        @Test
+        void updateRespondents() {
+            UUID respondentId = UUID.randomUUID();
+            UUID unchangedRespondentId = UUID.randomUUID();
+
+            CaseData caseData = CaseData.builder()
+                .respondents1(List.of(
+                    element(respondentId, respondent),
+                    element(unchangedRespondentId, unchangedRespondent)
+                ))
+                .build();
+
+            Respondent expectedRespondent = respondent.toBuilder()
+                .solicitor(respondent.getSolicitor().toBuilder()
+                    .organisation(newOrganisation)
+                    .build())
+                .build();
+
+            Map<String, List<Element<Respondent>>> result = underTest.updateRespondents(
+                caseData, previousOrganisation.getOrganisationName(), newOrgName,
+                previousOrganisation.getOrganisationID(), newOrgId
+            );
+
+            assertThat(result).containsEntry("respondents1", List.of(
+                element(respondentId, expectedRespondent),
+                element(unchangedRespondentId, unchangedRespondent)
+            ));
         }
     }
 
