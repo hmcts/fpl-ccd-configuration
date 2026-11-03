@@ -980,7 +980,7 @@ class ManageLegalCounselServiceTest {
                     .build())
                 .build();
 
-            CaseDetails caseDetails = CaseDetails.builder()
+            final CaseDetails caseDetails = CaseDetails.builder()
                 .id(TEST_CASE_ID)
                 .data(caseConverter.toMap(caseData))
                 .build();
@@ -1093,6 +1093,7 @@ class ManageLegalCounselServiceTest {
             assertThat(underTest.canCurrentUserManageApplicantCounsel(caseData))
                 .isTrue();
         }
+
         @Test
         void shouldAllowOutsourcedLAToUpdateApplicantCounsel() {
             when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
