@@ -61,6 +61,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -399,6 +400,9 @@ class MigrateCaseServiceTest {
 
         private final String caseRole = "[SOLICITORA]";
 
+        private final Telephone phoneNumber = Telephone.builder()
+            .telephoneNumber("01234567890").build();
+
         private int policyIndex = 0;
 
         private final Organisation previousOrganisation = Organisation.builder()
@@ -435,6 +439,17 @@ class MigrateCaseServiceTest {
                     .organisationName("Other Organisation")
                     .build())
                 .build())
+            .build();
+
+        private final RespondentLocalAuthority respondentLA = RespondentLocalAuthority.builder()
+            .name("Local Authority")
+            .email("la@example.com")
+            .address(testAddress())
+            .phoneNumber(phoneNumber.toString())
+            .organisation(previousOrganisation)
+            .usingOtherOrg(YES)
+            .representativeFirstName("Respondent")
+            .representativeLastName("Solicitor")
             .build();
 
         @Test
@@ -489,6 +504,22 @@ class MigrateCaseServiceTest {
                 element(respondentId, expectedRespondent),
                 element(unchangedRespondentId, unchangedRespondent)
             ));
+        }
+
+        @Test
+        void updateRespondentLA() {
+            CaseData caseData = CaseData.builder()
+                .respondentLocalAuthority(respondentLA)
+                .build();
+
+            RespondentLocalAuthority expectedRespondentLA = respondentLA.toBuilder()
+                .organisation(newOrganisation)
+                .build();
+
+            Map<String, RespondentLocalAuthority> result =
+                underTest.updateRespondentLA(caseData, newOrgName, newOrgId);
+
+            assertThat(result).containsEntry("respondentLocalAuthority", expectedRespondentLA);
         }
     }
 

@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
@@ -1158,6 +1159,30 @@ public class MigrateCaseService {
 
         updatedRespondents.set(index, updatedRespondentElement);
         return Map.of("respondents1", updatedRespondents);
+    }
+
+    public Map<String, RespondentLocalAuthority> updateRespondentLA(CaseData caseData, String newOrgName,
+                                                                    String newOrgId) {
+        RespondentLocalAuthority respondentLA = caseData.getRespondentLocalAuthority();
+
+        Organisation newRespondentOrg = Organisation.builder()
+            .organisationID(newOrgId)
+            .organisationName(newOrgName)
+            .build();
+
+        RespondentLocalAuthority updatedRespondentLA = RespondentLocalAuthority.builder()
+            .name(respondentLA.getName())
+            .email(respondentLA.getEmail())
+            .address(respondentLA.getAddress())
+            .phoneNumber(respondentLA.getPhoneNumber())
+            .organisation(newRespondentOrg)
+            .usingOtherOrg(respondentLA.getUsingOtherOrg())
+            .legalCounsellors(respondentLA.getLegalCounsellors())
+            .representativeFirstName(respondentLA.getRepresentativeFirstName())
+            .representativeLastName(respondentLA.getRepresentativeLastName())
+            .build();
+
+        return Map.of("respondentLocalAuthority", updatedRespondentLA);
     }
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,
                                                                                     String migrationId,
