@@ -31,9 +31,9 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3017", this::run3017,
         "DFPL-3390", this::run3390,
-        "DFPL-3373", this::run3373
+        "DFPL-3373", this::run3373,
+        "DFPL-3419", this::run3419
     );
 
     @PostMapping("/about-to-submit")
@@ -60,17 +60,21 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    public void run3017(CaseDetails caseDetails) {
+    public void run3419(CaseDetails caseDetails) {
         final CaseData caseData = getCaseData(caseDetails);
-        String orgId = "KB2TFNA";
-        String caseRole = CaseRole.LAMANAGING.formattedName();
-        String orgName = "Milton Keynes Council";
-        String newOrgName = "Milton Keynes City Council";
+        String orgName = "Wakefield Metropolitan District Council";
+        String newOrgName = "Kirklees Council";
+        String orgId = "T1GWH7Y";
+        String newOrgId = "4001R46";
+        String caseRole = CaseRole.SOLICITORA.formattedName();
+        int policyIndex = 0;
 
-        caseDetails.getData().putAll(migrateCaseService.updateLocalAuthorityPolicy(caseData, orgId,
-                                                                                   caseRole, newOrgName));
-        caseDetails.getData().putAll(migrateCaseService.updateLocalAuthority(caseData, orgName,  newOrgName));
+        caseDetails.getData().putAll(migrateCaseService.updateRespondents(caseData, orgName,
+                                                                          newOrgName, orgId, newOrgId));
+        caseDetails.getData().putAll(migrateCaseService.updateRespondentPolicy(caseData, newOrgId, caseRole, policyIndex));
         caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthorityName(newOrgName));
+        caseDetails.getData().putAll(migrateCaseService.updateRespondentLA(caseData, newOrgName, newOrgId));
+        caseDetails.getData().putAll(migrateCaseService.updateAdditionalApplications(caseData, newOrgName, newOrgId));
     }
 
     public void run3390(CaseDetails caseDetails) {
