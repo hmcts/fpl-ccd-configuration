@@ -20,8 +20,8 @@ export class LegalCounsel extends BasePage {
         this.email = page.getByLabel('Email address');
         this.organisation = page.getByLabel('You can only search for');
         this.selectOrg = page.getByRole('link', {name: 'Select'});
-        this.removeCounsel = page.getByLabel('Remove Counsel');
-        this.removeCounselAlert = page.getByRole('button', {name: 'Remove'});
+        this.removeCounsel = page.getByLabel('Remove Counsel',{exact: true});
+        this.removeCounselAlert = page.getByRole('button', {name: 'Remove',exact: true});
         this.isRepresented = page.getByRole('group', {name: 'Do they have legal'});
     }
 
