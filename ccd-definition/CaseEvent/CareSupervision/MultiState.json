@@ -990,7 +990,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "addOrRemoveLegalCounsel",
-    "Name": "Add or remove Respondent Counsel",
+    "Name": "Add/remove Respondent counsel",
     "Description": "Add or remove Respondent Counsel",
     "DisplayOrder": 11,
     "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
