@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.legalcounsel.ManageLegalCounselService;
@@ -29,12 +30,25 @@ public class ManageApplicantLegalCounselController extends CallbackController {
     ) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        List<Element<LegalCounsellor>> legalCounsellors =
-            manageLegalCounselService.retrieveApplicantLegalCounselForCurrentUser(getCaseData(caseDetails));
+        try {
+            CaseData persistedCaseData =
+                manageLegalCounselService.getAuthorisedApplicantCounselCaseData(
+                    caseDetails.getId()
+                );
 
-        caseDetails.getData().put("legalCounsellors", legalCounsellors);
+            List<Element<LegalCounsellor>> legalCounsellors =
+                manageLegalCounselService.retrieveApplicantLegalCounselForCurrentUser(
+                    persistedCaseData
+                );
 
-        return respond(caseDetails);
+            caseDetails.getData().put("legalCounsellors", legalCounsellors);
+
+            return respond(caseDetails);
+        } catch (AuthorizationException exception) {
+            return respond(caseDetails, List.of(
+                "You must be the Applicant or acting on behalf of the Applicant to manage Applicant legal counsel."
+            ));
+        }
     }
 
     @PostMapping("/mid-event")
