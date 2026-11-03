@@ -572,4 +572,9 @@ public class UploadAdditionalApplicationsService {
             .map(childName -> String.join(" ", childName.getLabel()))
             .collect(Collectors.joining("\n"));
     }
+
+    public YesNo reviewNextHearingChecker(UploadAdditionalApplicationsEventData eventData) {
+        return !isNull(eventData.getTemporaryC2Document())
+            && YesNo.YES.equals(eventData.getTemporaryC2Document().getCanBeConsideredAtNextHearing()) ? YES : NO;
+    }
 }
