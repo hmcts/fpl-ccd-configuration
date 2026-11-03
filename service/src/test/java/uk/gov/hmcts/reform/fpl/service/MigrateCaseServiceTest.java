@@ -393,7 +393,7 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
-    class UpdateRespondentPolicy {
+    class UpdateRespondents {
 
         private final String newOrgId = "HIJKLMN";
         private final String newOrgName = "New Organisation Name";
@@ -520,6 +520,86 @@ class MigrateCaseServiceTest {
                 underTest.updateRespondentLA(caseData, newOrgName, newOrgId);
 
             assertThat(result).containsEntry("respondentLocalAuthority", expectedRespondentLA);
+        }
+
+        @Test
+        void updateAdditionalApplications() {
+            UUID bundleId = UUID.randomUUID();
+            UUID bundleWithoutC2Id = UUID.randomUUID();
+            UUID changedRespondentId = UUID.randomUUID();
+            UUID respondentWithoutSolicitorId = UUID.randomUUID();
+            UUID respondentWithoutOrganisationId = UUID.randomUUID();
+            UUID respondentAlreadyUpdatedId = UUID.randomUUID();
+
+            Respondent changedRespondent = Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test1").build())
+                .solicitor(RespondentSolicitor.builder()
+                    .email("solicitor@example.com")
+                    .organisation(previousOrganisation)
+                    .build())
+                .build();
+            Respondent respondentWithoutSolicitor = Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test2").build())
+                .build();
+            Respondent respondentWithoutOrganisation = Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test3").build())
+                .solicitor(RespondentSolicitor.builder().build())
+                .build();
+            Respondent respondentAlreadyUpdated = Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test4").build())
+                .solicitor(RespondentSolicitor.builder()
+                    .organisation(newOrganisation)
+                    .build())
+                .build();
+
+            Element<Respondent> changedRespondentElement = element(changedRespondentId, changedRespondent);
+            Element<Respondent> respondentWithoutSolicitorElement =
+                element(respondentWithoutSolicitorId, respondentWithoutSolicitor);
+            Element<Respondent> respondentWithoutOrganisationElement =
+                element(respondentWithoutOrganisationId, respondentWithoutOrganisation);
+            Element<Respondent> respondentAlreadyUpdatedElement =
+                element(respondentAlreadyUpdatedId, respondentAlreadyUpdated);
+
+            C2DocumentBundle c2Bundle = C2DocumentBundle.builder()
+                .respondents(List.of(
+                    changedRespondentElement,
+                    respondentWithoutSolicitorElement,
+                    respondentWithoutOrganisationElement,
+                    respondentAlreadyUpdatedElement
+                ))
+                .build();
+
+            Element<AdditionalApplicationsBundle> bundle = element(bundleId,
+                AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle).build());
+            Element<AdditionalApplicationsBundle> bundleWithoutC2 = element(bundleWithoutC2Id,
+                AdditionalApplicationsBundle.builder().build());
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(List.of(bundle, bundleWithoutC2))
+                .build();
+
+            Element<Respondent> expectedChangedRespondent = element(changedRespondentId,
+                changedRespondent.toBuilder()
+                    .solicitor(changedRespondent.getSolicitor().toBuilder()
+                        .organisation(newOrganisation)
+                        .build())
+                    .build());
+            Element<AdditionalApplicationsBundle> expectedBundle = element(bundleId,
+                bundle.getValue().toBuilder()
+                    .c2DocumentBundle(c2Bundle.toBuilder()
+                        .respondents(List.of(
+                            expectedChangedRespondent,
+                            respondentWithoutSolicitorElement,
+                            respondentWithoutOrganisationElement,
+                            respondentAlreadyUpdatedElement
+                        ))
+                        .build())
+                    .build());
+
+            Map<String, List<Element<AdditionalApplicationsBundle>>> result =
+                underTest.updateAdditionalApplications(caseData, newOrgName, newOrgId);
+
+            assertThat(result).containsEntry("additionalApplicationsBundle", List.of(expectedBundle, bundleWithoutC2));
         }
     }
 
