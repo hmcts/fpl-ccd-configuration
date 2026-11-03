@@ -304,14 +304,14 @@ def versions = [
   hmctsLogging    : '6.1.9',
   springBoot      : springBoot.class.package.implementationVersion,
   log4j           : '2.25.2',
-  logbackVersion  : '1.5.22',
-  jackson         : '2.18.3',
+  logbackVersion  : '1.5.34',
+  jackson         : '2.21.4',
   pdfbox          : '2.0.33',
-  mockito         : '5.2.0',
+  mockito         : '5.17.0',
   serenity        : '4.2.22',
   pact_version    : '4.1.7',
-  junit_jupiter   : '5.11.4',
-  lombok          : '1.18.38',
+  junit_jupiter   : '5.12.2',
+  lombok          : '1.18.46',
   sonarPitest     : '0.5'
 ]
 
@@ -326,8 +326,8 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-aop'
   implementation 'org.springframework.retry:spring-retry'
 
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '6.5.4'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '6.4.4'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '6.5.11'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '6.5.11'
 
   implementation 'org.springframework.boot:spring-boot-starter-validation'
   implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -479,7 +479,7 @@ pitest {
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2023.0.5'
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.0.3'
   }
 }
 
