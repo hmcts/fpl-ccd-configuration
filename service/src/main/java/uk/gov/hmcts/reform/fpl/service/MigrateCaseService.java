@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -1107,6 +1108,57 @@ public class MigrateCaseService {
             .build());
     }
 
+    public Map<String, List<Element<Respondent>>> updateRespondents(CaseData caseData, String orgName,
+                                                                    String newOrgName, String orgId, String newOrgId) {
+        List<Element<Respondent>> respondents = caseData.getRespondents1();
+        List<Element<Respondent>> updatedRespondents = new ArrayList<>(respondents);
+
+        Element<Respondent> respondentToUpdate = respondents.stream()
+            .filter(r ->
+                orgId.equals(r.getValue().getSolicitor().getOrganisation().getOrganisationID())
+                && orgName.equals(r.getValue().getSolicitor().getOrganisation().getOrganisationName()))
+            .findFirst()
+            .orElseThrow();
+
+        int index = updatedRespondents.indexOf(respondentToUpdate);
+        Respondent respondentToUpdateValue = respondentToUpdate.getValue();
+
+        RespondentSolicitor respondentSolicitor = respondentToUpdateValue.getSolicitor();
+
+        Organisation newRespondentOrg = Organisation.builder()
+            .organisationID(newOrgId)
+            .organisationName(newOrgName)
+            .build();
+
+        RespondentSolicitor newRespondentSolicitor = RespondentSolicitor.builder()
+            .email(respondentSolicitor.getEmail())
+            .lastName(respondentSolicitor.getLastName())
+            .firstName(respondentSolicitor.getFirstName())
+            .organisation(newRespondentOrg)
+            .telephoneNumber(respondentSolicitor.getTelephoneNumber())
+            .regionalOfficeAddress(respondentSolicitor.getRegionalOfficeAddress())
+            .colleaguesToBeNotified(respondentSolicitor.getColleaguesToBeNotified())
+            .unregisteredOrganisation(respondentSolicitor.getUnregisteredOrganisation())
+            .build();
+
+        Respondent updatedRespondentValue = Respondent.builder()
+            .party(respondentToUpdateValue.getParty())
+            .solicitor(newRespondentSolicitor)
+            .representedBy(respondentToUpdateValue.getRepresentedBy())
+            .usingOtherOrg(respondentToUpdateValue.getUsingOtherOrg())
+            .isLocalAuthority(respondentToUpdateValue.getIsLocalAuthority())
+            .legalCounsellors(respondentToUpdateValue.getLegalCounsellors())
+            .legalRepresentation(respondentToUpdateValue.getLegalRepresentation())
+            .build();
+
+        Element<Respondent> updatedRespondentElement = Element.<Respondent>builder()
+            .id(respondentToUpdate.getId())
+            .value(updatedRespondentValue)
+            .build();
+
+        updatedRespondents.set(index, updatedRespondentElement);
+        return Map.of("respondents1", updatedRespondents);
+    }
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,
                                                                                     String migrationId,
                                                                                     String applicantUuid) {
