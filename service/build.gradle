@@ -396,7 +396,6 @@ dependencies {
 
   testImplementation group: 'org.mockito', name: 'mockito-core', version: versions.mockito
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
-  testImplementation group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
 
   // Fortify client for Fortify scans
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9', classifier: 'all'
