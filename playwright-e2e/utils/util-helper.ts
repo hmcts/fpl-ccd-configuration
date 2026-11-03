@@ -53,29 +53,3 @@ export function parseWorkAllocationTable(tableSelector: Locator): void {
 }
 
 
-// export type HeaderFromKeys<K extends readonly string[]> = {
-//     [P in K[number]]: string;
-// };
-//
-// export function mapCellsToTableHeader<K extends readonly string[]>(
-//     keys: K,
-//     cells: readonly string[],
-//     options?: { strict?: boolean }
-// ): HeaderFromKeys<K> {
-//     const strict = options?.strict ?? false;
-//     const row = {} as HeaderFromKeys<K>;
-//
-//     keys.forEach((key, index) => {
-//         const value = cells[index]?.trim();
-//
-//         if (strict && value === undefined) {
-//             throw new Error(`Missing cell value for key "${key}" at index ${index}`);
-//         }
-//
-//         row[key] = value ?? "";
-//     });
-//
-//     return row;
-// }
-
-

@@ -10,7 +10,7 @@ export class ManageTTL extends BasePage {
     }
 
     async overrideSystemTTL() {
-        const futureDate = addMonthsToDate(this.getCurrentDate().toString(), 15);
+        const futureDate = addMonthsToDate(new Date(), 15);
         await this.page.getByRole('textbox', {name: 'Day'}).fill(futureDate.getUTCDate().toString());
         // Month is zero-based, so we add 1 to get the correct month number
         await this.page.getByRole('textbox', {name: 'Month'}).fill((futureDate.getUTCMonth()+1).toString());
