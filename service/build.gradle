@@ -433,7 +433,7 @@ dependencies {
   contractTestRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.11.4'
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
-  contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
+  contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.21'
   contractTestImplementation (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.1') {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
