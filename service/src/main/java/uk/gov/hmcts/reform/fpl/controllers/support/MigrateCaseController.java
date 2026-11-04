@@ -71,7 +71,8 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.updateRespondents(caseData, orgName,
                                                                           newOrgName, orgId, newOrgId));
-        caseDetails.getData().putAll(migrateCaseService.updateRespondentPolicy(caseData, newOrgId, caseRole, policyIndex));
+        caseDetails.getData().putAll(migrateCaseService.updateRespondentPolicy(caseData, newOrgId,
+                                                                               caseRole, policyIndex));
         caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthorityName(newOrgName));
         caseDetails.getData().putAll(migrateCaseService.updateRespondentLA(caseData, newOrgName, newOrgId));
         caseDetails.getData().putAll(migrateCaseService.updateAdditionalApplications(caseData, newOrgName, newOrgId));
