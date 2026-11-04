@@ -404,8 +404,7 @@ public class UploadAdditionalApplicationsService {
     private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(CaseData caseData,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         String uploadedBy, LocalDateTime uploadedDateTime) {
-
-        UploadAdditionalApplicationsEventData eventData = caseData.getUploadAdditionalApplicationsEventData();
+        
         final DocumentUploaderType uploaderType = manageDocumentService.getUploaderType(caseData);
         final List<CaseRole> uploadCaseRoles = new ArrayList<>(userService.getCaseRoles(caseData.getId()));
 
