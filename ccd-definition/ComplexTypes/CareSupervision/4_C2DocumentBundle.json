@@ -175,8 +175,7 @@
     "ElementLabel": "Adjournment requested?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Temporary field"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -356,7 +355,38 @@
     "FieldTypeParameter": "NoConfidentialAddressConfirmation",
     "ElementLabel": "There is a confidential address on this case. Check the document and confirm it doesn't contain a confidential address.",
     "SecurityClassification": "Public",
+    "FieldShowCondition": "hasConfidentialAddress=\"DO_NOT_SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "hasConfidentialAddressValue",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Document contains a confidential address?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "routeType!=\"APPLY_ONLINE\" AND hasConfidentialAddressValue!=\"No\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "confidentialApplication",
+    "FieldType": "Text",
+    "ElementLabel": "Confidential application",
+    "SecurityClassification": "Public",
     "Searchable": "N",
-    "Comment": "Temporary field"
+    "Comment": "Temporary field in review additional application event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "confidentialFieldSuffix",
+    "FieldType": "Text",
+    "ElementLabel": "Confidential suffix",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field in review additional application event",
+    "FieldShowCondition": "confidentialFieldSuffix=\"DO_NOT_SHOW\""
   }
 ]

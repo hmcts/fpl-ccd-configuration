@@ -4,8 +4,9 @@ import {
     updateCase
 } from "../../utils/api-helper";
 import {
-    authToken,
+    cafcassAPIUser,
     newSwanseaLocalAuthorityUserOne,
+    systemUpdateUser,
 } from "../../settings/user-credentials";
 import submitCase from '../../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 import {
@@ -29,7 +30,7 @@ test.describe('@new CafcassAPI Document Search', () => {
     });
     test('  Cafcass user search a valid case document',
         async ({request}) => {
-             let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth,docId);
+             let response = await cafcassAPIDocSearch(request, cafcassAPIUser,docId);
             //assert the response
             expect(response.status()).toBe(200);
             expect(response.headers()["content-type"]).toContain('application/octet-stream');
@@ -38,7 +39,7 @@ test.describe('@new CafcassAPI Document Search', () => {
 
     test('Unauthorised user search for the document with valid Doc id', async ({request}) => {
         let endTime = new Date().setMinutes(new Date().getMinutes() + 30);
-        let response = await cafcassAPIDocSearch(request, authToken.systemAuth,docId);
+        let response = await cafcassAPIDocSearch(request, systemUpdateUser,docId);
         //assertion
         expect(response.status()).toEqual(403);
         expect(response.statusText()).toEqual('Forbidden');

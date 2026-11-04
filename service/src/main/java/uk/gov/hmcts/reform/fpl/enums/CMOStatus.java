@@ -4,5 +4,7 @@ public enum CMOStatus {
     SEND_TO_JUDGE,
     APPROVED,
     RETURNED,
-    DRAFT
+    DRAFT,
+    REMOVED,
+    REFUSED
 }

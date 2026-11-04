@@ -114,6 +114,7 @@ class MessageJudgeControllerAboutToSubmitTest extends MessageJudgeControllerAbst
                     .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
                     .updatedTime(now())
                     .message("Some message")
+                    .urgency(SAME_DAY_URGENCY)
                     .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
                     .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
                 .build())))

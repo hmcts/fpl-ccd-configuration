@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
@@ -187,10 +186,10 @@ class AppointedGuardianFormatterTest {
                 .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
             Respondent.builder()
                 .party(RespondentParty.builder().firstName("Tony").lastName("Stark").build()).build()))
-            .others(Others.builder()
-                .firstOther(Other.builder().name("Ollie Otherworld").build())
-                .additionalOthers(wrapElements(Other.builder()
-                    .name("Otto Otherman").build(), Other.builder().name("Bob Bothers").build())).build())
+            .othersV2(wrapElements(
+                Other.builder().firstName("Ollie Otherworld").build(),
+                Other.builder().firstName("Otto Otherman").build(),
+                Other.builder().firstName("Bob Bothers").build()))
             .appointedGuardianSelector(Selector.builder().selected(List.of(0, 3, 4)).build())
             .build();
     }

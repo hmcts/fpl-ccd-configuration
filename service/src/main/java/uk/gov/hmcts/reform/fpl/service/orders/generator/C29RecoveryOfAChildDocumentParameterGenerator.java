@@ -57,7 +57,7 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
         String localAuthorityCode = caseData.getCaseLaOrRelatingLa();
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
-        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Child>> selectedChildren = childrenService.getSelectedChildrenFromMultiSelectList(caseData);
 
         // Date we are issuing the C29 Order
         String dayOrdinalSuffix = getDayOfMonthSuffix(eventData.getManageOrdersApprovalDate().getDayOfMonth());

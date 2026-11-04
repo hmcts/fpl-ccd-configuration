@@ -1,79 +1,75 @@
-import {test} from '../fixtures/create-fixture';
+import { test } from '../fixtures/create-fixture';
 import {
-    newSwanseaLocalAuthorityUserOne,
-    judgeWalesUser,
-    CTSCUser,
-    HighCourtAdminUser,
-    privateSolicitorOrgUser, swanseaOrgCAAUser, CTSCTeamLeadUser
+    newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, HighCourtAdminUser, privateSolicitorOrgUser,
+    CTSCTeamLeadUser
 } from '../settings/user-credentials';
-import {expect} from "@playwright/test";
-import {testConfig} from '../settings/test-config';
-import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json' assert {type: "json"};
-import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert {type: "json"};
+import { expect } from "@playwright/test";
+import { testConfig } from '../settings/test-config';
+import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json' assert { type: "json" };
+import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert { type: "json" };
 import caseDataWithHearing from '../caseData/caseWithHearingDetailsNoAdditionalApp.json' assert {type: "json"};
-import {setHighCourt} from '../utils/update-case-details';
+import { setHighCourt } from '../utils/update-case-details';
 import {assignAMJudicialRole, createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
 import config from "../settings/test-docs/config";
-
+import {urlConfig} from "../settings/urls";
 
 test.describe('Upload additional applications', () => {
-    const dateTime = new Date().toISOString();
-    let caseNumber: string;
-    let caseName: string;
+  const dateTime = new Date().toISOString();
+  let caseNumber: string;
+  let caseName: string;
 
-    test.beforeEach(async () => {
-        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        expect(caseNumber).toBeDefined();
+  test.beforeEach(async () => {
+    caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    expect(caseNumber).toBeDefined();
+  });
+  //mark test as slow to give extra timeout
+  test.slow();
 
+  test('LA uploads a C1 application @test',
+    async ({ page, signInPage, additionalApplications,envDataConfig }) => {
+      caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
+        expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+
+      await signInPage.visit();
+      await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+      await signInPage.navigateToCaseDetails(caseNumber);
+
+      await additionalApplications.gotoNextStep('Upload additional applications');
+      await additionalApplications.chooseOtherApplicationType();
+      await additionalApplications.fillOtherApplicationDetails();
+
+      // Payment details
+      await expect(page.getByText(testConfig.C1)).toBeVisible();
+      await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
+      await additionalApplications.checkYourAnsAndSubmit();
+      await additionalApplications.tabNavigation('Other applications');
+
+      // can see some basic properties of the application
+      await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible();
+      await expect(page.getByText('C1 - Change surname or remove from jurisdiction')).toBeVisible();
+      await expect(page.getByText('On the same day')).toBeVisible();
+
+      // If WA is enabled
+      if (testConfig.waEnabled) {
+        console.log('WA testing');
+        await additionalApplications.clickSignOut();
+        await signInPage.visit();
+        await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+
+        // Judge in Wales should see this Welsh case task + be able to assign it to themselves
+        await additionalApplications.tabNavigation('Tasks');
+        await additionalApplications.waitForTask('View Additional Applications');
+
+        // Assign and complete the task
+        await page.getByText('Assign to me').click();
+        await page.getByText('Mark as done').click();
+        await page.getByRole('button', { name: "Mark as done" }).click();
+
+        // Should be no more tasks on the page
+        await expect(page.getByText('View Additional Applications')).toHaveCount(0);
+      }
     });
-    //mark test as slow to give extra timeout
-    test.slow();
-
-    test('LA uploads a C1 application @test',
-        async ({page, signInPage, additionalApplications, envDataConfig}) => {
-            caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
-            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
-
-            await signInPage.visit();
-            await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateToCaseDetails(caseNumber);
-
-            await additionalApplications.gotoNextStep('Upload additional applications');
-            await additionalApplications.chooseOtherApplicationType();
-            await additionalApplications.fillOtherApplicationDetails();
-
-            // Payment details
-            await expect(page.getByText('£263.00')).toBeVisible();
-            await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
-            await additionalApplications.checkYourAnsAndSubmit();
-            await additionalApplications.tabNavigation('Other applications');
-
-            // can see some basic properties of the application
-            await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible();
-            await expect(page.getByText('C1 - Change surname or remove from jurisdiction')).toBeVisible();
-            await expect(page.getByText('On the same day')).toBeVisible();
-
-            // If WA is enabled
-            if (testConfig.waEnabled) {
-                console.log('WA testing');
-                await additionalApplications.clickSignOut();
-                await signInPage.visit();
-                await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
-                await signInPage.navigateToCaseDetails(caseNumber);
-
-                // Judge in Wales should see this Welsh case task + be able to assign it to themselves
-                await additionalApplications.tabNavigation('Tasks');
-                await additionalApplications.waitForTask('View Additional Applications');
-
-                // Assign and complete the task
-                await page.getByText('Assign to me').click();
-                await page.getByText('Mark as done').click();
-                await page.getByRole('button', {name: "Mark as done"}).click();
-
-                // Should be no more tasks on the page
-                await expect(page.getByText('View Additional Applications')).toHaveCount(0);
-            }
-        });
 
     test.skip('LA uploads a C2 application with draft order ',
         async ({page, signInPage, additionalApplications, envDataConfig}) => {
@@ -83,136 +79,133 @@ test.describe('Upload additional applications', () => {
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
             await signInPage.navigateToCaseDetails(caseNumber);
 
-            await additionalApplications.gotoNextStep('Upload additional applications');
-            await additionalApplications.chooseC2ApplicationType();
-            await additionalApplications.fillC2ApplicationDetails();
+      await additionalApplications.gotoNextStep('Upload additional applications');
+      await additionalApplications.chooseC2ApplicationType();
+      await additionalApplications.fillC2ApplicationDetails();
 
-            // Payment details
-            await expect(page.getByText('£263.00')).toBeVisible();
-            await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
-            await additionalApplications.checkYourAnsAndSubmit();
-        });
+      // Payment details
+      await expect(page.getByText(testConfig.C2_WITH_SUPPLEMENT)).toBeVisible();
+      await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
+      await additionalApplications.checkYourAnsAndSubmit();
+    });
 
-    test.skip('LA uploads combined Other and C2 applications @xbrowser',
-        async ({page, signInPage, additionalApplications, envDataConfig}) => {
-            caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
-            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
-            await signInPage.visit();
-            await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateToCaseDetails(caseNumber);
+  test.skip('LA uploads combined Other and C2 applications @xbrowser',
+    async ({ page, signInPage, additionalApplications,envDataConfig }) => {
+      caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
+      expect(   await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+      await signInPage.visit();
+      await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
-            await additionalApplications.gotoNextStep('Upload additional applications');
-            await additionalApplications.chooseBothApplicationTypes();
-            await additionalApplications.fillC2ApplicationDetails();
-            await additionalApplications.fillOtherApplicationDetails();
+      await additionalApplications.gotoNextStep('Upload additional applications');
+      await additionalApplications.chooseBothApplicationTypes();
+      await additionalApplications.fillC2ApplicationDetails();
+      await additionalApplications.fillOtherApplicationDetails();
 
-            await expect(page.getByText('£263.00')).toBeVisible();
-            await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
-            await additionalApplications.checkYourAnsAndSubmit();
-            await additionalApplications.tabNavigation('Other applications');
+      await expect(page.getByText(testConfig.COMBINE_C1_C2)).toBeVisible();
+      await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
+      await additionalApplications.checkYourAnsAndSubmit();
+      await additionalApplications.tabNavigation('Other applications');
 
-            // can see some basic properties of the application
-            await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible();
-            await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
-            await expect(page.getByText('On the same day')).toBeVisible(); // Other application
-            await expect(page.getByText('Within 2 days')).toBeVisible(); // C2 application
+      // can see some basic properties of the application
+      await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible();
+      await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
+      await expect(page.getByText('On the same day')).toBeVisible(); // Other application
+      await expect(page.getByText('Within 2 days')).toBeVisible(); // C2 application
 
-            // can see the draft order to be approved
-            await additionalApplications.tabNavigation('Draft orders');
-            await expect(page.getByText('Draft order title')).toBeVisible();
-        });
+      // can see the draft order to be approved
+      await additionalApplications.tabNavigation('Draft orders');
+      await expect(page.getByText('Draft order title')).toBeVisible();
+    });
 
-    test.skip('LA uploads a confidential C2 application with draft order @xbrowser',
-        async ({page, signInPage, additionalApplications, envDataConfig}) => {
-            caseName = 'LA uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
-            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
-            await signInPage.visit();
-            await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+  test.skip('LA uploads a confidential C2 application with draft order @xbrowser',
+    async ({ page, signInPage, additionalApplications ,envDataConfig}) => {
+      caseName = 'LA uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+      await signInPage.visit();
+      await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
 
-            await signInPage.navigateToCaseDetails(caseNumber);
-            await additionalApplications.gotoNextStep('Upload additional applications');
-            await additionalApplications.chooseConfidentialC2ApplicationType();
-            await additionalApplications.fillC2ApplicationDetails();
+      await signInPage.navigateToCaseDetails(caseNumber);
+      await additionalApplications.gotoNextStep('Upload additional applications');
+      await additionalApplications.chooseConfidentialC2ApplicationType();
+      await additionalApplications.fillC2ApplicationDetails();
 
-            // Payment details
-            await expect(page.getByText('£263.00')).toBeVisible();
-            await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
-            await additionalApplications.checkYourAnsAndSubmit();
-            await additionalApplications.tabNavigation('Other applications');
+      // Payment details
+      await expect(page.getByText(testConfig.C2_WITH_SUPPLEMENT)).toBeVisible();
+      await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
+      await additionalApplications.checkYourAnsAndSubmit();
+      await additionalApplications.tabNavigation('Other applications');
 
-            // can see some basic properties of the application
-            await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible(); //PBA0076191
-            await expect(page.getByText('Within 2 days')).toBeVisible();
+      // can see some basic properties of the application
+      await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible(); //PBA0076191
+      await expect(page.getByText('Within 2 days')).toBeVisible();
 
-            // can see the draft order to be approved
-            await additionalApplications.tabNavigation('Draft orders');
-            await expect(page.getByText('Draft order title')).toBeVisible();
+      // can see the draft order to be approved
+      await additionalApplications.tabNavigation('Draft orders');
+      await expect(page.getByText('Draft order title')).toBeVisible();
 
-            await additionalApplications.clickSignOut();
-            await signInPage.visit();
-            await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateToCaseDetails(caseNumber);
+      await additionalApplications.clickSignOut();
+      await signInPage.visit();
+      await signInPage.login(CTSCUser.email, CTSCUser.password);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
-            // CTSC can see some basic properties of the application
-            await additionalApplications.tabNavigation('Other applications');
-            await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible();
-            await expect(page.getByText('Within 2 days')).toBeVisible();
+      // CTSC can see some basic properties of the application
+      await additionalApplications.tabNavigation('Other applications');
+      await expect(page.getByText(envDataConfig.swanseaOrgPBA)).toBeVisible();
+      await expect(page.getByText('Within 2 days')).toBeVisible();
 
-            // CTSC can see the draft order to be approved
-            await additionalApplications.tabNavigation('Draft orders');
-            await expect(page.getByText('Draft order title')).toBeVisible();
-        });
+      // CTSC can see the draft order to be approved
+      await additionalApplications.tabNavigation('Draft orders');
+      await expect(page.getByText('Draft order title')).toBeVisible();
+    });
 
-    test.skip('CTSC uploads a confidential C2 application with draft order @test',
-        async ({page, signInPage, additionalApplications}) => {
-            caseName = 'CTSC uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
-            expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
-            await signInPage.visit();
-            await signInPage.login(CTSCUser.email, CTSCUser.password);
-            await signInPage.navigateToCaseDetails(caseNumber);
+  test.skip('CTSC uploads a confidential C2 application with draft order @test',
+    async ({ page, signInPage, additionalApplications }) => {
+      caseName = 'CTSC uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
+      expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
+      await signInPage.visit();
+      await signInPage.login(CTSCUser.email, CTSCUser.password);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
-            await additionalApplications.gotoNextStep('Upload additional applications');
-            await additionalApplications.chooseConfidentialC2ApplicationType();
-            await additionalApplications.fillC2ApplicationDetails();
+      await additionalApplications.gotoNextStep('Upload additional applications');
+      await additionalApplications.chooseConfidentialC2ApplicationType();
+      await additionalApplications.fillC2ApplicationDetails();
 
-            // Payment details
-            await expect(page.getByText('£263.00')).toBeVisible();
-            await additionalApplications.ctscPayForApplication();
-            await additionalApplications.clickContinue();
-            await additionalApplications.checkYourAnsAndSubmit();
-            await additionalApplications.tabNavigation('Other applications');
+      // Payment details
+      await expect(page.getByText(testConfig.C2_WITH_SUPPLEMENT)).toBeVisible();
+      await additionalApplications.ctscPayForApplication();
+      await additionalApplications.checkYourAnsAndSubmit();
+      await additionalApplications.tabNavigation('Other applications');
 
-            // can see some basic properties of the application
-            await expect(page.getByText('PBA0096471')).toBeVisible();
-            await expect(page.getByText('Within 2 days')).toBeVisible();
+      // can see some basic properties of the application
+      await expect(page.getByText('PBA0096471')).toBeVisible();
+      await expect(page.getByText('Within 2 days')).toBeVisible();
 
-            // can see the draft order to be approved
-            await additionalApplications.tabNavigation('Draft orders');
-            await expect(page.getByText('Draft order title')).toBeVisible();
+      // can see the draft order to be approved
+      await additionalApplications.tabNavigation('Draft orders');
+      await expect(page.getByText('Draft order title')).toBeVisible();
 
-            await additionalApplications.clickSignOut();
-            await signInPage.visit();
-            await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateToCaseDetails(caseNumber);
+      await additionalApplications.clickSignOut();
+      await signInPage.visit();
+      await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
-            // LA cannot see some basic properties of the application
-            await additionalApplications.tabNavigation('Draft orders');
-            await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
+      // LA cannot see some basic properties of the application
+      await additionalApplications.tabNavigation('Draft orders');
+      await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
 
-            // LA cannot see the draft order to be approved
-            await additionalApplications.tabNavigation('Draft orders');
-            await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
-        });
+      // LA cannot see the draft order to be approved
+      await additionalApplications.tabNavigation('Draft orders');
+      await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
+    });
 
-    test.skip('CTSC uploads standard C2 application with no PBA', async ({
-                                                                        page,
+    test.skip('CTSC uploads standard C2 application with no PBA', async ({ page,
                                                                         signInPage,
                                                                         additionalApplications,
                                                                         uploadAdditionalApplications,
                                                                         uploadAdditionalApplicationsApplicationFee,
                                                                         uploadAdditionalApplicationsSuppliedDocuments,
-                                                                        submit
-                                                                    }) => {
+                                                                        submit    }) => {
         caseName = 'CTSC standard C2 application ' + dateTime.slice(0, 10);
         expect(await updateCase(caseName, caseNumber, caseData)).toBeTruthy();
 
@@ -278,34 +271,34 @@ test.describe('Upload additional applications', () => {
         });
     });
 
-    test.skip('Respondent Solicitor Uploads additional applications',
-        async ({page, signInPage, additionalApplications, envDataConfig}) => {
-            caseName = 'Respondent solicitor Uploads additional application ' + dateTime.slice(0, 10);
-            expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
-            expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
-            await signInPage.visit();
-            await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-            await signInPage.navigateToCaseDetails(caseNumber);
+  test.skip('Respondent Solicitor Uploads additional applications',
+    async ({ page, signInPage, additionalApplications,envDataConfig }) => {
+      caseName = 'Respondent solicitor Uploads additional application ' + dateTime.slice(0, 10);
+      expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
+      expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
+      await signInPage.visit();
+      await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
-            await additionalApplications.gotoNextStep('Upload additional applications');
-            await additionalApplications.chooseConfidentialC2ApplicationType();
-            await additionalApplications.fillC2ApplicationDetails();
+      await additionalApplications.gotoNextStep('Upload additional applications');
+      await additionalApplications.chooseConfidentialC2ApplicationType();
+      await additionalApplications.fillC2ApplicationDetails();
 
-            // Payment details
-            await expect(page.getByText('£263.00')).toBeVisible();
-            await additionalApplications.payForApplication(envDataConfig.privateSolicitorOrgPBA);
-            await additionalApplications.checkYourAnsAndSubmit();
-            await additionalApplications.tabNavigation('Other applications');
+      // Payment details
+      await expect(page.getByText(testConfig.C2_WITH_SUPPLEMENT)).toBeVisible();
+      await additionalApplications.payForApplication(envDataConfig.privateSolicitorOrgPBA);
+      await additionalApplications.checkYourAnsAndSubmit();
+      await additionalApplications.tabNavigation('Other applications');
 
-            await additionalApplications.clickSignOut();
-            await signInPage.visit();
-            await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-            await signInPage.navigateToCaseDetails(caseNumber);
+      await additionalApplications.clickSignOut();
+      await signInPage.visit();
+      await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
+      await signInPage.navigateToCaseDetails(caseNumber);
 
-            // Assertion
-            await additionalApplications.tabNavigation('Other applications');
-            await expect(page.getByText('This is a confidential application and restricted viewing applies')).toBeVisible();
-        });
+      // Assertion
+      await additionalApplications.tabNavigation('Other applications');
+      await expect(page.getByText('This is a confidential application and restricted viewing applies')).toBeVisible();
+    });
 
     test.skip('Failed Payment High Court WA task', async ({
                                                          page,

@@ -26,5 +26,12 @@
     "ListElementCode": "REVIEW_LATER",
     "ListElement": "Review later",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMOReviewOutcome",
+    "ListElementCode": "JUDGE_REMOVED",
+    "ListElement": "The draft order is not required and should be removed",
+    "DisplayOrder": 5
   }
 ]

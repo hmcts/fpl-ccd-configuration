@@ -56,7 +56,8 @@ public class HearingOrderGenerator {
             .status(CMOStatus.APPROVED)
             .lastUploadedOrder(order)
             .others(selectedOthers)
-            .othersNotified(othersNotified);
+            .othersNotified(othersNotified)
+            .hasOrderConcludedProceedings(reviewDecision.hasOrderConcludedProceedings());
 
         DocumentReference sealedOrder = documentSealingService.sealDocument(order, caseData.getCourt(),
             caseData.getSealType());
@@ -76,9 +77,11 @@ public class HearingOrderGenerator {
     }
 
     public Element<HearingOrder> buildRejectedHearingOrder(
-        Element<HearingOrder> hearingOrderElement, String changesRequested) {
+        Element<HearingOrder> hearingOrderElement, String changesRequested, CMOStatus cmoStatus) {
         return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
-            .status(CMOStatus.RETURNED)
+            .refusedOrder(hearingOrderElement.getValue().getOrderOrOrderConfidential())
+            .order(null)
+            .status(cmoStatus)
             .requestedChanges(changesRequested)
             .build());
     }

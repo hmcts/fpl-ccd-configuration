@@ -26,5 +26,19 @@
     "ListElementCode": "DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT",
     "ListElement": "Deputy District Judge (Magistrates)",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FeePaidJudgeTitle",
+    "ListElementCode": "CIRCUIT_JUDGE_SITTING_IN_RETIRE",
+    "ListElement": "Circuit Judge (sitting in retirement)",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FeePaidJudgeTitle",
+    "ListElementCode": "DISTRICT_JUDGE_SITTING_IN_RETIRE",
+    "ListElement": "District Judge (sitting in retirement)",
+    "DisplayOrder": 6
   }
 ]

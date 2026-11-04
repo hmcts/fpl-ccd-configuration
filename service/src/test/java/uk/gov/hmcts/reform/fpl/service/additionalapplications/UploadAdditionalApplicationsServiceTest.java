@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiselectListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC2OrderDocument;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
@@ -972,18 +972,33 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    public void shouldNotReturnErrorWhenSingleC2DraftOrderUploaded() {
+        UploadAdditionalApplicationsEventData eventData = UploadAdditionalApplicationsEventData.builder()
+            .temporaryC2Document(C2AdditionalApplicationEventData.builder()
+                .draftOrdersBundle(List.of(
+                    element(DraftOrder.builder().build())
+                ))
+                .build())
+            .build();
+
+        List<String> errors = underTest.validateC2Bundle(eventData);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
     public void shouldReturnListOfChildrenAsDynamicMultiSelectList() {
         UUID child1Id = UUID.randomUUID();
         UUID child2Id = UUID.randomUUID();
 
         CaseData caseData =  CaseData.builder().children1(createChildrenList(child1Id, child2Id)).build();
 
-        DynamicMultiselectListElement child1Element = DynamicMultiselectListElement.builder()
+        DynamicMultiSelectListElement child1Element = DynamicMultiSelectListElement.builder()
             .label("Jemima Test (Child 1)")
             .code(child1Id.toString())
             .build();
 
-        DynamicMultiselectListElement child2Element = DynamicMultiselectListElement.builder()
+        DynamicMultiSelectListElement child2Element = DynamicMultiSelectListElement.builder()
             .label("Jim Test (Child 2)")
             .code(child2Id.toString())
             .build();
@@ -993,6 +1008,58 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         assertThat(underTest.getChildrenMultiSelectList(caseData)).isEqualTo(expectedList);
+    }
+
+    @Test
+    void shouldAddC2EvidenceOfConsentOnlyToC2SupportingDocuments() {
+        Supplement c2Supplement = createSupplementsBundle();
+        SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
+
+        Supplement otherSupplement = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
+        SupportingEvidenceBundle otherSupportingDocument = createSupportingEvidenceBundle("other document");
+
+        DocumentReference evidenceOfConsent = testDocumentReference("EvidenceOfConsent.pdf");
+
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0))
+            .listItems(DYNAMIC_LIST_ELEMENTS)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .c2Type(WITHOUT_NOTICE)
+                .c2EvidenceConsentDocument(evidenceOfConsent)
+                .temporaryC2Document(createC2EventData(c2Supplement, c2SupportingDocument))
+                .temporaryOtherApplicationsBundle(
+                    createOtherApplicationsBundle(otherSupplement, otherSupportingDocument)
+                )
+                .applicantsList(applicantsList)
+                .c2ApplicationRoute(PAPER_FORM)
+                .build())
+            .build();
+
+        AdditionalApplicationsBundle actual =
+            underTest.buildAdditionalApplicationsBundle(caseData);
+
+        List<Element<SupportingEvidenceBundle>> c2SupportingDocuments =
+            actual.getC2DocumentBundle().getSupportingEvidenceBundle();
+
+        List<Element<SupportingEvidenceBundle>> otherSupportingDocuments =
+            actual.getOtherApplicationsBundle().getSupportingEvidenceBundle();
+
+        assertThat(c2SupportingDocuments)
+            .hasSize(2)
+            .extracting(element -> element.getValue().getName())
+            .containsExactlyInAnyOrder(
+                "Supporting document",
+                "Evidence of consent"
+            );
+
+        assertThat(otherSupportingDocuments)
+            .hasSize(1)
+            .extracting(element -> element.getValue().getName())
+            .containsExactly("other document");
     }
 
     private void assertOnlineC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
@@ -1096,12 +1163,12 @@ class UploadAdditionalApplicationsServiceTest {
 
     private C2AdditionalApplicationEventData createC2EventDataForOnlineForm(Supplement supplementsBundle,
                                                                SupportingEvidenceBundle supportingEvidenceBundle) {
-        DynamicMultiselectListElement child1Element = DynamicMultiselectListElement.builder()
+        DynamicMultiSelectListElement child1Element = DynamicMultiSelectListElement.builder()
             .label("Jemima Test (Child 1)")
             .code("67891")
             .build();
 
-        DynamicMultiselectListElement child2Element = DynamicMultiselectListElement.builder()
+        DynamicMultiSelectListElement child2Element = DynamicMultiSelectListElement.builder()
             .label("Jim Test (Child 2)")
             .code("12345")
             .build();

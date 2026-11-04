@@ -334,5 +334,17 @@
     "FieldShowCondition": "judgeType=\"LEGAL_ADVISOR\"",
     "EventElementLabel": "Your name",
     "Comment": "Reusing existing Legal advisor input field"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "ReviewDecision",
+    "ListElementCode": "doesOrderConcludeProceedings",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "decision=\"SEND_TO_ALL_PARTIES\" OR decision=\"JUDGE_AMENDS_DRAFT\"",
+    "FieldType": "YesOrNo",
+    "EventElementLabel": "Does the order conclude the proceedings?"
   }
 ]

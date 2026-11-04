@@ -632,7 +632,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentsSelector",
+    "CaseFieldID": "respondentsSelectorV2",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
   },
@@ -775,6 +775,13 @@
     "CaseFieldID": "orderCollection",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "RU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "refusalOrders",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -2550,6 +2557,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isC2Application",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewNextHearing",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentsConfirmPR",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRUD"
@@ -2593,6 +2614,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardians",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isUrgentListingRequest",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "R"
   }

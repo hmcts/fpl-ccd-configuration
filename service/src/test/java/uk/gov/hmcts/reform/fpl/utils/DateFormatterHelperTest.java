@@ -155,6 +155,50 @@ class DateFormatterHelperTest {
         assertThat(formatLocalDateTimeBaseUsingFormat(null, "h:mma, yyyy")).isEmpty();
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"01/01/2026", "1/01/2026", "01/1/2026", "1/1/2026",
+        "01-01-2026", "1-01-2026", "01-1-2026", "1-1-2026",
+        "01.01.2026", "1.01.2026", "01.1.2026", "1.1.2026",
+        "01 01 2026", "1 01 2026", "01 1 2026", "1 1 2026",
+        "2026-01-01", "2026-01-1", "2026-1-01", "2026-1-1",
+        "2026/01/01", "2026/01/1", "2026/1/01", "2026/1/1",
+        "2026.01.01", "2026.01.1", "2026.1.01", "2026.1.1",
+        "2026 01 01", "2026 01 1", "2026 1 01", "2026 1 1",
+        "01 Jan 2026", "1 Jan 2026", "01/Jan 2026", "1/Jan/2026",
+        "01 January 2026", "1 January 2026", "01/January 2026", "1/January 2026",
+        "01|01|2026", "1|01|2026", "01|1|2026", "1|1|2026",
+        "01\\01\\2026 ", "1\\01\\2026", "01\\1\\2026", "1\\1\\2026",
+        "1st Jan 2026", "1st January 2026", "2026 Jan 1st", "2026 January 1st",
+        "1st/01/2026", "2026/1/1st",
+        "       01 January 2026 ",
+        "2026 01 01 st", "1       st January 2026", "2026 Jan 1 st",
+    })
+    void shouldParseLocalDateIfMatchAyFormat(String dateStr) {
+        final LocalDate date = LocalDate.of(2026, 1, 1);
+        assertThat(DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches(dateStr)).get().isEqualTo(date);
+    }
+
+    @Test
+    void shouldParseLocalDateIfMatchAyFormatWithDaySuffix() {
+        assertThat(DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches("1st January 2026")).get()
+            .isEqualTo(LocalDate.of(2026, 1, 1));
+        assertThat(DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches("2nd January 2026")).get()
+            .isEqualTo(LocalDate.of(2026, 1, 2));
+        assertThat(DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches("3rd January 2026")).get()
+            .isEqualTo(LocalDate.of(2026, 1, 3));
+        assertThat(DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches("4th January 2026")).get()
+            .isEqualTo(LocalDate.of(2026, 1, 4));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"01/01st/2026", "1/01/2026/Mon", "",
+        "1st Janx 2026",  "2026 1st January", "2026 Jan st 1"
+    })
+    void shouldNotParseLocalDateIfInvalid(String dateStr) {
+        final LocalDate date = LocalDate.of(2026, 1, 1);
+        assertThat(DateFormatterHelper.parseLocalDateFromStringIfAnyFormatMatches(dateStr)).isEmpty();
+    }
+
     private LocalDate createDate() {
         return LocalDate.of(2019, 1, 1);
     }

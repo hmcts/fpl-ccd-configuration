@@ -35,6 +35,7 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
@@ -81,6 +82,8 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
         Element<HearingOrder> agreedCMO = element(UUID.randomUUID(), buildPastHearingOrder(AGREED_CMO));
         Element<HearingOrder> draftOrderOne = element(UUID.randomUUID(), buildPastHearingOrder(C21));
         Element<HearingOrder> draftOrderTwo = element(UUID.randomUUID(), buildPastHearingOrder(C21));
+        Element<HearingOrder> refusedOrderOne = element(UUID.randomUUID(), buildRefusedOrder(C21));
+        Element<HearingOrder> refusedOrderTwo = element(UUID.randomUUID(), buildRefusedOrder(AGREED_CMO));
 
         CaseData caseData = CaseData.builder()
             .state(state)
@@ -98,6 +101,7 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
                     .orders(newArrayList(agreedCMO, draftOrderTwo))
                     .build())
             ))
+            .refusedHearingOrders(newArrayList(refusedOrderOne, refusedOrderTwo))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
@@ -136,7 +140,14 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
                     draftOrderTwo.getValue().getDocument().getFilename())),
                 buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s, %s",
                     formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
-                    draftCMOThree.getValue().getDocument().getFilename()))))
+                    draftCMOThree.getValue().getDocument().getFilename())),
+                buildListElement(refusedOrderOne.getId(), format("Refused order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    refusedOrderOne.getValue().getRefusedOrder().getFilename())),
+                buildListElement(refusedOrderTwo.getId(), format("Refused order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    refusedOrderTwo.getValue().getRefusedOrder().getFilename()))
+            ))
             .build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);
@@ -320,6 +331,17 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
             .title("test order")
             .order(DocumentReference.builder().filename("order.doc").build())
             .status((type == AGREED_CMO || type == C21) ? SEND_TO_JUDGE : DRAFT)
+            .dateSent(dateNow().minusDays(1))
+            .dateIssued(dateNow())
+            .build();
+    }
+
+    private HearingOrder buildRefusedOrder(HearingOrderType type) {
+        return HearingOrder.builder()
+            .type(type)
+            .title("test order")
+            .refusedOrder(DocumentReference.builder().filename("order.doc").build())
+            .status(RETURNED)
             .dateSent(dateNow().minusDays(1))
             .dateIssued(dateNow())
             .build();
