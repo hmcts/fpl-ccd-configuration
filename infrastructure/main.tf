@@ -70,7 +70,7 @@ moved {
   to   = module.application_insights_uksouth.azurerm_application_insights.this
 }
 #Copying appinsights key to the vault
-resource "azurerm_key_vault_secret" "AZURE_APPINSIGHTS_KEY" {
+resource "azurerm_key_vault_secret" "AZURE_APPINSGHTS_KEY" {
   name         = "AppInsightsInstrumentationKey"
   value        = module.application_insights_uksouth.instrumentation_key
   key_vault_id = module.key-vault.key_vault_id
