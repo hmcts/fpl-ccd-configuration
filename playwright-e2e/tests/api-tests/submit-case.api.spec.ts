@@ -5,7 +5,7 @@ import { expect } from "@playwright/test";
 import { formatDateToString, getAge } from "../../utils/document-format-helper";
 
 const EVENT = "case-submission";
-const APPLICATION_FEE = "251500";
+const APPLICATION_FEE = "258000";
 
 const IGNORE_TEXTS = ["C110A"];
 
@@ -33,7 +33,7 @@ test.describe('Submit case API test @apiTest', () => {
         });
 
         await test.step("verify generated document", async () => {
-            await documentService.expectPdfContentSame(caseDetails.caseData?.draftApplicationDocument, "expectedApplication.txt", 
+            await documentService.expectPdfContentSame(caseDetails.caseData?.draftApplicationDocument, "expectedApplication.txt",
                 placeHolderForDocument, IGNORE_TEXTS);
         });
     });
@@ -67,7 +67,7 @@ test.describe('Submit case API test @apiTest', () => {
         });
 
         await test.step("verify generated document", async () => {
-            await documentService.expectPdfContentSame(caseDetails.caseData.submittedForm, "expectedApplication.txt", 
+            await documentService.expectPdfContentSame(caseDetails.caseData.submittedForm, "expectedApplication.txt",
                 placeHolderForDocument, IGNORE_TEXTS);
         });
     });

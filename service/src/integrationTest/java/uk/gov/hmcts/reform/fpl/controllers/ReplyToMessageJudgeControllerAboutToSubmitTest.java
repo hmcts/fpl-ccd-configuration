@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -107,6 +108,7 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends MessageJudgeControl
                         .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
                         .updatedTime(now())
                         .message(REPLY)
+                        .urgency(NO.getValue())
                         .replyFrom("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
                         .replyTo("%s (%s)".formatted(SENDER_TYPE.getLabel(), SENDER))
                         .build()),
@@ -135,7 +137,7 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends MessageJudgeControl
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
             .judicialMessageReply(JudicialMessage.builder()
-                .isReplying(YesNo.NO.getValue())
+                .isReplying(NO.getValue())
                 .latestMessage(null)
                 .build())
             .build();

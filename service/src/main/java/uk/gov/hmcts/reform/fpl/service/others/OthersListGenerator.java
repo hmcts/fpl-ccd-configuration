@@ -20,7 +20,7 @@ public class OthersListGenerator {
         return dynamicLists.asDynamicList(
             others,
             (e) -> String.valueOf(e.getId()),
-            (e) -> e.getValue().getName());
+            (e) -> e.getValue().getFullName());
     }
 
 }

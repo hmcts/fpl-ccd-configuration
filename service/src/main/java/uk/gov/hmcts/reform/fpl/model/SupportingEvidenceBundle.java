@@ -58,6 +58,7 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private final LocalDateTime translationUploadDateTime;
     private final LanguageTranslationRequirement translationRequirements;
     private String hasConfidentialAddress;
+    private List<String> hasConfidentialAddressConfirmation;
     private ExpertReportType expertReportType;
     private List<String> documentAcknowledge;
     private String removalReason;

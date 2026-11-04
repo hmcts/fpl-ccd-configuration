@@ -7,10 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 /**
  * Representation of a CCD Dynamic List which is then converted to a select dropdown list.
@@ -26,17 +30,27 @@ public class DynamicMultiSelectList {
      * The selected value for the multiselect options.
      */
     @JsonProperty("value")
-    private List<DynamicMultiselectListElement> value;
+    private List<DynamicMultiSelectListElement> value;
 
     /**
      * List of options for the multiselect options.
      */
     @JsonProperty("list_items")
-    private List<DynamicMultiselectListElement> listItems;
+    private List<DynamicMultiSelectListElement> listItems;
 
     @JsonIgnore
     public String getValueLabel() {
         return value == null ? null : value.toString();
+    }
+
+    @JsonIgnore
+    public <T> List<Element<T>> getSelectedElementsFromMultiSelectList(List<Element<T>> elements) {
+        if (isEmpty(value)) {
+            return Collections.emptyList();
+        }
+        return elements.stream().filter(element -> value.stream()
+                .anyMatch(listValue -> listValue.hasCode(element.getId())))
+            .toList();
     }
 
     @JsonIgnore

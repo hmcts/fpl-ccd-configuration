@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiselectListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicMultiSelectListElement;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC2OrderDocument;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
@@ -97,6 +97,7 @@ public class UploadAdditionalApplicationsService {
 
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
     private static final String C2_APPLICATION_NAME = "C2_application.pdf";
+    private static final String DEFAULT_STRING = "-";
 
     private final Time time;
     private final UserService userService;
@@ -109,11 +110,11 @@ public class UploadAdditionalApplicationsService {
     private final JudicialService judicialService;
 
     public DynamicMultiSelectList getChildrenMultiSelectList(CaseData caseData) {
-        List<DynamicMultiselectListElement> listItems = new ArrayList<>();
+        List<DynamicMultiSelectListElement> listItems = new ArrayList<>();
         if (caseData.getChildren1() != null) {
             IncrementalInteger i = new IncrementalInteger(1);
             caseData.getChildren1().forEach(child -> {
-                listItems.add(DynamicMultiselectListElement.builder().code(child.getId().toString())
+                listItems.add(DynamicMultiSelectListElement.builder().code(child.getId().toString())
                     .label(child.getValue().getParty().getFirstName() + " "
                         + child.getValue().getParty().getLastName()
                         + " (Child " + i.getAndIncrement() + ")").build());
@@ -230,6 +231,13 @@ public class UploadAdditionalApplicationsService {
             temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
         );
 
+        addC2EvidenceOfConsent(
+            caseData,
+            updatedSupportingEvidenceBundle,
+            uploadedBy,
+            uploadedTime
+        );
+
         List<Element<Supplement>> updatedSupplementsBundle =
             getSupplementsBundle(temporaryC2Document.getSupplementsBundle(),
                 uploadedBy, uploadedTime);
@@ -243,8 +251,10 @@ public class UploadAdditionalApplicationsService {
                 .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
                 .supplementsBundle(updatedSupplementsBundle)
                 .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+                .hasConfidentialAddress(null)
                 .type(eventData.getC2Type())
-                .respondents(respondentsInCase);
+                .respondents(respondentsInCase)
+                .routeType(eventData.getC2ApplicationRoute());
 
         if (YES.equals(temporaryC2Document.getIsHearingAdjournmentRequired())) {
             c2DocumentBundleBuilder.c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT));
@@ -297,7 +307,9 @@ public class UploadAdditionalApplicationsService {
             .safeguardingReason(c2EventData.getSafeguardingRiskDetails())
             .requestAdjournment(c2EventData.getIsHearingAdjournmentRequired().getValue(language))
             .whichHearing(c2EventData.getRequestedHearingToAdjourn())
-            .considerAtNextHearing(c2EventData.getCanBeConsideredAtNextHearing().getValue(language))
+            .considerAtNextHearing(!isEmpty(c2EventData.getCanBeConsideredAtNextHearing())
+                ? c2EventData.getCanBeConsideredAtNextHearing().getValue(language)
+                : DEFAULT_STRING)
             .crest(CREST.getValue(language))
             .build();
 
@@ -365,6 +377,30 @@ public class UploadAdditionalApplicationsService {
         buildC2BundleByPolicy(caseData, convertedC2, builder);
     }
 
+    private void addC2EvidenceOfConsent(
+        CaseData caseData,
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
+        String uploadedBy,
+        LocalDateTime uploadedDateTime) {
+
+        UploadAdditionalApplicationsEventData eventData =
+            caseData.getUploadAdditionalApplicationsEventData();
+
+        if (eventData.getC2Type() == C2ApplicationType.WITHOUT_NOTICE
+            && eventData.getC2EvidenceConsentDocument() != null) {
+
+            supportingEvidenceBundle.add(element(SupportingEvidenceBundle.builder()
+                .name("Evidence of consent")
+                .document(eventData.getC2EvidenceConsentDocument())
+                .hasConfidentialAddress(YesNo.NO.getValue())
+                .dateTimeUploaded(uploadedDateTime)
+                .uploadedBy(uploadedBy)
+                .uploaderType(manageDocumentService.getUploaderType(caseData))
+                .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+                .build()));
+        }
+    }
+
     private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(CaseData caseData,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         String uploadedBy, LocalDateTime uploadedDateTime) {
@@ -378,20 +414,11 @@ public class UploadAdditionalApplicationsService {
             supportingEvidence.getValue().setUploadedBy(uploadedBy);
             supportingEvidence.getValue().setUploaderType(uploaderType);
             supportingEvidence.getValue().setUploaderCaseRoles(uploadCaseRoles);
+            supportingEvidence.getValue().setHasConfidentialAddress(
+                supportingEvidence.getValue().getHasConfidentialAddress()
+            );
+            supportingEvidence.getValue().setHasConfidentialAddressConfirmation(null);
         });
-
-        // If done with consent add the consent document to the support docs list
-        if (eventData.getC2Type() == C2ApplicationType.WITHOUT_NOTICE
-            && eventData.getC2EvidenceConsentDocument() != null) {
-            supportingEvidenceBundle.add(element(SupportingEvidenceBundle.builder()
-                .name("Evidence of consent")
-                .document(eventData.getC2EvidenceConsentDocument())
-                .dateTimeUploaded(uploadedDateTime)
-                .uploadedBy(uploadedBy)
-                .uploaderType(uploaderType)
-                .uploaderCaseRoles(uploadCaseRoles)
-                .build()));
-        }
 
         return supportingEvidenceBundle;
     }
@@ -534,7 +561,7 @@ public class UploadAdditionalApplicationsService {
         }
 
         if (!isEmpty(eventData.getTemporaryC2Document().getDraftOrdersBundle())
-            && eventData.getTemporaryC2Document().getDraftOrdersBundle().size() > 1 && !userService.isCtscUser()) {
+            && eventData.getTemporaryC2Document().getDraftOrdersBundle().size() > 1) {
             errors.add("Please upload only a single draft order to proceed");
         }
 
@@ -545,5 +572,10 @@ public class UploadAdditionalApplicationsService {
         return childSelector.getValue().stream()
             .map(childName -> String.join(" ", childName.getLabel()))
             .collect(Collectors.joining("\n"));
+    }
+
+    public YesNo reviewNextHearingChecker(UploadAdditionalApplicationsEventData eventData) {
+        return !isNull(eventData.getTemporaryC2Document())
+            && YesNo.YES.equals(eventData.getTemporaryC2Document().getCanBeConsideredAtNextHearing()) ? YES : NO;
     }
 }

@@ -421,6 +421,7 @@ class ReplyToMessageJudgeServiceTest {
                         .replyFrom("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
                         .replyTo("%s (%s)".formatted(JudicialMessageRoleType.LOCAL_COURT_ADMIN.getLabel(),
                             MESSAGE_SENDER))
+                        .urgency(NO.getValue())
                         .build()
                     ),
                     element(
@@ -431,6 +432,7 @@ class ReplyToMessageJudgeServiceTest {
                         .message(MESSAGE)
                         .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
                         .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
+                        .urgency(NO.getValue())
                         .build()
                 )))
                 .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
@@ -593,6 +595,7 @@ class ReplyToMessageJudgeServiceTest {
                     .message(MESSAGE)
                     .replyFrom("%s (%s)".formatted(SENDER_TYPE.getLabel(), MESSAGE_SENDER))
                     .replyTo("%s (%s)".formatted(RECIPIENT_TYPE.getLabel(), MESSAGE_RECIPIENT))
+                    .urgency(NO.getValue())
                     .build()
             )))
             .dateSent(formatLocalDateTimeBaseUsingFormat(dateSent, DATE_TIME_AT))

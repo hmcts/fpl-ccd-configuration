@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -25,6 +24,8 @@ import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
@@ -73,7 +74,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(Other.builder().name("test1").build()).build())
+            .othersV2(wrapElements(Other.builder().firstName("test1").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -139,25 +140,23 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
-            hearingOrdersBundleId, newArrayList(draftOrder1, draftOrder2));
+            hearingOrdersBundleId, newArrayList(draftOrder1, draftOrder2), null);
 
         ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder()
             .draftOrder1Document(order)
+            .judgeTitleAndName("Judge Title and Name")
             .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
-                .build())
+            .othersV2(wrapElements(Other.builder().name("test1").build(), Other.builder().name("test2").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
             .reviewDraftOrdersData(reviewDraftOrdersData).build();
 
         when(judicialService.isCurrentUserFeePaidJudge()).thenReturn(Boolean.FALSE);
-        when(hearingOrderGenerator.addCoverSheet(caseData, order)).thenReturn(orderWithCoverSheet);
+        when(hearingOrderGenerator.addCoverSheet(any(), eq(order))).thenReturn(orderWithCoverSheet);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
@@ -197,10 +196,9 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
-                .build())
+            .othersV2(wrapElements(
+                Other.builder().firstName("test1").lastName("lastname1").build(),
+                Other.builder().firstName("test2").lastName("lastname2").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -226,10 +224,9 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
-                .build())
+            .othersV2(wrapElements(
+                Other.builder().firstName("test1").lastName("lastname1").build(),
+                Other.builder().firstName("test2").lastName("lastname2").build()))
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -242,10 +239,34 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         assertThat(callbackResponse.getData().get("judgeType")).isEqualTo("LEGAL_ADVISOR");
     }
 
+    @Test
+    void shouldReturnNullIfOrderHasNoHearingId() {
+        UUID hearingOrdersBundleId = UUID.randomUUID();
+
+        Element<HearingOrder> draftOrder1 = element(HearingOrder.builder().title("Draft C21 Order 1")
+            .type(HearingOrderType.C21).hearing("Hearing 1").status(SEND_TO_JUDGE).build());
+
+        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
+            hearingOrdersBundleId, newArrayList(draftOrder1));
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
+
+        assertThat(callbackResponse.getData().get("selectedHearingIdDraft")).isNull();
+    }
+
     private Element<HearingOrdersBundle> buildHearingOrdersBundle(
         UUID hearingOrdersBundle1, List<Element<HearingOrder>> orders) {
+        return buildHearingOrdersBundle(hearingOrdersBundle1, orders, UUID.randomUUID());
+    }
+
+    private Element<HearingOrdersBundle> buildHearingOrdersBundle(
+        UUID hearingOrdersBundle1, List<Element<HearingOrder>> orders, UUID hearingId) {
         return element(hearingOrdersBundle1,
-            HearingOrdersBundle.builder().hearingId(UUID.randomUUID())
+            HearingOrdersBundle.builder().hearingId(hearingId)
                 .orders(orders)
                 .hearingName(hearing).build());
     }

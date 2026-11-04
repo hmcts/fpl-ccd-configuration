@@ -48,7 +48,7 @@ export class ApplicantDetails extends BasePage {
     this.continue = page.getByRole('button', { name: 'Continue' })
     this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
     this.representingPersonDetails = page.getByRole('group', { name: 'Details of person you are representing' });
-    this.mainContactDetails = page.getByRole('group').locator('#applicantContact_applicantContact');
+    this.mainContactDetails = page.locator('#applicantContact_applicantContact');
     this.otherContactPerson = page.locator('#applicantContactOthers_0_0');
 
   }

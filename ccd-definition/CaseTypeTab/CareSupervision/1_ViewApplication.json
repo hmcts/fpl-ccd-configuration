@@ -83,7 +83,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForTheApplicationHeadingLabel",
-    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\" OR risks!=\"\" OR proceeding!=\"\" OR internationalElement!=\"\"",
+    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\" OR risks!=\"\" OR proceedings!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -255,7 +255,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationGroundsSubHeadingLabel",
-    "FieldShowCondition": "proceeding!=\"\" OR internationalElement!=\"\"",
+    "FieldShowCondition": "proceedings!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 20
   },
   {
@@ -266,7 +266,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsSubHeadingLabel",
-    "FieldShowCondition": "proceeding!=\"\"",
+    "FieldShowCondition": "proceedings!=\"\"",
     "TabFieldDisplayOrder": 21
   },
   {
@@ -276,7 +276,7 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "proceeding",
+    "CaseFieldID": "proceedings",
     "TabFieldDisplayOrder": 22
   },
   {
@@ -287,7 +287,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsLink",
-    "FieldShowCondition": "proceeding!=\"\"",
+    "FieldShowCondition": "proceedings!=\"\"",
     "TabFieldDisplayOrder": 23
   },
   {
@@ -374,7 +374,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "informationAboutThePartiesHeadingLabel",
-    "FieldShowCondition": "children1!=\"\" OR respondents1!=\"\" OR others!=\"\" OR applicants!=\"\" OR solicitor!=\"\" OR localAuthorities!=\"\"",
+    "FieldShowCondition": "children1!=\"\" OR respondents1!=\"\" OR othersV2!=\"\" OR applicants!=\"\" OR solicitor!=\"\" OR localAuthorities!=\"\"",
     "TabFieldDisplayOrder": 37
   },
   {
@@ -503,7 +503,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationPartiesSubHeadingLabel",
-    "FieldShowCondition": "others!=\"\"",
+    "FieldShowCondition": "othersV2!=\"\"",
     "TabFieldDisplayOrder": 49
   },
   {
@@ -514,7 +514,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "othersSubHeadingLabel",
-    "FieldShowCondition": "others!=\"\"",
+    "FieldShowCondition": "othersV2!=\"\"",
     "TabFieldDisplayOrder": 50
   },
   {
@@ -524,7 +524,7 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "others",
+    "CaseFieldID": "othersV2",
     "TabFieldDisplayOrder": 51
   },
   {
@@ -535,7 +535,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "othersLink",
-    "FieldShowCondition": "others!=\"\"",
+    "FieldShowCondition": "othersV2!=\"\"",
     "TabFieldDisplayOrder": 52
   },
   {

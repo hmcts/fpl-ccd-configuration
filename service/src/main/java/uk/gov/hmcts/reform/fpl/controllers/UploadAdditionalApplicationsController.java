@@ -92,6 +92,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().remove("latestRoleSent");
+        caseDetails.getData().remove("isC2Application");
+        caseDetails.getData().remove("reviewNextHearing");
         caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
 
         return respond(caseDetails);
@@ -207,9 +209,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 order.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
             });
             List<Element<HearingOrder>> newDrafts = draftOrders.stream()
-                .map(Element::getValue)
-                .map(HearingOrder::from)
-                .map(ElementUtils::element)
+                .map(draftOrderElement ->
+                    element(draftOrderElement.getId(), // keep UUID consistent with application bundle & hearing orders
+                        HearingOrder.from(draftOrderElement.getValue())))
                 .collect(Collectors.toList());
 
             HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
@@ -244,6 +246,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().put("latestRoleSent", uploadAdditionalApplicationsService
             .getAllocatedJudgeOrLegalAdviserType(caseData));
 
+        caseDetails.getData().put("isC2Application", !isNull(eventData.getTemporaryC2Document()) ? YES : NO);
+        caseDetails.getData().put("reviewNextHearing",
+            uploadAdditionalApplicationsService.reviewNextHearingChecker(eventData));
         workAllocationTaskService.setTaskUrgency(caseDetails.getData(),
             uploadAdditionalApplicationsService.getBundleUrgency(additionalApplicationsBundle));
 

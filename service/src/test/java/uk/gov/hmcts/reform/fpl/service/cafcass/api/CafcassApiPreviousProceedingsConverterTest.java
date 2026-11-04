@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
@@ -9,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiProceeding;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 public class CafcassApiPreviousProceedingsConverterTest extends CafcassApiConverterTestBase {
     CafcassApiPreviousProceedingsConverterTest() {
@@ -24,29 +25,30 @@ public class CafcassApiPreviousProceedingsConverterTest extends CafcassApiConver
     @Test
     void shouldConvertPreviousProceedings() {
         Proceeding additionalProceeding = Proceeding.builder()
-            .proceedingStatus("Previous")
+            .proceedingStatus(ProceedingStatus.PREVIOUS)
             .caseNumber("123")
-            .sameGuardianNeeded(YesNo.NO.toString())
+            .started("2023-05-24")
+            .ended("2023-05-24")
+            .guardian("John Smith")
+            .sameGuardianNeeded(YesNo.NO)
             .build();
         Proceeding additionalEmptyProceeding = Proceeding.builder().build();
 
         Proceeding proceeding = Proceeding.builder()
-            .proceedingStatus("Ongoing")
+            .proceedingStatus(ProceedingStatus.ONGOING)
             .caseNumber("1234567898765432")
             .started("2023-05-24")
-            .ended("2023-05-24")
             .ordersMade("C20, C8, etc.")
             .judge("District Judge Martin Brown")
             .children("Joe Bloggs, Jane Bloggs")
             .guardian("John Smith")
-            .sameGuardianNeeded(YesNo.YES.toString())
+            .sameGuardianNeeded(YesNo.YES)
             .sameGuardianDetails("Do not need the same guardian for x and y reasons.")
-            .additionalProceedings(wrapElements(additionalProceeding, additionalEmptyProceeding))
             .build();
 
 
         CaseData caseData = CaseData.builder()
-            .proceeding(proceeding)
+            .proceedings(wrapElementsWithUUIDs(proceeding, additionalProceeding, additionalEmptyProceeding))
             .build();
 
         List<CafcassApiProceeding> expectedList = List.of(
@@ -54,7 +56,6 @@ public class CafcassApiPreviousProceedingsConverterTest extends CafcassApiConver
                 .proceedingStatus("Ongoing")
                 .caseNumber("1234567898765432")
                 .started("2023-05-24")
-                .ended("2023-05-24")
                 .ordersMade("C20, C8, etc.")
                 .judge("District Judge Martin Brown")
                 .children("Joe Bloggs, Jane Bloggs")
@@ -65,6 +66,9 @@ public class CafcassApiPreviousProceedingsConverterTest extends CafcassApiConver
             CafcassApiProceeding.builder()
                 .proceedingStatus("Previous")
                 .caseNumber("123")
+                .started("2023-05-24")
+                .ended("2023-05-24")
+                .guardian("John Smith")
                 .sameGuardianNeeded(false)
                 .build()
         );
@@ -75,6 +79,8 @@ public class CafcassApiPreviousProceedingsConverterTest extends CafcassApiConver
     @Test
     void shouldReturnEmptyListIfNull() {
         CafcassApiCaseData expected = CafcassApiCaseData.builder().previousProceedings(List.of()).build();
-        testConvert(CaseData.builder().proceeding(null).build(), expected);
+
+        testConvert(CaseData.builder().proceedings(null).build(), expected);
+        testConvert(CaseData.builder().proceedings(List.of()).build(), expected);
     }
 }

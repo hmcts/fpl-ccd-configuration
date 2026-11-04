@@ -52,9 +52,11 @@ import static uk.gov.hmcts.reform.fpl.config.TimeConfiguration.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration.SERVICE_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.CIRCUIT_JUDGE_SITTING_IN_RETIRE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_HIGH_COURT_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE_SITTING_IN_RETIRE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.RECORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeType.FEE_PAID_JUDGE;
@@ -85,7 +87,8 @@ public class JudicialService {
     );
 
     public static final List<JudgeOrMagistrateTitle> FEE_PAID_JUDGE_TITLES =
-        List.of(DEPUTY_HIGH_COURT_JUDGE, RECORDER, DEPUTY_DISTRICT_JUDGE, DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT);
+        List.of(DEPUTY_HIGH_COURT_JUDGE, RECORDER, DEPUTY_DISTRICT_JUDGE, DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT,
+            CIRCUIT_JUDGE_SITTING_IN_RETIRE, DISTRICT_JUDGE_SITTING_IN_RETIRE);
     public static final List<JudgeOrMagistrateTitle> LEGAL_ADVISOR_TITLES =
         List.of(JudgeOrMagistrateTitle.MAGISTRATES, JudgeOrMagistrateTitle.LEGAL_ADVISOR);
 

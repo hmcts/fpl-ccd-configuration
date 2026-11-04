@@ -291,7 +291,8 @@ public class PlacementService {
             .findFirst();
 
         currentPlacement.setPlacementRespondentsToNotify(
-            respondentService.getSelectedRespondents(caseData, caseData.getSendPlacementNoticeToAllRespondents())
+            respondentService.getSelectedRespondents(caseData, placementData,
+                caseData.getSendPlacementNoticeToAllRespondents())
         );
 
         if (placementData.getPlacementNotice() != null) {

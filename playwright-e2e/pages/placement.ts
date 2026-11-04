@@ -1,6 +1,7 @@
 import { BasePage } from "./base-page";
 import { expect, Page } from "@playwright/test";
 import config from "../settings/test-docs/config";
+import {testConfig} from "../settings/test-config";
 
 export class Placement extends BasePage {
 
@@ -31,7 +32,7 @@ export class Placement extends BasePage {
   }
 
   public async payForApplication() {
-    await expect(this.page.getByText('£556.00')).toBeVisible();
+    await expect(this.page.getByText(testConfig.PLACEMENT_APPLICATION)).toBeVisible();
     await this.page.getByRole('textbox', { name: 'Payment by account (PBA)' }).fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();

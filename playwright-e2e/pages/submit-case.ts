@@ -26,7 +26,7 @@ export class SubmitCase extends BasePage{
     this.paymentAmountText = page.getByText('£');
   }
 
-  async submitCaseSmokeTest(amount:string= '2,437.00') {
+  async submitCaseSmokeTest(amount:string) {
     //first page
     await expect(this.declarationHeading).toBeVisible();
     await expect(this.teamManagerNameText).toBeVisible();

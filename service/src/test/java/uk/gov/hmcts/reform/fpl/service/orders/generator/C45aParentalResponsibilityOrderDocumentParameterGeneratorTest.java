@@ -70,7 +70,7 @@ class C45aParentalResponsibilityOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn("Yes");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -88,7 +88,7 @@ class C45aParentalResponsibilityOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD,CHILD,CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn("Yes");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -106,7 +106,7 @@ class C45aParentalResponsibilityOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -123,7 +123,7 @@ class C45aParentalResponsibilityOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD,CHILD,CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -147,7 +147,7 @@ class C45aParentalResponsibilityOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn("Yes");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -166,7 +166,7 @@ class C45aParentalResponsibilityOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(childrenService.getSelectedChildrenFromMultiSelectList(caseData)).thenReturn(selectedChildren);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn("Yes");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
