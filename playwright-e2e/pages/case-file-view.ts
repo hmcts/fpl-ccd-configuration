@@ -25,7 +25,7 @@ export class CaseFileView extends BasePage {
         await this.page.getByRole('button', { name: 'More document options', exact: true }).click();
         await this.page.getByText('Change folder').click();
         await expect(this.page.getByText('Move File')).toBeVisible();
-        await this.page.locator('#mat-dialog-0').getByText(toFolder).click();
+        await this.page.locator('#mat-mdc-dialog-0').getByText(toFolder).click();
         await this.page.getByRole('button', { name: 'Save', exact: true }).click();
     }
 
