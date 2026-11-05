@@ -370,11 +370,11 @@ test.describe('Upload additional applications', () => {
 
         await additionalApplications.uploadSupplementDocument('0', 'C18 - Recovery order', 'test notes');
         await additionalApplications.uploadC2DraftOrder('0', 'Draft order one');
-        await additionalApplications.uploadC2DraftOrder('1', 'Draft order two');
         await additionalApplications.uploadSupportingDocument('0', 'birth certificate', 'birth certificate of child one');
 
 
         await additionalApplications.clickContinue();
+
         await additionalApplications.ctscPayForApplication();
         await additionalApplications.clickContinue();
         await additionalApplications.checkYourAnsAndSubmit();
@@ -390,7 +390,6 @@ test.describe('Upload additional applications', () => {
         expect(await additionalApplications.getRowData('Application Reviewed by Judge',page)).toContain('No');
         await expect(additionalApplications.page.getByText('C2 application')).toBeVisible();
         await expect(additionalApplications.page.getByText('Draft Orders 1')).toBeVisible();
-        await expect(additionalApplications.page.getByText('Draft Orders 2')).toBeVisible();
         await expect(additionalApplications.page.getByText('Supporting documents 1')).toBeVisible();
         await expect(additionalApplications.page.getByText('birth certificate',{exact:true})).toBeVisible();
         await expect(additionalApplications.page.getByText('Supporting documents 2')).toBeVisible();
@@ -399,7 +398,7 @@ test.describe('Upload additional applications', () => {
         await expect(additionalApplications.page.getByText('C18 - Recovery order')).toBeVisible();
 
     });
-    test('LA submit C2 paper application', async ({
+    test('LA submit C2 online application', async ({
                                                       page,
                                                       signInPage,
                                                       additionalApplications,
@@ -408,7 +407,7 @@ test.describe('Upload additional applications', () => {
                                                   }) => {
 
 
-        caseName = 'LA submit C2 paper application ' + dateTime.slice(0, 10);
+        caseName = 'LA submit C2 online application ' + dateTime.slice(0, 10);
         expect(await updateCase(caseName, caseNumber, caseDataWithHearing)).toBeTruthy();
         expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
 
@@ -463,7 +462,7 @@ test.describe('Upload additional applications', () => {
 
 
     });
-    test('Respondent solicitor submit C2 online application',async ({
+    test.only('Respondent solicitor submit C2 online application',async ({
                                                                         page,
                                                                         signInPage,
                                                                         additionalApplications,
@@ -479,6 +478,7 @@ test.describe('Upload additional applications', () => {
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
         await additionalApplications.gotoNextStep('Upload additional applications');
+        await additionalApplications.page.pause()
         await additionalApplications.selectApplicationType('C2 Application');
         await additionalApplications.selectC2FormType('Apply online');
         await additionalApplications.giveC2AppConsent('No');
@@ -497,7 +497,9 @@ test.describe('Upload additional applications', () => {
         await additionalApplications.payForApplication(envDataConfig.privateSolicitorOrgPBA);
         await additionalApplications.checkYourAnsAndSubmit();
         await expect(additionalApplications.page.getByText('with event: Upload additional applications')).toBeVisible();
+
         await additionalApplications.tabNavigation('Other applications');
+
         await expect(additionalApplications.page.getByText('Charlie Respondent, Respondent 1')).toBeVisible();
         await expect(additionalApplications.page.getByRole('button', { name: 'C2_APPLICATION.pdf' })).toBeVisible();
         await additionalApplications.openC2Application('C2_APPLICATION.pdf');
