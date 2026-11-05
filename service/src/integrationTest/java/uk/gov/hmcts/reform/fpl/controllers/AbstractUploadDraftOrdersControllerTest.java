@@ -68,6 +68,7 @@ abstract class AbstractUploadDraftOrdersControllerTest extends AbstractCallbackT
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
+                .judgeFullName("Her Honour Judge Jane Judy")
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .build())
             .caseManagementOrderId(cmoId)
