@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveApplicationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
 
@@ -60,14 +59,11 @@ class ApplicationRemovedEmailContentProviderTest extends AbstractEmailContentPro
     private ApplicationRemovedEmailContentProvider underTest;
 
     @MockitoBean
-    private EmailNotificationHelper helper;
-
-    @MockitoBean
     private Time time;
 
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(CASE_DATA.getChildren1())).thenReturn("McDonnell");
+        when(notificationHelper.getEldestChildLastName(CASE_DATA.getChildren1())).thenReturn("McDonnell");
         when(time.now()).thenReturn(REMOVAL_DATE);
     }
 

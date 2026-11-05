@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons;
 import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Base64;
 import java.util.HashMap;
@@ -71,12 +69,9 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
     @Autowired
     private ReturnedCaseContentProvider returnedCaseContentProvider;
 
-    @MockitoBean
-    private EmailNotificationHelper helper;
-
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn(CHILD_LAST_NAME);
     }
 
     @Test

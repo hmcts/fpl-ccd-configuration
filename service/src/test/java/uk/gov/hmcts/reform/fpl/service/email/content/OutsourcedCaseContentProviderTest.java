@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.OutsourcedCaseTemplate;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 
@@ -38,12 +36,9 @@ class OutsourcedCaseContentProviderTest extends AbstractEmailContentProviderTest
     @Autowired
     private OutsourcedCaseContentProvider underTest;
 
-    @MockitoBean
-    private EmailNotificationHelper helper;
-
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
     }
 
     @Test

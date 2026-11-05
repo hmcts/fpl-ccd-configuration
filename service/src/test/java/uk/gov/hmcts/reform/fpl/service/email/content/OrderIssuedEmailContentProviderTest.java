@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,6 +49,8 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -109,6 +112,12 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @MockitoBean
     private OrderIssuedEmailContentProviderTypeOfOrderCalculator calculator;
+
+    @BeforeEach
+    void init() {
+        when(notificationHelper.getEldestChildLastName(anyList())).thenReturn(TEST_CHILD.getParty().getLastName());
+        when(courtService.getCourtName(any())).thenReturn(COURT_NAME);
+    }
 
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {

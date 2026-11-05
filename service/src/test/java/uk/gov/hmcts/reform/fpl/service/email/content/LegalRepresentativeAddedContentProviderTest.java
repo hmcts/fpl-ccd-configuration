@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.LegalRepresentativeAddedTemplate;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -44,8 +43,6 @@ class LegalRepresentativeAddedContentProviderTest extends AbstractEmailContentPr
 
     @MockitoBean
     private LocalAuthorityNameLookupConfiguration laNameLookup;
-    @MockitoBean
-    private EmailNotificationHelper helper;
 
     @Autowired
     private LegalRepresentativeAddedContentProvider underTest;
@@ -53,7 +50,7 @@ class LegalRepresentativeAddedContentProviderTest extends AbstractEmailContentPr
     @BeforeEach
     void setUp() {
         when(laNameLookup.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).thenReturn(LOCAL_AUTHORITY_NAME);
-        when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_NAME);
+        when(notificationHelper.getEldestChildLastName(anyList())).thenReturn(CHILD_NAME);
     }
 
     @Test

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
@@ -53,8 +52,6 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
     private CaseDataExtractionService extractionService;
     @MockitoBean
     private HearingVenueLookUpService venueLookUp;
-    @MockitoBean
-    private EmailNotificationHelper helper;
     @Autowired
     private NoticeOfHearingEmailContentProvider underTest;
 
@@ -82,7 +79,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
 
         when(extractionService.getHearingTime(HEARING_BOOKING)).thenReturn(HEARING_TIME);
 
-        when(helper.getEldestChildLastName(children)).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(children)).thenReturn(CHILD_LAST_NAME);
 
         when(noticeOfHearing.getBinaryUrl()).thenReturn("/testUrl");
         when(documentDownloadService.downloadDocument("/testUrl")).thenReturn(APPLICATION_BINARY);

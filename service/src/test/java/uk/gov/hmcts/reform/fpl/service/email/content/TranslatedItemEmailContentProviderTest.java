@@ -4,14 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.TranslatedItemNotifyData;
-import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,15 +29,9 @@ class TranslatedItemEmailContentProviderTest extends AbstractEmailContentProvide
     @Autowired
     private TranslatedItemEmailContentProvider underTest;
 
-    @MockitoBean
-    private CourtService courtService;
-
-    @MockitoBean
-    private EmailNotificationHelper helper;
-
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
         when(courtService.getCourtName(any())).thenReturn("Family Court");
     }
 

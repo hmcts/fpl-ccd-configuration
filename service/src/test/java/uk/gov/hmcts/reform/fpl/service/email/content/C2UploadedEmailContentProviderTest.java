@@ -54,7 +54,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         DocumentReference uploadedC2 = DocumentReference.builder()
             .filename(randomAlphanumeric(10))
             .url(randomAlphanumeric(10))
-            .binaryUrl("http://dm-store:8080/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary")
+            .binaryUrl("http://dm-store:8080/documentsv2/b28f859b-7521-4c84-9057-47e56afd773f/binary")
             .build();
 
         CaseData caseData = buildCaseData();

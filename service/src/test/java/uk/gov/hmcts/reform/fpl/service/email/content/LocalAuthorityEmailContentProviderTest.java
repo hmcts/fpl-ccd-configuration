@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,8 +22,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {LocalAuthorityEmailContentProvider.class})
 class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProviderTest {
-    @MockitoBean
-    private EmailNotificationHelper helper;
     @Autowired
     private LocalAuthorityEmailContentProvider underTest;
 
@@ -45,7 +41,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
                 .build()))
             .build();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Jones");
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Jones");
 
         NotifyData actualData = underTest.buildNoticeOfPlacementOrderUploadedNotification(caseData);
 

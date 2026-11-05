@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Base64;
 import java.util.HashMap;
@@ -46,14 +44,12 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .build())
         .build();
 
-    @MockitoBean
-    private EmailNotificationHelper helper;
     @Autowired
     private CaseManagementOrderEmailContentProvider underTest;
 
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn("Some last name");
+        when(notificationHelper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn("Some last name");
     }
 
     @Test

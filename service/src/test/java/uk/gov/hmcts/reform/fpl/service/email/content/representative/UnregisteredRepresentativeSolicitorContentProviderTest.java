@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProviderTest;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,9 +45,6 @@ class UnregisteredRepresentativeSolicitorContentProviderTest extends AbstractEma
     private final CaseData caseData = mock(CaseData.class);
 
     @MockitoBean
-    private EmailNotificationHelper helper;
-
-    @MockitoBean
     private LocalAuthorityNameLookupConfiguration lookup;
 
     @Autowired
@@ -66,7 +62,7 @@ class UnregisteredRepresentativeSolicitorContentProviderTest extends AbstractEma
         when(caseData.getAllChildren()).thenReturn(children);
 
         when(lookup.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).thenReturn(LOCAL_AUTHORITY_NAME);
-        when(helper.getEldestChildLastName(children)).thenReturn("Tim Jones");
+        when(notificationHelper.getEldestChildLastName(children)).thenReturn("Tim Jones");
     }
 
     @Test

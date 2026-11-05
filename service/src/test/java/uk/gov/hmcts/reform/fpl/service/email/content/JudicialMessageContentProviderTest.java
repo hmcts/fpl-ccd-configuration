@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
@@ -41,14 +39,12 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
     private static final CaseData CASE_DATA = buildCaseData();
 
-    @MockitoBean
-    private EmailNotificationHelper helper;
     @Autowired
     private JudicialMessageContentProvider underTest;
 
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn(LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn(LAST_NAME);;
     }
 
     @ParameterizedTest

@@ -4,14 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.PartyAddedNotifyData;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 
@@ -37,15 +35,12 @@ class PartyAddedToCaseContentProviderTest extends AbstractEmailContentProviderTe
             .build()))
         .build();
 
-    @MockitoBean
-    private EmailNotificationHelper helper;
-
     @Autowired
     private PartyAddedToCaseContentProvider underTest;
 
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(CHILDREN)).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(CHILDREN)).thenReturn(CHILD_LAST_NAME);
     }
 
     @Test

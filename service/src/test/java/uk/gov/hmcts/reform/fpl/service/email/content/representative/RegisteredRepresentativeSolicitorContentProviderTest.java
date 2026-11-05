@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.RegisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProviderTest;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,9 +50,6 @@ class RegisteredRepresentativeSolicitorContentProviderTest extends AbstractEmail
     private final RespondentSolicitor solicitor = mock(RespondentSolicitor.class);
     private final RespondentSolicitor solicitor2 = mock(RespondentSolicitor.class);
 
-
-    @MockitoBean
-    private EmailNotificationHelper helper;
     @MockitoBean
     private LocalAuthorityNameLookupConfiguration lookup;
 
@@ -70,7 +66,7 @@ class RegisteredRepresentativeSolicitorContentProviderTest extends AbstractEmail
         when(caseData.getApplicantName()).thenReturn(Optional.of(LOCAL_AUTHORITY_NAME));
         when(caseData.getAllChildren()).thenReturn(children);
 
-        when(helper.getEldestChildLastName(children)).thenReturn("Tim Jones");
+        when(notificationHelper.getEldestChildLastName(children)).thenReturn("Tim Jones");
         when(lookup.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).thenReturn(LOCAL_AUTHORITY_NAME);
     }
 

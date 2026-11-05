@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
@@ -30,9 +28,6 @@ class SDOIssuedCafcassContentProviderTest extends AbstractEmailContentProviderTe
     private static final DocumentReference ORDER = TestDataHelper.testDocumentReference();
     private static final byte[] ORDER_BINARY = TestDataHelper.DOCUMENT_CONTENT;
     private static final String ENCODED_BINARY = Base64.getEncoder().encodeToString(ORDER_BINARY);
-
-    @MockitoBean
-    private EmailNotificationHelper helper;
 
     @Autowired
     private SDOIssuedCafcassContentProvider underTest;
@@ -54,7 +49,7 @@ class SDOIssuedCafcassContentProviderTest extends AbstractEmailContentProviderTe
                 .build()))
             .build();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
 
         NotifyData expectedParameters = SDONotifyData.builder()
             .lastName("Smith")

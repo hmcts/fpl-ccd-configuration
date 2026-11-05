@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,8 +33,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final LocalDate SOME_DATE = LocalDate.of(2020, 2, 20);
-    @MockitoBean
-    private EmailNotificationHelper helper;
     @Autowired
     private ReviewDraftOrdersEmailContentProvider underTest;
 
@@ -74,7 +70,7 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
             .digitalPreference("Yes")
             .build();
 
-        given(helper.getEldestChildLastName(caseData.getAllChildren())).willReturn("Davies");
+        given(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).willReturn("Davies");
 
         assertThat(underTest.buildOrdersApprovedContent(
             caseData, hearing, orders, DIGITAL_SERVICE)).isEqualTo(expectedTemplate);
@@ -125,7 +121,7 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
             .documentLinks(List.of())
             .build();
 
-        given(helper.getEldestChildLastName(caseData.getAllChildren())).willReturn("Davies");
+        given(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).willReturn("Davies");
 
         assertThat(underTest.buildOrdersApprovedContent(caseData, hearing, orders, EMAIL)).isEqualTo(expectedTemplate);
     }
@@ -161,7 +157,7 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
             .subjectLineWithHearingDate("Jones, SN2000, case management hearing, 20 February 2020")
             .build();
 
-        given(helper.getEldestChildLastName(caseData.getAllChildren())).willReturn("Davies");
+        given(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).willReturn("Davies");
 
         assertThat(underTest.buildOrdersRejectedContent(caseData, hearing, orders)).isEqualTo(expectedTemplate);
     }

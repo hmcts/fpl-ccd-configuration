@@ -3,13 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,9 +30,6 @@ class FurtherEvidenceUploadedEmailContentProviderTest extends AbstractEmailConte
     private static final String SOME_NAME = "SOME NAME";
     private static final List<String> DOCUMENT_NAMES = List.of("DOCUMENT");
 
-
-    @MockitoBean
-    private EmailNotificationHelper helper;
     @Autowired
     private FurtherEvidenceUploadedEmailContentProvider underTest;
 
@@ -50,7 +45,7 @@ class FurtherEvidenceUploadedEmailContentProviderTest extends AbstractEmailConte
 
         CaseData caseData = buildCaseData();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(SOME_NAME);
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(SOME_NAME);
 
         FurtherEvidenceDocumentUploadedData actual = underTest.buildParameters(caseData, SENDER, DOCUMENT_NAMES);
 
@@ -69,7 +64,7 @@ class FurtherEvidenceUploadedEmailContentProviderTest extends AbstractEmailConte
 
         CaseData caseData = buildCaseData();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(SOME_NAME);
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(SOME_NAME);
 
         FurtherEvidenceDocumentUploadedData actual = underTest.buildParametersWithHearing(caseData, SENDER,
             DOCUMENT_NAMES, Optional.of(HEARING_BOOKING));
