@@ -65,22 +65,21 @@ public class MigrateCaseController extends CallbackController {
 
     public void run3419(CaseDetails caseDetails) {
         final CaseData caseData = getCaseData(caseDetails);
+        final String migrationId = "DFPL-3419";
+        final long expectedCaseId = 1783943081734149L;
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
         String orgName = "Wakefield Metropolitan District Council";
         String newOrgName = "Kirklees Council";
         String orgId = "T1GWH7Y";
         String newOrgId = "4001R46";
+        String caseRole = CaseRole.SOLICITORA.formattedName();
+        int policyIndex = 0;
         String laCode = "KKL";
         List<UUID> bundleIds = List.of(
             UUID.fromString("727006c8-cca7-4c93-88b2-f5bc2aa216ab"),
             UUID.fromString("111462e4-bfba-4db4-900a-8ec1bf9bbc9b")
         );
-        String caseRole = CaseRole.SOLICITORA.formattedName();
-        int policyIndex = 0;
-
-        final String migrationId = "DFPL-3419";
-        final long expectedCaseId = 1783943081734149L;
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.updateRespondents(caseData, orgName,
                                                                           newOrgName, orgId, newOrgId));
