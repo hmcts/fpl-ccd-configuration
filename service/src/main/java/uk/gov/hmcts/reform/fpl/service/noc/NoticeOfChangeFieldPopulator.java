@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.fpl.service.noc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.APPSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.POPULATE;
 
@@ -43,8 +46,8 @@ public class NoticeOfChangeFieldPopulator {
             SolicitorRole solicitorRole = solicitorRoles.get(i);
 
             Optional<Element<WithSolicitor>> solicitorContainer = i < numElements
-                                                                  ? Optional.of(elements.get(i))
-                                                                  : Optional.empty();
+                ? Optional.of(elements.get(i))
+                : Optional.empty();
 
             OrganisationPolicy organisationPolicy = policyConverter.generate(
                 solicitorRole, solicitorContainer
@@ -59,6 +62,33 @@ public class NoticeOfChangeFieldPopulator {
             if (possibleAnswer.isPresent()) {
                 data.put(String.format(representing.getNocAnswersTemplate(), i), possibleAnswer.get());
             }
+        }
+
+        return data;
+    }
+
+    public Map<String, Object> generateApplicantAnswer(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+        NoticeOfChangeAnswers nocAnswers = NoticeOfChangeAnswers.builder().build();
+
+        data.put("appSolicitorPolicy", Optional.ofNullable(caseData.getAppSolicitorPolicy())
+            .orElseGet(() -> OrganisationPolicy.builder().organisation(Organisation.builder().build())
+                .orgPolicyCaseAssignedRole(APPSOLICITOR.formattedName()).build()));
+
+        if (caseData.isThirdPartyApplicant()) {
+            Optional<LocalAuthority> localAuthority = caseData.getLocalAuthorities().stream()
+                .map(Element::getValue)
+                .filter(la -> la.getId().equals(caseData.getAppSolicitorPolicy()
+                    .getOrganisation().getOrganisationID()))
+                .findFirst();
+
+            if (localAuthority.isPresent()) {
+                nocAnswers = NoticeOfChangeAnswers.builder()
+                    .respondentFirstName(localAuthority.get().getRepresentingDetails().getFirstName())
+                    .respondentLastName(localAuthority.get().getRepresentingDetails().getLastName())
+                    .build();
+            }
+            data.put("noticeOfChangeAnswersThirdPartyRespondent", nocAnswers);
         }
 
         return data;
