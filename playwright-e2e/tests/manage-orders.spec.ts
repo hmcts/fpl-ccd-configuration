@@ -449,7 +449,6 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
         
         await orders.clickContinue();
-        await orders.clickContinue();// issues with code, had to work around it
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
@@ -476,7 +475,6 @@ test.describe('manage orders', () => {
         await orders.clickContinue();
 
         await orders.clickContinue();
-        await orders.clickContinue();// issues with code, had to work around it
         await orders.checkYourAnsAndSubmit();
 
         await orders.tabNavigation('Orders');
