@@ -1077,8 +1077,8 @@ public class MigrateCaseService {
         return Map.of(LOCAL_AUTHORITIES, updatedLocalAuthorities);
     }
 
-    public Map<String, String> updateCaseLocalAuthorityName(String newOrgName) {
-        return Map.of("caseLocalAuthorityName", newOrgName);
+    public Map<String, String> updateCaseLocalAuthority(String newOrgName, String laCode) {
+        return Map.of("caseLocalAuthorityName", newOrgName, "caseLocalAuthority", laCode);
     }
 
     private String getOrgName(String orgId) {
@@ -1115,46 +1115,27 @@ public class MigrateCaseService {
         List<Element<Respondent>> updatedRespondents = new ArrayList<>(respondents);
 
         Element<Respondent> respondentToUpdate = respondents.stream()
-            .filter(r ->
-                orgId.equals(r.getValue().getSolicitor().getOrganisation().getOrganisationID())
-                && orgName.equals(r.getValue().getSolicitor().getOrganisation().getOrganisationName()))
+            .filter(r -> {
+                RespondentSolicitor solicitor = r.getValue().getSolicitor();
+                Organisation organisation = solicitor == null ? null : solicitor.getOrganisation();
+
+                return organisation != null
+                    && orgId.equals(organisation.getOrganisationID())
+                    && orgName.equals(organisation.getOrganisationName());
+            })
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(() -> new IllegalArgumentException(format("Fail to find respondents with org {}", orgId)));
 
         int index = updatedRespondents.indexOf(respondentToUpdate);
         Respondent respondentToUpdateValue = respondentToUpdate.getValue();
-
         RespondentSolicitor respondentSolicitor = respondentToUpdateValue.getSolicitor();
 
-        Organisation newRespondentOrg = Organisation.builder()
-            .organisationID(newOrgId)
-            .organisationName(newOrgName)
-            .build();
-
-        RespondentSolicitor newRespondentSolicitor = RespondentSolicitor.builder()
-            .email(respondentSolicitor.getEmail())
-            .lastName(respondentSolicitor.getLastName())
-            .firstName(respondentSolicitor.getFirstName())
-            .organisation(newRespondentOrg)
-            .telephoneNumber(respondentSolicitor.getTelephoneNumber())
-            .regionalOfficeAddress(respondentSolicitor.getRegionalOfficeAddress())
-            .colleaguesToBeNotified(respondentSolicitor.getColleaguesToBeNotified())
-            .unregisteredOrganisation(respondentSolicitor.getUnregisteredOrganisation())
-            .build();
-
-        Respondent updatedRespondentValue = Respondent.builder()
-            .party(respondentToUpdateValue.getParty())
-            .solicitor(newRespondentSolicitor)
-            .representedBy(respondentToUpdateValue.getRepresentedBy())
-            .usingOtherOrg(respondentToUpdateValue.getUsingOtherOrg())
-            .isLocalAuthority(respondentToUpdateValue.getIsLocalAuthority())
-            .legalCounsellors(respondentToUpdateValue.getLegalCounsellors())
-            .legalRepresentation(respondentToUpdateValue.getLegalRepresentation())
-            .build();
-
-        Element<Respondent> updatedRespondentElement = Element.<Respondent>builder()
-            .id(respondentToUpdate.getId())
-            .value(updatedRespondentValue)
+        Element<Respondent> updatedRespondentElement = respondentToUpdate.toBuilder()
+            .value(respondentToUpdateValue.toBuilder()
+                .solicitor(respondentSolicitor.toBuilder()
+                    .organisation(createNewOrganisation(newOrgId, newOrgName))
+                    .build())
+                .build())
             .build();
 
         updatedRespondents.set(index, updatedRespondentElement);
@@ -1165,21 +1146,8 @@ public class MigrateCaseService {
                                                                     String newOrgId) {
         RespondentLocalAuthority respondentLA = caseData.getRespondentLocalAuthority();
 
-        Organisation newRespondentOrg = Organisation.builder()
-            .organisationID(newOrgId)
-            .organisationName(newOrgName)
-            .build();
-
-        RespondentLocalAuthority updatedRespondentLA = RespondentLocalAuthority.builder()
-            .name(respondentLA.getName())
-            .email(respondentLA.getEmail())
-            .address(respondentLA.getAddress())
-            .phoneNumber(respondentLA.getPhoneNumber())
-            .organisation(newRespondentOrg)
-            .usingOtherOrg(respondentLA.getUsingOtherOrg())
-            .legalCounsellors(respondentLA.getLegalCounsellors())
-            .representativeFirstName(respondentLA.getRepresentativeFirstName())
-            .representativeLastName(respondentLA.getRepresentativeLastName())
+        RespondentLocalAuthority updatedRespondentLA = respondentLA.toBuilder()
+            .organisation(createNewOrganisation(newOrgId, newOrgName))
             .build();
 
         return Map.of("respondentLocalAuthority", updatedRespondentLA);
@@ -1187,53 +1155,59 @@ public class MigrateCaseService {
 
     public Map<String, List<Element<AdditionalApplicationsBundle>>> updateAdditionalApplications(CaseData caseData,
                                                                                                  String newOrgName,
-                                                                                                 String newOrgId) {
+                                                                                                 String orgName,
+                                                                                                 String newOrgId,
+                                                                                                 String orgId,
+                                                                                                 List<UUID> bundleIds) {
+        List<Element<AdditionalApplicationsBundle>> updatedBundle =
+            caseData.getAdditionalApplicationsBundle().stream()
+                .map(b -> {
+                    if (!bundleIds.contains(b.getId())) {
+                        return b;
+                    }
 
-        List<Element<AdditionalApplicationsBundle>> additionalBundles = caseData.getAdditionalApplicationsBundle();
-        List<Element<AdditionalApplicationsBundle>> updatedBundles = additionalBundles.stream()
-            .map(bundleElement -> {
-                AdditionalApplicationsBundle bundle = bundleElement.getValue();
-                C2DocumentBundle c2Bundle = bundle.getC2DocumentBundle();
+                    AdditionalApplicationsBundle bundle = b.getValue();
+                    C2DocumentBundle c2Bundle = bundle.getC2DocumentBundle();
 
-                // Skip this bundleElement item
-                if (c2Bundle == null) {
-                    return bundleElement;
-                }
+                    if (c2Bundle == null || c2Bundle.getRespondents() == null) {
+                        return b;
+                    }
 
-                List<Element<Respondent>> updatedRespondents = c2Bundle.getRespondents().stream()
-                    .map(respondentElement -> {
-                        Respondent respondentValue = respondentElement.getValue();
-                        RespondentSolicitor respondentSolicitor = respondentValue.getSolicitor();
+                    List<Element<Respondent>> updatedRespondents = c2Bundle.getRespondents().stream()
+                        .map(r -> {
+                            Respondent respondent = r.getValue();
+                            RespondentSolicitor solicitor = respondent.getSolicitor();
+                            Organisation organisation = solicitor == null ? null : solicitor.getOrganisation();
 
-                        if (respondentSolicitor == null || respondentSolicitor.getOrganisation() == null) {
-                            return respondentElement;
-                        }
+                            if (organisation == null
+                                || !Objects.equals(orgId, organisation.getOrganisationID())
+                                || !Objects.equals(orgName, organisation.getOrganisationName())) {
+                                return r;
+                            }
 
-                        Organisation respondentOrg = respondentSolicitor.getOrganisation();
-                        if (Objects.equals(newOrgName, respondentOrg.getOrganisationName())
-                            && Objects.equals(newOrgId, respondentOrg.getOrganisationID())) {
-                            return respondentElement;
-                        }
+                            return r.toBuilder()
+                                .value(respondent.toBuilder()
+                                    .solicitor(solicitor.toBuilder()
+                                        .organisation(createNewOrganisation(newOrgId, newOrgName))
+                                        .build())
+                                    .build())
+                                .build();
+                        })
+                        .toList();
 
-                        Respondent updatedRespondent = respondentValue.toBuilder()
-                            .solicitor(respondentSolicitor.toBuilder()
-                                .organisation(createNewOrganisation(newOrgId, newOrgName))
-                                .build())
-                            .build();
+                    C2DocumentBundle updatedC2Bundle = c2Bundle.toBuilder()
+                        .respondents(updatedRespondents)
+                        .build();
 
-                        return respondentElement.toBuilder().value(updatedRespondent).build();
-                    })
-                    .collect(toList());
+                    return b.toBuilder()
+                        .value(bundle.toBuilder()
+                            .c2DocumentBundle(updatedC2Bundle)
+                            .build())
+                        .build();
+                })
+                .toList();
 
-                AdditionalApplicationsBundle updatedBundle = bundle.toBuilder()
-                    .c2DocumentBundle(c2Bundle.toBuilder().respondents(updatedRespondents).build())
-                    .build();
-
-                return bundleElement.toBuilder().value(updatedBundle).build();
-            })
-            .toList();
-
-        return Map.of("additionalApplicationsBundle", updatedBundles);
+        return Map.of("additionalApplicationsBundle", updatedBundle);
     }
 
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,

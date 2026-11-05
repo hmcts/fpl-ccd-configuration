@@ -397,6 +397,8 @@ class MigrateCaseServiceTest {
 
         private final String newOrgId = "HIJKLMN";
         private final String newOrgName = "New Organisation Name";
+        private final String orgId = "ABCDEFG";
+        private final String orgName = "Previous Organisation Name";
 
         private final String caseRole = "[SOLICITORA]";
 
@@ -526,10 +528,12 @@ class MigrateCaseServiceTest {
         void updateAdditionalApplications() {
             UUID bundleId = UUID.randomUUID();
             UUID bundleWithoutC2Id = UUID.randomUUID();
+            UUID bundleId2 = UUID.randomUUID();
             UUID changedRespondentId = UUID.randomUUID();
             UUID respondentWithoutSolicitorId = UUID.randomUUID();
             UUID respondentWithoutOrganisationId = UUID.randomUUID();
             UUID respondentAlreadyUpdatedId = UUID.randomUUID();
+            List<UUID> bundleIds = List.of(bundleId, bundleWithoutC2Id, bundleId2);
 
             Respondent changedRespondent = Respondent.builder()
                 .party(RespondentParty.builder().firstName("Test1").build())
@@ -573,9 +577,11 @@ class MigrateCaseServiceTest {
                 AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle).build());
             Element<AdditionalApplicationsBundle> bundleWithoutC2 = element(bundleWithoutC2Id,
                 AdditionalApplicationsBundle.builder().build());
+            Element<AdditionalApplicationsBundle> bundle2 = element(bundleId2,
+                AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle).build());
 
             CaseData caseData = CaseData.builder()
-                .additionalApplicationsBundle(List.of(bundle, bundleWithoutC2))
+                .additionalApplicationsBundle(List.of(bundle, bundleWithoutC2, bundle2))
                 .build();
 
             Element<Respondent> expectedChangedRespondent = element(changedRespondentId,
@@ -584,7 +590,19 @@ class MigrateCaseServiceTest {
                         .organisation(newOrganisation)
                         .build())
                     .build());
-            Element<AdditionalApplicationsBundle> expectedBundle = element(bundleId,
+            Element<AdditionalApplicationsBundle> expectedBundle1 = element(bundleId,
+                bundle.getValue().toBuilder()
+                    .c2DocumentBundle(c2Bundle.toBuilder()
+                        .respondents(List.of(
+                            expectedChangedRespondent,
+                            respondentWithoutSolicitorElement,
+                            respondentWithoutOrganisationElement,
+                            respondentAlreadyUpdatedElement
+                        ))
+                        .build())
+                    .build());
+
+            Element<AdditionalApplicationsBundle> expectedBundle2 = element(bundleId2,
                 bundle.getValue().toBuilder()
                     .c2DocumentBundle(c2Bundle.toBuilder()
                         .respondents(List.of(
@@ -597,9 +615,11 @@ class MigrateCaseServiceTest {
                     .build());
 
             Map<String, List<Element<AdditionalApplicationsBundle>>> result =
-                underTest.updateAdditionalApplications(caseData, newOrgName, newOrgId);
+                underTest.updateAdditionalApplications(caseData, newOrgName, orgName,
+                    newOrgId, orgId, bundleIds);
 
-            assertThat(result).containsEntry("additionalApplicationsBundle", List.of(expectedBundle, bundleWithoutC2));
+            assertThat(result).containsEntry("additionalApplicationsBundle",
+                List.of(expectedBundle1, bundleWithoutC2, expectedBundle2));
         }
     }
 
@@ -611,6 +631,7 @@ class MigrateCaseServiceTest {
         private final String caseRole = "[LAMANAGING]";
         private final String newOrgName = "New Organisation Name";
         private final String prevOrgName = "Previous Organisation Name";
+        private final String laCode = "AB";
         private final UUID elementId1 = UUID.randomUUID();
         private final UUID elementId2 = UUID.randomUUID();
         private final UUID elementId3 = UUID.randomUUID();
@@ -695,11 +716,13 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void updateCaseLocalAuthorityName() {
-            Map<String, String> updatedFields = underTest.updateCaseLocalAuthorityName(newOrgName);
+        void updateCaseLocalAuthority() {
+            Map<String, String> updatedFields = underTest.updateCaseLocalAuthority(newOrgName, laCode);
             String updatedCaseLAName = updatedFields.get("caseLocalAuthorityName");
+            String updatedLACode = updatedFields.get("caseLocalAuthority");
 
             assertThat(updatedCaseLAName).isEqualTo(newOrgName);
+            assertThat(updatedLACode).isEqualTo(laCode);
         }
     }
 
