@@ -632,6 +632,7 @@ class MigrateCaseServiceTest {
         private final String newOrgName = "New Organisation Name";
         private final String prevOrgName = "Previous Organisation Name";
         private final String laCode = "AB";
+        private final String newLACode = "SA";
         private final UUID elementId1 = UUID.randomUUID();
         private final UUID elementId2 = UUID.randomUUID();
         private final UUID elementId3 = UUID.randomUUID();
@@ -723,6 +724,14 @@ class MigrateCaseServiceTest {
 
             assertThat(updatedCaseLAName).isEqualTo(newOrgName);
             assertThat(updatedLACode).isEqualTo(laCode);
+        }
+
+        @Test
+        void updateRelatingLA() {
+            Map<String, String> updatedField = underTest.updateRelatingLA(newLACode);
+            String updatedRelatingLA = updatedField.get("relatingLA");
+
+            assertThat(updatedRelatingLA).isEqualTo(newLACode);
         }
     }
 

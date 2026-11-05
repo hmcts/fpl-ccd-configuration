@@ -1081,6 +1081,10 @@ public class MigrateCaseService {
         return Map.of("caseLocalAuthorityName", newOrgName, "caseLocalAuthority", laCode);
     }
 
+    public Map<String, String> updateRelatingLA(String newLACode) {
+        return Map.of("relatingLA", newLACode);
+    }
+
     private String getOrgName(String orgId) {
         return organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)

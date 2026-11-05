@@ -16,8 +16,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -66,16 +68,28 @@ public class MigrateCaseController extends CallbackController {
         String newOrgName = "Kirklees Council";
         String orgId = "T1GWH7Y";
         String newOrgId = "4001R46";
+        String laCode = "KKL";
+        List<UUID> bundleIds = List.of(
+            UUID.fromString("727006c8-cca7-4c93-88b2-f5bc2aa216ab"),
+            UUID.fromString("111462e4-bfba-4db4-900a-8ec1bf9bbc9b")
+        );
         String caseRole = CaseRole.SOLICITORA.formattedName();
         int policyIndex = 0;
+
+        final String migrationId = "DFPL-3419";
+        final long expectedCaseId = 1783943081734149L;
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.updateRespondents(caseData, orgName,
                                                                           newOrgName, orgId, newOrgId));
         caseDetails.getData().putAll(migrateCaseService.updateRespondentPolicy(caseData, newOrgId,
                                                                                caseRole, policyIndex));
-        caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthorityName(newOrgName));
+        caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthority(newOrgName, laCode));
         caseDetails.getData().putAll(migrateCaseService.updateRespondentLA(caseData, newOrgName, newOrgId));
-        caseDetails.getData().putAll(migrateCaseService.updateAdditionalApplications(caseData, newOrgName, newOrgId));
+        caseDetails.getData().putAll(migrateCaseService.updateAdditionalApplications(caseData, newOrgName, orgName,
+                                                                                     newOrgId, orgId, bundleIds));
+        caseDetails.getData().putAll(migrateCaseService.updateRelatingLA(laCode));
     }
 
     public void run3390(CaseDetails caseDetails) {
