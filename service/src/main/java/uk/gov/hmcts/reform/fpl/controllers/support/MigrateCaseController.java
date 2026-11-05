@@ -33,7 +33,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-log", this::runLog,
         "DFPL-3017", this::run3017,
         "DFPL-3390", this::run3390,
-        "DFPL-3373", this::run3373
+        "DFPL-3373", this::run3373,
+        "DFPL-3425", this::run3425
     );
 
     @PostMapping("/about-to-submit")
@@ -96,6 +97,18 @@ public class MigrateCaseController extends CallbackController {
             orgId,
             CaseRole.EPSMANAGING.formattedName()
         ));
+    }
+
+    private void run3425(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3425";
+        final long expectedCaseId = 1791536916287646L;
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> updatedData = migrateCaseService.removeSubmittedC1Document(caseData, migrationId);
+
+        caseDetails.getData().putAll(updatedData);
     }
 }
 
