@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -34,10 +34,10 @@ class NotifyGatekeeperControllerAboutToStartTest extends AbstractCallbackTest {
     private static final String SUBMITTED = "Submitted";
     private static final String GATEKEEPING = "Gatekeeping";
 
-    @MockBean
+    @MockitoBean
     protected ValidateEmailService validateEmailService;
 
-    @SpyBean
+    @MockitoSpyBean
     private ValidateGroupService validateGroupService;
 
     NotifyGatekeeperControllerAboutToStartTest() {

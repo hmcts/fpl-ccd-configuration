@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
@@ -54,10 +54,10 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
     private static final String LOGGED_USER_ID = USER_ID;
     private static final String OTHER_USER_ID = randomUUID().toString();
 
-    @MockBean
+    @MockitoBean
     private OrganisationApi organisationApi;
 
-    @MockBean
+    @MockitoBean
     private CoreCaseDataService coreCaseDataService;
 
     CaseInitiationControllerSubmittedTest() {

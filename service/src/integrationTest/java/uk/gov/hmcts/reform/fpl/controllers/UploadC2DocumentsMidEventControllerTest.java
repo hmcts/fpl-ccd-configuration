@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class UploadC2DocumentsMidEventControllerTest extends AbstractCallbackTest {
     private static final String ERROR_MESSAGE = "Date received cannot be in the future";
 
-    @MockBean
+    @MockitoBean
     private FeeService feeService;
 
     UploadC2DocumentsMidEventControllerTest() {
@@ -76,13 +76,22 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractCallbackTest {
             .totalAmount(BigDecimal.TEN)
             .build());
 
+        Map<String, Object> docRefMap = Map.of(
+            "document_url", "example_url",
+            "document_binary_url", "example_url/binary",
+            "document_filename", "c2.pdf"
+        );
+
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document",
-                Map.of("document", Map.of("url", "example_url")),
+                Map.of("document", docRefMap),
                 "c2ApplicationType", Map.of("type", "WITH_NOTICE")))
             .build(), "get-fee");
 
-        assertThat(response.getData()).extracting("temporaryC2Document")
+        CaseData updatedCaseData = extractCaseData(CaseDetails.builder().data(response.getData()).build());
+
+        assertThat(updatedCaseData)
+            .extracting("temporaryC2Document")
             .extracting("document")
             .extracting("url")
             .isEqualTo("example_url");

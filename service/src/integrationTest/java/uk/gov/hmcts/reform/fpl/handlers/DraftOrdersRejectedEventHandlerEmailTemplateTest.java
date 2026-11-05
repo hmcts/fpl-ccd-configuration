@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -47,8 +46,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     DraftOrdersRejectedEventHandler.class, ReviewDraftOrdersEmailContentProvider.class, EmailNotificationHelper.class,
     CaseUrlService.class
 })
-@MockBeans(value = {
-    @MockBean(FurtherEvidenceNotificationService.class)
+@MockitoBean(types = {
+    FurtherEvidenceNotificationService.class
 })
 class DraftOrdersRejectedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String CHILD_LAST_NAME = "Smith";

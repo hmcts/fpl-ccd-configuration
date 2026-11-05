@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -50,7 +50,7 @@ class DraftOrdersUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
     private static final String RESPONDENT_LAST_NAME = "Smithson";
     private static final String CHILD_LAST_NAME = "Jones";
 
-    @MockBean
+    @MockitoBean
     private CafcassNotificationService cafcassNotificationService;
 
     @Autowired

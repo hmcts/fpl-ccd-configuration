@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -33,7 +33,7 @@ class ApplicantAboutToStartControllerTest extends AbstractCallbackTest {
     private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
     private static final String ORGANISATION_ID = "ORGSA";
 
-    @MockBean
+    @MockitoBean
     private OrganisationApi organisationApi;
 
     ApplicantAboutToStartControllerTest() {

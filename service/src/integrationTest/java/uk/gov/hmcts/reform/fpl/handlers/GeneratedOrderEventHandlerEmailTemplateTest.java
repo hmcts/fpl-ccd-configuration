@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -63,18 +62,18 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     SealedOrderHistoryService.class, CaseUrlService.class, GeneratedOrderEventHandler.class,
     RepresentativeNotificationService.class, ChildrenSmartSelector.class, ChildSelectionUtils.class
 })
-@MockBeans({
+@MockitoBean(types = {
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
-    @MockBean(ChildrenService.class), @MockBean(IdentityService.class), @MockBean(OrderCreationService.class),
-    @MockBean(SendDocumentService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
-    @MockBean(SealedOrderLanguageRequirementGenerator.class),
-    @MockBean(TranslationRequestService.class),
-    @MockBean(SealedOrderHistoryTypeGenerator.class), @MockBean(SealedOrderHistoryFinalMarker.class),
-    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(AppointedGuardianFormatter.class),
-    @MockBean(OthersService.class), @MockBean(OthersNotifiedGenerator.class), @MockBean(OtherRecipientsInbox.class),
-    @MockBean(OrderNotificationDocumentService.class), @MockBean(PlacementService.class),
-    @MockBean(CafcassNotificationService.class), @MockBean(UserService.class),
-    @MockBean(WorkAllocationTaskService.class), @MockBean(JudicialService.class)
+    ChildrenService.class, IdentityService.class, OrderCreationService.class,
+    SendDocumentService.class, SealedOrderHistoryExtraTitleGenerator.class,
+    SealedOrderLanguageRequirementGenerator.class,
+    TranslationRequestService.class,
+    SealedOrderHistoryTypeGenerator.class, SealedOrderHistoryFinalMarker.class,
+    ManageOrdersClosedCaseFieldGenerator.class, AppointedGuardianFormatter.class,
+    OthersService.class, OthersNotifiedGenerator.class, OtherRecipientsInbox.class,
+    OrderNotificationDocumentService.class, PlacementService.class,
+    CafcassNotificationService.class, UserService.class,
+    WorkAllocationTaskService.class, JudicialService.class
 })
 class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final GeneratedOrder ORDER = mock(GeneratedOrder.class);

@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtToCourtAdminLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType;
@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     SDOIssuedContentProvider.class, CtscEmailLookupConfiguration.class, EmailNotificationHelper.class,
     HmctsCourtToCourtAdminLookupConfiguration.class
 })
-@MockBean(TranslationRequestService.class)
+@MockitoBean(types = {TranslationRequestService.class})
 class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";

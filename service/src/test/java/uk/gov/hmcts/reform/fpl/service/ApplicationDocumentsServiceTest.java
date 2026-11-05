@@ -9,8 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
@@ -73,16 +73,16 @@ class ApplicationDocumentsServiceTest {
     @Autowired
     private ApplicationDocumentsService applicationDocumentsService;
 
-    @MockBean
+    @MockitoBean
     private ManageDocumentService manageDocumentService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     @Autowired
     private ObjectMapper mapper;
 
-    @MockBean
+    @MockitoBean
     private DocumentUploadHelper documentUploadHelper;
 
     @BeforeEach

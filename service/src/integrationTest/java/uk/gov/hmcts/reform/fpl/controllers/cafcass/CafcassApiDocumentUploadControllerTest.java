@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -79,13 +79,13 @@ public class CafcassApiDocumentUploadControllerTest extends AbstractTest {
     private final OrganisationPolicy designatedPolicy = organisationPolicy("ORG1", "Designated LA", LASOLICITOR);
     @Autowired
     private MockMvc mockMvc;
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
-    @MockBean
+    @MockitoBean
     private CoreCaseDataService coreCaseDataService;
-    @MockBean
+    @MockitoBean
     private UserService userService;
-    @MockBean
+    @MockitoBean
     private CafcassApiInterceptor cafcassApiInterceptor;
 
 

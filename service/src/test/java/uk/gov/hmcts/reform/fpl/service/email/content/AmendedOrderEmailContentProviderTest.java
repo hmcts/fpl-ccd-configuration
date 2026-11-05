@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderAmendedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -44,12 +42,10 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
     @Autowired
     private AmendedOrderEmailContentProvider underTest;
 
-    @MockBean
-    private EmailNotificationHelper helper;
-
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(CASE_DATA.getChildren1())).thenReturn("McDonnell");
+        when(notificationHelper.getEldestChildLastName(CASE_DATA.getChildren1())).thenReturn("McDonnell");
+        when(courtService.getCourtName(CASE_DATA)).thenReturn(COURT_NAME);
     }
 
     @Test

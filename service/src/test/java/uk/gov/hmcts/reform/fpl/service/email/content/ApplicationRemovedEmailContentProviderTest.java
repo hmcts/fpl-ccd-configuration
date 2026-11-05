@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveApplicationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
 
@@ -59,15 +58,12 @@ class ApplicationRemovedEmailContentProviderTest extends AbstractEmailContentPro
     @Autowired
     private ApplicationRemovedEmailContentProvider underTest;
 
-    @MockBean
-    private EmailNotificationHelper helper;
-
-    @MockBean
+    @MockitoBean
     private Time time;
 
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(CASE_DATA.getChildren1())).thenReturn("McDonnell");
+        when(notificationHelper.getEldestChildLastName(CASE_DATA.getChildren1())).thenReturn("McDonnell");
         when(time.now()).thenReturn(REMOVAL_DATE);
     }
 

@@ -11,9 +11,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
@@ -67,16 +67,16 @@ class PaymentServiceTest {
     private static final String NOT_PROVIDED = "Not provided";
     private static final String LOCAL_AUTHORITY_CODE = "LA";
 
-    @MockBean
+    @MockitoBean
     private FeeService feeService;
 
-    @MockBean
+    @MockitoBean
     private PaymentClient paymentClient;
 
-    @MockBean
+    @MockitoBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
     @Autowired

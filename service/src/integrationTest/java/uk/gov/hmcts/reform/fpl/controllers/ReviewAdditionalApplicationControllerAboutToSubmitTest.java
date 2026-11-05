@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(ReviewAdditionalApplicationController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class ReviewAdditionalApplicationControllerAboutToSubmitTest extends AbstractCallbackTest {
-    @MockBean
+    @MockitoBean
     private ReviewAdditionalApplicationService reviewAdditionalApplicationService;
 
     private static final List<Element<AdditionalApplicationsBundle>> APPLICATION_BUNDLE_ELEMENT_LIST =

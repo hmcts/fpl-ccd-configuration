@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 
@@ -37,12 +35,9 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Autowired
     private GatekeeperEmailContentProvider underTest;
 
-    @MockBean
-    private EmailNotificationHelper helper;
-
     @BeforeEach
     void mocking() {
-        when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
     }
 
     @Test

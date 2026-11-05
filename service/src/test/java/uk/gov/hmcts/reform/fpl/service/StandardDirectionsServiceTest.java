@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -42,7 +42,7 @@ class StandardDirectionsServiceTest {
     private static final String DIRECTION_TYPE_3 = "Test SDO type 3";
     private static final String DIRECTION_TEXT_3 = "Test body 3\n";
 
-    @MockBean
+    @MockitoBean
     private CalendarService calendarService;
 
     @Autowired

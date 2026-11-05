@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -25,10 +25,8 @@ import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.PbaService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderNotificationDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderTitleGenerator;
@@ -51,6 +49,8 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -81,14 +81,13 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     SealedOrderHistoryService.class, IdentityService.class, C43ChildArrangementOrderTitleGenerator.class,
     ChildrenSmartSelector.class, ChildrenSmartFinalOrderUpdater.class, ChildSelectionUtils.class, CourtService.class,
     PlacementService.class, RespondentService.class})
-@MockBeans({
-    @MockBean(OrderCreationService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
-    @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(OrderNotificationDocumentService.class),
-    @MockBean(FeeService.class), @MockBean(PbaNumberService.class), @MockBean(DocumentSealingService.class),
-    @MockBean(RespondentService.class), @MockBean(DocmosisDocumentGeneratorService.class),
-    @MockBean(UploadDocumentService.class), @MockBean(HearingVenueLookUpService.class),
-    @MockBean(HighCourtAdminEmailLookupConfiguration.class), @MockBean(UserService.class),
-    @MockBean(PbaService.class)
+@MockitoBean(types = {
+    OrderCreationService.class, SealedOrderHistoryExtraTitleGenerator.class,
+    SealedOrderHistoryFinalMarker.class, OrderNotificationDocumentService.class,
+    FeeService.class, PbaNumberService.class, DocumentSealingService.class,
+    RespondentService.class, HearingVenueLookUpService.class,
+    HighCourtAdminEmailLookupConfiguration.class, UserService.class,
+    PbaService.class
 })
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
@@ -111,8 +110,14 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Autowired
     private OrderIssuedEmailContentProvider underTest;
 
-    @MockBean
+    @MockitoBean
     private OrderIssuedEmailContentProviderTypeOfOrderCalculator calculator;
+
+    @BeforeEach
+    void init() {
+        when(notificationHelper.getEldestChildLastName(anyList())).thenReturn(TEST_CHILD.getParty().getLastName());
+        when(courtService.getCourtName(any())).thenReturn(COURT_NAME);
+    }
 
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
