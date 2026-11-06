@@ -28,6 +28,8 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-publiclaw-gatekeeper",
             "caseworker-publiclaw-localAuthority",
             "caseworker-publiclaw-courtadmin",
+            "caseworker-publiclaw-caseflags",
+            "caseworker-publiclaw-support",
             "caseworker-caa",
             "caseworker-ras-validation",
             "GS_profile",
