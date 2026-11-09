@@ -33,7 +33,7 @@ module "fpl-performance-alert" {
   common_tags                = var.common_tags
 }
 
-module "fpl-performance-alert" {
+module "fpl-performance-alert-uksouth" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = var.location
   app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
@@ -71,7 +71,7 @@ module "fpl-exceptions-alert" {
   common_tags                = var.common_tags
 }
 
-module "fpl-exceptions-alert" {
+module "fpl-exceptions-alert-uksouth" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = var.location
   app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
@@ -109,7 +109,7 @@ module "fpl-health-failure-alert" {
   common_tags                = var.common_tags
 }
 
-module "fpl-health-failure-alert" {
+module "fpl-health-failure-alert-uksouth" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = var.location
   app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
@@ -147,7 +147,7 @@ module "fpl-upcoming-hearings-job-alert" {
   common_tags                = var.common_tags
 }
 
-module "fpl-upcoming-hearings-job-alert" {
+module "fpl-upcoming-hearings-job-alert-uksouth" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = var.location
   app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
@@ -185,7 +185,7 @@ module "fpl-summary-tab-job-alert" {
   common_tags                = var.common_tags
 }
 
-module "fpl-summary-tab-job-alert" {
+module "fpl-summary-tab-job-alert-uksouth" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = var.location
   app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
@@ -223,7 +223,7 @@ module "fpl-executor-alert" {
   common_tags                = var.common_tags
 }
 
-module "fpl-executor-alert" {
+module "fpl-executor-alert-uksouth" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = var.location
   app_insights_name          = "${var.product}-${var.component}-appinsights-uksouth-${var.env}"
