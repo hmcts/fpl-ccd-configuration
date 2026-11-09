@@ -38,6 +38,7 @@ module "application_insights" {
 
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.appinsights_location
+  alert_limit_reached = true
   common_tags         = var.common_tags
 
   # Capture full telemetry on the lower environments used for diagnosis (demo)
@@ -56,6 +57,7 @@ module "application_insights_uksouth" {
 
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
+  alert_limit_reached = true
   common_tags         = var.common_tags
 
   # Capture full telemetry on the lower environments used for diagnosis (demo)
