@@ -309,7 +309,7 @@ def versions = [
   pdfbox          : '2.0.33',
   mockito         : '5.17.0',
   serenity        : '4.2.22',
-  pact_version    : '4.7.7',
+  pact_version    : '4.1.7',
   junit_jupiter   : '5.12.2',
   lombok          : '1.18.46',
   sonarPitest     : '0.5'
@@ -424,12 +424,10 @@ dependencies {
   smokeTestImplementation sourceSets.test.runtimeClasspath
 
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
   contractTestImplementation 'org.springframework.boot:spring-boot-starter-test'
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
   contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit_jupiter
-  contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
-  contractTestRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.11.4'
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.21'
