@@ -182,6 +182,7 @@ pact {
   publish {
     pactDirectory = 'service/pacts'
     tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+    branch = System.getenv("PACT_BRANCH_NAME") ?: 'Dev'
     version = project.pacticipantVersion
   }
 }
