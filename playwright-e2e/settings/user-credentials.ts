@@ -71,6 +71,11 @@ export const FPLSolicitorOrgUser = {
   password: process.env.FPL_SOLICITOR_ORG_USER_PASSWORD || defaultPwd,
 };
 
+export const FPLPrivateSolicitorOrgUser = {
+  email: process.env.FPL_SOLICITOR_ORG_USER_TWO_USERNAME || 'fplprivatesolicitorone@mailinator.com',
+  password: process.env.FPL_SOLICITOR_ORG_USER_TWO_PASSWORD || defaultPwd,
+};
+
 export const wiltshireCountyUserOne = {
     email: process.env.WILTSHIRE_USER_ONE_USERNAME || 'raghu@wiltshire.gov.uk',
     password: process.env.WILTSHIRE_USER_ONE_PASSWORD || defaultPwd,
