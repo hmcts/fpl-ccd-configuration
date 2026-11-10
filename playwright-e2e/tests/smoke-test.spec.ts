@@ -1,15 +1,16 @@
 import { expect, test } from "../fixtures/fixtures";
-import { newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from "../settings/user-credentials";
+import { CTSCUser, newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from "../settings/user-credentials";
 import { CreateCaseName } from "../utils/create-case-name";
 import { CaseFileView } from "../pages/case-file-view";
-import {testConfig} from "../settings/test-config";
+import { testConfig } from "../settings/test-config";
+import { SubmitCase } from "../pages/submit-case";
 
 
 test.describe('Smoke Test @xbrowser @smoke-test', () => {
-test.setTimeout(7 * 60 * 1000);
+    test.setTimeout(7 * 60 * 1000);
 
     test('Local Authority C110A application submission  @accessibility ', async ({
-                                                                    signInPage,
+        signInPage,
         page,
         createCase,
         startApplication,
@@ -24,7 +25,7 @@ test.setTimeout(7 * 60 * 1000);
         submitCase,
         envDataConfig,
         makeAxeBuilder
-                                                                }, testInfo) => {
+    }, testInfo) => {
         test.info().annotations.push({ type: 'tag', description: 'xbrowser' });
         test.info().annotations.push({ type: 'tag', description: 'smoke-test' });
         test.info().annotations.push({ type: 'tag', description: 'accessibility' });
@@ -47,13 +48,13 @@ test.setTimeout(7 * 60 * 1000);
             await ordersAndDirectionSought.ordersAndDirectionsNeeded();
         });
 
-        await test.step('Hearing urgency', async() => {
+        await test.step('Hearing urgency', async () => {
 
             await startApplication.hearingUrgency();
             await hearingUrgency.hearingUrgency();
         });
 
-        await test.step('Grounds for the application', async() => {
+        await test.step('Grounds for the application', async () => {
             await startApplication.groundsForTheApplication();
             await groundsForTheApplication.checkChildBeyondParentalControl();
             await groundsForTheApplication.checkNoProvideSummaryRadioButton();
@@ -76,48 +77,52 @@ test.setTimeout(7 * 60 * 1000);
             ]);
         });
 
-        await test.step('Upload documents', async() => {
+        await test.step('Upload documents', async () => {
             await startApplication.addApplicationDocuments();
             await addApplicationDocuments.uploadDocumentSmokeTest();
         });
 
-        await test.step('Applicant details', async() => {
+        await test.step('Applicant details', async () => {
 
-           await startApplication.applicantDetails()
+            await startApplication.applicantDetails()
 
             await applicantDetails.applicantDetailsNeeded(envDataConfig.swanseaOrgPBA);
         });
 
-        await test.step('Child details', async() => {
+        await test.step('Child details', async () => {
 
-            await   startApplication.childDetails()
+            await startApplication.childDetails()
             await childDetails.addChildDetailsForC110AApplication();
         });
 
-        await test.step('Add respondent details', async() => {
+        await test.step('Add respondent details', async () => {
             await startApplication.respondentDetails()
             await respondentDetails.respondentDetailsNeeded();
         });
 
-        await test.step('Allocation proposal', async() => {
+        await test.step('Allocation proposal', async () => {
             await startApplication.allocationProposal()
-           await allocationProposal.allocationProposalSmokeTest();
+            await allocationProposal.allocationProposalSmokeTest();
         });
 
-        await test.step('Submit case', async() => {
+        await test.step('Submit case', async () => {
 
-           await  startApplication.submitCase()
+            await startApplication.submitCase()
             await submitCase.submitCaseSmokeTest(testConfig.APPLICATION_OF_PROCEEDING);
+
         });
 
-        const accessibilityScanResults = await makeAxeBuilder()
-            // Automatically uses the shared AxeBuilder configuration,
-            // but supports additional test-specific configuration too
-            .analyze();
+        // Add WA Standard application
 
-        await testInfo.attach('accessibility-scan-results', {
-            body: JSON.stringify(accessibilityScanResults, null, 2),
-            contentType: 'application/json'
+        await test.step('Add WA Standard application', async () => {
+            await createCase.getCaseNumber();
+            await signInPage.logout();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateToCaseDetails(createCase.casenumber);
+            await submitCase.tabNavigation('Tasks');
+            await submitCase.waitForTask('Review Standard Application');
+            await expect(page.getByText('Review Standard Application')).toBeVisible();
+
         });
     });
 
@@ -171,42 +176,42 @@ test.setTimeout(7 * 60 * 1000);
             await ordersAndDirectionSought.SoliciotrC110AAppOrderAndDirectionNeeded();
             await expect(startApplication.ordersAndDirectionsSoughtFinishedStatus).toBeVisible();
         });
-            await test.step('Hearing Urgency', async () => {
-                await startApplication.hearingUrgency();
-                await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
-                await hearingUrgency.hearingUrgencySmokeTest();
-            });
+        await test.step('Hearing Urgency', async () => {
+            await startApplication.hearingUrgency();
+            await expect(hearingUrgency.hearingUrgencyHeading).toBeVisible();
+            await hearingUrgency.hearingUrgencySmokeTest();
+        });
 
-            await test.step('Applicant Details', async() => {
-                await startApplication.applicantDetails();
-                await applicantDetails.solicitorC110AApplicationApplicantDetails(envDataConfig.privateSolicitorOrgPBA);
-                await startApplication.applicantDetailsHasBeenUpdated();
-            });
-
-
-            await test.step('Child Details', async () => {
-                 await   startApplication.childDetails()
-                await childDetails.addChildDetailsForC110AApplication();
-                await startApplication.childDetailsHasBeenUpdated();
-            });
-
-            await test.step('Add Respondent Details', async () => {
-                await    startApplication.respondentDetails()
-                await respondentDetails.respondentDetailsPrivateSolicitor();
-            });
+        await test.step('Applicant Details', async () => {
+            await startApplication.applicantDetails();
+            await applicantDetails.solicitorC110AApplicationApplicantDetails(envDataConfig.privateSolicitorOrgPBA);
+            await startApplication.applicantDetailsHasBeenUpdated();
+        });
 
 
-            await test.step('Allocation Proposal', async () => {
-                await startApplication.allocationProposal()
-                await allocationProposal.allocationProposalSmokeTest();
-                await startApplication.allocationProposalHasBeenUpdated();
-            });
+        await test.step('Child Details', async () => {
+            await startApplication.childDetails()
+            await childDetails.addChildDetailsForC110AApplication();
+            await startApplication.childDetailsHasBeenUpdated();
+        });
 
-            await test.step('Submit the Case', async () => {
-                await   startApplication.submitCase()
-                await submitCase.submitCaseSmokeTest(testConfig.VARIATION_DISCHARGE_OF_CARE_SUPERVISION_ORDER);
-            });
+        await test.step('Add Respondent Details', async () => {
+            await startApplication.respondentDetails()
+            await respondentDetails.respondentDetailsPrivateSolicitor();
+        });
 
+
+        await test.step('Allocation Proposal', async () => {
+            await startApplication.allocationProposal()
+            await allocationProposal.allocationProposalSmokeTest();
+            await startApplication.allocationProposalHasBeenUpdated();
+        });
+
+        await test.step('Submit the Case', async () => {
+            await startApplication.submitCase()
+            await submitCase.submitCaseSmokeTest(testConfig.VARIATION_DISCHARGE_OF_CARE_SUPERVISION_ORDER);
+
+        });
 
         await test.step('CFV Application check', async () => {
             await caseFileView.goToCFVTab();
