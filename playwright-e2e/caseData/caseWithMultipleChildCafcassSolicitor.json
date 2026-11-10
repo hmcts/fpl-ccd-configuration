@@ -7,25 +7,29 @@
         "CARE_ORDER"
       ]
     },
+    "noticeOfChangeChildAnswers0": {
+      "respondentFirstName": "Susan",
+      "respondentLastName": "Brown"
+    },
     "changeOfRepresentatives": [
       {
-        "id": "525aeb0d-79d8-4b60-808a-14ab4f92a421",
+        "id": "dd1b3d48-af8d-4ded-bc9a-965cde9bd903",
         "value": {
-          "date": "2024-05-03",
-          "removed": {},
-          "added": {
-            "firstName": "ChilKenny",
-            "lastName": "Solicitor",
-            "organisation": {
-              "OrganisationID": "D25VR7V",
-              "OrganisationName": "Private solicitors"
-            },
-            "email": "fr_applicant_sol@sharklasers.com"
-          },
           "by": "HMCTS",
-          "respondent": null,
+          "via": "FPL",
+          "date": "2026-11-06",
+          "added": {
+            "email": "childsolicitor@email.com",
+            "lastName": "solicitor",
+            "firstName": "child",
+            "organisation": {
+              "OrganisationID": "4ZYL0HK",
+              "OrganisationName": "FPLSolicitorOrg"
+            }
+          },
           "child": "Susan Brown",
-          "via": "FPL"
+          "removed": {},
+          "respondent": null
         }
       }
     ],
@@ -44,22 +48,6 @@
       {
         "id": "f2d78d5b-cbab-414c-9fb4-c85dabf90dd8",
         "value": {
-          "legalCounsellors": [],
-          "solicitor": {
-            "firstName": "Child",
-            "lastName": "Kenny",
-            "telephoneNumber": {
-              "telephoneNumber": "5654674568"
-            },
-            "colleaguesToBeNotified": [],
-            "organisation": {
-              "OrganisationID": "D25VR7V",
-              "OrganisationName": "Private solicitors"
-            },
-            "unregisteredOrganisation": {},
-            "email": "fr_applicant_sol@sharklasers.com",
-            "regionalOfficeAddress": {}
-          },
           "party": {
             "lastName": "Brown",
             "address": {
@@ -77,6 +65,8 @@
             },
             "careAndContactPlan": "this is the brief summary of care and contact plan",
             "detailsHidden": "No",
+            "socialWorkerDetailsHidden": "No",
+            "isAddressConfidential": "No",
             "socialWorkerName": "Robert Taylor",
             "dateOfBirth": "2019-01-10",
             "fathersResponsibility": "Yes",
@@ -89,7 +79,23 @@
             "livingSituation": "Living with respondents",
             "partyId": "0a36cd74-6d26-4e4e-b4dc-5e81439f262b",
             "keyDates": "these are the key dates"
-          }
+          },
+          "solicitor": {
+            "email": "childsolicitor@email.com",
+            "lastName": "solicitor",
+            "firstName": "child",
+            "organisation": {
+              "OrganisationID": "4ZYL0HK",
+              "OrganisationName": "FPLSolicitorOrg"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "020 2772 5772"
+            },
+            "regionalOfficeAddress": {},
+            "colleaguesToBeNotified": [],
+            "unregisteredOrganisation": {}
+          },
+          "legalCounsellors": []
         }
       }
     ],
