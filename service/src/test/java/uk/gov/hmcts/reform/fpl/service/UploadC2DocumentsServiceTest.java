@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.C2AdditionalApplicationEventData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadAdditionalApplicationsEventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -78,12 +80,16 @@ class UploadC2DocumentsServiceTest {
         assertThat(service.validate(createC2DocumentBundleWithNoSupportingDocuments())).isEmpty();
     }
 
-    private C2DocumentBundle createC2DocumentBundle() {
-        return C2DocumentBundle.builder()
+    private C2AdditionalApplicationEventData createC2EventData() {
+        return C2AdditionalApplicationEventData.builder()
             .author("Elon Musk")
             .type(WITH_NOTICE)
             .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundleWithInvalidDateReceived()))
             .build();
+    }
+
+    private C2DocumentBundle createC2DocumentBundle() {
+        return createC2EventData().toC2DocumentBundle();
     }
 
     private C2DocumentBundle createC2DocumentBundleWithNoSupportingDocuments() {
@@ -103,8 +109,10 @@ class UploadC2DocumentsServiceTest {
     private CaseData createCaseDataWithC2DocumentBundle() {
         return CaseData.builder()
             .c2DocumentBundle(wrapElements(createC2DocumentBundle()))
-            .temporaryC2Document(createC2DocumentBundle())
-            .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .uploadAdditionalApplicationsEventData(UploadAdditionalApplicationsEventData.builder()
+                .temporaryC2Document(createC2EventData())
+                .c2ApplicationType(Map.of("type", WITH_NOTICE))
+                .build())
             .build();
     }
 
