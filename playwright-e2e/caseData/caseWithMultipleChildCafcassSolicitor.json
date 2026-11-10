@@ -7,7 +7,10 @@
         "CARE_ORDER"
       ]
     },
-
+    "noticeOfChangeChildAnswers0": {
+      "respondentFirstName": "Susan",
+      "respondentLastName": "Brown"
+    },
     "changeOfRepresentatives": [
       {
         "id": "dd1b3d48-af8d-4ded-bc9a-965cde9bd903",
@@ -62,6 +65,8 @@
             },
             "careAndContactPlan": "this is the brief summary of care and contact plan",
             "detailsHidden": "No",
+            "socialWorkerDetailsHidden": "No",
+            "isAddressConfidential": "No",
             "socialWorkerName": "Robert Taylor",
             "dateOfBirth": "2019-01-10",
             "fathersResponsibility": "Yes",
