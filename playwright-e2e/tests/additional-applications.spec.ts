@@ -1,13 +1,15 @@
 import { test } from '../fixtures/create-fixture';
 import {
     newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, HighCourtAdminUser, privateSolicitorOrgUser,
-    CTSCTeamLeadUser
+    CTSCTeamLeadUser, FPLSolicitorOrgUser
 } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
 import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json' assert { type: "json" };
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert { type: "json" };
 import caseDataWithHearing from '../caseData/caseWithHearingDetailsNoAdditionalApp.json' assert {type: "json"};
+import caseDataWithChildSolicitor from '../caseData/caseWithMultipleChildCafcassSolicitor.json' assert {type: "json"};
+import caseDataWithChildSolicitorDemo from '../caseData/caseWithMultipleChildCafcassSolicitorDemo.json' assert {type: "json"};
 import { setHighCourt } from '../utils/update-case-details';
 import {assignAMJudicialRole, createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
 import config from "../settings/test-docs/config";
@@ -398,7 +400,7 @@ test.describe('Upload additional applications', () => {
         await expect(additionalApplications.page.getByText('C18 - Recovery order')).toBeVisible();
 
     });
-    test('LA submit C2 online application', async ({
+    test.only('Child Solicitor submit C2 confidential paper application', async ({
                                                       page,
                                                       signInPage,
                                                       additionalApplications,
@@ -407,21 +409,29 @@ test.describe('Upload additional applications', () => {
                                                   }) => {
 
 
-        caseName = 'LA submit C2 online application ' + dateTime.slice(0, 10);
-        expect(await updateCase(caseName, caseNumber, caseDataWithHearing)).toBeTruthy();
+        caseName = 'Child Solicitor submit C2 confidential paper application ' + dateTime.slice(0, 10);
+       if(urlConfig.env == 'aat'){
+        expect(await updateCase(caseName, caseNumber, caseDataWithChildSolicitor)).toBeTruthy();
+        console.log("aat")
+         }
+       if(urlConfig.env == 'demo'){
+           expect(await updateCase(caseName, caseNumber, caseDataWithChildSolicitorDemo)).toBeTruthy();
+           console.log("demo")
+       }
+        expect(await giveAccessToCase(caseNumber,FPLSolicitorOrgUser, '[CHILDSOLICITORA]')).toBeTruthy();
         expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
 
-
         await signInPage.visit();
-        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+
+        await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
 
         await additionalApplications.gotoNextStep('Upload additional applications');
         await additionalApplications.selectApplicationType('C2 Application');
         await additionalApplications.selectC2FormType('Upload a paper form');
-        await additionalApplications.giveC2AppConsent('No');
-        await additionalApplications.isC2AppConfidential('No');
-        await additionalApplications.selectWhoMakeApplication('Swansea City Council, Applicant');
+        await additionalApplications.giveC2AppConsent('Yes');
+        await additionalApplications.isC2AppConfidential('Yes');
+        await additionalApplications.selectWhoMakeApplication('Susan Brown, Child 1');
         await additionalApplications.clickContinue();
         await additionalApplications.uploadC2ApplicationForm();
         await additionalApplications.isC2ApplicationHasSafeguardRisk('No');
@@ -429,27 +439,42 @@ test.describe('Upload additional applications', () => {
         await additionalApplications.canC2AppWaitUntilNextHearing('No');
 
         await additionalApplications.uploadSupplementDocument('0', 'C20 - Secure accommodation', 'test notes');
+        await additionalApplications.uploadSupplementDocument('1', 'C18 - Recovery order', 'Recovery order notes');
         await additionalApplications.uploadC2DraftOrder('0', 'Draft order one');
         await additionalApplications.clickContinue();
-
-        await additionalApplications.payForApplication(envDataConfig.swanseaOrgPBA);
+        await expect.soft(additionalApplications.page.getByText(testConfig.C2_WITH_SUPPLEMENT)).toBeVisible();
+        await additionalApplications.payForApplication(envDataConfig.fplSolicitorOrgPBA);
         await additionalApplications.checkYourAnsAndSubmit();
 
 
         await expect.soft(page.getByText('updated with event: Upload additional applications')).toBeVisible();
+        await page.pause();
         //assertion
         await additionalApplications.tabNavigation('Other applications');
 
-        expect(await additionalApplications.getRowData('Application with consent?',page)).toContain('No');
+        expect(await additionalApplications.getRowData('Applicant',page)).toContain('Sarah Black, Child 4');
+
+        expect(await additionalApplications.getRowData('Application with consent?',page)).toContain('Yes');
+        expect(await additionalApplications.getRowData('Adjournment requested?',page)).toContain('No');
         expect(await additionalApplications.getRowData('Safeguarding risk?',page)).toContain('No');
         expect(await additionalApplications.getRowData('Consider at next hearing?',page)).toContain('No');
-        expect(await additionalApplications.getRowData('Payment by account (PBA) number',page)).toContain(envDataConfig.swanseaOrgPBA);
+        expect(await additionalApplications.getRowData('Consider at next hearing?',page)).toContain('No');
+        expect(await additionalApplications.getRowData('Payment by account (PBA) number',page)).toContain(envDataConfig.fplSolicitorOrgPBA);
         expect(await additionalApplications.getRowData('Customer reference',page)).toContain('Test');
         expect(await additionalApplications.getRowData('Application Reviewed by Judge',page)).toContain('No');
         await expect(additionalApplications.page.getByText('C2 application')).toBeVisible();
         await expect(additionalApplications.page.getByText('Supplements 1')).toBeVisible();
+        await expect(additionalApplications.page.getByText('Supplements 2')).toBeVisible();
         await expect(additionalApplications.page.getByText('C20 - Secure accommodation')).toBeVisible();
         await expect(additionalApplications.page.getByText('Draft order one')).toBeVisible();
+
+        //Login in as Local Authority to check  confidential application is not visible to them
+        await signInPage.clickSignOut();
+        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await additionalApplications.tabNavigation('Other applications');
+
+
 
         if (testConfig.waEnabled) {
             await signInPage.clickSignOut();
@@ -462,7 +487,7 @@ test.describe('Upload additional applications', () => {
 
 
     });
-    test.only('Respondent solicitor submit C2 online application',async ({
+    test('Respondent solicitor submit C2 online application',async ({
                                                                         page,
                                                                         signInPage,
                                                                         additionalApplications,
@@ -473,16 +498,16 @@ test.describe('Upload additional applications', () => {
         caseName = 'C2 Online application by Respondent solicitor ' + dateTime.slice(0, 10);
         expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
         expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
-       // expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
+        expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
         await signInPage.visit();
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
         await additionalApplications.gotoNextStep('Upload additional applications');
-        await additionalApplications.page.pause()
+        await additionalApplications.page.pause();
         await additionalApplications.selectApplicationType('C2 Application');
         await additionalApplications.selectC2FormType('Apply online');
         await additionalApplications.giveC2AppConsent('No');
-        await additionalApplications.isC2AppConfidential('Yes');
+        await additionalApplications.isC2AppConfidential('No');
         await additionalApplications.selectWhoMakeApplication('Charlie Respondent, Respondent 1');
         await additionalApplications.clickContinue();
         await additionalApplications.selectPermissionC2PermissionType('Permission already granted');
@@ -508,6 +533,20 @@ test.describe('Upload additional applications', () => {
         await expect(additionalApplications.c2applicationPage.getByText('To be joined as, or ceased to be, a party in existing family proceedings')).toBeVisible();
         await expect(additionalApplications.c2applicationPage.getByText('under the Children Act 1989')).toBeVisible();
         await expect(additionalApplications.c2applicationPage.getByText('I, Charlie Respondent believe that the facts stated in this application are true.')).toBeVisible();
+        expect(await additionalApplications.getRowData('Applicant', additionalApplications.page)).toContain('Charlie Respondent, Respondent 1');
+        expect(await additionalApplications.getRowData('Application with consent?',additionalApplications.page)).toContain('No');
+        expect(await additionalApplications.getRowData('Online or paper form?',additionalApplications.page)).toContain('Apply online');
+        expect(await additionalApplications.getRowData('Adjournment requested?',additionalApplications.page)).toContain('No');
+        expect(await additionalApplications.getRowData('Permission needed?',additionalApplications.page)).toContain('Permission already granted');
+        expect(await additionalApplications.getRowData('Relates to all children?',additionalApplications.page)).toContain('No');
+        expect(await additionalApplications.getRowData('Which children does the application relate to?', additionalApplications.page)).toContain('Child katie (Child 1)');
+        expect(await additionalApplications.getRowData('Application Summary', additionalApplications.page)).toContain('The C2 application for the taking the gaurdian ship of the chidren');
+        expect(await additionalApplications.getRowData('Safeguarding risk?',additionalApplications.page)).toContain('Yes');
+        expect(await additionalApplications.getRowData('Safeguarding Reason', additionalApplications.page)).toContain('Urgent');
+        expect(await additionalApplications.getRowData('Consider at next hearing?',additionalApplications.page)).toContain('Yes');
+        expect(await additionalApplications.getRowData('Payment by account (PBA) number',additionalApplications.page)).toContain(envDataConfig.privateSolicitorOrgPBA);
+        expect(await additionalApplications.getRowData('Customer reference',additionalApplications.page)).toContain('Test');
+        expect(await additionalApplications.getRowData('Application Reviewed by Judge',additionalApplications.page)).toContain('No');
 
     });
     test('Child solicitor submit paper C2 and other application together', async ({
