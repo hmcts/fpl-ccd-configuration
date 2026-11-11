@@ -162,12 +162,8 @@ public class TaskListRenderer {
         lines.add("<div class='govuk-grid-row'>");
         switch (task.getState()) {
             case NOT_AVAILABLE:
-                lines.add(taskListRenderElements.renderDisabledLink(task)
-                    + taskListRenderElements.renderImage("cannot-send-yet.png", "Cannot send yet"));
-                break;
-            case IN_PROGRESS:
-                lines.add(taskListRenderElements.renderLink(task)
-                    + taskListRenderElements.renderImage("in-progress.png", "In progress"));
+                lines.add(taskListRenderElements.renderDisabledLink(task));
+                lines.add("<div class='govuk-tag govuk-tag--grey' height='25px'>Cannot send yet</div>");
                 break;
             case COMPLETED_FINISHED, COMPLETED:
                 lines.add(taskListRenderElements.renderLink(task));
