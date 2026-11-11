@@ -214,7 +214,7 @@
     "CaseEventID": "changeOtherToRespondent",
     "CaseFieldID": "transformedRespondent",
     "ListElementCode": "legalRepresentation",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "ChangeOtherToRespondent",
