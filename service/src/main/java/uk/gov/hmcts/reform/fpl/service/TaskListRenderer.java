@@ -159,7 +159,7 @@ public class TaskListRenderer {
 
     private List<String> renderTask(Task task) {
         final List<String> lines = new LinkedList<>();
-
+        lines.add("<div class='govuk-grid-row'>");
         switch (task.getState()) {
             case NOT_AVAILABLE:
                 lines.add(taskListRenderElements.renderDisabledLink(task)
@@ -169,18 +169,16 @@ public class TaskListRenderer {
                 lines.add(taskListRenderElements.renderLink(task)
                     + taskListRenderElements.renderImage("in-progress.png", "In progress"));
                 break;
-            case COMPLETED:
-                lines.add(taskListRenderElements.renderLink(task)
-                    + taskListRenderElements.renderImage("information-added.png", "Information added"));
-                break;
-            case COMPLETED_FINISHED:
-                lines.add(taskListRenderElements.renderLink(task)
-                    + taskListRenderElements.renderImage("finished.png", "Finished"));
+            case COMPLETED_FINISHED, COMPLETED:
+                lines.add(taskListRenderElements.renderLink(task));
+                lines.add("<div class='govuk-tag govuk-tag--green' height='25px'>Finished</div>");
                 break;
             default:
                 lines.add(taskListRenderElements.renderLink(task));
+                lines.add("<div class='govuk-tag govuk-tag--red' height='25px'>Not started</div>");
         }
 
+        lines.add("</div>");
         task.getHint().map(taskListRenderElements::renderHint).ifPresent(lines::add);
         return lines;
     }

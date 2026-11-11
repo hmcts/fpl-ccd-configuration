@@ -26,7 +26,7 @@ public class TaskListRenderElements {
     }
 
     public String renderLink(Event event) {
-        return format("<a href='/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s'>%s</a>",
+        return format("<div class='govuk-grid-column-three-quarters'><a href='/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s'>%s</a></div>",
             JURISDICTION, CASE_TYPE, event.getId(), event.getName());
     }
 
