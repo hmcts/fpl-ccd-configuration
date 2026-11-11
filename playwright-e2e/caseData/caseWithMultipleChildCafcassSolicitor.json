@@ -33,6 +33,32 @@
         }
       }
     ],
+    "childrenHaveRepresentation": "Yes",
+    "childrenHaveSameRepresentation": "Yes",
+    "childrenMainRepresentative": {
+      "colleaguesToBeNotified": [
+      ],
+      "email": "fr_applicant_sol@sharklasers.com",
+      "firstName": "child",
+      "lastName": "One",
+      "organisation": {
+        "OrganisationID": "4ZYL0HK",
+        "OrganisationName": "FPLSolicitorOrg"
+      },
+      "telephoneNumber": {
+        "contactDirection": null,
+        "telephoneNumber": "2465767"
+      }
+    },
+
+    "childPolicy0": {
+      "Organisation": {
+        "OrganisationID": "4ZYL0HK",
+        "OrganisationName": "FPLSolicitorOrg"
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+    },
+
     "grounds": {
       "thresholdReason": [
         "noCare"

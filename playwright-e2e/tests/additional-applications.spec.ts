@@ -422,6 +422,7 @@ test.describe('Upload additional applications', () => {
         expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
 
         await signInPage.visit();
+        await signInPage.page.pause();
 
         await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
@@ -452,7 +453,7 @@ test.describe('Upload additional applications', () => {
         //assertion
         await additionalApplications.tabNavigation('Other applications');
 
-        expect(await additionalApplications.getRowData('Applicant',page)).toContain('Sarah Black, Child 4');
+        expect(await additionalApplications.getRowData('Applicant',page)).toContain('Susan Brown, Child 1');
 
         expect(await additionalApplications.getRowData('Application with consent?',page)).toContain('Yes');
         expect(await additionalApplications.getRowData('Adjournment requested?',page)).toContain('No');
@@ -473,7 +474,7 @@ test.describe('Upload additional applications', () => {
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateToCaseDetails(caseNumber);
         await additionalApplications.tabNavigation('Other applications');
-
+        await expect(additionalApplications.page.getByText('This is a confidential application and restricted viewing applies')).toBeVisible();
 
 
         if (testConfig.waEnabled) {
