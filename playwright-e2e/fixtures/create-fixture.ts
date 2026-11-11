@@ -64,7 +64,8 @@ import { FamilymanCaseNumberPage} from "../pages/gatekeeping/familyman-case-numb
 import {SendToGatekeeperPage} from "../pages/gatekeeping/send-to-gatekeeper";
 import {HistoryPage} from "../pages/case-details/history";
 import {EnvironmentConfig, getEnvironmentSpecificTestData} from "../settings/environment-data-config"
-
+import {ALLWork} from "../pages/all-work";
+ import {MyWork} from "../pages/my-work";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -132,6 +133,8 @@ type CreateFixtures = {
   recordFinalDecision: RecordFinalDecision;
   sendOrderRemainder: SendOrderRemainder;
   envDataConfig: EnvironmentConfig;
+  allWork: ALLWork;
+    myWork: MyWork;
 
 
 };
@@ -388,5 +391,13 @@ othersToBeGivenNotice: async ({ page }, use) => {
     envDataConfig: async ({}, use) => {
       const config = getEnvironmentSpecificTestData();
       await use(config);
+    },
+    allWork: async ({ page }, use) => {
+        await use(new ALLWork(page));
+    },
+
+    myWork: async ({ page }, use) => {
+        await use(new MyWork(page));
     }
 });
+

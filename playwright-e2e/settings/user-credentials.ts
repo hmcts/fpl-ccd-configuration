@@ -35,6 +35,10 @@ export const HighCourtAdminUser = {
   email: 'high-court-admin@justice.gov.uk',
   password: defaultPwd,
 };
+export const HearingCenterTeamLeader = {
+    email: 'hca-wales@justice.gov.uk',
+    password: defaultPwd,
+};
 
 export const judgeUser = {
   email: process.env.JUDGE_USERNAME || 'judiciary-only@mailnesia.com',
