@@ -33,10 +33,12 @@ fi
 
 version="n/a"
 newVersion="n/a"
+ccdDefinitionStoreUrl=${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}
+echo "ccdDefinitionStoreUrl = ${ccdDefinitionStoreUrl}"
 
 if [[ "$ENVIRONMENT" == "preview" ]]; then
   version=$(curl --insecure --silent --show-error -X GET \
-    ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/data/case-type/CARE_SUPERVISION_EPO/version \
+    ${ccdDefinitionStoreUrl}/api/data/case-type/CARE_SUPERVISION_EPO/version \
     -H "Authorization: Bearer ${userToken}" \
     -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
 
@@ -50,7 +52,7 @@ if [[ "$useShutteredCaseDef" == "1" ]]; then
 fi
 
 uploadResponse=$(curl --insecure --silent -w "\n%{http_code}" --show-error -X POST \
-  ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/import \
+  ${ccdDefinitionStoreUrl}/import \
   -H "Authorization: Bearer ${userToken}" \
   -H "ServiceAuthorization: Bearer ${serviceToken}" \
   -F "file=@${filepath};filename=${uploadFilename}" || echo 'bypass-if-error')
@@ -63,7 +65,7 @@ if [ "$ENVIRONMENT" == "preview" ] && [ "$upload_http_code" != "201" ]; then
   sleep 45
 
   newVersion=$(curl --insecure --silent --show-error -X GET \
-    ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/data/case-type/CARE_SUPERVISION_EPO/version \
+    ${ccdDefinitionStoreUrl}/api/data/case-type/CARE_SUPERVISION_EPO/version \
     -H "Authorization: Bearer ${userToken}" \
     -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
 
@@ -83,7 +85,7 @@ if [[ "${upload_http_code}" == '504' ]]; then
     sleep 5
     echo "Checking status of ${filename} (${uploadFilename}) upload (Try ${try})"
     audit_response=$(curl --insecure --silent --show-error -X GET \
-      ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/import-audits \
+      ${ccdDefinitionStoreUrl}/api/import-audits \
       -H "Authorization: Bearer ${userToken}" \
       -H "ServiceAuthorization: Bearer ${serviceToken}")
 
