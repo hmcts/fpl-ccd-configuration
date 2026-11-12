@@ -17,7 +17,7 @@ if [ -z "${USER_TOKEN:-}" ]; then
   userToken=$(${dir}/utils/idam-lease-user-token.sh ${CCD_CONFIGURER_IMPORTER_USERNAME:-ccd.docker.default@hmcts.net} ${CCD_CONFIGURER_IMPORTER_PASSWORD:-Password12})
   echo ">>> Got userToken"
 else
-  echo "Couldn't get userToken - Using cached userToken"
+  echo ">>> Couldn't get userToken - Using cached userToken"
   userToken=${USER_TOKEN}
 fi
 
@@ -27,7 +27,7 @@ if [ -z "${SERVICE_TOKEN:-}" ]; then
   serviceToken=$(${dir}/utils/idam-lease-service-token.sh ccd_gw $(docker run --rm hmctsprod.azurecr.io/imported/toolbelt/oathtool:latest --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC}))
   echo ">>> Got serviceToken"
 else
-  echo "Couldn't get userToken - Using cached userToken"
+  echo ">>> Couldn't get serviceToken - Using cached serviceToken"
   serviceToken=${SERVICE_TOKEN}
 fi
 
@@ -36,70 +36,154 @@ newVersion="n/a"
 ccdDefinitionStoreUrl=${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}
 echo "ccdDefinitionStoreUrl = ${ccdDefinitionStoreUrl}"
 
+# Poll import status
+poll_import_status() {
+  for try in {1..10}; do
+    sleep 5
+    echo "Checking import job ${importJobId} status (Try ${try})"
+
+    jobResponse=$(curl --insecure --silent --show-error \
+      -X GET \
+      "${ccdDefinitionStoreUrl}/import-jobs/${importJobId}" \
+      -H "Authorization: Bearer ${userToken}" \
+      -H "ServiceAuthorization: Bearer ${serviceToken}" || true)
+
+    if [[ "${jobResponse}" == *"COMPLETED"* ]]; then
+      echo ">>> ${filename} (${uploadFilename}) uploaded"
+      exit 0
+    fi
+
+    if [[ "${jobResponse}" == *"FAILED"* ]]; then
+      echo ">>> ${filename} (${uploadFilename}) upload failed: ${jobResponse}"
+      exit 1
+    fi
+
+    if [[ "${jobResponse}" == *"EXPIRED"* ]]; then
+      echo ">>> ${filename} (${uploadFilename}) upload expired: ${jobResponse}"
+      exit 1
+    fi
+  done
+
+  echo ">>> ${filename} (${uploadFilename}) upload status could not be confirmed"
+  exit 1
+}
+
+# Get current case version if in Preview
 if [[ "$ENVIRONMENT" == "preview" ]]; then
   version=$(curl --insecure --silent --show-error -X GET \
-    ${ccdDefinitionStoreUrl}/api/data/case-type/CARE_SUPERVISION_EPO/version \
+    "${ccdDefinitionStoreUrl}/api/data/case-type/CARE_SUPERVISION_EPO/version" \
     -H "Authorization: Bearer ${userToken}" \
     -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
 
-  echo "Current version is ${version}"
+  echo "Current CCD definition version is ${version}"
 fi
 
 useShutteredCaseDef=${USE_SHUTTERED_CASE_DEF:-0}
 if [[ "$useShutteredCaseDef" == "1" ]]; then
   echo "Using Shuttered Case Definition File"
-  uploadFilename=`echo $uploadFilename | sed 's/\.xlsx/-shuttered\.xlsx/'`
+  uploadFilename="$(printf '%s' "${uploadFilename}" | sed 's/\.xlsx/-shuttered\.xlsx/')"
 fi
 
-uploadResponse=$(curl --insecure --silent -w "\n%{http_code}" --show-error -X POST \
-  ${ccdDefinitionStoreUrl}/import \
-  -H "Authorization: Bearer ${userToken}" \
-  -H "ServiceAuthorization: Bearer ${serviceToken}" \
-  -F "file=@${filepath};filename=${uploadFilename}" || echo 'bypass-if-error')
+max_upload_attempts=3
+upload_retry_delay=5
+attempt=1
+upload_curl_failed=false
 
-upload_http_code=$(echo "$uploadResponse" | tail -n1)
-upload_response_content=$(echo "$uploadResponse" | sed '$d')
+# Attempt to upload case def file
+while true; do
+  echo "Uploading ${filename} (${uploadFilename}) - attempt ${attempt}/${max_upload_attempts}"
 
-if [ "$ENVIRONMENT" == "preview" ] && [ "$upload_http_code" != "201" ]; then
-  echo "Bypassing audit check as on preview - will wait 45s and then verify the version has changed"
-  sleep 45
-
-  newVersion=$(curl --insecure --silent --show-error -X GET \
-    ${ccdDefinitionStoreUrl}/api/data/case-type/CARE_SUPERVISION_EPO/version \
+  if uploadResponse=$(curl --insecure --silent -w "\n%{http_code}" --show-error -X POST \
+    "${ccdDefinitionStoreUrl}/import" \
     -H "Authorization: Bearer ${userToken}" \
-    -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
+    -H "ServiceAuthorization: Bearer ${serviceToken}" \
+    -H "X-Import-Job_Id: ${importJobId}" \
+    -F "file=@${filepath};filename=${uploadFilename}"); then
 
-    echo "Current version is ${newVersion}"
-    if [[ "$newVersion" == "$version" ]]; then
-      echo "Version has not changed - the definition was not imported successfully"
-      exit 1
+    upload_http_code=$(echo "$uploadResponse" | tail -n1)
+    upload_response_content=$(echo "$uploadResponse" | sed '$d')
+  else
+    upload_curl_failed=true
+    echo ">>> Import request encountered a connection error technical error"
+    break
+  fi
+
+  # Skip audit check on Preview b/c import takes 60s but infra cuts of at 30s
+  if [[ "$ENVIRONMENT" == "preview" ]] && [[ "$upload_http_code" != "201" ]]; then
+    echo ">>> Upload on Preview didn't return HTTP 201. Waiting 45s and then verifying the version has changed..."
+    sleep 45
+
+    newVersion=$(curl --insecure --silent --show-error -X GET \
+      "${ccdDefinitionStoreUrl}/api/data/case-type/CARE_SUPERVISION_EPO/version" \
+      -H "Authorization: Bearer ${userToken}" \
+      -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
+
+      echo "Current version is ${newVersion}"
+      if [[ "$newVersion" == "$version" ]]; then
+        echo ">>> CCD definition version for ${filename} (${uploadFilename}) has not changed - definition import failed"
+        exit 1
+      fi
+
+    echo ">>> CCD definition version for ${filename} (${uploadFilename}) has changed - definition imported successfully"
+    exit 0
+  fi
+
+  # If gateway timeout, audit imports to check if import was successful
+  if [[ "${upload_http_code}" == '504' ]]; then
+    for try in {1..20}; do
+      echo "Checking status of ${filename} (${uploadFilename}) upload (Try ${try})"
+      sleep 5
+      audit_response=$(curl --insecure --silent --show-error -X GET \
+        "${ccdDefinitionStoreUrl}/api/import-audits" \
+        -H "Authorization: Bearer ${userToken}" \
+        -H "ServiceAuthorization: Bearer ${serviceToken}")
+
+      if [[ ${audit_response} == *"${uploadFilename}"* ]]; then
+        echo ">>> ${filename} (${uploadFilename}) uploaded"
+        exit 0
+      fi
+    done
+  else
+    if [[ "${upload_response_content}" == 'Case Definition data successfully imported' ]]; then
+      echo ">>> ${filename} (${uploadFilename}) uploaded"
+      exit 0
     fi
+  fi
 
-  echo "CCD definition version has changed, definition successfully uploaded"
+  # Retry if the HTTP code is 409 (conflict)
+  if [[ "${upload_http_code}" != "409" ]]; then
+    break
+  fi
+
+  # Retry if the max_upload_attempts has not been exceeded
+  if [[ "${attempt}" -ge "${max_upload_attempts}" ]]; then
+    break
+  fi
+
+  echo ">>> Upload returned HTTP 409. Retrying in ${upload_retry_delay} seconds..."
+  sleep "${upload_retry_delay}"
+  attempt=$((attempt + 1))
+done
+
+if [[ "${upload_curl_failed}" == "true" ]]; then
+  echo "Checking import job: ${importJobId}"
+  poll_import_status
+fi
+
+if [[ "${upload_http_code}" =~ ^2[0-9][0-9]$ ]]; then
+  echo ">>> ${filename} (${uploadFilename}) uploaded"
   exit 0
 fi
 
-if [[ "${upload_http_code}" == '504' ]]; then
-  for try in {1..20}
-  do
-    sleep 5
-    echo "Checking status of ${filename} (${uploadFilename}) upload (Try ${try})"
-    audit_response=$(curl --insecure --silent --show-error -X GET \
-      ${ccdDefinitionStoreUrl}/api/import-audits \
-      -H "Authorization: Bearer ${userToken}" \
-      -H "ServiceAuthorization: Bearer ${serviceToken}")
-
-    if [[ ${audit_response} == *"${uploadFilename}"* ]]; then
-      echo "${filename} (${uploadFilename}) uploaded"
-      exit 0
-    fi
-  done
-else
-  if [[ "${upload_response_content}" == 'Case Definition data successfully imported' ]]; then
-    echo "${filename} (${uploadFilename}) uploaded"
-    exit 0
-  fi
+if [[ "${upload_http_code}" == "409" ]]; then
+  echo ">>> ${filename} (${uploadFilename}) upload failed after ${attempt} attempts: HTTP 409 (${upload_response_content})"
+  exit 1
 fi
 
-echo "${filename} (${uploadFilename}) upload failed (${upload_response_content})"
-exit 1;
+if [[ "${upload_http_code}" =~ ^4[0-9][0-9]$ ]]; then
+  echo ">>> ${filename} (${uploadFilename}) upload failed: HTTP ${upload_http_code} (${upload_response_content})"
+  exit 1
+fi
+
+echo "Import returned HTTP ${upload_http_code} - checking job ${importJobId}"
+poll_import_status
