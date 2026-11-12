@@ -5118,4 +5118,80 @@ class MigrateCaseServiceTest {
             .isInstanceOf(AssertionError.class)
             .hasMessage(format("Migration {id = %s, case reference = %s}, no child requires update", MIGRATION_ID, 1L));
     }
+
+    @Test
+    void shouldUpdateOnlyTheApplicantsOrganisationId() {
+        UUID applicantId = UUID.randomUUID();
+        LocalAuthority applicant = LocalAuthority.builder()
+            .id("OLDORG1")
+            .name("NH Solicitors LLP")
+            .email("family@example.com")
+            .build();
+        Element<LocalAuthority> otherEntry = Element.<LocalAuthority>builder()
+            .id(UUID.randomUUID())
+            .value(LocalAuthority.builder().id("OTHER01").build())
+            .build();
+        CaseData caseData = caseWithApplicant(applicantId, applicant, otherEntry);
+
+        var result = underTest.updateApplicantOrganisationId(caseData, applicantId, "OLDORG1", "NEWORG1");
+
+        assertThat(result.get("localAuthorities")).containsExactly(
+            Element.<LocalAuthority>builder()
+                .id(applicantId)
+                .value(applicant.toBuilder().id("NEWORG1").build())
+                .build(),
+            otherEntry
+        );
+        assertThat(caseData.getLocalAuthorities().get(0).getValue().getId()).isEqualTo("OLDORG1");
+    }
+
+    @Test
+    void shouldLeaveApplicantUnchangedWhenOrganisationIdAlreadyMatches() {
+        UUID applicantId = UUID.randomUUID();
+        CaseData caseData = caseWithApplicant(applicantId, "NEWORG1");
+
+        var result = underTest.updateApplicantOrganisationId(caseData, applicantId, "OLDORG1", "NEWORG1");
+
+        assertThat(result.get("localAuthorities")).isEqualTo(caseData.getLocalAuthorities());
+    }
+
+    @Test
+    void shouldRejectAnUnexpectedApplicantOrganisationId() {
+        UUID applicantId = UUID.randomUUID();
+        CaseData caseData = caseWithApplicant(applicantId, "OTHER01");
+
+        assertThatThrownBy(() ->
+            underTest.updateApplicantOrganisationId(caseData, applicantId, "OLDORG1", "NEWORG1"))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("Unexpected organisation ID for applicant");
+    }
+
+    @Test
+    void shouldRejectAMissingApplicantEntry() {
+        CaseData caseData = caseWithApplicant(UUID.randomUUID(), "OLDORG1");
+        UUID missingApplicantId = UUID.randomUUID();
+
+        assertThatThrownBy(() ->
+            underTest.updateApplicantOrganisationId(caseData, missingApplicantId, "OLDORG1", "NEWORG1"))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("Applicant entry not found");
+    }
+
+    private CaseData caseWithApplicant(UUID applicantId, String orgId) {
+        return CaseData.builder()
+            .localAuthorities(List.of(Element.<LocalAuthority>builder()
+                .id(applicantId)
+                .value(LocalAuthority.builder().id(orgId).build())
+                .build()))
+            .build();
+    }
+
+    private CaseData caseWithApplicant(UUID applicantId, LocalAuthority applicant, Element<LocalAuthority> otherEntry) {
+        return CaseData.builder()
+            .localAuthorities(List.of(
+                Element.<LocalAuthority>builder().id(applicantId).value(applicant).build(),
+                otherEntry
+            ))
+            .build();
+    }
 }
