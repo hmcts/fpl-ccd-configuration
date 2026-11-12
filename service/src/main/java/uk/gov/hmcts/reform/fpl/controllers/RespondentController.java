@@ -79,7 +79,7 @@ public class RespondentController extends CallbackController {
         List<Element<Respondent>> respondents = confidentialDetailsService.prepareCollection(
             caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
 
-        // if we have a respondent LA, remove from collection and migrate to the other field
+        // If we have a respondent LA, remove from collection and migrate to the other field
         if (!RepresentativeType.LOCAL_AUTHORITY.equals(caseData.getRepresentativeType())
             && isNotEmpty(respondents) && respondents.get(0).getId().equals(DUMMY_UUID)) {
             Respondent fakeRespondentLA = respondents.get(0).getValue();
