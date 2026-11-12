@@ -400,7 +400,7 @@ test.describe('Upload additional applications', () => {
         await expect(additionalApplications.page.getByText('C18 - Recovery order')).toBeVisible();
 
     });
-    test.only('Child Solicitor submit C2 confidential paper application', async ({
+    test('Child Solicitor submit C2 confidential paper application', async ({
                                                       page,
                                                       signInPage,
                                                       additionalApplications,
@@ -412,11 +412,9 @@ test.describe('Upload additional applications', () => {
         caseName = 'Child Solicitor submit C2 confidential paper application ' + dateTime.slice(0, 10);
        if(urlConfig.env == 'aat'){
         expect(await updateCase(caseName, caseNumber, caseDataWithChildSolicitor)).toBeTruthy();
-        console.log("aat")
          }
        if(urlConfig.env == 'demo'){
            expect(await updateCase(caseName, caseNumber, caseDataWithChildSolicitorDemo)).toBeTruthy();
-           console.log("demo")
        }
         expect(await giveAccessToCase(caseNumber,FPLSolicitorOrgUser, '[CHILDSOLICITORA]')).toBeTruthy();
         expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
@@ -550,57 +548,225 @@ test.describe('Upload additional applications', () => {
         expect(await additionalApplications.getRowData('Application Reviewed by Judge',additionalApplications.page)).toContain('No');
 
     });
-    test('Child solicitor submit paper C2 and other application together', async ({
-                                                                                      page,
-                                                                                      signInPage,
-                                                                                      additionalApplications,
-                                                                                      caseFileView,
-                                                                                      envDataConfig
-                                                                                  }) => {
-    });
-    test('LA user submit other application', async ({
-                                                        page,
-                                                        signInPage,
-                                                        additionalApplications,
-                                                        caseFileView,
-                                                        envDataConfig
-                                                    }) => {
-    });
+    test.only('Local Authority submit Confidential C2 online application and C1 application',async ({
+                                                                        page,
+                                                                        signInPage,
+                                                                        additionalApplications,
+                                                                        caseFileView,
+                                                                        envDataConfig
+                                                                    }) => {
+
+        caseName = 'C1 and C2 Online application by Local Authority ' + dateTime.slice(0, 10);
+        expect(await updateCase(caseName, caseNumber, caseWithResSolicitor)).toBeTruthy();
+        expect(await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]')).toBeTruthy();
+        expect(await assignAMJudicialRole(caseNumber,judgeWalesUser)).toBeTruthy();
+        await signInPage.visit();
+        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+        await signInPage.navigateToCaseDetails(caseNumber);
+        await additionalApplications.gotoNextStep('Upload additional applications');
+        await additionalApplications.clickContinue();
+        await expect.soft(page.getByRole('heading', { name: 'There is a problem' })).toBeVisible();
+        await expect.soft(page.getByLabel('There is a problem')).toContainText('What application are you making? is required');
+        await expect.soft(page.getByLabel('There is a problem')).toContainText('Who is making this application? is required');
+        await additionalApplications.selectApplicationType('C2 Application');
+        await additionalApplications.selectApplicationType('Other specific application - including C1, C100 and supplements');
+        await additionalApplications.selectC2FormType('Apply online');
+        await additionalApplications.giveC2AppConsent('Yes');
+        await additionalApplications.isC2AppConfidential('Yes');
+        await additionalApplications.selectWhoMakeApplication('Swansea City Council, Applicant');
+        await additionalApplications.clickContinue();
+        await expect.soft(additionalApplications.page.getByText('C2 application')).toBeVisible();
+        await additionalApplications.clickContinue();
+        await expect(page.getByRole('heading', { name: 'There is a problem' })).toBeVisible();
+        await expect(page.getByLabel('There is a problem')).toContainText('Do all other parties consent to this application? is required');
+        await expect(page.getByLabel('There is a problem')).toContainText('Is this a confidential application? is required');
+        await expect(page.getByLabel('There is a problem')).toContainText('Who is making this application? is required');
 
 
-    test('CTSC user submit  C2 online application', async ({
-                                                               page,
-                                                               signInPage,
-                                                               additionalApplications,
-                                                               caseFileView,
-                                                               envDataConfig
-                                                           }) => {
-    });
-    test('CTSC user submit C2 and other application together', async ({
-                                                                          page,
-                                                                          signInPage,
-                                                                          additionalApplications,
-                                                                          caseFileView,
-                                                                          envDataConfig
-                                                                      }) => {
-    });
-
-    test('Respondent solcitor submit online confidential C2 application', async ({
-                                                                                     page,
-                                                                                     signInPage,
-                                                                                     additionalApplications,
-                                                                                     caseFileView,
-                                                                                     envDataConfig
-                                                                                 }) => {
-    });
-    test('Respondent solicitor submit other application', async ({
-                                                                     page,
-                                                                     signInPage,
-                                                                     additionalApplications,
-                                                                     caseFileView,
-                                                                     envDataConfig
-                                                                 }) => {
-    });
 
 
-})
+
+
+
+        await page.getByRole('radio', { name: 'Yes', exact: true }).check();
+        await page.getByRole('button', { name: 'Evidence of consent' }).click();
+        await page.getByRole('button', { name: 'Evidence of consent' }).setInputFiles('C4 - Whereabouts of a missing child.pdf');
+        await page.getByRole('radio', { name: 'Yes - only the judge or HMCTS' }).check();
+        await page.getByLabel('Who is making this').selectOption('1: applicant');
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await expect(page.getByLabel('There is a problem')).toContainText('Do you need permission to make this application? is required');
+        await expect(page.getByLabel('There is a problem')).toContainText('Does this application relate to all children in the case? is required');
+        await expect(page.getByLabel('There is a problem')).toContainText('What is your application about? is required');
+        await expect(page.getByLabel('There is a problem')).toContainText('Is there any reason, such as a safeguarding risk or other urgent issue, that requires your application to be considered by a judge on the same day? is required');
+        await expect(page.getByLabel('There is a problem')).toContainText('Are you requesting an adjournment for a scheduled hearing? is required');
+        await expect(page.getByLabel('There is a problem')).toContainText('Draft Orders is required');
+        await expect(page.getByLabel('There is a problem')).toContainText('Field is required');
+        await page.getByRole('group', { name: 'Do you need permission to' }).getByLabel('Yes').check();
+        await page.getByRole('group', { name: 'Does this application relate' }).getByLabel('No').check();
+        await page.getByRole('group', { name: 'Does this application relate' }).getByLabel('Yes').check();
+        await page.getByRole('textbox', { name: 'What is your application' }).click();
+        await page.getByRole('textbox', { name: 'What is your application' }).fill('application');
+        await page.locator('#temporaryC2Document_hasSafeguardingRisk_radio div').filter({ hasText: 'Yes' }).click();
+        await page.getByRole('textbox', { name: 'Reason' }).click();
+        await page.getByRole('textbox', { name: 'Reason' }).fill('Test');
+        await page.getByRole('group', { name: 'Are you requesting an' }).getByLabel('Yes').check();
+        await page.getByRole('group', { name: 'Are you requesting an' }).getByLabel('No').check();
+        await page.getByRole('group', { name: 'Can your application wait to' }).getByLabel('Yes').check();
+        await page.getByRole('group', { name: 'Can your application wait to' }).getByLabel('No').check();
+        await page.locator('#temporaryC2Document_draftOrdersBundle').getByRole('button', { name: 'Add new' }).click();
+        await page.getByRole('textbox', { name: 'File name' }).click();
+        await page.getByRole('textbox', { name: 'File name' }).fill('Draft Order');
+        await page.getByRole('button', { name: 'Upload document' }).click();
+        await page.getByRole('button', { name: 'Upload document' }).setInputFiles('Draft order 2.pdf');
+        await page.getByRole('checkbox', { name: 'Yes' }).click();
+        await page.locator('#temporaryC2Document_supplementsBundle').getByRole('button', { name: 'Add new' }).click();
+        await page.getByLabel('Select supplement').selectOption('2: C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD');
+        await page.getByRole('textbox', { name: 'Notes (Optional)' }).click();
+        await page.getByRole('textbox', { name: 'Notes (Optional)' }).fill('note');
+        await page.locator('#temporaryC2Document_supplementsBundle_0_document').click();
+        await page.locator('#temporaryC2Document_supplementsBundle_0_document').setInputFiles('AdditionalDoc1.pdf');
+        await page.locator('#temporaryC2Document_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+        await page.locator('#temporaryC2Document_supportingEvidenceBundle').getByRole('button', { name: 'Add new' }).click();
+        await page.locator('#temporaryC2Document_supportingEvidenceBundle_0_name').fill('supporting document');
+        await page.locator('#temporaryC2Document_supportingEvidenceBundle_0_notes').dblclick();
+        await page.locator('#temporaryC2Document_supportingEvidenceBundle_0_notes').fill('Note');
+        await page.locator('#temporaryC2Document_supportingEvidenceBundle_0_document').click();
+        await page.locator('#temporaryC2Document_supportingEvidenceBundle_0_document').setInputFiles('Birth Certificate.docx');
+        await page.locator('#temporaryC2Document_supportingEvidenceBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+        await page.getByRole('checkbox', { name: 'I believe that the facts' }).check();
+        await expect(page.locator('#statementOfTruthLabel')).toContainText('Statement of Truth I understand that proceedings for contempt of court may be brought against anyone who makes, or causes to be made, a false statement in a document verified by a statement of truth');
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await page.getByLabel('Select application').selectOption('1: C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION');
+        await page.getByRole('button', { name: 'Upload application' }).click();
+        await page.getByRole('button', { name: 'Upload application' }).setInputFiles('C12 - Warrant to assist person authorised by an emergency protection order.pdf');
+        await page.getByRole('checkbox', { name: 'Yes' }).check();
+        await page.getByRole('radio', { name: 'On the same day' }).check();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle').getByRole('button', { name: 'Add new' }).click();
+        await page.getByLabel('Document name').selectOption('5: C18_RECOVERY_ORDER');
+        await page.getByRole('textbox', { name: 'Notes (Optional)' }).click();
+        await page.getByRole('textbox', { name: 'Notes (Optional)' }).fill('Note for recovery order');
+        await page.getByRole('button', { name: 'Upload document' }).click();
+        await page.getByRole('button', { name: 'Upload document' }).setInputFiles('Consent 2.pdf');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+        await page.getByRole('button', { name: 'Add new' }).nth(1).click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_1_name').selectOption('1: C13A_SPECIAL_GUARDIANSHIP');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_1_document').click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_1_document').setInputFiles('C17 - Education supervision order (ESO).pdf');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_1_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+        await page.getByRole('button', { name: 'Add new' }).nth(1).click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_2_name').selectOption('2: C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_2_document').click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_2_document').setInputFiles('C4 - Whereabouts of a missing child.pdf');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_2_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+        await page.getByRole('button', { name: 'Add new' }).nth(1).click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_3_name').selectOption('3: C15_CONTACT_WITH_CHILD_IN_CARE');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_3_document').click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_3_document').setInputFiles('C3 - Search, take charge and delivery of a child.docx');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_3_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+        await page.getByRole('button', { name: 'Add new' }).nth(1).click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_4_name').selectOption('4: C16_CHILD_ASSESSMENT');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_4_document').click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_4_document').setInputFiles('C17 - Education supervision order (ESO).pdf');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_4_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+        await page.getByRole('button', { name: 'Add new' }).nth(1).click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_5_name').selectOption('5: C18_RECOVERY_ORDER');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_5_name').selectOption('6: C20_SECURE_ACCOMMODATION');
+        await page.getByRole('radio', { name: 'England' }).check();
+        await page.getByRole('radio', { name: 'Wales' }).check();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_5_notes').click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_5_notes').fill('fds');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_5_document').click();
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_5_document').setInputFiles('C3 - Search, take charge and delivery of a child.docx');
+        await page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_5_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+        await page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle').getByRole('button', { name: 'Add new' }).click();
+        await page.getByRole('textbox', { name: 'File name' }).fill('fdsgds');
+        await page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_notes').click();
+        await page.getByRole('textbox', { name: 'File name' }).fill('fdsgdsgf');
+        await page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_notes').fill('dsfg');
+        await page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_document').click();
+        await page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_document').setInputFiles('C17 - Education supervision order (ESO).pdf');
+        await page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await expect(page.getByText('£')).toBeVisible();
+        await expect(page.getByRole('definition')).toContainText('£270.00');
+        await page.getByLabel('Payment by account (PBA)').selectOption('1: PBA0076191');
+        await page.getByRole('textbox', { name: 'Customer reference' }).click();
+        await page.getByRole('textbox', { name: 'Customer reference' }).fill('res');
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await page.getByRole('button', { name: 'Previous' }).click();
+        await page.getByRole('textbox', { name: 'Client code (Optional)' }).click();
+        await page.getByRole('textbox', { name: 'Client code (Optional)' }).fill('cliendt');
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await page.getByRole('button', { name: 'Save and continue' }).click();
+        await page.goto('https://xui-fpl-case-service-pr-6281.preview.platform.hmcts.net/cases/case-details/PUBLICLAW/CARE_SUPERVISION_EPO/1794414033636359#Case%20File%20View');
+        await page.getByText('Other applications', { exact: true }).click();
+        await expect(page.getByText('C1 - Change surname or remove')).toBeVisible();
+        await page.getByText('C18 - Recovery order').click();
+        await expect(page.getByText('C18 - Recovery order')).toBeVisible();
+        await expect(page.getByText('C13A - Special guardianship')).toBeVisible();
+        await expect(page.locator('div').filter({ hasText: /^C14 - Authority to refuse contact with a child in care$/ }).nth(3)).toBeVisible();
+        await expect(page.getByText('C15 - Contact with a child in')).toBeVisible();
+        await expect(page.getByText('C16 - Child assessment')).toBeVisible();
+        await expect(page.getByText('C20 - Secure accommodation')).toBeVisible();
+        await page.getByText('Sign out').click();
+        await page.getByRole('textbox', { name: 'Enter your email address' }).click();
+        await page.getByRole('textbox', { name: 'Enter your email address' }).fill('private.solicitors@mailinator.com');
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await page.goto('https://xui-fpl-case-service-pr-6281.preview.platform.hmcts.net/cases');
+        await page.getByRole('link', { name: 'Case list' }).click();
+        await page.goto('https://xui-fpl-case-service-pr-6281.preview.platform.hmcts.net/cases');
+
+
+
+
+
+
+        await additionalApplications.page.pause();
+        await additionalApplications.selectApplicationType('C2 Application');
+        await additionalApplications.selectC2FormType('Apply online');
+        await additionalApplications.giveC2AppConsent('No');
+        await additionalApplications.isC2AppConfidential('No');
+        await additionalApplications.selectWhoMakeApplication('Charlie Respondent, Respondent 1');
+        await additionalApplications.clickContinue();
+        await additionalApplications.selectPermissionC2PermissionType('Permission already granted');
+        await additionalApplications.selectC2RelatedToAllChildren('No',['Child katie']);
+        await additionalApplications.enterC2ApplicationDetails();
+        await additionalApplications.isC2ApplicationHasSafeguardRisk('Yes', 'Urgent');
+        await additionalApplications.IsC2ToAdjournHearing('No');
+        await additionalApplications.canC2AppWaitUntilNextHearing('Yes');
+        await additionalApplications.uploadC2DraftOrder('0', 'Draft order one');
+        await additionalApplications.checkStatementOfTruth();
+        await additionalApplications.clickContinue();
+        await additionalApplications.payForApplication(envDataConfig.privateSolicitorOrgPBA);
+        await additionalApplications.checkYourAnsAndSubmit();
+        await expect(additionalApplications.page.getByText('with event: Upload additional applications')).toBeVisible();
+
+        await additionalApplications.tabNavigation('Other applications');
+
+        await expect(additionalApplications.page.getByText('Charlie Respondent, Respondent 1')).toBeVisible();
+        await expect(additionalApplications.page.getByRole('button', { name: 'C2_APPLICATION.pdf' })).toBeVisible();
+        await additionalApplications.openC2Application('C2_APPLICATION.pdf');
+        await expect(additionalApplications.c2applicationPage.getByText('For permission to start proceedings')).toBeVisible();
+        await expect(additionalApplications.c2applicationPage.getByText('For an order or directions in existing proceedings')).toBeVisible();
+        await expect(additionalApplications.c2applicationPage.getByText('To be joined as, or ceased to be, a party in existing family proceedings')).toBeVisible();
+        await expect(additionalApplications.c2applicationPage.getByText('under the Children Act 1989')).toBeVisible();
+        await expect(additionalApplications.c2applicationPage.getByText('I, Charlie Respondent believe that the facts stated in this application are true.')).toBeVisible();
+        expect(await additionalApplications.getRowData('Applicant', additionalApplications.page)).toContain('Charlie Respondent, Respondent 1');
+        expect(await additionalApplications.getRowData('Application with consent?',additionalApplications.page)).toContain('No');
+        expect(await additionalApplications.getRowData('Online or paper form?',additionalApplications.page)).toContain('Apply online');
+        expect(await additionalApplications.getRowData('Adjournment requested?',additionalApplications.page)).toContain('No');
+        expect(await additionalApplications.getRowData('Permission needed?',additionalApplications.page)).toContain('Permission already granted');
+        expect(await additionalApplications.getRowData('Relates to all children?',additionalApplications.page)).toContain('No');
+        expect(await additionalApplications.getRowData('Which children does the application relate to?', additionalApplications.page)).toContain('Child katie (Child 1)');
+        expect(await additionalApplications.getRowData('Application Summary', additionalApplications.page)).toContain('The C2 application for the taking the gaurdian ship of the chidren');
+        expect(await additionalApplications.getRowData('Safeguarding risk?',additionalApplications.page)).toContain('Yes');
+        expect(await additionalApplications.getRowData('Safeguarding Reason', additionalApplications.page)).toContain('Urgent');
+        expect(await additionalApplications.getRowData('Consider at next hearing?',additionalApplications.page)).toContain('Yes');
+        expect(await additionalApplications.getRowData('Payment by account (PBA) number',additionalApplications.page)).toContain(envDataConfig.privateSolicitorOrgPBA);
+        expect(await additionalApplications.getRowData('Customer reference',additionalApplications.page)).toContain('Test');
+        expect(await additionalApplications.getRowData('Application Reviewed by Judge',additionalApplications.page)).toContain('No');
+
+    });
+    })
