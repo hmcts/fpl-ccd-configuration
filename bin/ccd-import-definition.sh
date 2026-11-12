@@ -39,7 +39,12 @@ echo "ccdDefinitionStoreUrl = ${ccdDefinitionStoreUrl}"
 # Poll import status
 poll_import_status() {
   for try in {1..10}; do
-    sleep 5
+    if [[ "$ENVIRONMENT" == "preview" ]]; then
+      sleep 10
+    else
+      sleep 5
+    fi
+
     echo "Checking import job ${importJobId} status (Try ${try})"
 
     jobResponse=$(curl --insecure --silent --show-error \
