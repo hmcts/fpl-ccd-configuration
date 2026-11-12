@@ -31,8 +31,6 @@ else
   serviceToken=${SERVICE_TOKEN}
 fi
 
-#version="n/a"
-#newVersion="n/a"
 ccdDefinitionStoreUrl=${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}
 echo "ccdDefinitionStoreUrl = ${ccdDefinitionStoreUrl}"
 
@@ -73,16 +71,6 @@ poll_import_status() {
   exit 1
 }
 
-# Get current case version if in Preview
-#if [[ "$ENVIRONMENT" == "preview" ]]; then
-#  version=$(curl --insecure --silent --show-error -X GET \
-#    "${ccdDefinitionStoreUrl}/api/data/case-type/CARE_SUPERVISION_EPO/version" \
-#    -H "Authorization: Bearer ${userToken}" \
-#    -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
-#
-#  echo "Current CCD definition version is ${version}"
-#fi
-
 useShutteredCaseDef=${USE_SHUTTERED_CASE_DEF:-0}
 if [[ "$useShutteredCaseDef" == "1" ]]; then
   echo "Using Shuttered Case Definition File"
@@ -109,51 +97,9 @@ while true; do
     upload_response_content=$(echo "$uploadResponse" | sed '$d')
   else
     upload_curl_failed=true
-    echo ">>> Import request encountered a connection error technical error"
+    echo ">>> Import request encountered a connection or technical error"
     break
   fi
-
-  # Skip audit check on Preview b/c import takes 60s but infra cuts of at 30s
-#  if [[ "$ENVIRONMENT" == "preview" ]] && [[ "$upload_http_code" != "201" ]]; then
-#    echo ">>> Upload on Preview didn't return HTTP 201. Waiting 45s and then verifying the version has changed..."
-#    sleep 45
-#
-#    newVersion=$(curl --insecure --silent --show-error -X GET \
-#      "${ccdDefinitionStoreUrl}/api/data/case-type/CARE_SUPERVISION_EPO/version" \
-#      -H "Authorization: Bearer ${userToken}" \
-#      -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
-#
-#      echo "Current version is ${newVersion}"
-#      if [[ "$newVersion" == "$version" ]]; then
-#        echo ">>> CCD definition version for ${filename} (${uploadFilename}) has not changed - definition import failed"
-#        exit 1
-#      fi
-#
-#    echo ">>> CCD definition version for ${filename} (${uploadFilename}) has changed - definition imported successfully"
-#    exit 0
-#  fi
-
-  # If gateway timeout, audit imports to check if import was successful
-#  if [[ "${upload_http_code}" == '504' ]]; then
-#    for try in {1..20}; do
-#      echo "Checking status of ${filename} (${uploadFilename}) upload (Try ${try})"
-#      sleep 5
-#      audit_response=$(curl --insecure --silent --show-error -X GET \
-#        "${ccdDefinitionStoreUrl}/api/import-audits" \
-#        -H "Authorization: Bearer ${userToken}" \
-#        -H "ServiceAuthorization: Bearer ${serviceToken}")
-#
-#      if [[ ${audit_response} == *"${uploadFilename}"* ]]; then
-#        echo ">>> ${filename} (${uploadFilename}) uploaded"
-#        exit 0
-#      fi
-#    done
-#  else
-#    if [[ "${upload_response_content}" == 'Case Definition data successfully imported' ]]; then
-#      echo ">>> ${filename} (${uploadFilename}) uploaded"
-#      exit 0
-#    fi
-#  fi
 
   # Retry if the HTTP code is 409 (importJobId Conflict - ID already exists)
   if [[ "${upload_http_code}" != "409" ]]; then
@@ -199,18 +145,3 @@ fi
 
 echo "Import returned HTTP ${upload_http_code} - checking job ${importJobId}"
 poll_import_status
-
-
-
-# Can i remove the Preview & !201 check
-  # Skips /import-audits check to avoid timeout on preview
-# Can i remove the 504 check
-  # /import-audits to check if import succeeded despite server error
-# Can i remove the ^5[0-9][0-9] check
-  # Outputs a different log message and invokes poll_import_status
-#
-# /import creates and updates a job record in DB
-# /import-jobs/{id} reads that record & returns its stored status in a 200 response
-#
-# Status from /import-jobs/{id} not based on http code from /import
-# Based on exceptions that /import raises
