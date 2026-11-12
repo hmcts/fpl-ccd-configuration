@@ -185,5 +185,11 @@ if [[ "${upload_http_code}" =~ ^4[0-9][0-9]$ ]]; then
   exit 1
 fi
 
+if [[ "${upload_http_code}" =~ ^5[0-9][0-9]$ ]]; then
+  echo ">>> Server error when uploading ${filename} (${uploadFilename}): HTTP ${upload_http_code} (${upload_response_content})"
+  echo "Checking import job: ${importJobId}"
+  poll_import_status
+fi
+
 echo "Import returned HTTP ${upload_http_code} - checking job ${importJobId}"
 poll_import_status
