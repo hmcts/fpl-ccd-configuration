@@ -102,7 +102,7 @@ while true; do
     "${ccdDefinitionStoreUrl}/import" \
     -H "Authorization: Bearer ${userToken}" \
     -H "ServiceAuthorization: Bearer ${serviceToken}" \
-    -H "X-Import-Job_Id: ${importJobId}" \
+    -H "X-Import-Job-Id: ${importJobId}" \
     -F "file=@${filepath};filename=${uploadFilename}"); then
 
     upload_http_code=$(echo "$uploadResponse" | tail -n1)
