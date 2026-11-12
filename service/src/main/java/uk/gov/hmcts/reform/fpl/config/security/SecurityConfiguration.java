@@ -39,7 +39,7 @@ public class SecurityConfiguration {
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.decoder(jwtDecoder)))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/health/**", "/actuator/health/**").permitAll()
+                .requestMatchers("/health/**", "/actuator/health/**", "/testing-support/**").permitAll()
                 .requestMatchers("/callback/**").authenticated());
 
         return http.build();
