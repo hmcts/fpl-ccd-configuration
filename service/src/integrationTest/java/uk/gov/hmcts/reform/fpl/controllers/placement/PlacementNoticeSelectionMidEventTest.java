@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -35,10 +35,10 @@ class PlacementNoticeSelectionMidEventTest extends AbstractPlacementControllerTe
     public static final String EMMA_GREEN_MOTHER = "Emma Green - mother";
     public static final String ADAM_GREEN_FATHER = "Adam Green - father";
 
-    @MockBean
+    @MockitoBean
     private PbaService pbaService;
 
-    @MockBean
+    @MockitoBean
     private FeesRegisterApi feesRegisterApi;
 
     @Test

@@ -4,7 +4,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -49,13 +49,13 @@ class UploadDraftOrdersSubmittedControllerTest extends AbstractUploadDraftOrders
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2020, Month.NOVEMBER, 3, 0, 0, 0);
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private CoreCaseDataService coreCaseDataService;
 
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
     static Stream<Boolean> provideBooleanValues() {

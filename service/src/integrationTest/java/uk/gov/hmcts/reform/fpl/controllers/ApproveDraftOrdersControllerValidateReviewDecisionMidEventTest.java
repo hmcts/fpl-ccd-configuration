@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -52,10 +52,10 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
     private final Element<HearingOrder> draftOrder1 = element(buildDraftOrder(C21));
     private final Element<HearingOrder> draftOrder2 = element(buildDraftOrder(C21));
 
-    @MockBean
+    @MockitoBean
     private JudicialService judicialService;
 
-    @MockBean
+    @MockitoBean
     private HearingOrderGenerator hearingOrderGenerator;
 
     ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest() {

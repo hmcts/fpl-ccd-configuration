@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -27,15 +25,12 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 @ContextConfiguration(classes = {SDOIssuedContentProvider.class})
 class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
-    @MockBean
-    private EmailNotificationHelper helper;
-
     @Autowired
     private SDOIssuedContentProvider underTest;
 
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(any(CaseData.class))).thenReturn("name");
+        when(notificationHelper.getEldestChildLastName(any(CaseData.class))).thenReturn("name");
     }
 
     @Test
@@ -52,7 +47,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
                 .build()))
             .build();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
 
         SDONotifyData actualData = underTest.buildNotificationParameters(caseData, SDO);
 
@@ -87,7 +82,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
                 .build()))
             .build();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
         when(documentDownloadService.downloadDocument(any()))
             .thenReturn(DOCUMENT_CONTENT);
 
@@ -130,7 +125,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
                 .build()))
             .build();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
         when(documentDownloadService.downloadDocument(any()))
             .thenReturn(DOCUMENT_CONTENT);
 

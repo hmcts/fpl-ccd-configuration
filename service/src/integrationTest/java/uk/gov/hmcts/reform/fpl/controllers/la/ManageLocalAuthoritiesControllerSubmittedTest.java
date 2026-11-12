@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -70,10 +70,10 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
     private static final Long CASE_ID = 1234L;
     private static final String CASE_NAME = "Case name";
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private CoreCaseDataService coreCaseDataService;
 
     ManageLocalAuthoritiesControllerSubmittedTest() {

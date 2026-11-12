@@ -4,9 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -74,15 +73,15 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, ChildrenSmartSelector.class,
     ChildSelectionUtils.class
 })
-@MockBeans({
-    @MockBean(IdentityService.class), @MockBean(ChildrenService.class), @MockBean(OrderCreationService.class),
-    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
-    @MockBean(SealedOrderHistoryTypeGenerator.class), @MockBean(SealedOrderHistoryFinalMarker.class),
-    @MockBean(AppointedGuardianFormatter.class), @MockBean(SealedOrderLanguageRequirementGenerator.class),
-    @MockBean(TranslationRequestService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class),
-    @MockBean(SendDocumentService.class), @MockBean(OthersNotifiedGenerator.class),
-    @MockBean(OrderNotificationDocumentService.class), @MockBean(PlacementService.class),
-    @MockBean(WorkAllocationTaskService.class)
+@MockitoBean(types = {
+    IdentityService.class, ChildrenService.class, OrderCreationService.class,
+    ManageOrdersClosedCaseFieldGenerator.class, SealedOrderHistoryExtraTitleGenerator.class,
+    SealedOrderHistoryTypeGenerator.class, SealedOrderHistoryFinalMarker.class,
+    AppointedGuardianFormatter.class, SealedOrderLanguageRequirementGenerator.class,
+    TranslationRequestService.class, OthersService.class, OtherRecipientsInbox.class,
+    SendDocumentService.class, OthersNotifiedGenerator.class,
+    OrderNotificationDocumentService.class, PlacementService.class,
+    WorkAllocationTaskService.class
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";
@@ -95,7 +94,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
     @Captor
     private ArgumentCaptor<Set<DocumentReference>> documArgumentCaptor;
 
-    @MockBean
+    @MockitoBean
     private CafcassNotificationService cafcassNotificationService;
     @Autowired
     private CaseManagementOrderIssuedEventHandler underTest;

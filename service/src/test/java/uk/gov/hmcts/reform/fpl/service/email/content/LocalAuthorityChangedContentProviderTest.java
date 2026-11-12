@@ -1,16 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.CaseTransferredNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedLocalAuthorityChangedNotifyData;
-import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,16 +20,12 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 
 class LocalAuthorityChangedContentProviderTest extends AbstractEmailContentProviderTest {
 
-    private final OrganisationPolicy designated = organisationPolicy("ORG1", "Designated", LASOLICITOR);
-    private final OrganisationPolicy secondary = organisationPolicy("ORG2", "Secondary", LASHARED);
+    private final OrganisationPolicy designated = organisationPolicy("ORG1", "Designated",
+        LASOLICITOR);
+    private final OrganisationPolicy secondary = organisationPolicy("ORG2", "Secondary",
+        LASHARED);
 
-    @Mock
-    private CaseUrlService caseUrlService;
-
-    @Mock
-    private EmailNotificationHelper notificationHelper;
-
-    @InjectMocks
+    @Autowired
     private LocalAuthorityChangedContentProvider underTest;
 
     @Test

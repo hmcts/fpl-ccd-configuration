@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -71,13 +71,13 @@ class NoticeOfProceedingsServiceTest {
     @Autowired
     private Time time;
 
-    @MockBean
+    @MockitoBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
-    @MockBean
+    @MockitoBean
     private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
     private LocalDateTime now;

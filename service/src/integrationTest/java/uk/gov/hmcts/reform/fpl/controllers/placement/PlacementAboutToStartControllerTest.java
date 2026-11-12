@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert.assertT
 @OverrideAutoConfiguration(enabled = true)
 class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTest {
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     @BeforeEach

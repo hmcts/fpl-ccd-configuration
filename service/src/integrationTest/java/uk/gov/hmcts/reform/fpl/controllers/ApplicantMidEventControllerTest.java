@@ -5,9 +5,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -29,10 +29,10 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
     private static final String ERROR_MESSAGE =
         "Payment by account (PBA) number must include 7 numbers and the PBA prefix";
 
-    @MockBean
+    @MockitoBean
     private ApplicantService applicantService;
 
-    @MockBean
+    @MockitoBean
     private OrganisationService organisationService;
 
     ApplicantMidEventControllerTest() {

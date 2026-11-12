@@ -6,7 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.aac.client.NocApi;
 import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -79,16 +79,16 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
     private static final String SECOND_RESPONDENT_FIRST_NAME = "Second";
     private static final String SECOND_RESPONDENT_LAST_NAME = "Respondent";
 
-    @MockBean
+    @MockitoBean
     private IdentityService identityService;
 
-    @MockBean
+    @MockitoBean
     private Time time;
 
     @Captor
     private ArgumentCaptor<DecisionRequest> requestCaptor;
 
-    @MockBean
+    @MockitoBean
     private NocApi nocApi;
 
     NoticeOfChangeAboutToStartControllerTest() {

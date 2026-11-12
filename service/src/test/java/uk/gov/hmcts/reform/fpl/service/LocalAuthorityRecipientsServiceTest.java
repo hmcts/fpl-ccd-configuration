@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
@@ -86,13 +86,13 @@ class LocalAuthorityRecipientsServiceTest {
         .email("representative.2@solicitors.com")
         .build();
 
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggles;
 
-    @MockBean
+    @MockitoBean
     private LocalAuthorityIdLookupConfiguration localAuthorityIds;
 
-    @MockBean
+    @MockitoBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmails;
 
     @Autowired

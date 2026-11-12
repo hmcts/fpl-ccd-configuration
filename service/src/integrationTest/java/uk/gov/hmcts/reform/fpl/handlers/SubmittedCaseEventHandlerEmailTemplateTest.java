@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
@@ -50,11 +49,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     RegisteredRepresentativeSolicitorContentProvider.class, CaseUrlService.class, CafcassEmailContentProvider.class,
     HmctsEmailContentProvider.class, EmailNotificationHelper.class
 })
-@MockBeans(value = {
-    @MockBean(PaymentService.class),
-    @MockBean(EventService.class),
-    @MockBean(TranslationRequestService.class),
-    @MockBean(CafcassNotificationService.class)
+@MockitoBean(types = {
+    PaymentService.class,
+    EventService.class,
+    TranslationRequestService.class,
+    CafcassNotificationService.class
 })
 class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 

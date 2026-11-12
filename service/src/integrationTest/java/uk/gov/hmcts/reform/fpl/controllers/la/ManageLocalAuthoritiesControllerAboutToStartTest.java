@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 @OverrideAutoConfiguration(enabled = true)
 class ManageLocalAuthoritiesControllerAboutToStartTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     ManageLocalAuthoritiesControllerAboutToStartTest() {
