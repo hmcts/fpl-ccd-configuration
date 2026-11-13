@@ -37,6 +37,7 @@ public class LocalAuthority {
     private String clientCode;
     private String customerReference;
     private RepresentingDetails representingDetails;
+    private List<Element<LegalCounsellor>> legalCounsellors;
     @Builder.Default
     private List<Element<Colleague>> colleagues = new ArrayList<>();
     private String designated;

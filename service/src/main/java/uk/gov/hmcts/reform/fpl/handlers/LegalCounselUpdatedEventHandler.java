@@ -8,11 +8,13 @@ import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorAdded;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LegalCounsellorEmailContentProvider;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,6 +25,11 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_T
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import java.util.Objects;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -54,7 +61,9 @@ public class LegalCounselUpdatedEventHandler {
         LegalCounsellor legalCounsellor = event.getLegalCounsellor();
         String userId = legalCounsellor.getUserId();
 
-        caseAccessService.revokeCaseRoleFromUser(caseId, userId, BARRISTER);
+        if (!isCounselStillAssigned(caseData, userId)) {
+            caseAccessService.revokeCaseRoleFromUser(caseId, userId, BARRISTER);
+        }
 
         final String currentUserEmail = userService.getUserEmail();
         // legal counsellor removed themselves from the case
@@ -65,8 +74,8 @@ public class LegalCounselUpdatedEventHandler {
 
             // Send notification to the solicitor that legal counsellor was acting for
             Set<String> solicitorEmails =
-                Stream.concat(unwrapElements(caseData.getRespondents1()).stream(),
-                        unwrapElements(caseData.getChildren1()).stream())
+                Stream.concat(unwrapElements(event.getPreviousCaseData().getRespondents1()).stream(),
+                        unwrapElements(event.getPreviousCaseData().getChildren1()).stream())
                     .filter(withSolicitor ->
                         unwrapElements(withSolicitor.getLegalCounsellors()).stream()
                             .map(LegalCounsellor::getEmail)
@@ -88,5 +97,35 @@ public class LegalCounselUpdatedEventHandler {
                 contentProvider.buildLegalCounsellorRemovedNotificationTemplate(caseData, event), caseId
             );
         }
+    }
+
+    private boolean isCounselStillAssigned(CaseData caseData, String userId) {
+        Stream<LegalCounsellor> applicantCounsel =
+            Optional.ofNullable(caseData.getLocalAuthorities())
+                .orElseGet(List::of)
+                .stream()
+            .map(Element::getValue)
+            .map(LocalAuthority::getLegalCounsellors)
+            .filter(Objects::nonNull)
+            .flatMap(List::stream)
+            .map(Element::getValue);
+
+        Stream<LegalCounsellor> respondentCounsel = caseData.getAllRespondents().stream()
+            .map(Element::getValue)
+            .map(WithSolicitor::getLegalCounsellors)
+            .filter(Objects::nonNull)
+            .flatMap(List::stream)
+            .map(Element::getValue);
+
+        Stream<LegalCounsellor> childCounsel = caseData.getAllChildren().stream()
+            .map(Element::getValue)
+            .map(WithSolicitor::getLegalCounsellors)
+            .filter(Objects::nonNull)
+            .flatMap(List::stream)
+            .map(Element::getValue);
+
+        return Stream.of(applicantCounsel, respondentCounsel, childCounsel)
+            .flatMap(stream -> stream)
+            .anyMatch(counsel -> Objects.equals(userId, counsel.getUserId()));
     }
 }

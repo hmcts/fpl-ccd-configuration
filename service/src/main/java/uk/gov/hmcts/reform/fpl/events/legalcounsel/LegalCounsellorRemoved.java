@@ -9,4 +9,21 @@ public class LegalCounsellorRemoved implements LegalCounsellorEvent {
     CaseData caseData;
     String solicitorOrganisationName;
     LegalCounsellor legalCounsellor;
+    CaseData previousCaseData;
+
+    public LegalCounsellorRemoved(CaseData caseData,
+                                  String solicitorOrganisationName,
+                                  LegalCounsellor legalCounsellor) {
+        this(caseData, solicitorOrganisationName, legalCounsellor, caseData);
+    }
+
+    public LegalCounsellorRemoved(CaseData caseData,
+                                  String solicitorOrganisationName,
+                                  LegalCounsellor legalCounsellor,
+                                  CaseData previousCaseData) {
+        this.caseData = caseData;
+        this.solicitorOrganisationName = solicitorOrganisationName;
+        this.legalCounsellor = legalCounsellor;
+        this.previousCaseData = previousCaseData;
+    }
 }

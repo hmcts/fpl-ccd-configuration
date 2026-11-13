@@ -432,7 +432,7 @@ class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1)
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1, caseDataBefore)
         ));
     }
 
@@ -453,7 +453,7 @@ class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, "HMCTS", legalCounsellor1)
+            new LegalCounsellorRemoved(caseData, "HMCTS", legalCounsellor1, caseDataBefore)
         ));
     }
 
@@ -476,7 +476,7 @@ class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1)
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1, caseDataBefore)
         ));
     }
 
@@ -498,7 +498,7 @@ class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1)
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1, caseDataBefore)
         ));
     }
 
@@ -536,8 +536,8 @@ class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1),
-            new LegalCounsellorRemoved(caseData, ORG_2_NAME, legalCounsellor2)
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1, caseDataBefore),
+            new LegalCounsellorRemoved(caseData, ORG_2_NAME, legalCounsellor2, caseDataBefore)
         ));
     }
 
@@ -556,7 +556,7 @@ class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, "HMCTS", legalCounsellor1)
+            new LegalCounsellorRemoved(caseData, "HMCTS", legalCounsellor1, caseDataBefore)
         ));
     }
 
