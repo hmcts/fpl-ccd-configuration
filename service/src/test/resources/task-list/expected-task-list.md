@@ -224,7 +224,7 @@ Why can't I submit my application?
 
 <div class='govuk-details__text'>
 
-Add the orders and directions sought in the <div class='govuk-grid-column-three-quarters'><a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a></div>
+Add the orders and directions sought in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>
 
 </div>
 
