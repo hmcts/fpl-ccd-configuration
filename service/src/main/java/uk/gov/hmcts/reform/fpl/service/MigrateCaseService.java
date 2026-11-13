@@ -470,6 +470,27 @@ public class MigrateCaseService {
         return Map.of("caseNotes", caseNoteService.removeCaseNote(caseNoteIdToRemove, caseData.getCaseNotes()));
     }
 
+    public Map<String, Object> removeCaseNotes(
+        CaseData caseData, String migrationId, UUID... caseNoteIdsToRemove
+    ) {
+        var caseNotes = caseData.getCaseNotes();
+
+        for (UUID caseNoteId : caseNoteIdsToRemove) {
+            if (ElementUtils.findElement(caseNoteId, caseNotes).isEmpty()) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, case note %s not found",
+                    migrationId, caseData.getId(), caseNoteId
+                ));
+            }
+        }
+
+        for (UUID caseNoteId : caseNoteIdsToRemove) {
+            caseNotes = caseNoteService.removeCaseNote(caseNoteId, caseNotes);
+        }
+
+        return Map.of("caseNotes", caseNotes);
+    }
+
     public void verifyGatekeepingOrderUrgentHearingOrderExist(CaseData caseData, String migrationId) {
         if (caseData.getUrgentHearingOrder() == null || caseData.getUrgentHearingOrder().getOrder() == null) {
             throw new AssertionError(format(
