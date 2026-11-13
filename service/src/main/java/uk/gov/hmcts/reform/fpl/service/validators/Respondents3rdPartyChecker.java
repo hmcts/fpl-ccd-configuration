@@ -56,10 +56,4 @@ public class Respondents3rdPartyChecker extends PropertiesChecker {
 
         return errors;
     }
-
-    @Override
-    public boolean isStarted(CaseData caseData) {
-        return false;
-    }
-
 }

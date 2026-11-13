@@ -11,8 +11,6 @@ public interface EventChecker {
 
     List<String> validate(CaseData caseData);
 
-    boolean isStarted(CaseData caseData);
-
     default boolean isCompleted(CaseData caseData) {
         return validate(caseData).isEmpty();
     }

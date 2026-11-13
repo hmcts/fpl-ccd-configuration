@@ -30,20 +30,6 @@ public class RespondentsChecker extends PropertiesChecker {
         return errors;
     }
 
-    @Override
-    public boolean isStarted(CaseData caseData) {
-        final List<Respondent> respondents = unwrapElements(caseData.getAllRespondents());
-
-        switch (respondents.size()) {
-            case 0:
-                return false;
-            case 1:
-                return !isEmptyRespondent(respondents.get(0));
-            default:
-                return true;
-        }
-    }
-
     private static boolean isEmptyRespondent(Respondent respondent) {
 
         if (isEmpty(respondent)) {
