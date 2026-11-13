@@ -72,9 +72,7 @@ public class TaskListRenderer {
         groupInSections(allTasks, tasksHints).forEach(section -> lines.addAll(renderSection(section)));
 
         lines.add("</div>");
-
         lines.addAll(renderTasksErrors(tasksErrors));
-
         return String.join("\n\n", lines);
     }
 
@@ -159,28 +157,22 @@ public class TaskListRenderer {
 
     private List<String> renderTask(Task task) {
         final List<String> lines = new LinkedList<>();
-
+        lines.add("<div class='govuk-grid-row'>");
         switch (task.getState()) {
             case NOT_AVAILABLE:
-                lines.add(taskListRenderElements.renderDisabledLink(task)
-                    + taskListRenderElements.renderImage("cannot-send-yet.png", "Cannot send yet"));
+                lines.add(taskListRenderElements.renderDisabledLink(task));
+                lines.add("<div class='govuk-tag govuk-tag--grey' height='25px'>Cannot send yet</div>");
                 break;
-            case IN_PROGRESS:
-                lines.add(taskListRenderElements.renderLink(task)
-                    + taskListRenderElements.renderImage("in-progress.png", "In progress"));
-                break;
-            case COMPLETED:
-                lines.add(taskListRenderElements.renderLink(task)
-                    + taskListRenderElements.renderImage("information-added.png", "Information added"));
-                break;
-            case COMPLETED_FINISHED:
-                lines.add(taskListRenderElements.renderLink(task)
-                    + taskListRenderElements.renderImage("finished.png", "Finished"));
+            case COMPLETED_FINISHED, COMPLETED:
+                lines.add(taskListRenderElements.renderLink(task));
+                lines.add("<div class='govuk-tag govuk-tag--green' height='25px'>Finished</div>");
                 break;
             default:
                 lines.add(taskListRenderElements.renderLink(task));
+                lines.add("<div class='govuk-tag govuk-tag--red' height='25px'>Not started</div>");
         }
 
+        lines.add("</div>");
         task.getHint().map(taskListRenderElements::renderHint).ifPresent(lines::add);
         return lines;
     }
@@ -192,7 +184,8 @@ public class TaskListRenderer {
         final List<String> errors = taskErrors.stream()
             .flatMap(task -> task.getErrors()
                 .stream()
-                .map(error -> format("%s in the %s", error, taskListRenderElements.renderLink(task.getEvent()))))
+                .map(error ->
+                    format("%s in the %s", error, taskListRenderElements.renderErrorLink(task.getEvent()))))
             .collect(toList());
 
         return taskListRenderElements.renderCollapsible("Why can't I submit my application?", errors);

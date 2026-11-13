@@ -12,9 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TaskListRenderElementsTest {
 
-    private static final String BASE_URL = "baseUrl/";
-
-    private TaskListRenderElements underTest = new TaskListRenderElements(BASE_URL);
+    private TaskListRenderElements underTest = new TaskListRenderElements();
 
     @Test
     void shouldRenderLink() {
@@ -22,9 +20,10 @@ class TaskListRenderElementsTest {
             .event(Event.ALLOCATION_PROPOSAL)
             .build());
 
-        assertThat(actual).isEqualTo("<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/"
+        assertThat(actual).isEqualTo("<div class='govuk-grid-column-three-quarters'>"
+            + "<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/"
             + "${[CASE_REFERENCE]}/trigger/otherProposal'>"
-            + "Allocation proposal</a>");
+            + "Allocation proposal</a></div>");
     }
 
     @Test
@@ -33,14 +32,8 @@ class TaskListRenderElementsTest {
             .event(Event.ALLOCATION_PROPOSAL)
             .build());
 
-        assertThat(actual).isEqualTo("<a>Allocation proposal</a>");
-    }
-
-    @Test
-    void shouldRenderImage() {
-        String actual = underTest.renderImage("imageName", "title");
-
-        assertThat(actual).isEqualTo("<img align='right' height='25px' src='baseUrl/imageName' title='title'/>");
+        assertThat(actual).isEqualTo("<div class='govuk-grid-column-three-quarters'>"
+            + "<a>Allocation proposal</a></div>");
     }
 
     @Test

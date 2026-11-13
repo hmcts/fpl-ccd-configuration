@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 
 import java.util.List;
@@ -21,14 +19,8 @@ public class ApplicationDocumentChecker implements EventChecker {
     }
 
     @Override
-    public boolean isStarted(CaseData caseData) {
-        final List<Element<ApplicationDocument>> applicationDocuments = caseData.getTemporaryApplicationDocuments();
-        return !isEmpty(applicationDocuments);
-    }
-
-    @Override
     public boolean isCompleted(CaseData caseData) {
-        return isStarted(caseData);
+        return !isEmpty(caseData.getTemporaryApplicationDocuments());
     }
 
     @Override

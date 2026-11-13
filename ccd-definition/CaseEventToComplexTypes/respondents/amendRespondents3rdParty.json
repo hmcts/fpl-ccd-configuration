@@ -253,7 +253,7 @@
   "CaseEventID": "amendRespondents3rdParty",
   "CaseFieldID": "respondents1",
   "ListElementCode": "legalRepresentation",
-  "DisplayContext": "OPTIONAL"
+  "DisplayContext": "MANDATORY"
 },
   {
     "LiveFrom": "01/01/2017",

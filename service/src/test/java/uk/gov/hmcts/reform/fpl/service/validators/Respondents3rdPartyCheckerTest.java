@@ -140,11 +140,6 @@ class Respondents3rdPartyCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    @Test
-    void shouldReturnFalseForIsStarted() {
-        assertThat(respondents3rdPartyChecker.isStarted(CaseData.builder().build())).isFalse();
-    }
-
     @Nested
     class RespondentsChecker {
 

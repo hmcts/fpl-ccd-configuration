@@ -25,11 +25,6 @@ public class LanguageRequirementsChecker implements EventChecker {
     }
 
     @Override
-    public boolean isStarted(CaseData caseData) {
-        return false;
-    }
-
-    @Override
     public TaskState completedState() {
         return COMPLETED_FINISHED;
     }

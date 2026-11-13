@@ -89,9 +89,4 @@ public class ThirdPartyApplicantDetailsChecker extends LocalAuthorityDetailsChec
 
         return errors;
     }
-
-    @Override
-    public boolean isStarted(CaseData caseData) {
-        return false;
-    }
 }

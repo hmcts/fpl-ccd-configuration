@@ -25,11 +25,6 @@ public class CourtSelectionChecker implements EventChecker {
     }
 
     @Override
-    public boolean isStarted(CaseData caseData) {
-        return isNotEmpty(caseData.getCourt());
-    }
-
-    @Override
     public boolean isCompleted(CaseData caseData) {
         return isNotEmpty(caseData.getCourt());
     }

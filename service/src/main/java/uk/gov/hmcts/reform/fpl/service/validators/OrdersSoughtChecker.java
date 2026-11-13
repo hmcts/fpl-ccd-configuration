@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirec
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
-import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Component
 public class OrdersSoughtChecker extends PropertiesChecker {
@@ -32,17 +31,6 @@ public class OrdersSoughtChecker extends PropertiesChecker {
         errors.addAll(super.validate(caseData, List.of("orders")));
 
         return errors;
-    }
-
-    @Override
-    public boolean isStarted(CaseData caseData) {
-        final Orders orders = caseData.getOrders();
-
-        if (isEmpty(orders)) {
-            return false;
-        }
-
-        return anyNonEmpty(orders.getOrderType(), orders.getDirections());
     }
 
     @Override
