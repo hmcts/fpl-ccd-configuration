@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.allE
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.isEmptyAddress;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.isEmptyEmail;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.isEmptyTelephone;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})

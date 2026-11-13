@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.tasklist;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
@@ -21,6 +20,11 @@ public class TaskListRenderElements {
 
     public String renderLink(Event event) {
         return format("<div class='govuk-grid-column-three-quarters'><a href='/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s'>%s</a></div>",
+            JURISDICTION, CASE_TYPE, event.getId(), event.getName());
+    }
+
+    public String renderErrorLink(Event event) {
+        return format("<a href='/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s'>%s</a>",
             JURISDICTION, CASE_TYPE, event.getId(), event.getName());
     }
 

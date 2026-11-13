@@ -72,9 +72,7 @@ public class TaskListRenderer {
         groupInSections(allTasks, tasksHints).forEach(section -> lines.addAll(renderSection(section)));
 
         lines.add("</div>");
-
         lines.addAll(renderTasksErrors(tasksErrors));
-
         return String.join("\n\n", lines);
     }
 
@@ -186,7 +184,8 @@ public class TaskListRenderer {
         final List<String> errors = taskErrors.stream()
             .flatMap(task -> task.getErrors()
                 .stream()
-                .map(error -> format("%s in the %s", error, taskListRenderElements.renderLink(task.getEvent()))))
+                .map(error ->
+                    format("%s in the %s", error, taskListRenderElements.renderErrorLink(task.getEvent()))))
             .collect(toList());
 
         return taskListRenderElements.renderCollapsible("Why can't I submit my application?", errors);
