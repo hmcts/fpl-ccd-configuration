@@ -2075,4 +2075,29 @@ public class MigrateCaseService {
 
         return order.getDocument() != null ? order.getDocument().getUploadedTimestamp() : null;
     }
+
+    public Map<String, List<Element<LocalAuthority>>> updateApplicantOrganisationId(
+        CaseData caseData, UUID applicantUuid, String expectedOrgId, String newOrgId
+    ) {
+        List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
+        Element<LocalAuthority> applicantEntry = ElementUtils.findElement(applicantUuid, localAuthorities)
+            .orElseThrow(() -> new IllegalStateException("Applicant entry not found: " + applicantUuid));
+
+        LocalAuthority applicant = applicantEntry.getValue();
+        if (newOrgId.equals(applicant.getId())) {
+            return Map.of(LOCAL_AUTHORITIES, localAuthorities);
+        }
+        if (!expectedOrgId.equals(applicant.getId())) {
+            throw new IllegalStateException("Unexpected organisation ID for applicant: " + applicantUuid);
+        }
+
+        List<Element<LocalAuthority>> updatedLocalAuthorities = new ArrayList<>(localAuthorities);
+        int applicantIndex = localAuthorities.indexOf(applicantEntry);
+        updatedLocalAuthorities.set(applicantIndex, Element.<LocalAuthority>builder()
+            .id(applicantEntry.getId())
+            .value(applicant.toBuilder().id(newOrgId).build())
+            .build());
+
+        return Map.of(LOCAL_AUTHORITIES, updatedLocalAuthorities);
+    }
 }

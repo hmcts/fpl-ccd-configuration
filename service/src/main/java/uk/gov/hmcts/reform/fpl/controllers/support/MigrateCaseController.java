@@ -36,7 +36,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-3390", this::run3390,
         "DFPL-3373", this::run3373,
         "DFPL-3419", this::run3419,
-        "DFPL-3425", this::run3425
+        "DFPL-3425", this::run3425,
+        "DFPL-3407", this::run3407
     );
 
     @PostMapping("/about-to-submit")
@@ -128,5 +129,26 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(updatedData);
     }
+
+    private void run3407(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3407";
+        final long expectedCaseId = 1773923914594011L;
+        final String oldOrgId = "LJKOQT7";
+        final String newOrgId = "XKCMGVR";
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        final UUID applicantUuid = UUID.fromString("a66928e6-e803-4a21-a783-3b9f02b990b5");
+        final CaseData caseData = getCaseData(caseDetails);
+
+        var applicantUpdate = migrateCaseService.updateApplicantOrganisationId(
+            caseData, applicantUuid, oldOrgId, newOrgId
+        );
+        var policyUpdate = migrateCaseService.updateOutsourcingPolicy(caseData, newOrgId, null);
+
+        caseDetails.getData().putAll(applicantUpdate);
+        caseDetails.getData().putAll(policyUpdate);
+    }
+
 }
 
