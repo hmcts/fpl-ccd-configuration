@@ -37,7 +37,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-3373", this::run3373,
         "DFPL-3419", this::run3419,
         "DFPL-3425", this::run3425,
-        "DFPL-3405", this::run3405
+        "DFPL-3405", this::run3405,
         "DFPL-3407", this::run3407
     );
 
@@ -144,6 +144,7 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("61daa227-70c4-4a19-92db-c6e1fde60cac"),
             UUID.fromString("07b396b0-20d0-4a7c-83ae-e5a8d42e8036")
         ));
+    }
     private void run3407(CaseDetails caseDetails) {
         final String migrationId = "DFPL-3407";
         final long expectedCaseId = 1773923914594011L;
