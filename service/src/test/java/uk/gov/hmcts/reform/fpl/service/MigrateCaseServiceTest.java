@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
@@ -1190,6 +1191,48 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () -> underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove));
+        }
+
+        @Test
+        void shouldRemoveBothTargetedCaseNotesAndPreserveOtherNote() {
+            UUID secondNoteIdToRemove = UUID.randomUUID();
+            var firstNote = element(noteIdToRemove, CaseNote.builder().note("First note").build());
+            var secondNote = element(secondNoteIdToRemove, CaseNote.builder().note("Second note").build());
+            var retainedNote = element(UUID.randomUUID(), CaseNote.builder().note("Keep this note").build());
+
+            var originalNotes = List.of(firstNote, secondNote, retainedNote);
+            var notesAfterFirstRemoval = List.of(secondNote, retainedNote);
+            var remainingNotes = List.of(retainedNote);
+            CaseData caseData = CaseData.builder().caseNotes(originalNotes).build();
+
+            ReflectionTestUtils.setField(underTest, "caseNoteService", caseNoteService);
+
+            when(caseNoteService.removeCaseNote(noteIdToRemove, caseData.getCaseNotes()))
+                .thenReturn(notesAfterFirstRemoval);
+            when(caseNoteService.removeCaseNote(secondNoteIdToRemove, notesAfterFirstRemoval))
+                .thenReturn(remainingNotes);
+
+            Map<String, Object> updatedFields = underTest.removeCaseNotes(
+                caseData, MIGRATION_ID, noteIdToRemove, secondNoteIdToRemove
+            );
+
+            assertThat(updatedFields).containsEntry("caseNotes", remainingNotes);
+        }
+
+        @Test
+        void shouldValidateBothCaseNotesBeforeRemovingEither() {
+            UUID missingNoteId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .caseNotes(List.of(element(noteIdToRemove, CaseNote.builder().note("Existing note").build())))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCaseNotes(
+                caseData, MIGRATION_ID, noteIdToRemove, missingNoteId
+            ))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("case note " + missingNoteId + " not found");
+
+            Mockito.verifyNoInteractions(caseNoteService);
         }
     }
 
