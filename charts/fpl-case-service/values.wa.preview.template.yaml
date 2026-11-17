@@ -90,7 +90,6 @@ wa:
       devmemoryLimits: 4Gi
       environment:
         CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-        WA_INITIATE_TASKS_ON_CREATE_ENABLED: false
 
   wa-task-management-api:
     java:
