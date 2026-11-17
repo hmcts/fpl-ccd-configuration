@@ -1,7 +1,7 @@
 import {expect, type Locator, type Page} from "@playwright/test";
 import {BasePage} from "./base-page";
 import config from "../settings/test-docs/config";
-
+import {ComplexPanel, ComplexTable} from "../component/complexPanel";
 export class AdditionalApplications extends BasePage {
 
     readonly otherSpecificOrder: Locator;
@@ -45,6 +45,9 @@ export class AdditionalApplications extends BasePage {
     private C2RelatedToAllChildren: Locator;
     private C2applicationDetails: any;
     c2applicationPage: Page ;
+    private additionalApp1: Locator;
+    c2Panel: Locator;
+    otherAppPanel: Locator;
 
 
     public constructor(page: Page) {
@@ -77,10 +80,9 @@ export class AdditionalApplications extends BasePage {
         this.uploadApplication = page.getByRole('button', {name: 'Upload application'});
         this.otherApplicant = page.getByRole('textbox', {name: 'Add applicant\'s name'});
 
-        this.applicationType = page.getByRole('group', {name: 'What application are you making?', exact: true});
+        this.applicationType = page.getByRole('group', {name: 'What application are you making?'});
         this.C2FormType = page.getByRole('group', {
-            name: 'Do you want to make the C2 application online or upload a paper form?',
-            exact: true
+            name: 'Do you want to make the C2 application online or upload a paper form?'
         });
         this.C2Consent = page.getByRole('group', {name: 'Do all other parties consent to this application?'});
         this.C2Confidentiality = page.getByRole('group', {name: 'Is this a confidential application?'});
@@ -95,14 +97,27 @@ export class AdditionalApplications extends BasePage {
         this.C2applicationPermissionType = page.getByRole('group', {name: 'Do you need permission to make this application?'});
         this.C2RelatedToAllChildren = page.getByRole('group', {name: 'Does this application relate to all children in the case?'});
         this.C2applicationDetails =page.getByLabel('What is your application about?');
+        this.additionalApp1 = page.locator('.complex-panel').filter({
+            has: page.locator('.complex-panel-title dt span', { hasText: /^Additional applications 1$/ })
+        }).first();
+
+        this.c2Panel = this.additionalApp1.locator('.complex-panel').filter({
+            has: page.locator('.complex-panel-title dt span', { hasText: /^C2 application$/ })
+        }).first();
+        this.otherAppPanel = this.additionalApp1.locator('.complex-panel').filter({
+            has: page.locator('.complex-panel-title dt span', { hasText: /^Other applications$/ })
+        }).first();
 
     }
+
+
 
     public async selectApplicationType(Type: string) {
         await this.applicationType.getByRole('checkbox', {name: Type}).click();
     }
 
     public async selectC2FormType(type: string) {
+        await this.C2FormType.click()
         await this.C2FormType.getByRole('radio', {name: type}).click();
     }
 
@@ -339,7 +354,7 @@ export class AdditionalApplications extends BasePage {
         await this.C2applicationPermissionType.getByRole('radio', {name: permissionType}).click();
     }
 
-    public async selectC2RelatedToAllChildren(YesNo: string,childNames: string[]) {
+    public async selectC2RelatedToAllChildren(YesNo: string,childNames: string[]=[]) {
         await this.C2RelatedToAllChildren.getByRole('radio', {name: YesNo}).click();
         if(YesNo == 'No'){
             for (const childName of childNames) {
@@ -364,5 +379,10 @@ export class AdditionalApplications extends BasePage {
         await this.page.getByRole('button', { name: `${docName}` }).click();
         this.c2applicationPage = await newPagePromise;
         await this.c2applicationPage.waitForLoadState();
+    }
+    async extractComplexTable(panel: Locator): Promise<ComplexTable> {
+        const complexPanel = new ComplexPanel(panel);
+        return await complexPanel.extractComplexTableData();
+
     }
 }
