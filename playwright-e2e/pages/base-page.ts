@@ -19,6 +19,7 @@ export class BasePage {
   readonly day: Locator;
   private dateOfHearing: Locator;
   readonly startButton: Locator;
+  readonly allWork: Locator;
 
 
   constructor(page: Page) {
@@ -40,6 +41,7 @@ export class BasePage {
     this.year = this.page.getByLabel(' Year ');
     this.dateOfHearing =  this.page.getByRole('group', { name: 'What is the date of the' });
     this.startButton = page.getByRole('button', { name: 'Start' });
+    this.allWork = page.getByRole('link', { name: 'All work' });
   }
 
   async gotoNextStep(eventName: string) {
@@ -189,6 +191,10 @@ export class BasePage {
             console.error(`Error getting table value: ${error}`);
             throw new Error(`Failed to get value for heading "${cellHeading}" in table "${tableName}"`);
         }
+    }
+    async clickAllWork() {
+        await this.allWork.click();
+        expect.soft(this.page.getByRole('heading', { name: 'All work' })).toBeVisible();
     }
 }
 
