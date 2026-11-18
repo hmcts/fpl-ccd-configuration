@@ -28,6 +28,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_T
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class LegalCounselUpdatedEventHandlerTest {
@@ -100,6 +102,29 @@ class LegalCounselUpdatedEventHandlerTest {
     }
 
     @Test
+    void shouldRevokeRespondentCounselAccessWhenLocalAuthoritiesIsNull() {
+        CaseData caseDataWithoutLocalAuthorities = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .build();
+
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(
+            caseDataWithoutLocalAuthorities,
+            "Test Solicitors",
+            TEST_LEGAL_COUNCILLOR
+        );
+
+        when(userService.getUserEmail()).thenReturn("solicitor@test.com");
+
+        underTest.handleLegalCounsellorRemovedEvent(event);
+
+        verify(caseAccessService).revokeCaseRoleFromUser(
+            TEST_CASE_ID,
+            TEST_COUNCILLOR_USER_ID,
+            BARRISTER
+        );
+    }
+
+    @Test
     void shouldRevokeAccessFromUserAndNotifyThemIfBarrister() {
         LegalCounsellorRemovedNotifyTemplate expectedTemplate = mock(LegalCounsellorRemovedNotifyTemplate.class);
         LegalCounsellorRemoved event = new LegalCounsellorRemoved(caseData, "Test Solicitors", TEST_LEGAL_COUNCILLOR);
@@ -119,19 +144,34 @@ class LegalCounselUpdatedEventHandlerTest {
 
     @Test
     void shouldNotifyAllRespondentSolicitorTheyAreActingForIfBarristerRemovedThemselves() {
+
         CaseData caseData = CaseData.builder()
             .id(TEST_CASE_ID)
             .respondents1(wrapElements(
                 Respondent.builder()
                     .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
-                    .solicitor(RespondentSolicitor.builder().email("respondent.solicitor@test.com").build())
+                    .solicitor(RespondentSolicitor.builder()
+                        .email("respondent.solicitor@test.com")
+                        .build())
                     .build(),
                 Respondent.builder()
                     .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
-                    .solicitor(RespondentSolicitor.builder().email("respondent.solicitor2@test.com").build())
+                    .solicitor(RespondentSolicitor.builder()
+                        .email("respondent.solicitor2@test.com")
+                        .build())
                     .build()))
             .build();
-        LegalCounsellorRemoved event = new LegalCounsellorRemoved(caseData, "Test Solicitors", TEST_LEGAL_COUNCILLOR);
+
+        CaseData updatedCaseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .build();
+
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(
+            updatedCaseData,
+            "Test Solicitors",
+            TEST_LEGAL_COUNCILLOR,
+            caseData
+        );
 
         LegalCounsellorRemovedNotifyTemplate expectedTemplateToBarrister =
             mock(LegalCounsellorRemovedNotifyTemplate.class);
@@ -139,10 +179,12 @@ class LegalCounselUpdatedEventHandlerTest {
             mock(LegalCounsellorRemovedNotifyTemplate.class);
 
         when(userService.getUserEmail()).thenReturn(TEST_COUNSELLOR_EMAIL_ADDRESS);
-        when(contentProvider.buildLegalCounsellorRemovedNotificationTemplate(caseData, event))
+        when(contentProvider.buildLegalCounsellorRemovedNotificationTemplate(updatedCaseData, event))
             .thenReturn(expectedTemplateToBarrister);
-        when(contentProvider.buildLegalCounsellorRemovedThemselvesNotificationTemplate(caseData,
-            TEST_LEGAL_COUNCILLOR.getFullName())).thenReturn(expectedTemplateToSolicitor);
+
+        when(contentProvider.buildLegalCounsellorRemovedThemselvesNotificationTemplate(
+            updatedCaseData, TEST_LEGAL_COUNCILLOR.getFullName()))
+            .thenReturn(expectedTemplateToSolicitor);
 
         underTest.handleLegalCounsellorRemovedEvent(event);
 
@@ -176,7 +218,17 @@ class LegalCounselUpdatedEventHandlerTest {
                     .solicitor(RespondentSolicitor.builder().email("child.solicitor2@test.com").build())
                     .build()))
             .build();
-        LegalCounsellorRemoved event = new LegalCounsellorRemoved(caseData, "Test Solicitors", TEST_LEGAL_COUNCILLOR);
+
+        CaseData updatedCaseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .build();
+
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(
+            updatedCaseData,
+            "Test Solicitors",
+            TEST_LEGAL_COUNCILLOR,
+            caseData
+        );
 
         LegalCounsellorRemovedNotifyTemplate expectedTemplateToBarrister =
             mock(LegalCounsellorRemovedNotifyTemplate.class);
@@ -184,10 +236,12 @@ class LegalCounselUpdatedEventHandlerTest {
             mock(LegalCounsellorRemovedNotifyTemplate.class);
 
         when(userService.getUserEmail()).thenReturn(TEST_COUNSELLOR_EMAIL_ADDRESS);
-        when(contentProvider.buildLegalCounsellorRemovedNotificationTemplate(caseData, event))
+        when(contentProvider.buildLegalCounsellorRemovedNotificationTemplate(updatedCaseData, event))
             .thenReturn(expectedTemplateToBarrister);
-        when(contentProvider.buildLegalCounsellorRemovedThemselvesNotificationTemplate(caseData,
-            TEST_LEGAL_COUNCILLOR.getFullName())).thenReturn(expectedTemplateToSolicitor);
+
+        when(contentProvider.buildLegalCounsellorRemovedThemselvesNotificationTemplate(
+            updatedCaseData, TEST_LEGAL_COUNCILLOR.getFullName()))
+            .thenReturn(expectedTemplateToSolicitor);
 
         underTest.handleLegalCounsellorRemovedEvent(event);
 
@@ -205,6 +259,106 @@ class LegalCounselUpdatedEventHandlerTest {
             LEGAL_COUNSELLOR_REMOVED_THEMSELVES, "child.solicitor2@test.com",
             expectedTemplateToSolicitor, TEST_CASE_ID
         );
+    }
+
+    @Test
+    void shouldNotRevokeAccessWhenCounselIsStillAssignedToApplicant() {
+        LocalAuthority applicant = LocalAuthority.builder()
+            .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
+            .build();
+
+        caseData = caseData.toBuilder()
+            .localAuthorities(wrapElements(applicant))
+            .build();
+
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(
+            caseData,
+            "Test Solicitors",
+            TEST_LEGAL_COUNCILLOR
+        );
+
+        when(userService.getUserEmail()).thenReturn("solicitor@test.com");
+
+        underTest.handleLegalCounsellorRemovedEvent(event);
+
+        verify(caseAccessService, never())
+            .revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
+    }
+
+    @Test
+    void shouldNotRevokeAccessWhenApplicantCounselStillRepresentsRespondent() {
+        CaseData previousCaseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .localAuthorities(wrapElements(
+                LocalAuthority.builder()
+                    .name("Previous Local Authority")
+                    .designated("Yes")
+                    .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
+                    .build()))
+            .build();
+
+        CaseData updatedCaseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .localAuthorities(wrapElements(
+                LocalAuthority.builder()
+                    .name("New Local Authority")
+                    .designated("Yes")
+                    .build()))
+            .respondents1(wrapElements(
+                Respondent.builder()
+                    .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
+                    .build()))
+            .build();
+
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(
+            updatedCaseData,
+            "Previous Local Authority",
+            TEST_LEGAL_COUNCILLOR,
+            previousCaseData
+        );
+
+        when(userService.getUserEmail()).thenReturn("solicitor@test.com");
+
+        underTest.handleLegalCounsellorRemovedEvent(event);
+
+        verify(caseAccessService, never())
+            .revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
+    }
+
+    @Test
+    void shouldRevokeAccessWhenApplicantCounselRemovedFollowingLATransfer() {
+        CaseData previousCaseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .localAuthorities(wrapElements(
+                LocalAuthority.builder()
+                    .name("Previous Local Authority")
+                    .designated("Yes")
+                    .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
+                    .build()))
+            .build();
+
+        CaseData updatedCaseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .localAuthorities(wrapElements(
+                LocalAuthority.builder()
+                    .name("New Local Authority")
+                    .designated("Yes")
+                    .build()))
+            .build();
+
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(
+            updatedCaseData,
+            "Previous Local Authority",
+            TEST_LEGAL_COUNCILLOR,
+            previousCaseData
+        );
+
+        when(userService.getUserEmail()).thenReturn("solicitor@test.com");
+
+        underTest.handleLegalCounsellorRemovedEvent(event);
+
+        verify(caseAccessService)
+            .revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
     }
 
 }

@@ -6,14 +6,18 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorAdded;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorEvent;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
+import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
@@ -43,6 +47,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 @RequiredArgsConstructor
 @Component
@@ -66,6 +72,8 @@ public class ManageLegalCounselService {
     private final OrganisationService organisationService;
     private final CaseAccessService caseAccessService;
     private final UserService userService;
+    private final ApplicantLocalAuthorityService applicantLocalAuthorityService;
+    private final CoreCaseDataService coreCaseDataService;
 
     public List<Element<LegalCounsellor>> retrieveLegalCounselForLoggedInSolicitor(CaseData caseData) {
         Long caseId = caseData.getId();
@@ -259,10 +267,12 @@ public class ManageLegalCounselService {
             retrieveLegalCounselForLoggedInSolicitor(previousCaseData)
         );
 
-        //Revoke case access from all removed legal counsellors
+        // Revoke case access from all removed legal counsellors
         previousLegalCounsellors.stream()
             .filter(not(currentLegalCounsellors::contains))
-            .forEach(counsellor -> events.add(new LegalCounsellorRemoved(currentCaseData, orgName, counsellor)));
+            .forEach(counsellor -> events.add(
+                new LegalCounsellorRemoved(currentCaseData, orgName, counsellor, previousCaseData)
+            ));
 
         //Grant case access to all new legal counsellors
         currentLegalCounsellors.stream()
@@ -282,5 +292,270 @@ public class ManageLegalCounselService {
 
     private boolean isBarrister(Set<CaseRole> caseRoles) {
         return nullSafeCollection(caseRoles).stream().anyMatch(CaseRole.BARRISTER::equals);
+    }
+
+    public List<Element<LegalCounsellor>> retrieveApplicantLegalCounsel(CaseData caseData) {
+        return Optional.ofNullable(getApplicantForLegalCounsel(caseData))
+            .map(LocalAuthority::getLegalCounsellors)
+            .orElse(emptyList());
+    }
+
+    public List<Element<LegalCounsellor>> retrieveApplicantLegalCounselForCurrentUser(CaseData caseData) {
+        List<Element<LegalCounsellor>> applicantCounsel = retrieveApplicantLegalCounsel(caseData);
+
+        if (isBarrister(caseAccessService.getUserCaseRoles(caseData.getId()))) {
+            String currentUserEmail = userService.getUserEmail();
+
+            return applicantCounsel.stream()
+                .filter(counsel -> StringUtils.equalsIgnoreCase(
+                    counsel.getValue().getEmail(), currentUserEmail))
+                .toList();
+        }
+
+        return applicantCounsel;
+    }
+
+
+    public void updateApplicantLegalCounsel(CaseDetails caseDetails) {
+        Objects.requireNonNull(caseDetails, "Case details must not be null");
+
+        CaseData caseData = caseConverter.convert(caseDetails);
+
+        CaseData persistedCaseData = Objects.requireNonNull(
+            caseConverter.convert(
+                coreCaseDataService.findCaseDetailsById(caseDetails.getId().toString())
+            ),
+            "Persisted case data must not be null"
+        );
+
+        List<Element<LocalAuthority>> applicants = persistedCaseData.getLocalAuthorities();
+        LocalAuthority applicant = getApplicantForLegalCounsel(persistedCaseData);
+
+        Set<CaseRole> caseRoles = caseAccessService.getUserCaseRoles(caseData.getId());
+
+        if (isBarrister(caseRoles)) {
+            String currentUserEmail = userService.getUserEmail();
+
+            boolean isAssignedApplicantBarrister = Optional.ofNullable(applicant.getLegalCounsellors())
+                .orElse(emptyList())
+                .stream()
+                .anyMatch(counsel -> StringUtils.equalsIgnoreCase(
+                    counsel.getValue().getEmail(), currentUserEmail
+                ));
+
+            if (!isAssignedApplicantBarrister) {
+                throw new IllegalArgumentException(
+                    "Current barrister is not assigned to the Applicant"
+                );
+            }
+
+            updateApplicantCounselForBarrister(caseData, applicant);
+        } else {
+            updateApplicantCounselForSolicitor(
+                caseData, persistedCaseData, applicant, caseRoles
+            );
+        }
+
+        caseDetails.getData().put("localAuthorities", applicants);
+        caseDetails.getData().remove("legalCounsellors");
+    }
+
+
+    private LocalAuthority getApplicantForLegalCounsel(CaseData caseData) {
+        if (isThirdPartyApplication(caseData)) {
+            String applicantOrgId = Optional.ofNullable(caseData.getOutsourcingPolicy())
+                .map(OrganisationPolicy::getOrganisation)
+                .map(uk.gov.hmcts.reform.ccd.model.Organisation::getOrganisationID)
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "Unable to identify third-party Applicant organisation"
+                ));
+
+            return applicantLocalAuthorityService
+                .findLocalAuthority(caseData, applicantOrgId)
+                .map(Element::getValue)
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "Unable to find third-party Applicant"
+                ));
+        }
+
+        return applicantLocalAuthorityService.getDesignatedLocalAuthority(caseData);
+    }
+
+
+    private void updateApplicantCounselForBarrister(
+        CaseData caseData, LocalAuthority applicant) {
+
+        String currentUserEmail = userService.getUserEmail();
+
+        List<Element<LegalCounsellor>> existingCounsel =
+            Optional.ofNullable(applicant.getLegalCounsellors())
+                .orElse(emptyList());
+
+        List<Element<LegalCounsellor>> submittedCounsel =
+            Optional.ofNullable(caseData.getManageLegalCounselEventData().getLegalCounsellors())
+                .orElse(emptyList());
+
+        boolean hasSubmittedChanges = !submittedCounsel.isEmpty()
+            && !submittedCounsel.equals(
+            existingCounsel.stream()
+                .filter(counsel -> StringUtils.equalsIgnoreCase(
+                    counsel.getValue().getEmail(), currentUserEmail))
+                .toList());
+
+        if (hasSubmittedChanges) {
+            throw new IllegalArgumentException(
+                "Barristers can only remove their own Applicant counsel assignment"
+            );
+        }
+
+        List<Element<LegalCounsellor>> updatedCounsel = existingCounsel.stream()
+            .filter(counsel -> !StringUtils.equalsIgnoreCase(
+                counsel.getValue().getEmail(), currentUserEmail)
+                || !submittedCounsel.isEmpty())
+            .toList();
+
+        applicant.setLegalCounsellors(updatedCounsel);
+    }
+
+
+    private void updateApplicantCounselForSolicitor(
+        CaseData caseData,
+        CaseData persistedCaseData,
+        LocalAuthority applicant,
+        Set<CaseRole> caseRoles) {
+
+        String currentUserOrgId = organisationService.findOrganisation()
+            .map(Organisation::getOrganisationIdentifier)
+            .orElseThrow(() -> new IllegalArgumentException(
+                "Unable to identify the current user's organisation"
+            ));
+
+        if (!isAuthorisedToManageApplicantCounsel(
+            persistedCaseData, applicant, currentUserOrgId, caseRoles)) {
+            throw new IllegalArgumentException(
+                "Current user is not authorised to manage Applicant legal counsel"
+            );
+        }
+
+        List<Element<LegalCounsellor>> legalCounsellors = populateWithUserIds(
+            caseData.getManageLegalCounselEventData().getLegalCounsellors()
+        );
+
+        applicant.setLegalCounsellors(legalCounsellors);
+    }
+
+    public CaseData getAuthorisedApplicantCounselCaseData(Long caseId) {
+        CaseData persistedCaseData = Objects.requireNonNull(
+            caseConverter.convert(
+                coreCaseDataService.findCaseDetailsById(caseId.toString())
+            ),
+            "Persisted case data must not be null"
+        );
+
+        if (!canCurrentUserManageApplicantCounsel(persistedCaseData)) {
+            throw new AuthorizationException(
+                "Current user is not authorised to manage Applicant legal counsel"
+            );
+        }
+
+        return persistedCaseData;
+    }
+
+    public boolean canCurrentUserManageApplicantCounsel(CaseData caseData) {
+        Set<CaseRole> caseRoles = caseAccessService.getUserCaseRoles(caseData.getId());
+
+        if (isBarrister(caseRoles)) {
+            String currentUserEmail = userService.getUserEmail();
+
+            return retrieveApplicantLegalCounsel(caseData).stream()
+                .anyMatch(counsel -> StringUtils.equalsIgnoreCase(
+                    counsel.getValue().getEmail(), currentUserEmail
+                ));
+        }
+
+        String currentUserOrgId = organisationService.findOrganisation()
+            .map(Organisation::getOrganisationIdentifier)
+            .orElse(null);
+
+        if (currentUserOrgId == null) {
+            return false;
+        }
+
+        LocalAuthority applicant = getApplicantForLegalCounsel(caseData);
+
+        return isAuthorisedToManageApplicantCounsel(
+            caseData, applicant, currentUserOrgId, caseRoles
+        );
+    }
+
+    private boolean isAuthorisedToManageApplicantCounsel(
+        CaseData caseData,
+        LocalAuthority applicant,
+        String currentUserOrgId,
+        Set<CaseRole> caseRoles) {
+
+        boolean isDesignatedLA = applicantLocalAuthorityService.isOrgIdInPolicy(
+            currentUserOrgId, caseData.getLocalAuthorityPolicy()
+        );
+
+        boolean isOutsourcedOrganisation = applicantLocalAuthorityService.isOrgIdInPolicy(
+            currentUserOrgId, caseData.getOutsourcingPolicy()
+        );
+
+        boolean isAuthorisedDesignatedLA = isDesignatedLA
+            && caseRoles.contains(CaseRole.LASOLICITOR);
+
+        boolean isAuthorisedOutsourcedLA = isOutsourcedOrganisation
+            && (caseRoles.contains(CaseRole.EPSMANAGING)
+            || caseRoles.contains(CaseRole.LAMANAGING));
+
+        boolean isAuthorisedThirdPartyApplicant = isThirdPartyApplication(caseData)
+            && isOutsourcedOrganisation
+            && caseRoles.contains(CaseRole.SOLICITORA)
+            && currentUserOrgId.equals(applicant.getId());
+
+        return isAuthorisedDesignatedLA
+            || isAuthorisedOutsourcedLA
+            || isAuthorisedThirdPartyApplicant;
+    }
+
+
+
+    private boolean isThirdPartyApplication(CaseData caseData) {
+        return caseData.getRepresentativeType() == RepresentativeType.RESPONDENT_SOLICITOR
+            || caseData.getRepresentativeType() == RepresentativeType.CHILD_SOLICITOR;
+    }
+
+
+
+    public List<LegalCounsellorEvent> runApplicantFinalEventActions(CaseData previousCaseData,
+                                                                     CaseData currentCaseData) {
+        List<LegalCounsellorEvent> events = new ArrayList<>();
+
+        String orgName = getApplicantForLegalCounsel(previousCaseData).getName();
+
+        List<LegalCounsellor> previousCounsel = unwrapElements(
+            retrieveApplicantLegalCounsel(previousCaseData)
+        );
+
+        List<LegalCounsellor> currentCounsel = unwrapElements(
+            retrieveApplicantLegalCounsel(currentCaseData)
+        );
+
+        previousCounsel.stream()
+            .filter(counsel -> currentCounsel.stream()
+                .noneMatch(current -> Objects.equals(current.getUserId(), counsel.getUserId())))
+            .forEach(counsel -> events.add(
+                new LegalCounsellorRemoved(currentCaseData, orgName, counsel, previousCaseData)
+            ));
+
+        currentCounsel.stream()
+            .filter(counsel -> previousCounsel.stream()
+                .noneMatch(previous -> Objects.equals(previous.getUserId(), counsel.getUserId())))
+            .forEach(counsel -> events.add(
+                new LegalCounsellorAdded(currentCaseData, counsel)
+            ));
+
+        return events;
     }
 }

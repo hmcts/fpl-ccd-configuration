@@ -5,10 +5,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorAdded;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorEvent;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
+import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
@@ -27,9 +30,13 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CHILDSOLICITORA;
@@ -43,9 +50,20 @@ import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegal
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondent;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondents;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
+import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+
 
 class ManageLegalCounselServiceTest {
 
+    private final ApplicantLocalAuthorityService applicantLocalAuthorityService =
+        mock(ApplicantLocalAuthorityService.class);
     private static final String BARRISTER_EMAIL = "ted.robinson@example.com";
     private static final Element<LegalCounsellor> TEST_LEGAL_COUNSELLOR = element(LegalCounsellor.builder()
         .firstName("Ted")
@@ -68,9 +86,10 @@ class ManageLegalCounselServiceTest {
     private final CaseAccessService caseAccessService = mock(CaseAccessService.class);
     private final CaseRoleLookupService caseRoleLookupService = mock(CaseRoleLookupService.class);
     private final UserService userService = mock(UserService.class);
+    private final CoreCaseDataService coreCaseDataService = mock(CoreCaseDataService.class);
     private final ManageLegalCounselService underTest =
-        new ManageLegalCounselService(caseConverter, caseRoleLookupService, organisationService, caseAccessService,
-                userService);
+        new ManageLegalCounselService(caseConverter, caseRoleLookupService, organisationService,
+            caseAccessService, userService, applicantLocalAuthorityService, coreCaseDataService);
 
     @Nested
     class SolicitorTests {
@@ -107,7 +126,7 @@ class ManageLegalCounselServiceTest {
         @Test
         void shouldUpdateLegalCounselInCaseDataAndResetEventData() {
             CaseData caseData = buildCaseData();
-            CaseDetails caseDetails = CaseDetails.builder()
+            final CaseDetails caseDetails = CaseDetails.builder()
                     .id(TEST_CASE_ID)
                     .data(caseConverter.toMap(caseData))
                     .build();
@@ -408,9 +427,968 @@ class ManageLegalCounselServiceTest {
         assertThat(eventsToPublish)
             .hasSize(2)
             .containsExactly(
-                new LegalCounsellorRemoved(currentCaseData, "Solicitors Law Ltd", legalCounsellor3),
+                new LegalCounsellorRemoved(
+                    currentCaseData,
+                    "Solicitors Law Ltd",
+                    legalCounsellor3,
+                    previousCaseData
+                ),
                 new LegalCounsellorAdded(currentCaseData, legalCounsellor2)
             );
+    }
+
+    @Nested
+    class ApplicantCounselTests {
+
+        @BeforeEach
+        void setUp() {
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(BARRISTER));
+
+            when(userService.getUserEmail())
+                .thenReturn(BARRISTER_EMAIL);
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenAnswer(invocation -> {
+                    CaseData caseData = CaseData.builder()
+                        .id(TEST_CASE_ID)
+                        .localAuthorities(List.of(element(
+                            LocalAuthority.builder()
+                                .designated("Yes")
+                                .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                                .build()
+                        )))
+                        .build();
+
+                    return CaseDetails.builder()
+                        .id(TEST_CASE_ID)
+                        .data(caseConverter.toMap(caseData))
+                        .build();
+                });
+        }
+
+        @Test
+        void shouldPublishApplicantCounselRemovalUsingDesignatedLAName() {
+            LegalCounsellor counsel = buildLegalCounsellor("1");
+
+            LocalAuthority previousApplicant = LocalAuthority.builder()
+                .name("Manchester City Council")
+                .designated("Yes")
+                .legalCounsellors(wrapElements(counsel))
+                .build();
+
+            LocalAuthority currentApplicant = previousApplicant.toBuilder()
+                .legalCounsellors(List.of())
+                .build();
+
+            CaseData previousCaseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(previousApplicant)))
+                .build();
+
+            CaseData currentCaseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(currentApplicant)))
+                .build();
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            List<LegalCounsellorEvent> events =
+                underTest.runApplicantFinalEventActions(previousCaseData, currentCaseData);
+
+            assertThat(events)
+                .containsExactly(new LegalCounsellorRemoved(
+                    currentCaseData,
+                    "Manchester City Council",
+                    counsel,
+                    previousCaseData
+                ));
+
+            verify(organisationService, never()).findOrganisation();
+        }
+
+        @Test
+        void shouldPreserveOtherApplicantCounselWhenBarristerRemovesThemselves() {
+            Element<LegalCounsellor> otherCounsel = element(
+                LegalCounsellor.builder()
+                    .firstName("Bob")
+                    .lastName("Smith")
+                    .email("bob.smith@example.com")
+                    .organisation(Organisation.organisation("123"))
+                    .build()
+            );
+
+            LocalAuthority designatedApplicant = LocalAuthority.builder()
+                .designated("Yes")
+                .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR, otherCounsel))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(designatedApplicant)))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of())
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(caseData))
+                    .build());
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            underTest.updateApplicantLegalCounsel(caseDetails);
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            List<Element<LegalCounsellor>> remainingCounsel =
+                updatedCaseData.getLocalAuthorities().get(0).getValue().getLegalCounsellors();
+
+            assertThat(remainingCounsel)
+                .hasSize(1)
+                .containsExactly(otherCounsel);
+
+            assertThat(updatedCaseData.getManageLegalCounselEventData().getLegalCounsellors())
+                .isNull();
+        }
+
+        @Test
+        void shouldPreserveApplicantCounselWhenBarristerIsNotAssignedToApplicant() {
+            Element<LegalCounsellor> applicantCounsel = element(
+                LegalCounsellor.builder()
+                    .firstName("Bob")
+                    .lastName("Smith")
+                    .email("bob.smith@example.com")
+                    .organisation(Organisation.organisation("123"))
+                    .build()
+            );
+
+            LocalAuthority designatedApplicant = LocalAuthority.builder()
+                .designated("Yes")
+                .legalCounsellors(List.of(applicantCounsel))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(designatedApplicant)))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of())
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(caseData))
+                    .build());
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            assertThatThrownBy(() -> underTest.updateApplicantLegalCounsel(caseDetails))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Current barrister is not assigned to the Applicant");
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            assertThat(updatedCaseData.getLocalAuthorities().get(0)
+                .getValue().getLegalCounsellors())
+                .containsExactly(applicantCounsel);
+        }
+
+        @Test
+        void shouldRejectBarristerAttemptToModifyAnotherApplicantCounsel() {
+            Element<LegalCounsellor> otherCounsel = element(
+                LegalCounsellor.builder()
+                    .firstName("Bob")
+                    .lastName("Smith")
+                    .email("bob.smith@example.com")
+                    .organisation(Organisation.organisation("123"))
+                    .build()
+            );
+
+            LocalAuthority designatedApplicant = LocalAuthority.builder()
+                .designated("Yes")
+                .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR, otherCounsel))
+                .build();
+
+            Element<LegalCounsellor> modifiedOtherCounsel = element(
+                otherCounsel.getId(),
+                otherCounsel.getValue().toBuilder()
+                    .lastName("Changed")
+                    .build()
+            );
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(designatedApplicant)))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of(modifiedOtherCounsel))
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            assertThatThrownBy(() -> underTest.updateApplicantLegalCounsel(caseDetails))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(
+                    "Barristers can only remove their own Applicant counsel assignment"
+                );
+        }
+
+        @Test
+        void shouldRejectBarristerAttemptToModifyOwnApplicantCounselDetails() {
+            LocalAuthority designatedApplicant = LocalAuthority.builder()
+                .designated("Yes")
+                .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                .build();
+
+            Element<LegalCounsellor> modifiedCounsel = element(
+                TEST_LEGAL_COUNSELLOR.getId(),
+                TEST_LEGAL_COUNSELLOR.getValue().toBuilder()
+                    .lastName("Modified")
+                    .build()
+            );
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(designatedApplicant)))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of(modifiedCounsel))
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            assertThatThrownBy(() -> underTest.updateApplicantLegalCounsel(caseDetails))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(
+                    "Barristers can only remove their own Applicant counsel assignment"
+                );
+        }
+
+        @Test
+        void shouldNotAllowBarristerToModifyApplicantDetails() {
+            LocalAuthority persistedApplicant = LocalAuthority.builder()
+                .designated("Yes")
+                .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                .build();
+
+            CaseData persistedCaseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(persistedApplicant)))
+                .build();
+
+            LocalAuthority submittedApplicant = LocalAuthority.builder()
+                .designated("No")
+                .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                .build();
+
+            CaseData submittedCaseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(submittedApplicant)))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of())
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(submittedCaseData))
+                .build();
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(persistedCaseData))
+                    .build());
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            underTest.updateApplicantLegalCounsel(caseDetails);
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            assertThat(updatedCaseData.getLocalAuthorities().get(0).getValue().getDesignated())
+                .isEqualTo("Yes");
+        }
+
+        @Test
+        void shouldRejectApplicantCounselUpdateFromUnauthorisedOrganisation() {
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            LocalAuthority designatedApplicant = LocalAuthority.builder()
+                .designated("Yes")
+                .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(designatedApplicant)))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of())
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            assertThatThrownBy(() -> underTest.updateApplicantLegalCounsel(caseDetails))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Unable to identify the current user's organisation");
+        }
+
+        @Test
+        void shouldRejectApplicantCounselUpdateFromDifferentOrganisation() {
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            uk.gov.hmcts.reform.rd.model.Organisation organisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(organisation.getOrganisationIdentifier())
+                .thenReturn("UNAUTHORISED_ORG");
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(organisation));
+
+            when(applicantLocalAuthorityService.isOrgIdInPolicy(
+                eq("UNAUTHORISED_ORG"), nullable(OrganisationPolicy.class)
+            )).thenReturn(false);
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(List.of(element(
+                    LocalAuthority.builder()
+                        .designated("Yes")
+                        .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                        .build()
+                )))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of())
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            assertThatThrownBy(() -> underTest.updateApplicantLegalCounsel(caseDetails))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(
+                    "Current user is not authorised to manage Applicant legal counsel"
+                );
+        }
+
+        @Test
+        void shouldAllowDesignatedLASolicitorToUpdateApplicantCounsel() {
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(LASOLICITOR));
+
+            uk.gov.hmcts.reform.rd.model.Organisation userOrganisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(userOrganisation.getOrganisationIdentifier())
+                .thenReturn("LA_ORG_123");
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(userOrganisation));
+
+            OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("LA_ORG_123")
+                    .build())
+                .build();
+
+            LocalAuthority designatedApplicant = LocalAuthority.builder()
+                .designated("Yes")
+                .legalCounsellors(List.of())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorityPolicy(localAuthorityPolicy)
+                .localAuthorities(List.of(element(designatedApplicant)))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                    .build())
+                .build();
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(caseData))
+                    .build());
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            when(applicantLocalAuthorityService.isOrgIdInPolicy(
+                eq("LA_ORG_123"), any(OrganisationPolicy.class)
+            )).thenReturn(true);
+
+            when(organisationService.findUserByEmail(TEST_LEGAL_COUNSELLOR.getValue().getEmail()))
+                .thenReturn(Optional.of("BARRISTER_USER_123"));
+
+            underTest.updateApplicantLegalCounsel(caseDetails);
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            assertThat(updatedCaseData.getLocalAuthorities().get(0).getValue().getLegalCounsellors())
+                .hasSize(1);
+        }
+
+        @Test
+        void shouldRejectRespondentSolicitorEvenWhenOrganisationMatchesOutsourcingPolicy() {
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            uk.gov.hmcts.reform.rd.model.Organisation userOrganisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(userOrganisation.getOrganisationIdentifier())
+                .thenReturn("RESPONDENT_ORG");
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(userOrganisation));
+
+            OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("RESPONDENT_ORG")
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .outsourcingPolicy(outsourcingPolicy)
+                .localAuthorities(List.of(element(
+                    LocalAuthority.builder()
+                        .designated("Yes")
+                        .legalCounsellors(List.of())
+                        .build()
+                )))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of())
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            when(applicantLocalAuthorityService.isOrgIdInPolicy(
+                eq("RESPONDENT_ORG"), any(OrganisationPolicy.class)
+            )).thenReturn(true);
+
+            assertThatThrownBy(() -> underTest.updateApplicantLegalCounsel(caseDetails))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(
+                    "Current user is not authorised to manage Applicant legal counsel"
+                );
+        }
+
+        @Test
+        void shouldAllowThirdPartyApplicantSolicitorToUpdateApplicantCounsel() {
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            uk.gov.hmcts.reform.rd.model.Organisation userOrganisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(userOrganisation.getOrganisationIdentifier())
+                .thenReturn("THIRD_PARTY_ORG");
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(userOrganisation));
+
+            OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("THIRD_PARTY_ORG")
+                    .build())
+                .build();
+
+            LocalAuthority thirdPartyApplicant = LocalAuthority.builder()
+                .id("THIRD_PARTY_ORG")
+                .name("Third Party Applicant")
+                .designated("No")
+                .legalCounsellors(List.of())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .outsourcingPolicy(outsourcingPolicy)
+                .localAuthorities(List.of(element(thirdPartyApplicant)))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                    .build())
+                .build();
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(caseData))
+                    .build());
+
+            when(applicantLocalAuthorityService.findLocalAuthority(
+                any(CaseData.class), eq("THIRD_PARTY_ORG")
+            )).thenAnswer(invocation -> {
+                CaseData persistedCaseData = invocation.getArgument(0);
+
+                return persistedCaseData.getLocalAuthorities().stream()
+                    .filter(applicant ->
+                        "THIRD_PARTY_ORG".equals(applicant.getValue().getId()))
+                    .findFirst();
+            });
+
+            when(applicantLocalAuthorityService.isOrgIdInPolicy(
+                eq("THIRD_PARTY_ORG"),
+                any(OrganisationPolicy.class)
+            )).thenReturn(true);
+
+            when(organisationService.findUserByEmail(TEST_LEGAL_COUNSELLOR.getValue().getEmail()))
+                .thenReturn(Optional.of("BARRISTER_USER_123"));
+
+            underTest.updateApplicantLegalCounsel(caseDetails);
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            assertThat(updatedCaseData.getLocalAuthorities().get(0).getValue().getLegalCounsellors())
+                .hasSize(1);
+        }
+
+        @Test
+        void shouldRejectRespondentSolicitorFromManagingApplicantCounsel() {
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .outsourcingPolicy(organisationPolicy("APPLICANT_ORG", "Applicant", SOLICITORA))
+                .localAuthorities(wrapElements(
+                    LocalAuthority.builder()
+                        .id("APPLICANT_ORG")
+                        .build()
+                ))
+                .build();
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(
+                    uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                        .organisationIdentifier("RESPONDENT_ORG")
+                        .build()
+                ));
+
+            when(applicantLocalAuthorityService.findLocalAuthority(
+                any(CaseData.class), eq("APPLICANT_ORG")
+            )).thenAnswer(invocation -> {
+                CaseData currentCaseData = invocation.getArgument(0);
+                return currentCaseData.getLocalAuthorities().stream()
+                    .filter(applicant -> "APPLICANT_ORG".equals(applicant.getValue().getId()))
+                    .findFirst();
+            });
+
+            assertThat(underTest.canCurrentUserManageApplicantCounsel(caseData))
+                .isFalse();
+        }
+
+        @Test
+        void shouldAllowThirdPartyApplicantSolicitorToManageApplicantCounsel() {
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .outsourcingPolicy(organisationPolicy("APPLICANT_ORG", "Applicant", SOLICITORA))
+                .localAuthorities(wrapElements(
+                    LocalAuthority.builder()
+                        .id("APPLICANT_ORG")
+                        .build()
+                ))
+                .build();
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(
+                    uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                        .organisationIdentifier("APPLICANT_ORG")
+                        .build()
+                ));
+
+            when(applicantLocalAuthorityService.findLocalAuthority(
+                any(CaseData.class), eq("APPLICANT_ORG")
+            )).thenAnswer(invocation -> {
+                CaseData currentCaseData = invocation.getArgument(0);
+                return currentCaseData.getLocalAuthorities().stream()
+                    .filter(applicant -> "APPLICANT_ORG".equals(applicant.getValue().getId()))
+                    .findFirst();
+            });
+
+            when(applicantLocalAuthorityService.isOrgIdInPolicy(
+                eq("APPLICANT_ORG"), any(OrganisationPolicy.class)
+            )).thenReturn(true);
+
+            assertThat(underTest.canCurrentUserManageApplicantCounsel(caseData))
+                .isTrue();
+        }
+
+        @Test
+        void shouldAllowOutsourcedLAToUpdateApplicantCounsel() {
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(CaseRole.EPSMANAGING));
+
+            uk.gov.hmcts.reform.rd.model.Organisation userOrganisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(userOrganisation.getOrganisationIdentifier())
+                .thenReturn("OUTSOURCED_LA_ORG");
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(userOrganisation));
+
+            OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("OUTSOURCED_LA_ORG")
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .outsourcingPolicy(outsourcingPolicy)
+                .localAuthorities(List.of(element(
+                    LocalAuthority.builder()
+                        .designated("Yes")
+                        .legalCounsellors(List.of())
+                        .build()
+                )))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                    .build())
+                .build();
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(caseData))
+                    .build());
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            when(applicantLocalAuthorityService.isOrgIdInPolicy(
+                eq("OUTSOURCED_LA_ORG"), any(OrganisationPolicy.class)
+            )).thenReturn(true);
+
+            when(organisationService.findUserByEmail(TEST_LEGAL_COUNSELLOR.getValue().getEmail()))
+                .thenReturn(Optional.of("BARRISTER_USER_123"));
+
+            underTest.updateApplicantLegalCounsel(caseDetails);
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            assertThat(updatedCaseData.getLocalAuthorities().get(0).getValue().getLegalCounsellors())
+                .hasSize(1);
+        }
+
+        @Test
+        void shouldAllowOutsourcedLAWithLAManagingRoleToUpdateApplicantCounsel() {
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(CaseRole.LAMANAGING));
+
+            uk.gov.hmcts.reform.rd.model.Organisation userOrganisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(userOrganisation.getOrganisationIdentifier())
+                .thenReturn("OUTSOURCED_LA_ORG");
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(userOrganisation));
+
+            OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("OUTSOURCED_LA_ORG")
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .outsourcingPolicy(outsourcingPolicy)
+                .localAuthorities(List.of(element(
+                    LocalAuthority.builder()
+                        .designated("Yes")
+                        .legalCounsellors(List.of())
+                        .build()
+                )))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                    .build())
+                .build();
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(caseData))
+                    .build());
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            when(applicantLocalAuthorityService.isOrgIdInPolicy(
+                eq("OUTSOURCED_LA_ORG"), any(OrganisationPolicy.class)
+            )).thenReturn(true);
+
+            when(organisationService.findUserByEmail(TEST_LEGAL_COUNSELLOR.getValue().getEmail()))
+                .thenReturn(Optional.of("BARRISTER_USER_123"));
+
+            underTest.updateApplicantLegalCounsel(caseDetails);
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            assertThat(updatedCaseData.getLocalAuthorities().get(0).getValue().getLegalCounsellors())
+                .hasSize(1);
+        }
+
+        @Test
+        void shouldPreservePersistedLocalAuthorityDetailsWhenUpdatingApplicantCounsel() {
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(LASOLICITOR));
+
+            uk.gov.hmcts.reform.rd.model.Organisation userOrganisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(userOrganisation.getOrganisationIdentifier())
+                .thenReturn("LA_ORG_123");
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(userOrganisation));
+
+            OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("LA_ORG_123")
+                    .build())
+                .build();
+
+            CaseData persistedCaseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorityPolicy(localAuthorityPolicy)
+                .localAuthorities(List.of(element(
+                    LocalAuthority.builder()
+                        .name("Original Local Authority")
+                        .designated("Yes")
+                        .legalCounsellors(List.of())
+                        .build()
+                )))
+                .build();
+
+            CaseData submittedCaseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorityPolicy(localAuthorityPolicy)
+                .localAuthorities(List.of(element(
+                    LocalAuthority.builder()
+                        .name("Modified Local Authority")
+                        .designated("Yes")
+                        .legalCounsellors(List.of())
+                        .build()
+                )))
+                .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
+                    .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                    .build())
+                .build();
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(submittedCaseData))
+                .build();
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(persistedCaseData))
+                    .build());
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            when(applicantLocalAuthorityService.isOrgIdInPolicy(
+                eq("LA_ORG_123"), any(OrganisationPolicy.class)
+            )).thenReturn(true);
+
+            when(organisationService.findUserByEmail(TEST_LEGAL_COUNSELLOR.getValue().getEmail()))
+                .thenReturn(Optional.of("BARRISTER_USER_123"));
+
+            underTest.updateApplicantLegalCounsel(caseDetails);
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            LocalAuthority updatedApplicant =
+                updatedCaseData.getLocalAuthorities().get(0).getValue();
+
+            assertThat(updatedApplicant.getName())
+                .isEqualTo("Original Local Authority");
+
+            assertThat(updatedApplicant.getLegalCounsellors())
+                .hasSize(1);
+        }
+
+        @Test
+        void shouldRejectRespondentBarristerFromManagingApplicantCounsel() {
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(wrapElements(
+                    LocalAuthority.builder()
+                        .designated("Yes")
+                        .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                        .build()
+                ))
+                .build();
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(BARRISTER));
+
+            when(userService.getUserEmail())
+                .thenReturn("respondent.barrister@example.com");
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(caseData))
+                .thenReturn(caseData.getLocalAuthorities().get(0).getValue());
+
+            assertThat(underTest.canCurrentUserManageApplicantCounsel(caseData))
+                .isFalse();
+        }
+
+        @Test
+        void shouldAllowAssignedApplicantBarristerToManageApplicantCounsel() {
+            CaseData caseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(wrapElements(
+                    LocalAuthority.builder()
+                        .designated("Yes")
+                        .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                        .build()
+                ))
+                .build();
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(BARRISTER));
+
+            when(userService.getUserEmail())
+                .thenReturn(TEST_LEGAL_COUNSELLOR.getValue().getEmail());
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(caseData))
+                .thenReturn(caseData.getLocalAuthorities().get(0).getValue());
+
+            assertThat(underTest.canCurrentUserManageApplicantCounsel(caseData))
+                .isTrue();
+        }
+
+        @Test
+        void shouldRejectUnauthorisedUserUsingPersistedApplicantCaseData() {
+            CaseData persistedCaseData = CaseData.builder()
+                .id(TEST_CASE_ID)
+                .localAuthorities(wrapElements(
+                    LocalAuthority.builder()
+                        .designated("Yes")
+                        .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                        .build()
+                ))
+                .build();
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(persistedCaseData))
+                    .build());
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(BARRISTER));
+
+            when(userService.getUserEmail())
+                .thenReturn("respondent.barrister@example.com");
+
+            when(applicantLocalAuthorityService.getDesignatedLocalAuthority(any(CaseData.class)))
+                .thenAnswer(invocation -> invocation.<CaseData>getArgument(0)
+                    .getLocalAuthorities().get(0).getValue());
+
+            assertThatThrownBy(() ->
+                underTest.getAuthorisedApplicantCounselCaseData(TEST_CASE_ID)
+            )
+                .isInstanceOf(AuthorizationException.class)
+                .hasMessage("Current user is not authorised to manage Applicant legal counsel");
+        }
     }
 
     private CaseData buildCaseData() {
