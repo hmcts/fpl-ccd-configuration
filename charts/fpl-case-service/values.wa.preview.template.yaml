@@ -90,6 +90,7 @@ wa:
       devmemoryLimits: 4Gi
       environment:
         CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+        S2S_SECRET_CAMUNDA_BPM: ${S2S_SECRET_CAMUNDA_BPM}
 
   wa-task-management-api:
     java:

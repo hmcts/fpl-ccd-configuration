@@ -234,8 +234,8 @@ class SecureDocStoreHelperTest {
             } else {
                 Document actualDoc = underTest.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE);
                 assertThat(actualDoc).isEqualTo(resultFromSecureDocStore);
-                assertThat(logs.getInfos()).containsExactly(format("Uploading document file name: %s (%s)",
-                    FILE_NAME, CONTENT_TYPE));
+                assertThat(logs.getInfos()).containsExactly(format("Uploading document of content type: %s",
+                    CONTENT_TYPE));
             }
         }
 
