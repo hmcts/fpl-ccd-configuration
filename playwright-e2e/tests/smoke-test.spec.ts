@@ -1,5 +1,5 @@
 import { expect, test } from "../fixtures/fixtures";
-import { newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from "../settings/user-credentials";
+import { CTSCUser, newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from "../settings/user-credentials";
 import { CreateCaseName } from "../utils/create-case-name";
 import { CaseFileView } from "../pages/case-file-view";
 import {testConfig} from "../settings/test-config";
@@ -118,6 +118,17 @@ test.setTimeout(7 * 60 * 1000);
         await testInfo.attach('accessibility-scan-results', {
             body: JSON.stringify(accessibilityScanResults, null, 2),
             contentType: 'application/json'
+        });
+        // Add WA Standard application
+
+        await test.step('Add WA Standard application', async () => {
+            await createCase.getCaseNumber();
+            await signInPage.logout();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateToCaseDetails(createCase.casenumber);
+            await submitCase.tabNavigation('Tasks');
+            await submitCase.waitForTask('Review Standard Application');
+            await expect(page.getByText('Review Standard Application')).toBeVisible();
         });
     });
 
