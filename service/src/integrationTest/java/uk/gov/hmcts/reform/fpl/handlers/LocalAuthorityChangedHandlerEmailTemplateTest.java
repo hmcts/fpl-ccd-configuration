@@ -4,9 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityChangedContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -49,10 +47,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
     LocalAuthorityChangedHandler.class, LocalAuthorityChangedContentProvider.class, EmailNotificationHelper.class,
     CaseUrlService.class, HighCourtAdminEmailLookupConfiguration.class
 })
-@MockBeans({@MockBean(FeatureToggleService.class)})
 class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
 
-    @MockBean
+    @MockitoBean
     private ApplicantLocalAuthorityService service;
 
     @Autowired

@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -87,13 +87,13 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         .surname("Smith")
         .build();
 
-    @MockBean
+    @MockitoBean
     private DocumentSealingService sealingService;
 
-    @MockBean
+    @MockitoBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
     private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 3, 0, 0, 0));

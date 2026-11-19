@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -40,13 +40,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MessageJudgeControllerAboutToStartTest extends MessageJudgeControllerAbstractTest {
-    @MockBean
+    @MockitoBean
     ManageDocumentService manageDocumentService;
-    @MockBean
+    @MockitoBean
     private UserService userService;
-    @MockBean
+    @MockitoBean
     private RoleAssignmentService roleAssignmentService;
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
     MessageJudgeControllerAboutToStartTest() {

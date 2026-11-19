@@ -8,8 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.Event;
@@ -51,49 +51,49 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 @ContextConfiguration(classes = {EventsChecker.class, LocalValidatorFactoryBean.class})
 @TestInstance(PER_CLASS)
 class EventsCheckerTest {
-    @MockBean
+    @MockitoBean
     private DocumentsChecker documentsChecker;
-    @MockBean
+    @MockitoBean
     private CaseNameChecker caseNameChecker;
-    @MockBean
+    @MockitoBean
     private ChildrenChecker childrenChecker;
-    @MockBean
+    @MockitoBean
     private RespondentsChecker respondentsChecker;
-    @MockBean
+    @MockitoBean
     private Respondents3rdPartyChecker respondents3rdPartyChecker;
-    @MockBean
+    @MockitoBean
     private HearingUrgencyChecker hearingUrgencyChecker;
-    @MockBean
+    @MockitoBean
     private OrdersSoughtChecker ordersSoughtChecker;
-    @MockBean
+    @MockitoBean
     private GroundsChecker groundsChecker;
-    @MockBean(name = "localAuthorityDetailsChecker")
+    @MockitoBean(name = "localAuthorityDetailsChecker")
     private LocalAuthorityDetailsChecker localAuthorityDetailsChecker;
-    @MockBean(name = "localAuthorityDetailsChecker")
+    @MockitoBean(name = "localAuthorityDetailsChecker")
     private ThirdPartyApplicantDetailsChecker thirdPartyApplicantDetailsChecker;
-    @MockBean
+    @MockitoBean
     private AllocationProposalChecker allocationProposalChecker;
-    @MockBean
+    @MockitoBean
     private CaseSubmissionChecker caseSubmissionChecker;
-    @MockBean
+    @MockitoBean
     private RiskAndHarmChecker riskAndHarmChecker;
-    @MockBean
+    @MockitoBean
     private ProceedingsChecker proceedingsChecker;
-    @MockBean
+    @MockitoBean
     private InternationalElementChecker internationalElementChecker;
-    @MockBean
+    @MockitoBean
     private OthersChecker othersChecker;
-    @MockBean
+    @MockitoBean
     private CourtServiceChecker courtServiceChecker;
-    @MockBean
+    @MockitoBean
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
-    @MockBean
+    @MockitoBean
     private ApplicationDocumentChecker applicationDocumentChecker;
-    @MockBean
+    @MockitoBean
     private LanguageRequirementsChecker languageRequirementsChecker;
-    @MockBean
+    @MockitoBean
     private CourtSelectionChecker courtSelectionChecker;
-    @MockBean
+    @MockitoBean
     private C1WithSupplementChecker c1WithSupplementChecker;
     @Autowired
     private EventsChecker eventsChecker;

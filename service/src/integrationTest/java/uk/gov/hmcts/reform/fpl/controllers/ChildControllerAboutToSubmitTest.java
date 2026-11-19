@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
@@ -84,10 +84,10 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final UUID UUID_1 = UUID.randomUUID();
     private static final UUID UUID_2 = UUID.randomUUID();
 
-    @MockBean
+    @MockitoBean
     private IdentityService identityService;
 
-    @SpyBean
+    @MockitoSpyBean
     private RespondentAfterSubmissionRepresentationService representationService;
 
     ChildControllerAboutToSubmitTest() {

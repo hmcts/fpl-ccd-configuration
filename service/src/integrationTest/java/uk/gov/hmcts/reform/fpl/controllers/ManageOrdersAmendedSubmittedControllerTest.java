@@ -6,7 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -80,15 +80,15 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
     private static final String MEDIA_TYPE = "application/pdf";
     public static final String INTERNAL_CHANGE_MANAGE_ORDER = "internal-change-manage-order";
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService downloadService;
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadService;
-    @MockBean
+    @MockitoBean
     private Time time; // mocking to ensure time that is stamped into the doc matches the one in the test doc
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
-    @MockBean
+    @MockitoBean
     private EventService eventPublisher;
     @Captor
     private ArgumentCaptor<byte[]> documentBinaries;

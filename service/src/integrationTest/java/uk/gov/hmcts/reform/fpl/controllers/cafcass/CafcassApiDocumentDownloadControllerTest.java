@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers.cafcass;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiDocumentService;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.Mockito.when;
 
 public class CafcassApiDocumentDownloadControllerTest extends CafcassApiControllerBaseTest {
-    @MockBean
+    @MockitoBean
     private CafcassApiDocumentService cafcassApiDocumentService;
 
     @Test

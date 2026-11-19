@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -38,10 +38,10 @@ class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractCallb
         .build();
     private static final Long CASE_ID = 12345L;
 
-    @MockBean
+    @MockitoBean
     private OrganisationApi organisationApi;
 
-    @MockBean
+    @MockitoBean
     private CaseUserApi caseUserApi;
 
 

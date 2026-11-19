@@ -6,8 +6,8 @@ import org.mockito.Captor;
 import org.mockito.Spy;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
@@ -31,7 +31,7 @@ class AddCaseNumberControllerSubmittedTest extends AbstractCallbackTest {
     @Captor
     private ArgumentCaptor<EmailData> email;
 
-    @MockBean
+    @MockitoBean
     private EmailService emailService;
 
     @Spy

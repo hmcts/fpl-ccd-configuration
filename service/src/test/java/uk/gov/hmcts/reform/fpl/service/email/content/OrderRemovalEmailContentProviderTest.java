@@ -3,13 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 
@@ -29,16 +27,13 @@ class OrderRemovalEmailContentProviderTest extends AbstractEmailContentProviderT
     @Autowired
     private OrderRemovalEmailContentProvider underTest;
 
-    @MockBean
-    private EmailNotificationHelper helper;
-
     @BeforeEach
     void setUp() {
         when(CASE_DATA.getId()).thenReturn(CASE_ID);
 
         List<Element<Child>> children = wrapElements(mock(Child.class));
         when(CASE_DATA.getAllChildren()).thenReturn(children);
-        when(helper.getEldestChildLastName(children)).thenReturn("Smith");
+        when(notificationHelper.getEldestChildLastName(children)).thenReturn("Smith");
     }
 
     @Test

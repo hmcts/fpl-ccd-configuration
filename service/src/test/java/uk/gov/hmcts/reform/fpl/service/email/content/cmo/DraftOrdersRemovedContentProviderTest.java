@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersRemovedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProviderTest;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -42,15 +40,12 @@ public class DraftOrdersRemovedContentProviderTest extends AbstractEmailContentP
         .id(CASE_NUMBER)
         .build();
 
-    @MockBean
-    private EmailNotificationHelper helper;
-
     @Autowired
     private DraftOrdersRemovedContentProvider underTest;
 
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("White");
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("White");
     }
 
     @Test

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -62,19 +62,19 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
     private static final byte[] MAIN_DOCUMENT_BINARIES = testDocumentBinaries();
     private static final UUID LETTER_ID = UUID.randomUUID();
 
-    @MockBean
+    @MockitoBean
     private DocumentConversionService documentConversionService;
 
-    @MockBean
+    @MockitoBean
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     private SendLetterApi sendLetterApi;
 
     SendDocumentControllerTest() {

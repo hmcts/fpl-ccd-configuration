@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -60,21 +60,21 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @SpringBootTest(classes = {FailedPBAPaymentEventHandler.class, LookupTestConfig.class, WorkAllocationTaskService.class})
 class FailedPBAPaymentEventHandlerTest {
 
-    @MockBean
+    @MockitoBean
     private RequestData requestData;
 
-    @MockBean
+    @MockitoBean
     private LocalAuthorityRecipientsService localAuthorityRecipients;
 
-    @MockBean
+    @MockitoBean
     private NotificationService notificationService;
 
-    @MockBean
+    @MockitoBean
     private FailedPBAPaymentContentProvider failedPBAPaymentContentProvider;
-    @MockBean
+    @MockitoBean
     private WorkAllocationTaskService workAllocationTaskService;
 
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
     @Autowired

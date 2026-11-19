@@ -5,7 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -46,7 +46,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
 
     private static final String CALLBACK_NAME = "direction-selection";
 
-    @MockBean
+    @MockitoBean
     private BankHolidaysApi bankHolidaysApi;
 
     AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest() {

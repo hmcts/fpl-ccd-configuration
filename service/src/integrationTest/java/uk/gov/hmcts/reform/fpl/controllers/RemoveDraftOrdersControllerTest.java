@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @OverrideAutoConfiguration(enabled = true)
 public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private EventService eventPublisher;
 
     @Captor

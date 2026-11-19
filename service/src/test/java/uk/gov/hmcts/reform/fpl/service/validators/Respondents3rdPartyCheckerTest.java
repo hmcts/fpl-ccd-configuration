@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -33,7 +33,7 @@ class Respondents3rdPartyCheckerTest {
     @Autowired
     private Respondents3rdPartyChecker respondents3rdPartyChecker;
 
-    @MockBean
+    @MockitoBean
     private RespondentAfterSubmissionValidator respondentAfterSubmissionValidator;
 
     private static final RespondentLocalAuthority FULL_RESPONDENT_LA = RespondentLocalAuthority.builder()

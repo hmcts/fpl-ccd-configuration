@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -44,16 +44,16 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
     private static final String USER = "kurt@swansea.gov.uk";
     private static final String ANOTHER_USER = "siva@swansea.gov.uk";
 
-    @MockBean
+    @MockitoBean
     private IdentityService identityService;
 
-    @MockBean
+    @MockitoBean
     private DocumentUploadHelper documentUploadHelper;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
-    @MockBean
+    @MockitoBean
     private ManageDocumentService manageDocumentService;
 
     UploadDocumentsAboutToSubmitControllerTest() {
