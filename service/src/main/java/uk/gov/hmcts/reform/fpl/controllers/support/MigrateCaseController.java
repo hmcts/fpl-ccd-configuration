@@ -10,15 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -29,20 +30,15 @@ public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
     private final CaseAccessService caseAccessService;
-    private static final String FLEETWOOD_EPIMMS_ID = "401452";
-    private static final String BLACKPOOL_EPIMMS_ID = "214320";
-    private static final String BLACKPOOL_COURT_CODE = "131";
-    private static final String BLACKPOOL_COURT_NAME = "Family Court sitting at Blackpool";
-    private static final String BLACKBURN_LANCASTER_DFJ_COURT = "blackburnLancasterDFJCourt";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3213", this::run3213,
-        "DFPL-2423", this::run2423,
-        "DFPL-2423-rollback", this::run2423Rollback,
-        "DFPL-3363", this::run3363,
-        "DFPL-3213-v2", this::run3213v2,
-        "DFPL-3361", this::run3361
+        "DFPL-3390", this::run3390,
+        "DFPL-3373", this::run3373,
+        "DFPL-3419", this::run3419,
+        "DFPL-3425", this::run3425,
+        "DFPL-3405", this::run3405,
+        "DFPL-3407", this::run3407
     );
 
     @PostMapping("/about-to-submit")
@@ -69,109 +65,106 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2423(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2423";
-
-        migrateCaseService.migrateOtherProceedings(caseDetails, getCaseData(caseDetails), migrationId);
-    }
-
-    private void run2423Rollback(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2423-rollback";
-        migrateCaseService.rollbackOtherProceedings(caseDetails, getCaseData(caseDetails), migrationId);
-    }
-
-    //run 3213 Migrate function to replace Fleetwood Location with BlackPool Location
-    private void run3213(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3213";
-
-        Long caseId = caseDetails.getId();
-        log.info("Migration {id = {}, case reference = {}} processing", migrationId, caseId);
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        // Calling the service to replace Fleetwood location with Blackpool Location if exists
-        caseDetails.getData().putAll(migrateCaseService.updateCaseManagementLocation(
-            migrationId,
-            caseData,
-            FLEETWOOD_EPIMMS_ID,
-            BLACKPOOL_EPIMMS_ID,
-            BLACKPOOL_COURT_CODE,
-            BLACKPOOL_COURT_NAME,
-            BLACKBURN_LANCASTER_DFJ_COURT
-        ));
-    }
-
-    private void run3346(CaseDetails caseDetails) {
-        final String DFPL_3346 = "DFPL-3346";
-        final long CASE_ID_3346 = 1781013695412110L;
-        final String ORG_ID_3346 = "CPYYWBZ";
-        runOutsourcingPolicyMigration(caseDetails, DFPL_3346, CASE_ID_3346, ORG_ID_3346);
-    }
-
-    private void run3347(CaseDetails caseDetails) {
-        final String DFPL_3347 = "DFPL-3347";
-        final long CASE_ID_3347 = 1783696286134453L;
-        final String ORG_ID_3347 = "ZL7FAG5";
-        runOutsourcingPolicyMigration(caseDetails, DFPL_3347, CASE_ID_3347, ORG_ID_3347);
-    }
-
-    private void runOutsourcingPolicyMigration(CaseDetails caseDetails, String migrationId,
-                                               long expectedCaseId, String targetOrgId) {
-        Long caseId = caseDetails.getId();
-
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-        log.info("Migration of {} is started for case {}", migrationId, caseId);
-
-        Map<String, OrganisationPolicy> migrationResult =
-            migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails), targetOrgId, null);
-
-        caseDetails.getData().putAll(migrationResult);
-
-        OrganisationPolicy updatedOrgPolicy =  migrationResult.get("outsourcingPolicy");
-        if (updatedOrgPolicy != null && updatedOrgPolicy.getOrganisation() != null) {
-            log.info("Migration {} successfully updated outsourcingPolicy to organisation {} on case {}",
-                migrationId, updatedOrgPolicy.getOrganisation().getOrganisationID(), caseId);
-        } else {
-            log.info("Migration {} completed but outsourcingPolicy was null for case {}", migrationId, caseId);
-        }
-    }
-
-    // run 3213 Migrate function to replace Fleetwood Location with Preston Location
-    private void run3213v2(CaseDetails caseDetails) {
-        String migrationId = "DFPL-3213-v2";
-        String expectedBaseLocation = "102476";
-        String prestonCourtCode = "303";
-
-        Long caseId = caseDetails.getId();
-        log.info("Migration {id = {}, case_reference = {}} processing", migrationId, caseId);
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOrdersCourt(
-            migrationId,
-            caseData,
-            expectedBaseLocation,
-            prestonCourtCode
-        ));
-    }
-
-    private void run3361(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3361";
-        final long expectedCaseId = 1761903519622353L;
-        final String orgId = "CPYYWBZ";
-
-        Long caseId = caseDetails.getId();
-        migrateCaseService.doCaseIdCheck(caseId, expectedCaseId, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(getCaseData(caseDetails),
-            orgId, CaseRole.EPSMANAGING.formattedName()));
-
-    }
-
-    public void run3363(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-3363";
+    public void run3419(CaseDetails caseDetails) {
         final CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.updateChildStatusWithFinalOrderIssued(migrationId, caseData));
+        final String migrationId = "DFPL-3419";
+        final long expectedCaseId = 1783943081734149L;
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        String orgName = "Wakefield Metropolitan District Council";
+        String newOrgName = "Kirklees Council";
+        String orgId = "T1GWH7Y";
+        String newOrgId = "4001R46";
+        String caseRole = CaseRole.SOLICITORA.formattedName();
+        int policyIndex = 0;
+        String laCode = "KKL";
+        List<UUID> bundleIds = List.of(
+            UUID.fromString("727006c8-cca7-4c93-88b2-f5bc2aa216ab"),
+            UUID.fromString("111462e4-bfba-4db4-900a-8ec1bf9bbc9b")
+        );
+
+        caseDetails.getData().putAll(migrateCaseService.updateRespondents(caseData, orgName,
+                                                                          newOrgName, orgId, newOrgId));
+        caseDetails.getData().putAll(migrateCaseService.updateRespondentPolicy(caseData, newOrgId,
+                                                                               caseRole, policyIndex));
+        caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthority(newOrgName, laCode));
+        caseDetails.getData().putAll(migrateCaseService.updateRespondentLA(caseData, newOrgName, newOrgId));
+        caseDetails.getData().putAll(migrateCaseService.updateAdditionalApplications(caseData, newOrgName, orgName,
+                                                                                     newOrgId, orgId, bundleIds));
+        caseDetails.getData().putAll(migrateCaseService.updateRelatingLA(laCode));
     }
+
+    public void run3390(CaseDetails caseDetails) {
+        final CaseData caseData = getCaseData(caseDetails);
+        final String orgId = "CS35UMJ";
+        final String migrationId = "DFPL-3390";
+        final long expectedCaseId = 1786619265255294L;
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(caseData, orgId, null));
+    }
+
+    private void run3373(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3373";
+        final long expectedCaseId = 1783093091738688L;
+        final String orgId = "L3HSA4L";
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(
+            getCaseData(caseDetails),
+            orgId,
+            CaseRole.EPSMANAGING.formattedName()
+        ));
+    }
+
+    private void run3425(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3425";
+        final long expectedCaseId = 1791536916287646L;
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> updatedData = migrateCaseService.removeSubmittedC1Document(caseData, migrationId);
+
+        caseDetails.getData().putAll(updatedData);
+    }
+
+    private void run3405(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3405";
+        final long expectedCaseId = 1752834832377121L;
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        final CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeCaseNotes(
+            caseData,
+            migrationId,
+            UUID.fromString("61daa227-70c4-4a19-92db-c6e1fde60cac"),
+            UUID.fromString("07b396b0-20d0-4a7c-83ae-e5a8d42e8036")
+        ));
+    }
+
+    private void run3407(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3407";
+        final long expectedCaseId = 1773923914594011L;
+        final String oldOrgId = "LJKOQT7";
+        final String newOrgId = "XKCMGVR";
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        final UUID applicantUuid = UUID.fromString("a66928e6-e803-4a21-a783-3b9f02b990b5");
+        final CaseData caseData = getCaseData(caseDetails);
+
+        var applicantUpdate = migrateCaseService.updateApplicantOrganisationId(
+            caseData, applicantUuid, oldOrgId, newOrgId
+        );
+        var policyUpdate = migrateCaseService.updateOutsourcingPolicy(caseData, newOrgId, null);
+
+        caseDetails.getData().putAll(applicantUpdate);
+        caseDetails.getData().putAll(policyUpdate);
+    }
+
 }
 
