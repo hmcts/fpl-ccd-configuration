@@ -28,7 +28,7 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -57,7 +57,6 @@ class RepresentativeAboutToSubmitControllerTest extends AbstractCallbackTest {
         Representative representative = Representative.builder()
             .fullName("John Smith")
             .positionInACase("Position")
-            .role(RepresentativeRole.REPRESENTING_PERSON_1)
             .servingPreferences(DIGITAL_SERVICE)
             .email("test@test.com")
             .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
@@ -80,7 +79,7 @@ class RepresentativeAboutToSubmitControllerTest extends AbstractCallbackTest {
         verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representative.getEmail());
 
         verify(caseUserApi).updateCaseRolesForUser(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
-            caseDetails.getId().toString(), userId, new CaseUser(userId, Set.of(SOLICITOR.formattedName())));
+            caseDetails.getId().toString(), userId, new CaseUser(userId, Set.of(SOLICITORA.formattedName())));
 
         CaseData outgoingCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         Respondent updatedResponded = outgoingCaseData.getRespondents1().get(0).getValue();

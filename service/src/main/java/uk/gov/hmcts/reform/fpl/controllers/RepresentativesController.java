@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService;
 
 import java.util.List;
 
@@ -30,6 +32,8 @@ public class RepresentativesController extends CallbackController {
     private final RepresentativeService representativeService;
     private final RespondentService respondentService;
     private final OthersService othersService;
+    private final CaseFlagsService caseFlagsService;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -60,6 +64,14 @@ public class RepresentativesController extends CallbackController {
         CaseData originalCaseData = getCaseDataBefore(callbackRequest);
 
         representativeService.updateRepresentatives(updatedCaseDetails.getId(), updatedCaseData, originalCaseData);
+        if (featureToggleService.isCaseFlagsV2Enabled()) {
+            caseFlagsService.removeObsoleteRepresentativeFlags(updatedCaseData, originalCaseData);
+            if (caseFlagsService.caseFlagsSetupRequired(updatedCaseData)) {
+                caseFlagsService.setupCaseFlags(updatedCaseData);
+            }
+            caseFlagsService.processNewlySetCaseFlags(updatedCaseData);
+            updatedCaseDetails.getData().putAll(caseFlagsService.generate(updatedCaseData));
+        }
 
         updatedCaseDetails.getData().put("representatives", updatedCaseData.getRepresentatives());
         updatedCaseDetails.getData().put(OTHER.getCaseDataKey(), updatedCaseData.getOthersV2());
