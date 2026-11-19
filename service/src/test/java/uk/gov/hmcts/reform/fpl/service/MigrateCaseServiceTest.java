@@ -1166,9 +1166,10 @@ class MigrateCaseServiceTest {
         private final UUID noteIdToRemove1 = UUID.randomUUID();
         private final UUID missingNoteId = UUID.randomUUID();
 
-        Element<CaseNote> createCaseNote(UUID Id, String note) {
-            return element(Id, CaseNote.builder().note(note).build());
+        Element<CaseNote> createCaseNote(UUID noteId, String note) {
+            return element(noteId, CaseNote.builder().note(note).build());
         }
+
         private final Element<CaseNote> noteToRemove0 = createCaseNote(noteIdToRemove0, "removeNote0");
         private final Element<CaseNote> noteToRemove1 = createCaseNote(noteIdToRemove1, "removeNote1");
         private final Element<CaseNote> testNote0 = createCaseNote(UUID.randomUUID(), "testNote0");
