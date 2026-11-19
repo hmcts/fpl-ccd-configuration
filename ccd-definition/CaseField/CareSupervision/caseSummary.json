@@ -110,6 +110,42 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryCaseAgeBandInjected",
+    "Label": "Injected age band helper",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryCaseAgeGreenTag",
+    "Label": "<div class='govuk-tag govuk-tag--green'>Under 26 weeks</div>",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryCaseAgeAmberTag",
+    "Label": "<div class='govuk-tag govuk-tag--yellow'>26 to 52 weeks</div>",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryCaseAgeRedTag",
+    "Label": "<div class='govuk-tag govuk-tag--red'>Over 52 weeks</div>",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryAllocatedJudgeName",
     "Label": "Allocated judge or magistrate",
     "FieldType": "Text",
