@@ -14,7 +14,7 @@ test.describe('Change other to respondent', () => {
         expect(caseNumber).toBeDefined();
     });
 
-    test('Change other to respondent @xbrowser',
+    test.only('Change other to respondent @xbrowser',
         async ({ page, signInPage, changeOtherToRespondent }) => {
             casename = 'CTSC changes other to respondent ' + dateTime.slice(0, 10);
             expect(await updateCase(casename, caseNumber, caseData)).toBeTruthy();

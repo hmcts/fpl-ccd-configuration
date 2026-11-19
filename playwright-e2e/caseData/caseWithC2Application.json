@@ -1,0 +1,697 @@
+  {
+  "state": "SUBMITTED",
+  "caseData": {
+    "court": {
+      "code": "117",
+      "name": "Family Court sitting at Barnet",
+      "email": null,
+      "region": "London",
+      "epimmsId": "229786",
+      "regionId": "1",
+      "dateTransferred": null
+    },
+    "orders": {
+      "court": "117",
+      "orderType": [
+        "OTHER"
+      ],
+      "directions": "No",
+      "otherOrder": "Order to contact the child at foster care",
+      "directionDetails": null
+    },
+    "dfjArea": "WEST_LONDON",
+    "hearing": {
+      "type": null,
+      "reason": null,
+      "timeFrame": null,
+      "reason2Days": null,
+      "reason7Days": null,
+      "reason12Days": null,
+      "reducedNotice": null,
+      "withoutNotice": null,
+      "type_GiveReason": null,
+      "respondentsAware": "Yes",
+      "hearingUrgencyType": "STANDARD",
+      "reducedNoticeReason": null,
+      "withoutNoticeReason": null,
+      "hearingUrgencyDetails": null,
+      "respondentsAwareReason": null
+    },
+    "caseName": "Somuy & Swansea City Council, Asa, Yaks",
+    "children1": [
+      {
+        "id": "d0d3ccd6-285a-489b-ae8a-87e01cc41827",
+        "value": {
+          "party": {
+            "gender": "They identify in another way",
+            "partyId": "f5494d7f-41ff-435e-9d25-86ac51dca57f",
+            "adoption": "Yes",
+            "keyDates": "Dates for KS2 exams 20-05-2025",
+            "lastName": "test",
+            "firstName": "test",
+            "dateOfBirth": "2020-01-01",
+            "fathersName": "Father",
+            "mothersName": "Mother",
+            "placementCourt": "barnet court",
+            "additionalNeeds": "Yes",
+            "careAndContactPlan": "Brief summary",
+            "genderIdentification": "Non-binary",
+            "isAddressConfidential": "Yes",
+            "additionalNeedsDetails": "Allegeries to nuts",
+            "placementOrderApplication": "Yes",
+            "socialWorkerDetailsHidden": "Yes",
+            "socialWorkerDetailsHiddenReason": "Test"
+          },
+          "legalCounsellors": []
+        }
+      }
+    ],
+    "allParties": [
+      {
+        "id": "b643f860-38e0-4f99-809f-60f57e6fc1fe",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "directionText": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.",
+          "directionType": "Request permission for expert evidence",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "cfa09e01-a3c8-40f1-a31c-5da3c32008a2",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "directionText": "Make an application to the court if you believe any party or witness needs help with:\n\n- understanding proceedings and their role in them in court\n- putting their views to the court\n- instructing their representatives before, during and after the hearing\n- attending the hearing without significant distress\n\nIf possible, include in your application:\n\n- why the party or witness would benefit from help\n- the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n- written confirmation from any relevant witnesses of their view\n",
+          "directionType": "Request help to take part in proceedings",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "bdde7972-0bbf-4227-a073-a20da60e0518",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "directionText": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.  \n",
+          "directionType": "Ask for disclosure",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "d5580a56-4af1-4f60-8744-0802804860a7",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "No",
+          "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
+          "directionType": "Attend the pre-hearing and hearing",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "be2e46d2-c491-44b5-bdb0-b0f04c2598d2",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "directionText": "Contact anyone who might want to be a carer if your preferred plan proves to be impossible. Give their contact details to the Local Authority.",
+          "directionType": "Contact alternative carers",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "relatingLA": "SA",
+    "sendToCtsc": "Yes",
+    "childPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+    },
+    "childPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORB]"
+    },
+    "childPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORC]"
+    },
+    "childPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORD]"
+    },
+    "childPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORE]"
+    },
+    "childPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORF]"
+    },
+    "childPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORG]"
+    },
+    "childPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORH]"
+    },
+    "childPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORI]"
+    },
+    "childPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
+    },
+    "respondents1": [
+      {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "value": {
+          "party": {
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "SK3 8PP",
+              "PostTown": "Stockport",
+              "AddressLine1": "1 Barnfield Road West",
+              "AddressLine2": "",
+              "AddressLine3": ""
+            },
+            "firstName": "Swansea City Council",
+            "addressKnow": "Yes",
+            "hideAddress": "No",
+            "hideTelephone": "No",
+            "relationshipToChild": "Local Authority"
+          },
+          "solicitor": {
+            "email": "FamilyPublicLaw+sa@gmail.com",
+            "lastName": "Lee",
+            "firstName": "Tommy",
+            "organisation": {
+              "OrganisationID": "W9V61CP",
+              "OrganisationName": "Swansea City Council"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "07818213678"
+            },
+            "regionalOfficeAddress": {},
+            "colleaguesToBeNotified": [],
+            "unregisteredOrganisation": {}
+          },
+          "representedBy": [],
+          "usingOtherOrg": "No",
+          "isLocalAuthority": "YES",
+          "legalCounsellors": [],
+          "legalRepresentation": "Yes"
+        }
+      },
+      {
+        "id": "b04cb621-836c-4be0-9982-a851a12d2639",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {},
+            "partyId": "fc38fb9f-b942-4e72-945b-bbf70b0bdc7d",
+            "lastName": "Asa",
+            "firstName": "Dianah",
+            "addressKnow": "No",
+            "dateOfBirth": "1998-10-11",
+            "hideAddress": "No",
+            "hideTelephone": "No",
+            "litigationIssues": "NO",
+            "relationshipToChild": "uncle",
+            "addressNotKnowReason": "Whereabouts unknown"
+          },
+          "representedBy": [],
+          "isLocalAuthority": "NO",
+          "legalCounsellors": [],
+          "legalRepresentation": "No"
+        }
+      },
+      {
+        "id": "c5b002b0-c410-455d-aa90-9f18300490f3",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {},
+            "lastName": "Yaks",
+            "firstName": "Moniks",
+            "addressKnow": "No",
+            "dateOfBirth": "1988-03-31",
+            "hideAddress": "No",
+            "hideTelephone": "No",
+            "litigationIssues": "NO",
+            "relationshipToChild": "uncle",
+            "addressNotKnowReason": "No fixed abode"
+          },
+          "representedBy": [],
+          "isLocalAuthority": "NO",
+          "legalCounsellors": [],
+          "legalRepresentation": "No"
+        }
+      }
+    ],
+    "c1Application": "No",
+    "childPolicy10": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORK]"
+    },
+    "childPolicy11": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORL]"
+    },
+    "childPolicy12": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORM]"
+    },
+    "childPolicy13": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORN]"
+    },
+    "childPolicy14": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORO]"
+    },
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "Somuy__Swansea_City_Council_Asa_Yaks.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+
+    "hearingDetails": [
+      {
+        "id": "1e20eda5-e0fa-43c0-9773-15e5c9c6886a",
+        "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "96",
+          "others": [],
+          "status": null,
+          "endDate": "2029-04-05T10:00:00",
+          "presence": null,
+          "startDate": "2029-04-03T10:00:00",
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "typeReason": null,
+          "hearingDays": 3,
+          "typeDetails": null,
+          "vacatedDate": null,
+          "hearingHours": null,
+          "endDateDerived": "Yes",
+          "hearingMinutes": null,
+          "othersNotified": "",
+          "additionalNotes": null,
+          "hearingDuration": "3 days",
+          "housekeepReason": null,
+          "needTranslation": "NO",
+          "noticeOfHearing": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "upload_timestamp": "2026-11-18T14:37:20.861599820",
+            "document_filename": "Notice_of_hearing_18November.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "attendanceDetails": "df",
+          "hearingJudgeLabel": "District Judge (MC) Taylor",
+          "legalAdvisorLabel": "",
+          "cancellationReason": null,
+          "hearingNeedsBooked": null,
+          "venueCustomAddress": {},
+          "allocatedJudgeLabel": "District Judge (MC) Taylor",
+          "customPreviousVenue": null,
+          "hearingNeedsDetails": null,
+          "judgeAndLegalAdvisor": {
+            "judgeType": "SALARIED_JUDGE",
+            "judgeTitle": "OTHER",
+            "otherTitle": "District Judge (MC)",
+            "judgeFullName": "District Judge (MC) Craig Taylor",
+            "judgeLastName": "Taylor",
+            "judgeEmailAddress": "DJMC.Craig.Taylor@ejudiciary.net",
+            "judgeJudicialUser": {
+              "idamId": "b682db84-01e6-4d04-8f40-6b37226d1924",
+              "personalCode": null
+            }
+          },
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {},
+          "caseManagementOrderId": null,
+          "noticeOfHearingVacated": null,
+          "translationRequirements": "NO",
+          "translatedNoticeOfHearing": null,
+          "translationUploadDateTime": null
+        }
+      }
+    ],
+    "latestRoleSent": "JUDICIARY",
+    "otherOrderType": "YES",
+
+
+
+    "hasRespondentLA": "YES",
+
+
+
+
+
+    "c2DocumentBundle": [],
+
+
+
+    "legalAdvisorName": null,
+
+
+    "localAuthorities": [
+      {
+        "id": "914f4be7-bf03-4b7b-8a3b-38b6df0bde87",
+        "value": {
+          "id": "D25VR7V",
+          "name": "Private solicitors",
+          "email": "privatesol@gmail.com",
+          "address": {
+            "PostCode": "CR0 2GE",
+            "PostTown": "London",
+            "AddressLine1": "Flat 1",
+            "AddressLine2": "Private Solicitors Apartments"
+          },
+          "pbaNumber": "PBA0096432",
+          "colleagues": [
+            {
+              "id": "039787bf-fc33-442f-9704-a77fbc82f662",
+              "value": {
+                "email": "email@email.com",
+                "phone": "35346878679876",
+                "lastName": "Nouth",
+                "firstName": "Maie",
+                "mainContact": "Yes",
+                "notificationRecipient": "Yes"
+              }
+            },
+            {
+              "id": "2bedfd9b-70f2-42b7-95b1-7853319e1d03",
+              "value": {
+                "role": "OTHER",
+                "email": "Johnson@hmcts.com",
+                "title": "assistant",
+                "lastName": "Johnson",
+                "firstName": "Johnson",
+                "mainContact": "No",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ],
+          "designated": "No",
+          "customerReference": "Customer reference 1000",
+          "representingDetails": {
+            "lastName": "Somuy",
+            "firstName": "John"
+          }
+        }
+      }
+    ],
+
+
+
+
+
+
+
+    "submissionConsent": [
+      "agree"
+    ],
+
+
+
+    "allocationProposal": {
+      "proposal": null,
+      "proposalV2": "Circuit judge",
+      "proposalReason": "Test"
+    },
+
+    "caseLocalAuthority": "SA",
+
+
+    "displayAmountToPay": "Yes",
+
+
+
+
+
+    "representativeType": "RESPONDENT_SOLICITOR",
+
+
+
+
+    "familyManCaseNumber": "Familyman",
+
+
+
+
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+
+
+
+    "caseNameHmctsInternal": "Private Solicitor -C110 a Application 2026-11-17T18:03:32.058Z",
+
+
+    "lastGenuineUpdateTime": "TO BE FILLED WITH VALID DATA",
+
+
+    "caseManagementCategory": {
+      "value": {
+        "code": "FPL",
+        "label": "Family Public Law"
+      },
+      "list_items": [
+        {
+          "code": "FPL",
+          "label": "Family Public Law"
+        }
+      ]
+    },
+
+
+    "caseManagementLocation": {
+      "region": "1",
+      "baseLocation": "229786"
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    "additionalApplicationsBundle": [
+      {
+        "id": "a84ecb2a-7c15-455e-b00a-19f167276043",
+        "value": {
+          "author": "private.solicitors@mailinator.com",
+          "amountToPay": "27000",
+          "c2DocumentBundle": {
+            "id": "62b46262-f155-4242-8581-c31b0ef8c3ef",
+            "type": "WITHOUT_NOTICE",
+            "author": "private.solicitors@mailinator.com",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "upload_timestamp": "2026-11-18T15:04:20.536392766",
+              "document_filename": "C2_application.pdf",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "routeType": "APPLY_ONLINE",
+            "respondents": [
+              {
+                "id": "00000000-0000-0000-0000-000000000000",
+                "value": {
+                  "party": {
+                    "address": {
+                      "County": "",
+                      "Country": "United Kingdom",
+                      "PostCode": "SK3 8PP",
+                      "PostTown": "Stockport",
+                      "AddressLine1": "1 Barnfield Road West",
+                      "AddressLine2": "",
+                      "AddressLine3": ""
+                    },
+                    "firstName": "Swansea City Council",
+                    "addressKnow": "Yes",
+                    "hideAddress": "No",
+                    "hideTelephone": "No",
+                    "relationshipToChild": "Local Authority"
+                  },
+                  "solicitor": {
+                    "email": "FamilyPublicLaw+sa@gmail.com",
+                    "lastName": "Lee",
+                    "firstName": "Tommy",
+                    "organisation": {
+                      "OrganisationID": "W9V61CP",
+                      "OrganisationName": "Swansea City Council"
+                    },
+                    "telephoneNumber": {
+                      "telephoneNumber": "07818213678"
+                    },
+                    "regionalOfficeAddress": {},
+                    "colleaguesToBeNotified": [],
+                    "unregisteredOrganisation": {
+                      "name": null,
+                      "address": {}
+                    }
+                  },
+                  "representedBy": [],
+                  "usingOtherOrg": "No",
+                  "isLocalAuthority": "YES",
+                  "legalCounsellors": [],
+                  "legalRepresentation": "Yes"
+                }
+              },
+              {
+                "id": "b04cb621-836c-4be0-9982-a851a12d2639",
+                "value": {
+                  "party": {
+                    "gender": "Male",
+                    "address": {},
+                    "partyId": "fc38fb9f-b942-4e72-945b-bbf70b0bdc7d",
+                    "lastName": "Asa",
+                    "firstName": "Dianah",
+                    "addressKnow": "No",
+                    "dateOfBirth": "1998-10-11",
+                    "hideAddress": "No",
+                    "hideTelephone": "No",
+                    "litigationIssues": "NO",
+                    "relationshipToChild": "uncle",
+                    "addressNotKnowReason": "Whereabouts unknown"
+                  },
+                  "representedBy": [],
+                  "isLocalAuthority": "NO",
+                  "legalCounsellors": [],
+                  "legalRepresentation": "No"
+                }
+              },
+              {
+                "id": "c5b002b0-c410-455d-aa90-9f18300490f3",
+                "value": {
+                  "party": {
+                    "gender": "Male",
+                    "address": {},
+                    "lastName": "Yaks",
+                    "firstName": "Moniks",
+                    "addressKnow": "No",
+                    "dateOfBirth": "1988-03-31",
+                    "hideAddress": "No",
+                    "hideTelephone": "No",
+                    "litigationIssues": "NO",
+                    "relationshipToChild": "uncle",
+                    "addressNotKnowReason": "No fixed abode"
+                  },
+                  "representedBy": [],
+                  "isLocalAuthority": "NO",
+                  "legalCounsellors": [],
+                  "legalRepresentation": "No"
+                }
+              }
+            ],
+            "applicantName": "Private solicitors, Applicant",
+            "uploadedDateTime": "18 November 2026, 3:04pm",
+            "draftOrdersBundle": [
+              {
+                "id": "0c3515a7-3b1e-4ed5-a5f4-8c804c18b3d1",
+                "value": {
+                  "title": "Draft order",
+                  "document": {
+                    "document_url": "${TEST_DOCUMENT_URL}",
+                    "upload_timestamp": "2026-11-18T15:04:19.090270109",
+                    "document_filename": "C2-draft order-01.docx",
+                    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                  },
+                  "uploaderType": "SOLICITOR",
+                  "uploaderCaseRoles": [
+                    "SOLICITORA"
+                  ]
+                }
+              }
+            ],
+            "supplementsBundle": [],
+            "applicationSummary": "application to recover child custody",
+            "hasSafeguardingRisk": "Yes",
+            "childrenOnApplication": "test test (Child 1)",
+            "safeguardingRiskDetails": "Reason",
+            "supportingEvidenceBundle": [
+              {
+                "id": "6495b8f9-0885-4b4b-9889-5603d66e77ec",
+                "value": {
+                  "name": "Evidence of consent",
+                  "document": {
+                    "document_url": "${TEST_DOCUMENT_URL}",
+                    "upload_timestamp": "2026-11-18T15:04:19.090270109",
+                    "document_filename": "AdditionalDoc1.pdf",
+                    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                  },
+                  "uploadedBy": "private.solicitors@mailinator.com",
+                  "uploaderType": "SOLICITOR",
+                  "needTranslation": "NO",
+                  "dateTimeUploaded": "2026-11-18T15:04:16.618539974",
+                  "uploaderCaseRoles": [
+                    "SOLICITORA"
+                  ],
+                  "documentAcknowledge": [
+                    "ACK_RELATED_TO_CASE"
+                  ],
+                  "hasConfidentialAddress": "No"
+                }
+              }
+            ],
+            "applicationPermissionType": "YES",
+            "requestedHearingToAdjourn": "Case management hearing, 3 April 2029",
+            "c2AdditionalOrdersRequested": [
+              "REQUESTING_ADJOURNMENT"
+            ],
+            "hasConfidentialAddressValue": "No",
+            "canBeConsideredAtNextHearing": "No",
+            "isHearingAdjournmentRequired": "Yes",
+            "applicationRelatesToAllChildren": "NO"
+          },
+          "uploadedDateTime": "18 November 2026, 3:04pm",
+          "hasConfidentialC2": "NO",
+          "applicationReviewed": "NO"
+        }
+      }
+    ],
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    "caseSummaryLALanguageRequirement": "No",
+
+
+
+
+
+
+
+
+
+
+  }}
