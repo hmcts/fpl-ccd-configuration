@@ -39,6 +39,8 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -466,6 +468,27 @@ public class MigrateCaseService {
         }
 
         return Map.of("caseNotes", caseNoteService.removeCaseNote(caseNoteIdToRemove, caseData.getCaseNotes()));
+    }
+
+    public Map<String, Object> removeCaseNotes(
+        CaseData caseData, String migrationId, UUID... caseNoteIdsToRemove
+    ) {
+        var caseNotes = caseData.getCaseNotes();
+
+        for (UUID caseNoteId : caseNoteIdsToRemove) {
+            if (ElementUtils.findElement(caseNoteId, caseNotes).isEmpty()) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, case note %s not found",
+                    migrationId, caseData.getId(), caseNoteId
+                ));
+            }
+        }
+
+        for (UUID caseNoteId : caseNoteIdsToRemove) {
+            caseNotes = caseNoteService.removeCaseNote(caseNoteId, caseNotes);
+        }
+
+        return Map.of("caseNotes", caseNotes);
     }
 
     public void verifyGatekeepingOrderUrgentHearingOrderExist(CaseData caseData, String migrationId) {
@@ -1075,8 +1098,12 @@ public class MigrateCaseService {
         return Map.of(LOCAL_AUTHORITIES, updatedLocalAuthorities);
     }
 
-    public Map<String, String> updateCaseLocalAuthorityName(String newOrgName) {
-        return Map.of("caseLocalAuthorityName", newOrgName);
+    public Map<String, String> updateCaseLocalAuthority(String newOrgName, String laCode) {
+        return Map.of("caseLocalAuthorityName", newOrgName, "caseLocalAuthority", laCode);
+    }
+
+    public Map<String, String> updateRelatingLA(String newLACode) {
+        return Map.of("relatingLA", newLACode);
     }
 
     private String getOrgName(String orgId) {
@@ -1105,6 +1132,107 @@ public class MigrateCaseService {
             .organisation(newOrganisation)
             .orgPolicyCaseAssignedRole(caseRole)
             .build());
+    }
+
+    public Map<String, List<Element<Respondent>>> updateRespondents(CaseData caseData, String orgName,
+                                                                    String newOrgName, String orgId, String newOrgId) {
+        List<Element<Respondent>> respondents = caseData.getRespondents1();
+        List<Element<Respondent>> updatedRespondents = new ArrayList<>(respondents);
+
+        Element<Respondent> respondentToUpdate = respondents.stream()
+            .filter(r -> {
+                RespondentSolicitor solicitor = r.getValue().getSolicitor();
+                Organisation organisation = solicitor == null ? null : solicitor.getOrganisation();
+
+                return organisation != null
+                    && orgId.equals(organisation.getOrganisationID())
+                    && orgName.equals(organisation.getOrganisationName());
+            })
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(format("Fail to find respondents with org {}", orgId)));
+
+        int index = updatedRespondents.indexOf(respondentToUpdate);
+        Respondent respondentToUpdateValue = respondentToUpdate.getValue();
+        RespondentSolicitor respondentSolicitor = respondentToUpdateValue.getSolicitor();
+
+        Element<Respondent> updatedRespondentElement = respondentToUpdate.toBuilder()
+            .value(respondentToUpdateValue.toBuilder()
+                .solicitor(respondentSolicitor.toBuilder()
+                    .organisation(createNewOrganisation(newOrgId, newOrgName))
+                    .build())
+                .build())
+            .build();
+
+        updatedRespondents.set(index, updatedRespondentElement);
+        return Map.of("respondents1", updatedRespondents);
+    }
+
+    public Map<String, RespondentLocalAuthority> updateRespondentLA(CaseData caseData, String newOrgName,
+                                                                    String newOrgId) {
+        RespondentLocalAuthority respondentLA = caseData.getRespondentLocalAuthority();
+
+        RespondentLocalAuthority updatedRespondentLA = respondentLA.toBuilder()
+            .organisation(createNewOrganisation(newOrgId, newOrgName))
+            .build();
+
+        return Map.of("respondentLocalAuthority", updatedRespondentLA);
+    }
+
+    public Map<String, List<Element<AdditionalApplicationsBundle>>> updateAdditionalApplications(CaseData caseData,
+                                                                                                 String newOrgName,
+                                                                                                 String orgName,
+                                                                                                 String newOrgId,
+                                                                                                 String orgId,
+                                                                                                 List<UUID> bundleIds) {
+        List<Element<AdditionalApplicationsBundle>> updatedBundle =
+            caseData.getAdditionalApplicationsBundle().stream()
+                .map(b -> {
+                    if (!bundleIds.contains(b.getId())) {
+                        return b;
+                    }
+
+                    AdditionalApplicationsBundle bundle = b.getValue();
+                    C2DocumentBundle c2Bundle = bundle.getC2DocumentBundle();
+
+                    if (c2Bundle == null || c2Bundle.getRespondents() == null) {
+                        return b;
+                    }
+
+                    List<Element<Respondent>> updatedRespondents = c2Bundle.getRespondents().stream()
+                        .map(r -> {
+                            Respondent respondent = r.getValue();
+                            RespondentSolicitor solicitor = respondent.getSolicitor();
+                            Organisation organisation = solicitor == null ? null : solicitor.getOrganisation();
+
+                            if (organisation == null
+                                || !Objects.equals(orgId, organisation.getOrganisationID())
+                                || !Objects.equals(orgName, organisation.getOrganisationName())) {
+                                return r;
+                            }
+
+                            return r.toBuilder()
+                                .value(respondent.toBuilder()
+                                    .solicitor(solicitor.toBuilder()
+                                        .organisation(createNewOrganisation(newOrgId, newOrgName))
+                                        .build())
+                                    .build())
+                                .build();
+                        })
+                        .toList();
+
+                    C2DocumentBundle updatedC2Bundle = c2Bundle.toBuilder()
+                        .respondents(updatedRespondents)
+                        .build();
+
+                    return b.toBuilder()
+                        .value(bundle.toBuilder()
+                            .c2DocumentBundle(updatedC2Bundle)
+                            .build())
+                        .build();
+                })
+                .toList();
+
+        return Map.of("additionalApplicationsBundle", updatedBundle);
     }
 
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,
@@ -1967,5 +2095,30 @@ public class MigrateCaseService {
         }
 
         return order.getDocument() != null ? order.getDocument().getUploadedTimestamp() : null;
+    }
+
+    public Map<String, List<Element<LocalAuthority>>> updateApplicantOrganisationId(
+        CaseData caseData, UUID applicantUuid, String expectedOrgId, String newOrgId
+    ) {
+        List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
+        Element<LocalAuthority> applicantEntry = ElementUtils.findElement(applicantUuid, localAuthorities)
+            .orElseThrow(() -> new IllegalStateException("Applicant entry not found: " + applicantUuid));
+
+        LocalAuthority applicant = applicantEntry.getValue();
+        if (newOrgId.equals(applicant.getId())) {
+            return Map.of(LOCAL_AUTHORITIES, localAuthorities);
+        }
+        if (!expectedOrgId.equals(applicant.getId())) {
+            throw new IllegalStateException("Unexpected organisation ID for applicant: " + applicantUuid);
+        }
+
+        List<Element<LocalAuthority>> updatedLocalAuthorities = new ArrayList<>(localAuthorities);
+        int applicantIndex = localAuthorities.indexOf(applicantEntry);
+        updatedLocalAuthorities.set(applicantIndex, Element.<LocalAuthority>builder()
+            .id(applicantEntry.getId())
+            .value(applicant.toBuilder().id(newOrgId).build())
+            .build());
+
+        return Map.of(LOCAL_AUTHORITIES, updatedLocalAuthorities);
     }
 }

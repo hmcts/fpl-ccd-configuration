@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
@@ -61,8 +62,10 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Recipients;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentLocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -391,12 +394,17 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
-    class UpdateRespondentPolicy {
+    class UpdateRespondents {
 
         private final String newOrgId = "HIJKLMN";
         private final String newOrgName = "New Organisation Name";
+        private final String orgId = "ABCDEFG";
+        private final String orgName = "Previous Organisation Name";
 
         private final String caseRole = "[SOLICITORA]";
+
+        private final Telephone phoneNumber = Telephone.builder()
+            .telephoneNumber("01234567890").build();
 
         private int policyIndex = 0;
 
@@ -408,6 +416,43 @@ class MigrateCaseServiceTest {
         private final Organisation newOrganisation = Organisation.builder()
             .organisationID(newOrgId)
             .organisationName(newOrgName)
+            .build();
+
+        private final RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
+            .firstName("Respondent")
+            .lastName("Solicitor")
+            .email("solicitor@example.com")
+            .organisation(previousOrganisation)
+            .telephoneNumber(phoneNumber)
+            .regionalOfficeAddress(testAddress())
+            .build();
+
+        private final Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder().firstName("First").lastName("Respondent").build())
+            .solicitor(respondentSolicitor)
+            .legalRepresentation("Yes")
+            .usingOtherOrg(YES)
+            .build();
+
+        private final Respondent unchangedRespondent = Respondent.builder()
+            .party(RespondentParty.builder().firstName("Second").lastName("Respondent").build())
+            .solicitor(RespondentSolicitor.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("OPQRSTU")
+                    .organisationName("Other Organisation")
+                    .build())
+                .build())
+            .build();
+
+        private final RespondentLocalAuthority respondentLA = RespondentLocalAuthority.builder()
+            .name("Local Authority")
+            .email("la@example.com")
+            .address(testAddress())
+            .phoneNumber(phoneNumber.toString())
+            .organisation(previousOrganisation)
+            .usingOtherOrg(YES)
+            .representativeFirstName("Respondent")
+            .representativeLastName("Solicitor")
             .build();
 
         @Test
@@ -434,6 +479,149 @@ class MigrateCaseServiceTest {
                 .orgPolicyCaseAssignedRole(caseRole)
                 .build());
         }
+
+        @Test
+        void updateRespondents() {
+            UUID respondentId = UUID.randomUUID();
+            UUID unchangedRespondentId = UUID.randomUUID();
+
+            CaseData caseData = CaseData.builder()
+                .respondents1(List.of(
+                    element(respondentId, respondent),
+                    element(unchangedRespondentId, unchangedRespondent)
+                ))
+                .build();
+
+            Respondent expectedRespondent = respondent.toBuilder()
+                .solicitor(respondent.getSolicitor().toBuilder()
+                    .organisation(newOrganisation)
+                    .build())
+                .build();
+
+            Map<String, List<Element<Respondent>>> result = underTest.updateRespondents(
+                caseData, previousOrganisation.getOrganisationName(), newOrgName,
+                previousOrganisation.getOrganisationID(), newOrgId
+            );
+
+            assertThat(result).containsEntry("respondents1", List.of(
+                element(respondentId, expectedRespondent),
+                element(unchangedRespondentId, unchangedRespondent)
+            ));
+        }
+
+        @Test
+        void updateRespondentLA() {
+            CaseData caseData = CaseData.builder()
+                .respondentLocalAuthority(respondentLA)
+                .build();
+
+            RespondentLocalAuthority expectedRespondentLA = respondentLA.toBuilder()
+                .organisation(newOrganisation)
+                .build();
+
+            Map<String, RespondentLocalAuthority> result =
+                underTest.updateRespondentLA(caseData, newOrgName, newOrgId);
+
+            assertThat(result).containsEntry("respondentLocalAuthority", expectedRespondentLA);
+        }
+
+        @Test
+        void updateAdditionalApplications() {
+            UUID bundleId = UUID.randomUUID();
+            UUID bundleWithoutC2Id = UUID.randomUUID();
+            UUID bundleId2 = UUID.randomUUID();
+            UUID changedRespondentId = UUID.randomUUID();
+            UUID respondentWithoutSolicitorId = UUID.randomUUID();
+            UUID respondentWithoutOrganisationId = UUID.randomUUID();
+            UUID respondentAlreadyUpdatedId = UUID.randomUUID();
+            List<UUID> bundleIds = List.of(bundleId, bundleWithoutC2Id, bundleId2);
+
+            Respondent changedRespondent = Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test1").build())
+                .solicitor(RespondentSolicitor.builder()
+                    .email("solicitor@example.com")
+                    .organisation(previousOrganisation)
+                    .build())
+                .build();
+            Respondent respondentWithoutSolicitor = Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test2").build())
+                .build();
+            Respondent respondentWithoutOrganisation = Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test3").build())
+                .solicitor(RespondentSolicitor.builder().build())
+                .build();
+            Respondent respondentAlreadyUpdated = Respondent.builder()
+                .party(RespondentParty.builder().firstName("Test4").build())
+                .solicitor(RespondentSolicitor.builder()
+                    .organisation(newOrganisation)
+                    .build())
+                .build();
+
+            Element<Respondent> changedRespondentElement = element(changedRespondentId, changedRespondent);
+            Element<Respondent> respondentWithoutSolicitorElement =
+                element(respondentWithoutSolicitorId, respondentWithoutSolicitor);
+            Element<Respondent> respondentWithoutOrganisationElement =
+                element(respondentWithoutOrganisationId, respondentWithoutOrganisation);
+            Element<Respondent> respondentAlreadyUpdatedElement =
+                element(respondentAlreadyUpdatedId, respondentAlreadyUpdated);
+
+            C2DocumentBundle c2Bundle = C2DocumentBundle.builder()
+                .respondents(List.of(
+                    changedRespondentElement,
+                    respondentWithoutSolicitorElement,
+                    respondentWithoutOrganisationElement,
+                    respondentAlreadyUpdatedElement
+                ))
+                .build();
+
+            Element<AdditionalApplicationsBundle> bundle = element(bundleId,
+                AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle).build());
+            Element<AdditionalApplicationsBundle> bundleWithoutC2 = element(bundleWithoutC2Id,
+                AdditionalApplicationsBundle.builder().build());
+            Element<AdditionalApplicationsBundle> bundle2 = element(bundleId2,
+                AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle).build());
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(List.of(bundle, bundleWithoutC2, bundle2))
+                .build();
+
+            Element<Respondent> expectedChangedRespondent = element(changedRespondentId,
+                changedRespondent.toBuilder()
+                    .solicitor(changedRespondent.getSolicitor().toBuilder()
+                        .organisation(newOrganisation)
+                        .build())
+                    .build());
+            Element<AdditionalApplicationsBundle> expectedBundle1 = element(bundleId,
+                bundle.getValue().toBuilder()
+                    .c2DocumentBundle(c2Bundle.toBuilder()
+                        .respondents(List.of(
+                            expectedChangedRespondent,
+                            respondentWithoutSolicitorElement,
+                            respondentWithoutOrganisationElement,
+                            respondentAlreadyUpdatedElement
+                        ))
+                        .build())
+                    .build());
+
+            Element<AdditionalApplicationsBundle> expectedBundle2 = element(bundleId2,
+                bundle.getValue().toBuilder()
+                    .c2DocumentBundle(c2Bundle.toBuilder()
+                        .respondents(List.of(
+                            expectedChangedRespondent,
+                            respondentWithoutSolicitorElement,
+                            respondentWithoutOrganisationElement,
+                            respondentAlreadyUpdatedElement
+                        ))
+                        .build())
+                    .build());
+
+            Map<String, List<Element<AdditionalApplicationsBundle>>> result =
+                underTest.updateAdditionalApplications(caseData, newOrgName, orgName,
+                    newOrgId, orgId, bundleIds);
+
+            assertThat(result).containsEntry("additionalApplicationsBundle",
+                List.of(expectedBundle1, bundleWithoutC2, expectedBundle2));
+        }
     }
 
     @Nested
@@ -444,6 +632,8 @@ class MigrateCaseServiceTest {
         private final String caseRole = "[LAMANAGING]";
         private final String newOrgName = "New Organisation Name";
         private final String prevOrgName = "Previous Organisation Name";
+        private final String laCode = "AB";
+        private final String newLACode = "SA";
         private final UUID elementId1 = UUID.randomUUID();
         private final UUID elementId2 = UUID.randomUUID();
         private final UUID elementId3 = UUID.randomUUID();
@@ -528,11 +718,21 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void updateCaseLocalAuthorityName() {
-            Map<String, String> updatedFields = underTest.updateCaseLocalAuthorityName(newOrgName);
+        void updateCaseLocalAuthority() {
+            Map<String, String> updatedFields = underTest.updateCaseLocalAuthority(newOrgName, laCode);
             String updatedCaseLAName = updatedFields.get("caseLocalAuthorityName");
+            String updatedLACode = updatedFields.get("caseLocalAuthority");
 
             assertThat(updatedCaseLAName).isEqualTo(newOrgName);
+            assertThat(updatedLACode).isEqualTo(laCode);
+        }
+
+        @Test
+        void updateRelatingLA() {
+            Map<String, String> updatedField = underTest.updateRelatingLA(newLACode);
+            String updatedRelatingLA = updatedField.get("relatingLA");
+
+            assertThat(updatedRelatingLA).isEqualTo(newLACode);
         }
     }
 
@@ -991,6 +1191,48 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () -> underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove));
+        }
+
+        @Test
+        void shouldRemoveBothTargetedCaseNotesAndPreserveOtherNote() {
+            UUID secondNoteIdToRemove = UUID.randomUUID();
+            var firstNote = element(noteIdToRemove, CaseNote.builder().note("First note").build());
+            var secondNote = element(secondNoteIdToRemove, CaseNote.builder().note("Second note").build());
+            var retainedNote = element(UUID.randomUUID(), CaseNote.builder().note("Keep this note").build());
+
+            var originalNotes = List.of(firstNote, secondNote, retainedNote);
+            var notesAfterFirstRemoval = List.of(secondNote, retainedNote);
+            var remainingNotes = List.of(retainedNote);
+            CaseData caseData = CaseData.builder().caseNotes(originalNotes).build();
+
+            ReflectionTestUtils.setField(underTest, "caseNoteService", caseNoteService);
+
+            when(caseNoteService.removeCaseNote(noteIdToRemove, caseData.getCaseNotes()))
+                .thenReturn(notesAfterFirstRemoval);
+            when(caseNoteService.removeCaseNote(secondNoteIdToRemove, notesAfterFirstRemoval))
+                .thenReturn(remainingNotes);
+
+            Map<String, Object> updatedFields = underTest.removeCaseNotes(
+                caseData, MIGRATION_ID, noteIdToRemove, secondNoteIdToRemove
+            );
+
+            assertThat(updatedFields).containsEntry("caseNotes", remainingNotes);
+        }
+
+        @Test
+        void shouldValidateBothCaseNotesBeforeRemovingEither() {
+            UUID missingNoteId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .caseNotes(List.of(element(noteIdToRemove, CaseNote.builder().note("Existing note").build())))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCaseNotes(
+                caseData, MIGRATION_ID, noteIdToRemove, missingNoteId
+            ))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("case note " + missingNoteId + " not found");
+
+            Mockito.verifyNoInteractions(caseNoteService);
         }
     }
 
@@ -4918,5 +5160,81 @@ class MigrateCaseServiceTest {
         assertThatThrownBy(() -> underTest.updateChildStatusWithFinalOrderIssued(MIGRATION_ID, caseData))
             .isInstanceOf(AssertionError.class)
             .hasMessage(format("Migration {id = %s, case reference = %s}, no child requires update", MIGRATION_ID, 1L));
+    }
+
+    @Test
+    void shouldUpdateOnlyTheApplicantsOrganisationId() {
+        UUID applicantId = UUID.randomUUID();
+        LocalAuthority applicant = LocalAuthority.builder()
+            .id("OLDORG1")
+            .name("NH Solicitors LLP")
+            .email("family@example.com")
+            .build();
+        Element<LocalAuthority> otherEntry = Element.<LocalAuthority>builder()
+            .id(UUID.randomUUID())
+            .value(LocalAuthority.builder().id("OTHER01").build())
+            .build();
+        CaseData caseData = caseWithApplicant(applicantId, applicant, otherEntry);
+
+        var result = underTest.updateApplicantOrganisationId(caseData, applicantId, "OLDORG1", "NEWORG1");
+
+        assertThat(result.get("localAuthorities")).containsExactly(
+            Element.<LocalAuthority>builder()
+                .id(applicantId)
+                .value(applicant.toBuilder().id("NEWORG1").build())
+                .build(),
+            otherEntry
+        );
+        assertThat(caseData.getLocalAuthorities().get(0).getValue().getId()).isEqualTo("OLDORG1");
+    }
+
+    @Test
+    void shouldLeaveApplicantUnchangedWhenOrganisationIdAlreadyMatches() {
+        UUID applicantId = UUID.randomUUID();
+        CaseData caseData = caseWithApplicant(applicantId, "NEWORG1");
+
+        var result = underTest.updateApplicantOrganisationId(caseData, applicantId, "OLDORG1", "NEWORG1");
+
+        assertThat(result.get("localAuthorities")).isEqualTo(caseData.getLocalAuthorities());
+    }
+
+    @Test
+    void shouldRejectAnUnexpectedApplicantOrganisationId() {
+        UUID applicantId = UUID.randomUUID();
+        CaseData caseData = caseWithApplicant(applicantId, "OTHER01");
+
+        assertThatThrownBy(() ->
+            underTest.updateApplicantOrganisationId(caseData, applicantId, "OLDORG1", "NEWORG1"))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("Unexpected organisation ID for applicant");
+    }
+
+    @Test
+    void shouldRejectAMissingApplicantEntry() {
+        CaseData caseData = caseWithApplicant(UUID.randomUUID(), "OLDORG1");
+        UUID missingApplicantId = UUID.randomUUID();
+
+        assertThatThrownBy(() ->
+            underTest.updateApplicantOrganisationId(caseData, missingApplicantId, "OLDORG1", "NEWORG1"))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("Applicant entry not found");
+    }
+
+    private CaseData caseWithApplicant(UUID applicantId, String orgId) {
+        return CaseData.builder()
+            .localAuthorities(List.of(Element.<LocalAuthority>builder()
+                .id(applicantId)
+                .value(LocalAuthority.builder().id(orgId).build())
+                .build()))
+            .build();
+    }
+
+    private CaseData caseWithApplicant(UUID applicantId, LocalAuthority applicant, Element<LocalAuthority> otherEntry) {
+        return CaseData.builder()
+            .localAuthorities(List.of(
+                Element.<LocalAuthority>builder().id(applicantId).value(applicant).build(),
+                otherEntry
+            ))
+            .build();
     }
 }

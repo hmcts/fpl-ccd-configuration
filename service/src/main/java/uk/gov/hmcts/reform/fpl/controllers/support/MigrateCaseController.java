@@ -16,8 +16,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -31,9 +33,12 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3017", this::run3017,
         "DFPL-3390", this::run3390,
-        "DFPL-3373", this::run3373
+        "DFPL-3373", this::run3373,
+        "DFPL-3419", this::run3419,
+        "DFPL-3425", this::run3425,
+        "DFPL-3405", this::run3405,
+        "DFPL-3407", this::run3407
     );
 
     @PostMapping("/about-to-submit")
@@ -60,17 +65,33 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    public void run3017(CaseDetails caseDetails) {
+    public void run3419(CaseDetails caseDetails) {
         final CaseData caseData = getCaseData(caseDetails);
-        String orgId = "KB2TFNA";
-        String caseRole = CaseRole.LAMANAGING.formattedName();
-        String orgName = "Milton Keynes Council";
-        String newOrgName = "Milton Keynes City Council";
+        final String migrationId = "DFPL-3419";
+        final long expectedCaseId = 1783943081734149L;
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.updateLocalAuthorityPolicy(caseData, orgId,
-                                                                                   caseRole, newOrgName));
-        caseDetails.getData().putAll(migrateCaseService.updateLocalAuthority(caseData, orgName,  newOrgName));
-        caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthorityName(newOrgName));
+        String orgName = "Wakefield Metropolitan District Council";
+        String newOrgName = "Kirklees Council";
+        String orgId = "T1GWH7Y";
+        String newOrgId = "4001R46";
+        String caseRole = CaseRole.SOLICITORA.formattedName();
+        int policyIndex = 0;
+        String laCode = "KKL";
+        List<UUID> bundleIds = List.of(
+            UUID.fromString("727006c8-cca7-4c93-88b2-f5bc2aa216ab"),
+            UUID.fromString("111462e4-bfba-4db4-900a-8ec1bf9bbc9b")
+        );
+
+        caseDetails.getData().putAll(migrateCaseService.updateRespondents(caseData, orgName,
+                                                                          newOrgName, orgId, newOrgId));
+        caseDetails.getData().putAll(migrateCaseService.updateRespondentPolicy(caseData, newOrgId,
+                                                                               caseRole, policyIndex));
+        caseDetails.getData().putAll(migrateCaseService.updateCaseLocalAuthority(newOrgName, laCode));
+        caseDetails.getData().putAll(migrateCaseService.updateRespondentLA(caseData, newOrgName, newOrgId));
+        caseDetails.getData().putAll(migrateCaseService.updateAdditionalApplications(caseData, newOrgName, orgName,
+                                                                                     newOrgId, orgId, bundleIds));
+        caseDetails.getData().putAll(migrateCaseService.updateRelatingLA(laCode));
     }
 
     public void run3390(CaseDetails caseDetails) {
@@ -97,5 +118,53 @@ public class MigrateCaseController extends CallbackController {
             CaseRole.EPSMANAGING.formattedName()
         ));
     }
+
+    private void run3425(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3425";
+        final long expectedCaseId = 1791536916287646L;
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> updatedData = migrateCaseService.removeSubmittedC1Document(caseData, migrationId);
+
+        caseDetails.getData().putAll(updatedData);
+    }
+
+    private void run3405(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3405";
+        final long expectedCaseId = 1752834832377121L;
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        final CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeCaseNotes(
+            caseData,
+            migrationId,
+            UUID.fromString("61daa227-70c4-4a19-92db-c6e1fde60cac"),
+            UUID.fromString("07b396b0-20d0-4a7c-83ae-e5a8d42e8036")
+        ));
+    }
+
+    private void run3407(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3407";
+        final long expectedCaseId = 1773923914594011L;
+        final String oldOrgId = "LJKOQT7";
+        final String newOrgId = "XKCMGVR";
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        final UUID applicantUuid = UUID.fromString("a66928e6-e803-4a21-a783-3b9f02b990b5");
+        final CaseData caseData = getCaseData(caseDetails);
+
+        var applicantUpdate = migrateCaseService.updateApplicantOrganisationId(
+            caseData, applicantUuid, oldOrgId, newOrgId
+        );
+        var policyUpdate = migrateCaseService.updateOutsourcingPolicy(caseData, newOrgId, null);
+
+        caseDetails.getData().putAll(applicantUpdate);
+        caseDetails.getData().putAll(policyUpdate);
+    }
+
 }
 
