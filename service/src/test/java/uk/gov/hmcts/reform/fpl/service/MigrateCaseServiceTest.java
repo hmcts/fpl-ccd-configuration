@@ -1176,7 +1176,26 @@ class MigrateCaseServiceTest {
             Map<String, Object> updatedFields = underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove);
 
             assertThat(updatedFields).extracting("caseNotes").asList().hasSize(0);
+        }
 
+        @Test
+        void shouldRemoveSingleCaseNoteFromList() {
+            Element<CaseNote> testNote0 = element(UUID.randomUUID(), CaseNote.builder().note("testNote0").build());
+            Element<CaseNote> testNote2 = element(UUID.randomUUID(), CaseNote.builder().note("testNote2").build());
+            CaseData caseData = CaseData.builder()
+                .caseNotes(List.of(
+                    testNote0,
+                    element(noteIdToRemove, CaseNote.builder().note("testNote1").build()),
+                    testNote2
+                ))
+                .build();
+
+            when(caseNoteService.removeCaseNote(noteIdToRemove, caseData.getCaseNotes()))
+                .thenReturn(List.of(testNote0, testNote2));
+
+            Map<String, Object> updatedFields = underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove);
+
+            assertThat(updatedFields).containsEntry("caseNotes", List.of(testNote0, testNote2));
         }
 
         @Test
