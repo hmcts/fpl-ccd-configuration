@@ -149,15 +149,17 @@ public class CaseSubmissionController extends CallbackController {
             data.putAll(nocFieldPopulator.generate(caseData, RESPONDENT));
             data.putAll(nocFieldPopulator.generate(caseData, CHILD));
 
-            boolean caseFlagsToggle = featureToggleService.isCaseFlagsEnabled();
-            log.info("Case flags feature flag is {}", caseFlagsToggle);
+            boolean caseFlagsV2Enabled = featureToggleService.isCaseFlagsV2Enabled();
+            log.info("Case flags v2 feature flag is {}", caseFlagsV2Enabled);
 
-            if (caseFlagsToggle && caseFlagsService.caseFlagsSetupRequired(caseData)) {
-                caseFlagsService.setupCaseFlags(caseData);
-                caseFlagsService.processNewlySetCaseFlags(caseData);
+            if (caseFlagsV2Enabled) {
+                if (caseFlagsService.caseFlagsSetupRequired(caseData)) {
+                    caseFlagsService.setupCaseFlags(caseData);
+                    caseFlagsService.processNewlySetCaseFlags(caseData);
+                }
+
+                data.putAll(caseFlagsService.generate(caseData));
             }
-
-            data.putAll(caseFlagsService.generate(caseData));
         }
 
         removeTemporaryFields(caseDetails, DRAFT_APPLICATION_DOCUMENT, "submissionConsentLabel",

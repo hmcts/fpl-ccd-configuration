@@ -7,8 +7,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.caseflag.AllPartyFlags;
 import uk.gov.hmcts.reform.fpl.model.caseflag.CaseFlagsType;
 import uk.gov.hmcts.reform.fpl.model.caseflag.FlagDetailType;
@@ -26,11 +28,17 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.APPLICANT;
+import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.APPLICANT_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.EXTERNAL;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.INTERNAL;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.RESPONDENT1;
 import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.RESPONDENT10;
+import static uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService.REPRESENTATIVE1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_3;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_4;
 import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.ACTIVE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.DISRUPTIVE_CUSTOMER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseFlagConstants.LANGUAGE_INTERPRETER;
@@ -60,6 +68,54 @@ class CaseFlagsServiceTest {
         caseFlagsService.setupCaseFlags(caseData);
 
         assertThat(caseFlagsService.caseFlagsSetupRequired(caseData)).isFalse();
+    }
+
+    @Test
+    void shouldMigrateCaseFlagsWithoutLosingExistingFlagDetails() {
+        CaseFlagsType existingApplicantFlags = flagsWith(LANGUAGE_INTERPRETER);
+        caseData.setAllPartyFlags(AllPartyFlags.builder()
+            .applicantFlags(existingApplicantFlags)
+            .build());
+
+        caseFlagsService.migrateCaseFlags(caseData);
+
+        AllPartyFlags migratedFlags = partyFlags(caseData);
+        assertThat(migratedFlags.getCaseFlags()).isNotNull();
+        assertThat(migratedFlags.getApplicantExternalFlags()).isNotNull();
+        assertThat(migratedFlags.getRespondent1Flags()).isNotNull();
+        assertThat(migratedFlags.getRespondent1ExternalFlags()).isNotNull();
+        assertThat(migratedFlags.getApplicantFlags().getDetails())
+            .extracting(item -> item.getValue().getName())
+            .containsExactly(LANGUAGE_INTERPRETER);
+        assertThat(caseData.getCaseInterpreterRequiredFlag()).isEqualTo(YES);
+    }
+
+    @Test
+    void shouldRollbackAllCaseFlagsV21Fields() {
+        caseFlagsService.setupCaseFlags(caseData);
+        caseData.setCaseInterpreterRequiredFlag(YES);
+        caseData.setCaseAdditionalSecurityFlag(YES);
+
+        caseFlagsService.rollbackCaseFlags(caseData);
+        Map<String, Object> rollback = caseFlagsService.generateRollback();
+
+        assertThat(caseData.getAllPartyFlags()).isNull();
+        assertThat(caseData.getCaseInterpreterRequiredFlag()).isNull();
+        assertThat(caseData.getCaseAdditionalSecurityFlag()).isNull();
+        assertThat(rollback).hasSize(47).containsKeys(
+            "caseFlags",
+            "applicantFlags",
+            "applicantExternalFlags",
+            "applicantRepresentativeFlags",
+            "applicantRepresentativeExternalFlags",
+            "respondent1Flags",
+            "respondent10ExternalFlags",
+            "representative1Flags",
+            "representative10ExternalFlags",
+            "caseInterpreterRequiredFlag",
+            "caseAdditionalSecurityFlag"
+        );
+        assertThat(rollback.values()).containsOnlyNulls();
     }
 
     @Test
@@ -194,6 +250,346 @@ class CaseFlagsServiceTest {
             INTERNAL);
         assertFlag(partyFlags(caseData).getRespondent1ExternalFlags(), "Updated Respondent", RESPONDENT1, RESPONDENT1,
             EXTERNAL);
+    }
+
+    @Test
+    void shouldSetupRepresentativeInternalAndExternalFlags() {
+        caseData = caseData.toBuilder()
+            .representatives(List.of(element(Representative.builder().fullName("Jane Representative").build())))
+            .build();
+
+        caseFlagsService.setupCaseFlags(caseData);
+
+        assertFlag(partyFlags(caseData).getRepresentative1Flags(), "Jane Representative",
+            REPRESENTATIVE1, REPRESENTATIVE1, INTERNAL);
+        assertFlag(partyFlags(caseData).getRepresentative1ExternalFlags(), "Jane Representative",
+            REPRESENTATIVE1, REPRESENTATIVE1, EXTERNAL);
+        assertThat(caseFlagsService.generate(caseData)).containsKeys(
+            "representative1Flags", "representative1ExternalFlags"
+        );
+    }
+
+    @Test
+    void shouldSetupApplicantRepresentativeInternalAndExternalFlags() {
+        caseData = caseData.toBuilder()
+            .legalRepresentatives(List.of(element(LegalRepresentative.builder().fullName("Jane Counsel").build())))
+            .build();
+
+        caseFlagsService.setupCaseFlags(caseData);
+
+        assertFlag(partyFlags(caseData).getApplicantRepresentativeFlags(), "Jane Counsel",
+            APPLICANT_REPRESENTATIVE, APPLICANT_REPRESENTATIVE, INTERNAL);
+        assertFlag(partyFlags(caseData).getApplicantRepresentativeExternalFlags(), "Jane Counsel",
+            APPLICANT_REPRESENTATIVE, APPLICANT_REPRESENTATIVE, EXTERNAL);
+    }
+
+    @Test
+    void shouldDeleteRepresentativeFlagsWhenRepresentativeIsRemoved() {
+        Element<Representative> representative = element(
+            Representative.builder().fullName("Jane Representative").email("jane@example.com").build()
+        );
+        CaseData caseDataBefore = caseData.toBuilder().representatives(List.of(representative)).build();
+        caseFlagsService.setupCaseFlags(caseDataBefore);
+        CaseData updatedCaseData = caseDataBefore.toBuilder().representatives(List.of()).build();
+
+        caseFlagsService.removeObsoleteRepresentativeFlags(updatedCaseData, caseDataBefore);
+
+        assertThat(partyFlags(updatedCaseData).getRepresentative1Flags()).isNull();
+        assertThat(partyFlags(updatedCaseData).getRepresentative1ExternalFlags()).isNull();
+    }
+
+    @Test
+    void shouldDeleteRepresentativeFlagsWhenRepresentativeNameOrEmailChanges() {
+        Element<Representative> representative = element(
+            Representative.builder().fullName("Jane Representative").email("jane@example.com").build()
+        );
+        CaseData caseDataBefore = caseData.toBuilder().representatives(List.of(representative)).build();
+        caseFlagsService.setupCaseFlags(caseDataBefore);
+        Element<Representative> changedRepresentative = element(representative.getId(),
+            Representative.builder().fullName("Jane Updated").email("jane.updated@example.com").build());
+        CaseData updatedCaseData = caseDataBefore.toBuilder()
+            .representatives(List.of(changedRepresentative))
+            .build();
+
+        caseFlagsService.removeObsoleteRepresentativeFlags(updatedCaseData, caseDataBefore);
+
+        assertThat(partyFlags(updatedCaseData).getRepresentative1Flags()).isNull();
+        assertThat(partyFlags(updatedCaseData).getRepresentative1ExternalFlags()).isNull();
+    }
+
+    @Test
+    void shouldKeepRepresentativeFlagsWhenChangedRepresentativeStillRepresentsAnotherRespondent() {
+        Element<Representative> representative = element(
+            Representative.builder().fullName("Jane Representative").email("jane@example.com").build()
+        );
+        Element<Representative> sharedRepresentative = element(
+            Representative.builder().fullName("Jane Representative").email("jane@example.com").build()
+        );
+        CaseData caseDataBefore = caseData.toBuilder()
+            .representatives(List.of(representative, sharedRepresentative))
+            .build();
+        caseFlagsService.setupCaseFlags(caseDataBefore);
+        partyFlags(caseDataBefore).getRepresentative1Flags().setDetails(flagsWith(LANGUAGE_INTERPRETER).getDetails());
+
+        Element<Representative> changedRepresentative = element(representative.getId(),
+            Representative.builder().fullName("Jane Updated").email("jane.updated@example.com").build());
+        CaseData updatedCaseData = caseDataBefore.toBuilder()
+            .representatives(List.of(changedRepresentative, sharedRepresentative))
+            .build();
+
+        caseFlagsService.removeObsoleteRepresentativeFlags(updatedCaseData, caseDataBefore);
+
+        assertThat(partyFlags(updatedCaseData).getRepresentative1Flags()).isNull();
+        assertThat(partyFlags(updatedCaseData).getRepresentative2Flags().getDetails())
+            .isNotNull()
+            .extracting(item -> item.getValue().getName())
+            .containsExactly(LANGUAGE_INTERPRETER);
+    }
+
+    @Test
+    void shouldKeepOneRepresentativeFlagPairWhenRepresentativeRepresentsMultipleRespondents() {
+        Element<Representative> representative1 = element(
+            Representative.builder().fullName("Jane Representative").email("jane@example.com").build()
+        );
+        Element<Representative> representative2 = element(
+            Representative.builder().fullName("Jane Representative").email("jane@example.com").build()
+        );
+        Element<Representative> otherRepresentative = element(
+            Representative.builder().fullName("John Representative").email("john@example.com").build()
+        );
+        CaseData caseDataWithSharedRepresentative = caseData.toBuilder()
+            .representatives(List.of(representative1, representative2, otherRepresentative))
+            .build();
+
+        caseFlagsService.setupCaseFlags(caseDataWithSharedRepresentative);
+
+        assertThat(partyFlags(caseDataWithSharedRepresentative).getRepresentative1Flags()).isNotNull();
+        assertThat(partyFlags(caseDataWithSharedRepresentative).getRepresentative1ExternalFlags()).isNotNull();
+        assertThat(partyFlags(caseDataWithSharedRepresentative).getRepresentative2Flags()).isNull();
+        assertThat(partyFlags(caseDataWithSharedRepresentative).getRepresentative2ExternalFlags()).isNull();
+        assertFlag(partyFlags(caseDataWithSharedRepresentative).getRepresentative3Flags(), "John Representative",
+            "Representative 3", "Representative 3", INTERNAL);
+        assertFlag(partyFlags(caseDataWithSharedRepresentative).getRepresentative3ExternalFlags(),
+            "John Representative", "Representative 3", "Representative 3", EXTERNAL);
+    }
+
+    @Test
+    void shouldKeepEachRepresentativesFlagsWhenThreeRepresentativesSwitchRespondents() {
+        Element<Representative> representative1 = element(Representative.builder()
+            .fullName("Representative 1").email("representative1@example.com")
+            .role(REPRESENTING_RESPONDENT_2).build());
+        Element<Representative> representative2 = element(Representative.builder()
+            .fullName("Representative 2").email("representative2@example.com")
+            .role(REPRESENTING_RESPONDENT_1).build());
+        Element<Representative> representative3 = element(Representative.builder()
+            .fullName("Representative 3").email("representative3@example.com")
+            .role(REPRESENTING_RESPONDENT_3).build());
+        CaseData before = caseData.toBuilder()
+            .representatives(List.of(representative1, representative2, representative3)).build();
+        caseFlagsService.setupCaseFlags(before);
+        AllPartyFlags flags = partyFlags(before);
+        List<CaseFlagsType> originalInternal = List.of(flags.getRepresentative2Flags(),
+            flags.getRepresentative1Flags(), flags.getRepresentative3Flags());
+        List<CaseFlagsType> originalExternal = List.of(flags.getRepresentative2ExternalFlags(),
+            flags.getRepresentative1ExternalFlags(), flags.getRepresentative3ExternalFlags());
+        List<ListTypeItem<FlagDetailType>> internalDetails = IntStream.range(0, 3)
+            .mapToObj(index -> flagsWithStatus("Internal support " + index, ACTIVE).getDetails()).toList();
+        List<ListTypeItem<FlagDetailType>> externalDetails = IntStream.range(0, 3)
+            .mapToObj(index -> flagsWithStatus("External support " + index, "Requested").getDetails()).toList();
+        for (int index = 0; index < 3; index++) {
+            originalInternal.get(index).setDetails(internalDetails.get(index));
+            originalExternal.get(index).setDetails(externalDetails.get(index));
+        }
+        CaseData updated = before.toBuilder().representatives(List.of(
+            element(representative1.getId(), representative1.getValue().toBuilder()
+                .role(REPRESENTING_RESPONDENT_1).build()),
+            element(representative2.getId(), representative2.getValue().toBuilder()
+                .role(REPRESENTING_RESPONDENT_3).build()),
+            element(representative3.getId(), representative3.getValue().toBuilder()
+                .role(REPRESENTING_RESPONDENT_2).build()))).build();
+
+        caseFlagsService.removeObsoleteRepresentativeFlags(updated, before);
+        assertThat(caseFlagsService.caseFlagsSetupRequired(updated)).isTrue();
+        caseFlagsService.setupCaseFlags(updated);
+        // Repeated setup must not duplicate flags or change their owner.
+        caseFlagsService.setupCaseFlags(updated);
+
+        List<CaseFlagsType> updatedInternal = List.of(flags.getRepresentative1Flags(),
+            flags.getRepresentative3Flags(), flags.getRepresentative2Flags());
+        List<CaseFlagsType> updatedExternal = List.of(flags.getRepresentative1ExternalFlags(),
+            flags.getRepresentative3ExternalFlags(), flags.getRepresentative2ExternalFlags());
+        int[] respondentPositions = {1, 3, 2};
+        for (int index = 0; index < 3; index++) {
+            String sectionRole = "Representative " + respondentPositions[index];
+            assertFlag(updatedInternal.get(index), "Representative " + (index + 1), sectionRole, sectionRole, INTERNAL);
+            assertFlag(updatedExternal.get(index), "Representative " + (index + 1), sectionRole, sectionRole, EXTERNAL);
+            assertThat(updatedInternal.get(index).getDetails()).containsExactlyElementsOf(internalDetails.get(index));
+            assertThat(updatedExternal.get(index).getDetails()).containsExactlyElementsOf(externalDetails.get(index));
+        }
+        assertThat(caseFlagsService.caseFlagsSetupRequired(updated)).isFalse();
+    }
+
+    @Test
+    void shouldDeleteOnlyChangedSharedRepresentativeFlagsWhenRepresentativesAreReordered() {
+        Element<Representative> representative1 = element(Representative.builder()
+            .fullName("Representative 1").email("representative1@example.com")
+            .role(REPRESENTING_RESPONDENT_1).build());
+        Element<Representative> representative2ForRespondent2 = element(Representative.builder()
+            .fullName("Representative 2").email("representative2@example.com")
+            .role(REPRESENTING_RESPONDENT_2).build());
+        Element<Representative> representative2ForRespondent3 = element(Representative.builder()
+            .fullName("Representative 2").email("representative2@example.com")
+            .role(REPRESENTING_RESPONDENT_3).build());
+        Element<Representative> representative3 = element(Representative.builder()
+            .fullName("Representative 3").email("representative3@example.com")
+            .role(REPRESENTING_RESPONDENT_4).build());
+        CaseData caseDataBefore = caseData.toBuilder().representatives(List.of(
+            representative1, representative2ForRespondent2, representative2ForRespondent3, representative3)).build();
+        caseFlagsService.setupCaseFlags(caseDataBefore);
+        partyFlags(caseDataBefore).getRepresentative2Flags().setDetails(flagsWith(LANGUAGE_INTERPRETER).getDetails());
+
+        Element<Representative> changedRepresentative2ForRespondent2 = element(
+            representative2ForRespondent2.getId(), Representative.builder()
+                .fullName("Updated representative 2").email("updated.representative2@example.com")
+                .role(REPRESENTING_RESPONDENT_2).build());
+        Element<Representative> changedRepresentative2ForRespondent3 = element(
+            representative2ForRespondent3.getId(), Representative.builder()
+                .fullName("Updated representative 2").email("updated.representative2@example.com")
+                .role(REPRESENTING_RESPONDENT_3).build());
+        CaseData updatedCaseData = caseDataBefore.toBuilder().representatives(List.of(
+            representative1, representative3, changedRepresentative2ForRespondent2,
+            changedRepresentative2ForRespondent3)).build();
+
+        caseFlagsService.removeObsoleteRepresentativeFlags(updatedCaseData, caseDataBefore);
+        caseFlagsService.setupCaseFlags(updatedCaseData);
+
+        assertFlag(partyFlags(updatedCaseData).getRepresentative1Flags(), "Representative 1",
+            "Representative 1", "Representative 1", INTERNAL);
+        assertFlag(partyFlags(updatedCaseData).getRepresentative4Flags(), "Representative 3",
+            "Representative 4", "Representative 4", INTERNAL);
+        assertFlag(partyFlags(updatedCaseData).getRepresentative2Flags(), "Updated representative 2",
+            "Representative 2", "Representative 2", INTERNAL);
+        assertThat(partyFlags(updatedCaseData).getRepresentative2Flags().getDetails()).isNull();
+        assertThat(partyFlags(updatedCaseData).getRepresentative2ExternalFlags().getDetails()).isNull();
+        assertThat(partyFlags(updatedCaseData).getRepresentative3Flags()).isNull();
+        assertThat(partyFlags(updatedCaseData).getRepresentative3ExternalFlags()).isNull();
+    }
+
+    @Test
+    void shouldDeleteRemovedSharedRepresentativeFlagsAndCreateEmptyFlagsWhenTheyAreAddedAgain() {
+        Element<Representative> representative1 = element(Representative.builder()
+            .fullName("Representative 1").email("representative1@example.com")
+            .role(REPRESENTING_RESPONDENT_1).build());
+        Element<Representative> representative2ForRespondent2 = element(Representative.builder()
+            .fullName("Representative 2").email("representative2@example.com")
+            .role(REPRESENTING_RESPONDENT_2).build());
+        Element<Representative> representative2ForRespondent3 = element(Representative.builder()
+            .fullName("Representative 2").email("representative2@example.com")
+            .role(REPRESENTING_RESPONDENT_3).build());
+        Element<Representative> representative3 = element(Representative.builder()
+            .fullName("Representative 3").email("representative3@example.com")
+            .role(REPRESENTING_RESPONDENT_4).build());
+        CaseData caseDataBefore = caseData.toBuilder().representatives(List.of(
+            representative1, representative2ForRespondent2, representative2ForRespondent3, representative3)).build();
+        caseFlagsService.setupCaseFlags(caseDataBefore);
+        partyFlags(caseDataBefore).getRepresentative2Flags().setDetails(flagsWith(LANGUAGE_INTERPRETER).getDetails());
+
+        CaseData caseDataWithoutRepresentative2 = caseDataBefore.toBuilder()
+            .representatives(List.of(representative1, representative3))
+            .build();
+        caseFlagsService.removeObsoleteRepresentativeFlags(caseDataWithoutRepresentative2, caseDataBefore);
+        caseFlagsService.setupCaseFlags(caseDataWithoutRepresentative2);
+
+        assertFlag(partyFlags(caseDataWithoutRepresentative2).getRepresentative1Flags(), "Representative 1",
+            "Representative 1", "Representative 1", INTERNAL);
+        assertFlag(partyFlags(caseDataWithoutRepresentative2).getRepresentative4Flags(), "Representative 3",
+            "Representative 4", "Representative 4", INTERNAL);
+        assertThat(partyFlags(caseDataWithoutRepresentative2).getRepresentative2Flags()).isNull();
+        assertThat(partyFlags(caseDataWithoutRepresentative2).getRepresentative3Flags()).isNull();
+
+        CaseData caseDataWithReplacementRepresentative2 = caseDataWithoutRepresentative2.toBuilder()
+            .representatives(List.of(representative1, representative3, element(Representative.builder()
+                .fullName("Replacement representative 2").email("replacement.representative2@example.com")
+                .role(REPRESENTING_RESPONDENT_3).build())))
+            .build();
+        caseFlagsService.setupCaseFlags(caseDataWithReplacementRepresentative2);
+
+        assertFlag(partyFlags(caseDataWithReplacementRepresentative2).getRepresentative3Flags(),
+            "Replacement representative 2", "Representative 3", "Representative 3", INTERNAL);
+        assertThat(partyFlags(caseDataWithReplacementRepresentative2).getRepresentative3Flags().getDetails()).isNull();
+        assertThat(partyFlags(caseDataWithReplacementRepresentative2).getRepresentative3ExternalFlags().getDetails())
+            .isNull();
+    }
+
+    @Test
+    void shouldDeleteApplicantRepresentativeFlagsWhenLegalRepresentativeIsRemoved() {
+        CaseData caseDataWithLegalRepresentative = caseData.toBuilder()
+            .legalRepresentatives(List.of(element(LegalRepresentative.builder().fullName("Jane Counsel").build())))
+            .build();
+        caseFlagsService.setupCaseFlags(caseDataWithLegalRepresentative);
+        CaseData updatedCaseData = caseDataWithLegalRepresentative.toBuilder()
+            .legalRepresentatives(List.of())
+            .build();
+
+        caseFlagsService.removeObsoleteApplicantRepresentativeFlags(updatedCaseData, caseDataWithLegalRepresentative);
+
+        assertThat(partyFlags(updatedCaseData).getApplicantRepresentativeFlags()).isNull();
+        assertThat(partyFlags(updatedCaseData).getApplicantRepresentativeExternalFlags()).isNull();
+    }
+
+    @Test
+    void shouldCreateEmptyApplicantRepresentativeFlagsWhenRepresentativeIsAddedAfterRemoval() {
+        CaseData caseDataWithLegalRepresentative = caseData.toBuilder()
+            .legalRepresentatives(List.of(element(LegalRepresentative.builder().fullName("Jane Counsel").build())))
+            .build();
+        caseFlagsService.setupCaseFlags(caseDataWithLegalRepresentative);
+        partyFlags(caseDataWithLegalRepresentative).getApplicantRepresentativeFlags()
+            .setDetails(flagsWith(LANGUAGE_INTERPRETER).getDetails());
+        partyFlags(caseDataWithLegalRepresentative).getApplicantRepresentativeExternalFlags()
+            .setDetails(flagsWith(VEXATIOUS_LITIGANT).getDetails());
+
+        CaseData caseDataWithoutRepresentative = caseDataWithLegalRepresentative.toBuilder()
+            .legalRepresentatives(List.of())
+            .build();
+        caseFlagsService.removeObsoleteApplicantRepresentativeFlags(
+            caseDataWithoutRepresentative, caseDataWithLegalRepresentative
+        );
+
+        CaseData caseDataWithReplacement = caseDataWithoutRepresentative.toBuilder()
+            .legalRepresentatives(List.of(element(LegalRepresentative.builder().fullName("John Counsel").build())))
+            .build();
+        caseFlagsService.setupCaseFlags(caseDataWithReplacement);
+
+        assertFlag(partyFlags(caseDataWithReplacement).getApplicantRepresentativeFlags(), "John Counsel",
+            APPLICANT_REPRESENTATIVE, APPLICANT_REPRESENTATIVE, INTERNAL);
+        assertFlag(partyFlags(caseDataWithReplacement).getApplicantRepresentativeExternalFlags(), "John Counsel",
+            APPLICANT_REPRESENTATIVE, APPLICANT_REPRESENTATIVE, EXTERNAL);
+        assertThat(partyFlags(caseDataWithReplacement).getApplicantRepresentativeFlags().getDetails()).isNull();
+        assertThat(partyFlags(caseDataWithReplacement).getApplicantRepresentativeExternalFlags().getDetails()).isNull();
+    }
+
+    @Test
+    void shouldDeleteApplicantRepresentativeFlagsWhenRepresentativeNameOrEmailChanges() {
+        Element<LegalRepresentative> representative = element(
+            LegalRepresentative.builder().fullName("Jane Counsel").email("jane@example.com").build()
+        );
+        CaseData caseDataBefore = caseData.toBuilder().legalRepresentatives(List.of(representative)).build();
+        caseFlagsService.setupCaseFlags(caseDataBefore);
+        partyFlags(caseDataBefore).getApplicantRepresentativeFlags()
+            .setDetails(flagsWith(LANGUAGE_INTERPRETER).getDetails());
+
+        Element<LegalRepresentative> changedRepresentative = element(representative.getId(),
+            LegalRepresentative.builder().fullName("Jane Updated").email("jane.updated@example.com").build());
+        CaseData updatedCaseData = caseDataBefore.toBuilder()
+            .legalRepresentatives(List.of(changedRepresentative))
+            .build();
+
+        caseFlagsService.removeObsoleteApplicantRepresentativeFlags(updatedCaseData, caseDataBefore);
+        caseFlagsService.setupCaseFlags(updatedCaseData);
+
+        assertFlag(partyFlags(updatedCaseData).getApplicantRepresentativeFlags(), "Jane Updated",
+            APPLICANT_REPRESENTATIVE, APPLICANT_REPRESENTATIVE, INTERNAL);
+        assertThat(partyFlags(updatedCaseData).getApplicantRepresentativeFlags().getDetails()).isNull();
     }
 
     @Test
@@ -444,6 +840,11 @@ class CaseFlagsServiceTest {
     }
 
     @Test
+    void shouldGenerateEmptyDataWhenCaseDataIsNull() {
+        assertThat(caseFlagsService.generate(null)).isEmpty();
+    }
+
+    @Test
     void shouldGenerateEmptyDataWhenNoFlagsAreInitialised() {
         CaseData emptyCaseData = CaseData.builder().build();
 
@@ -456,7 +857,7 @@ class CaseFlagsServiceTest {
 
         Map<String, Object> generatedData = caseFlagsService.generate(caseData);
 
-        assertThat(generatedData).containsKeys(
+        assertThat(generatedData).hasSize(23).containsKeys(
             "caseFlags",
             "applicantFlags",
             "applicantExternalFlags",
@@ -481,7 +882,6 @@ class CaseFlagsServiceTest {
             "respondent10Flags",
             "respondent10ExternalFlags"
         );
-        assertThat(generatedData).hasSize(23);
     }
 
     private static Stream<Arguments> interpreterFlagNames() {

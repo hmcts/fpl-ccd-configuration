@@ -176,7 +176,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldSetupAndReturnCaseFlagsWhenFeatureIsEnabledAndSetupIsRequired() {
-        given(featureToggleService.isCaseFlagsEnabled()).willReturn(true);
+        given(featureToggleService.isCaseFlagsV2Enabled()).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetailsForCaseFlags());
         CaseData updatedCaseData = extractCaseData(callbackResponse);
@@ -203,7 +203,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotSetupCaseFlagsWhenFeatureIsDisabled() {
-        given(featureToggleService.isCaseFlagsEnabled()).willReturn(false);
+        given(featureToggleService.isCaseFlagsV2Enabled()).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetailsForCaseFlags());
 
@@ -217,12 +217,12 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         verify(caseFlagsService, never()).caseFlagsSetupRequired(any(CaseData.class));
         verify(caseFlagsService, never()).setupCaseFlags(any(CaseData.class));
         verify(caseFlagsService, never()).processNewlySetCaseFlags(any(CaseData.class));
-        verify(caseFlagsService).generate(any(CaseData.class));
+        verify(caseFlagsService, never()).generate(any(CaseData.class));
     }
 
     @Test
     void shouldGenerateExistingCaseFlagsWithoutSetupWhenSetupIsNotRequired() {
-        given(featureToggleService.isCaseFlagsEnabled()).willReturn(true);
+        given(featureToggleService.isCaseFlagsV2Enabled()).willReturn(true);
         CaseDetails caseDetails = caseDetailsForCaseFlags();
         caseDetails.getData().put("caseFlags", CaseFlagsType.builder().build());
         caseDetails.getData().put("applicantFlags",
@@ -257,7 +257,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldProcessExistingCaseFlagDetailsWhenSetupIsRequired() {
-        given(featureToggleService.isCaseFlagsEnabled()).willReturn(true);
+        given(featureToggleService.isCaseFlagsV2Enabled()).willReturn(true);
         CaseDetails caseDetails = caseDetailsForCaseFlags();
         caseDetails.getData().put("applicantFlags",
             caseFlags(INTERNAL, LANGUAGE_INTERPRETER));
@@ -276,7 +276,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldSkipCaseFlagProcessingWhenCaseSubmissionHasValidationErrors() {
-        given(featureToggleService.isCaseFlagsEnabled()).willReturn(true);
+        given(featureToggleService.isCaseFlagsV2Enabled()).willReturn(true);
         given(featureToggleService.isRestrictedFromCaseSubmission(LOCAL_AUTHORITY_1_CODE)).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetailsForCaseFlags());

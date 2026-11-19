@@ -173,5 +173,159 @@
     "Label": "Respondent 10 External Flags",
     "FieldType": "Flags",
     "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative1Flags",
+    "Label": "Representative 1 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative1ExternalFlags",
+    "Label": "Representative 1 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative2Flags",
+    "Label": "Representative 2 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative2ExternalFlags",
+    "Label": "Representative 2 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative3Flags",
+    "Label": "Representative 3 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative3ExternalFlags",
+    "Label": "Representative 3 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative4Flags",
+    "Label": "Representative 4 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative4ExternalFlags",
+    "Label": "Representative 4 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative5Flags",
+    "Label": "Representative 5 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative5ExternalFlags",
+    "Label": "Representative 5 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative6Flags",
+    "Label": "Representative 6 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative6ExternalFlags",
+    "Label": "Representative 6 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative7Flags",
+    "Label": "Representative 7 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative7ExternalFlags",
+    "Label": "Representative 7 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative8Flags",
+    "Label": "Representative 8 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative8ExternalFlags",
+    "Label": "Representative 8 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative9Flags",
+    "Label": "Representative 9 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative9ExternalFlags",
+    "Label": "Representative 9 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative10Flags",
+    "Label": "Representative 10 Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representative10ExternalFlags",
+    "Label": "Representative 10 External Flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicantRepresentativeFlags",
+    "Label": "Applicant representative flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicantRepresentativeExternalFlags",
+    "Label": "Applicant representative external flags",
+    "FieldType": "Flags",
+    "SecurityClassification": "Public"
   }
 ]

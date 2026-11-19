@@ -165,14 +165,14 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsCaseFlagsEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsCaseFlagsV2Enabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isCaseFlagsEnabled()).isEqualTo(toggleState);
+        assertThat(service.isCaseFlagsV2Enabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("case-flags-enabled"),
+            eq("case-flags-v2-enabled"),
             argThat(ldUser(ENVIRONMENT).build()),
-            eq(true));
+            eq(false));
     }
 
     @Nested

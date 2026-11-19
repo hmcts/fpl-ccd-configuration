@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
@@ -24,6 +25,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 public class CaseFlagsController extends CallbackController {
 
     private final CaseFlagsService caseFlagsService;
+    private final FeatureToggleService featureToggleService;
 
     /**
      * handleAboutToSubmit for creating/managing case flags. Validates flags and sets other flags as needed.
@@ -33,6 +35,9 @@ public class CaseFlagsController extends CallbackController {
      */
     @PostMapping(value = "/aboutToSubmit", consumes = APPLICATION_JSON_VALUE)
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest ccdRequest) {
+        if (!featureToggleService.isCaseFlagsV2Enabled()) {
+            return respond(ccdRequest.getCaseDetails());
+        }
 
         CaseData caseData = getCaseData(ccdRequest);
         caseFlagsService.processNewlySetCaseFlags(caseData);

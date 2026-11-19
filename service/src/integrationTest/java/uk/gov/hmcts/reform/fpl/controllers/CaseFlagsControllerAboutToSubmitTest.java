@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,12 +18,14 @@ import uk.gov.hmcts.reform.fpl.model.caseflag.AllPartyFlags;
 import uk.gov.hmcts.reform.fpl.model.caseflag.CaseFlagsType;
 import uk.gov.hmcts.reform.fpl.model.caseflag.FlagDetailType;
 import uk.gov.hmcts.reform.fpl.model.caseflag.ListTypeItem;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -50,8 +54,16 @@ class CaseFlagsControllerAboutToSubmitTest extends AbstractCallbackTest {
     @SpyBean
     private CaseFlagsService caseFlagsService;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     CaseFlagsControllerAboutToSubmitTest() {
         super("caseFlags");
+    }
+
+    @BeforeEach
+    void enableCaseFlagsV2() {
+        given(featureToggleService.isCaseFlagsV2Enabled()).willReturn(true);
     }
 
     @Test
@@ -88,6 +100,21 @@ class CaseFlagsControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getCaseInterpreterRequiredFlag()).isEqualTo(NO);
         assertThat(responseCaseData.getCaseAdditionalSecurityFlag()).isEqualTo(NO);
         verify(caseFlagsService).processNewlySetCaseFlags(any(CaseData.class));
+    }
+
+    @Test
+    void shouldNotProcessCaseFlagsWhenCaseFlagsV2IsDisabled() throws Exception {
+        given(featureToggleService.isCaseFlagsV2Enabled()).willReturn(false);
+
+        AboutToStartOrSubmitCallbackResponse response = postCaseFlagsAboutToSubmit(CaseDetails.builder()
+            .id(CASE_REFERENCE)
+            .data(caseDetailsData("applicantFlags", caseFlags(SIGN_LANGUAGE_INTERPRETER, ACTIVE)))
+            .build());
+
+        assertThat(response.getData()).doesNotContainKeys(
+            "caseInterpreterRequiredFlag", "caseAdditionalSecurityFlag"
+        );
+        verify(caseFlagsService, never()).processNewlySetCaseFlags(any(CaseData.class));
     }
 
     @Test

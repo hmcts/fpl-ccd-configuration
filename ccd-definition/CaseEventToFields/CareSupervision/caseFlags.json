@@ -926,5 +926,83 @@
     "ShowSummaryChangeOption": "Y",
     "ShowSummary": "Y",
     "RetainHiddenValue": "Yes"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createFlag",
+    "CaseFieldID": "applicantRepresentativeFlags",
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 3,
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "ShowSummaryChangeOption": "Y",
+    "ShowSummary": "Y",
+    "RetainHiddenValue": "Yes"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageFlags",
+    "CaseFieldID": "applicantRepresentativeFlags",
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 5,
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "ShowSummaryChangeOption": "Y",
+    "ShowSummary": "Y",
+    "RetainHiddenValue": "Yes"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createFlag",
+    "CaseFieldID": "applicantRepresentativeExternalFlags",
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 3,
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "ShowSummaryChangeOption": "Y",
+    "ShowSummary": "Y",
+    "RetainHiddenValue": "Yes"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageFlags",
+    "CaseFieldID": "applicantRepresentativeExternalFlags",
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 5,
+    "FieldShowCondition": "flagLauncher=\"hidden\"",
+    "ShowSummaryChangeOption": "Y",
+    "ShowSummary": "Y",
+    "RetainHiddenValue": "Yes"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "requestSupport",
+    "CaseFieldID": "applicantRepresentativeExternalFlags",
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 3,
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "ShowSummaryChangeOption": "Y",
+    "ShowSummary": "Y",
+    "RetainHiddenValue": "Yes"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageSupport",
+    "CaseFieldID": "applicantRepresentativeExternalFlags",
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 5,
+    "FieldShowCondition": "flagLauncherExternal=\"hidden\"",
+    "ShowSummaryChangeOption": "Y",
+    "ShowSummary": "Y",
+    "RetainHiddenValue": "Yes"
   }
 ]
