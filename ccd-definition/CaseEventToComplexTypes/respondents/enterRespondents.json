@@ -276,7 +276,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.firstName",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -285,7 +285,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.lastName",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -293,9 +293,9 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.email",
-    "EventElementLabel": "*Email address",
+    "EventElementLabel": "Email address",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
