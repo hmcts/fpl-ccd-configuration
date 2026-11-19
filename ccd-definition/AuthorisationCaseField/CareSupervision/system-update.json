@@ -4771,13 +4771,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "outsourcingPolicyLA",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "reviewNextHearing",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRU"
