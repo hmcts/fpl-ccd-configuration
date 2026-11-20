@@ -87,32 +87,33 @@ test.describe('Query management', () => {
                 await queryManagement.tabNavigation('Case File View');
                 await expect(queryManagement.page.getByText('Uncategorised documents')).toBeHidden();
             });
-            await test.step('CTSC user respond to the query raised', async () => {
+            if(testConfig.waEnabled) {
+                await test.step('CTSC user respond to the query raised', async () => {
 
-                await queryManagement.clickSignOut();
-                await signInPage.login(CTSCUser.email, CTSCUser.password);
-                await signInPage.navigateToCaseDetails(caseNumber);
-                await queryManagement.tabNavigation('Tasks');
-                await queryManagement.waitForTask('Respond to a Query');
-                await queryManagement.assignToMe();
+                    await queryManagement.clickSignOut();
+                    await signInPage.login(CTSCUser.email, CTSCUser.password);
+                    await signInPage.navigateToCaseDetails(caseNumber);
+                    await queryManagement.tabNavigation('Tasks');
+                    await queryManagement.waitForTask('Respond to a Query');
+                    await queryManagement.assignToMe();
 
-                await queryManagement.respondToQuery(false);
+                    await queryManagement.respondToQuery(false);
 
-                await expect(queryManagement.page.getByRole('heading', {name: 'Query response submitted'})).toBeVisible();
-                await expect(queryManagement.page.getByText('This query response has been added to the case')).toBeVisible();
-            })
+                    await expect(queryManagement.page.getByRole('heading', {name: 'Query response submitted'})).toBeVisible();
+                    await expect(queryManagement.page.getByText('This query response has been added to the case')).toBeVisible();
+                })
 
 
-            await test.step('Assert query response are visible under query tab', async () => {
+                await test.step('Assert query response are visible under query tab', async () => {
 
-                await queryManagement.backToCaseDetailsLink.click();
-                await queryManagement.tabNavigation('Queries');
-                await expect(queryManagement.page.getByText('Responded')).toBeVisible();
-                await queryManagement.expandQuery('Birth certificate format');
-                await expect(queryManagement.page.getByText('Response', {exact: true})).toBeVisible();
-                await expect(queryManagement.page.getByText('Answered to the query raised by LA')).toBeVisible();
-            });
-
+                    await queryManagement.backToCaseDetailsLink.click();
+                    await queryManagement.tabNavigation('Queries');
+                    await expect(queryManagement.page.getByText('Responded')).toBeVisible();
+                    await queryManagement.expandQuery('Birth certificate format');
+                    await expect(queryManagement.page.getByText('Response', {exact: true})).toBeVisible();
+                    await expect(queryManagement.page.getByText('Answered to the query raised by LA')).toBeVisible();
+                });
+            }
 
         });
     test('LA raise follow up query',
@@ -153,26 +154,28 @@ test.describe('Query management', () => {
                 await queryManagement.tabNavigation('Queries');
                 await expect(page.getByRole('button', {name: 'Birth certificate format'})).toBeHidden();
             });
-            await test.step('CTSC user respond to the follow up query raised', async () => {
-                await queryManagement.clickSignOut();
-                await signInPage.login(CTSCUser.email, CTSCUser.password);
-                await signInPage.navigateToCaseDetails(caseNumber);
-                await queryManagement.tabNavigation('Tasks');
-                await queryManagement.waitForTask('Respond to a Query');
-                await queryManagement.assignToMe();
-                await queryManagement.respondToQuery(true);
-            });
-            await test.step('Assert follow up query response are visible under query tab', async () => {
-                await queryManagement.goBackToCaseDetails();
-                await queryManagement.tabNavigation('Queries');
+            if (testConfig.waEnabled) {
+                await test.step('CTSC user respond to the follow up query raised', async () => {
+                    await queryManagement.clickSignOut();
+                    await signInPage.login(CTSCUser.email, CTSCUser.password);
+                    await signInPage.navigateToCaseDetails(caseNumber);
+                    await queryManagement.tabNavigation('Tasks');
+                    await queryManagement.waitForTask('Respond to a Query');
+                    await queryManagement.assignToMe();
+                    await queryManagement.respondToQuery(true);
+                });
+                await test.step('Assert follow up query response are visible under query tab', async () => {
+                    await queryManagement.goBackToCaseDetails();
+                    await queryManagement.tabNavigation('Queries');
 
-                await expect(page.getByText('Closed')).toBeVisible();
-                await queryManagement.expandQuery('query by LA');
-                //   await queryManagement.page.getByRole('button', {name: ''}).click();
-                await expect(page.getByText('Response', {exact: true})).toHaveCount(2);
-                await expect(page.getByText('Answered to the query raised by LA')).toBeVisible();
-                await expect(queryManagement.page.getByText('This query has been closed by HMCTS staff.')).toBeVisible();
-            })
+                    await expect(page.getByText('Closed')).toBeVisible();
+                    await queryManagement.expandQuery('query by LA');
+                    //   await queryManagement.page.getByRole('button', {name: ''}).click();
+                    await expect(page.getByText('Response', {exact: true})).toHaveCount(2);
+                    await expect(page.getByText('Answered to the query raised by LA')).toBeVisible();
+                    await expect(queryManagement.page.getByText('This query has been closed by HMCTS staff.')).toBeVisible();
+                })
+            }
 
         });
 

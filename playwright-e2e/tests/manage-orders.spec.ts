@@ -5,6 +5,7 @@ import caseWithOrderData from '../caseData/caseWithAllTypesOfOrders.json' with {
 import caseDataWithPlacementApplication from '../caseData/caseWithPlacementApplication.json' with {type: 'json'};
 import { expect } from "@playwright/test";
 import { createCase, updateCase } from "../utils/api-helper";
+import {testConfig} from "../settings/test-config";
 
 test.describe('manage orders', () => {
     const dateTime = new Date().toISOString();
@@ -768,13 +769,13 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c45a_parental_responsibility_order.pdf' })).toBeVisible();
-
-        await signInPage.logout();
-        await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateToCaseDetails(caseNumber);
-
-        await orders.tabNavigation('Tasks');
-        await orders.waitForTask('Review Order (CTSC)');
+        if(testConfig.waEnabled) {
+            await signInPage.logout();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateToCaseDetails(caseNumber);
+            await orders.tabNavigation('Tasks');
+            await orders.waitForTask('Review Order (CTSC)');
+        }
 
     })
 
@@ -800,13 +801,14 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(page.getByRole('button', { name: 'c43a_special_guardianship_order.pdf', exact: true })).toBeVisible();
+        if (testConfig.waEnabled) {
+            await signInPage.logout();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateToCaseDetails(caseNumber);
 
-        await signInPage.logout();
-        await signInPage.login(CTSCUser.email, CTSCUser.password);
-        await signInPage.navigateToCaseDetails(caseNumber);
-
-        await orders.tabNavigation('Tasks');
-        await orders.waitForTask('Review Order (CTSC)')
+            await orders.tabNavigation('Tasks');
+            await orders.waitForTask('Review Order (CTSC)');
+        }
 
     })
 
