@@ -6,10 +6,13 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.JudgeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.event.AllocateJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 
@@ -62,6 +65,26 @@ public class ReviewAdditionalApplicationControllerAboutToStartTest extends Abstr
             .isEqualTo(initFieldMap.get("onlyOneApplicationToBeReviewed"));
         assertThat(resultEventData.getAdditionalApplicationToBeReviewedList())
             .isEqualTo(initFieldMap.get("additionalApplicationToBeReviewedList"));
+    }
+
+    @Test
+    void shouldClearPreviousJudgeDetailsWhenStartingEvent() {
+        CaseData caseData = CaseData.builder()
+            .allocateJudgeEventData(new AllocateJudgeEventData(
+                JudgeType.LEGAL_ADVISOR,
+                null,
+                null,
+                Judge.builder()
+                    .judgeFullName("Previous Legal Adviser")
+                    .build()
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response =
+            postAboutToStartEvent(caseData);
+
+        assertThat(response.getData())
+            .doesNotContainKeys("judgeType", "manualJudgeDetails");
     }
 
 }
