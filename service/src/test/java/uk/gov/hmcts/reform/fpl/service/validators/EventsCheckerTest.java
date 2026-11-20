@@ -126,18 +126,6 @@ class EventsCheckerTest {
 
     @ParameterizedTest
     @MethodSource("getEventsValidators")
-    void shouldCheckEventIsInProgress(Event event, EventChecker validator) {
-        final boolean isInProgress = RandomUtils.nextBoolean();
-
-        when(validator.isStarted(caseData)).thenReturn(isInProgress);
-
-        assertThat(eventsChecker.isInProgress(event, caseData)).isEqualTo(isInProgress);
-
-        verify(validator).isStarted(caseData);
-    }
-
-    @ParameterizedTest
-    @MethodSource("getEventsValidators")
     void shouldCheckEventIsAvailableAndShouldNotValidateAgainstDocumentsChecker(Event event, EventChecker validator) {
         final boolean isAvailable = RandomUtils.nextBoolean();
 

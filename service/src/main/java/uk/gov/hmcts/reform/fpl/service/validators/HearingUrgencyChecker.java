@@ -14,7 +14,6 @@ import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType.SAME_DAY;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType.URGENT;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
-import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Component
 public class HearingUrgencyChecker extends PropertiesChecker {
@@ -28,14 +27,6 @@ public class HearingUrgencyChecker extends PropertiesChecker {
         } else {
             return errMsg;
         }
-    }
-
-    @Override
-    public boolean isStarted(CaseData caseData) {
-        final Hearing hearing = caseData.getHearing();
-
-        return !isEmpty(hearing)
-               && anyNonEmpty(hearing.getHearingUrgencyType(), hearing.getRespondentsAware());
     }
 
     @Override

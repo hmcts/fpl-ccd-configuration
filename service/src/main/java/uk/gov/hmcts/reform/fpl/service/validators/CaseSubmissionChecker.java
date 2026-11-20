@@ -36,11 +36,6 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
     }
 
     @Override
-    public boolean isStarted(CaseData caseData) {
-        return isNotEmpty(caseData.getDateSubmitted());
-    }
-
-    @Override
     public boolean isCompleted(CaseData caseData) {
         return isNotEmpty(caseData.getDateSubmitted());
     }

@@ -80,28 +80,6 @@ class CourtSelectionCheckerTest {
         }
     }
 
-    @Nested
-    class IsStarted {
-
-        @Test
-        void shouldReturnTrueWhenCaseHasDesignatedCourtSelected() {
-            final CaseData caseData = CaseData.builder()
-                .court(court)
-                .build();
-
-            assertThat(courtSelectionChecker.isStarted(caseData)).isTrue();
-        }
-
-        @Test
-        void shouldReturnFalseWhenCaseHasNotDesignatedCourtSelected() {
-            final CaseData caseData = CaseData.builder()
-                .court(null)
-                .build();
-
-            assertThat(courtSelectionChecker.isStarted(caseData)).isFalse();
-        }
-    }
-
     @Test
     void shouldMarkCompletedTaskAsFinished() {
         assertThat(courtSelectionChecker.completedState()).isEqualTo(TaskState.COMPLETED_FINISHED);

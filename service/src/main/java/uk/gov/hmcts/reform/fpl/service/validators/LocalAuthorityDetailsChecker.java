@@ -13,7 +13,6 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -143,10 +142,5 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
         }
 
         return errors;
-    }
-
-    @Override
-    public boolean isStarted(CaseData caseData) {
-        return isNotEmpty(unwrapElements(caseData.getLocalAuthorities()));
     }
 }

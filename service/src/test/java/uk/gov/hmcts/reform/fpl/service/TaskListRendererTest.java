@@ -34,7 +34,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.Task.task;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
-import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
@@ -44,27 +43,25 @@ class TaskListRendererTest {
     private final FeatureToggleService toggleService = mock(FeatureToggleService.class);
 
     private final TaskListRenderer taskListRenderer = new TaskListRenderer(
-        new TaskListRenderElements(
-            "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/"
-        ), toggleService);
+        new TaskListRenderElements(), toggleService);
 
     @Nested
     class WithLocalAuthority {
         private final List<Task> tasks = List.of(
             task(CASE_NAME, COMPLETED_FINISHED),
-            task(ORDERS_SOUGHT, IN_PROGRESS),
+            task(ORDERS_SOUGHT, NOT_STARTED),
             task(HEARING_URGENCY, COMPLETED_FINISHED),
             task(GROUNDS, COMPLETED),
-            task(RISK_AND_HARM, IN_PROGRESS),
+            task(RISK_AND_HARM, NOT_STARTED),
             task(APPLICATION_DOCUMENTS, COMPLETED),
             task(APPLICANT_DETAILS_LA, COMPLETED),
             task(CHILDREN, COMPLETED),
-            task(RESPONDENTS, IN_PROGRESS),
+            task(RESPONDENTS, NOT_STARTED),
             task(ALLOCATION_PROPOSAL, COMPLETED),
             task(OTHER_PROCEEDINGS, NOT_STARTED),
-            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+            task(INTERNATIONAL_ELEMENT, NOT_STARTED),
             task(OTHERS, NOT_STARTED),
-            task(COURT_SERVICES, IN_PROGRESS),
+            task(COURT_SERVICES, NOT_STARTED),
             task(SUBMIT_APPLICATION, NOT_AVAILABLE),
             task(LANGUAGE_REQUIREMENTS, COMPLETED_FINISHED));
 
@@ -95,19 +92,19 @@ class TaskListRendererTest {
 
         private final List<Task> tasks = List.of(
             task(CASE_NAME, COMPLETED_FINISHED),
-            task(ORDERS_SOUGHT, IN_PROGRESS),
+            task(ORDERS_SOUGHT, NOT_STARTED),
             task(HEARING_URGENCY, COMPLETED_FINISHED),
             task(GROUNDS, COMPLETED),
-            task(RISK_AND_HARM, IN_PROGRESS),
+            task(RISK_AND_HARM, NOT_STARTED),
             task(APPLICATION_DOCUMENTS, COMPLETED),
             task(APPLICANT_DETAILS_LA, COMPLETED),
             task(CHILDREN, COMPLETED),
-            task(RESPONDENTS, IN_PROGRESS),
+            task(RESPONDENTS, NOT_STARTED),
             task(ALLOCATION_PROPOSAL, COMPLETED),
             task(OTHER_PROCEEDINGS, NOT_STARTED),
-            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+            task(INTERNATIONAL_ELEMENT, NOT_STARTED),
             task(OTHERS, NOT_STARTED),
-            task(COURT_SERVICES, IN_PROGRESS),
+            task(COURT_SERVICES, NOT_STARTED),
             task(SUBMIT_APPLICATION, NOT_AVAILABLE),
             task(LANGUAGE_REQUIREMENTS, COMPLETED_FINISHED)
         );
@@ -140,19 +137,19 @@ class TaskListRendererTest {
 
         private final List<Task> tasks = List.of(
             task(CASE_NAME, COMPLETED_FINISHED),
-            task(ORDERS_SOUGHT, IN_PROGRESS),
+            task(ORDERS_SOUGHT, NOT_STARTED),
             task(HEARING_URGENCY, COMPLETED_FINISHED),
             task(GROUNDS, COMPLETED),
-            task(RISK_AND_HARM, IN_PROGRESS),
+            task(RISK_AND_HARM, NOT_STARTED),
             task(APPLICATION_DOCUMENTS, COMPLETED),
             task(APPLICANT_DETAILS_LA, COMPLETED),
             task(CHILDREN, COMPLETED),
-            task(RESPONDENTS, IN_PROGRESS),
+            task(RESPONDENTS, NOT_STARTED),
             task(ALLOCATION_PROPOSAL, COMPLETED),
             task(OTHER_PROCEEDINGS, NOT_STARTED),
-            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+            task(INTERNATIONAL_ELEMENT, NOT_STARTED),
             task(OTHERS, NOT_STARTED),
-            task(COURT_SERVICES, IN_PROGRESS),
+            task(COURT_SERVICES, NOT_STARTED),
             task(SUBMIT_APPLICATION, NOT_AVAILABLE),
             task(SELECT_COURT, COMPLETED_FINISHED),
             task(LANGUAGE_REQUIREMENTS, COMPLETED_FINISHED)
@@ -192,17 +189,17 @@ class TaskListRendererTest {
 
         private final List<Task> tasks = List.of(
             task(CASE_NAME, COMPLETED_FINISHED),
-            task(ORDERS_SOUGHT, IN_PROGRESS),
+            task(ORDERS_SOUGHT, NOT_STARTED),
             task(HEARING_URGENCY, COMPLETED_FINISHED),
             task(APPLICATION_DOCUMENTS, COMPLETED),
             task(APPLICANT_DETAILS_LA, COMPLETED),
             task(CHILDREN, COMPLETED),
-            task(RESPONDENTS, IN_PROGRESS),
+            task(RESPONDENTS, NOT_STARTED),
             task(ALLOCATION_PROPOSAL, COMPLETED),
             task(OTHER_PROCEEDINGS, NOT_STARTED),
-            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+            task(INTERNATIONAL_ELEMENT, NOT_STARTED),
             task(OTHERS, NOT_STARTED),
-            task(COURT_SERVICES, IN_PROGRESS),
+            task(COURT_SERVICES, NOT_STARTED),
             task(SUBMIT_APPLICATION, NOT_AVAILABLE),
             task(LANGUAGE_REQUIREMENTS, COMPLETED_FINISHED)
         );
