@@ -157,6 +157,287 @@ class ManageLegalCounselServiceTest {
                     .hasSize(1)
                     .contains(UPDATED_LEGAL_COUNSELLOR);
         }
+
+        @Test
+        void shouldUpdateRespondentBCounselWithoutChangingThirdPartyApplicantCounsel() {
+
+            String applicantOrgId = "THIRD_PARTY_ORG";
+
+            OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(applicantOrgId)
+                    .build())
+                .build();
+
+            LocalAuthority applicant = LocalAuthority.builder()
+                .id(applicantOrgId)
+                .name("Third Party Applicant")
+                .legalCounsellors(List.of(TEST_LEGAL_COUNSELLOR))
+                .build();
+
+            CaseData caseData = buildCaseData().toBuilder()
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .outsourcingPolicy(outsourcingPolicy)
+                .localAuthorities(List.of(element(applicant)))
+                .build();
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORB));
+
+            when(caseRoleLookupService.getCaseSolicitorRolesByCaseRoles(Set.of(SOLICITORB)))
+                .thenReturn(List.of(SolicitorRole.SOLICITORB));
+
+
+            when(organisationService.findUserByEmail(
+                TEST_LEGAL_COUNSELLOR.getValue().getEmail()
+            )).thenReturn(Optional.of(USER_ID));
+
+            underTest.updateLegalCounsel(caseDetails);
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            assertThat(updatedCaseData.getAllRespondents().get(1).getValue().getLegalCounsellors())
+                .containsExactly(UPDATED_LEGAL_COUNSELLOR);
+
+            assertThat(updatedCaseData.getAllRespondents().get(0).getValue().getLegalCounsellors())
+                .isNull();
+
+            assertThat(updatedCaseData.getLocalAuthorities().get(0).getValue().getLegalCounsellors())
+                .containsExactly(TEST_LEGAL_COUNSELLOR);
+        }
+
+        @Test
+        void shouldRejectThirdPartyApplicantSolicitorFromUpdatingRespondentCounsel() {
+            String applicantOrgId = "THIRD_PARTY_ORG";
+
+            OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(applicantOrgId)
+                    .build())
+                .build();
+
+            LocalAuthority applicant = LocalAuthority.builder()
+                .id(applicantOrgId)
+                .name("Third Party Applicant")
+                .build();
+
+            CaseData caseData = buildCaseData().toBuilder()
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .outsourcingPolicy(outsourcingPolicy)
+                .localAuthorities(List.of(element(applicant)))
+                .build();
+            caseData = withRespondentSolicitorOrganisation(caseData, "RESPONDENT_ORG");
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            when(caseRoleLookupService.getCaseSolicitorRolesByCaseRoles(Set.of(SOLICITORA)))
+                .thenReturn(List.of(SolicitorRole.SOLICITORA));
+
+            uk.gov.hmcts.reform.rd.model.Organisation userOrganisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(userOrganisation.getOrganisationIdentifier())
+                .thenReturn(applicantOrgId);
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(userOrganisation));
+
+            when(organisationService.findUserByEmail(
+                TEST_LEGAL_COUNSELLOR.getValue().getEmail()
+            )).thenReturn(Optional.of(USER_ID));
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(caseData))
+                    .build());
+
+            assertThatThrownBy(() -> underTest.updateLegalCounsel(caseDetails))
+                .isInstanceOf(AuthorizationException.class)
+                .hasMessageContaining(
+                    "Current user is not authorised to manage Respondent legal counsel"
+                );
+        }
+
+        @Test
+        void shouldAllowRespondentSolicitorFromDifferentOrganisationToUpdateCounsel() {
+            String applicantOrgId = "THIRD_PARTY_ORG";
+
+            OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(applicantOrgId)
+                    .build())
+                .build();
+
+            CaseData caseData = buildCaseData().toBuilder()
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .outsourcingPolicy(outsourcingPolicy)
+                .build();
+
+            caseData = withRespondentSolicitorOrganisation(caseData, "RESPONDENT_ORG");
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            when(caseRoleLookupService.getCaseSolicitorRolesByCaseRoles(Set.of(SOLICITORA)))
+                .thenReturn(List.of(SolicitorRole.SOLICITORA));
+
+            uk.gov.hmcts.reform.rd.model.Organisation userOrganisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(userOrganisation.getOrganisationIdentifier())
+                .thenReturn("RESPONDENT_ORG");
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(userOrganisation));
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(caseData))
+                    .build());
+
+            when(organisationService.findUserByEmail(
+                TEST_LEGAL_COUNSELLOR.getValue().getEmail()
+            )).thenReturn(Optional.of(USER_ID));
+
+            underTest.updateLegalCounsel(caseDetails);
+
+            CaseData updatedCaseData = caseConverter.convert(caseDetails);
+
+            assertThat(updatedCaseData.getAllRespondents().get(0)
+                .getValue().getLegalCounsellors())
+                .containsExactly(UPDATED_LEGAL_COUNSELLOR);
+        }
+
+        @Test
+        void shouldRejectThirdPartyApplicantSolicitorFromRetrievingRespondentCounsel() {
+            String applicantOrgId = "THIRD_PARTY_ORG";
+
+            OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(applicantOrgId)
+                    .build())
+                .build();
+
+            CaseData caseData = withRespondentSolicitorOrganisation(
+                buildCaseData().toBuilder()
+                    .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                    .outsourcingPolicy(outsourcingPolicy)
+                    .build(),
+                "RESPONDENT_ORG"
+            );
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            uk.gov.hmcts.reform.rd.model.Organisation userOrganisation =
+                mock(uk.gov.hmcts.reform.rd.model.Organisation.class);
+
+            when(userOrganisation.getOrganisationIdentifier())
+                .thenReturn(applicantOrgId);
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.of(userOrganisation));
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(CaseDetails.builder()
+                    .id(TEST_CASE_ID)
+                    .data(caseConverter.toMap(caseData))
+                    .build());
+
+            assertThatThrownBy(() ->
+                underTest.retrieveLegalCounselForLoggedInSolicitor(caseData)
+            )
+                .isInstanceOf(AuthorizationException.class)
+                .hasMessageContaining(
+                    "Current user is not authorised to manage Respondent legal counsel"
+                );
+        }
+
+
+        @Test
+        void shouldRejectRespondentCounselAccessWhenRespondentSolicitorOrganisationIsMissing() {
+            CaseData caseData = buildCaseData().toBuilder()
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .outsourcingPolicy(null)
+                .build();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(caseDetails);
+
+            assertThatThrownBy(() -> underTest.updateLegalCounsel(caseDetails))
+                .isInstanceOf(AuthorizationException.class)
+                .hasMessageContaining(
+                    "Unable to identify Respondent 1 solicitor organisation"
+                );
+        }
+
+
+        @Test
+        void shouldRejectRespondentCounselAccessWhenCurrentUserOrganisationIsMissing() {
+            String applicantOrgId = "THIRD_PARTY_ORG";
+
+            OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(applicantOrgId)
+                    .build())
+                .build();
+
+            CaseData caseData = buildCaseData().toBuilder()
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .outsourcingPolicy(outsourcingPolicy)
+                .build();
+
+            caseData = withRespondentSolicitorOrganisation(caseData, "RESPONDENT_ORG");
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(TEST_CASE_ID)
+                .data(caseConverter.toMap(caseData))
+                .build();
+
+            when(caseAccessService.getUserCaseRoles(TEST_CASE_ID))
+                .thenReturn(Set.of(SOLICITORA));
+
+            when(coreCaseDataService.findCaseDetailsById(TEST_CASE_ID.toString()))
+                .thenReturn(caseDetails);
+
+            when(organisationService.findOrganisation())
+                .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> underTest.updateLegalCounsel(caseDetails))
+                .isInstanceOf(AuthorizationException.class)
+                .hasMessageContaining(
+                    "Unable to identify current user's organisation"
+                );
+        }
+
+
+
     }
 
     @Nested
@@ -1389,6 +1670,32 @@ class ManageLegalCounselServiceTest {
                 .isInstanceOf(AuthorizationException.class)
                 .hasMessage("Current user is not authorised to manage Applicant legal counsel");
         }
+    }
+
+    private CaseData withRespondentSolicitorOrganisation(
+        CaseData caseData, String organisationId) {
+
+        List<Element<Respondent>> respondents = caseData.getAllRespondents();
+
+        Element<Respondent> firstRespondent = respondents.get(0);
+
+        Respondent updatedRespondent = firstRespondent.getValue().toBuilder()
+            .solicitor(uk.gov.hmcts.reform.fpl.model.RespondentSolicitor.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(organisationId)
+                    .build())
+                .build())
+            .build();
+
+        List<Element<Respondent>> updatedRespondents =
+            new java.util.ArrayList<>(respondents);
+
+        updatedRespondents.set(0,
+            element(firstRespondent.getId(), updatedRespondent));
+
+        return caseData.toBuilder()
+            .respondents1(updatedRespondents)
+            .build();
     }
 
     private CaseData buildCaseData() {

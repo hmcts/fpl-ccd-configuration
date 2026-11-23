@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,10 +77,14 @@ public class ManageLegalCounselService {
     private final CoreCaseDataService coreCaseDataService;
 
     public List<Element<LegalCounsellor>> retrieveLegalCounselForLoggedInSolicitor(CaseData caseData) {
-        Long caseId = caseData.getId();
-        Set<CaseRole> caseRoles = caseAccessService.getUserCaseRoles(caseId);
-        // if we are adding more condition in the future,
-        // we can use strategy design pattern instead of having the same if-else in every method
+        Set<CaseRole> caseRoles = caseAccessService.getUserCaseRoles(caseData.getId());
+
+        validateRespondentCounselAccess(caseData, caseRoles);
+
+        return retrieveLegalCounsel(caseData, caseRoles);
+    }
+
+    private List<Element<LegalCounsellor>> retrieveLegalCounsel(CaseData caseData, Set<CaseRole> caseRoles) {
         if (isBarrister(caseRoles)) {
             return retrieveLegalCounselForBarrister(caseData);
         } else {
@@ -125,11 +130,14 @@ public class ManageLegalCounselService {
         CaseData caseData = caseConverter.convert(caseDetails);
         Long caseId = caseData.getId();
 
+        Set<CaseRole> caseRoles = caseAccessService.getUserCaseRoles(caseId);
+
+        validateRespondentCounselAccess(caseData, caseRoles);
+
         List<Element<LegalCounsellor>> legalCounsellors = populateWithUserIds(
             caseData.getManageLegalCounselEventData().getLegalCounsellors()
         );
 
-        Set<CaseRole> caseRoles = caseAccessService.getUserCaseRoles(caseId);
         if (isBarrister(caseRoles)) {
             updateLegalCounselForBarrister(caseDetails, caseData, legalCounsellors);
         } else {
@@ -137,6 +145,48 @@ public class ManageLegalCounselService {
         }
 
         caseDetails.getData().remove("legalCounsellors");
+    }
+
+    private void validateRespondentCounselAccess(CaseData caseData, Set<CaseRole> caseRoles) {
+
+        if (!caseRoles.contains(CaseRole.SOLICITORA)) {
+            return;
+        }
+
+        CaseData persistedCaseData = Objects.requireNonNull(
+            caseConverter.convert(
+                coreCaseDataService.findCaseDetailsById(caseData.getId().toString())
+            ),
+            "Persisted Case data must not be null"
+        );
+
+        if (!isThirdPartyApplication(persistedCaseData)) {
+            return;
+        }
+
+        String respondentSolicitorOrgId = persistedCaseData.getAllRespondents().stream()
+            .findFirst()
+            .map(Element::getValue)
+            .map(Respondent::getSolicitor)
+            .map(RespondentSolicitor::getOrganisation)
+            .map(uk.gov.hmcts.reform.ccd.model.Organisation::getOrganisationID)
+            .filter(orgId -> !orgId.isBlank())
+            .orElseThrow(() -> new AuthorizationException(
+                "Unable to identify Respondent 1 solicitor organisation"
+            ));
+
+        String currentUserOrgId = organisationService.findOrganisation()
+            .map(Organisation::getOrganisationIdentifier)
+            .filter(orgId -> !orgId.isBlank())
+            .orElseThrow(() -> new AuthorizationException(
+                "Unable to identify current user's organisation"
+            ));
+
+        if (!respondentSolicitorOrgId.equals(currentUserOrgId)) {
+            throw new AuthorizationException(
+                "Current user is not authorised to manage Respondent legal counsel"
+            );
+        }
     }
 
     private void updateLegalCounselForSolicitorRoles(CaseDetails caseDetails, CaseData caseData,
@@ -260,11 +310,13 @@ public class ManageLegalCounselService {
             .map(Organisation::getName)
             .orElseThrow();
 
+        Set<CaseRole> caseRoles = caseAccessService.getUserCaseRoles(currentCaseData.getId());
+
         List<LegalCounsellor> currentLegalCounsellors = unwrapElements(
-            retrieveLegalCounselForLoggedInSolicitor(currentCaseData)
+            retrieveLegalCounsel(currentCaseData, caseRoles)
         );
         List<LegalCounsellor> previousLegalCounsellors = unwrapElements(
-            retrieveLegalCounselForLoggedInSolicitor(previousCaseData)
+            retrieveLegalCounsel(previousCaseData, caseRoles)
         );
 
         // Revoke case access from all removed legal counsellors
@@ -274,7 +326,7 @@ public class ManageLegalCounselService {
                 new LegalCounsellorRemoved(currentCaseData, orgName, counsellor, previousCaseData)
             ));
 
-        //Grant case access to all new legal counsellors
+        // Grant case access to all new legal counsellors
         currentLegalCounsellors.stream()
             .filter(not(previousLegalCounsellors::contains))
             .forEach(counsellor -> events.add(new LegalCounsellorAdded(currentCaseData, counsellor)));

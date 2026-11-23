@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -25,14 +26,27 @@ public class ManageLegalCounselController extends CallbackController {
     private final EventService eventPublisher;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
+        @RequestBody CallbackRequest callbackRequest) {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        List<Element<LegalCounsellor>> legalCounsellors =
-            manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(getCaseData(caseDetails));
-        caseDetails.getData().put("legalCounsellors", legalCounsellors);
+        try {
+            List<Element<LegalCounsellor>> legalCounsellors =
+                manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(
+                    getCaseData(caseDetails)
+                );
 
-        return respond(caseDetails);
+            caseDetails.getData().put("legalCounsellors", legalCounsellors);
+
+            return respond(caseDetails);
+
+        } catch (AuthorizationException exception) {
+            return respond(caseDetails, List.of(
+                "You are not able to manage legal counsel for this respondent using this feature. "
+                    + "Please use the ‘Notice of Change’ section to manage representation for the respondent."
+            ));
+        }
     }
 
     @PostMapping("/mid-event")
@@ -45,12 +59,20 @@ public class ManageLegalCounselController extends CallbackController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
+        @RequestBody CallbackRequest callbackRequest) {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        manageLegalCounselService.updateLegalCounsel(caseDetails);
-
-        return respond(caseDetails);
+        try {
+            manageLegalCounselService.updateLegalCounsel(caseDetails);
+            return respond(caseDetails);
+        } catch (AuthorizationException exception) {
+            return respond(caseDetails, List.of(
+                "You are not able to manage legal counsel for this respondent using this feature. "
+                    + "Please use the ‘Notice of Change’ section to manage representation for the respondent."
+            ));
+        }
     }
 
     @PostMapping("/submitted")
