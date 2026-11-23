@@ -33,10 +33,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-3390", this::run3390,
-        "DFPL-3373", this::run3373,
-        "DFPL-3419", this::run3419,
-        "DFPL-3425", this::run3425
+        "DFPL-3372", this::run3372
     );
 
     @PostMapping("/about-to-submit")
@@ -92,17 +89,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.updateRelatingLA(laCode));
     }
 
-    public void run3390(CaseDetails caseDetails) {
-        final CaseData caseData = getCaseData(caseDetails);
-        final String orgId = "CS35UMJ";
-        final String migrationId = "DFPL-3390";
-        final long expectedCaseId = 1786619265255294L;
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.updateOutsourcingPolicy(caseData, orgId, null));
-    }
-
     private void run3373(CaseDetails caseDetails) {
         final String migrationId = "DFPL-3373";
         final long expectedCaseId = 1783093091738688L;
@@ -128,5 +114,20 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(updatedData);
     }
+
+    private void run3372(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-3372";
+        final long expectedCaseId = 1776778920069623L;
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        final CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeCaseNotes(
+            caseData,
+            migrationId,
+            UUID.fromString("31063977-9626-4c77-996f-e4eecba96f1d")
+        ));
+    }
+
 }
 
