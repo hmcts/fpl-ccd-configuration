@@ -1,9 +1,9 @@
 // aat, demo, perftest, ithc
 const env = process.env.ENVIRONMENT || "aat";
 
-const e2ePw: string = process.env.E2E_TEST_PASSWORD || "Hmcts1234";
-const defaultPwd: string = process.env.SYSTEM_UPDATE_USER_PASSWORD || "Password12";
-const judgePwd: string = process.env.E2E_TEST_JUDGE_PASSWORD || "Hmcts1234";
+const e2ePw: string = process.env.E2E_TEST_PASSWORD || "";
+const defaultPwd: string = process.env.SYSTEM_UPDATE_USER_PASSWORD || "";
+const judgePwd: string = process.env.E2E_TEST_JUDGE_PASSWORD || "";
 const jurisdiction:string = process.env.JURISDICTIONS || "PUBLICLAW";
 const caseType:string = process.env.CASE_TYPE || "CARE_SUPERVISION_EPO";
 
