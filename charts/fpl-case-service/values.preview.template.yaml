@@ -191,6 +191,7 @@ ccd:
         maxReplicas: 1
   ccd-definition-store-api:
     java:
+      image: hmctsprod.azurecr.io/ccd/definition-store-api:latest
       disableKeyVaults: true
       devmemoryRequests: '1024Mi'
       devmemoryLimits: '2048Mi'

@@ -61,6 +61,9 @@ def otherSecrets = [
     secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
     secret('ccd-case-document-am-api-s2s-secret', 'CCD_CASE_DOCUMENT_AM_API_SECRET')
   ],
+  'camunda-${env}' : [
+    secret('s2s-secret-camunda-bpm', 'S2S_SECRET_CAMUNDA_BPM')
+  ],
   'fpl-${env}': [
     secret('definition-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
     secret('definition-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
