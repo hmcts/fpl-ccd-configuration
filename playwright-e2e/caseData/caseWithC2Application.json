@@ -350,6 +350,125 @@
     "noticeOfChangeAnswers0": {
       "respondentFirstName": "Swansea City Council"
     },
+    "relatingLA": "SA",
+
+    "latestRoleSent": "JUDICIARY",
+
+    "isC2Application": "YES",
+
+    "isLocalAuthority": "NO",
+
+    "outsourcingPolicy": {
+      "Organisation": {
+        "OrganisationID": "D25VR7V",
+        "OrganisationName": "Private solicitors"
+      },
+      "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+    },
+
+    "reviewNextHearing": "NO",
+
+    "selectedHearingId": "1e20eda5-e0fa-43c0-9773-15e5c9c6886a",
+
+    "allocationDecision": {
+      "proposal": null,
+      "proposalV2": "Circuit judge",
+      "proposalReason": "Test",
+      "judgeLevelRadio": null,
+      "allocationProposalPresent": "Yes"
+    },
+
+    "confidentialChildren": [
+      {
+        "id": "d0d3ccd6-285a-489b-ae8a-87e01cc41827",
+        "value": {
+          "party": {
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "SW1A 0AA",
+              "PostTown": "London",
+              "AddressLine1": "House Of Commons, Houses Of Parliament",
+              "AddressLine2": "",
+              "AddressLine3": ""
+            },
+            "lastName": "test",
+            "firstName": "test",
+            "livingSituation": "Living with respondents",
+            "socialWorkerName": "Social Samy",
+            "socialWorkerEmail": "socialWorker@email.com",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "0564575685"
+            }
+          },
+          "legalCounsellors": []
+        }
+      }
+    ],
+
+    "manualJudgeAllocationWarning": null,
+
+    "direction-SEND_DOCUMENTS_TO_ALL_PARTIES": {
+      "type": "SEND_DOCUMENTS_TO_ALL_PARTIES",
+      "title": "Send documents to all parties",
+      "assignee": "LOCAL_AUTHORITY",
+      "description": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on",
+      "dueDateType": "DAYS",
+      "daysBeforeHearing": "2",
+      "dateToBeCompletedBy": null
+    },
+
+    "direction-ARRANGE_INTERPRETERS_IMMEDIATE": {
+      "type": "ARRANGE_INTERPRETERS_IMMEDIATE",
+      "title": "Arrange interpreters",
+      "assignee": "COURT",
+      "description": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+      "dueDateType": null,
+      "daysBeforeHearing": null,
+      "dateToBeCompletedBy": null
+    },
+
+    "manualJudgeAllocationWarningHearingJudge": null,
+
+    "direction-OBJECT_TO_REQUEST_FOR_DISCLOSURE": {
+      "type": "OBJECT_TO_REQUEST_FOR_DISCLOSURE",
+      "title": "Object to a request for disclosure",
+      "assignee": "OTHERS",
+      "description": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.",
+      "dueDateType": "DAYS",
+      "daysBeforeHearing": "2",
+      "dateToBeCompletedBy": null
+    },
+
+    "direction-APPOINT_CHILDREN_GUARDIAN_IMMEDIATE": {
+      "type": "APPOINT_CHILDREN_GUARDIAN_IMMEDIATE",
+      "title": "Appoint a children's guardian",
+      "assignee": "CAFCASS",
+      "description": null,
+      "dueDateType": null,
+      "daysBeforeHearing": null,
+      "dateToBeCompletedBy": null
+    },
+
+    "direction-SEND_RESPONSE_TO_THRESHOLD_STATEMENT": {
+      "type": "SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
+      "title": "Send response to threshold statement to all parties",
+      "assignee": "PARENTS_AND_RESPONDENTS",
+      "description": "Send a written statement to the court and all parties, showing:\n\n- the parents' response to the local authority's threshold statement\n- the parents' proposals for placing the children, immediately and long-term\n- whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.",
+      "dueDateType": "DAYS",
+      "daysBeforeHearing": "2",
+      "dateToBeCompletedBy": null
+    },
+
+    "direction-REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE": {
+      "type": "REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
+      "title": "Request permission for expert evidence",
+      "assignee": "ALL_PARTIES",
+      "description": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.",
+      "dueDateType": "DAYS",
+      "daysBeforeHearing": "2",
+      "dateToBeCompletedBy": null
+    },
 
     "noticeOfChangeAnswers1": {
       "respondentLastName": "Asa",
