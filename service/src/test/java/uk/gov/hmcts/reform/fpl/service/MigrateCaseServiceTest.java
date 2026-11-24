@@ -1162,58 +1162,70 @@ class MigrateCaseServiceTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveCaseNote {
+        private final UUID noteIdToRemove0 = UUID.randomUUID();
+        private final UUID noteIdToRemove1 = UUID.randomUUID();
+        private final UUID missingNoteId = UUID.randomUUID();
 
-        private final UUID noteIdToRemove = UUID.randomUUID();
+        Element<CaseNote> createCaseNote(UUID noteId, String note) {
+            return element(noteId, CaseNote.builder().note(note).build());
+        }
+
+        private final Element<CaseNote> noteToRemove0 = createCaseNote(noteIdToRemove0, "removeNote0");
+        private final Element<CaseNote> noteToRemove1 = createCaseNote(noteIdToRemove1, "removeNote1");
+        private final Element<CaseNote> testNote0 = createCaseNote(UUID.randomUUID(), "testNote0");
+        private final Element<CaseNote> testNote1 = createCaseNote(UUID.randomUUID(), "testNote1");
 
         @Test
         void shouldRemoveCaseNoteWhenPresent() {
             CaseData caseData = CaseData.builder()
-                .caseNotes(List.of(
-                    element(noteIdToRemove, CaseNote.builder().note("Test note").build())
-                ))
+                .caseNotes(List.of(noteToRemove0))
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove);
+            Map<String, Object> updatedFields = underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove0);
 
             assertThat(updatedFields).extracting("caseNotes").asList().hasSize(0);
+        }
 
+        @Test
+        void shouldRemoveSingleCaseNoteFromList() {
+            CaseData caseData = CaseData.builder()
+                .caseNotes(List.of(testNote0, noteToRemove0, testNote1))
+                .build();
+
+            ReflectionTestUtils.setField(underTest, "caseNoteService", caseNoteService);
+            when(caseNoteService.removeCaseNote(noteIdToRemove0, caseData.getCaseNotes()))
+                .thenReturn(List.of(testNote0, testNote1));
+
+            Map<String, Object> updatedFields = underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove0);
+
+            assertThat(updatedFields).containsEntry("caseNotes", List.of(testNote0, testNote1));
         }
 
         @Test
         void shouldThrowExceptionWhenCaseNoteNotPresent() {
-            UUID otherNoteId = UUID.randomUUID();
-            UUID otherNoteId2 = UUID.randomUUID();
             CaseData caseData = CaseData.builder()
-                .caseNotes(List.of(
-                    element(otherNoteId, CaseNote.builder().note("Test note 1").build()),
-                    element(otherNoteId2, CaseNote.builder().note("Test note 2").build())
-                ))
+                .caseNotes(List.of(testNote0, testNote1))
                 .build();
 
-            assertThrows(AssertionError.class, () -> underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove));
+            assertThrows(AssertionError.class, () -> underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove0));
         }
 
         @Test
         void shouldRemoveBothTargetedCaseNotesAndPreserveOtherNote() {
-            UUID secondNoteIdToRemove = UUID.randomUUID();
-            var firstNote = element(noteIdToRemove, CaseNote.builder().note("First note").build());
-            var secondNote = element(secondNoteIdToRemove, CaseNote.builder().note("Second note").build());
-            var retainedNote = element(UUID.randomUUID(), CaseNote.builder().note("Keep this note").build());
-
-            var originalNotes = List.of(firstNote, secondNote, retainedNote);
-            var notesAfterFirstRemoval = List.of(secondNote, retainedNote);
-            var remainingNotes = List.of(retainedNote);
+            var originalNotes = List.of(noteToRemove0, noteToRemove1, testNote0);
+            var notesAfterFirstRemoval = List.of(noteToRemove1, testNote0);
+            var remainingNotes = List.of(testNote0);
             CaseData caseData = CaseData.builder().caseNotes(originalNotes).build();
 
             ReflectionTestUtils.setField(underTest, "caseNoteService", caseNoteService);
 
-            when(caseNoteService.removeCaseNote(noteIdToRemove, caseData.getCaseNotes()))
+            when(caseNoteService.removeCaseNote(noteIdToRemove0, caseData.getCaseNotes()))
                 .thenReturn(notesAfterFirstRemoval);
-            when(caseNoteService.removeCaseNote(secondNoteIdToRemove, notesAfterFirstRemoval))
+            when(caseNoteService.removeCaseNote(noteIdToRemove1, notesAfterFirstRemoval))
                 .thenReturn(remainingNotes);
 
             Map<String, Object> updatedFields = underTest.removeCaseNotes(
-                caseData, MIGRATION_ID, noteIdToRemove, secondNoteIdToRemove
+                caseData, MIGRATION_ID, noteIdToRemove0, noteIdToRemove1
             );
 
             assertThat(updatedFields).containsEntry("caseNotes", remainingNotes);
@@ -1221,13 +1233,12 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldValidateBothCaseNotesBeforeRemovingEither() {
-            UUID missingNoteId = UUID.randomUUID();
             CaseData caseData = CaseData.builder()
-                .caseNotes(List.of(element(noteIdToRemove, CaseNote.builder().note("Existing note").build())))
+                .caseNotes(List.of(noteToRemove0))
                 .build();
 
             assertThatThrownBy(() -> underTest.removeCaseNotes(
-                caseData, MIGRATION_ID, noteIdToRemove, missingNoteId
+                caseData, MIGRATION_ID, noteIdToRemove0, missingNoteId
             ))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("case note " + missingNoteId + " not found");
