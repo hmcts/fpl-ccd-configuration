@@ -4,12 +4,13 @@ import {
 } from "../settings/user-credentials";
 import {createCase, updateCase} from "../utils/api-helper";
 import caseWithC2App from "../caseData/caseWithC2Application.json" assert {type: "json"}
+import caseWithPaperC2App from "../caseData/caseWithPaperC2Application.json" assert {type: "json"}
 import {testConfig} from "../settings/test-config";
 import caseWithChildrenCafcassSolicitor from "../caseData/caseWithMultipleChildCafcassSolicitor.json";
 import config from "../settings/test-docs/config";
 
 
-test.describe('Court Service', () => {
+test.describe('Review Additional Application', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
 
@@ -22,7 +23,6 @@ test.describe('Court Service', () => {
                                                                                            signInPage,
                                                                                            reviewAdditionalApplication,
                                                                                            caseFileView,
-                                                                                           makeAxeBuilder
                                                                                        }, testInfo) => {
         let caseName = 'Judge approve additional application and draft order ' + dateTime;
         expect(await updateCase(caseName, caseNumber, caseWithC2App)).toBeTruthy();
@@ -83,12 +83,10 @@ test.describe('Court Service', () => {
     });
     test('Judge approve additional application but make changes to draft order @xbrowser', async ({
                                                                                                       reviewAdditionalApplication,
-                                                                                                      signInPage,
-                                                                                                      courtServices,
-                                                                                                      makeAxeBuilder
+                                                                                                      signInPage,caseFileView
                                                                                                   }, testInfo) => {
         let caseName = 'Judge approve additional application but make changes to draft order ' + dateTime;
-        expect(await updateCase(caseName, caseNumber, caseWithC2App)).toBeTruthy();
+        expect(await updateCase(caseName, caseNumber, caseWithPaperC2App)).toBeTruthy();
         console.log(`Case created with case number: ${caseNumber} and case name: ${caseName}`);
         await test.step('Login and navigate to case', async () => {
             await signInPage.visit();
@@ -98,27 +96,43 @@ test.describe('Court Service', () => {
         });
         await test.step('Judge review the application details', async () => {
             // await additionalApplicationPage.checkApplicationDetails();
+            await reviewAdditionalApplication.clickContinue();
+
 
         });
         await test.step('Judge approve the application but make changes to draft order', async () => {
             await reviewAdditionalApplication.makeDecision('Approve the application but make changes to the order');
             await reviewAdditionalApplication.uploadAmendedOrder(config.testPdfFile);
+            await reviewAdditionalApplication.clickContinue();
+            await reviewAdditionalApplication.clickContinue();
             await reviewAdditionalApplication.setOrderUrgent(false);
             await reviewAdditionalApplication.clickContinue();
             await reviewAdditionalApplication.checkYourAnsAndSubmit();
+            await reviewAdditionalApplication.page.pause();
         });
 
-        test.step('Assert the event success ', async () => {
-            expect(await reviewAdditionalApplication.page.getByText('Response submitted').isVisible());
+        await test.step('Assert the event success ', async () => {
+
+            await expect(reviewAdditionalApplication.page.getByRole('heading', { name: 'Response submitted' })).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByRole('heading', { name: 'What happens next' })).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByText('The task will be closed and')).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByText('The applicant and the other parties will be notified.')).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByText('A task for the courts and')).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByText('If you need to send any further directions to the CTSC or the local court, for example, to request a listing, you can do this using the \'Send message\' event.')).toBeVisible();
+
+
             await reviewAdditionalApplication.closeConfirmation();
-            await reviewAdditionalApplication.tabNavigation('Additional application');
-            await expect(reviewAdditionalApplication.getRowData('Is Reviewed by Judge', reviewAdditionalApplication.page)).toContain('Yes');
+            await reviewAdditionalApplication.tabNavigation('Other applications');
+            expect(reviewAdditionalApplication.getRowData('Application Reviewed by Judge', reviewAdditionalApplication.page)).toContain('Yes');
             await reviewAdditionalApplication.tabNavigation('Orders');
-            await expect(reviewAdditionalApplication.getRowData('Order title', reviewAdditionalApplication.page)).toContain('Amended order');
+            expect(reviewAdditionalApplication.getRowData('Order document', reviewAdditionalApplication.page)).toContain('amended_Draft order 2.pdf');
+            await reviewAdditionalApplication.tabNavigation('Case File View');
+            await caseFileView.openFolder('Orders');
+            await expect(reviewAdditionalApplication.page.getByText('amended_Draft order 2.pdf')).toBeVisible();
 
         });
         if (testConfig.waEnabled) {
-            test.step('Assert the WA task', async () => {
+            await test.step('Assert the WA task', async () => {
                 await signInPage.logout();
                 await signInPage.login(CTSCUser.email, CTSCUser.password);
                 await signInPage.navigateToCaseDetails(caseNumber);

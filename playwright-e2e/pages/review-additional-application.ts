@@ -28,7 +28,7 @@ export class ReviewAdditionalApplication extends BasePage {
         this.approveApplicationRefuseOrder = page.getByRole('radio', {name: 'Approve the application but the applicant need to make changes to the order'});
         this.refuseApplication = page.getByRole('radio', {name: 'Refuse the application'});
         this.listAtNextHearing = page.getByRole('radio', {name: 'List at the next hearing'});
-        this.amendedOrder = page.getByLabel('Upload amended order');
+        this.amendedOrder = page.getByRole('button', {name: 'Upload amended order'});
         this.applicantNeedsToMakeChangesDetail = page.getByLabel('What does the applicant need to change?');
         this.refusalReason = page.getByLabel('Reason for refusal - this will populate the order');
         this.whatTheDecision = page.getByRole('group', {name: 'What do you want to do?'});
@@ -63,6 +63,7 @@ export class ReviewAdditionalApplication extends BasePage {
 
     async uploadAmendedOrder(filePath: string): Promise<void> {
         await this.amendedOrder.setInputFiles(filePath);
+        await this.waitForAllUploadsToBeCompleted()
     }
 
     async enterChangesRequested(detail: string): Promise<void> {
