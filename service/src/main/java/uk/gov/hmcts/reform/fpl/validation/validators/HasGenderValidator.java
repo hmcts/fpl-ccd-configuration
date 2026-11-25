@@ -14,8 +14,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ChildGender.OTHER;
 public class HasGenderValidator implements ConstraintValidator<HasGender, ChildParty> {
     @Override
     public boolean isValid(ChildParty child, ConstraintValidatorContext constraintValidatorContext) {
-        String gender = OTHER == child.getGender() ? child.getGenderIdentification()
-            : Optional.ofNullable(child.getGender()).map(ChildGender::getLabel).orElse(null);
+        String gender = Optional.ofNullable(child.getGender()).map(ChildGender::getLabel).orElse(null);
         return StringUtils.isNotBlank(gender);
     }
 }
