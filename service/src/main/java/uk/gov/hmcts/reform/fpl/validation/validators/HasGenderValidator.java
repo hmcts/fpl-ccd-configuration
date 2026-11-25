@@ -9,8 +9,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasGender;
 
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.enums.ChildGender.OTHER;
-
 public class HasGenderValidator implements ConstraintValidator<HasGender, ChildParty> {
     @Override
     public boolean isValid(ChildParty child, ConstraintValidatorContext constraintValidatorContext) {
