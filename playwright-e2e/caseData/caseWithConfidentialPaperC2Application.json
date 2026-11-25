@@ -1,0 +1,691 @@
+{
+  "state": "SUBMITTED",
+  "caseData": {
+    "court": {
+      "code": "117",
+      "name": "Family Court sitting at Barnet",
+      "email": null,
+      "region": "London",
+      "epimmsId": "229786",
+      "regionId": "1",
+      "dateTransferred": null
+    },
+    "orders": {
+      "court": "117",
+      "address": {
+        "County": null,
+        "Country": null,
+        "PostCode": null,
+        "PostTown": null,
+        "AddressLine1": null,
+        "AddressLine2": null,
+        "AddressLine3": null
+      },
+      "epoType": null,
+      "excluded": null,
+      "orderType": [
+        "CARE_ORDER"
+      ],
+      "directions": "No",
+      "otherOrder": null,
+      "directionDetails": null,
+      "particularsOfChildren": [],
+      "emergencyProtectionOrders": [],
+      "particularsOfChildrenDetails": null,
+      "emergencyProtectionOrderDetails": null,
+      "emergencyProtectionOrderDirections": [],
+      "childAssessmentOrderContactDirections": null,
+      "childRecoveryOrderDirectionsAppliedFor": null,
+      "childAssessmentOrderAssessmentDirections": null,
+      "emergencyProtectionOrderDirectionDetails": null,
+      "educationSupervisionOrderDirectionsAppliedFor": null,
+      "educationSupervisionOrderPriorConsultationType": [],
+      "educationSupervisionOrderPriorConsultationOtherLA": null
+    },
+    "dfjArea": "WEST_LONDON",
+    "grounds": {
+      "thresholdReason": [
+        "beyondControl"
+      ],
+      "thresholdDetails": "test",
+      "hasThresholdDocument": "NO"
+    },
+    "hearing": {
+      "type": null,
+      "reason": null,
+      "timeFrame": null,
+      "reason2Days": null,
+      "reason7Days": null,
+      "reason12Days": null,
+      "reducedNotice": null,
+      "withoutNotice": null,
+      "type_GiveReason": null,
+      "respondentsAware": "Yes",
+      "hearingUrgencyType": "STANDARD",
+      "reducedNoticeReason": null,
+      "withoutNoticeReason": null,
+      "hearingUrgencyDetails": null,
+      "respondentsAwareReason": null
+    },
+    "caseName": "Swansea City Council & test1",
+    "children1": [
+      {
+        "id": "330b595c-8156-48bd-9b0f-3c6fe33069f0",
+        "value": {
+          "party": {
+            "gender": "They identify in another way",
+            "partyId": "67aedf6f-0c58-45da-ae22-b03777d5545f",
+            "adoption": "Yes",
+            "keyDates": "Dates for KS2 exams 20-05-2025",
+            "lastName": "test",
+            "firstName": "test",
+            "dateOfBirth": "2020-01-01",
+            "fathersName": "Father",
+            "mothersName": "Mother",
+            "placementCourt": "barnet court",
+            "additionalNeeds": "Yes",
+            "careAndContactPlan": "Brief summary",
+            "genderIdentification": "Non-binary",
+            "isAddressConfidential": "Yes",
+            "additionalNeedsDetails": "Allegeries to nuts",
+            "placementOrderApplication": "Yes",
+            "socialWorkerDetailsHidden": "Yes",
+            "socialWorkerDetailsHiddenReason": "Test"
+          },
+          "legalCounsellors": []
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "carePlanList": [],
+    "childPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+    },
+    "childPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORB]"
+    },
+    "childPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORC]"
+    },
+    "childPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORD]"
+    },
+    "childPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORE]"
+    },
+    "childPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORF]"
+    },
+    "childPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORG]"
+    },
+    "childPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORH]"
+    },
+    "childPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORI]"
+    },
+    "childPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
+    },
+    "respondents1": [
+      {
+        "id": "9a0f819e-26ca-443f-836b-5c3c202a326b",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {},
+            "partyId": "b7a9253b-3032-445e-824b-5692c83d64fb",
+            "lastName": "test1",
+            "firstName": "test1",
+            "addressKnow": "No",
+            "dateOfBirth": "1990-03-01",
+            "hideAddress": "No",
+            "hideTelephone": "No",
+            "litigationIssues": "YES",
+            "relationshipToChild": "uncle",
+            "addressNotKnowReason": "Whereabouts unknown",
+            "litigationIssuesDetails": "test"
+          },
+          "representedBy": [],
+          "isLocalAuthority": "NO",
+          "legalCounsellors": [],
+          "legalRepresentation": "No"
+        }
+      }
+    ],
+    "c1Application": "No",
+    "childPolicy10": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORK]"
+    },
+    "childPolicy11": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORL]"
+    },
+    "childPolicy12": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORM]"
+    },
+    "childPolicy13": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORN]"
+    },
+    "childPolicy14": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORO]"
+    },
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}" ,
+      "upload_timestamp": "2026-11-25T12:24:34.188313661",
+      "document_filename": "Swansea_City_Council__test1.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "thresholdList": [],
+    "carePlanListLA": [],
+    "deadline26week": "2027-05-26",
+    "latestRoleSent": "CTSC",
+    "otherOrderType": "NO",
+    "hasRespondentLA": "NO",
+    "isC2Application": "YES",
+    "thresholdListLA": [],
+    "c2DocumentBundle": [],
+    "localAuthorities": [
+      {
+        "id": "db84aebd-3e93-4e88-ba1d-39e9343fd83e",
+        "value": {
+          "id": "W9V61CP",
+          "name": "Swansea City Council",
+          "email": "FamilyPublicLaw+sa@gmail.com",
+          "address": {
+            "County": "United Kingdom",
+            "Country": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
+          },
+          "pbaNumber": "PBA0076191",
+          "colleagues": [
+            {
+              "id": "2a8fb849-0a38-4f48-bbb8-7f71a2ed47f6",
+              "value": {
+                "email": "somethingtest@mailnator.com",
+                "phone": "0123456789",
+                "lastName": "Smith",
+                "firstName": "Peter",
+                "mainContact": "Yes",
+                "alternativePhone": "0123456789",
+                "notificationRecipient": "Yes"
+              }
+            },
+            {
+              "id": "c52daa0d-f848-4e13-97aa-f77d73d3f712",
+              "value": {
+                "role": "OTHER",
+                "email": "zee@mail.com",
+                "title": "QA",
+                "lastName": "Two",
+                "firstName": "Me",
+                "mainContact": "No",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ],
+          "designated": "Yes",
+          "legalTeamManager": "Test",
+          "customerReference": "1234567",
+          "representingDetails": {
+            "lastName": null,
+            "firstName": null
+          }
+        }
+      }
+    ],
+    "respondentPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+    },
+    "respondentPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+    },
+    "respondentPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+    },
+    "respondentPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+    },
+    "respondentPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+    },
+    "respondentPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+    },
+    "respondentPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+    },
+    "respondentPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+    },
+    "respondentPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+    },
+    "respondentPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+    },
+    "reviewNextHearing": "NO",
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": null,
+      "proposalV2": "Circuit judge",
+      "proposalReason": "Test"
+    },
+    "caseLocalAuthority": "SA",
+    "displayAmountToPay": "Yes",
+    "nextHearingDetails": {},
+    "representativeType": "LOCAL_AUTHORITY",
+    "waTaskUrgencyLevel": "HIGH",
+    "westLondonDFJCourt": "117",
+    "caseSummaryCourtName": "Family Court sitting at Barnet",
+
+    "dateAndTimeSubmitted": "2026-11-25T12:24:33.567450587Z",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "W9V61CP",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "respondentsConfirmPR": [
+      "confirm"
+    ],
+    "caseNameHmctsInternal": "Smoke Test 2026-11-25T12:23:36.364Z",
+    "lastGenuineUpdateTime": "TO BE FILLED WITH VALID DATA",
+    "caseLocalAuthorityName": "Swansea City Council",
+    "caseManagementCategory": {
+      "value": {
+        "code": "FPL",
+        "label": "Family Public Law"
+      },
+      "list_items": [
+        {
+          "code": "FPL",
+          "label": "Family Public Law"
+        }
+      ]
+    },
+    "caseManagementLocation": {
+      "region": "1",
+      "baseLocation": "229786"
+    },
+    "caseSummaryDateOfIssue": "2026-11-25",
+    "caseSummaryLATabHidden": "Yes",
+    "noticeOfChangeAnswers0": {
+      "respondentLastName": "test1",
+      "respondentFirstName": "test1"
+    },
+    "caseSummaryCaseFlagNotes": null,
+    "caseSummaryHighCourtCase": "No",
+    "caseSummaryHasNextHearing": null,
+    "caseSummaryNextHearingCMO": null,
+    "documentsFiledOnIssueList": [
+      {
+        "id": "7a38f7ed-c8b9-4e18-8422-545ac18f66f6",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "upload_timestamp": "2026-11-25T12:24:04.100850695",
+            "document_filename": "testPdf.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+          "uploaderCaseRoles": [
+            "LASOLICITOR"
+          ]
+        }
+      }
+    ],
+    "caseSummaryCafcassGuardian": null,
+    "caseSummaryHasFinalHearing": null,
+    "caseSummaryLAHighCourtCase": "No",
+    "caseSummaryLASolicitorName": "Peter Smith",
+    "caseSummaryNextHearingDate": null,
+    "caseSummaryNextHearingType": null,
+    "caseSummaryOrdersRequested": "Care order",
+    "hearingOrdersBundlesDrafts": [
+      {
+        "id": "9216ffd3-fa9a-4b07-a263-abba2eebee6b",
+        "value": {
+          "orders": [],
+          "ordersLA": [
+            {
+              "id": "8310ac7b-fdb1-481b-8136-eae5aafcdb6d",
+              "value": {
+                "type": "C21",
+                "title": "Draft order",
+                "others": [],
+                "status": "SEND_TO_JUDGE",
+                "hearing": "No hearing",
+                "dateSent": "2026-11-25",
+                "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+                "uploaderEmail": "kurt@swansea.gov.uk",
+                "needTranslation": "NO",
+                "judgeTitleAndName": "",
+                "orderConfidential": {
+                  "document_url": "${TEST_DOCUMENT_URL}",
+                  "upload_timestamp": "2026-11-25T14:17:41.887772760",
+                  "document_filename": "Draft order1.pdf",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                },
+                "uploaderCaseRoles": [
+                  "LASOLICITOR"
+                ],
+                "documentAcknowledge": [],
+                "translationRequirements": "NO"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "caseSummaryFinalHearingDate": null,
+    "caseSummaryFlagAddedByEmail": null,
+    "caseSummaryLASolicitorEmail": "somethingtest@mailnator.com",
+    "caseSummaryNextHearingJudge": null,
+    "caseSummaryNumberOfChildren": 1,
+    "documentsFiledOnIssueListLA": [],
+    "noticeOfChangeChildAnswers0": {
+      "respondentLastName": "test",
+      "respondentFirstName": "test"
+    },
+    "additionalApplicationsBundle": [
+      {
+        "id": "b93b64eb-dd61-4a6b-af1c-78d54b2699b1",
+        "value": {
+          "author": "kurt@swansea.gov.uk",
+          "pbaPayment": {
+            "pbaNumber": "PBA0076191",
+            "fileReference": "Cutomer"
+          },
+          "amountToPay": "6200",
+          "uploadedDateTime": "25 November 2026, 2:17pm",
+          "hasConfidentialC2": "YES",
+          "c2DocumentBundleLA": {
+            "id": "09b72940-04d5-45df-a825-24812af805cc",
+            "type": "WITHOUT_NOTICE",
+            "author": "kurt@swansea.gov.uk",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}" ,
+              "upload_timestamp": "2026-11-25T14:17:43.217432516",
+              "document_filename": "C2_Application_Sample.pdf",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "routeType": "PAPER_FORM",
+            "respondents": [
+              {
+                "id": "9a0f819e-26ca-443f-836b-5c3c202a326b",
+                "value": {
+                  "party": {
+                    "gender": "Male",
+                    "address": {},
+                    "partyId": "b7a9253b-3032-445e-824b-5692c83d64fb",
+                    "lastName": "test1",
+                    "firstName": "test1",
+                    "addressKnow": "No",
+                    "dateOfBirth": "1990-03-01",
+                    "hideAddress": "No",
+                    "hideTelephone": "No",
+                    "litigationIssues": "YES",
+                    "relationshipToChild": "uncle",
+                    "addressNotKnowReason": "Whereabouts unknown",
+                    "litigationIssuesDetails": "test"
+                  },
+                  "representedBy": [],
+                  "isLocalAuthority": "NO",
+                  "legalCounsellors": [],
+                  "legalRepresentation": "No"
+                }
+              }
+            ],
+            "applicantName": "Swansea City Council, Applicant",
+            "uploadedDateTime": "25 November 2026, 2:17pm",
+            "draftOrdersBundle": [
+              {
+                "id": "8310ac7b-fdb1-481b-8136-eae5aafcdb6d",
+                "value": {
+                  "title": "Draft order",
+                  "document": {
+                    "document_url": "${TEST_DOCUMENT_URL}" ,
+                    "upload_timestamp": "2026-11-25T14:17:41.88777276",
+                    "document_filename": "Draft order1.pdf",
+                    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                  },
+                  "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+                  "uploaderCaseRoles": [
+                    "LASOLICITOR"
+                  ]
+                }
+              }
+            ],
+            "supplementsBundle": [],
+            "hasSafeguardingRisk": "Yes",
+            "safeguardingRiskDetails": "Reason for the safeguarding risk",
+            "supportingEvidenceBundle": [
+              {
+                "id": "a79d6b0a-0cda-4b04-a707-e9aced332e1a",
+                "value": {
+                  "name": "File supporting",
+                  "notes": "Notest",
+                  "document": {
+                    "document_url": "${TEST_DOCUMENT_URL}" ,
+                    "upload_timestamp": "2026-11-25T14:17:41.88777276",
+                    "document_filename": "AdditionalDoc1.pdf",
+                    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                  },
+                  "uploadedBy": "kurt@swansea.gov.uk",
+                  "confidential": [],
+                  "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+                  "needTranslation": "NO",
+                  "dateTimeUploaded": "2026-11-25T14:17:41.432281343",
+                  "uploaderCaseRoles": [
+                    "LASOLICITOR"
+                  ],
+                  "documentAcknowledge": [
+                    "ACK_RELATED_TO_CASE"
+                  ],
+                  "hasConfidentialAddress": "No"
+                }
+              },
+              {
+                "id": "69ca2605-4b6b-4757-ab2b-6f58b104a869",
+                "value": {
+                  "name": "Evidence of consent",
+                  "document": {
+                    "document_url": "${TEST_DOCUMENT_URL}" ,
+                    "upload_timestamp": "2026-11-25T14:17:41.88777276",
+                    "document_filename": "C12.pdf",
+                    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                  },
+                  "uploadedBy": "kurt@swansea.gov.uk",
+                  "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+                  "needTranslation": "NO",
+                  "dateTimeUploaded": "2026-11-25T14:17:41.432281343",
+                  "uploaderCaseRoles": [
+                    "LASOLICITOR"
+                  ],
+                  "documentAcknowledge": [
+                    "ACK_RELATED_TO_CASE"
+                  ],
+                  "hasConfidentialAddress": "No"
+                }
+              }
+            ],
+            "c2AdditionalOrdersRequested": [],
+            "hasConfidentialAddressValue": "No",
+            "canBeConsideredAtNextHearing": "No",
+            "isHearingAdjournmentRequired": "No"
+          },
+          "applicationReviewed": "NO",
+          "c2DocumentBundleConfidential": {
+            "id": "09b72940-04d5-45df-a825-24812af805cc",
+            "type": "WITHOUT_NOTICE",
+            "author": "kurt@swansea.gov.uk",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}" ,
+              "upload_timestamp": "2026-11-25T14:17:43.217432516",
+              "document_filename": "C2_Application_Sample.pdf",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "routeType": "PAPER_FORM",
+            "respondents": [
+              {
+                "id": "9a0f819e-26ca-443f-836b-5c3c202a326b",
+                "value": {
+                  "party": {
+                    "gender": "Male",
+                    "address": {},
+                    "partyId": "b7a9253b-3032-445e-824b-5692c83d64fb",
+                    "lastName": "test1",
+                    "firstName": "test1",
+                    "addressKnow": "No",
+                    "dateOfBirth": "1990-03-01",
+                    "hideAddress": "No",
+                    "hideTelephone": "No",
+                    "litigationIssues": "YES",
+                    "relationshipToChild": "uncle",
+                    "addressNotKnowReason": "Whereabouts unknown",
+                    "litigationIssuesDetails": "test"
+                  },
+                  "representedBy": [],
+                  "isLocalAuthority": "NO",
+                  "legalCounsellors": [],
+                  "legalRepresentation": "No"
+                }
+              }
+            ],
+            "applicantName": "Swansea City Council, Applicant",
+            "uploadedDateTime": "25 November 2026, 2:17pm",
+            "draftOrdersBundle": [
+              {
+                "id": "8310ac7b-fdb1-481b-8136-eae5aafcdb6d",
+                "value": {
+                  "title": "Draft order",
+                  "document": {
+                    "document_url": "${TEST_DOCUMENT_URL}" ,
+                    "upload_timestamp": "2026-11-25T14:17:41.88777276",
+                    "document_filename": "Draft order1.pdf",
+                    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                  },
+                  "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+                  "uploaderCaseRoles": [
+                    "LASOLICITOR"
+                  ]
+                }
+              }
+            ],
+            "supplementsBundle": [],
+            "hasSafeguardingRisk": "Yes",
+            "safeguardingRiskDetails": "Reason for the safeguarding risk",
+            "supportingEvidenceBundle": [
+              {
+                "id": "a79d6b0a-0cda-4b04-a707-e9aced332e1a",
+                "value": {
+                  "name": "File supporting",
+                  "notes": "Notest",
+                  "document": {
+                    "document_url": "${TEST_DOCUMENT_URL}" ,
+                    "upload_timestamp": "2026-11-25T14:17:41.88777276",
+                    "document_filename": "AdditionalDoc1.pdf",
+                    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                  },
+                  "uploadedBy": "kurt@swansea.gov.uk",
+                  "confidential": [],
+                  "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+                  "needTranslation": "NO",
+                  "dateTimeUploaded": "2026-11-25T14:17:41.432281343",
+                  "uploaderCaseRoles": [
+                    "LASOLICITOR"
+                  ],
+                  "documentAcknowledge": [
+                    "ACK_RELATED_TO_CASE"
+                  ],
+                  "hasConfidentialAddress": "No"
+                }
+              },
+              {
+                "id": "69ca2605-4b6b-4757-ab2b-6f58b104a869",
+                "value": {
+                  "name": "Evidence of consent",
+                  "document": {
+                    "document_url": "${TEST_DOCUMENT_URL}" ,
+                    "upload_timestamp": "2026-11-25T14:17:41.88777276",
+                    "document_filename": "C12.pdf",
+                    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                  },
+                  "uploadedBy": "kurt@swansea.gov.uk",
+                  "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+                  "needTranslation": "NO",
+                  "dateTimeUploaded": "2026-11-25T14:17:41.432281343",
+                  "uploaderCaseRoles": [
+                    "LASOLICITOR"
+                  ],
+                  "documentAcknowledge": [
+                    "ACK_RELATED_TO_CASE"
+                  ],
+                  "hasConfidentialAddress": "No"
+                }
+              }
+            ],
+            "c2AdditionalOrdersRequested": [],
+            "hasConfidentialAddressValue": "No",
+            "canBeConsideredAtNextHearing": "No",
+            "isHearingAdjournmentRequired": "No"
+          }
+        }
+      }
+    ],
+    "caseSummaryPreviousCourtName": null,
+    "secureAccommodationOrderType": "NO",
+    "caseSummaryAllocatedJudgeName": null,
+    "caseSummaryFlagAssessmentForm": null,
+    "caseSummaryHasPreviousHearing": null,
+    "caseSummaryPreviousHearingCMO": null,
+    "caseSummaryAllocatedJudgeEmail": null,
+    "caseSummaryFlagAddedByFullName": null,
+    "caseSummaryLanguageRequirement": "No",
+    "caseSummaryNextHearingDateTime": null,
+    "caseSummaryPreviousHearingDate": null,
+    "caseSummaryPreviousHearingType": null,
+    "contactWithChildInCareOrderType": null,
+    "refuseContactWithChildOrderType": null,
+    "caseSummaryHasUnresolvedMessages": null,
+    "caseSummaryLALanguageRequirement": "No",
+    "applicationDocumentsToFollowReason": "testing",
+    "caseSummaryFirstRespondentLastName": "test1",
+    "caseSummaryFirstRespondentLegalRep": null,
+    "caseSummaryNextHearingEmailAddress": null
+  }
+}

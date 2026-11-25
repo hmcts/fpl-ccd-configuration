@@ -1028,7 +1028,7 @@
             "isHearingAdjournmentRequired": "Yes"
           },
           "uploadedDateTime": "24 November 2026, 11:36am",
-          "hasConfidentialC2": "NO",
+          "hasConfidentialC2": "YES",
           "applicationReviewed": "NO"
         }
       }

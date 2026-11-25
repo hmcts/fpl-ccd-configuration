@@ -5,6 +5,8 @@ import {
 import {createCase, updateCase} from "../utils/api-helper";
 import caseWithC2App from "../caseData/caseWithC2Application.json" assert {type: "json"}
 import caseWithPaperC2App from "../caseData/caseWithPaperC2Application.json" assert {type: "json"}
+import caseWithConfidentialPaperC2App
+    from "../caseData/caseWithConfidentialPaperC2Application.json" assert {type: "json"}
 import {testConfig} from "../settings/test-config";
 import caseWithChildrenCafcassSolicitor from "../caseData/caseWithMultipleChildCafcassSolicitor.json";
 import config from "../settings/test-docs/config";
@@ -63,12 +65,11 @@ test.describe('Review Additional Application', () => {
             await reviewAdditionalApplication.tabNavigation('Other applications');
             expect(await reviewAdditionalApplication.getRowData('Application Reviewed by Judge', reviewAdditionalApplication.page)).toContain('Yes');
             await reviewAdditionalApplication.tabNavigation('Orders');
-            expect(await reviewAdditionalApplication.getRowData('Order document', reviewAdditionalApplication.page)).toContain('C2-draft order-01.pdf');
+            expect(await reviewAdditionalApplication.getRowData('Order document', reviewAdditionalApplication.page)).toContain('amended_Draft order 2.pdf');
             await reviewAdditionalApplication.tabNavigation('Case File View');
             await caseFileView.openFolder('Orders');
-            await expect(reviewAdditionalApplication.page.getByText('C2-draft order-01.pdf')).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByText('amended_Draft order 2.pdf')).toBeVisible();
         });
-
 
         if (testConfig.waEnabled) {
             await test.step('Assert the WA task', async () => {
@@ -82,22 +83,22 @@ test.describe('Review Additional Application', () => {
         }
     });
     test('Judge approve additional application but make changes to draft order @xbrowser', async ({
-                                                                                                      reviewAdditionalApplication,
-                                                                                                      signInPage,caseFileView
-                                                                                                  }, testInfo) => {
+                                                                                                           reviewAdditionalApplication,
+                                                                                                           signInPage,
+                                                                                                           caseFileView
+                                                                                                       }, testInfo) => {
         let caseName = 'Judge approve additional application but make changes to draft order ' + dateTime;
-        expect(await updateCase(caseName, caseNumber, caseWithPaperC2App)).toBeTruthy();
-        console.log(`Case created with case number: ${caseNumber} and case name: ${caseName}`);
+        expect(await updateCase(caseName, caseNumber, caseWithConfidentialPaperC2App)).toBeTruthy();
         await test.step('Login and navigate to case', async () => {
             await signInPage.visit();
             await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
+
             await signInPage.gotoNextStep('Review additional application');
         });
         await test.step('Judge review the application details', async () => {
-            // await additionalApplicationPage.checkApplicationDetails();
+            // await additionalApplicationPage.checkApplicationDetails(); TO be implemented
             await reviewAdditionalApplication.clickContinue();
-
 
         });
         await test.step('Judge approve the application but make changes to draft order', async () => {
@@ -108,27 +109,31 @@ test.describe('Review Additional Application', () => {
             await reviewAdditionalApplication.setOrderUrgent(false);
             await reviewAdditionalApplication.clickContinue();
             await reviewAdditionalApplication.checkYourAnsAndSubmit();
-            await reviewAdditionalApplication.page.pause();
+
         });
 
         await test.step('Assert the event success ', async () => {
 
-            await expect(reviewAdditionalApplication.page.getByRole('heading', { name: 'Response submitted' })).toBeVisible();
-            await expect(reviewAdditionalApplication.page.getByRole('heading', { name: 'What happens next' })).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByRole('heading', {name: 'Response submitted'})).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByRole('heading', {name: 'What happens next'})).toBeVisible();
             await expect(reviewAdditionalApplication.page.getByText('The task will be closed and')).toBeVisible();
-            await expect(reviewAdditionalApplication.page.getByText('The applicant and the other parties will be notified.')).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByText('The applicant will be notified.')).toBeVisible();
             await expect(reviewAdditionalApplication.page.getByText('A task for the courts and')).toBeVisible();
             await expect(reviewAdditionalApplication.page.getByText('If you need to send any further directions to the CTSC or the local court, for example, to request a listing, you can do this using the \'Send message\' event.')).toBeVisible();
 
 
             await reviewAdditionalApplication.closeConfirmation();
             await reviewAdditionalApplication.tabNavigation('Other applications');
-            expect(reviewAdditionalApplication.getRowData('Application Reviewed by Judge', reviewAdditionalApplication.page)).toContain('Yes');
+            expect(await reviewAdditionalApplication.getRowData('Application Reviewed by Judge', reviewAdditionalApplication.page)).toContain('Yes');
             await reviewAdditionalApplication.tabNavigation('Orders');
-            expect(reviewAdditionalApplication.getRowData('Order document', reviewAdditionalApplication.page)).toContain('amended_Draft order 2.pdf');
+            expect(await reviewAdditionalApplication.getRowData('Order document', reviewAdditionalApplication.page)).toContain('amended_Draft order1.pdf');
             await reviewAdditionalApplication.tabNavigation('Case File View');
             await caseFileView.openFolder('Orders');
-            await expect(reviewAdditionalApplication.page.getByText('amended_Draft order 2.pdf')).toBeVisible();
+            await caseFileView.openFolder('Confidential');
+            await expect(reviewAdditionalApplication.page.getByText('amended_Draft order1.pdf')).toBeVisible();
+            await caseFileView.openFolder('Draft Orders');
+            await caseFileView.openFolder('Confidential');
+            await expect(reviewAdditionalApplication.page.getByText('Draft order1.pdf', {exact: true})).toBeHidden();
 
         });
         if (testConfig.waEnabled) {
@@ -171,7 +176,7 @@ test.describe('Review Additional Application', () => {
 
         });
 
-        test.step('Assert the event success ', async () => {
+        await test.step('Assert the event success ', async () => {
             expect(await reviewAdditionalApplication.page.getByText('Response submitted').isVisible());
             await reviewAdditionalApplication.closeConfirmation();
             await reviewAdditionalApplication.tabNavigation('Additional application');
@@ -184,7 +189,7 @@ test.describe('Review Additional Application', () => {
             await reviewAdditionalApplication.tabNavigation('Case file view');
         });
         if (testConfig.waEnabled) {
-            test.step('Assert the WA task', async () => {
+            await test.step('Assert the WA task', async () => {
                 await signInPage.logout();
                 await signInPage.login(CTSCUser.email, CTSCUser.password);
                 await signInPage.navigateToCaseDetails(caseNumber);
