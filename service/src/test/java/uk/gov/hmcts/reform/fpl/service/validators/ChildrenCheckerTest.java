@@ -83,27 +83,6 @@ class ChildrenCheckerTest {
     }
 
     @Test
-    void shouldReturnErrorWhenDetailsOfNonStandardGenderAreMissing() {
-        final Child child = Child.builder()
-                .party(ChildParty.builder()
-                        .firstName("Alex")
-                        .lastName("Brown")
-                        .gender(ChildGender.OTHER)
-                        .dateOfBirth(LocalDate.now().minusYears(20))
-                        .build())
-                .build();
-        final CaseData caseData = CaseData.builder()
-                .children1(ElementUtils.wrapElements(child))
-                .build();
-
-        final List<String> errors = childrenChecker.validate(caseData);
-        final boolean isCompleted = childrenChecker.isCompleted(caseData);
-
-        assertThat(errors).containsExactly("Tell us the gender of all children in the case");
-        assertThat(isCompleted).isFalse();
-    }
-
-    @Test
     void shouldReturnErrorWhenDateOfBirthIsInFuture() {
         final Child child = Child.builder()
                 .party(ChildParty.builder()

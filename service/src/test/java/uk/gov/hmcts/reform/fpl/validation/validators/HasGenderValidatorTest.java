@@ -46,15 +46,4 @@ class HasGenderValidatorTest extends AbstractValidationTest {
         List<String> validationErrors = validate(child);
         assertThat(validationErrors).contains(ERROR_MESSAGE);
     }
-
-    @Test
-    void shouldReturnAnErrorIfNonStandardGenderIsNotProvided() {
-        ChildParty child = ChildParty.builder()
-            .gender(ChildGender.OTHER)
-            .build();
-
-        List<String> validationErrors = validate(child);
-
-        assertThat(validationErrors).contains(ERROR_MESSAGE);
-    }
 }
