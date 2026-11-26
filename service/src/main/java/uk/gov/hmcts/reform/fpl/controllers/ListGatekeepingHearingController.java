@@ -60,7 +60,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PREVIOUS_HEA
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @RestController
 @RequestMapping("/callback/list-gatekeeping-hearing")
@@ -182,10 +182,11 @@ public class ListGatekeepingHearingController extends CallbackController {
         caseDetails.getData().put(
             JUDGE_AND_LEGAL_ADVISOR,
             JudgeAndLegalAdvisor.builder()
-                .allocatedJudgeLabel(buildAllocatedJudgeLabel(allocatedJudge))
+                .allocatedJudgeLabel(formatJudgeTitleAndName(allocatedJudge.toJudgeAndLegalAdvisor()))
                 .build());
 
-        caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(allocatedJudge));
+        caseDetails.getData().put("allocatedJudgeLabel",
+            formatJudgeTitleAndName(allocatedJudge.toJudgeAndLegalAdvisor()));
 
         return respond(caseDetails);
     }
