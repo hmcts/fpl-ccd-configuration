@@ -190,5 +190,22 @@ export class BasePage {
             throw new Error(`Failed to get value for heading "${cellHeading}" in table "${tableName}"`);
         }
     }
+    async getRowData( rowHeading: string,page:Page):Promise<string> {
+
+      if(await page
+          .locator('tr.complex-panel-simple-field')
+          .filter({ hasText: rowHeading }).count() !=1){
+          throw new Error('Row not found or multiple rows found with the same heading: ' + rowHeading);
+      }
+   else{
+       let data = await page
+           .locator('tr.complex-panel-simple-field')
+           .filter({ hasText: rowHeading })
+           .locator('td')
+           .innerText();
+       return data;
+   }
+
+    }
 }
 

@@ -57,6 +57,9 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
                 .map(this::getUrgencyTimeFrame);
 
         Optional<String> c2 = Optional.ofNullable(additionalApplicationsBundle.getC2DocumentBundle())
+                // Only CTSC noti template has urgency details.
+                // But CTSC notification has been disabled after WA release,
+                // so we may to review this when CTSC notification is enabled again.
                 .map(C2DocumentBundle::getUrgencyTimeFrameType)
                 .map(this::getUrgencyTimeFrame);
 
