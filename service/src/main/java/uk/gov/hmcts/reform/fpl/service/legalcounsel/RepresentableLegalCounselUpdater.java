@@ -70,7 +70,12 @@ public class RepresentableLegalCounselUpdater {
             events.addAll(
                 unwrapElements(representable.getLegalCounsellors()).stream()
                     .filter(not(allCurrentLegalCounsellors::contains))
-                    .map(counsellor -> new LegalCounsellorRemoved(caseData, orgName, counsellor))
+                    .map(counsellor -> new LegalCounsellorRemoved(
+                        caseData,
+                        orgName,
+                        counsellor,
+                        caseDataBefore
+                    ))
                     .collect(Collectors.toSet())
             );
         }

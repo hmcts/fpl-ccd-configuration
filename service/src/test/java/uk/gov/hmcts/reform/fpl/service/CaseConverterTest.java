@@ -15,9 +15,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader;
 
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Map.of;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
@@ -149,5 +153,45 @@ class CaseConverterTest {
         CaseData convertedObject = caseConverter.convert(objectToBeConverted, CaseData.class);
 
         assertThat(convertedObject).isEqualTo(expectedConvertedObject);
+    }
+
+    @Test
+    void shouldDeserializeApplicantLegalCounselFromCaseDetails() {
+        CaseConverter realCaseConverter = CoreCaseDataStoreLoader.getCaseConverterInstance();
+
+        Map<String, Object> counsel = Map.of(
+            "email", "applicant.counsel@example.com",
+            "userId", "APPLICANT_COUNSEL_USER"
+        );
+
+        Map<String, Object> localAuthority = Map.of(
+            "id", "ORG1",
+            "name", "Previous Local Authority",
+            "designated", "Yes",
+            "legalCounsellors", List.of(
+                Map.of("id", UUID.randomUUID().toString(), "value", counsel)
+            )
+        );
+
+        CaseDetails previousCaseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(Map.of(
+                "localAuthorities", List.of(
+                    Map.of("id", UUID.randomUUID().toString(), "value", localAuthority)
+                )
+            ))
+            .build();
+
+        CaseData previousCaseData = realCaseConverter.convert(previousCaseDetails);
+
+        assertThat(previousCaseData.getLocalAuthorities()).hasSize(1);
+
+        LocalAuthority previousLA = previousCaseData.getLocalAuthorities().get(0).getValue();
+
+        assertThat(previousLA.getLegalCounsellors()).hasSize(1);
+        assertThat(previousLA.getLegalCounsellors().get(0).getValue().getUserId())
+            .isEqualTo("APPLICANT_COUNSEL_USER");
+        assertThat(previousLA.getLegalCounsellors().get(0).getValue().getEmail())
+            .isEqualTo("applicant.counsel@example.com");
     }
 }

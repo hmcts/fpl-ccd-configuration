@@ -65,8 +65,8 @@ public class LegalCounselUpdatedEventHandler {
 
             // Send notification to the solicitor that legal counsellor was acting for
             Set<String> solicitorEmails =
-                Stream.concat(unwrapElements(caseData.getRespondents1()).stream(),
-                        unwrapElements(caseData.getChildren1()).stream())
+                Stream.concat(unwrapElements(event.getPreviousCaseData().getRespondents1()).stream(),
+                        unwrapElements(event.getPreviousCaseData().getChildren1()).stream())
                     .filter(withSolicitor ->
                         unwrapElements(withSolicitor.getLegalCounsellors()).stream()
                             .map(LegalCounsellor::getEmail)
