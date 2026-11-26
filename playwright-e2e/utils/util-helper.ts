@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 
 export const getCurrentdate = async ()  => {
     let date = new Date();
@@ -41,4 +42,27 @@ export function getLocalLongDate(date: Date): string {
     const year = date.getFullYear();
 
     return `${day} ${month} ${year} `;
+}
+export function assertComplexValue(
+    data: Record<string, string | Array<Record<string, string | Array<Record<string, any>>>>>,
+    path: string[],
+    expected: string
+): void {
+    let current: any = data;
+
+// Walk down keys and optional array indexes in path, e.g. ["Supplements", "0", "Document name"]
+for (const segment of path) {
+    if (Array.isArray(current)) {
+        const idx = Number(segment);
+        expect(Number.isInteger(idx)).toBeTruthy();
+        expect(current[idx]).toBeDefined();
+        current = current[idx];
+    } else {
+        expect(current).toHaveProperty(segment);
+        current = current[segment];
+    }
+}
+
+expect(typeof current).toBe("string");
+expect.soft((current as string).trim()).toContain(expected);
 }

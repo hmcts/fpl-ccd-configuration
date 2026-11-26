@@ -1,0 +1,1174 @@
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "court": {
+      "code": "117",
+      "name": "Family Court sitting at Barnet",
+      "email": null,
+      "region": "London",
+      "epimmsId": "229786",
+      "regionId": "1",
+      "dateTransferred": null
+    },
+    "orders": {
+      "court": "117",
+      "address": {
+        "County": null,
+        "Country": null,
+        "PostCode": null,
+        "PostTown": null,
+        "AddressLine1": null,
+        "AddressLine2": null,
+        "AddressLine3": null
+      },
+      "epoType": "REMOVE_TO_ACCOMMODATION",
+      "excluded": null,
+      "orderType": [
+        "SECURE_ACCOMMODATION_ORDER"
+      ],
+      "directions": "Yes",
+      "otherOrder": "variation on supervision",
+      "directionDetails": "Other direction needed",
+      "particularsOfChildren": [],
+      "emergencyProtectionOrders": [
+        "CHILD_WHEREABOUTS"
+      ],
+      "particularsOfChildrenDetails": null,
+      "emergencyProtectionOrderDetails": null,
+      "secureAccommodationOrderSection": "ENGLAND",
+      "emergencyProtectionOrderDirections": [
+        "CONTACT_WITH_NAMED_PERSON"
+      ],
+      "childAssessmentOrderContactDirections": null,
+      "childRecoveryOrderDirectionsAppliedFor": null,
+      "childAssessmentOrderAssessmentDirections": null,
+      "emergencyProtectionOrderDirectionDetails": null,
+      "educationSupervisionOrderDirectionsAppliedFor": null,
+      "educationSupervisionOrderPriorConsultationType": [],
+      "educationSupervisionOrderPriorConsultationOtherLA": null
+    },
+    "dfjArea": "WEST_LONDON",
+    "hearing": {
+      "type": null,
+      "reason": null,
+      "timeFrame": null,
+      "reason2Days": null,
+      "reason7Days": null,
+      "reason12Days": null,
+      "reducedNotice": null,
+      "withoutNotice": "Yes",
+      "type_GiveReason": null,
+      "respondentsAware": "No",
+      "hearingUrgencyType": "SAME_DAY",
+      "reducedNoticeReason": null,
+      "withoutNoticeReason": "this is urgent can not wait long",
+      "hearingUrgencyDetails": "test",
+      "respondentsAwareReason": "not aware"
+    },
+    "caseName": "Swansea City Council & Pittman",
+        "children1": [
+      {
+        "id": "401d3641-0a0f-48b9-bc9b-dfccfe5064d0",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "partyId": "ce7cac60-2002-4931-ab8d-338fbdc87df1",
+            "adoption": "No",
+            "keyDates": "Et fugiat et est sun",
+            "lastName": "Zimmerman",
+            "firstName": "Isadora",
+            "dateOfBirth": "2000-09-16",
+            "fathersName": "Shannon Hayden",
+            "mothersName": "Shoshana Blankenship",
+            "additionalNeeds": "Yes",
+            "livingSituation": "Other",
+            "socialWorkerName": "Shaeleigh Patterson",
+            "socialWorkerEmail": "kejypo@mailinator.com",
+            "careAndContactPlan": "Beatae culpa itaque",
+            "isAddressConfidential": "No",
+            "livingSituationDetails": "Living in aboard",
+            "socialWorkerDetailsHidden": "No",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "+1 (262) 586-9222"
+            }
+          },
+          "legalCounsellors": []
+        }
+      }
+    ],
+    "allParties": [
+      {
+        "id": "a784f35b-b619-4eb0-b359-f80191bee4dd",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "directionText": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.",
+          "directionType": "Request permission for expert evidence",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "f1ea816e-db37-4fc7-81df-b954166ca551",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "directionText": "Make an application to the court if you believe any party or witness needs help with:\n\n- understanding proceedings and their role in them in court\n- putting their views to the court\n- instructing their representatives before, during and after the hearing\n- attending the hearing without significant distress\n\nIf possible, include in your application:\n\n- why the party or witness would benefit from help\n- the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n- written confirmation from any relevant witnesses of their view\n",
+          "directionType": "Request help to take part in proceedings",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "911b50e3-cc8e-4af2-a961-de5ad3ec8040",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "directionText": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.  \n",
+          "directionType": "Ask for disclosure",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "8d8beff6-ff6f-46dc-aabc-be46dc16d81d",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "No",
+          "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
+          "directionType": "Attend the pre-hearing and hearing",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "a6bfc1fa-c7e5-46c3-b74b-d04cb69e3fbd",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "directionText": "Contact anyone who might want to be a carer if your preferred plan proves to be impossible. Give their contact details to the Local Authority.",
+          "directionType": "Contact alternative carers",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "childPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+    },
+    "childPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORB]"
+    },
+    "childPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORC]"
+    },
+    "childPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORD]"
+    },
+    "childPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORE]"
+    },
+    "childPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORF]"
+    },
+    "childPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORG]"
+    },
+    "childPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORH]"
+    },
+    "childPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORI]"
+    },
+    "childPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
+    },
+    "respondents1": [
+      {
+        "id": "047d1ed8-12b5-423a-98ed-94e99de41a0b",
+        "value": {
+          "party": {
+            "address": {},
+            "partyId": "9fd34bad-f392-48c6-84a6-ae26e2b1ea43",
+            "lastName": "Pittman",
+            "firstName": "Noelani",
+            "addressKnow": "No",
+            "dateOfBirth": "1972-04-18",
+            "hideAddress": "No",
+            "hideTelephone": "Yes",
+            "litigationIssues": "NO",
+            "relationshipToChild": "Dolore animi soluta",
+            "addressNotKnowReason": "No fixed abode"
+          },
+          "representedBy": [],
+          "isLocalAuthority": "NO",
+          "legalCounsellors": [],
+          "legalRepresentation": "No"
+        }
+      }
+    ],
+    "c1Application": "Yes",
+    "childPolicy10": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORK]"
+    },
+    "childPolicy11": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORL]"
+    },
+    "childPolicy12": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORM]"
+    },
+    "childPolicy13": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORN]"
+    },
+    "childPolicy14": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORO]"
+    },
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "upload_timestamp": "2026-11-26T12:07:14.835220493",
+      "document_filename": "Swansea_City_Council__Pittman.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "allocatedJudge": {
+      "judgeType": "SALARIED_JUDGE",
+      "judgeTitle": "OTHER",
+      "otherTitle": "District Judge (MC)",
+      "judgeFullName": "District Judge (MC) Craig Taylor",
+      "judgeLastName": "Taylor",
+      "judgeEmailAddress": "DJMC.Craig.Taylor@ejudiciary.net",
+      "judgeJudicialUser": {
+        "idamId": "b682db84-01e6-4d04-8f40-6b37226d1924",
+        "personalCode": null
+      }
+    },
+    "deadline26week": "2027-05-27",
+    "hearingDetails": [
+      {
+        "id": "d1379038-ae80-4353-846e-40c3fa61548a",
+        "value": {
+          "type": "FACT_FINDING",
+          "venue": null,
+          "others": [],
+          "status": null,
+          "endDate": "2028-05-04T14:04:00",
+          "presence": null,
+          "startDate": "2028-05-04T10:00:00",
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "typeReason": null,
+          "hearingDays": null,
+          "typeDetails": null,
+          "vacatedDate": null,
+          "hearingHours": 4,
+          "endDateDerived": "Yes",
+          "hearingMinutes": 4,
+          "othersNotified": "",
+          "additionalNotes": null,
+          "hearingDuration": "4 hours 4 minutes",
+          "housekeepReason": null,
+          "needTranslation": "NO",
+          "noticeOfHearing": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "upload_timestamp": "2026-11-26T12:12:45.967307421",
+            "document_filename": "Notice_of_hearing_26November.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "attendanceDetails": "sdf",
+          "hearingJudgeLabel": "District Judge (MC) Taylor",
+          "legalAdvisorLabel": "",
+          "cancellationReason": null,
+          "hearingNeedsBooked": null,
+          "venueCustomAddress": {},
+          "allocatedJudgeLabel": "District Judge (MC) Taylor",
+          "customPreviousVenue": null,
+          "hearingNeedsDetails": null,
+          "judgeAndLegalAdvisor": {
+            "judgeType": "SALARIED_JUDGE",
+            "judgeTitle": "OTHER",
+            "otherTitle": "District Judge (MC)",
+            "judgeFullName": "District Judge (MC) Craig Taylor",
+            "judgeLastName": "Taylor",
+            "judgeEmailAddress": "DJMC.Craig.Taylor@ejudiciary.net",
+            "judgeJudicialUser": {
+              "idamId": "b682db84-01e6-4d04-8f40-6b37226d1924",
+              "personalCode": null
+            }
+          },
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "newVenue": null,
+            "previousVenue": "Aberystwyth Justice Centre, Y Lanfa, Aberystwyth Justice Centre, Aberystwyth, SY23 1AS",
+            "usePreviousVenue": "Yes",
+            "newVenueCustomAddress": {}
+          },
+          "caseManagementOrderId": null,
+          "noticeOfHearingVacated": null,
+          "translationRequirements": "NO",
+          "translatedNoticeOfHearing": null,
+          "translationUploadDateTime": null
+        }
+      },
+      {
+        "id": "cbac2bc8-eb31-44cb-ab80-922f55b24cbc",
+        "value": {
+          "type": "INTERIM_CARE_ORDER",
+          "venue": "64",
+          "others": [],
+          "status": null,
+          "endDate": "2027-06-12T10:00:00",
+          "presence": null,
+          "startDate": "2027-06-12T10:00:00",
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "typeReason": null,
+          "hearingDays": 1,
+          "typeDetails": null,
+          "vacatedDate": null,
+          "hearingHours": null,
+          "endDateDerived": "Yes",
+          "hearingMinutes": null,
+          "othersNotified": "",
+          "additionalNotes": null,
+          "hearingDuration": "1 days",
+          "housekeepReason": null,
+          "needTranslation": "NO",
+          "noticeOfHearing": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "upload_timestamp": "2026-11-26T12:10:23.815028093",
+            "document_filename": "Notice_of_hearing_26November.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "attendanceDetails": "add details",
+          "hearingJudgeLabel": "District Judge (MC) Taylor",
+          "legalAdvisorLabel": "",
+          "cancellationReason": null,
+          "hearingNeedsBooked": null,
+          "venueCustomAddress": {},
+          "allocatedJudgeLabel": null,
+          "customPreviousVenue": null,
+          "hearingNeedsDetails": null,
+          "judgeAndLegalAdvisor": {
+            "judgeType": "SALARIED_JUDGE",
+            "judgeTitle": "OTHER",
+            "otherTitle": "District Judge (MC)",
+            "judgeFullName": "District Judge (MC) Craig Taylor",
+            "judgeLastName": "Taylor",
+            "judgeEmailAddress": "DJMC.Craig.Taylor@ejudiciary.net",
+            "judgeJudicialUser": {
+              "idamId": "b682db84-01e6-4d04-8f40-6b37226d1924",
+              "personalCode": null
+            }
+          },
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "newVenue": null,
+            "previousVenue": null,
+            "usePreviousVenue": null,
+            "newVenueCustomAddress": {}
+          },
+          "caseManagementOrderId": null,
+          "noticeOfHearingVacated": null,
+          "translationRequirements": "NO",
+          "translatedNoticeOfHearing": null,
+          "translationUploadDateTime": null
+        }
+      },
+      {
+        "id": "6e8bbd07-0cc8-491b-9101-34db33e66bb3",
+        "value": {
+          "type": "INTERIM_CARE_ORDER",
+          "venue": "64",
+          "others": [],
+          "status": null,
+          "endDate": "2026-04-08T10:00:00",
+          "presence": null,
+          "startDate": "2026-04-04T10:00:00",
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "typeReason": null,
+          "hearingDays": 4,
+          "typeDetails": null,
+          "vacatedDate": null,
+          "hearingHours": null,
+          "endDateDerived": "Yes",
+          "hearingMinutes": null,
+          "othersNotified": "",
+          "additionalNotes": "rwe",
+          "hearingDuration": "4 days",
+          "housekeepReason": null,
+          "needTranslation": "NO",
+          "noticeOfHearing": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "upload_timestamp": "2026-11-26T12:13:32.294580455",
+            "document_filename": "Notice_of_hearing_26November.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "attendanceDetails": "sdf",
+          "hearingJudgeLabel": "District Judge (MC) Taylor",
+          "legalAdvisorLabel": "",
+          "cancellationReason": null,
+          "hearingNeedsBooked": null,
+          "venueCustomAddress": {},
+          "allocatedJudgeLabel": "District Judge (MC) Taylor",
+          "customPreviousVenue": null,
+          "hearingNeedsDetails": null,
+          "judgeAndLegalAdvisor": {
+            "judgeType": "SALARIED_JUDGE",
+            "judgeTitle": "OTHER",
+            "otherTitle": "District Judge (MC)",
+            "judgeFullName": "District Judge (MC) Craig Taylor",
+            "judgeLastName": "Taylor",
+            "judgeEmailAddress": "DJMC.Craig.Taylor@ejudiciary.net",
+            "judgeJudicialUser": {
+              "idamId": "b682db84-01e6-4d04-8f40-6b37226d1924",
+              "personalCode": null
+            }
+          },
+          "preAttendanceDetails": "1 hour before the hearing",
+          "previousHearingVenue": {
+            "newVenue": "64",
+            "previousVenue": "Aberystwyth Justice Centre, Y Lanfa, Aberystwyth Justice Centre, Aberystwyth, SY23 1AS",
+            "usePreviousVenue": "No",
+            "newVenueCustomAddress": {}
+          },
+          "caseManagementOrderId": null,
+          "noticeOfHearingVacated": null,
+          "translationRequirements": "NO",
+          "translatedNoticeOfHearing": null,
+          "translationUploadDateTime": null
+        }
+      }
+    ],
+    "latestRoleSent": "JUDICIARY",
+    "otherOrderType": "NO",
+    "courtDirections": [
+      {
+        "id": "a6396c76-9e68-4b69-9dd6-577d1c654f89",
+        "value": {
+          "assignee": "COURT",
+          "readOnly": "No",
+          "directionText": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+          "directionType": "Arrange interpreters",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "9961ecf9-dd46-4d52-b6dc-c07e1749ae41",
+        "value": {
+          "assignee": "COURT",
+          "readOnly": "No",
+          "directionText": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+          "directionType": "Arrange interpreters",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+
+    "hasRespondentLA": "NO",
+    "isC2Application": "YES",
+    "c2DocumentBundle": [],
+    "gatekeeperEmails": [
+      {
+        "id": "77c9f4ae-4934-4244-8c64-5a2f09708e7b",
+        "value": {
+          "email": "fr_applicant_sol@sharklasers.com"
+        }
+      }
+    ],
+    "localAuthorities": [
+      {
+        "id": "cdf8363c-b256-4918-807b-344af62d7110",
+        "value": {
+          "id": "W9V61CP",
+          "name": "Swansea City Council",
+          "email": "FamilyPublicLaw+sa@gmail.com",
+          "address": {
+            "County": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
+          },
+          "pbaNumber": "PBA0076173",
+          "colleagues": [
+            {
+              "id": "54d332ce-f5c2-4bb8-b7ad-421b0ca86d2f",
+              "value": {
+                "email": "nekikime@mailinator.com",
+                "phone": "+1 (199) 941-3076",
+                "lastName": "Knowles",
+                "firstName": "Nigel",
+                "mainContact": "Yes",
+                "alternativePhone": "+1 (138) 609-7202",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ],
+          "designated": "Yes",
+          "legalTeamManager": "Kurt",
+          "customerReference": "customer",
+          "representingDetails": {
+            "lastName": null,
+            "firstName": null
+          }
+        }
+      }
+    ],
+    "cafcassDirections": [
+      {
+        "id": "0bedb491-3939-4bba-9870-d7a95da4421e",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "Yes",
+          "directionText": "All of the advocates who will appear at the related hearing must attend. ",
+          "directionType": "Arrange an advocates' meeting",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "8d92d06d-a39f-4e7a-a267-e08f66250b1e",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "Yes",
+          "directionText": "Send to the court and all parties.",
+          "directionType": "Send the guardian's analysis to all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "152d36eb-9558-4e23-ba8e-c7601add4c24",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "No",
+          "directionText": "",
+          "directionType": "Appoint a children's guardian",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "3f3e97af-eeff-4aea-9c93-5bc493f2de05",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "No",
+          "directionText": "",
+          "directionType": "Appoint a children's guardian",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "draftUploadedCMOs": [],
+    "respondentPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+    },
+    "respondentPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+    },
+    "respondentPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+    },
+    "respondentPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+    },
+    "respondentPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+    },
+    "respondentPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+    },
+    "respondentPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+    },
+    "respondentPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+    },
+    "respondentPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+    },
+    "respondentPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+    },
+    "reviewNextHearing": "YES",
+    "selectedHearingId": "6e8bbd07-0cc8-491b-9101-34db33e66bb3",
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationDecision": {
+      "proposal": null,
+      "proposalV2": "District judge",
+      "proposalReason": "reas",
+      "judgeLevelRadio": null,
+      "allocationProposalPresent": "Yes"
+    },
+    "allocationProposal": {
+      "proposal": null,
+      "proposalV2": "District judge",
+      "proposalReason": "reas"
+    },
+    "caseLocalAuthority": "SA",
+    "displayAmountToPay": "Yes",
+    "nextHearingDetails": {
+      "hearingDateTime": "2027-06-12T10:00:00"
+    },
+    "representativeType": "LOCAL_AUTHORITY",
+    "supplementDocument": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "upload_timestamp": "2026-11-26T12:07:14.835220493",
+      "document_filename": "c20_supplement_26nov.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "waTaskUrgencyLevel": "URGENT",
+    "westLondonDFJCourt": "117",
+    "familyManCaseNumber": "Familyman",
+    "languageRequirement": null,
+    "caseSummaryCourtName": "Family Court sitting at Barnet",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "W9V61CP",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "respondentDirections": [
+      {
+        "id": "d1798d11-1cb8-4643-98cb-82f27784e34f",
+        "value": {
+          "assignee": "PARENTS_AND_RESPONDENTS",
+          "readOnly": "Yes",
+          "directionText": "Send a written statement to the court and all parties, showing:\n\n- the parents' response to the local authority's threshold statement\n- the parents' proposals for placing the children, immediately and long-term\n- whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
+          "directionType": "Send response to threshold statement to all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "respondentsConfirmPR": [
+      "confirm"
+    ],
+    "caseNameHmctsInternal": "c1",
+    "lastGenuineUpdateTime": "TO BE FILLED WITH VALID DATA",
+    "urgentDirectionsOrder": {
+      "orderDoc": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "upload_timestamp": "2026-11-26T12:10:23.815028093",
+        "document_filename": "urgent-directions-order.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
+      "dateOfIssue": "26 November 2026",
+      "orderStatus": "SEALED",
+      "needTranslation": "NO",
+      "customDirections": [],
+      "standardDirections": [
+        {
+          "id": "17a5f1ef-9345-47bc-b7aa-828174999922",
+          "value": {
+            "type": "ATTEND_HEARING",
+            "title": "Attend the pre-hearing and hearing",
+            "assignee": "ALL_PARTIES",
+            "description": "Parties and their legal representatives must attend the pre-hearing and hearing",
+            "dueDateType": "DAYS",
+            "daysBeforeHearing": 2,
+            "dateToBeCompletedBy": null
+          }
+        },
+        {
+          "id": "9831ace3-ddd1-444d-84ee-21e5a8af5952",
+          "value": {
+            "type": "LODGE_BUNDLE",
+            "title": "Lodge a bundle",
+            "assignee": "LOCAL_AUTHORITY",
+            "description": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
+            "dueDateType": "DAYS",
+            "daysBeforeHearing": 2,
+            "dateToBeCompletedBy": null
+          }
+        },
+        {
+          "id": "9d435b88-e810-4393-a451-2f3e731a7de4",
+          "value": {
+            "type": "APPOINT_CHILDREN_GUARDIAN_IMMEDIATE",
+            "title": "Appoint a children's guardian",
+            "assignee": "CAFCASS",
+            "description": "",
+            "dueDateType": null,
+            "daysBeforeHearing": null,
+            "dateToBeCompletedBy": null
+          }
+        },
+        {
+          "id": "65f0d8b7-1fdc-491b-b185-eea9c3847ab2",
+          "value": {
+            "type": "ARRANGE_INTERPRETERS_IMMEDIATE",
+            "title": "Arrange interpreters",
+            "assignee": "COURT",
+            "description": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+            "dueDateType": null,
+            "daysBeforeHearing": null,
+            "dateToBeCompletedBy": null
+          }
+        }
+      ],
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT",
+        "judgeLastName": "ldf",
+        "judgeEmailAddress": "fr_applicant_sol@sharklasers.com",
+        "judgeJudicialUser": {
+          "idamId": null,
+          "personalCode": null
+        }
+      },
+      "unsealedDocumentCopy": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "upload_timestamp": "2026-11-26T12:10:23.815028093",
+        "document_filename": "draft-urgent-directions-order.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
+      "translationRequirements": "NO"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
+    "caseManagementCategory": {
+      "value": {
+        "code": "FPL",
+        "label": "Family Public Law"
+      },
+      "list_items": [
+        {
+          "code": "FPL",
+          "label": "Family Public Law"
+        }
+      ]
+    },
+    "caseManagementLocation": {
+      "region": "1",
+      "baseLocation": "229786"
+    },
+    "caseSummaryDateOfIssue": "2026-11-26",
+    "caseSummaryLATabHidden": "Yes",
+
+    "gatekeepingOrderRouter": "UPLOAD",
+    "noticeOfChangeAnswers0": {
+      "respondentLastName": "Pittman",
+      "respondentFirstName": "Noelani"
+    },
+    "otherPartiesDirections": [
+      {
+        "id": "8ae67a6a-2a4f-4587-a3c3-b95324ae1179",
+        "value": {
+          "assignee": "OTHERS",
+          "readOnly": "Yes",
+          "directionText": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.\n",
+          "directionType": "Object to a request for disclosure",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "standardDirectionOrder": {
+      "orderDoc": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "upload_timestamp": "2026-11-26T12:12:46.719055421",
+        "document_filename": "Consent 2.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
+      "uploader": "CTSC Team Leader",
+      "orderStatus": "SEALED",
+      "dateOfUpload": "2026-11-26",
+      "needTranslation": "NO",
+      "lastUploadedOrder": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "upload_timestamp": "2026-11-26T12:11:50.129635016",
+        "document_filename": "Consent 2.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
+      "judgeAndLegalAdvisor": {},
+      "translationRequirements": "NO"
+    },
+
+    "caseSummaryCaseFlagNotes": null,
+    "caseSummaryHighCourtCase": "No",
+
+    "localAuthorityDirections": [
+      {
+        "id": "e4d74b5a-b1e3-4cf6-9c2d-aefdf4a54fba",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "directionText": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on\n",
+          "directionType": "Send documents to all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "079fa392-e6fe-464a-9475-65930413df4e",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "directionText": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents\n",
+          "directionType": "Send missing annex documents to the court and all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "ec8b78f3-6998-49e2-82e1-12da62df1d68",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "directionText": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
+          "directionType": "Identify alternative carers",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "ff1443cf-9897-46b1-9d73-e66c2011184f",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "directionText": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
+          "directionType": "Send translated case documents to respondents",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "1d1fb4a4-9c6a-41ff-a1b8-3c95743e81f7",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "directionText": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
+          "directionType": "Lodge a bundle",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "c315b81a-37b9-4899-98d5-c5b22c82c2f3",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "directionText": "Send to the court and all parties.",
+          "directionType": "Send case summary to all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "70da4a2e-b93a-4436-a744-ff32b900624b",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.\n",
+          "directionType": "Urgently consider jurisdiction and invite any representations",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "78bef9d3-4f53-42d7-84e7-e78177967ece",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "directionText": "",
+          "directionType": "Reduce time for service of notice of the proceedings",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "caseSummaryHasNextHearing": "Yes",
+    "caseSummaryNextHearingCMO": null,
+    "directionsForCourtUpdated": [
+      "ARRANGE_INTERPRETERS_IMMEDIATE"
+    ],
+    "noticeOfProceedingsBundle": [
+      {
+        "id": "246aaa27-f454-42b1-b45f-0e3c52921183",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "upload_timestamp": "2026-11-26T12:12:45.967307421",
+            "document_filename": "Notice_of_proceedings_c6.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "needTranslation": "NO",
+          "translatedDocument": null,
+          "translationRequirements": "NO",
+          "translationUploadDateTime": null
+        }
+      }
+    ],
+    "caseSummaryCafcassGuardian": null,
+    "caseSummaryHasFinalHearing": null,
+    "caseSummaryLAHighCourtCase": "No",
+    "caseSummaryLASolicitorName": "Nigel Knowles",
+    "caseSummaryNextHearingDate": "2027-06-12",
+    "caseSummaryNextHearingType": "Interim care order",
+    "caseSummaryOrdersRequested": "Secure Accommodation order",
+    "hearingOrdersBundlesDrafts": [
+      {
+        "id": "a31b3820-f7a5-447a-8564-536c2d75f4b1",
+        "value": {
+          "orders": [
+            {
+              "id": "ac89a562-146d-4afc-9d58-074d7f9815a9",
+              "value": {
+                "type": "C21",
+                "order": {
+                  "document_url": "${TEST_DOCUMENT_URL}",
+                  "upload_timestamp": "2026-11-26T12:15:09.320493801",
+                  "document_filename": "Draft order 2.pdf",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                },
+                "title": "Draft order",
+                "others": [],
+                "status": "SEND_TO_JUDGE",
+                "hearing": "No hearing",
+                "dateSent": "2026-11-26",
+                "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+                "needTranslation": "NO",
+                "judgeTitleAndName": "",
+                "uploaderCaseRoles": [
+                  "LASOLICITOR"
+                ],
+                "documentAcknowledge": [
+                  "ACK_RELATED_TO_CASE"
+                ],
+                "translationRequirements": "NO"
+              }
+            }
+          ],
+          "hearingName": "No hearing"
+        }
+      }
+    ],
+    "urgentDirectionsForCafcass": [
+      "APPOINT_CHILDREN_GUARDIAN_IMMEDIATE"
+    ],
+    "caseSummaryFinalHearingDate": null,
+    "caseSummaryFlagAddedByEmail": null,
+    "caseSummaryLASolicitorEmail": "nekikime@mailinator.com",
+    "caseSummaryNextHearingJudge": "District Judge (MC) Taylor",
+    "caseSummaryNumberOfChildren": 1,
+    "noticeOfChangeChildAnswers0": {
+      "respondentLastName": "Zimmerman",
+      "respondentFirstName": "Isadora"
+    },
+    "additionalApplicationsBundle": [
+      {
+        "id": "2d8c2e8b-12d8-4246-b78b-581e55a40365",
+        "value": {
+          "author": "kurt@swansea.gov.uk",
+          "pbaPayment": {
+            "pbaNumber": "PBA0076191",
+            "fileReference": "customer reference"
+          },
+          "amountToPay": "27000",
+          "c2DocumentBundle": {
+            "id": "330307af-e0d6-4076-9c50-19e5db86aa82",
+            "type": "WITH_NOTICE",
+            "author": "kurt@swansea.gov.uk",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "upload_timestamp": "2026-11-26T12:15:11.501573437",
+              "document_filename": "C2_Application_Sample.pdf",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "routeType": "PAPER_FORM",
+            "respondents": [
+              {
+                "id": "047d1ed8-12b5-423a-98ed-94e99de41a0b",
+                "value": {
+                  "party": {
+                    "address": {},
+                    "partyId": "9fd34bad-f392-48c6-84a6-ae26e2b1ea43",
+                    "lastName": "Pittman",
+                    "firstName": "Noelani",
+                    "addressKnow": "No",
+                    "dateOfBirth": "1972-04-18",
+                    "hideAddress": "No",
+                    "hideTelephone": "Yes",
+                    "litigationIssues": "NO",
+                    "relationshipToChild": "Dolore animi soluta",
+                    "addressNotKnowReason": "No fixed abode"
+                  },
+                  "representedBy": [],
+                  "isLocalAuthority": "NO",
+                  "legalCounsellors": [],
+                  "legalRepresentation": "No"
+                }
+              }
+            ],
+            "applicantName": "Swansea City Council, Local Authority",
+            "uploadedDateTime": "26 November 2026, 12:15pm",
+            "draftOrdersBundle": [
+              {
+                "id": "ac89a562-146d-4afc-9d58-074d7f9815a9",
+                "value": {
+                  "title": "Draft order",
+                  "document": {
+                    "document_url": "${TEST_DOCUMENT_URL}",
+                    "upload_timestamp": "2026-11-26T12:15:09.320493801",
+                    "document_filename": "Draft order 2.pdf",
+                    "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                  },
+                  "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+                  "uploaderCaseRoles": [
+                    "LASOLICITOR"
+                  ]
+                }
+              }
+            ],
+            "supplementsBundle": [],
+            "hasSafeguardingRisk": "Yes",
+            "safeguardingRiskDetails": "Reason for urgency",
+            "supportingEvidenceBundle": [],
+            "requestedHearingToAdjourn": "Fact finding hearing, 4 May 2028",
+            "c2AdditionalOrdersRequested": [
+              "REQUESTING_ADJOURNMENT"
+            ],
+            "hasConfidentialAddressValue": "No",
+            "canBeConsideredAtNextHearing": "Yes",
+            "isHearingAdjournmentRequired": "Yes"
+          },
+          "uploadedDateTime": "26 November 2026, 12:15pm",
+          "hasConfidentialC2": "NO",
+          "applicationReviewed": "NO",
+          "otherApplicationsBundle": {
+            "id": "11d95a0e-595d-4e07-9bbf-22551f413307",
+            "author": "kurt@swansea.gov.uk",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "upload_timestamp": "2026-11-26T12:15:11.501573437",
+              "document_filename": "C1 - Appointment of a guardian.pdf",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "respondents": [
+              {
+                "id": "047d1ed8-12b5-423a-98ed-94e99de41a0b",
+                "value": {
+                  "party": {
+                    "address": {},
+                    "partyId": "9fd34bad-f392-48c6-84a6-ae26e2b1ea43",
+                    "lastName": "Pittman",
+                    "firstName": "Noelani",
+                    "addressKnow": "No",
+                    "dateOfBirth": "1972-04-18",
+                    "hideAddress": "No",
+                    "hideTelephone": "Yes",
+                    "litigationIssues": "NO",
+                    "relationshipToChild": "Dolore animi soluta",
+                    "addressNotKnowReason": "No fixed abode"
+                  },
+                  "representedBy": [],
+                  "isLocalAuthority": "NO",
+                  "legalCounsellors": [],
+                  "legalRepresentation": "No"
+                }
+              }
+            ],
+            "applicantName": "Swansea City Council, Local Authority",
+            "applicationType": "C1_APPOINTMENT_OF_A_GUARDIAN",
+            "uploadedDateTime": "26 November 2026, 12:15pm",
+            "supplementsBundle": [],
+            "urgencyTimeFrameType": "SAME_DAY",
+            "supportingEvidenceBundle": []
+          }
+        }
+      }
+    ],
+    "caseSummaryPreviousCourtName": null,
+    "manualJudgeAllocationWarning": null,
+    "secureAccommodationOrderType": "YES",
+    "caseSummaryAllocatedJudgeName": "District Judge (MC) Taylor",
+    "caseSummaryFlagAssessmentForm": null,
+    "caseSummaryHasPreviousHearing": "Yes",
+    "caseSummaryPreviousHearingCMO": null,
+    "urgentDirectionsForAllParties": [
+      "ATTEND_HEARING"
+    ],
+    "caseSummaryAllocatedJudgeEmail": "DJMC.Craig.Taylor@ejudiciary.net",
+    "caseSummaryFlagAddedByFullName": null,
+    "caseSummaryLanguageRequirement": "No",
+    "caseSummaryNextHearingDateTime": "2027-06-12T10:00:00",
+    "caseSummaryPreviousHearingDate": "2026-04-04",
+    "caseSummaryPreviousHearingType": "Interim care order",
+    "contactWithChildInCareOrderType": null,
+    "refuseContactWithChildOrderType": null,
+    "caseSummaryHasUnresolvedMessages": null,
+    "caseSummaryLALanguageRequirement": "No",
+    "gatekeepingOrderListOrSendToAdmin": "NO",
+    "urgentDirectionsForLocalAuthority": [
+      "LODGE_BUNDLE"
+    ],
+    "caseSummaryFirstRespondentLastName": "Pittman",
+    "caseSummaryFirstRespondentLegalRep": null,
+    "caseSummaryNextHearingEmailAddress": "DJMC.Craig.Taylor@ejudiciary.net",
+    "groundsForSecureAccommodationOrder": {
+      "grounds": [
+        "ABSCOND_FROM_ACCOMMODATION",
+        "SELF_INJURY",
+        "APPROVAL_OF_SECRETARY_OF_STATE"
+      ],
+      "reasonAndLength": "the reason for the application and it is needed for 4 year"
+    },
+    "gatekeepingOrderListOrSendToAdminReason": "fds",
+    "direction-ARRANGE_INTERPRETERS_IMMEDIATE": {
+      "type": "ARRANGE_INTERPRETERS_IMMEDIATE",
+      "title": "Arrange interpreters",
+      "assignee": "COURT",
+      "description": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+      "dueDateType": null,
+      "daysBeforeHearing": null,
+      "dateToBeCompletedBy": null
+    },
+    "manualJudgeAllocationWarningHearingJudge": null,
+    "direction-APPOINT_CHILDREN_GUARDIAN_IMMEDIATE": {
+      "type": "APPOINT_CHILDREN_GUARDIAN_IMMEDIATE",
+      "title": "Appoint a children's guardian",
+      "assignee": "CAFCASS",
+      "description": null,
+      "dueDateType": null,
+      "daysBeforeHearing": null,
+      "dateToBeCompletedBy": null
+    }
+  }
+}

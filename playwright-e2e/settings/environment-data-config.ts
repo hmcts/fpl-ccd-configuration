@@ -1,16 +1,19 @@
 export interface EnvironmentConfig {
  swanseaOrgPBA: string;
  privateSolicitorOrgPBA: string;
+ fplSolicitorOrgPBA: string;
 }
 
 export const environments: Record<string, EnvironmentConfig> = {
     aat: {
     swanseaOrgPBA: 'PBA0076191',
-    privateSolicitorOrgPBA: 'PBA0096432'
+    privateSolicitorOrgPBA: 'PBA0096432',
+    fplSolicitorOrgPBA:  'PBA0090841'
     },
     demo: {
     swanseaOrgPBA: 'PBA7183462',
-    privateSolicitorOrgPBA: 'PBA0090842'
+    privateSolicitorOrgPBA: 'PBA0090842',
+    fplSolicitorOrgPBA:  'PBA0091441'
     },
 };
 

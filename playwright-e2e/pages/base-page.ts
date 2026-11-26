@@ -191,16 +191,13 @@ export class BasePage {
         }
     }
     async getRowData( rowHeading: string,page:Page):Promise<string> {
-
-      if(await page
-          .locator('tr.complex-panel-simple-field')
-          .filter({ hasText: rowHeading }).count() !=1){
+let count = await page.getByRole('row', { name: rowHeading }).count();
+console.log(count);
+      if(count !=1){
           throw new Error('Row not found or multiple rows found with the same heading: ' + rowHeading);
       }
    else{
-       let data = await page
-           .locator('tr.complex-panel-simple-field')
-           .filter({ hasText: rowHeading })
+       let data = await page.getByRole('row', { name: rowHeading })
            .locator('td')
            .innerText();
        return data;

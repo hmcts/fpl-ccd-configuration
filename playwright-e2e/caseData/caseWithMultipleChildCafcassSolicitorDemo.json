@@ -7,6 +7,30 @@
         "CARE_ORDER"
       ]
     },
+    "childrenHaveRepresentation": "Yes",
+    "childrenHaveSameRepresentation": "Yes",
+    "childrenMainRepresentative": {
+      "colleaguesToBeNotified": [
+      ],
+      "email": "fr_applicant_sol@sharklasers.com",
+      "firstName": "child",
+      "lastName": "One",
+      "organisation": {
+        "OrganisationID": "4ZYL0HK",
+        "OrganisationName": "FPLSolicitorOrg"
+      },
+      "telephoneNumber": {
+        "contactDirection": null,
+        "telephoneNumber": "2465767"
+      }
+    },
+    "childPolicy0": {
+      "Organisation": {
+        "OrganisationID": "P3ZKHF9",
+        "OrganisationName": "FPLSolicitorOrg"
+      },
+      "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+    },
     "changeOfRepresentatives": [
       {
         "id": "525aeb0d-79d8-4b60-808a-14ab4f92a421",
@@ -17,8 +41,8 @@
             "firstName": "ChilKenny",
             "lastName": "Solicitor",
             "organisation": {
-              "OrganisationID": "M1YPZ85",
-              "OrganisationName": "Private solicitors"
+              "OrganisationID": "P3ZKHF9",
+              "OrganisationName": "FPLSolicitorOrg"
             },
             "email": "fr_applicant_sol@sharklasers.com"
           },

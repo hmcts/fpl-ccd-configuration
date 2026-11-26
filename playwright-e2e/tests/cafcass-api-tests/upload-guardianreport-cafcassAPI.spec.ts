@@ -31,7 +31,7 @@ test.describe('Cafcass upload guardian report ', () => {
         await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Guardian\'s evidence');
+        await caseFileView.clickFolder('Guardian\'s evidence');
 
         await expect(page.getByRole('tree')).toContainText(`${docName}`);
 
@@ -50,7 +50,7 @@ test.describe('Cafcass upload guardian report ', () => {
         await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
         await signInPage.navigateToCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Position Statements');
+        await caseFileView.clickFolder('Position Statements');
 
         await expect(page.getByRole('tree')).toContainText(`${docName}`);
 
