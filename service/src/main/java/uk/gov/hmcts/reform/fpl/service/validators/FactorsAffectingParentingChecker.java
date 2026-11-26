@@ -13,7 +13,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
-import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Service
 /**
@@ -26,20 +25,6 @@ public class FactorsAffectingParentingChecker implements EventChecker {
     @Override
     public List<String> validate(CaseData caseData) {
         return emptyList();
-    }
-
-    @Override
-    public boolean isStarted(CaseData caseData) {
-        final FactorsParenting factors = caseData.getFactorsParenting();
-
-        if (isEmpty(factors)) {
-            return false;
-        }
-
-        return anyNonEmpty(
-            factors.getAlcoholDrugAbuse(),
-            factors.getDomesticViolence(),
-            factors.getAnythingElse());
     }
 
     @Override

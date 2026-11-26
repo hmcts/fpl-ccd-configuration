@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.allE
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.isEmptyAddress;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.isEmptyEmail;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.isEmptyTelephone;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -28,20 +27,6 @@ public class RespondentsChecker extends PropertiesChecker {
         List<String> errors = new ArrayList<>(respondentAfterSubmissionValidator.validateLegalRepresentation(caseData));
         errors.addAll(super.validate(caseData, List.of("respondents1")));
         return errors;
-    }
-
-    @Override
-    public boolean isStarted(CaseData caseData) {
-        final List<Respondent> respondents = unwrapElements(caseData.getAllRespondents());
-
-        switch (respondents.size()) {
-            case 0:
-                return false;
-            case 1:
-                return !isEmptyRespondent(respondents.get(0));
-            default:
-                return true;
-        }
     }
 
     private static boolean isEmptyRespondent(Respondent respondent) {

@@ -38,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
 
@@ -60,10 +59,6 @@ public class TaskListService {
     private TaskState getTaskState(CaseData caseData, Event event) {
         if (eventsChecker.isCompleted(event, caseData)) {
             return eventsChecker.completedState(event);
-        }
-
-        if (eventsChecker.isInProgress(event, caseData)) {
-            return IN_PROGRESS;
         }
 
         if (!eventsChecker.isAvailable(event, caseData)) {

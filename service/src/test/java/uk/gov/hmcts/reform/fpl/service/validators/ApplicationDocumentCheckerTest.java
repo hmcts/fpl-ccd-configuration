@@ -25,7 +25,7 @@ class ApplicationDocumentCheckerTest {
     private ApplicationDocumentChecker applicationDocumentChecker;
 
     @Test
-    void shouldReturnNoErrorsAndCompleteStateWhenApplicationDocumentsIsStarted() {
+    void shouldReturnNoErrorsAndCompleteStateWhenApplicationDocumentsIsCompleted() {
         final CaseData caseData = CaseData.builder()
                 .temporaryApplicationDocuments(documents())
                 .build();
@@ -47,24 +47,6 @@ class ApplicationDocumentCheckerTest {
 
         assertThat(errors).isEmpty();
         assertThat(isCompleted).isFalse();
-    }
-
-    @Test
-    void shouldSetIsStartedToTrueWhenApplicationDocumentsAdded() {
-        final CaseData caseData = CaseData.builder()
-            .temporaryApplicationDocuments(documents())
-            .build();
-
-        final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
-        assertThat(isStarted).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseIfNothingHasBeenEnteredIntoApplicationDocumentEvent() {
-        final CaseData caseData = CaseData.builder().build();
-
-        final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
-        assertThat(isStarted).isFalse();
     }
 
     private static List<Element<ApplicationDocument>> documents() {

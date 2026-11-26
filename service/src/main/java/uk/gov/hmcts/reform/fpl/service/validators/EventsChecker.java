@@ -148,12 +148,6 @@ public class EventsChecker {
             .orElse(NOT_AVAILABLE);
     }
 
-    public boolean isInProgress(Event event, CaseData caseData) {
-        return ofNullable(eventCheckers.get(event))
-            .map(validator -> validator.isStarted(caseData))
-            .orElse(false);
-    }
-
     public boolean isAvailable(Event event, CaseData caseData) {
         return ofNullable(eventCheckers.get(event))
             .map(validator -> validator.isAvailable(caseData))

@@ -10,7 +10,6 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ProceedingStatus.PREVIOUS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
@@ -22,11 +21,6 @@ public class ProceedingsChecker implements EventChecker {
     @Override
     public List<String> validate(CaseData caseData) {
         return emptyList();
-    }
-
-    @Override
-    public boolean isStarted(CaseData caseData) {
-        return isNotEmpty(caseData.getProceedings());
     }
 
     @Override
