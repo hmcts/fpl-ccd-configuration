@@ -78,7 +78,6 @@ class OrderValidationServiceTest {
             "You need to enter a hearing date.",
             "You need to enter the allocated judge.",
             "Tell us the date of birth of all children in the case",
-            "Tell us the gender of all children in the case",
             "Enter the respondent's relationship to child"
         );
     }

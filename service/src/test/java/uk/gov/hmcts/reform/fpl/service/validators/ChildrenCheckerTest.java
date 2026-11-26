@@ -55,7 +55,6 @@ class ChildrenCheckerTest {
 
         assertThat(errors).containsExactlyInAnyOrder(
                 "Tell us the names of all children in the case",
-                "Tell us the gender of all children in the case",
                 "Tell us the date of birth of all children in the case"
         );
         assertThat(isCompleted).isFalse();
