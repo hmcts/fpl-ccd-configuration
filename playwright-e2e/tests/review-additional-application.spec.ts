@@ -4,11 +4,10 @@ import {
 } from "../settings/user-credentials";
 import {createCase, updateCase} from "../utils/api-helper";
 import caseWithC2App from "../caseData/caseWithC2Application.json" assert {type: "json"}
-import caseWithPaperC2App from "../caseData/caseWithPaperC2Application.json" assert {type: "json"}
 import caseWithConfidentialPaperC2App
     from "../caseData/caseWithConfidentialPaperC2Application.json" assert {type: "json"}
+import caseWithHearingAdditionalApplication from "../caseData/caseWithPaperC2ApplicationWithHearing.json" assert {type: "json"}
 import {testConfig} from "../settings/test-config";
-import caseWithChildrenCafcassSolicitor from "../caseData/caseWithMultipleChildCafcassSolicitor.json";
 import config from "../settings/test-docs/config";
 
 
@@ -31,13 +30,9 @@ test.describe('Review Additional Application', () => {
 
         await test.step('Login and navigate to case', async () => {
             await signInPage.visit();
-            await signInPage.page.pause();
             await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
             await signInPage.navigateToCaseDetails(caseNumber);
             await signInPage.gotoNextStep('Review additional application');
-            await signInPage.page.pause()
-
-
         });
         await test.step('Judge review the application details', async () => {
             //soft assert the application details are displayed correctly
@@ -64,10 +59,10 @@ test.describe('Review Additional Application', () => {
             await reviewAdditionalApplication.tabNavigation('Other applications');
             expect(await reviewAdditionalApplication.getRowData('Application Reviewed by Judge', reviewAdditionalApplication.page)).toContain('Yes');
             await reviewAdditionalApplication.tabNavigation('Orders');
-            expect(await reviewAdditionalApplication.getRowData('Order document', reviewAdditionalApplication.page)).toContain('amended_Draft order 2.pdf');
+            expect(await reviewAdditionalApplication.getRowData('Order document', reviewAdditionalApplication.page)).toContain('C2-draft order-01.pdf');
             await reviewAdditionalApplication.tabNavigation('Case File View');
             await caseFileView.clickFolder('Orders');
-            await expect(reviewAdditionalApplication.page.getByRole('button', {name: 'amended_Draft order 2.pdf'})).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByRole('button', {name: 'C2-draft order-01.pdf'})).toBeVisible();
         });
 
         if (testConfig.waEnabled) {
@@ -127,7 +122,6 @@ test.describe('Review Additional Application', () => {
             await reviewAdditionalApplication.tabNavigation('Orders');
             expect(await reviewAdditionalApplication.getRowData('Order document', reviewAdditionalApplication.page)).toContain('amended_Draft order1.pdf');
             await reviewAdditionalApplication.tabNavigation('Case File View');
-            await reviewAdditionalApplication.page.pause();
             await caseFileView.clickFolder('Orders');
             await caseFileView.clickFolder('Draft Orders');
             await caseFileView.clickFolder('Confidential');
@@ -255,10 +249,10 @@ test.describe('Review Additional Application', () => {
             await reviewAdditionalApplication.tabNavigation('Case File View');
             await caseFileView.clickFolder('Orders');
             await caseFileView.clickFolder('Refusal Order');
-            await expect(reviewAdditionalApplication.page.getByRole('button', {name: ' Refusal order for application date 18 November 2026 304pm.pdf '})).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByRole('button', {name: ' Refusal order for application date'})).toBeVisible();
             await caseFileView.clickFolder('Refusal Order');
             await caseFileView.clickFolder('Returned / Refused Order');
-            await expect(reviewAdditionalApplication.page.getByRole('button', {name: ' C2-draft order-01.docx '})).toBeVisible();
+            await expect(reviewAdditionalApplication.page.getByRole('button', {name: 'C2-draft order-01.docx'})).toBeVisible();
 
         });
         if (testConfig.waEnabled) {
@@ -276,12 +270,11 @@ test.describe('Review Additional Application', () => {
     test('Judge list at next hearing @xbrowser', async ({
                                                             reviewAdditionalApplication,
                                                             signInPage,
-                                                            courtServices,
-                                                            makeAxeBuilder
+                                                            caseFileView
                                                         }, testInfo) => {
         let caseName = 'Judge list the additional application at next hearing ' + dateTime;
-        expect(await updateCase(caseName, caseNumber, caseWithC2App)).toBeTruthy();
-        console.log(`Case created with case number: ${caseNumber} and case name: ${caseName}`);
+        expect(await updateCase(caseName, caseNumber, caseWithHearingAdditionalApplication)).toBeTruthy();
+
         await test.step('Login and navigate to case', async () => {
             await signInPage.visit();
             await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
@@ -290,31 +283,40 @@ test.describe('Review Additional Application', () => {
         });
         await test.step('Judge review the application details', async () => {
             // await additionalApplicationPage.checkApplicationDetails();
+            await reviewAdditionalApplication.clickContinue();
 
         });
-        await test.step('Judge refuse the application and the draft order', async () => {
-            await reviewAdditionalApplication.makeDecision('Refuse the application');
-            await reviewAdditionalApplication.enterRefusalReason('The application is not valid and the order is not valid');
+        await test.step('Judge list the application at the next hearing and the draft order', async () => {
+
+            await reviewAdditionalApplication.makeDecision('List at the next hearing');
+            await reviewAdditionalApplication.clickContinue()
+            await expect(reviewAdditionalApplication.page.getByText('Generated list at next hearing order')).toBeVisible();
+            await reviewAdditionalApplication.openOrderPreview('List at next hearing order');
+            await expect(await reviewAdditionalApplication.previewOrderPage.getByText('considered at the next scheduled hearing 12 June 2027.')).toBeVisible();
             await reviewAdditionalApplication.clickContinue();
             await reviewAdditionalApplication.checkYourAnsAndSubmit();
 
         });
 
-        test.step('Assert the event success ', async () => {
+       await test.step('Assert the event success ', async () => {
             expect(await reviewAdditionalApplication.page.getByText('Response submitted').isVisible());
+            await expect(reviewAdditionalApplication.page.locator('#confirmation-body')).toContainText('The task will be closed and marked as complete.\n A new order with your decision to list the application at the next hearing will be created.\nThe applicant and the other parties will be notified.\n');
             await reviewAdditionalApplication.closeConfirmation();
-            await reviewAdditionalApplication.tabNavigation('Additional application');
-            await expect(reviewAdditionalApplication.getRowData('Is Reviewed by Judge', reviewAdditionalApplication.page)).toContain('Yes');
-            await reviewAdditionalApplication.tabNavigation('Refused orders');
-            //assert for the refusal order - blank order title and refusal reason
-            await expect(reviewAdditionalApplication.getRowData('Refusal reason', reviewAdditionalApplication.page)).toContain('The order needs to be amended');
+            await reviewAdditionalApplication.tabNavigation('Other applications');
+            expect(await reviewAdditionalApplication.getRowData('Application Reviewed by Judge', reviewAdditionalApplication.page)).toContain('Yes');
+
+            //Assert the order to list at next hearing is created and the order title is displayed in the orders tab
             await reviewAdditionalApplication.tabNavigation('Orders');
-            await expect(reviewAdditionalApplication.getRowData('Order title', reviewAdditionalApplication.page)).toContain('Amended order');
+            expect(await reviewAdditionalApplication.getRowData('Order title', reviewAdditionalApplication.page)).toContain('List at next hearing order for');
 // CFV assertion
-            await reviewAdditionalApplication.tabNavigation('Case file view');
+            await reviewAdditionalApplication.tabNavigation('Case File View');
+            await caseFileView.clickFolder('Orders');
+            await expect(reviewAdditionalApplication.page.getByRole('button', {name: ' List at next hearing order for '})).toBeVisible();
+
+
         });
         if (testConfig.waEnabled) {
-            test.step('Assert the WA task', async () => {
+            await test.step('Assert the WA task', async () => {
                 await signInPage.logout();
                 await signInPage.login(CTSCUser.email, CTSCUser.password);
                 await signInPage.navigateToCaseDetails(caseNumber);
