@@ -127,6 +127,8 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     }
   ]
 
+  pgsql_sku = "GP_Standard_D2s_v3"
+
   pgsql_version = "17"
 
   pgsql_server_configuration = [
